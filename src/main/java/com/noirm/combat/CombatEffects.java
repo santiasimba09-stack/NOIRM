@@ -41,12 +41,15 @@ final class CombatEffects {
 
     static void hitLanded(LivingEntity attacker, LivingEntity target, CombatMove move, boolean guarded, CombatState targetState) {
         CombatMove.Hit hit = move.hit();
+        net.minecraft.world.phys.Vec3 chest = target.position().add(0, target.getBbHeight() * 0.6, 0);
         if (!guarded) {
             sound(target, hit.isHeavy() ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG, 1f, 0.9f);
-            particles(target, ParticleTypes.CRIT, hit.isHeavy() ? 16 : 8, 0.3);
+            com.noirm.vfx.Vfx.hit(target.level(), chest, com.noirm.vfx.Vfx.HIT, hit.isHeavy());
             if (hit.isHeavy()) {
                 particles(target, ParticleTypes.SWEEP_ATTACK, 1, 0);
             }
+        } else {
+            com.noirm.vfx.Vfx.burst(target.level(), com.noirm.vfx.Vfx.spark(0x9AC8FF, 0.15f, 6), chest, 5, 0.1, 0.25);
         }
         float shake = guarded ? hit.shake() * 0.4f : hit.shake();
         if (attacker instanceof ServerPlayer player) {

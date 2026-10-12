@@ -312,6 +312,8 @@ public final class JutsuBehaviors {
             case LAVA -> SoundEvents.LAVA_POP;
             case EXPLOSION -> SoundEvents.GENERIC_EXPLODE;
             case DUST -> SoundEvents.BEACON_POWER_SELECT;
+            case YIN -> SoundEvents.ILLUSIONER_CAST_SPELL;
+            case YANG, YIN_YANG -> SoundEvents.AMETHYST_BLOCK_CHIME;
         };
     }
 

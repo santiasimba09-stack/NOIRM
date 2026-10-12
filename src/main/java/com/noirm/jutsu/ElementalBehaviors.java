@@ -46,6 +46,7 @@ public final class ElementalBehaviors {
             return;
         }
         ParticleOptions look = look(ctx);
+        com.noirm.vfx.Vfx.gather(ctx.level(), target.position().add(0, target.getBbHeight() / 2, 0), com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), 2f, 24);
         JutsuEffects.hit(caster, target, p.damage() * ctx.power(), 0, p.posture() * ctx.power(), p.fireSeconds(), Vec3.ZERO);
         int hold = Math.round(p.stun() * Math.min(1.5f, ctx.power()));
         CombatSystem.stun(target, hold);
@@ -76,7 +77,12 @@ public final class ElementalBehaviors {
                 JutsuEffects.particlesAt(ctx.level(), spike.add(0, y, 0), look, 3, 0.08, 0.05);
             }
         }
+        com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx));
+        com.noirm.vfx.Vfx.shockwave(ctx.level(), at, palette, radius * 1.4f);
+        com.noirm.vfx.Vfx.radial(ctx.level(), com.noirm.vfx.Vfx.shard(palette.edge(), 0.25f, 30), at.add(0, 0.3, 0), (int) (8 + radius * 6), 0.5);
+        com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.smoke(palette.edge(), 0.6f, 40), at.add(0, 0.4, 0), (int) (4 + radius * 3), radius * 0.6, 0.02);
         if (JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.EXPLOSION) {
+            com.noirm.vfx.Vfx.explosion(ctx.level(), at.add(0, 0.5, 0), palette, radius);
             ctx.level().sendParticles(ParticleTypes.EXPLOSION, at.x, at.y + 0.5, at.z, 3, radius * 0.4, 0.3, radius * 0.4, 0);
         }
         AABB box = new AABB(at, at).inflate(radius, 2.5, radius);
@@ -131,6 +137,8 @@ public final class ElementalBehaviors {
                 end = block.getLocation();
             }
             double length = start.distanceTo(end);
+            com.noirm.vfx.Vfx.line(level, start.add(dir.scale(0.6)), end, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), 0.22f);
+            com.noirm.vfx.Vfx.hit(level, end, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), false);
             for (double d = 0.5; d <= length; d += 0.4) {
                 Vec3 point = start.add(dir.scale(d));
                 JutsuEffects.particlesAt(level, point, look, 1, 0.05, 0);
@@ -148,6 +156,7 @@ public final class ElementalBehaviors {
                 // Where the beam ends, everything inside the radius is torn apart (Dust).
                 Vec3 center = end;
                 level.sendParticles(look, center.x, center.y, center.z, 60, p.radius() * 0.5, p.radius() * 0.5, p.radius() * 0.5, 0.02);
+                com.noirm.vfx.Vfx.explosion(level, center, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), p.radius());
                 for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(p.radius()),
                         e -> e != caster && e.isAlive() && !hit.contains(e) && e.position().distanceTo(center) <= p.radius() + 1)) {
                     hit.add(victim);

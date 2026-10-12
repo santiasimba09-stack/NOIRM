@@ -4,12 +4,10 @@ gamerule doDaylightCycle false
 gamerule doMobSpawning false
 effect give @s minecraft:resistance 99999 2 true
 effect give @s minecraft:saturation 99999 0 true
-fill ~-16 199 ~-12 ~16 201 ~24 minecraft:glass
-fill ~-15 200 ~-11 ~15 201 ~23 minecraft:air
-fill ~-15 199 ~-11 ~15 199 ~23 minecraft:smooth_stone
-noirm clan set senju
-noirm jutsu mastery noirm:doton/earth_wall 2
-noirm jutsu mastery noirm:suiton/water_bullet 2
+fill ~-12 199 ~-12 ~12 201 ~16 minecraft:glass
+fill ~-11 200 ~-11 ~11 201 ~15 minecraft:air
+fill ~-11 199 ~-11 ~11 199 ~15 minecraft:smooth_stone
+noirm clan set uchiha
 noirm sharingan 3
 summon noirm:training_dummy ~ 200 ~2.5 {Rotation:[180f,0f]}
 fill ~-3 200 ~5 ~3 202 ~5 minecraft:stone_bricks

@@ -143,8 +143,13 @@ public final class JutsuCaster {
         }
         casting.ticks++;
         if (casting.def.cast() == CastType.CHARGE) {
-            if (casting.ticks <= casting.def.maxCharge() && casting.ticks % 3 == 0) {
-                JutsuEffects.particles(entity, JutsuProjectile.particle(casting.def.nature().orElse(null)), 3, 0.4, 0.02);
+            if (casting.ticks <= casting.def.maxCharge() && casting.ticks % 2 == 0) {
+                // Anticipation: energy gathers in front of the caster, tighter and brighter as it fills.
+                float progress = Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge()));
+                net.minecraft.world.phys.Vec3 hand = entity.getEyePosition().add(entity.getViewVector(1f).scale(0.8)).add(0, -0.35, 0);
+                com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(casting.def.nature().orElse(null));
+                com.noirm.vfx.Vfx.gather(entity.level(), hand, palette, 1.2f - 0.6f * progress, 3 + Math.round(progress * 4));
+                com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.glow(palette.core(), palette.mid(), 0.2f + 0.5f * progress, 0.1f, 4), hand, 1, 0, 0);
             }
             return;
         }

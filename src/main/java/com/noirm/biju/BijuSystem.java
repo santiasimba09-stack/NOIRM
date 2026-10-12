@@ -149,9 +149,10 @@ public final class BijuSystem {
         }
         biju.setCloak(biju.cloakStage(), biju.cloakTicks() - 1);
         if (player.level() instanceof ServerLevel level && player.tickCount % 2 == 0) {
-            float red = biju.cloakStage() == 2 ? 0.75f : 1f;
-            DustParticleOptions aura = new DustParticleOptions(new Vector3f(red, biju.cloakStage() == 2 ? 0.1f : 0.45f, 0.05f), 1.4f);
-            level.sendParticles(aura, player.getX(), player.getY() + 1, player.getZ(), 6, 0.35, 0.7, 0.35, 0);
+            com.noirm.vfx.Vfx.Palette palette = biju.cloakStage() == 2
+                    ? new com.noirm.vfx.Vfx.Palette(0xFF8080, 0xB01010, 0x200000)
+                    : new com.noirm.vfx.Vfx.Palette(0xFFF0C0, 0xFF7A1A, 0x6A2A00);
+            com.noirm.vfx.Vfx.aura(level, player.position(), player.getBbWidth(), player.getBbHeight(), palette, 6);
             if (biju.cloakStage() == 2) {
                 level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.2, player.getZ(), 2, 0.3, 0.1, 0.3, 0.01);
             }

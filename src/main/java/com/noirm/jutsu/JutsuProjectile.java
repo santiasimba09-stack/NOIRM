@@ -157,35 +157,31 @@ public class JutsuProjectile extends Projectile {
                     JutsuEffects.hit(this, victim, damage * (0.5f + 0.5f * falloff), knockback, posture, fireSeconds, push);
                     JutsuEffects.applyEffects(victim, effect, effectTicks);
                 }
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1 + (int) blastRadius, blastRadius * 0.3, blastRadius * 0.3, blastRadius * 0.3, 0);
-                serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f, 1.2f);
+                com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
+                serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f + blastRadius * 0.1f, 1.3f - Math.min(0.6f, blastRadius * 0.08f));
+            } else {
+                com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
             }
-            serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 20, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
+            serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 12, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
         }
         discard();
     }
 
-    /** Client side: fills a ball the projectile's size with its nature's particles. */
+    /** This projectile's colours (the Tailed Beast Ball is dark and red). */
+    private com.noirm.vfx.Vfx.Palette palette() {
+        return isBeastChakra() ? new com.noirm.vfx.Vfx.Palette(0xFF6060, 0x3A0A40, 0x0A0008) : com.noirm.vfx.Vfx.palette(nature());
+    }
+
+    /** Client side: a glowing orb with a hot core and a smoky tail, plus a touch of its nature. */
     private void trail() {
-        Nature nature = nature();
-        float radius = size() * 0.5f;
-        int count = 4 + (int) (radius * radius * 40);
-        for (int i = 0; i < count; i++) {
-            ParticleOptions particle = trailParticle();
-            // a random point inside the ball (uniform-ish: push toward the surface)
-            double theta = random.nextDouble() * Math.PI * 2;
-            double phi = Math.acos(2 * random.nextDouble() - 1);
-            double r = radius * Math.cbrt(random.nextDouble());
-            double ox = r * Math.sin(phi) * Math.cos(theta);
-            double oy = r * Math.cos(phi);
-            double oz = r * Math.sin(phi) * Math.sin(theta);
-            level().addParticle(particle, getX() + ox, getY() + oy, getZ() + oz, 0, 0, 0);
+        com.noirm.vfx.Vfx.orb(level(), position(), getDeltaMovement(), palette(), size());
+        if (random.nextInt(2) == 0) {
+            float r = size() * 0.5f;
+            level().addParticle(trailParticle(), getX() + random.nextGaussian() * r, getY() + random.nextGaussian() * r,
+                    getZ() + random.nextGaussian() * r, 0, 0, 0);
         }
-        if (nature == Nature.FIRE) {
+        if (nature() == Nature.FIRE && random.nextInt(3) == 0) {
             level().addParticle(ParticleTypes.LAVA, getX(), getY(), getZ(), 0, 0, 0);
-            if (random.nextInt(2) == 0) {
-                level().addParticle(ParticleTypes.LARGE_SMOKE, getX() - getDeltaMovement().x, getY(), getZ() - getDeltaMovement().z, 0, 0.02, 0);
-            }
         }
     }
 
@@ -208,6 +204,9 @@ public class JutsuProjectile extends Projectile {
             case MAGNET -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.BLACK_CONCRETE_POWDER.defaultBlockState());
             case SCORCH -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1f, 0.55f, 0.15f), 1.6f);
             case DUST -> ParticleTypes.END_ROD;
+            case YIN -> ParticleTypes.SQUID_INK;
+            case YANG -> ParticleTypes.HAPPY_VILLAGER;
+            case YIN_YANG -> ParticleTypes.END_ROD;
         };
     }
 

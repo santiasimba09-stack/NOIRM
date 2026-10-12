@@ -28,11 +28,20 @@ public enum Nature implements StringRepresentable {
     EXPLOSION("explosion", "Bakuton", "爆", 0xFFB347, EARTH, LIGHTNING),
     MAGNET("magnet", "Jiton", "磁", 0x6A6A80, WIND, EARTH),
     SCORCH("scorch", "Shakuton", "灼", 0xFF8C3A, FIRE, WIND),
-    DUST("dust", "Jinton", "塵", 0xF5F5F5, FIRE, WIND, EARTH);
+    DUST("dust", "Jinton", "塵", 0xF5F5F5, FIRE, WIND, EARTH),
+
+    /** Spiritual energy, imagination: shadows, genjutsu. Runs in the Uchiha; the Nara use it. */
+    YIN("yin", "Inton", "陰", 0x8A5ACF),
+    /** Physical energy, vitality: healing, the body. Runs in the Senju; the Akimichi use it. */
+    YANG("yang", "Yōton", "陽", 0xFFD860),
+    /** Both together: giving life to form (the Sage of Six Paths). */
+    YIN_YANG("yin_yang", "Onmyōton", "陰陽", 0xE8E0FF, YIN, YANG);
 
     public static final Codec<Nature> CODEC = StringRepresentable.fromEnum(Nature::values);
-    /** Only the five basic natures (what clans roll and jutsu of the basic tree use). */
+    /** The five elemental natures (what clans roll; the ring of the nature tree). */
     public static final List<Nature> BASIC = List.of(FIRE, WATER, WIND, EARTH, LIGHTNING);
+    /** Yin and Yang: not elements, but natures all the same. */
+    public static final List<Nature> NON_ELEMENTAL = List.of(YIN, YANG);
 
     private final String name;
     private final String japanese;
@@ -67,8 +76,14 @@ public enum Nature implements StringRepresentable {
         return color;
     }
 
+    /** No components: one of the five elements, Yin or Yang. */
     public boolean isBasic() {
         return components.length == 0;
+    }
+
+    /** Fire, water, wind, earth, lightning, or a mix of them (not Yin/Yang). */
+    public boolean isElemental() {
+        return this != YIN && this != YANG && this != YIN_YANG;
     }
 
     /** The basic natures this one combines (empty for basic natures). */
