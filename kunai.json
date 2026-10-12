@@ -1,0 +1,142 @@
+{
+  "credit": "Original NYDO classic arsenal; editable Blockbench source in src/animation_workbench/weapons/nydo_classic",
+  "loader": "forge:obj",
+  "model": "nydomod:models/item/nydo_classic/kunai.obj",
+  "flip_v": true,
+  "automatic_culling": false,
+  "shade_quads": true,
+  "emissive_ambient": false,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "arsenal": "nydomod:item/weapons/nydo_classic/arsenal",
+    "particle": "nydomod:item/weapons/nydo_classic/arsenal"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        90,
+        0,
+        -180
+      ],
+      "translation": [
+        0,
+        0.75,
+        1
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        90,
+        0,
+        -180
+      ],
+      "translation": [
+        0,
+        0.75,
+        1
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        90,
+        0,
+        -180
+      ],
+      "translation": [
+        0,
+        0.75,
+        1
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        90,
+        0,
+        -180
+      ],
+      "translation": [
+        0,
+        0.75,
+        1
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        -90,
+        -180
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "gui": {
+      "rotation": [
+        70,
+        -45,
+        -90
+      ],
+      "translation": [
+        0,
+        0,
+        -0.5
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "head": {
+      "rotation": [
+        -90,
+        0,
+        -180
+      ],
+      "translation": [
+        7,
+        -30,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        45,
+        90
+      ],
+      "translation": [
+        0,
+        0,
+        -0.5
+      ]
+    }
+  }
+}
