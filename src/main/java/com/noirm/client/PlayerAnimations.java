@@ -51,8 +51,15 @@ public final class PlayerAnimations {
                 .setFirstPersonConfiguration(new FirstPersonConfiguration(true, true, true, true));
         @SuppressWarnings("unchecked")
         ModifierLayer<IAnimation> layer = (ModifierLayer<IAnimation>) raw;
-        layer.replaceAnimationWithFade(AbstractFadeModifier.standardFadeIn(2, Ease.INOUTSINE),
-                new ModifierLayer<>(keyframes, new SpeedModifier(speed)));
+        // The animation goes straight into our layer, and the speed change is a modifier on that
+        // layer, added after the animation (a modifier added first links to nothing and reports
+        // "inactive", and an inactive layer draws nothing). No fade: fading in from an empty
+        // layer has the same problem.
+        layer.setAnimation(keyframes);
+        while (layer.size() > 0) {
+            layer.removeModifier(0);
+        }
+        layer.addModifierBefore(new SpeedModifier(speed));
     }
 
     /** Gives every player an animation layer for NOIRM to play into. */
