@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "start": 6, "duration": 594, "burst": 1, "rate": 1.1, "max_particles": 12,
+    "geometry": "tapered_streak",
+    "shape": { "type": "sphere", "offset": [0.0, 0.0, 7.35], "radius": 0.70, "direction": "radial" },
+    "speed": [0.08, 0.16], "lifetime": [4, 8],
+    "gravity": -0.004, "drag": 0.93, "turbulence": 0.08,
+    "rotation": [-8, 8], "spin": [-1.0, 1.0],
+    "size": [[0.0, 0.02], [0.30, 0.05], [1.0, 0.01]],
+    "size_variation": 0.25,
+    "alpha": [[0.0, 0.0], [0.18, 0.80], [0.70, 0.60], [1.0, 0.0]],
+    "color": { "start": "#FFFFE9A8", "end": "#FFFF9018" },
+    "color_variation": 0.05,
+    "geometry_settings": { "length": 0.60 }
+  }
+}

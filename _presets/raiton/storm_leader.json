@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/raiton/blue_bolt",
+  "emitter": {
+    "lifetime": [10, 18],
+    "color": { "start": "#FFFFFFFF", "end": "#FF4AA8FF" },
+    "geometry_settings": {
+      "segments": 34, "length": 8.0, "thickness": 0.044, "jitter": 0.042,
+      "branches": 6, "branch_length": 0.30, "core": 1.0, "leader": 0.30,
+      "topology_ticks": 4
+    }
+  }
+}

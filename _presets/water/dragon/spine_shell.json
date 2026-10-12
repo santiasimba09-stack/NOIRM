@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "duration": 0,
+    "burst": 1,
+    "max_particles": 1,
+    "geometry": "trail",
+    "shape": {
+      "type": "point",
+      "direction": "forward"
+    },
+    "speed": [
+      0.0,
+      0.0
+    ],
+    "lifetime": [
+      120,
+      120
+    ],
+    "drag": 1.0,
+    "size": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.04,
+        2.05
+      ],
+      [
+        0.86,
+        1.9
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.04,
+        0.42
+      ],
+      [
+        0.86,
+        0.34
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FFFFFFFF",
+      "end": "#FFFFFFFF"
+    },
+    "near_fade": 3.0,
+    "material": {
+      "texture": "nydomod:textures/water_flow_surface.png"
+    },
+    "follow_origin": true,
+    "geometry_settings": {
+      "trail_points": 16,
+      "trail_taper": 0.8,
+      "trail_min_distance": 0.7,
+      "trail_break_distance": 40.0
+    }
+  }
+}

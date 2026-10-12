@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "duration": 0,
+    "burst": 1,
+    "max_particles": 1,
+    "geometry": "wind_gust",
+    "shape": {
+      "type": "point",
+      "direction": "forward"
+    },
+    "speed": [
+      0.0,
+      0.0
+    ],
+    "lifetime": [
+      16,
+      16
+    ],
+    "drag": 1.0,
+    "rotation": [
+      0,
+      0
+    ],
+    "size": [
+      [
+        0.0,
+        0.55
+      ],
+      [
+        0.16,
+        1.0
+      ],
+      [
+        0.72,
+        1.0
+      ],
+      [
+        1.0,
+        0.86
+      ]
+    ],
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.1,
+        0.88
+      ],
+      [
+        0.62,
+        0.7
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FFFFFFFF",
+      "end": "#FFD8E6F0"
+    },
+    "near_fade": 0.0,
+    "follow_origin": true,
+    "material": {
+      "texture": "nydomod:textures/wind_gust_flow.png"
+    },
+    "geometry_settings": {
+      "segments": 44,
+      "arc_degrees": 150.0,
+      "thickness": 0.3,
+      "taper": 0.22,
+      "turns": 0.55,
+      "edge": 0.55,
+      "crest": 0.35,
+      "lay_flat": true,
+      "flow": 1.6
+    }
+  }
+}

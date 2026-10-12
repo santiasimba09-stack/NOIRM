@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "duration": 0,
+    "burst": 1,
+    "max_particles": 1,
+    "geometry": "billboard",
+    "shape": {"type": "point", "direction": "forward"},
+    "speed": [0.0, 0.0],
+    "lifetime": [6, 6],
+    "drag": 1.0,
+    "rotation": [0, 360],
+    "spin": [0.0, 0.0],
+    "size": [[0.0, 0.22], [0.08, 2.1], [0.42, 2.8], [1.0, 0.0]],
+    "alpha": [[0.0, 0.0], [0.04, 0.88], [0.30, 0.44], [1.0, 0.0]],
+    "color": {"start": "#FFFFFFFF", "end": "#FF72CCFF"},
+    "material": {
+      "texture": "nydomod:textures/raiton_ion_flipbook.png",
+      "blend": "additive",
+      "depth_write": false,
+      "fullbright": true
+    },
+    "atlas": {"columns": 16, "rows": 1, "frames": 16}
+  }
+}

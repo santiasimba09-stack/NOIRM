@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/ninja_smoke/soft_billow",
+  "emitter": {
+    "speed": [
+      0.025,
+      0.065
+    ],
+    "lifetime": [
+      28,
+      42
+    ],
+    "gravity": -0.009,
+    "drag": 0.94,
+    "turbulence": 0.06,
+    "vortex": 0.38,
+    "vortex_pull": 0.015,
+    "spin": [
+      -1.8,
+      1.8
+    ],
+    "size": [
+      [
+        0,
+        0.13
+      ],
+      [
+        0.14,
+        0.3
+      ],
+      [
+        0.52,
+        0.48
+      ],
+      [
+        1,
+        0.65
+      ]
+    ],
+    "alpha": [
+      [
+        0,
+        0
+      ],
+      [
+        0.12,
+        0.48
+      ],
+      [
+        0.4,
+        0.37
+      ],
+      [
+        0.75,
+        0.18
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "color": {
+      "start": "#FFE9EEF0",
+      "end": "#FFB8C6CC"
+    },
+    "geometry_settings": {
+      "segments": 24
+    }
+  }
+}

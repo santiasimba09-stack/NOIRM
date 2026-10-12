@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 120, "burst": 1, "rate": 0.7, "max_particles": 8,
+    "geometry": "ring",
+    "shape": { "type": "point", "offset": [0.0, 0.0, 0.5], "direction": "forward" },
+    "speed": [0.58, 0.76], "lifetime": [10, 15],
+    "drag": 1.0,
+    "rotation": [0, 360], "spin": [-0.5, 0.5],
+    "size": [[0.0, 0.14], [0.30, 0.32], [0.80, 0.44], [1.0, 0.50]],
+    "size_variation": 0.14,
+    "alpha": [[0.0, 0.0], [0.14, 0.42], [0.62, 0.24], [1.0, 0.0]],
+    "color": { "start": "#FFBEE8F8", "end": "#FF4E96CE" },
+    "follow_origin": true,
+    "geometry_settings": { "segments": 20, "thickness": 0.042, "arc_degrees": 360.0 }
+  }
+}

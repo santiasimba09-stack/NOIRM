@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "start": 2, "duration": 118, "burst": 4, "rate": 1.6, "max_particles": 8,
+    "geometry": "water_ribbon",
+    "shape": { "type": "point", "offset": [0.0, 0.0, -0.4], "direction": "backward" },
+    "speed": [0.0, 0.0], "lifetime": [18, 30], "drag": 1.0,
+    "size": [[0.0, 0.24], [0.16, 0.86], [0.80, 0.74], [1.0, 0.0]],
+    "size_variation": 0.34,
+    "alpha": [[0.0, 0.0], [0.14, 0.72], [0.76, 0.48], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "near_fade": 2.0,
+    "follow_origin": true,
+    "material": { "texture": "nydomod:textures/water_flow_surface.png" },
+    "geometry_settings": {
+      "segments": 20, "length": 3.4, "thickness": 0.50,
+      "curl": 1.5, "swirl": 0.5, "wave": 0.22, "rim": 0.88,
+      "seat_arc": 1.9, "seat_bias": 1.5708
+    }
+  }
+}

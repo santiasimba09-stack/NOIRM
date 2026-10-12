@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "burst": 1, "max_particles": 1,
+    "geometry": "trail",
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+    "size": [[0.0, 0.0], [0.10, 0.085], [0.72, 0.095], [1.0, 0.0]],
+    "alpha": [[0.0, 0.0], [0.08, 0.70], [0.70, 0.45], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFA8DCF0" },
+    "geometry_settings": {
+      "trail_points": 10, "trail_taper": 1.6,
+      "trail_min_distance": 0.20, "trail_break_distance": 6.0
+    }
+  }
+}

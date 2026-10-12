@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "duration": 0, "burst": 1, "max_particles": 1,
+    "geometry": "lightning_bolt", "follow_origin": true,
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [8, 12], "drag": 1.0,
+    "size": [[0.0, 0.72], [0.10, 1.0], [0.82, 0.92], [1.0, 0.0]],
+    "alpha": [[0.0, 0.0], [0.05, 1.0], [0.72, 0.88], [1.0, 0.0]],
+    "color": { "start": "#FF75C9FF", "end": "#FF1676E8" },
+    "material": { "texture": "nydomod:textures/raiton_channel.png", "depth_write": false },
+    "geometry_settings": { "segments": 18, "length": 2.4, "thickness": 0.018, "jitter": 0.075, "branches": 3, "branch_length": 0.34, "core": 0.96, "leader": 0.16, "topology_ticks": 3 }
+  }
+}

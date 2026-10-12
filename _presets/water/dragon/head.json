@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "duration": 0, "burst": 1, "rate": 0.0, "max_particles": 1,
+    "geometry": "water_dragon_head",
+    "shape": { "type": "point", "offset": [0.0, 0.0, 0.0], "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [120, 120], "drag": 1.0,
+    "size": [[0.0, 0.22], [0.08, 1.02], [0.93, 1.06], [1.0, 0.0]],
+    "size_variation": 0.0,
+    "alpha": [[0.0, 0.0], [0.08, 0.96], [0.93, 0.92], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "near_fade": 2.2,
+    "follow_origin": true,
+    "material": { "texture": "nydomod:textures/dragon_water_skin.png" },
+    "geometry_settings": {
+      "segments": 14, "rim": 0.86, "glow": 0.55,
+      "mouth": 0.55, "horns": 0.62
+    }
+  }
+}

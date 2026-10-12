@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "material": {
+      "blend": "additive"
+    }
+  }
+}

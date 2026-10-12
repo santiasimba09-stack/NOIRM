@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "burst": 1, "max_particles": 1,
+    "geometry": "chakra_sphere",
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [600, 600], "drag": 1.0,
+    "size": [[0.0, 0.014], [0.05, 0.13], [1.0, 0.13]],
+    "alpha": [[0.0, 0.0], [0.03, 0.64], [0.94, 0.64], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFD9F5FF" },
+    "material": { "texture": "nydomod:textures/bijudama_solid.png" },
+    "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+    "geometry_settings": {
+      "segments": 32, "rim": 0.025,
+      "flow": 2.7, "flow_tile": 1.0, "wave": 0.025, "lobes": 5.0,
+      "swirl": 0.32, "glow": 0.92
+    }
+  }
+}

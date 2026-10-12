@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "duration": 120, "burst": 4, "rate": 4.4, "max_particles": 26,
+    "geometry": "billboard",
+    "shape": {
+      "type": "cone", "offset": [0.0, 0.0, 0.5], "scale": [1.0, 1.0, 1.0],
+      "length": 11.0, "angle": 4.2, "direction": "radial"
+    },
+    "speed": [0.03, 0.12], "lifetime": [6, 12],
+    "gravity": 0.005, "drag": 0.93, "turbulence": 0.10,
+    "rotation": [0, 360], "spin": [-2.4, 2.4],
+    "size": [[0.0, 0.13], [0.25, 0.34], [0.66, 0.42], [1.0, 0.16]],
+    "size_variation": 0.30,
+    "alpha": [[0.0, 0.0], [0.10, 0.82], [0.66, 0.58], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFDDF2FF" },
+    "color_variation": 0.03,
+    "collision": { "mode": "world", "response": "clip", "padding": 0.12 },
+    "near_fade": 1.8,
+    "material": { "texture": "nydomod:textures/water_foam_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+    "geometry_settings": { "length": 12.0, "sag": 0.11 }
+  }
+}

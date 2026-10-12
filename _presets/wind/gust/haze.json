@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 8,
+    "burst": 2,
+    "rate": 0.8,
+    "max_particles": 10,
+    "geometry": "billboard",
+    "shape": {
+      "type": "sphere",
+      "radius": 0.7,
+      "direction": "radial"
+    },
+    "speed": [
+      0.01,
+      0.07
+    ],
+    "lifetime": [
+      18,
+      30
+    ],
+    "drag": 0.9,
+    "turbulence": 0.05,
+    "rotation": [
+      0,
+      360
+    ],
+    "spin": [
+      -0.3,
+      0.3
+    ],
+    "size": [
+      [
+        0.0,
+        0.8
+      ],
+      [
+        0.32,
+        1.9
+      ],
+      [
+        0.74,
+        2.3
+      ],
+      [
+        1.0,
+        1.7
+      ]
+    ],
+    "size_variation": 0.3,
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.22,
+        0.09
+      ],
+      [
+        0.66,
+        0.06
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FF98A0AA",
+      "end": "#FF6E767F"
+    },
+    "near_fade": 0.0,
+    "material": {
+      "texture": "nydomod:textures/wind_haze.png"
+    }
+  }
+}

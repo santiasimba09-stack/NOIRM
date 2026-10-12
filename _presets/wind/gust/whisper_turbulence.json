@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 6,
+    "burst": 3,
+    "rate": 1.1,
+    "max_particles": 14,
+    "geometry": "billboard",
+    "shape": {
+      "type": "sphere",
+      "radius": 0.55,
+      "direction": "radial"
+    },
+    "speed": [
+      0.02,
+      0.1
+    ],
+    "lifetime": [
+      12,
+      18
+    ],
+    "drag": 0.94,
+    "turbulence": 0.06,
+    "rotation": [
+      0,
+      360
+    ],
+    "spin": [
+      0.4,
+      0.52
+    ],
+    "size": [
+      [
+        0.0,
+        0.55
+      ],
+      [
+        0.3,
+        1.15
+      ],
+      [
+        0.74,
+        1.3
+      ],
+      [
+        1.0,
+        0.95
+      ]
+    ],
+    "size_variation": 0.34,
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.13,
+        0.14
+      ],
+      [
+        0.27,
+        0.02
+      ],
+      [
+        0.42,
+        0.15
+      ],
+      [
+        0.56,
+        0.03
+      ],
+      [
+        0.73,
+        0.13
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FF8E96A0",
+      "end": "#FF6A727C"
+    },
+    "color_variation": 0.05,
+    "near_fade": 0.0,
+    "material": {
+      "texture": "nydomod:textures/wind_turbulence.png"
+    }
+  }
+}

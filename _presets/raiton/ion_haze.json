@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 0, "burst": 2, "max_particles": 12,
+    "geometry": "billboard",
+    "shape": { "type": "sphere", "radius": 0.5, "direction": "radial" },
+    "speed": [0.01, 0.06], "lifetime": [14, 24], "drag": 0.91, "turbulence": 0.07,
+    "rotation": [0, 360], "spin": [-0.3, 0.3],
+    "size": [[0.0, 0.32], [0.28, 0.82], [0.74, 1.08], [1.0, 0.72]],
+    "alpha": [[0.0, 0.0], [0.18, 0.16], [0.66, 0.08], [1.0, 0.0]],
+    "color": { "start": "#FF8294A8", "end": "#FF303947" },
+    "material": { "texture": "nydomod:textures/raiton_ion_flipbook.png", "depth_write": false },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+  }
+}

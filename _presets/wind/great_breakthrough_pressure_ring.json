@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 100, "rate": 0.22, "max_particles": 5,
+    "geometry": "shock_wave", "follow_origin": true,
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [12, 12], "drag": 1.0,
+    "rotation": [0.0, 360.0], "spin": [-0.34, 0.34],
+    "size": [[0.0, 0.72], [0.18, 1.0], [0.66, 1.04], [1.0, 1.08]],
+    "alpha": [[0.0, 0.0], [0.08, 0.26], [0.52, 0.13], [1.0, 0.0]],
+    "color": { "start": "#FFDCE8EC", "end": "#FF788892" },
+    "material": {
+      "texture": "nydomod:textures/wind_gust_flow.png", "blend": "alpha",
+      "shader": "lit", "depth_write": false, "fullbright": false
+    },
+    "geometry_settings": {
+      "segments": 42, "thickness": 0.20, "arc_degrees": 360.0,
+      "edge": 0.72, "roll": 76.0, "wave": 0.10, "crest": 0.42, "lobes": 5.0
+    }
+  }
+}

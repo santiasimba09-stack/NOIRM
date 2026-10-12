@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 200, "burst": 6, "rate": 3.4, "max_particles": 54,
+    "geometry": "streak",
+    "shape": { "type": "line", "offset": [0.0, 0.0, 3.2], "length": 5.4, "direction": "forward" },
+    "speed": [0.06, 0.16], "lifetime": [9, 16],
+    "gravity": 0.0, "drag": 0.94, "turbulence": 0.16, "vortex": 1.5,
+    "size": [[0.0, 0.16], [0.24, 0.42], [0.62, 0.50], [1.0, 0.20]],
+    "size_variation": 0.34,
+    "alpha": [[0.0, 0.0], [0.10, 0.34], [0.62, 0.26], [1.0, 0.0]],
+    "color": { "start": "#FFEAF7FF", "end": "#FFA4D6E8" },
+    "color_variation": 0.05,
+    "collision": { "mode": "world", "response": "clip", "padding": 0.16 },
+    "material": { "texture": "nydomod:textures/wind_filament_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+    "geometry_settings": { "length": 2.1 }
+  }
+}

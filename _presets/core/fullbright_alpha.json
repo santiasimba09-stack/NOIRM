@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "emitter": {
+    "material": {
+      "texture": "nydomod:textures/white_square.png",
+      "blend": "alpha",
+      "shader": "standard",
+      "depth_write": false,
+      "fullbright": true
+    }
+  }
+}

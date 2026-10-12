@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "start": 0,
+    "duration": 1180,
+    "burst": 1,
+    "rate": 0.10,
+    "max_particles": 5,
+    "geometry": "fire_wisp",
+    "shape": {
+      "type": "box_perimeter",
+      "offset": [0.0, 0.0, -1.36],
+      "radius": 0.84,
+      "length": 2.72,
+      "direction": "forward"
+    },
+    "speed": [0.001, 0.006],
+    "lifetime": [22, 34],
+    "gravity": 0.0003,
+    "drag": 0.925,
+    "turbulence": 0.12,
+    "rotation": [-18, 18],
+    "spin": [-0.75, 0.75],
+    "size": [[0.0, 0.028], [0.14, 0.09], [0.55, 0.115], [0.82, 0.06], [1.0, 0.0]],
+    "size_variation": 0.34,
+    "alpha": [[0.0, 0.0], [0.08, 0.22], [0.62, 0.12], [0.88, 0.05], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFD5DEEA" },
+    "color_variation": 0.06,
+    "follow_origin": true,
+    "geometry_settings": { "segments": 7, "length": 0.40 }
+  }
+}

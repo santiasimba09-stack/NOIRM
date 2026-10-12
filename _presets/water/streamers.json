@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "start": 5, "duration": 115, "burst": 2, "rate": 1.1, "max_particles": 7,
+    "geometry": "trail",
+    "shape": {
+      "type": "cone", "offset": [0.0, 0.0, 1.2], "scale": [1.0, 1.0, 1.0],
+      "length": 9.5, "angle": 13.0, "direction": "radial"
+    },
+    "speed": [0.20, 0.46], "lifetime": [14, 24],
+    "gravity": 0.030, "drag": 0.97, "turbulence": 0.03,
+    "size": [[0.0, 0.05], [0.18, 0.19], [0.74, 0.15], [1.0, 0.0]],
+    "size_variation": 0.55,
+    "alpha": [[0.0, 0.0], [0.12, 0.80], [0.74, 0.52], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "near_fade": 2.0,
+    "material": { "texture": "nydomod:textures/water_flow_surface.png" },
+    "geometry_settings": {
+      "sag": 0.11, "sag_length": 12.0,
+      "trail_points": 10,
+      "trail_taper": 1.15,
+      "trail_min_distance": 0.16,
+      "trail_break_distance": 6.0
+    }
+  }
+}

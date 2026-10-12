@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "duration": 200, "burst": 2, "rate": 1.5, "max_particles": 22,
+    "geometry": "directional_billboard",
+    "shape": { "type": "line", "offset": [0.0, 0.0, 3.8], "length": 5.2, "direction": "forward" },
+    "speed": [0.10, 0.24], "lifetime": [6, 11],
+    "gravity": 0.0, "drag": 0.92, "turbulence": 0.08, "vortex": 0.9,
+    "rotation": [-180, 180], "spin": [-4.5, 4.5],
+    "size": [[0.0, 0.30], [0.20, 0.78], [0.60, 0.96], [1.0, 0.44]],
+    "size_variation": 0.32,
+    "alpha": [[0.0, 0.0], [0.08, 0.72], [0.58, 0.50], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFC2E9F5" },
+    "color_variation": 0.04,
+    "collision": { "mode": "world", "response": "clip", "padding": 0.14 },
+    "material": { "texture": "nydomod:textures/wind_crescent_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+  }
+}

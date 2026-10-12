@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "burst": 1, "max_particles": 1,
+    "geometry": "shock_wave",
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [16, 16], "drag": 1.0,
+    "rotation": [0, 360],
+    "size": [[0.0, 1.0], [0.42, 0.84], [0.74, 0.48], [1.0, 0.0]],
+    "alpha": [[0.0, 0.0], [0.12, 0.55], [0.62, 0.95], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "geometry_settings": {
+      "segments": 26, "thickness": 0.34, "arc_degrees": 360.0,
+      "edge": 0.85, "roll": -22.0, "crest": 0.55, "wave": 0.11, "lobes": 4.0
+    }
+  }
+}

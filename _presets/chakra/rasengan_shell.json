@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "burst": 1, "max_particles": 1,
+    "geometry": "water_helix",
+    "shape": { "type": "point", "offset": [0.0, 0.0, -0.13], "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [600, 600], "drag": 1.0,
+    "size": [[0.0, 0.012], [0.05, 0.094], [1.0, 0.094]],
+    "alpha": [[0.0, 0.0], [0.03, 0.46], [0.94, 0.46], [1.0, 0.0]],
+    "color": { "start": "#FFEBFAFF", "end": "#FF7FD2F5" },
+    "material": { "texture": "nydomod:textures/chakra_band_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 1 },
+    "geometry_settings": {
+      "segments": 22, "length": 0.26, "thickness": 0.035,
+      "turns": 2.4, "flare": 1.05, "wave": 0.12, "crest": 0.18
+    }
+  }
+}

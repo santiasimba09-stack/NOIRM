@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "duration": 0, "burst": 1, "rate": 0.0, "max_particles": 1,
+    "geometry": "water_lance",
+    "shape": { "type": "point", "offset": [0.0, 0.0, 0.06], "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [120, 120], "drag": 1.0,
+    "size": [[0.0, 0.06], [0.05, 0.19], [0.93, 0.21], [1.0, 0.0]],
+    "size_variation": 0.03,
+    "alpha": [[0.0, 0.0], [0.05, 0.95], [0.93, 0.90], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "near_fade": 2.4,
+    "follow_origin": true,
+    "material": { "texture": "nydomod:textures/water_flow_surface.png" },
+    "geometry_settings": {
+      "segments": 14, "length": 12.0, "flare": 2.4, "sag": 0.11,
+      "wave": 0.10, "lobes": 3.0, "rim": 0.0, "taper": 0.0,
+      "flow": 5.2, "flow_tile": 2.0, "bloom": 1.35, "glow": 1.0
+    }
+  }
+}

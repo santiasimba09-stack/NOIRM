@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "geometry": "ninja_smoke",
+    "shape": {
+      "type": "sphere",
+      "radius": 0.35,
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "direction": "radial"
+    },
+    "speed": [
+      0.03,
+      0.1
+    ],
+    "lifetime": [
+      24,
+      36
+    ],
+    "gravity": -0.006,
+    "drag": 0.91,
+    "turbulence": 0.045,
+    "vortex": 0.22,
+    "vortex_pull": 0,
+    "near_fade": 0.42,
+    "rotation": [
+      0,
+      360
+    ],
+    "spin": [
+      -0.9,
+      0.9
+    ],
+    "size": [
+      [
+        0,
+        0.24
+      ],
+      [
+        0.12,
+        0.5
+      ],
+      [
+        0.52,
+        0.8
+      ],
+      [
+        1,
+        1.06
+      ]
+    ],
+    "size_variation": 0.24,
+    "alpha": [
+      [
+        0,
+        0
+      ],
+      [
+        0.07,
+        0.84
+      ],
+      [
+        0.35,
+        0.7
+      ],
+      [
+        0.72,
+        0.42
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "color": {
+      "start": "#FFF7F6F0",
+      "end": "#FFC4CFD2"
+    },
+    "color_variation": 0.025,
+    "material": {
+      "texture": "nydomod:textures/white_square.png",
+      "blend": "alpha",
+      "shader": "lit",
+      "depth_write": false,
+      "fullbright": false
+    },
+    "geometry_settings": {
+      "segments": 32
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 6,
+    "burst": 4,
+    "rate": 1.4,
+    "max_particles": 18,
+    "geometry": "billboard",
+    "shape": {
+      "type": "sphere",
+      "radius": 0.45,
+      "direction": "radial"
+    },
+    "speed": [
+      0.03,
+      0.14
+    ],
+    "lifetime": [
+      10,
+      16
+    ],
+    "drag": 0.93,
+    "turbulence": 0.08,
+    "rotation": [
+      0,
+      360
+    ],
+    "spin": [
+      0.4,
+      0.52
+    ],
+    "size": [
+      [
+        0.0,
+        0.4
+      ],
+      [
+        0.28,
+        0.95
+      ],
+      [
+        0.72,
+        1.05
+      ],
+      [
+        1.0,
+        0.7
+      ]
+    ],
+    "size_variation": 0.4,
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.16,
+        0.17
+      ],
+      [
+        0.34,
+        0.04
+      ],
+      [
+        0.55,
+        0.18
+      ],
+      [
+        0.78,
+        0.06
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FF9AA2AC",
+      "end": "#FF737B85"
+    },
+    "color_variation": 0.05,
+    "near_fade": 0.0,
+    "material": {
+      "texture": "nydomod:textures/wind_gust_stroke.png"
+    }
+  }
+}

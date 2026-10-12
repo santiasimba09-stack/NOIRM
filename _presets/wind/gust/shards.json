@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/lit_alpha",
+  "emitter": {
+    "duration": 5,
+    "burst": 5,
+    "rate": 1.2,
+    "max_particles": 16,
+    "geometry": "billboard",
+    "shape": {
+      "type": "sphere",
+      "radius": 0.38,
+      "direction": "radial"
+    },
+    "speed": [
+      0.1,
+      0.32
+    ],
+    "lifetime": [
+      6,
+      11
+    ],
+    "drag": 0.95,
+    "turbulence": 0.05,
+    "rotation": [
+      0,
+      360
+    ],
+    "spin": [
+      -0.9,
+      0.9
+    ],
+    "size": [
+      [
+        0.0,
+        0.3
+      ],
+      [
+        0.22,
+        0.8
+      ],
+      [
+        0.7,
+        0.68
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "size_variation": 0.42,
+    "alpha": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.12,
+        0.26
+      ],
+      [
+        0.66,
+        0.16
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "color": {
+      "start": "#FFC8D2DC",
+      "end": "#FF8C959F"
+    },
+    "near_fade": 0.0,
+    "material": {
+      "texture": "nydomod:textures/wind_shear_shards.png"
+    }
+  }
+}

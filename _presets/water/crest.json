@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "start": 4, "duration": 116, "burst": 1, "rate": 0.9, "max_particles": 4,
+    "geometry": "impact_dome",
+    "shape": { "type": "point", "offset": [0.0, 0.0, 11.3], "direction": "forward" },
+    "speed": [0.0, 0.06], "lifetime": [9, 14], "drag": 0.94,
+    "rotation": [0, 360], "spin": [-0.5, 0.5],
+    "size": [[0.0, 0.30], [0.26, 1.35], [0.72, 1.60], [1.0, 0.90]],
+    "size_variation": 0.20,
+    "alpha": [[0.0, 0.0], [0.10, 0.86], [0.66, 0.56], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "near_fade": 1.6,
+    "follow_origin": true,
+    "material": { "texture": "nydomod:textures/water_flow_surface.png" },
+    "geometry_settings": { "segments": 20, "length": 0.62, "sag": 0.11, "sag_length": 12.0 }
+  }
+}

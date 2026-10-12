@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "start": 2, "duration": 118, "burst": 3, "rate": 6.5, "max_particles": 46,
+    "geometry": "billboard",
+    "shape": { "type": "line", "offset": [0.0, 0.0, 1.6], "length": 9.0, "direction": "forward" },
+    "speed": [0.05, 0.13], "lifetime": [9, 14],
+    "gravity": 0.004, "drag": 0.93, "turbulence": 0.09,
+    "rotation": [-25, 25], "spin": [-1.6, 1.6],
+    "size": [[0.0, 0.34], [0.22, 0.82], [0.66, 0.95], [1.0, 0.52]],
+    "size_variation": 0.24,
+    "alpha": [[0.0, 0.0], [0.10, 0.72], [0.68, 0.60], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFFFFFFF" },
+    "color_variation": 0.0,
+    "collision": { "mode": "world", "response": "clip", "padding": 0.16 },
+    "material": { "texture": "nydomod:textures/water_mass_soft.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+    "geometry_settings": { "length": 12.0, "sag": 0.11 }
+  }
+}

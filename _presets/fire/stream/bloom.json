@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_alpha",
+  "emitter": {
+    "start": 6, "duration": 594, "burst": 2, "rate": 1.7, "max_particles": 20,
+    "geometry": "billboard",
+    "shape": {
+      "type": "sphere", "offset": [0.0, 0.0, 7.30], "scale": [1.05, 0.95, 1.0],
+      "radius": 0.85, "direction": "radial"
+    },
+    "speed": [0.03, 0.07], "lifetime": [9, 15],
+    "gravity": -0.006, "drag": 0.91, "turbulence": 0.16,
+    "rotation": [-28, 28], "spin": [-2.2, 2.2],
+    "size": [[0.0, 0.60], [0.22, 1.05], [0.60, 1.35], [1.0, 0.85]],
+    "size_variation": 0.26,
+    "alpha": [[0.0, 0.0], [0.10, 0.55], [0.66, 0.46], [1.0, 0.0]],
+    "color": { "start": "#FFFF7E12", "end": "#FFB01D04" },
+    "color_variation": 0.08,
+    "collision": { "mode": "world", "response": "clip", "padding": 0.18 },
+    "material": { "texture": "nydomod:textures/fire_blob_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+  }
+}

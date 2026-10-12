@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "extends": "nydomod:_presets/core/fullbright_additive",
+  "emitter": {
+    "burst": 1, "max_particles": 1,
+    "geometry": "billboard",
+    "shape": { "type": "point", "direction": "forward" },
+    "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+    "size": [[0.0, 0.10], [0.12, 0.20], [0.74, 0.19], [1.0, 0.10]],
+    "alpha": [[0.0, 0.0], [0.06, 1.0], [0.74, 0.88], [1.0, 0.0]],
+    "color": { "start": "#FFFFFFFF", "end": "#FFE4F6FF" },
+    "material": { "texture": "nydomod:textures/wind_point_flipbook.png" },
+    "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+  }
+}
