@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "duration": 18,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 4.5,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": true,
+  "follow_source_direction": false,
+  "emitters": [
+    {
+      "name": "launch_base_wave", "burst": 1, "max_particles": 1, "geometry": "ring",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": 12,
+      "size": [[0.0, 0.08], [0.12, 0.34], [0.46, 0.82], [0.76, 1.18], [1.0, 1.36]],
+      "alpha": [[0.0, 0.0], [0.06, 0.94], [0.55, 0.68], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFCFDFEA" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "follow_origin": true,
+      "geometry_settings": { "segments": 20, "thickness": 0.040, "arc_degrees": 286.0 }
+    },
+    {
+      "name": "following_mid_wave", "start": 3, "burst": 1, "max_particles": 1, "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.44], "direction": "forward" }, "lifetime": 10,
+      "size": [[0.0, 0.05], [0.14, 0.24], [0.52, 0.62], [1.0, 0.98]],
+      "alpha": [[0.0, 0.0], [0.08, 0.82], [0.58, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFBFD3E1" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "follow_origin": true,
+      "geometry_settings": { "segments": 16, "thickness": 0.030, "arc_degrees": 224.0 }
+    },
+    {
+      "name": "following_high_wave", "start": 6, "burst": 1, "max_particles": 1, "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.86], "direction": "forward" }, "lifetime": 8,
+      "size": [[0.0, 0.04], [0.16, 0.18], [0.56, 0.46], [1.0, 0.72]],
+      "alpha": [[0.0, 0.0], [0.08, 0.70], [0.58, 0.38], [1.0, 0.0]],
+      "color": { "start": "#FFF4FAFF", "end": "#FFAFC5D5" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "follow_origin": true,
+      "geometry_settings": { "segments": 12, "thickness": 0.022, "arc_degrees": 176.0 }
+    },
+    {
+      "name": "vertical_speed_lines", "burst": 10, "max_particles": 10, "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.12, "radius": 0.42, "direction": "forward" },
+      "speed": [0.18, 0.38], "lifetime": [7, 12], "drag": 0.90,
+      "size": [[0.0, 0.012], [0.14, 0.042], [0.64, 0.028], [1.0, 0.0]], "size_variation": 0.18,
+      "alpha": [[0.0, 0.0], [0.06, 0.88], [0.68, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFAEC3D2" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.18 }
+    },
+    {
+      "name": "lift_pressure_fragments", "start": 1, "burst": 7, "max_particles": 7, "geometry": "cube",
+      "shape": { "type": "ring", "inner_radius": 0.10, "radius": 0.34, "direction": "forward" },
+      "speed": [0.10, 0.24], "lifetime": [7, 12], "gravity": -0.004, "drag": 0.90,
+      "rotation": [0, 90], "spin": [-11, 11],
+      "size": [[0.0, 0.010], [0.14, 0.045], [0.62, 0.060], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.76], [0.70, 0.42], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9FB4C4" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": 1, "duration": 70, "priority": 3, "max_distance": 176.0, "bounds": 30.0,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "sixfold_spiritual_thrust", "burst": 34, "max_particles": 34, "geometry": "tapered_streak",
+      "shape": {"type": "line", "length": 2.4, "direction": "forward"},
+      "speed": [0.30, 0.72], "lifetime": [18, 46], "drag": 0.975, "turbulence": 0.04,
+      "size": [[0.0, 0.016], [0.08, 0.11], [0.72, 0.065], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 0.96], [0.70, 0.48], [1.0, 0.0]],
+      "color": {"start": "#FFFFF1C8", "end": "#FFD8380D"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 2.75}
+    },
+    {
+      "name": "dream_boundary", "burst": 6, "max_particles": 6, "geometry": "shock_wave",
+      "shape": {"type": "point", "offset": [0.0, 0.0, 1.25], "direction": "forward"},
+      "lifetime": [34, 58], "rotation": [-90.0, 90.0],
+      "size": [[0.0, 0.16], [0.12, 0.72], [0.74, 1.08], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.78], [0.68, 0.38], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFFF6A1A"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 28, "thickness": 0.07, "arc_degrees": 300.0, "edge": 0.92, "roll": -18.0, "crest": 0.58, "wave": 0.22, "lobes": 6.0}
+    }
+  ]
+}

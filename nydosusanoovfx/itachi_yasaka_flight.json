@@ -1,0 +1,17 @@
+{
+  "schema": 1, "duration": 120, "priority": 3, "max_distance": 160.0, "bounds": 10.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "preserve_trigger_offset": false, "follow_source_direction": true, "source_direction": "motion",
+  "emitters": [
+    {
+      "name": "rotating_chakra_wake", "duration": 116, "burst": 8, "rate": 1.0, "max_particles": 48, "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.16, "radius": 0.46, "direction": "backward" },
+      "speed": [0.08, 0.22], "lifetime": [8, 16], "drag": 0.88, "turbulence": 0.08, "vortex": 2.8,
+      "size": [[0.0, 0.018], [0.16, 0.070], [0.66, 0.048], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.88], [0.62, 0.44], [1.0, 0.0]],
+      "color": { "start": "#FFFFE094", "end": "#FFF06A12" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.45 }
+    }
+  ]
+}

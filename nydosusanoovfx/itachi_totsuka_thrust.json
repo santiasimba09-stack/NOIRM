@@ -1,0 +1,25 @@
+{
+  "schema": 1, "duration": 22, "priority": 3, "max_distance": 144.0, "bounds": 18.0,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "spiritual_blade_path", "burst": 26, "max_particles": 26, "geometry": "tapered_streak",
+      "shape": { "type": "line", "length": 1.0, "direction": "forward" },
+      "speed": [0.04, 0.12], "lifetime": [10, 18], "drag": 0.92,
+      "size": [[0.0, 0.018], [0.10, 0.085], [0.68, 0.055], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.92], [0.66, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFE6B0", "end": "#FFE85B16" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.7 }
+    },
+    {
+      "name": "sake_edge", "burst": 2, "max_particles": 2, "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.92], "direction": "forward" }, "lifetime": [12, 16],
+      "size": [[0.0, 0.10], [0.15, 0.52], [0.72, 0.84], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.84], [0.62, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFF8A28" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 24, "thickness": 0.055, "arc_degrees": 260.0 }
+    }
+  ]
+}

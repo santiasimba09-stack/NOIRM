@@ -1,0 +1,26 @@
+{
+  "schema": 1, "duration": 22, "priority": 3, "max_distance": 160.0, "bounds": 12.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "preserve_trigger_offset": true, "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "sake_blade_edge", "burst": 2, "max_particles": 2, "geometry": "ring", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"}, "lifetime": [20, 20], "spin": [-8.0, 8.0],
+      "size": [[0.0, 0.08], [0.18, 0.52], [0.82, 0.78], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.84], [0.72, 0.48], [1.0, 0.0]],
+      "color": {"start": "#FFFFF1C5", "end": "#FFD52E0A"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 28, "thickness": 0.06, "arc_degrees": 300.0}
+    },
+    {
+      "name": "soul_draw", "duration": 20, "rate": 1.0, "max_particles": 24, "geometry": "tapered_streak", "follow_origin": true,
+      "shape": {"type": "sphere", "radius": 0.86, "inner_radius": 0.38, "direction": "radial"},
+      "speed": [-0.12, -0.04], "lifetime": [10, 18], "drag": 0.92, "vortex": 2.2,
+      "size": [[0.0, 0.014], [0.12, 0.065], [0.68, 0.04], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.82], [0.62, 0.38], [1.0, 0.0]],
+      "color": {"start": "#FFFF7A22", "end": "#FFFFFFFF"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 1.18}
+    }
+  ]
+}

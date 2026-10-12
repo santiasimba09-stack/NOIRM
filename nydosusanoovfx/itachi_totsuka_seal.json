@@ -1,0 +1,25 @@
+{
+  "schema": 1, "duration": 46, "priority": 3, "max_distance": 144.0, "bounds": 10.0,
+  "follow_source": true, "stop_when_source_missing": false, "source_anchor": "center", "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "name": "inward_drunken_dream", "burst": 38, "max_particles": 38, "geometry": "tapered_streak", "follow_origin": true,
+      "shape": { "type": "sphere", "radius": 0.92, "inner_radius": 0.30, "direction": "radial" },
+      "speed": [-0.34, -0.12], "lifetime": [18, 36], "drag": 0.90, "vortex": 3.8, "vortex_pull": 1.6,
+      "size": [[0.0, 0.02], [0.12, 0.09], [0.70, 0.06], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.88], [0.68, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFE7B2", "end": "#FFD94E12" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.35 }
+    },
+    {
+      "name": "closing_seal", "start": 5, "burst": 4, "max_particles": 4, "geometry": "shock_wave", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [30, 38], "rotation": [-90, 90],
+      "size": [[0.0, 1.30], [0.72, 0.58], [1.0, 0.04]],
+      "alpha": [[0.0, 0.0], [0.08, 0.68], [0.76, 0.42], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFF7A1A" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 28, "thickness": 0.07, "arc_degrees": 360.0, "edge": 0.90, "roll": -20.0, "crest": 0.52, "wave": 0.22, "lobes": 5.0 }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema": 1, "duration": 172, "priority": 3, "max_distance": 256.0, "bounds": 96.0,
+  "follow_source": true, "source_anchor": "center", "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "kagutsuchi_storm_column", "start": 12, "duration": 142, "burst": 12, "rate": 0.22, "max_particles": 36,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "sphere", "inner_radius": 0.35, "radius": 1.5, "scale": [1.0,1.35,1.0], "direction": "radial" },
+      "speed": [0.06,0.24], "lifetime": [28,52], "spin": [18,34], "vortex": 3.8, "vortex_pull": 0.65,
+      "size": [[0,0.03],[0.10,0.30],[0.74,0.22],[1,0]], "alpha": [[0,0],[0.05,0.90],[0.74,0.52],[1,0]],
+      "color": { "start": "#FF7E4A9B", "end": "#FF08030C" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 26, "thickness": 0.06, "turns": 3.4, "wave": 0.46, "crest": 0.78, "lobes": 6.0 }
+    },
+    {
+      "name": "black_flame_rain", "start": 20, "duration": 136, "burst": 20, "rate": 0.42, "max_particles": 48,
+      "geometry": "flame", "shape": { "type": "box", "radius": 2.4, "length": 3.0, "scale": [1.0,1.5,1.0], "direction": "backward" },
+      "speed": [0.16,0.58], "lifetime": [16,36], "gravity": 0.035, "drag": 0.94, "turbulence": 0.18, "rotation": [-45,45],
+      "size": [[0,0.03],[0.10,0.28],[0.66,0.48],[1,0]], "alpha": [[0,0],[0.05,0.94],[0.72,0.68],[1,0]],
+      "color": { "start": "#FF633481", "end": "#FF040206" },
+      "material": { "texture": "nydomod:textures/flame_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }, "geometry_settings": { "segments": 6, "length": 1.2 }
+    },
+    {
+      "name": "heaven_scouring_arrows", "start": 24, "duration": 124, "burst": 14, "rate": 0.22, "max_particles": 32,
+      "geometry": "tapered_streak", "shape": { "type": "cone", "length": 3.6, "angle": 32.0, "direction": "forward" },
+      "speed": [0.28,0.82], "lifetime": [10,24], "drag": 0.94,
+      "size": [[0,0.018],[0.08,0.14],[0.70,0.08],[1,0]], "alpha": [[0,0],[0.04,0.96],[0.68,0.52],[1,0]],
+      "color": { "start": "#FFB084D2", "end": "#FF10051A" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 3.8 }
+    },
+    {
+      "name": "storm_pressure_shells", "start": 18, "duration": 130, "rate": 0.03, "max_particles": 5,
+      "geometry": "shock_wave", "follow_origin": true, "shape": { "type": "point", "direction": "forward" }, "lifetime": [28,46], "rotation": [-90,-90],
+      "size": [[0,0.2],[0.10,1.1],[0.72,3.8],[1,5.4]], "alpha": [[0,0],[0.05,0.38],[0.62,0.16],[1,0]],
+      "color": { "start": "#FFBCA4D2", "end": "#FF22112E" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 48, "thickness": 0.055, "arc_degrees": 360.0, "edge": 0.94, "crest": 0.55, "wave": 0.28, "lobes": 8.0 }
+    }
+  ]
+}

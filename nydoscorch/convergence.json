@@ -1,0 +1,637 @@
+{
+  "schema": 1,
+  "duration": 80,
+  "priority": 3,
+  "max_distance": 96,
+  "bounds": 3,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "inherit_source_scale": true,
+  "source_scale_base": 1,
+  "source_scale_power": 1,
+  "source_scale_limit": 4,
+  "emitters": [
+    {
+      "name": "rose_solar_limb",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        80,
+        80
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.25
+        ],
+        [
+          0.012,
+          0.54
+        ],
+        [
+          1,
+          0.54
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.05
+        ],
+        [
+          0.012,
+          0.25
+        ],
+        [
+          0.995,
+          0.25
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE33E69",
+        "end": "#FFE33E69"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.1,
+      "geometry_settings": {
+        "segments": 16,
+        "rim": 0.08,
+        "flow": -0.38,
+        "flow_tile": 1,
+        "wave": 0.12,
+        "lobes": 7,
+        "swirl": -0.22,
+        "glow": 0.03
+      },
+      "duration": 2,
+      "rate": 4
+    },
+    {
+      "name": "amber_photosphere",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        80,
+        80
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.2
+        ],
+        [
+          0.012,
+          0.46
+        ],
+        [
+          1,
+          0.46
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.06
+        ],
+        [
+          0.012,
+          0.53
+        ],
+        [
+          0.995,
+          0.53
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFAD36",
+        "end": "#FFFFAD36"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.08,
+      "geometry_settings": {
+        "segments": 20,
+        "rim": 0.24,
+        "flow": 0.64,
+        "flow_tile": 1,
+        "wave": 0.055,
+        "lobes": 5,
+        "swirl": 0.15,
+        "glow": 0.18
+      },
+      "duration": 2,
+      "rate": 4
+    },
+    {
+      "name": "ivory_heat_heart",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        80,
+        80
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0.008,
+          0.355
+        ],
+        [
+          1,
+          0.355
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.3
+        ],
+        [
+          0.008,
+          0.9
+        ],
+        [
+          0.995,
+          0.9
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF0CC",
+        "end": "#FFFFF0CC"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.06,
+      "geometry_settings": {
+        "segments": 20,
+        "rim": 0.13,
+        "flow": 0.24,
+        "flow_tile": 1,
+        "wave": 0.025,
+        "lobes": 3,
+        "swirl": 0.08,
+        "glow": 0.16
+      },
+      "duration": 2,
+      "rate": 4
+    },
+    {
+      "name": "broken_rose_corona",
+      "start": 0,
+      "burst": 2,
+      "max_particles": 2,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "random"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        80,
+        80
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.24
+        ],
+        [
+          0.02,
+          0.64
+        ],
+        [
+          1,
+          0.64
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0.02,
+          0.48
+        ],
+        [
+          0.995,
+          0.48
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFF577E",
+        "end": "#FFFF577E"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.12,
+      "rotation": [
+        -180,
+        180
+      ],
+      "spin": [
+        -2.7,
+        2.7
+      ],
+      "geometry_settings": {
+        "segments": 20,
+        "thickness": 0.048,
+        "arc_degrees": 156,
+        "edge": 0.92,
+        "roll": 18,
+        "crest": 0.7,
+        "wave": 0.13,
+        "lobes": 5
+      }
+    },
+    {
+      "name": "amber_corona_crest",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "random"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        80,
+        80
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.2
+        ],
+        [
+          0.018,
+          0.59
+        ],
+        [
+          1,
+          0.59
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0.018,
+          0.6
+        ],
+        [
+          0.995,
+          0.6
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFCE69",
+        "end": "#FFFFCE69"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.12,
+      "rotation": [
+        -180,
+        180
+      ],
+      "spin": [
+        2.2,
+        2.2
+      ],
+      "geometry_settings": {
+        "segments": 18,
+        "thickness": 0.029,
+        "arc_degrees": 212,
+        "edge": 0.96,
+        "roll": -13,
+        "crest": 0.8,
+        "wave": 0.1,
+        "lobes": 5
+      }
+    },
+    {
+      "name": "contracting_solar_meridian",
+      "start": 0,
+      "burst": 2,
+      "max_particles": 2,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "random"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        24,
+        24
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          1.4
+        ],
+        [
+          0.3,
+          1.1
+        ],
+        [
+          0.76,
+          0.7
+        ],
+        [
+          1,
+          0.52
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.4
+        ],
+        [
+          0.7,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFCC79",
+        "end": "#FFFFCC79"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.12,
+      "spin": [
+        -6,
+        6
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.026,
+        "arc_degrees": 264,
+        "edge": 0.97,
+        "roll": 12,
+        "crest": 0.8,
+        "wave": 0.035,
+        "lobes": 3
+      }
+    },
+    {
+      "name": "inward_heat_filaments",
+      "start": 0,
+      "burst": 6,
+      "max_particles": 16,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "sphere",
+        "radius": 1.35,
+        "direction": "radial"
+      },
+      "speed": [
+        -0.09,
+        -0.06
+      ],
+      "lifetime": [
+        8,
+        13
+      ],
+      "drag": 0.94,
+      "size": [
+        [
+          0,
+          0.013
+        ],
+        [
+          0.18,
+          0.027
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.16,
+          0.65
+        ],
+        [
+          0.6,
+          0.4
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFD97F",
+        "end": "#FFEA5476"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "duration": 24,
+      "rate": 1,
+      "turbulence": 0.015,
+      "geometry_settings": {
+        "length": 0.42
+      },
+      "follow_origin": true
+    },
+    {
+      "name": "fusion_ready_pulse",
+      "start": 20,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        10,
+        10
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.52
+        ],
+        [
+          0.3,
+          0.79
+        ],
+        [
+          1,
+          0.96
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.65
+        ],
+        [
+          0.65,
+          0.18
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFE8B3",
+        "end": "#FFFFE8B3"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.12,
+      "geometry_settings": {
+        "segments": 28,
+        "thickness": 0.03,
+        "arc_degrees": 360,
+        "edge": 0.96,
+        "roll": 0,
+        "crest": 0.78,
+        "wave": 0.05,
+        "lobes": 8
+      }
+    }
+  ]
+}

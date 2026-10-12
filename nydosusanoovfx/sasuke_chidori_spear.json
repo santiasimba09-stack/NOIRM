@@ -1,0 +1,32 @@
+{
+  "schema": 1, "duration": 68, "priority": 3, "max_distance": 224.0, "bounds": 62.0,
+  "follow_source": true, "source_anchor": "center", "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt", "name": "susanoo_chidori_lance",
+      "start": 15, "burst": 2, "max_particles": 2, "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0,0.1,0.9], "direction": "forward" }, "lifetime": [44,50],
+      "size": [[0,0.18],[0.05,0.88],[0.78,0.74],[1,0]],
+      "geometry_settings": { "segments": 64, "length": 22.0, "thickness": 0.075, "jitter": 0.028, "branches": 8, "branch_length": 0.26, "core": 1.0, "leader": 0.24, "topology_ticks": 3 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/corona_bolt", "name": "lance_corona",
+      "start": 11, "duration": 48, "burst": 8, "rate": 0.45, "max_particles": 26,
+      "shape": { "type": "line", "length": 5.0, "offset": [0.0,0.1,0.6], "direction": "radial" },
+      "speed": [0.02,0.10], "lifetime": [8,16],
+      "geometry_settings": { "segments": 18, "length": 2.6, "thickness": 0.035, "jitter": 0.12, "branches": 3, "branch_length": 0.20, "core": 0.3, "leader": 0.12, "topology_ticks": 3 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark", "name": "chidori_shear_sparks",
+      "start": 12, "duration": 46, "burst": 22, "rate": 0.72, "max_particles": 48,
+      "shape": { "type": "line", "length": 7.5, "offset": [0.0,0.1,0.6], "direction": "radial" },
+      "speed": [0.18,0.62], "lifetime": [5,12], "geometry_settings": { "length": 2.2 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze", "name": "ionized_spear_volume",
+      "start": 12, "duration": 48, "rate": 0.18, "max_particles": 8,
+      "shape": { "type": "line", "length": 6.0, "offset": [0.0,0.1,0.7], "direction": "forward" },
+      "size": [[0,0.18],[0.18,0.72],[0.78,0.56],[1,0]], "alpha": [[0,0],[0.10,0.11],[0.72,0.04],[1,0]]
+    }
+  ]
+}

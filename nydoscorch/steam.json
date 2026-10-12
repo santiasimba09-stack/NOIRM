@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "duration": 36,
+  "priority": 2,
+  "max_distance": 80,
+  "bounds": 4,
+  "emitters": [
+    {
+      "name": "released_water_vapor",
+      "start": 0,
+      "burst": 6,
+      "max_particles": 9,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.36,
+        "scale": [
+          0.8,
+          1.4,
+          0.8
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.025,
+        0.085
+      ],
+      "lifetime": [
+        20,
+        32
+      ],
+      "drag": 0.94,
+      "size": [
+        [
+          0,
+          0.14
+        ],
+        [
+          0.23,
+          0.3
+        ],
+        [
+          0.65,
+          0.48
+        ],
+        [
+          1,
+          0.66
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.28
+        ],
+        [
+          0.5,
+          0.18
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFF4EEDD",
+        "end": "#FFCDDCE3"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": false,
+        "shader": "lit"
+      },
+      "rate": 0.3,
+      "duration": 9,
+      "gravity": -0.008,
+      "turbulence": 0.06,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -1.5,
+        1.5
+      ],
+      "size_variation": 0.22,
+      "near_fade": 0.28,
+      "geometry_settings": {
+        "segments": 12
+      }
+    },
+    {
+      "name": "water_cooling_collar",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        12,
+        12
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.3,
+          0.65
+        ],
+        [
+          1,
+          1.12
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.28
+        ],
+        [
+          0.6,
+          0.16
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE4F0F3",
+        "end": "#FFE4F0F3"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 20,
+        "thickness": 0.08,
+        "arc_degrees": 284,
+        "edge": 0.96,
+        "roll": 15,
+        "crest": 0.35,
+        "wave": 0.07,
+        "lobes": 4
+      }
+    }
+  ]
+}

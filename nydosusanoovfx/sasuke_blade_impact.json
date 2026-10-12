@@ -1,0 +1,37 @@
+{
+  "schema": 1, "duration": 38, "priority": 3, "max_distance": 192.0, "bounds": 28.0,
+  "emitters": [
+    {
+      "name": "cut_plane", "burst": 3, "max_particles": 3, "geometry": "ring",
+      "shape": { "type": "point", "direction": "forward" },
+      "lifetime": [14, 22], "rotation": [-18, 18],
+      "size": [[0,0.10],[0.08,0.78],[0.62,2.65],[1,3.4]],
+      "alpha": [[0,0],[0.04,1],[0.52,0.55],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF7348C2" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 44, "thickness": 0.075, "arc_degrees": 238.0 }
+    },
+    {
+      "name": "impact_splinters", "burst": 36, "max_particles": 36,
+      "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.12, "radius": 0.72, "direction": "radial" },
+      "speed": [0.24, 0.82], "lifetime": [7, 18], "gravity": 0.018, "drag": 0.87,
+      "size": [[0,0.055],[0.18,0.095],[0.68,0.045],[1,0]],
+      "alpha": [[0,1],[0.62,0.68],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF4A277C" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.5 }
+    },
+    {
+      "name": "fractured_chakra", "start": 1, "burst": 18, "max_particles": 18,
+      "geometry": "cube",
+      "shape": { "type": "sphere", "inner_radius": 0.2, "radius": 0.9, "direction": "radial" },
+      "speed": [0.12, 0.46], "lifetime": [14, 30], "gravity": 0.022, "drag": 0.93,
+      "rotation": [0, 90], "spin": [-16, 16],
+      "size": [[0,0.03],[0.12,0.14],[0.72,0.10],[1,0]],
+      "alpha": [[0,0],[0.06,0.90],[0.74,0.54],[1,0]],
+      "color": { "start": "#FFB691E5", "end": "#FF150A22" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true }
+    }
+  ]
+}

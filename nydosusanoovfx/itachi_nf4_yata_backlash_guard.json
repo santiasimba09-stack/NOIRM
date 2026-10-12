@@ -1,0 +1,40 @@
+{
+  "schema": 1, "duration": 80, "priority": 3, "max_distance": 160.0, "bounds": 20.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "preserve_trigger_offset": true, "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "mirror_soul_face", "start": 6, "burst": 2, "max_particles": 2,
+      "geometry": "shock_wave", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"}, "lifetime": [72, 72], "rotation": [-8.0, 8.0],
+      "size": [[0.0, 0.12], [0.08, 1.48], [0.82, 1.62], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.42], [0.76, 0.30], [1.0, 0.0]],
+      "color": {"start": "#FFFFF4D0", "end": "#FFFF6A18"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 36, "thickness": 0.105, "arc_degrees": 120.0, "edge": 0.96, "roll": 0.0, "crest": 0.70, "wave": 0.18, "lobes": 6.0}
+    },
+    {
+      "name": "adaptive_seal_orbit", "start": 8, "duration": 66, "burst": 10, "rate": 0.45,
+      "max_particles": 40, "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": {"type": "ring", "inner_radius": 0.74, "radius": 1.36, "direction": "radial"},
+      "speed": [0.0, 0.025], "lifetime": [16, 28], "drag": 0.97, "vortex": 3.6,
+      "rotation": [-180.0, 180.0], "spin": [-20.0, 20.0],
+      "size": [[0.0, 0.016], [0.12, 0.075], [0.70, 0.05], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.72], [0.64, 0.34], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFF16A1C"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 18, "thickness": 0.04, "turns": 0.72, "wave": 0.20, "crest": 0.64, "lobes": 6.0, "rim": 0.18}
+    },
+    {
+      "name": "absorbed_pressure", "start": 10, "duration": 62, "rate": 0.72, "max_particles": 30,
+      "geometry": "tapered_streak", "follow_origin": true,
+      "shape": {"type": "sphere", "radius": 1.52, "inner_radius": 1.10, "direction": "radial"},
+      "speed": [-0.12, -0.045], "lifetime": [12, 22], "drag": 0.91,
+      "size": [[0.0, 0.012], [0.16, 0.058], [0.68, 0.035], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.10, 0.70], [0.62, 0.30], [1.0, 0.0]],
+      "color": {"start": "#FFFF8A32", "end": "#FFFFFFFF"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 1.08}
+    }
+  ]
+}

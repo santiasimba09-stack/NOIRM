@@ -1,0 +1,24 @@
+{
+  "schema": 1, "duration": 32, "priority": 3, "max_distance": 176.0, "bounds": 18.0,
+  "emitters": [
+    {
+      "name": "fourfold_detonation", "burst": 4, "max_particles": 4, "geometry": "shock_wave",
+      "shape": {"type": "point", "direction": "forward"}, "lifetime": [20, 28], "rotation": [-70.0, 70.0],
+      "size": [[0.0, 0.08], [0.10, 0.72], [0.50, 1.62], [1.0, 2.35]],
+      "alpha": [[0.0, 0.0], [0.05, 0.94], [0.54, 0.48], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFE84410"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 32, "thickness": 0.09, "arc_degrees": 360.0, "edge": 0.95, "roll": 22.0, "crest": 0.72, "wave": 0.30, "lobes": 8.0}
+    },
+    {
+      "name": "tomoe_shrapnel", "burst": 36, "max_particles": 36, "geometry": "tapered_streak",
+      "shape": {"type": "sphere", "radius": 0.62, "inner_radius": 0.12, "direction": "radial"},
+      "speed": [0.28, 0.88], "lifetime": [7, 16], "drag": 0.85, "turbulence": 0.12,
+      "size": [[0.0, 0.018], [0.12, 0.085], [0.62, 0.052], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.95], [0.58, 0.48], [1.0, 0.0]],
+      "color": {"start": "#FFFFE8AF", "end": "#FFFF5418"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 1.55}
+    }
+  ]
+}

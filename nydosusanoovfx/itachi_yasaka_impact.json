@@ -1,0 +1,24 @@
+{
+  "schema": 1, "duration": 26, "priority": 3, "max_distance": 160.0, "bounds": 12.0,
+  "emitters": [
+    {
+      "name": "magatama_detonation", "burst": 3, "max_particles": 3, "geometry": "shock_wave",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [18, 24], "rotation": [-30, 30],
+      "size": [[0.0, 0.08], [0.12, 0.65], [0.52, 1.45], [1.0, 2.1]],
+      "alpha": [[0.0, 0.0], [0.05, 0.92], [0.56, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFF07016" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 30, "thickness": 0.09, "arc_degrees": 360.0, "edge": 0.94, "roll": 18.0, "crest": 0.66, "wave": 0.28, "lobes": 6.0 }
+    },
+    {
+      "name": "orange_fragments", "burst": 28, "max_particles": 28, "geometry": "tapered_streak",
+      "shape": { "type": "sphere", "radius": 0.48, "inner_radius": 0.10, "direction": "radial" },
+      "speed": [0.24, 0.72], "lifetime": [6, 13], "drag": 0.86,
+      "size": [[0.0, 0.02], [0.12, 0.08], [0.64, 0.05], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.94], [0.58, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFF8A22" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.3 }
+    }
+  ]
+}

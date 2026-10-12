@@ -1,0 +1,33 @@
+{
+  "schema": 1, "duration": 34, "priority": 3, "max_distance": 208.0, "bounds": 54.0,
+  "emitters": [
+    {
+      "name": "cutting_crescent", "burst": 2, "max_particles": 2, "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0,0.15,0.9], "direction": "forward" },
+      "speed": [0.18,0.24], "lifetime": [24,30], "drag": 0.98, "rotation": [-12,12],
+      "size": [[0,0.12],[0.10,1.25],[0.62,4.8],[1,7.2]],
+      "alpha": [[0,0],[0.04,0.96],[0.60,0.46],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF7751E8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 52, "thickness": 0.065, "arc_degrees": 164.0, "edge": 0.97, "crest": 0.82, "wave": 0.30, "lobes": 7.0 }
+    },
+    {
+      "name": "violet_pressure_echo", "start": 3, "burst": 2, "max_particles": 2, "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0,0.15,0.7], "direction": "forward" },
+      "speed": [0.12,0.17], "lifetime": [20,26], "rotation": [-20,20],
+      "size": [[0,0.08],[0.12,1.0],[1,5.8]], "alpha": [[0,0],[0.06,0.54],[0.70,0.24],[1,0]],
+      "color": { "start": "#FFD8CCFF", "end": "#FF4B2A86" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 44, "thickness": 0.045, "arc_degrees": 188.0 }
+    },
+    {
+      "name": "sheared_chakra_fragments", "start": 2, "burst": 34, "max_particles": 34,
+      "geometry": "tapered_streak", "shape": { "type": "cone", "length": 2.8, "angle": 18.0, "direction": "forward" },
+      "speed": [0.24,0.72], "lifetime": [7,16], "drag": 0.89, "turbulence": 0.08,
+      "size": [[0,0.012],[0.10,0.07],[0.62,0.045],[1,0]], "alpha": [[0,0],[0.04,0.9],[0.58,0.42],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF6846C8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.45 }
+    }
+  ]
+}

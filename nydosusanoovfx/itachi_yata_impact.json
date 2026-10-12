@@ -1,0 +1,25 @@
+{
+  "schema": 1, "duration": 18, "priority": 3, "max_distance": 128.0, "bounds": 8.0,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "adaptive_face", "burst": 2, "max_particles": 2, "geometry": "shock_wave",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [12, 15],
+      "size": [[0.0, 0.10], [0.12, 0.72], [0.48, 1.15], [1.0, 1.32]],
+      "alpha": [[0.0, 0.0], [0.06, 0.92], [0.58, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFFB13B" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 28, "thickness": 0.075, "arc_degrees": 334.0, "edge": 0.94, "roll": 10.0, "crest": 0.58, "wave": 0.24, "lobes": 6.0 }
+    },
+    {
+      "name": "cancelled_force", "burst": 18, "max_particles": 18, "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.22, "radius": 0.78, "direction": "radial" },
+      "speed": [0.18, 0.52], "lifetime": [5, 10], "drag": 0.84, "turbulence": 0.10,
+      "size": [[0.0, 0.018], [0.14, 0.065], [0.62, 0.045], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.94], [0.58, 0.54], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFF8A20" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.28 }
+    }
+  ]
+}

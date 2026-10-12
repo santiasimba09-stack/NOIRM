@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "duration": 12,
+  "priority": 3,
+  "max_distance": 80.0,
+  "bounds": 2.2,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "fox_pressure",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": 9,
+      "rotation": [
+        -12,
+        12
+      ],
+      "size": [
+        [
+          0,
+          0.03
+        ],
+        [
+          0.16,
+          0.23
+        ],
+        [
+          0.55,
+          0.61
+        ],
+        [
+          1,
+          0.88
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.95
+        ],
+        [
+          0.6,
+          0.45
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFFF",
+        "end": "#FFFF913D"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 16,
+        "thickness": 0.045,
+        "arc_degrees": 270
+      }
+    },
+    {
+      "name": "three_claws",
+      "burst": 3,
+      "max_particles": 3,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "ring",
+        "inner_radius": 0.08,
+        "radius": 0.14,
+        "direction": "radial"
+      },
+      "lifetime": [
+        5,
+        7
+      ],
+      "speed": [
+        0.1,
+        0.17
+      ],
+      "drag": 0.79,
+      "rotation": [
+        28,
+        38
+      ],
+      "size": [
+        [
+          0,
+          0.015
+        ],
+        [
+          0.13,
+          0.075
+        ],
+        [
+          0.5,
+          0.05
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.97
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFFF",
+        "end": "#FFFF7540"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.9
+      }
+    },
+    {
+      "name": "ember_pressure",
+      "burst": 4,
+      "max_particles": 4,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "ring",
+        "inner_radius": 0.05,
+        "radius": 0.15,
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        8
+      ],
+      "speed": [
+        0.16,
+        0.3
+      ],
+      "drag": 0.84,
+      "size": [
+        [
+          0,
+          0.008
+        ],
+        [
+          0.15,
+          0.035
+        ],
+        [
+          0.6,
+          0.018
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.1,
+          0.86
+        ],
+        [
+          0.6,
+          0.36
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFFF",
+        "end": "#FFFF9038"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.5
+      }
+    }
+  ]
+}

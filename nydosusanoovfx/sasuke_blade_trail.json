@@ -1,0 +1,40 @@
+{
+  "schema": 1, "duration": 34, "priority": 3, "max_distance": 192.0, "bounds": 36.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "preserve_trigger_offset": true, "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "tempered_chakra_edge", "burst": 5, "max_particles": 5,
+      "geometry": "tapered_streak", "follow_origin": true,
+      "shape": { "type": "line", "length": 2.8, "offset": [0.0, 0.0, 0.15], "direction": "forward" },
+      "speed": [0.0, 0.02], "lifetime": [20, 30], "drag": 0.97,
+      "size": [[0,0.02],[0.06,0.22],[0.60,0.14],[1,0]],
+      "alpha": [[0,0],[0.04,1],[0.68,0.70],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA98BFF" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 5.8 }
+    },
+    {
+      "name": "animated_cut_arc", "start": 2, "burst": 4, "max_particles": 4,
+      "geometry": "ring", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.05, 0.65], "direction": "forward" },
+      "lifetime": [18, 26], "rotation": [-22, 22], "spin": [-8, 8],
+      "size": [[0,0.08],[0.10,0.82],[0.58,1.65],[1,2.15]],
+      "alpha": [[0,0],[0.05,0.94],[0.62,0.46],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF6544C0" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 42, "thickness": 0.055, "arc_degrees": 214.0 }
+    },
+    {
+      "name": "edge_sparks", "start": 3, "burst": 28, "max_particles": 28,
+      "geometry": "tapered_streak",
+      "shape": { "type": "line", "length": 3.8, "direction": "radial" },
+      "speed": [0.16, 0.56], "lifetime": [6, 14], "gravity": 0.01, "drag": 0.86,
+      "size": [[0,0.045],[0.16,0.075],[0.64,0.036],[1,0]],
+      "alpha": [[0,0.98],[0.54,0.66],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF5E38A8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.25 }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": 1, "duration": 42, "priority": 3, "max_distance": 208.0, "bounds": 58.0,
+  "emitters": [
+    {
+      "name": "ground_break_front", "start": 8, "burst": 4, "max_particles": 4, "geometry": "shock_wave",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [28,34], "rotation": [-90,-90],
+      "size": [[0,0.15],[0.12,1.8],[0.70,5.8],[1,8.0]], "alpha": [[0,0],[0.05,0.88],[0.62,0.38],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF6946B6" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 56, "thickness": 0.085, "arc_degrees": 360.0, "edge": 0.97, "crest": 0.88, "wave": 0.40, "lobes": 11.0 }
+    },
+    {
+      "name": "chakra_fault_lines", "start": 9, "burst": 28, "max_particles": 28, "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.45, "radius": 2.7, "scale": [1.0,0.08,1.0], "direction": "radial" },
+      "speed": [0.12,0.46], "lifetime": [11,24], "drag": 0.90,
+      "size": [[0,0.018],[0.10,0.11],[0.68,0.06],[1,0]], "alpha": [[0,0],[0.04,0.92],[0.64,0.45],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF49217F" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 2.4 }
+    },
+    {
+      "name": "lifted_debris", "start": 10, "burst": 32, "max_particles": 32, "geometry": "cube",
+      "shape": { "type": "ring", "inner_radius": 0.55, "radius": 2.6, "scale": [1.0,0.06,1.0], "direction": "radial" },
+      "speed": [0.10,0.42], "lifetime": [16,32], "gravity": 0.045, "drag": 0.95, "rotation": [0,90], "spin": [-12,12],
+      "size": [[0,0.04],[0.12,0.16],[0.72,0.12],[1,0]], "alpha": [[0,0],[0.06,0.82],[0.72,0.42],[1,0]],
+      "color": { "start": "#FF9B83B6", "end": "#FF21152E" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "shader": "lit", "depth_write": true, "fullbright": false }
+    }
+  ]
+}

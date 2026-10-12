@@ -1,0 +1,40 @@
+{
+  "schema": 1, "duration": 104, "priority": 3, "max_distance": 240.0, "bounds": 72.0,
+  "follow_source": true, "source_anchor": "center", "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "black_flame_arrow_spine", "start": 24, "burst": 3, "max_particles": 3,
+      "geometry": "tapered_streak", "follow_origin": true,
+      "shape": { "type": "line", "length": 3.2, "offset": [0.0,0.05,0.9], "direction": "forward" },
+      "speed": [0.22,0.42], "lifetime": [58,72], "drag": 0.98,
+      "size": [[0,0.025],[0.08,0.26],[0.78,0.15],[1,0]], "alpha": [[0,0],[0.04,0.98],[0.74,0.62],[1,0]],
+      "color": { "start": "#FFB889E2", "end": "#FF09040E" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 7.6 }
+    },
+    {
+      "name": "kagutsuchi_flame_barbs", "start": 22, "duration": 68, "burst": 20, "rate": 0.55, "max_particles": 52,
+      "geometry": "flame", "shape": { "type": "line", "length": 5.0, "offset": [0.0,0.05,0.8], "direction": "radial" },
+      "speed": [0.08,0.28], "lifetime": [12,28], "gravity": -0.008, "drag": 0.92, "turbulence": 0.16, "rotation": [-34,34],
+      "size": [[0,0.04],[0.12,0.30],[0.68,0.42],[1,0]], "alpha": [[0,0],[0.05,0.92],[0.70,0.62],[1,0]],
+      "color": { "start": "#FF5C2A78", "end": "#FF050208" },
+      "material": { "texture": "nydomod:textures/flame_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }, "geometry_settings": { "segments": 6, "length": 1.3 }
+    },
+    {
+      "name": "bow_release_ring", "start": 20, "burst": 3, "max_particles": 3, "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0,0.05,0.7], "direction": "forward" }, "lifetime": [20,28],
+      "size": [[0,0.10],[0.12,0.68],[0.68,1.6],[1,0]], "alpha": [[0,0],[0.05,0.74],[0.62,0.32],[1,0]],
+      "color": { "start": "#FFD7B5EE", "end": "#FF1B0928" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 42, "thickness": 0.055, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "cinder_wake", "start": 26, "duration": 62, "burst": 18, "rate": 0.45, "max_particles": 44, "geometry": "cube",
+      "shape": { "type": "line", "length": 5.5, "direction": "radial" }, "speed": [0.12,0.36], "lifetime": [12,30], "gravity": 0.012, "drag": 0.94,
+      "rotation": [0,90], "spin": [-12,12], "size": [[0,0.025],[0.12,0.11],[0.72,0.08],[1,0]], "alpha": [[0,0],[0.06,0.84],[0.70,0.52],[1,0]],
+      "color": { "start": "#FF70458E", "end": "#FF07030A" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true }
+    }
+  ]
+}

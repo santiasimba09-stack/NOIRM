@@ -1,0 +1,25 @@
+{
+  "schema": 1, "duration": 58, "priority": 3, "max_distance": 176.0, "bounds": 14.0,
+  "follow_source": true, "stop_when_source_missing": false, "source_anchor": "center", "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "name": "soul_extraction", "burst": 44, "max_particles": 44, "geometry": "tapered_streak", "follow_origin": true,
+      "shape": {"type": "sphere", "radius": 1.18, "inner_radius": 0.38, "direction": "radial"},
+      "speed": [-0.42, -0.14], "lifetime": [20, 44], "drag": 0.90, "vortex": 4.4, "vortex_pull": 1.8,
+      "size": [[0.0, 0.018], [0.10, 0.095], [0.72, 0.058], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.90], [0.68, 0.44], [1.0, 0.0]],
+      "color": {"start": "#FFFFF0C0", "end": "#FFD42608"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 1.48}
+    },
+    {
+      "name": "six_closing_seals", "start": 5, "burst": 6, "max_particles": 6, "geometry": "shock_wave", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"}, "lifetime": [40, 50], "rotation": [-120.0, 120.0],
+      "size": [[0.0, 1.52], [0.72, 0.62], [1.0, 0.04]],
+      "alpha": [[0.0, 0.0], [0.06, 0.74], [0.78, 0.40], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFFF6716"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 30, "thickness": 0.075, "arc_degrees": 360.0, "edge": 0.93, "roll": -22.0, "crest": 0.56, "wave": 0.24, "lobes": 6.0}
+    }
+  ]
+}

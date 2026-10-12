@@ -1,0 +1,24 @@
+{
+  "schema": 1, "duration": 24, "priority": 3, "max_distance": 160.0, "bounds": 12.0,
+  "emitters": [
+    {
+      "name": "adaptive_rejection_face", "burst": 3, "max_particles": 3, "geometry": "shock_wave",
+      "shape": {"type": "point", "direction": "forward"}, "lifetime": [15, 21], "rotation": [-16.0, 16.0],
+      "size": [[0.0, 0.08], [0.10, 0.82], [0.50, 1.38], [1.0, 1.82]],
+      "alpha": [[0.0, 0.0], [0.04, 0.96], [0.52, 0.52], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFFF7B21"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 32, "thickness": 0.09, "arc_degrees": 120.0, "edge": 0.96, "roll": 0.0, "crest": 0.74, "wave": 0.24, "lobes": 6.0}
+    },
+    {
+      "name": "reflected_force", "burst": 30, "max_particles": 30, "geometry": "tapered_streak",
+      "shape": {"type": "ring", "inner_radius": 0.18, "radius": 0.88, "direction": "radial"},
+      "speed": [0.30, 0.92], "lifetime": [6, 13], "drag": 0.84, "turbulence": 0.08,
+      "size": [[0.0, 0.016], [0.12, 0.078], [0.62, 0.046], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.96], [0.56, 0.46], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FFFF941F"},
+      "material": {"texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"length": 1.65}
+    }
+  ]
+}

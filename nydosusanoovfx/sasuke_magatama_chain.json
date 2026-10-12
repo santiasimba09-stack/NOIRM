@@ -1,0 +1,33 @@
+{
+  "schema": 1, "duration": 106, "priority": 3, "max_distance": 224.0, "bounds": 62.0,
+  "follow_source": true, "source_anchor": "center", "follow_source_direction": true, "source_direction": "look",
+  "emitters": [
+    {
+      "name": "triple_yasaka_rotor", "duration": 88, "burst": 6, "rate": 0.20, "max_particles": 24,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "ring", "inner_radius": 0.28, "radius": 0.68, "offset": [0.0,0.1,0.8], "direction": "radial" },
+      "speed": [0,0.02], "lifetime": [26,40], "spin": [-30,-18], "rotation": [-180,180],
+      "size": [[0,0.03],[0.12,0.26],[0.76,0.34],[1,0]], "alpha": [[0,0],[0.06,0.92],[0.72,0.48],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8460E8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 22, "thickness": 0.055, "turns": 0.92, "wave": 0.30, "crest": 0.72, "lobes": 3.0 }
+    },
+    {
+      "name": "chained_projectile_wake", "start": 18, "duration": 70, "burst": 8, "rate": 0.48, "max_particles": 34,
+      "geometry": "spiral_vortex", "shape": { "type": "line", "length": 2.5, "direction": "forward" },
+      "speed": [0.12,0.38], "lifetime": [14,26], "drag": 0.92, "spin": [12,24],
+      "size": [[0,0.02],[0.12,0.16],[0.72,0.10],[1,0]], "alpha": [[0,0],[0.05,0.88],[0.66,0.40],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF5B369F" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 18, "thickness": 0.04, "turns": 1.8, "wave": 0.34, "crest": 0.56, "lobes": 4.0 }
+    },
+    {
+      "name": "yasaka_pressure_rings", "start": 20, "burst": 4, "max_particles": 4, "geometry": "ring",
+      "shape": { "type": "line", "length": 2.2, "direction": "forward" }, "speed": [0.08,0.18], "lifetime": [22,34],
+      "size": [[0,0.10],[0.14,0.72],[0.72,1.45],[1,0]], "alpha": [[0,0],[0.06,0.52],[0.66,0.24],[1,0]],
+      "color": { "start": "#FFDCD1FF", "end": "#FF3D235F" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 34, "thickness": 0.045, "arc_degrees": 360.0 }
+    }
+  ]
+}

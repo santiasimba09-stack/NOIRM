@@ -1,0 +1,28 @@
+{
+  "schema": 1, "duration": 106, "priority": 3, "max_distance": 256.0, "bounds": 86.0,
+  "follow_source": true,
+  "emitters": [
+    {
+      "name": "four_sword_tempest", "duration": 94, "burst": 8, "rate": 0.38,
+      "max_particles": 42, "geometry": "ring", "follow_origin": true,
+      "shape": {"type":"ring","inner_radius":0.7,"radius":2.2,"direction":"radial"},
+      "speed":[0.02,0.08], "lifetime":[22,34], "rotation":[-90.0,90.0], "spin":[-24.0,24.0],
+      "size":[[0.0,0.12],[0.12,1.2],[0.72,2.6],[1.0,0.0]],
+      "alpha":[[0.0,0.0],[0.05,0.90],[0.70,0.42],[1.0,0.0]],
+      "color":{"start":"#FFFFFFFF","end":"#FF2448B8"},
+      "material":{"texture":"nydomod:textures/white_square.png","blend":"additive","depth_write":false,"fullbright":true},
+      "geometry_settings":{"segments":44,"thickness":0.052,"arc_degrees":146.0}
+    },
+    {
+      "name":"cyclone_pressure", "start":4, "duration":92, "rate":1.2,
+      "max_particles":64, "geometry":"spiral_vortex",
+      "shape":{"type":"sphere","radius":2.4,"scale":[1.0,1.6,1.0],"direction":"radial"},
+      "speed":[0.04,0.18], "lifetime":[16,30], "drag":0.94, "spin":[12.0,24.0],
+      "size":[[0.0,0.02],[0.14,0.15],[0.74,0.10],[1.0,0.0]],
+      "alpha":[[0.0,0.0],[0.06,0.82],[0.72,0.34],[1.0,0.0]],
+      "color":{"start":"#FFDCE7FF","end":"#FF13265F"},
+      "material":{"texture":"nydomod:textures/white_square.png","blend":"additive","depth_write":false,"fullbright":true},
+      "geometry_settings":{"segments":18,"thickness":0.035,"turns":2.4,"wave":0.32,"crest":0.62,"lobes":4.0}
+    }
+  ]
+}

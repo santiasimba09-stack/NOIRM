@@ -1,0 +1,32 @@
+{
+  "schema": 1, "duration": 48, "priority": 3, "max_distance": 176.0, "bounds": 30.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "emitters": [
+    {
+      "name": "iron_chakra_cage", "burst": 12, "max_particles": 12, "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "ring", "inner_radius": 0.45, "radius": 1.0, "direction": "radial" },
+      "speed": [0,0], "lifetime": [42,46], "spin": [18,30], "rotation": [-180,180],
+      "size": [[0,0.02],[0.12,0.22],[0.78,0.28],[1,0]], "alpha": [[0,0],[0.06,0.90],[0.78,0.50],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF7652D8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 24, "thickness": 0.052, "turns": 3.2, "wave": 0.34, "crest": 0.72, "lobes": 4.0 }
+    },
+    {
+      "name": "converging_shackles", "start": 6, "burst": 18, "max_particles": 18, "geometry": "tapered_streak",
+      "shape": { "type": "sphere", "inner_radius": 0.65, "radius": 1.25, "scale": [1.0,1.35,1.0], "direction": "radial" },
+      "speed": [0.16,0.38], "lifetime": [14,28], "drag": 0.93, "vortex": 2.4, "vortex_pull": 0.9,
+      "size": [[0,0.015],[0.10,0.11],[0.72,0.06],[1,0]], "alpha": [[0,0],[0.05,0.96],[0.72,0.42],[1,0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF4E2B93" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.8 }
+    },
+    {
+      "name": "lock_ring", "start": 9, "burst": 3, "max_particles": 3, "geometry": "shock_wave", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [28,34], "rotation": [-90,-90],
+      "size": [[0,0.2],[0.12,0.7],[0.62,1.2],[1,1.45]], "alpha": [[0,0],[0.06,0.70],[0.62,0.32],[1,0]],
+      "color": { "start": "#FFE9E1FF", "end": "#FF45276F" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 40, "thickness": 0.06, "arc_degrees": 360.0, "edge": 0.95, "crest": 0.70, "wave": 0.16, "lobes": 6.0 }
+    }
+  ]
+}
