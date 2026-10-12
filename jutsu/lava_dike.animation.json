@@ -1,0 +1,118 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/lava_dike": {
+      "animation_length": 1.1,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0": {
+              "vector": [
+                9,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -7,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.65": {
+              "vector": [
+                -3,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -25,
+                -20,
+                14
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -131,
+                -22,
+                18
+              ],
+              "easing": "linear"
+            },
+            "0.65": {
+              "vector": [
+                -109,
+                -12,
+                12
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -25,
+                20,
+                -14
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -131,
+                22,
+                -18
+              ],
+              "easing": "linear"
+            },
+            "0.65": {
+              "vector": [
+                -109,
+                12,
+                -12
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      }
+    }
+  }
+}

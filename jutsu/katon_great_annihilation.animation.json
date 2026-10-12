@@ -1,0 +1,404 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/katon_great_annihilation": {
+      "animation_length": 5.5,
+      "bones": {
+        "body": {
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                -0.1,
+                0
+              ],
+              "easing": "linear"
+            },
+            "1.2": {
+              "vector": [
+                0,
+                -0.25,
+                0.15
+              ],
+              "easing": "linear"
+            },
+            "2.5": {
+              "vector": [
+                0,
+                -0.4,
+                0.45
+              ],
+              "easing": "linear"
+            },
+            "2.55": {
+              "vector": [
+                0,
+                -0.3,
+                0.65
+              ],
+              "easing": "linear"
+            },
+            "3.5": {
+              "vector": [
+                0,
+                -0.35,
+                0.7
+              ],
+              "easing": "linear"
+            },
+            "4.5": {
+              "vector": [
+                0,
+                -0.25,
+                0.5
+              ],
+              "easing": "linear"
+            },
+            "5.5": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          },
+          "rotation": {
+            "0": {
+              "vector": [
+                -2,
+                5,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.35": {
+              "vector": [
+                -5,
+                8,
+                -0.5
+              ],
+              "easing": "linear"
+            },
+            "1.2": {
+              "vector": [
+                -7,
+                11,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "2.3": {
+              "vector": [
+                -9,
+                14,
+                -1.5
+              ],
+              "easing": "linear"
+            },
+            "2.5": {
+              "vector": [
+                -11,
+                15,
+                -2
+              ],
+              "easing": "linear"
+            },
+            "2.55": {
+              "vector": [
+                -8,
+                13,
+                -1.2
+              ],
+              "easing": "linear"
+            },
+            "3.5": {
+              "vector": [
+                -9,
+                14,
+                -1.7
+              ],
+              "easing": "linear"
+            },
+            "4.5": {
+              "vector": [
+                -7,
+                12,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "5": {
+              "vector": [
+                -4,
+                7,
+                -0.5
+              ],
+              "easing": "linear"
+            },
+            "5.5": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                3,
+                -8,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.35": {
+              "vector": [
+                6,
+                -12,
+                0.5
+              ],
+              "easing": "linear"
+            },
+            "1.2": {
+              "vector": [
+                9,
+                -16,
+                1
+              ],
+              "easing": "linear"
+            },
+            "2.3": {
+              "vector": [
+                12,
+                -20,
+                2
+              ],
+              "easing": "linear"
+            },
+            "2.5": {
+              "vector": [
+                15,
+                -22,
+                2.5
+              ],
+              "easing": "linear"
+            },
+            "2.55": {
+              "vector": [
+                11,
+                -19,
+                1.5
+              ],
+              "easing": "linear"
+            },
+            "3.5": {
+              "vector": [
+                13,
+                -21,
+                2
+              ],
+              "easing": "linear"
+            },
+            "4.5": {
+              "vector": [
+                10,
+                -17,
+                1
+              ],
+              "easing": "linear"
+            },
+            "5": {
+              "vector": [
+                6,
+                -10,
+                0.5
+              ],
+              "easing": "linear"
+            },
+            "5.5": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -57,
+                -19,
+                9
+              ],
+              "easing": "linear"
+            },
+            "0.35": {
+              "vector": [
+                -68,
+                -23,
+                11
+              ],
+              "easing": "linear"
+            },
+            "1.2": {
+              "vector": [
+                -75,
+                -27,
+                13
+              ],
+              "easing": "linear"
+            },
+            "2.3": {
+              "vector": [
+                -80,
+                -30,
+                15
+              ],
+              "easing": "linear"
+            },
+            "2.5": {
+              "vector": [
+                -83,
+                -31,
+                16
+              ],
+              "easing": "linear"
+            },
+            "2.55": {
+              "vector": [
+                -78,
+                -28,
+                13
+              ],
+              "easing": "linear"
+            },
+            "3.5": {
+              "vector": [
+                -81,
+                -30,
+                15
+              ],
+              "easing": "linear"
+            },
+            "4.5": {
+              "vector": [
+                -77,
+                -27,
+                13
+              ],
+              "easing": "linear"
+            },
+            "5": {
+              "vector": [
+                -66,
+                -22,
+                10
+              ],
+              "easing": "linear"
+            },
+            "5.5": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                10,
+                7,
+                -6
+              ],
+              "easing": "linear"
+            },
+            "0.35": {
+              "vector": [
+                14,
+                10,
+                -8
+              ],
+              "easing": "linear"
+            },
+            "1.2": {
+              "vector": [
+                18,
+                13,
+                -11
+              ],
+              "easing": "linear"
+            },
+            "2.3": {
+              "vector": [
+                22,
+                16,
+                -14
+              ],
+              "easing": "linear"
+            },
+            "2.5": {
+              "vector": [
+                25,
+                18,
+                -16
+              ],
+              "easing": "linear"
+            },
+            "2.55": {
+              "vector": [
+                20,
+                15,
+                -13
+              ],
+              "easing": "linear"
+            },
+            "3.5": {
+              "vector": [
+                23,
+                17,
+                -15
+              ],
+              "easing": "linear"
+            },
+            "4.5": {
+              "vector": [
+                19,
+                14,
+                -12
+              ],
+              "easing": "linear"
+            },
+            "5": {
+              "vector": [
+                12,
+                8,
+                -7
+              ],
+              "easing": "linear"
+            },
+            "5.5": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      }
+    }
+  }
+}

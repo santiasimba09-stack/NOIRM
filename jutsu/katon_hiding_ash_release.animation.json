@@ -1,0 +1,204 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/katon_hiding_ash_release": {
+      "animation_length": 1.1,
+      "bones": {
+        "body": {
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                0,
+                -0.35,
+                0.4
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          },
+          "rotation": {
+            "0": {
+              "vector": [
+                -1,
+                4,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.2": {
+              "vector": [
+                -5,
+                9,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -9,
+                14,
+                -2
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                -7,
+                11,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                2,
+                -7,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.2": {
+              "vector": [
+                7,
+                -13,
+                1
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                13,
+                -20,
+                2
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                9,
+                -15,
+                1
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -54,
+                -18,
+                8
+              ],
+              "easing": "linear"
+            },
+            "0.2": {
+              "vector": [
+                -69,
+                -24,
+                11
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -79,
+                -29,
+                14
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                -73,
+                -25,
+                12
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                9,
+                6,
+                -5
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                21,
+                15,
+                -13
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                16,
+                11,
+                -9
+              ],
+              "easing": "linear"
+            },
+            "1.1": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      }
+    }
+  }
+}

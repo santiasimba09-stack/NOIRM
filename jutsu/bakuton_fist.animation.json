@@ -1,0 +1,110 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/bakuton_fist": {
+      "animation_length": 0.8,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0,
+                -20,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.28": {
+              "vector": [
+                10,
+                25,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.52": {
+              "vector": [
+                3,
+                10,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.8": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -25,
+                20,
+                30
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.28": {
+              "vector": [
+                -102,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.48": {
+              "vector": [
+                -80,
+                -6,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.8": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -35,
+                -15,
+                -20
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.28": {
+              "vector": [
+                -50,
+                20,
+                -35
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.8": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        }
+      }
+    }
+  }
+}

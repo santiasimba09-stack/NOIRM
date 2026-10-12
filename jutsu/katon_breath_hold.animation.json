@@ -1,0 +1,213 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/katon_breath_hold": {
+      "animation_length": 1,
+      "bones": {
+        "body": {
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                -0.25,
+                0.45
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                0,
+                -0.3,
+                0.55
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                0,
+                -0.25,
+                0.45
+              ],
+              "easing": "linear"
+            }
+          },
+          "rotation": {
+            "0": {
+              "vector": [
+                -7,
+                12,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -8,
+                13,
+                -1.5
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -7,
+                12,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                -8,
+                13,
+                -1.5
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -7,
+                12,
+                -1
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                11,
+                -18,
+                1.5
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                13,
+                -20,
+                2
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                11,
+                -18,
+                1.5
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                13,
+                -20,
+                2
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                11,
+                -18,
+                1.5
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -77,
+                -28,
+                13
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -80,
+                -30,
+                15
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -77,
+                -28,
+                13
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                -80,
+                -30,
+                15
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -77,
+                -28,
+                13
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                19,
+                14,
+                -12
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                22,
+                16,
+                -14
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                19,
+                14,
+                -12
+              ],
+              "easing": "linear"
+            },
+            "0.75": {
+              "vector": [
+                22,
+                16,
+                -14
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                19,
+                14,
+                -12
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      },
+      "loop": true
+    }
+  }
+}

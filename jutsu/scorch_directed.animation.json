@@ -1,0 +1,162 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/jutsu/scorch_directed": {
+      "animation_length": 0.6,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0": {
+              "vector": [
+                0,
+                -5,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -3,
+                -12,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                6,
+                8,
+                -2
+              ],
+              "easing": "linear"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                0,
+                4,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                2,
+                10,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -4,
+                -8,
+                2
+              ],
+              "easing": "linear"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -58,
+                -25,
+                16
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -66,
+                -32,
+                20
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -91,
+                4,
+                4
+              ],
+              "easing": "linear"
+            },
+            "0.48": {
+              "vector": [
+                -88,
+                4,
+                3
+              ],
+              "easing": "linear"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -20,
+                5,
+                -14
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -28,
+                15,
+                -20
+              ],
+              "easing": "linear"
+            },
+            "0.4": {
+              "vector": [
+                -15,
+                5,
+                -10
+              ],
+              "easing": "linear"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      }
+    }
+  }
+}
