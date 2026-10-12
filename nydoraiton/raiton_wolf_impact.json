@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "duration": 26,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 7.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/storm_flash",
+      "name": "pack_bite_flash",
+      "size": [[0, 0.18], [0.08, 1.25], [0.42, 2.0], [1, 0]],
+      "lifetime": [5, 5]
+    },
+    {
+      "preset": "nydomod:_presets/raiton/impact_ring",
+      "name": "discharge_front",
+      "duration": 26,
+      "lifetime": [
+        12,
+        12
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "chain_burst",
+      "duration": 26,
+      "burst": 11,
+      "max_particles": 14,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.26,
+        "direction": "shape"
+      },
+      "lifetime": [
+        9,
+        15
+      ],
+      "geometry_settings": {
+        "segments": 18,
+        "length": 3.1,
+        "thickness": 0.022,
+        "jitter": 0.1,
+        "branches": 4,
+        "branch_length": 0.42,
+        "core": 1.0,
+        "leader": 0.14,
+        "topology_ticks": 2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "fragments",
+      "duration": 26,
+      "burst": 22,
+      "max_particles": 26,
+      "lifetime": [
+        6,
+        15
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "afterburn",
+      "duration": 26,
+      "burst": 5,
+      "max_particles": 7
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "duration": 360,
+  "priority": 3,
+  "max_distance": 120.0,
+  "bounds": 5.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "owner_center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "name": "body_bound_electric_mantle",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_aura", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0.0, 0.0], "lifetime": [358, 358], "drag": 1.0,
+      "size": [[0.0, 0.01], [0.05, 0.98], [0.90, 1.00], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.18], [0.84, 0.11], [1.0, 0.0]],
+      "color": {"start": "#FFDDF6FF", "end": "#FF62BFFF"},
+      "material": {"texture": "nydomod:textures/raiton_channel_soft.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 1, "rows": 1, "frames": 1},
+      "geometry_settings": {"segments": 10, "thickness": 0.034, "lobes": 6, "flow": 3.8, "flow_tile": 3.2, "wave": 0.42, "rim": 0.70, "glow": 0.72, "crest": 0.84}
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "low_voltage_ion_haze",
+      "start": 0, "duration": 350, "burst": 2, "rate": 0.07, "max_particles": 4,
+      "shape": {"type": "box", "offset": [0.0, 0.06, 0.0], "radius": 0.30, "length": 0.72, "scale": [0.78, 1.10, 0.62], "direction": "radial"},
+      "speed": [0.008, 0.025], "lifetime": [16, 28], "drag": 0.96, "turbulence": 0.035,
+      "size": [[0.0, 0.10], [0.24, 0.34], [0.76, 0.44], [1.0, 0.30]],
+      "alpha": [[0.0, 0.0], [0.20, 0.075], [0.68, 0.038], [1.0, 0.0]],
+      "color": {"start": "#FFB8D9EC", "end": "#FF526B83"}
+    },
+    {
+      "preset": "nydomod:_presets/raiton/micro_filament",
+      "name": "torso_angular_microfilaments",
+      "start": 0, "duration": 354, "burst": 2, "rate": 0.13, "max_particles": 4,
+      "shape": {"type": "box_perimeter", "offset": [0.0, 0.05, 0.0], "radius": 0.30, "length": 0.76, "scale": [0.84, 1.12, 0.62], "direction": "body_tangent"},
+      "lifetime": [3, 6],
+      "size": [[0.0, 0.08], [0.04, 0.44], [0.34, 0.24], [0.58, 0.40], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF55C6FF"},
+      "geometry_settings": {"segments": 6, "length": 0.44, "thickness": 0.005, "jitter": 0.26, "branches": 1, "branch_length": 0.18, "core": 1.0, "leader": 0.06, "topology_ticks": 2}
+    },
+    {
+      "preset": "nydomod:_presets/raiton/micro_filament",
+      "name": "limb_skitter_microfilaments",
+      "start": 1, "duration": 351, "burst": 1, "rate": 0.10, "max_particles": 3,
+      "shape": {"type": "box_perimeter", "offset": [0.0, -0.25, 0.0], "radius": 0.25, "length": 0.54, "scale": [0.82, 1.28, 0.52], "direction": "body_tangent"},
+      "lifetime": [3, 5],
+      "size": [[0.0, 0.06], [0.04, 0.36], [0.38, 0.19], [0.64, 0.32], [1.0, 0.0]],
+      "color": {"start": "#FFF8FDFF", "end": "#FF3CB6F6"},
+      "geometry_settings": {"segments": 5, "length": 0.34, "thickness": 0.005, "jitter": 0.30, "branches": 1, "branch_length": 0.16, "core": 1.0, "leader": 0.05, "topology_ticks": 2}
+    },
+    {
+      "preset": "nydomod:_presets/raiton/micro_filament",
+      "name": "collarbone_return_strokes",
+      "start": 2, "duration": 350, "burst": 1, "rate": 0.055, "max_particles": 2,
+      "shape": {"type": "box_perimeter", "offset": [0.0, 0.58, 0.0], "radius": 0.25, "length": 0.16, "scale": [1.0, 0.30, 0.78], "direction": "body_tangent"},
+      "lifetime": [4, 6],
+      "size": [[0.0, 0.06], [0.04, 0.40], [0.30, 0.22], [0.56, 0.37], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF78D7FF"},
+      "geometry_settings": {"segments": 7, "length": 0.58, "thickness": 0.005, "jitter": 0.20, "branches": 2, "branch_length": 0.17, "core": 1.0, "leader": 0.08, "topology_ticks": 2}
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "grounding_sparks",
+      "start": 0, "duration": 350, "burst": 2, "rate": 0.08, "max_particles": 3,
+      "shape": {"type": "box_perimeter", "offset": [0.0, -0.72, 0.0], "radius": 0.28, "length": 0.10, "scale": [1.0, 0.20, 1.0], "direction": "radial"},
+      "speed": [0.045, 0.16], "gravity": 0.035, "drag": 0.91, "lifetime": [5, 10],
+      "size": [[0.0, 0.025], [0.08, 0.085], [0.68, 0.050], [1.0, 0.0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF198CFF"},
+      "geometry_settings": {"length": 1.35}
+    },
+    {
+      "name": "instantaneous_speed_residue",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "trail", "follow_origin": true,
+      "shape": {"type": "point", "offset": [0.0, -0.08, 0.0], "direction": "backward"},
+      "speed": [0.0, 0.0], "lifetime": [354, 354],
+      "size": [[0.0, 0.01], [0.04, 0.045], [0.52, 0.022], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 0.16], [0.45, 0.035], [1.0, 0.0]],
+      "color": {"start": "#FFCDEEFF", "end": "#FF4F99C8"},
+      "material": {"texture": "nydomod:textures/raiton_channel_soft.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 1, "rows": 1, "frames": 1},
+      "geometry_settings": {"trail_points": 8, "trail_taper": 2.4, "trail_min_distance": 0.20, "trail_break_distance": 4.5}
+    }
+  ]
+}

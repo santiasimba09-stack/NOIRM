@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "duration": 240,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 11.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/surface_arc",
+      "name": "vertebral_conduction",
+      "duration": 240, "burst": 5, "rate": 1.05, "max_particles": 12,
+      "shape": { "type": "box_perimeter", "offset": [0.0, 0.10, 0.0], "radius": 0.30, "length": 1.32, "scale": [0.70, 0.54, 1.55], "direction": "surface_tangent" },
+      "lifetime": [5, 9],
+      "geometry_settings": { "segments": 14, "length": 1.58, "thickness": 0.014, "jitter": 0.082, "branches": 2, "branch_length": 0.28, "core": 1.0, "leader": 0.16, "topology_ticks": 2 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/forked_flash",
+      "name": "forward_fang_corona",
+      "duration": 240, "burst": 3, "rate": 0.62, "max_particles": 8,
+      "shape": { "type": "box", "offset": [0.0, 0.26, -0.76], "radius": 0.24, "length": 0.38, "scale": [1.28, 0.70, 0.58], "direction": "forward" },
+      "lifetime": [4, 8],
+      "geometry_settings": { "segments": 12, "length": 1.10, "thickness": 0.018, "jitter": 0.125, "branches": 3, "branch_length": 0.25, "core": 1.0, "leader": 0.10, "topology_ticks": 1 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/storm_leader",
+      "name": "running_afterimage_forks",
+      "duration": 240, "rate": 0.34, "max_particles": 6,
+      "shape": { "type": "cone", "offset": [0.0, 0.05, 0.68], "length": 0.74, "angle": 30.0, "direction": "backward" },
+      "lifetime": [6, 11],
+      "color": { "start": "#FFE8F9FF", "end": "#FF1676E8" },
+      "geometry_settings": { "segments": 18, "length": 3.35, "thickness": 0.012, "jitter": 0.070, "branches": 4, "branch_length": 0.31, "core": 0.90, "leader": 0.24, "topology_ticks": 3 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "four_paw_static",
+      "duration": 240, "rate": 0.55, "max_particles": 8,
+      "shape": { "type": "box", "offset": [0.0, -0.48, 0.0], "radius": 0.36, "length": 1.12, "scale": [0.96, 0.12, 1.46], "direction": "radial" },
+      "speed": [0.06, 0.24], "lifetime": [4, 8],
+      "color": { "start": "#FFFFFFFF", "end": "#FF2999FF" }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "thin_ion_boundary",
+      "duration": 240, "rate": 0.11, "max_particles": 4,
+      "shape": { "type": "box", "offset": [0.0, 0.08, 0.0], "radius": 0.34, "length": 1.25, "scale": [0.92, 0.56, 1.56], "direction": "radial" },
+      "size": [[0, 0.26], [0.30, 0.52], [1, 0.38]],
+      "alpha": [[0, 0], [0.18, 0.08], [0.66, 0.035], [1, 0]]
+    }
+  ]
+}

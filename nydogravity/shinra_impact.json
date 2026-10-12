@@ -1,0 +1,35 @@
+{
+  "schema": 1, "duration": 32, "priority": 3, "max_distance": 256.0, "bounds": 128.0,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "omnidirectional_fronts", "burst": 9, "max_particles": 9, "geometry": "shock_wave",
+      "shape": { "type": "point", "direction": "random" }, "lifetime": [18, 27],
+      "rotation": [0, 180], "spin": [-5, 5],
+      "size": [[0.0, 0.015], [0.05, 0.20], [0.38, 0.64], [1.0, 1.0]],
+      "alpha": [[0.0, 0.0], [0.025, 1.0], [0.30, 0.62], [0.78, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFCBB7DC" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 42, "thickness": 0.026, "edge": 0.76, "wave": 0.18, "crest": 0.78, "lobes": 6 }
+    },
+    {
+      "name": "pressure_dome", "burst": 1, "max_particles": 1, "geometry": "impact_dome",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": 24,
+      "size": [[0.0, 0.02], [0.06, 0.18], [0.44, 0.74], [1.0, 1.0]],
+      "alpha": [[0.0, 0.0], [0.03, 0.52], [0.40, 0.20], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8C719D" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 32, "thickness": 0.04 }
+    },
+    {
+      "name": "radial_expression_lines", "burst": 56, "max_particles": 56, "geometry": "tapered_streak",
+      "shape": { "type": "sphere", "inner_radius": 0.06, "radius": 0.22, "direction": "radial" },
+      "speed": [0.35, 0.90], "lifetime": [7, 15], "drag": 0.92,
+      "size": [[0.0, 0.010], [0.08, 0.050], [0.60, 0.030], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 1.0], [0.58, 0.54], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB6A5C5" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.8 }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "duration": 240,
+  "priority": 3,
+  "max_distance": 160.0,
+  "bounds": 12.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/black_bolt",
+      "name": "void_clinging_conduction",
+      "duration": 240, "burst": 6, "rate": 1.25, "max_particles": 14,
+      "shape": { "type": "box_perimeter", "offset": [0.0, 0.10, 0.0], "radius": 0.36, "length": 1.34, "scale": [0.92, 0.62, 1.60], "direction": "surface_tangent" },
+      "lifetime": [6, 10],
+      "geometry_settings": { "segments": 16, "length": 1.88, "thickness": 0.027, "jitter": 0.094, "branches": 3, "branch_length": 0.34, "core": 0.15, "leader": 0.13, "topology_ticks": 2 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/forked_flash",
+      "name": "violet_predator_crown",
+      "duration": 240, "burst": 3, "rate": 0.52, "max_particles": 7,
+      "shape": { "type": "box", "offset": [0.0, 0.34, -0.66], "radius": 0.25, "length": 0.36, "scale": [1.32, 0.84, 0.52], "direction": "forward" },
+      "lifetime": [5, 9],
+      "color": { "start": "#FFF5E9FF", "end": "#FF6B32D4" },
+      "geometry_settings": { "segments": 14, "length": 1.42, "thickness": 0.012, "jitter": 0.115, "branches": 2, "branch_length": 0.30, "core": 0.86, "leader": 0.10, "topology_ticks": 2 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/black_bolt",
+      "name": "asymmetric_hunting_afterimage",
+      "duration": 240, "rate": 0.32, "max_particles": 7,
+      "shape": { "type": "cone", "offset": [0.22, 0.04, 0.70], "length": 0.82, "angle": 34.0, "direction": "backward" },
+      "lifetime": [7, 12],
+      "color": { "start": "#FF211131", "end": "#FF040208" },
+      "geometry_settings": { "segments": 18, "length": 3.70, "thickness": 0.022, "jitter": 0.074, "branches": 4, "branch_length": 0.34, "core": 0.14, "leader": 0.23, "topology_ticks": 3 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "violet_claw_shed",
+      "duration": 240, "rate": 0.70, "max_particles": 10,
+      "shape": { "type": "box", "offset": [0.0, -0.34, -0.12], "radius": 0.38, "length": 1.06, "scale": [1.04, 0.30, 1.36], "direction": "radial" },
+      "speed": [0.08, 0.31], "lifetime": [4, 9],
+      "color": { "start": "#FFEEDFFF", "end": "#FF5923A2" }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "black_pressure_silhouette",
+      "duration": 240, "rate": 0.12, "max_particles": 5,
+      "shape": { "type": "box", "offset": [0.0, 0.08, 0.0], "radius": 0.40, "length": 1.38, "scale": [1.02, 0.66, 1.68], "direction": "radial" },
+      "size": [[0, 0.30], [0.26, 0.62], [1, 0.46]],
+      "alpha": [[0, 0], [0.18, 0.105], [0.66, 0.05], [1, 0]],
+      "color": { "start": "#FF2A173A", "end": "#FF07030F" }
+    }
+  ]
+}

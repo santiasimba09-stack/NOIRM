@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "duration": 46,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 3,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "blink_fold",
+      "start": 0,
+      "burst": 5,
+      "max_particles": 5,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.3,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.8,
+          0.8,
+          1.5
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        14,
+        21
+      ],
+      "speed": [
+        0.04,
+        0.1
+      ],
+      "size": [
+        [
+          0,
+          0.25
+        ],
+        [
+          0.15,
+          0.46
+        ],
+        [
+          1,
+          0.68
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/fading_wisp",
+      "name": "blink_after_curls",
+      "start": 3,
+      "burst": 3,
+      "max_particles": 3,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.38,
+        "offset": [
+          0,
+          0,
+          0.2
+        ],
+        "scale": [
+          1,
+          1,
+          0.75
+        ],
+        "direction": "radial"
+      }
+    }
+  ]
+}

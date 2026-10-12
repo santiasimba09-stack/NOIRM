@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 3,
+  "max_distance": 80,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "quenched_vapor",
+      "start": 0,
+      "duration": 24,
+      "burst": 6,
+      "max_particles": 6,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.35,
+        "direction": "radial"
+      },
+      "speed": [
+        0.035,
+        0.09
+      ],
+      "lifetime": [
+        18,
+        18
+      ],
+      "drag": 0.94,
+      "size": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.65,
+          0.48
+        ],
+        [
+          1,
+          0.62
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.35
+        ],
+        [
+          0.7,
+          0.18
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFB8B6B5",
+        "end": "#FFB8B6B5"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": false,
+        "shader": "lit"
+      },
+      "follow_origin": false,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "segments": 12
+      },
+      "gravity": -0.005
+    }
+  ]
+}

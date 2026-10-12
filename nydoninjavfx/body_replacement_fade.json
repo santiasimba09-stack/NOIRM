@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "duration": 50,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 3.5,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "quiet_log_release",
+      "start": 0,
+      "burst": 7,
+      "max_particles": 7,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.35,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.25,
+          1,
+          0.45
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.02,
+        0.075
+      ],
+      "lifetime": [
+        23,
+        33
+      ],
+      "size": [
+        [
+          0,
+          0.22
+        ],
+        [
+          0.14,
+          0.54
+        ],
+        [
+          0.55,
+          0.78
+        ],
+        [
+          1,
+          1.02
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.35
+        ],
+        [
+          0.1,
+          0.8
+        ],
+        [
+          0.4,
+          0.6
+        ],
+        [
+          0.75,
+          0.28
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/fading_wisp",
+      "name": "last_spiral_threads",
+      "start": 4,
+      "burst": 5,
+      "max_particles": 5,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.46,
+        "offset": [
+          0,
+          0,
+          0.12
+        ],
+        "scale": [
+          1,
+          1,
+          0.75
+        ],
+        "direction": "radial"
+      }
+    }
+  ]
+}

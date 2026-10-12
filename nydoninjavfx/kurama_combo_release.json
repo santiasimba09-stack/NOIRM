@@ -1,0 +1,10 @@
+{
+  "schema": 1, "duration": 8, "priority": 2, "max_distance": 64, "bounds": 1.2,
+  "emitters": [
+    {"preset":"nydomod:_presets/ninja_smoke/soft_billow","name":"quiet_release_curl","start":0,"burst":3,"max_particles":3,
+     "shape":{"type":"sphere","radius":0.13,"offset":[0,0.04,0],"scale":[1.1,0.4,1],"direction":"radial"},
+     "speed":[0.01,0.038],"gravity":-0.003,"vortex":0.18,"lifetime":[4,6],
+     "size":[[0,0.07],[0.18,0.14],[0.68,0.19],[1,0.2]],"alpha":[[0,0],[0.1,0.22],[0.6,0.09],[1,0]],
+     "color":{"start":"#FFFFD9A8","end":"#FFBEC8CB"}}
+  ]
+}

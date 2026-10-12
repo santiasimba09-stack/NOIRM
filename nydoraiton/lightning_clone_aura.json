@@ -1,0 +1,4 @@
+{"schema":1,"duration":160,"priority":2,"max_distance":112.0,"bounds":4.0,"follow_source":true,"stop_when_source_missing":true,"source_anchor":"center","preserve_trigger_offset":false,"follow_source_direction":true,"source_direction":"motion","emitters":[
+  {"preset":"nydomod:_presets/raiton/ion_haze","name":"decoy_ion_breath","duration":158,"rate":0.06,"max_particles":3,"shape":{"type":"box","radius":0.25,"length":1.45,"scale":[0.82,1.35,0.62],"direction":"radial"},"lifetime":[13,23],"alpha":[[0,0],[0.2,0.055],[0.72,0.025],[1,0]]},
+  {"preset":"nydomod:_presets/raiton/micro_filament","name":"tell_filaments","duration":158,"rate":0.09,"max_particles":3,"shape":{"type":"box_perimeter","radius":0.28,"length":1.4,"scale":[0.86,1.42,0.65],"direction":"body_tangent"},"lifetime":[3,5],"geometry_settings":{"segments":5,"length":0.38,"thickness":0.005,"jitter":0.22,"branches":1,"branch_length":0.11,"core":1.0,"leader":0.04,"topology_ticks":2}}
+]}

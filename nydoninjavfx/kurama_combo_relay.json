@@ -1,0 +1,10 @@
+{
+  "schema": 1, "duration": 7, "priority": 2, "max_distance": 64, "bounds": 1.15,
+  "emitters": [
+    {"preset":"nydomod:_presets/ninja_smoke/fading_wisp","name":"side_relay_curl","start":0,"burst":2,"max_particles":2,
+     "shape":{"type":"ring","radius":0.15,"offset":[0,0.04,-0.17],"scale":[1.2,0.32,0.8],"direction":"radial"},
+     "speed":[0.012,0.034],"gravity":-0.002,"vortex":0.3,"lifetime":[3,4],
+     "size":[[0,0.06],[0.25,0.13],[1,0.18]],"alpha":[[0,0],[0.12,0.2],[0.7,0.07],[1,0]],
+     "color":{"start":"#FFFFD49A","end":"#FFD6E0DF"}}
+  ]
+}

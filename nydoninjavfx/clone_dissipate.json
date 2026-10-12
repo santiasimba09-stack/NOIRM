@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "duration": 64,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 5,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "released_body_shell",
+      "start": 0,
+      "burst": 9,
+      "max_particles": 9,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.36,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1.4
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.065,
+        0.15
+      ],
+      "lifetime": [
+        23,
+        34
+      ],
+      "size": [
+        [
+          0,
+          0.32
+        ],
+        [
+          0.09,
+          0.66
+        ],
+        [
+          0.45,
+          0.92
+        ],
+        [
+          1,
+          1.2
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "counter_rolling_crown",
+      "start": 2,
+      "burst": 6,
+      "max_particles": 6,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.5,
+        "offset": [
+          0,
+          0,
+          0.34
+        ],
+        "scale": [
+          1.2,
+          1,
+          0.7
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.04,
+        0.09
+      ],
+      "gravity": -0.011,
+      "spin": [
+        -1.7,
+        -0.4
+      ],
+      "lifetime": [
+        28,
+        40
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "release_floor_wash",
+      "start": 2,
+      "burst": 5,
+      "max_particles": 5,
+      "shape": {
+        "type": "ring",
+        "radius": 0.58,
+        "offset": [
+          0,
+          0,
+          -0.62
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "direction": "random"
+      },
+      "speed": [
+        0.018,
+        0.045
+      ],
+      "gravity": -0.003,
+      "vortex": 0.16,
+      "lifetime": [
+        20,
+        30
+      ],
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.14,
+          0.38
+        ],
+        [
+          0.58,
+          0.64
+        ],
+        [
+          1,
+          0.85
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.65
+        ],
+        [
+          0.35,
+          0.52
+        ],
+        [
+          0.72,
+          0.25
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE2E8E9",
+        "end": "#FFBDC8CC"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/fading_wisp",
+      "name": "detached_curl_fragments",
+      "start": 7,
+      "burst": 6,
+      "max_particles": 6,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.8,
+        "offset": [
+          0,
+          0,
+          0.3
+        ],
+        "scale": [
+          1,
+          1,
+          0.75
+        ],
+        "direction": "radial"
+      }
+    }
+  ]
+}

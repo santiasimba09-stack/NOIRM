@@ -1,0 +1,27 @@
+{
+  "schema": 1, "duration": 28, "priority": 3, "max_distance": 144.0, "bounds": 12.0,
+  "follow_source": true, "stop_when_source_missing": true, "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "name": "annihilation_shell", "burst": 7, "max_particles": 7, "geometry": "shock_wave",
+      "follow_origin": true, "shape": { "type": "point", "direction": "random" },
+      "lifetime": [20, 27], "rotation": [0, 180], "spin": [-7, 7],
+      "size": [[0.0, 0.10], [0.12, 0.75], [0.55, 1.80], [1.0, 3.10]],
+      "alpha": [[0.0, 0.0], [0.05, 0.82], [0.56, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF7542A8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 38, "thickness": 0.075, "edge": 0.72, "wave": 0.22, "crest": 0.70, "lobes": 7 }
+    },
+    {
+      "name": "violent_convergence", "duration": 24, "rate": 2.0, "max_particles": 48,
+      "geometry": "tapered_streak", "shape": { "type": "sphere", "inner_radius": 1.6, "radius": 5.2, "direction": "backward" },
+      "speed": [0.20, 0.52], "lifetime": [6, 12], "drag": 0.88,
+      "size": [[0.0, 0.020], [0.12, 0.095], [0.68, 0.050], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.95], [0.55, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB78DD8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 2.1 }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "duration": 80,
+  "priority": 3,
+  "max_distance": 80,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "forged_obsidian",
+      "start": 0,
+      "duration": 80,
+      "burst": 1,
+      "rate": 4,
+      "max_particles": 1,
+      "geometry": "obsidian_shard",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        360,
+        360
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          0.98,
+          1
+        ],
+        [
+          1,
+          0.98
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          1
+        ],
+        [
+          0.97,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF857F99",
+        "end": "#FF857F99"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": true,
+        "fullbright": false,
+        "shader": "lit"
+      },
+      "follow_origin": true,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "segments": 8,
+        "length": 0.95
+      }
+    },
+    {
+      "name": "ember_cut",
+      "start": 0,
+      "duration": 80,
+      "burst": 1,
+      "rate": 0.8,
+      "max_particles": 4,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "point",
+        "direction": "backward"
+      },
+      "speed": [
+        0.06,
+        0.12
+      ],
+      "lifetime": [
+        6,
+        6
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.014
+        ],
+        [
+          0.98,
+          0.014
+        ],
+        [
+          1,
+          0.01372
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.65
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFB35A",
+        "end": "#FFFFB35A"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "length": 0.8
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "replace_on_trigger": true
+}

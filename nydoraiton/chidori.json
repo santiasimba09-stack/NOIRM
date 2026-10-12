@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "duration": 600,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 2.5,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "name": "volumetric_electric_illumination",
+      "duration": 600, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_sphere", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [600, 600], "drag": 1.0,
+      "size": [[0.0, 0.025], [0.035, 0.46], [0.94, 0.52], [1.0, 0.0]],
+      "alpha": [[0.0, 0.018], [0.035, 0.105], [0.90, 0.080], [1.0, 0.0]],
+      "color": { "start": "#FF6FC9FF", "end": "#FF1676E8" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 14, "thickness": 0.012, "lobes": 4.0, "flow": -0.95, "flow_tile": 1.0, "wave": 0.09, "swirl": 0.32, "rim": 0.76, "glow": 0.42 }
+    },
+    {
+      "name": "compressed_plasma_kernel",
+      "duration": 600, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_sphere", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [600, 600], "drag": 1.0,
+      "size": [[0.0, 0.018], [0.035, 0.165], [0.95, 0.175], [1.0, 0.0]],
+      "alpha": [[0.0, 0.10], [0.035, 0.82], [0.94, 0.74], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF70C6FF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 16, "thickness": 0.020, "lobes": 5.0, "flow": 2.8, "flow_tile": 2.0, "wave": 0.20, "swirl": 0.72, "rim": 0.16, "glow": 0.74 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/corona_bolt",
+      "name": "discharge_glow_envelope",
+      "duration": 600, "burst": 3, "rate": 0.55, "max_particles": 10,
+      "align_to_spawn_direction": true,
+      "shape": { "type": "sphere", "radius": 0.15, "scale": [1.0, 0.86, 1.0], "direction": "radial" },
+      "speed": [0.0, 0.0], "lifetime": [9, 15],
+      "size": [[0.0, 0.20], [0.16, 0.62], [0.70, 0.50], [1.0, 0.0]],
+      "geometry_settings": { "segments": 9, "length": 0.52, "thickness": 0.038, "jitter": 0.17, "branches": 1, "branch_length": 0.18, "core": 0.0, "leader": 0.05, "topology_ticks": 4 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "hand_seeking_streamers",
+      "duration": 600, "burst": 4, "rate": 1.55, "max_particles": 18,
+      "align_to_spawn_direction": true,
+      "shape": { "type": "sphere", "radius": 0.13, "scale": [1.0, 0.82, 1.0], "direction": "radial" },
+      "speed": [0.0, 0.0], "lifetime": [3, 6],
+      "size": [[0.0, 0.18], [0.08, 0.54], [0.72, 0.42], [1.0, 0.0]],
+      "geometry_settings": { "segments": 10, "length": 0.48, "thickness": 0.012, "jitter": 0.15, "branches": 1, "branch_length": 0.14, "core": 1.0, "leader": 0.06, "topology_ticks": 1 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "piercing_palm_channel",
+      "duration": 600, "rate": 0.30, "max_particles": 4,
+      "align_to_spawn_direction": true,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, 0.035], "length": 0.08, "angle": 13.0, "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [4, 7],
+      "size": [[0.0, 0.12], [0.08, 0.48], [0.72, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF1686EC" },
+      "geometry_settings": { "segments": 13, "length": 0.82, "thickness": 0.010, "jitter": 0.075, "branches": 1, "branch_length": 0.13, "core": 1.0, "leader": 0.12, "topology_ticks": 2 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "corona_electron_grain",
+      "duration": 600, "burst": 4, "rate": 0.80, "max_particles": 16,
+      "shape": { "type": "sphere", "radius": 0.16, "direction": "radial" },
+      "speed": [0.035, 0.13], "lifetime": [3, 6],
+      "size": [[0.0, 0.022], [0.14, 0.070], [0.64, 0.046], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF2998FF" },
+      "geometry_settings": { "length": 0.42 }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "near_hand_ozone",
+      "duration": 600, "rate": 0.08, "max_particles": 3,
+      "shape": { "type": "sphere", "radius": 0.15, "scale": [1.0, 0.84, 1.0], "direction": "radial" },
+      "size": [[0.0, 0.11], [0.30, 0.24], [1.0, 0.18]],
+      "alpha": [[0.0, 0.0], [0.18, 0.038], [0.66, 0.016], [1.0, 0.0]]
+    }
+  ]
+}

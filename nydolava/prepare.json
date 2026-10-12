@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "duration": 360,
+  "priority": 3,
+  "max_distance": 80,
+  "bounds": 2,
+  "emitters": [
+    {
+      "name": "surveyed_fault",
+      "start": 0,
+      "duration": 360,
+      "burst": 1,
+      "rate": 4,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward",
+        "offset": [
+          0,
+          0,
+          0.04
+        ]
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        12,
+        12
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          0.775
+        ],
+        [
+          1,
+          0.775
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.25
+        ],
+        [
+          0.4,
+          0.7
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFD3703B",
+        "end": "#FFD3703B"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "segments": 20,
+        "thickness": 0.027,
+        "edge": 0.9,
+        "arc_degrees": 360,
+        "lay_flat": false
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "replace_on_trigger": true
+}

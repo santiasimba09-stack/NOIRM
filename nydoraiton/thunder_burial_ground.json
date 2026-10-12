@@ -1,0 +1,5 @@
+{"schema":1,"duration":28,"priority":3,"max_distance":144.0,"bounds":10.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"burial_release_flash","color":{"start":"#FFFFFFFF","end":"#FF9A78FF"},"burst":1,"max_particles":1,"size":[[0,0.22],[0.08,1.45],[0.4,2.2],[1,0]],"lifetime":[6,6]},
+  {"preset":"nydomod:_presets/raiton/impact_ring","name":"black_ground_seal","burst":2,"max_particles":2,"color":{"start":"#FFDCCBFF","end":"#FF2A1438"},"size":[[0,0.25],[0.12,1.0],[1,4.2]],"lifetime":[15,18]},
+  {"preset":"nydomod:_presets/raiton/black_bolt","name":"searching_roots","burst":10,"max_particles":13,"shape":{"type":"ring","radius":0.55,"scale":[1.0,0.1,1.0],"direction":"radial"},"lifetime":[8,14],"geometry_settings":{"segments":14,"length":4.0,"thickness":0.025,"jitter":0.08,"branches":4,"branch_length":0.42,"core":0.16,"leader":0.18,"topology_ticks":3}}
+]}

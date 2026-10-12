@@ -1,0 +1,6 @@
+{"schema":1,"duration":28,"priority":3,"max_distance":176.0,"bounds":28.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"spear_release_flash","size":[[0,0.25],[0.08,1.5],[0.42,2.2],[1,0]],"lifetime":[6,6]},
+  {"preset":"nydomod:_presets/raiton/storm_leader","name":"piercing_main_channel","burst":1,"max_particles":1,"shape":{"type":"point","direction":"forward"},"lifetime":[18,18],"size":[[0,0.65],[0.06,1.0],[0.72,0.88],[1,0]],"geometry_settings":{"segments":48,"length":20.0,"thickness":0.045,"jitter":0.035,"branches":7,"branch_length":0.22,"core":1.0,"leader":0.30,"topology_ticks":4}},
+  {"preset":"nydomod:_presets/raiton/blue_bolt","name":"return_stroke_echo","start":3,"burst":1,"max_particles":1,"shape":{"type":"point","direction":"forward"},"lifetime":[12,12],"color":{"start":"#FFFFFFFF","end":"#FF4CAFFF"},"geometry_settings":{"segments":52,"length":20.0,"thickness":0.025,"jitter":0.028,"branches":5,"branch_length":0.18,"core":1.0,"leader":0.08,"topology_ticks":3}},
+  {"preset":"nydomod:_presets/raiton/spark","name":"channel_shedding","burst":24,"max_particles":30,"shape":{"type":"line","length":20.0,"direction":"radial"},"speed":[0.08,0.38],"lifetime":[6,12],"geometry_settings":{"length":1.8}}
+]}

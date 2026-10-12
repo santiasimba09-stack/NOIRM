@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "duration": 260,
+  "priority": 3,
+  "max_distance": 160.0,
+  "bounds": 9.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "body_plasma",
+      "duration": 260,
+      "burst": 3,
+      "rate": 0.55,
+      "max_particles": 6,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          0.12,
+          0.0
+        ],
+        "radius": 0.34,
+        "length": 1.7,
+        "scale": [
+          0.62,
+          0.72,
+          1.75
+        ],
+        "direction": "surface_tangent"
+      },
+      "lifetime": [
+        7,
+        12
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/raiton/forked_flash",
+      "name": "pelt_conduction",
+      "duration": 260,
+      "burst": 6,
+      "rate": 1.20,
+      "max_particles": 10,
+      "shape": {
+        "type": "box_perimeter",
+        "offset": [
+          0.0,
+          0.14,
+          0.0
+        ],
+        "radius": 0.3,
+        "length": 1.5,
+        "scale": [
+          0.58,
+          0.82,
+          1.66
+        ],
+        "direction": "surface_tangent"
+      },
+      "lifetime": [
+        5,
+        9
+      ],
+      "geometry_settings": {
+        "segments": 11,
+        "length": 1.62,
+        "thickness": 0.027,
+        "jitter": 0.14,
+        "branches": 4,
+        "branch_length": 0.29,
+        "core": 1.0,
+        "leader": 0.15,
+        "topology_ticks": 2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/forked_flash",
+      "name": "fang_crown",
+      "duration": 260,
+      "burst": 2,
+      "rate": 0.45,
+      "max_particles": 4,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          0.30,
+          -0.82
+        ],
+        "radius": 0.16,
+        "length": 0.42,
+        "scale": [
+          0.44,
+          0.4,
+          0.62
+        ],
+        "direction": "surface_tangent"
+      },
+      "lifetime": [
+        4,
+        8
+      ],
+      "geometry_settings": {
+        "segments": 10,
+        "length": 0.72,
+        "thickness": 0.014,
+        "jitter": 0.12,
+        "branches": 2,
+        "branch_length": 0.18,
+        "core": 1.0,
+        "leader": 0.22,
+        "topology_ticks": 2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "run_afterimage",
+      "duration": 260,
+      "rate": 0.35,
+      "max_particles": 5,
+      "shape": {
+        "type": "cone",
+        "offset": [
+          0.0,
+          0.1,
+          0.84
+        ],
+        "length": 1.05,
+        "angle": 24.0,
+        "direction": "backward"
+      },
+      "lifetime": [
+        6,
+        11
+      ],
+      "geometry_settings": {
+        "segments": 16,
+        "length": 2.6,
+        "thickness": 0.016,
+        "jitter": 0.07,
+        "branches": 3,
+        "branch_length": 0.3,
+        "core": 0.92,
+        "leader": 0.12,
+        "topology_ticks": 3
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "paw_shed",
+      "duration": 260,
+      "rate": 0.65,
+      "max_particles": 6,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          -0.42,
+          0.0
+        ],
+        "radius": 0.32,
+        "length": 1.4,
+        "scale": [
+          0.6,
+          0.24,
+          1.6
+        ],
+        "direction": "surface_tangent"
+      },
+      "lifetime": [
+        4,
+        9
+      ]
+    }
+  ]
+}

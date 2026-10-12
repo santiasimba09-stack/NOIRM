@@ -1,0 +1,5 @@
+{"schema":1,"duration":26,"priority":3,"max_distance":128.0,"bounds":8.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"stored_charge_break","color":{"start":"#FFFFFFFF","end":"#FFA884FF"},"burst":1,"max_particles":1,"size":[[0,0.2],[0.08,1.3],[0.42,2.0],[1,0]],"lifetime":[6,6]},
+  {"preset":"nydomod:_presets/raiton/black_bolt","name":"consumed_charge_fragments","burst":10,"max_particles":13,"shape":{"type":"sphere","radius":0.2,"direction":"radial"},"lifetime":[8,14],"geometry_settings":{"segments":15,"length":3.4,"thickness":0.022,"jitter":0.1,"branches":4,"branch_length":0.38,"core":0.16,"leader":0.16,"topology_ticks":2}},
+  {"preset":"nydomod:_presets/raiton/spark","name":"violet_after_sparks","burst":16,"max_particles":20,"color":{"start":"#FFF4E8FF","end":"#FF663A8C"},"speed":[0.18,0.72],"lifetime":[6,14]}
+]}

@@ -1,0 +1,4 @@
+{"schema":1,"duration":14,"priority":2,"max_distance":80.0,"bounds":3.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"needle_focus","burst":1,"max_particles":1,"size":[[0,0.08],[0.12,0.48],[0.58,0.24],[1,0]],"lifetime":[5,5]},
+  {"preset":"nydomod:_presets/raiton/micro_filament","name":"finger_filaments","burst":3,"max_particles":4,"shape":{"type":"sphere","radius":0.12,"direction":"forward"},"lifetime":[3,5],"geometry_settings":{"segments":5,"length":0.42,"thickness":0.005,"jitter":0.18,"branches":1,"branch_length":0.12,"core":1.0,"leader":0.08,"topology_ticks":2}}
+]}

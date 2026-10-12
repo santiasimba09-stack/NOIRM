@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "duration": 360,
+  "priority": 3,
+  "max_distance": 80,
+  "bounds": 4,
+  "emitters": [
+    {
+      "name": "incandescent_subsurface",
+      "start": 0,
+      "duration": 360,
+      "burst": 1,
+      "rate": 4,
+      "max_particles": 1,
+      "geometry": "lava_surface",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        360,
+        360
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          0.98,
+          1
+        ],
+        [
+          1,
+          0.98
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          1
+        ],
+        [
+          0.97,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFA43D",
+        "end": "#FFFFA43D"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": true,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "segments": 12
+      }
+    },
+    {
+      "name": "rafting_crust",
+      "start": 0,
+      "duration": 360,
+      "burst": 1,
+      "rate": 4,
+      "max_particles": 1,
+      "geometry": "lava_surface",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        360,
+        360
+      ],
+      "drag": 1,
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          0.98,
+          1
+        ],
+        [
+          1,
+          0.98
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          1
+        ],
+        [
+          0.97,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF514044",
+        "end": "#FF514044"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": true,
+        "fullbright": false,
+        "shader": "lit"
+      },
+      "follow_origin": true,
+      "near_fade": 0.035,
+      "geometry_settings": {
+        "segments": 12
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "replace_on_trigger": true
+}

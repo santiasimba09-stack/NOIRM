@@ -1,0 +1,6 @@
+{"schema":1,"duration":24,"priority":3,"max_distance":112.0,"bounds":7.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"fang_contact_flash","size":[[0,0.18],[0.08,1.3],[0.42,2.1],[1,0]],"lifetime":[5,5]},
+  {"preset":"nydomod:_presets/raiton/impact_ring","name":"fang_pressure","size":[[0,0.22],[0.16,1.1],[1,2.3]]},
+  {"preset":"nydomod:_presets/raiton/blue_bolt","name":"fang_discharge","burst":12,"max_particles":16,"shape":{"type":"sphere","radius":0.18,"direction":"radial"},"geometry_settings":{"segments":16,"length":3.1,"thickness":0.022,"jitter":0.09,"branches":4,"branch_length":0.38,"core":1.0,"leader":0.15,"topology_ticks":2}},
+  {"preset":"nydomod:_presets/raiton/spark","name":"fang_sparks","burst":24,"max_particles":30,"speed":[0.22,0.88]}
+]}

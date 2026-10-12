@@ -1,0 +1,4 @@
+{"schema":1,"duration":22,"priority":2,"max_distance":96.0,"bounds":5.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/ion_haze","name":"quiet_ion_release","burst":5,"max_particles":7,"shape":{"type":"box","radius":0.28,"length":1.4,"scale":[0.86,1.4,0.65],"direction":"radial"},"lifetime":[10,19],"alpha":[[0,0],[0.18,0.09],[0.7,0.035],[1,0]]},
+  {"preset":"nydomod:_presets/raiton/micro_filament","name":"quiet_filament_break","burst":5,"max_particles":6,"shape":{"type":"sphere","radius":0.3,"direction":"radial"},"lifetime":[3,6],"geometry_settings":{"segments":5,"length":0.48,"thickness":0.005,"jitter":0.24,"branches":1,"branch_length":0.12,"core":1.0,"leader":0.04,"topology_ticks":2}}
+]}

@@ -1,0 +1,15 @@
+{
+  "schema":1,"duration":70,"priority":2,"max_distance":48,"bounds":5,
+  "emitters":[
+    {"preset":"nydomod:_presets/waves/vortex_ring","name":"outer_contract","start":0,"burst":1,"max_particles":1,
+     "lifetime":[68,68],"rotation":[0,0],"spin":[0.45,0.45],
+     "size":[[0,0.2],[0.2,2.6],[0.78,2.6],[1,0.1]],"alpha":[[0,0],[0.15,0.85],[0.85,0.8],[1,0]],
+     "color":{"start":"#FF365942","end":"#FFC4DF9C"},
+     "geometry_settings":{"segments":40,"thickness":0.10,"arc_degrees":360,"edge":0.8,"roll":0,"crest":0,"wave":0.02,"lobes":5}},
+    {"preset":"nydomod:_presets/waves/vortex_ring","name":"inner_contract","start":8,"burst":1,"max_particles":1,
+     "lifetime":[60,60],"rotation":[30,30],"spin":[-0.7,-0.7],
+     "size":[[0,0.2],[0.25,1.6],[0.8,1.6],[1,0.1]],"alpha":[[0,0],[0.15,0.9],[0.8,0.85],[1,0]],
+     "color":{"start":"#FF24392A","end":"#FFDCEDB1"},
+     "geometry_settings":{"segments":32,"thickness":0.09,"arc_degrees":310,"edge":0.8,"roll":0,"crest":0,"wave":0.02,"lobes":3}}
+  ]
+}

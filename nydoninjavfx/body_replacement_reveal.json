@@ -1,0 +1,293 @@
+{
+  "schema": 1,
+  "duration": 64,
+  "priority": 3,
+  "max_distance": 96,
+  "bounds": 5.5,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "instant_swap_core",
+      "start": 0,
+      "burst": 10,
+      "max_particles": 10,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.35,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1.55
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.055,
+        0.15
+      ],
+      "lifetime": [
+        20,
+        29
+      ],
+      "size": [
+        [
+          0,
+          0.4
+        ],
+        [
+          0.07,
+          0.78
+        ],
+        [
+          0.34,
+          1.04
+        ],
+        [
+          1,
+          1.32
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.55
+        ],
+        [
+          0.06,
+          0.94
+        ],
+        [
+          0.3,
+          0.75
+        ],
+        [
+          0.7,
+          0.4
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "asymmetric_cloud_crown",
+      "start": 1,
+      "burst": 7,
+      "max_particles": 7,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.5,
+        "offset": [
+          0,
+          0,
+          0.34
+        ],
+        "scale": [
+          1.4,
+          0.85,
+          0.64
+        ],
+        "direction": "radial"
+      },
+      "gravity": -0.01,
+      "speed": [
+        0.04,
+        0.12
+      ],
+      "lifetime": [
+        27,
+        39
+      ],
+      "size": [
+        [
+          0,
+          0.28
+        ],
+        [
+          0.12,
+          0.56
+        ],
+        [
+          0.5,
+          0.92
+        ],
+        [
+          1,
+          1.18
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "ground_hugging_roll",
+      "start": 2,
+      "burst": 7,
+      "max_particles": 7,
+      "shape": {
+        "type": "ring",
+        "radius": 0.58,
+        "offset": [
+          0,
+          0,
+          -0.62
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "direction": "random"
+      },
+      "speed": [
+        0.018,
+        0.045
+      ],
+      "gravity": -0.003,
+      "vortex": 0.16,
+      "lifetime": [
+        20,
+        30
+      ],
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.14,
+          0.38
+        ],
+        [
+          0.58,
+          0.64
+        ],
+        [
+          1,
+          0.85
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.65
+        ],
+        [
+          0.35,
+          0.52
+        ],
+        [
+          0.72,
+          0.25
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE2E8E9",
+        "end": "#FFBDC8CC"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/fading_wisp",
+      "name": "log_reveal_curls",
+      "start": 7,
+      "burst": 7,
+      "max_particles": 7,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.78,
+        "offset": [
+          0,
+          0,
+          0.18
+        ],
+        "scale": [
+          1,
+          1,
+          0.75
+        ],
+        "direction": "radial"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "fall_contact_roll",
+      "start": 4,
+      "burst": 4,
+      "max_particles": 4,
+      "shape": {
+        "type": "ring",
+        "radius": 0.28,
+        "offset": [
+          0,
+          0,
+          -0.6
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "direction": "random"
+      },
+      "speed": [
+        0.025,
+        0.06
+      ],
+      "gravity": -0.003,
+      "lifetime": [
+        18,
+        27
+      ],
+      "size": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0.12,
+          0.34
+        ],
+        [
+          0.6,
+          0.55
+        ],
+        [
+          1,
+          0.7
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.5
+        ],
+        [
+          0.5,
+          0.36
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    }
+  ]
+}

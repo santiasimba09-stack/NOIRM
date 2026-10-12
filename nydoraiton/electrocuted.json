@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "duration": 60,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 4.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": false,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "body_current",
+      "duration": 60,
+      "burst": 7,
+      "rate": 3.1,
+      "max_particles": 24,
+      "shape": {
+          "type": "box_perimeter",
+        "offset": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.32,
+        "length": 1.4,
+        "scale": [
+          0.75,
+          1.5,
+          0.75
+        ],
+          "direction": "body_tangent"
+      },
+      "lifetime": [
+        3,
+        7
+      ],
+      "geometry_settings": {
+        "segments": 9,
+        "length": 0.66,
+        "thickness": 0.015,
+        "jitter": 0.13,
+        "branches": 4,
+        "branch_length": 0.2,
+        "core": 1.0,
+        "leader": 0.08,
+        "topology_ticks": 1
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "ground_arc",
+      "duration": 60,
+      "burst": 3,
+      "rate": 0.85,
+      "max_particles": 8,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          -0.75,
+          0.0
+        ],
+        "radius": 0.42,
+        "length": 0.5,
+        "scale": [
+          0.9,
+          0.24,
+          0.9
+        ],
+          "direction": "body_tangent"
+      },
+      "lifetime": [
+        4,
+        8
+      ],
+      "geometry_settings": {
+        "segments": 12,
+        "length": 1.15,
+        "thickness": 0.017,
+        "jitter": 0.09,
+        "branches": 3,
+        "branch_length": 0.3,
+        "core": 0.95,
+        "leader": 0.16,
+        "topology_ticks": 2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/spark",
+      "name": "shed_sparks",
+      "duration": 60,
+      "burst": 6,
+      "rate": 2.0,
+      "max_particles": 18,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.44,
+        "length": 1.5,
+        "scale": [
+          0.85,
+          1.55,
+          0.85
+        ],
+        "direction": "shape"
+      },
+      "lifetime": [
+        4,
+        10
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/raiton/ion_haze",
+      "name": "ion_shroud",
+      "duration": 60,
+      "rate": 0.4,
+      "max_particles": 7,
+      "shape": {
+        "type": "box",
+        "offset": [
+          0.0,
+          0.05,
+          0.0
+        ],
+        "radius": 0.5,
+        "length": 1.5,
+        "scale": [
+          0.9,
+          1.6,
+          0.9
+        ],
+        "direction": "shape"
+      },
+      "lifetime": [
+        9,
+        16
+      ]
+    }
+  ]
+}

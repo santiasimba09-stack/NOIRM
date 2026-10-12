@@ -1,0 +1,4 @@
+{"schema":1,"duration":18,"priority":3,"max_distance":112.0,"bounds":5.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/black_bolt","name":"black_chakra_roots","burst":5,"max_particles":7,"shape":{"type":"ring","radius":0.42,"scale":[1.0,0.12,1.0],"direction":"surface_tangent"},"lifetime":[5,9],"geometry_settings":{"segments":9,"length":1.25,"thickness":0.014,"jitter":0.12,"branches":3,"branch_length":0.24,"core":0.18,"leader":0.08,"topology_ticks":2}},
+  {"preset":"nydomod:_presets/raiton/ion_haze","name":"ground_pressure","burst":2,"max_particles":3,"shape":{"type":"ring","radius":0.5,"scale":[1.0,0.1,1.0],"direction":"radial"},"color":{"start":"#FF281531","end":"#FF08040D"},"alpha":[[0,0],[0.2,0.08],[0.7,0.035],[1,0]]}
+]}

@@ -1,0 +1,4 @@
+{"schema":1,"duration":18,"priority":3,"max_distance":96.0,"bounds":4.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"needle_contact","burst":1,"max_particles":1,"size":[[0,0.1],[0.1,0.72],[0.45,1.0],[1,0]],"lifetime":[4,4]},
+  {"preset":"nydomod:_presets/raiton/spark","name":"needle_fragments","burst":9,"max_particles":11,"speed":[0.12,0.48],"lifetime":[5,10],"geometry_settings":{"length":1.15}}
+]}

@@ -1,0 +1,5 @@
+{"schema":1,"duration":26,"priority":3,"max_distance":112.0,"bounds":5.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"substitution_flash","burst":1,"max_particles":1,"size":[[0,0.2],[0.08,1.15],[0.42,1.7],[1,0]],"lifetime":[6,6]},
+  {"preset":"nydomod:_presets/raiton/ion_haze","name":"body_assembly_haze","burst":5,"max_particles":7,"shape":{"type":"box","radius":0.28,"length":1.55,"scale":[0.9,1.5,0.72],"direction":"radial"},"lifetime":[10,19],"alpha":[[0,0],[0.18,0.16],[0.7,0.07],[1,0]]},
+  {"preset":"nydomod:_presets/raiton/micro_filament","name":"body_assembly_lines","burst":8,"max_particles":10,"shape":{"type":"box_perimeter","radius":0.3,"length":1.5,"scale":[0.9,1.5,0.7],"direction":"body_tangent"},"lifetime":[4,8],"geometry_settings":{"segments":7,"length":0.72,"thickness":0.007,"jitter":0.2,"branches":2,"branch_length":0.18,"core":1.0,"leader":0.08,"topology_ticks":2}}
+]}

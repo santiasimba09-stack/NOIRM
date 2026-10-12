@@ -1,0 +1,165 @@
+{
+    "schema":  1,
+    "duration":  140,
+    "priority":  3,
+    "max_distance":  224.0,
+    "bounds":  42.0,
+    "follow_source":  true,
+    "stop_when_source_missing":  true,
+    "source_anchor":  "center",
+    "preserve_trigger_offset":  false,
+    "follow_source_direction":  true,
+    "source_direction":  "motion",
+    "emitters":  [
+                     {
+                         "preset":  "nydomod:_presets/raiton/surface_arc",
+                         "name":  "dragon_channel_field",
+                         "duration":  140,
+                         "burst":  26,
+                         "rate":  7.5,
+                         "max_particles":  48,
+                         "shape":  {
+                                       "type":  "box_perimeter",
+                                       "radius":  1.7,
+                                       "length":  5.8,
+                                       "scale":  [
+                                                     1.15,
+                                                     0.8,
+                                                     2.5
+                                                 ],
+                                       "direction":  "surface_tangent"
+                                   },
+                         "lifetime":  [
+                                          6,
+                                          12
+                                      ],
+                         "geometry_settings":  {
+                                                   "segments":  20,
+                                                   "length":  6.8,
+                                                   "thickness":  0.038,
+                                                   "jitter":  0.074,
+                                                   "branches":  6,
+                                                   "branch_length":  0.38,
+                                                   "core":  1.0,
+                                                   "leader":  0.14,
+                                                   "topology_ticks":  2
+                                               }
+                     },
+                     {
+                         "preset":  "nydomod:_presets/raiton/storm_leader",
+                         "name":  "dragon_spine_return",
+                         "duration":  140,
+                         "rate":  1.15,
+                         "max_particles":  6,
+                         "shape":  {
+                                       "type":  "point",
+                                       "offset":  [
+                                                      0,
+                                                      0,
+                                                      -4.5
+                                                  ],
+                                       "direction":  "forward"
+                                   },
+                         "lifetime":  [
+                                          11,
+                                          17
+                                      ],
+                         "geometry_settings":  {
+                                                   "segments":  46,
+                                                   "length":  18.0,
+                                                   "thickness":  0.075,
+                                                   "jitter":  0.035,
+                                                   "branches":  7,
+                                                   "branch_length":  0.24,
+                                                   "core":  1.0,
+                                                   "leader":  0.20,
+                                                   "topology_ticks":  3
+                                               }
+                     },
+                     {
+                         "preset":  "nydomod:_presets/raiton/spark",
+                         "name":  "supersonic_ion_wake",
+                         "duration":  140,
+                         "burst":  20,
+                         "rate":  5.0,
+                         "max_particles":  66,
+                         "shape":  {
+                                       "type":  "cone",
+                                       "offset":  [
+                                                      0,
+                                                      0,
+                                                      -2.5
+                                                  ],
+                                       "length":  5.5,
+                                       "angle":  22.0,
+                                       "direction":  "backward"
+                                   },
+                         "speed":  [
+                                       0.2,
+                                       0.72
+                                   ],
+                         "lifetime":  [
+                                          7,
+                                          15
+                                      ],
+                         "geometry_settings":  {
+                                                   "length":  4.5
+                                               }
+                     },
+                     {
+                         "preset":  "nydomod:_presets/raiton/ion_haze",
+                         "name":  "heated_channel_wake",
+                         "duration":  140,
+                         "rate":  1.2,
+                         "max_particles":  24,
+                         "shape":  {
+                                       "type":  "cone",
+                                       "offset":  [
+                                                      0,
+                                                      0,
+                                                      -3.0
+                                                  ],
+                                       "length":  5.0,
+                                       "angle":  28.0,
+                                       "direction":  "backward"
+                                   },
+                         "size":  [
+                                      [
+                                          0,
+                                          0.8
+                                      ],
+                                      [
+                                          0.25,
+                                          2.8
+                                      ],
+                                      [
+                                          0.75,
+                                          4.2
+                                      ],
+                                      [
+                                          1,
+                                          3.0
+                                      ]
+                                  ],
+                         "alpha":  [
+                                       [
+                                           0,
+                                           0
+                                       ],
+                                       [
+                                           0.18,
+                                           0.18
+                                       ],
+                                       [
+                                           0.7,
+                                           0.07
+                                       ],
+                                       [
+                                           1,
+                                           0
+                                       ]
+                                   ]
+                     }
+                 ]
+}
+

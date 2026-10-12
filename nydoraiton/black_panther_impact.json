@@ -1,0 +1,7 @@
+{"schema":1,"duration":30,"priority":3,"max_distance":144.0,"bounds":10.0,"emitters":[
+  {"preset":"nydomod:_presets/raiton/storm_flash","name":"violet_contact_flash","color":{"start":"#FFFFFFFF","end":"#FF9D6BFF"},"size":[[0,0.24],[0.08,1.6],[0.42,2.6],[1,0]],"lifetime":[6,6]},
+  {"preset":"nydomod:_presets/raiton/impact_ring","name":"black_pressure_front","color":{"start":"#FFD9BFFF","end":"#FF31143F"},"size":[[0,0.3],[0.14,1.5],[1,3.4]],"lifetime":[14,14]},
+  {"preset":"nydomod:_presets/raiton/black_bolt","name":"black_chain_burst","burst":18,"max_particles":22,"shape":{"type":"sphere","radius":0.22,"direction":"radial"},"lifetime":[10,16],"geometry_settings":{"segments":20,"length":4.8,"thickness":0.040,"jitter":0.09,"branches":5,"branch_length":0.42,"core":0.18,"leader":0.18,"topology_ticks":3}},
+  {"preset":"nydomod:_presets/raiton/spark","name":"violet_fragments","burst":34,"max_particles":40,"color":{"start":"#FFF5E7FF","end":"#FF6D2F9C"},"speed":[0.28,1.1],"lifetime":[7,17]},
+  {"preset":"nydomod:_presets/raiton/ion_haze","name":"dark_afterburn","burst":8,"max_particles":10,"color":{"start":"#FF43304F","end":"#FF0B0810"},"size":[[0,0.8],[0.25,2.4],[0.76,3.2],[1,2.0]],"alpha":[[0,0],[0.14,0.3],[0.7,0.12],[1,0]]}
+]}
