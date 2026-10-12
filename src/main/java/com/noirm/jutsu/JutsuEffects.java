@@ -43,6 +43,49 @@ public final class JutsuEffects {
         }
     }
 
+    /**
+     * Applies effects like {@code "slowness:1,weakness:0"} (vanilla effect ids and levels, 0 =
+     * level I) for {@code ticks}. Unknown ids are ignored.
+     */
+    public static void applyEffects(LivingEntity target, String spec, int ticks) {
+        if (spec == null || spec.isBlank() || ticks <= 0) {
+            return;
+        }
+        for (String part : spec.split(",")) {
+            String[] bits = part.trim().split(":");
+            if (bits.length == 0 || bits[0].isBlank()) {
+                continue;
+            }
+            net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(bits[0]);
+            net.minecraft.world.effect.MobEffect effect = id == null ? null : net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(id);
+            if (effect == null) {
+                continue;
+            }
+            int level = 0;
+            if (bits.length > 1) {
+                try {
+                    level = Integer.parseInt(bits[1].trim());
+                } catch (NumberFormatException ignored) {
+                    // keep level I
+                }
+            }
+            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect, ticks, level));
+        }
+    }
+
+    /** The particle of a block given by id ({@code "minecraft:oak_log"}), or {@code fallback}. */
+    public static ParticleOptions blockParticle(String blockId, ParticleOptions fallback) {
+        if (blockId == null || blockId.isBlank()) {
+            return fallback;
+        }
+        net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(blockId);
+        net.minecraft.world.level.block.Block block = id == null ? null : net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValue(id);
+        if (block == null || block == net.minecraft.world.level.block.Blocks.AIR) {
+            return fallback;
+        }
+        return new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK, block.defaultBlockState());
+    }
+
     public static void particles(Entity at, ParticleOptions particle, int count, double spread, double speed) {
         if (at.level() instanceof ServerLevel level) {
             level.sendParticles(particle, at.getX(), at.getY() + at.getBbHeight() * 0.6, at.getZ(), count, spread, spread, spread, speed);

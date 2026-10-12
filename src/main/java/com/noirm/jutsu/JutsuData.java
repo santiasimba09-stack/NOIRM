@@ -37,6 +37,15 @@ public final class JutsuData {
                 .toList();
     }
 
+    /** Every jutsu of a nature that needs no dōjutsu or cloak (what a ninja of that nature can use). */
+    public static List<ResourceLocation> allFor(Nature nature) {
+        return jutsu.entrySet().stream()
+                .filter(e -> e.getValue().nature().orElse(null) == nature && e.getValue().requires().isEmpty())
+                .map(Map.Entry::getKey)
+                .sorted(Comparator.comparing(ResourceLocation::toString))
+                .toList();
+    }
+
     @SubscribeEvent
     public static void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new CodecJsonLoader<>("jutsu", JutsuDefinition.CODEC, loaded -> jutsu = loaded));

@@ -125,7 +125,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         natures.putAll(clan.natures());
         jutsu.clear();
         for (Nature nature : natures.keySet()) {
-            jutsu.addAll(JutsuData.startersFor(nature));
+            jutsu.addAll(JutsuData.allFor(nature)); // ninjas have mastered their clan's natures
         }
         jutsu.addAll(JutsuData.startersFor(null));
         entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : 0));

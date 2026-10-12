@@ -1,0 +1,22 @@
+{
+  "nature": "water",
+  "cast": "charge",
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 35,
+  "cooldown": 240,
+  "min_charge": 10,
+  "max_charge": 30,
+  "unlock": {
+    "after": "noirm:suiton/water_bullet",
+    "mastery": 2
+  },
+  "params": {
+    "damage": 6,
+    "charge_damage": 8,
+    "speed": 0.9,
+    "radius": 2.5,
+    "knockback": 2.2,
+    "posture": 50
+  }
+}

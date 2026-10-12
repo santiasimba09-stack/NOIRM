@@ -240,7 +240,11 @@ public final class JutsuCaster {
         if (caster instanceof Player player) {
             ShinobiCapability.get(player).ifPresent(data -> {
                 data.jutsu().setCooldown(id, cooldown(caster, id, def));
+                int before = data.jutsu().masteryLevel(id);
                 data.jutsu().addXp(id, data.identity().has(ClanTrait.JUTSU_PRODIGY) ? 2 : 1);
+                if (data.jutsu().masteryLevel(id) > before) {
+                    com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id);
+                }
                 data.markPowersDirty();
             });
         }

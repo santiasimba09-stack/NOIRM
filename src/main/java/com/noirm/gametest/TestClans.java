@@ -21,6 +21,11 @@ final class TestClans {
     /** Like the Hyūga but without traits: water + Byakugan. */
     static final Clan BYAKUGAN = clan("test_byakugan", Map.of(Nature.WATER, Clan.SECONDARY_AFFINITY), Optional.of("byakugan"), AwakeningPath.WILL);
 
+    /** Every nature, basic and combined: for trying all jutsu. */
+    static final Clan EVERY_NATURE = clan("test_every_nature",
+            java.util.Arrays.stream(Nature.values()).collect(java.util.stream.Collectors.toMap(n -> n, n -> Clan.SECONDARY_AFFINITY)),
+            Optional.empty(), AwakeningPath.WILL);
+
     private TestClans() {}
 
     static Clan clan(String id, Map<Nature, Float> natures, Optional<String> kekkeiGenkai, AwakeningPath path) {

@@ -150,9 +150,7 @@ public final class PowersCommand {
             return 0;
         }
         ShinobiData data = data(ctx.getSource());
-        data.identity().addNature(nature, Clan.TRAINED_AFFINITY);
-        JutsuData.startersFor(nature).forEach(id -> data.jutsu().learn(id, false));
-        data.markPowersDirty();
+        com.noirm.clan.NatureSystem.grant(data, nature, Clan.TRAINED_AFFINITY);
         ctx.getSource().sendSuccess(() -> Component.translatable("message.noirm.clan.natures", ClanSystem.natures(data.identity())), false);
         return 1;
     }

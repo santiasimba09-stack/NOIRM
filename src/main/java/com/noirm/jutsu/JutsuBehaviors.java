@@ -46,7 +46,13 @@ public final class JutsuBehaviors {
             Map.entry("genjutsu", JutsuBehaviors::genjutsu),
             Map.entry("stream", new Stream()),
             Map.entry("rotation", HyugaTechniques::rotation),
-            Map.entry("palms", HyugaTechniques::palms));
+            Map.entry("palms", HyugaTechniques::palms),
+            Map.entry("bind", ElementalBehaviors::bind),
+            Map.entry("pillar", ElementalBehaviors::pillar),
+            Map.entry("cloud", ElementalBehaviors::cloud),
+            Map.entry("rain", ElementalBehaviors::rain),
+            Map.entry("beam", ElementalBehaviors::beam),
+            Map.entry("buff", ElementalBehaviors::buff));
 
     private JutsuBehaviors() {}
 
@@ -72,16 +78,26 @@ public final class JutsuBehaviors {
         float blast = p.radius() * (0.6f + 0.4f * charge);
         float size = 0.35f + 0.3f * blast;
         float damage = (p.damage() + p.chargeDamage() * charge) * ctx.power();
-        Vec3 look = ctx.look();
-        Vec3 start = caster.getEyePosition().add(look.scale(0.9)).add(0, -0.25, 0);
-        projectile.setOwner(caster);
-        projectile.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());
-        projectile.configure(nature(ctx), size, damage, p.knockback(), p.posture() * ctx.power(), blast, p.fireSeconds());
-        if (ctx.def().requires().filter(r -> "cloak".equals(r.dojutsu())).isPresent()) {
-            projectile.setBeastChakra(); // the Tailed Beast Ball
+        int count = Math.max(1, p.count());
+        for (int i = 0; i < count; i++) {
+            JutsuProjectile shot = i == 0 ? projectile : NoirmEntities.JUTSU_PROJECTILE.get().create(ctx.level());
+            if (shot == null) {
+                continue;
+            }
+            // Several shots fan out across `spread` degrees.
+            float offset = count == 1 ? 0f : p.spread() * (i / (float) (count - 1) - 0.5f);
+            Vec3 look = ctx.look().yRot(-offset * Mth.DEG_TO_RAD);
+            Vec3 start = caster.getEyePosition().add(look.scale(0.9)).add(0, -0.25, 0);
+            shot.setOwner(caster);
+            shot.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());
+            shot.configure(nature(ctx), size, damage, p.knockback(), p.posture() * ctx.power(), blast, p.fireSeconds());
+            shot.setOnHitEffect(p.effect(), p.effectTicks());
+            if (ctx.def().requires().filter(r -> "cloak".equals(r.dojutsu())).isPresent()) {
+                shot.setBeastChakra(); // the Tailed Beast Ball
+            }
+            shot.setDeltaMovement(look.scale(p.speed()));
+            ctx.level().addFreshEntity(shot);
         }
-        projectile.setDeltaMovement(look.scale(p.speed()));
-        ctx.level().addFreshEntity(projectile);
         sound(caster, castSound(nature(ctx)), 1f, 1f);
     }
 
@@ -277,20 +293,25 @@ public final class JutsuBehaviors {
 
     // ------------------------------------------------------------ helpers
 
-    private static Nature nature(JutsuContext ctx) {
+    static Nature nature(JutsuContext ctx) {
         return ctx.def().nature().orElse(null);
     }
 
-    private static SoundEvent castSound(Nature nature) {
+    static SoundEvent castSound(Nature nature) {
         if (nature == null) {
             return SoundEvents.SNOWBALL_THROW;
         }
         return switch (nature) {
-            case FIRE -> SoundEvents.BLAZE_SHOOT;
-            case WATER -> SoundEvents.GENERIC_SPLASH;
+            case FIRE, SCORCH -> SoundEvents.BLAZE_SHOOT;
+            case WATER, BOIL -> SoundEvents.GENERIC_SPLASH;
             case WIND -> SoundEvents.ENDER_DRAGON_FLAP;
-            case EARTH -> SoundEvents.GRAVEL_BREAK;
-            case LIGHTNING -> SoundEvents.LIGHTNING_BOLT_IMPACT;
+            case EARTH, MAGNET -> SoundEvents.GRAVEL_BREAK;
+            case LIGHTNING, STORM -> SoundEvents.LIGHTNING_BOLT_IMPACT;
+            case WOOD -> SoundEvents.WOOD_BREAK;
+            case ICE -> SoundEvents.GLASS_BREAK;
+            case LAVA -> SoundEvents.LAVA_POP;
+            case EXPLOSION -> SoundEvents.GENERIC_EXPLODE;
+            case DUST -> SoundEvents.BEACON_POWER_SELECT;
         };
     }
 
@@ -337,11 +358,11 @@ public final class JutsuBehaviors {
         return Math.toDegrees(Math.atan2(entity.getBbHeight() * 0.5, distance));
     }
 
-    private static void sound(LivingEntity at, SoundEvent sound, float volume, float pitch) {
+    static void sound(LivingEntity at, SoundEvent sound, float volume, float pitch) {
         at.level().playSound(null, at.getX(), at.getY(), at.getZ(), sound, SoundSource.PLAYERS, volume, pitch);
     }
 
-    private static void message(LivingEntity to, Component text) {
+    static void message(LivingEntity to, Component text) {
         if (to instanceof Player player) {
             player.displayClientMessage(text, true);
         }

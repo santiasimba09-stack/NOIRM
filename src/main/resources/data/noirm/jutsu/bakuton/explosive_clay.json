@@ -1,0 +1,19 @@
+{
+  "nature": "explosion",
+  "cast": "charge",
+  "behavior": "projectile",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 220,
+  "min_charge": 10,
+  "max_charge": 30,
+  "params": {
+    "damage": 5,
+    "charge_damage": 9,
+    "speed": 0.9,
+    "radius": 3.5,
+    "knockback": 1.8,
+    "posture": 40
+  }
+}

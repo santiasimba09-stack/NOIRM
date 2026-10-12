@@ -1,0 +1,19 @@
+{
+  "nature": "fire",
+  "behavior": "projectile",
+  "rank": "C",
+  "chakra_cost": 20,
+  "cooldown": 120,
+  "unlock": {
+    "after": "noirm:katon/great_fireball",
+    "mastery": 2
+  },
+  "params": {
+    "count": 5,
+    "spread": 30,
+    "speed": 1.3,
+    "damage": 3,
+    "fire_seconds": 3,
+    "posture": 8
+  }
+}

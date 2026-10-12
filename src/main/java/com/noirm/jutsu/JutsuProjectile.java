@@ -44,6 +44,9 @@ public class JutsuProjectile extends Projectile {
     private float blastRadius;
     private int fireSeconds;
     private int life;
+    /** Effects on whoever it hits ({@code "slowness:1"}), and for how long. */
+    private String effect = "";
+    private int effectTicks;
 
     public JutsuProjectile(EntityType<? extends JutsuProjectile> type, Level level) {
         super(type, level);
@@ -59,6 +62,11 @@ public class JutsuProjectile extends Projectile {
         this.posture = posture;
         this.blastRadius = blastRadius;
         this.fireSeconds = fireSeconds;
+    }
+
+    public void setOnHitEffect(String effect, int ticks) {
+        this.effect = effect == null ? "" : effect;
+        this.effectTicks = ticks;
     }
 
     /** Marks this as tailed-beast chakra (the Tailed Beast Ball): dark, violent particles. */
@@ -121,6 +129,9 @@ public class JutsuProjectile extends Projectile {
         Entity target = result.getEntity();
         if (blastRadius <= 0) {
             JutsuEffects.hit(this, target, damage, knockback, posture, fireSeconds, getDeltaMovement());
+            if (target instanceof LivingEntity living) {
+                JutsuEffects.applyEffects(living, effect, effectTicks);
+            }
         }
         burst();
     }
@@ -144,6 +155,7 @@ public class JutsuProjectile extends Projectile {
                     Vec3 push = victim.position().subtract(position()).normalize();
                     float falloff = 1f - (float) Math.min(1, victim.distanceTo(this) / (blastRadius + 1));
                     JutsuEffects.hit(this, victim, damage * (0.5f + 0.5f * falloff), knockback, posture, fireSeconds, push);
+                    JutsuEffects.applyEffects(victim, effect, effectTicks);
                 }
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1 + (int) blastRadius, blastRadius * 0.3, blastRadius * 0.3, blastRadius * 0.3, 0);
                 serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f, 1.2f);
@@ -177,7 +189,7 @@ public class JutsuProjectile extends Projectile {
         }
     }
 
-    static ParticleOptions particle(Nature nature) {
+    public static ParticleOptions particle(Nature nature) {
         if (nature == null) {
             return ParticleTypes.CLOUD;
         }
@@ -187,6 +199,15 @@ public class JutsuProjectile extends Projectile {
             case WIND -> ParticleTypes.CLOUD;
             case EARTH -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_MUD.defaultBlockState());
             case LIGHTNING -> ParticleTypes.ELECTRIC_SPARK;
+            case WOOD -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LOG.defaultBlockState());
+            case ICE -> ParticleTypes.SNOWFLAKE;
+            case LAVA -> ParticleTypes.LAVA;
+            case STORM -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.45f, 0.8f, 1f), 1.4f);
+            case BOIL -> ParticleTypes.POOF;
+            case EXPLOSION -> ParticleTypes.SMALL_FLAME;
+            case MAGNET -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.BLACK_CONCRETE_POWDER.defaultBlockState());
+            case SCORCH -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1f, 0.55f, 0.15f), 1.6f);
+            case DUST -> ParticleTypes.END_ROD;
         };
     }
 

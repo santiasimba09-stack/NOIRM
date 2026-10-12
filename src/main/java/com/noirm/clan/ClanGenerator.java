@@ -14,6 +14,8 @@ import java.util.Map;
  * traits, small stat leanings and an awakening path. Every world grows its own set of clans.
  */
 public final class ClanGenerator {
+    /** Chance a new clan carries a kekkei genkai nature (Wood, Ice, Lava…) in its blood. */
+    public static final float BLOODLINE_CHANCE = 0.08f;
     private static final String[] FIRST = {"Ka", "Mi", "Shi", "Ta", "Ha", "Ki", "Ri", "Ku", "Yo", "Sa", "To", "Fu", "Ro", "Na", "Ha", "Tsu", "Ze", "Mo", "Ai", "Ya"};
     private static final String[] MIDDLE = {"ze", "ka", "mo", "ri", "su", "ne", "to", "ku", "ga", "ra", "shi", "no", "ba", "me", "ya", "ki"};
     private static final String[] LAST = {"mori", "gawa", "zaki", "mura", "shima", "yama", "kawa", "hara", "no", "da", "ki", "be", "ta", "saki", "kage", "ishi"};
@@ -31,16 +33,27 @@ public final class ClanGenerator {
             name = name + (takenNames.size() + 1);
         }
 
-        Nature[] all = Nature.values();
+        List<Nature> basic = Nature.BASIC;
         Map<Nature, Float> natures = new EnumMap<>(Nature.class);
-        Nature primary = all[random.nextInt(all.length)];
-        natures.put(primary, Clan.PRIMARY_AFFINITY);
-        if (random.nextFloat() < 0.4f) {
-            Nature secondary;
-            do {
-                secondary = all[random.nextInt(all.length)];
-            } while (secondary == primary);
-            natures.put(secondary, Clan.SECONDARY_AFFINITY);
+        if (random.nextFloat() < BLOODLINE_CHANCE) {
+            // A bloodline: a kekkei genkai nature, with both of the natures it mixes.
+            List<Nature> bloodlines = Nature.combined().stream().filter(n -> n.tier() == 2).toList();
+            Nature bloodline = bloodlines.get(random.nextInt(bloodlines.size()));
+            List<Nature> parts = new ArrayList<>(bloodline.components());
+            parts.sort(java.util.Comparator.naturalOrder());
+            natures.put(parts.get(0), Clan.PRIMARY_AFFINITY);
+            natures.put(parts.get(1), Clan.SECONDARY_AFFINITY);
+            natures.put(bloodline, Clan.SECONDARY_AFFINITY);
+        } else {
+            Nature primary = basic.get(random.nextInt(basic.size()));
+            natures.put(primary, Clan.PRIMARY_AFFINITY);
+            if (random.nextFloat() < 0.4f) {
+                Nature secondary;
+                do {
+                    secondary = basic.get(random.nextInt(basic.size()));
+                } while (secondary == primary);
+                natures.put(secondary, Clan.SECONDARY_AFFINITY);
+            }
         }
 
         List<ClanTrait> pool = new ArrayList<>(List.of(ClanTrait.values()));

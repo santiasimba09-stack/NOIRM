@@ -75,6 +75,26 @@ public final class PowerPackets {
         }
     }
 
+    /** The jutsu screen's nature tree: unlock an available combined nature. */
+    public record UnlockNature(int nature) {
+        public void encode(FriendlyByteBuf buf) {
+            buf.writeVarInt(nature);
+        }
+
+        public static UnlockNature decode(FriendlyByteBuf buf) {
+            return new UnlockNature(buf.readVarInt());
+        }
+
+        public void handle(Supplier<NetworkEvent.Context> context) {
+            ServerPlayer player = context.get().getSender();
+            if (player != null && nature >= 0 && nature < com.noirm.clan.Nature.values().length) {
+                com.noirm.player.ShinobiCapability.get(player).ifPresent(data ->
+                        com.noirm.clan.NatureSystem.unlock(player, data, com.noirm.clan.Nature.values()[nature]));
+            }
+            context.get().setPacketHandled(true);
+        }
+    }
+
     public enum Toggle { SHARINGAN, CLOAK }
 
     /** Sharingan or chakra-cloak key. */

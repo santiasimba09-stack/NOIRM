@@ -1,0 +1,15 @@
+{
+  "nature": "wood",
+  "behavior": "bind",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 30,
+  "cooldown": 300,
+  "params": {
+    "range": 10,
+    "stun": 80,
+    "damage": 3,
+    "posture": 30,
+    "block": "minecraft:oak_log"
+  }
+}

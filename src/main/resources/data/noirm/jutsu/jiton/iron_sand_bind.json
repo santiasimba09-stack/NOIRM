@@ -1,0 +1,15 @@
+{
+  "nature": "magnet",
+  "behavior": "bind",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 30,
+  "cooldown": 300,
+  "params": {
+    "range": 10,
+    "stun": 70,
+    "damage": 2,
+    "posture": 25,
+    "block": "minecraft:black_concrete_powder"
+  }
+}

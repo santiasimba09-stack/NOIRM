@@ -68,7 +68,12 @@ public final class PowersGameTests {
             Clan clan = ClanGenerator.generate(random, names);
             helper.assertTrue(names.add(clan.name()), "duplicate clan name " + clan.name());
             helper.assertTrue(!clan.canon(), "generated clans are custom");
-            helper.assertTrue(clan.natures().size() >= 1 && clan.natures().size() <= 2, clan.name() + " should have 1-2 natures");
+            long combined = clan.natures().keySet().stream().filter(n -> !n.isBasic()).count();
+            helper.assertTrue(combined <= 1, clan.name() + " has at most one bloodline nature");
+            helper.assertTrue(clan.natures().size() >= 1 && clan.natures().size() <= (combined == 1 ? 3 : 2),
+                    clan.name() + " should have 1-2 natures (3 with a bloodline: its two parts plus it)");
+            clan.natures().keySet().stream().filter(n -> !n.isBasic())
+                    .forEach(n -> helper.assertTrue(clan.natures().keySet().containsAll(n.components()), clan.name() + " has " + n + " without its parts"));
             helper.assertTrue(clan.natures().containsValue(Clan.PRIMARY_AFFINITY), clan.name() + " needs a strong nature");
             helper.assertTrue(clan.traits().size() == 2 && clan.traits().get(0) != clan.traits().get(1), clan.name() + " needs 2 different traits");
         }
