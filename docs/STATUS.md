@@ -65,7 +65,6 @@ Nothing. Waiting for the owner's in-game check of the HUD and the command.
   game-test system is enabled. Forge 1.20.1 ships no empty template, so tests use our own
   `data/noirm/structures/empty.nbt` (`template = "empty"`).
 - Text lives in `assets/noirm/lang/` in English (`en_us`) and Spanish (`es_es`, `es_mx`).
-
 - **Masters teach in stages.** Techniques need enough strength, mastery and speed to unlock.
 - **Perception mechanic** (owner's idea): stronger fighters see weaker opponents' attacks
   slower, instead of everything getting faster. **Near-death awakening** at <20% health.
