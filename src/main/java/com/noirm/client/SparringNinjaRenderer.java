@@ -2,17 +2,12 @@ package com.noirm.client;
 
 import com.noirm.Noirm;
 import com.noirm.entity.SparringNinja;
-import com.noirm.registry.NoirmEntities;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * Draws the sparring ninja with the vanilla player model and skin (placeholder art), posed by
@@ -77,16 +72,6 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
             jacket.copyFrom(body);
             rightSleeve.copyFrom(rightArm);
             leftSleeve.copyFrom(leftArm);
-        }
-    }
-
-    @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static final class Registration {
-        private Registration() {}
-
-        @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(NoirmEntities.SPARRING_NINJA.get(), SparringNinjaRenderer::new);
         }
     }
 }
