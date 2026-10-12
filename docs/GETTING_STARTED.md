@@ -32,6 +32,27 @@ You can also run it from a terminal in the project folder:
 gradlew.bat runClient      # Windows
 ```
 
+## How to test combat (milestone 2)
+
+1. Run `runClient` and create a world with **cheats on**.
+2. Open the creative inventory → Spawn Eggs → **Sparring Ninja**, and place one.
+3. Press **R** to enter combat mode (the ninja accepts the challenge), then:
+
+| Key | Action |
+|---|---|
+| **R** | Combat mode on/off |
+| **Left click** | Light attack (press again quickly to combo) |
+| **Right click** (empty hand or sword) | Heavy attack |
+| **Shift + right click** | Launcher (uppercut) |
+| **Alt** (+ WASD) | Dodge, costs stamina. Dodging right as a hit lands = **perfect dodge** |
+| **Hold V** | Guard. Raising it right before a hit lands = **parry** |
+| **Z** | Lock on to the enemy you're looking at |
+| **F5** | Third-person view, to see the animations |
+
+Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
+(perception). Or summon a strong one:
+`/summon noirm:sparring_ninja ~ ~ ~3 {Speed:25,Taijutsu:25}`.
+
 ## Useful commands
 
 | Command | What it does |

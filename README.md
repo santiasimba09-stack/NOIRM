@@ -11,7 +11,8 @@ masters, and exploring a world of shinobi villages.
 ```
 src/main/java/com/noirm/   mod code (Forge 1.20.1, Java 17)
 src/main/resources/        mod assets and data
-docs/                      roadmap and guides
+docs/                      roadmap, status, combat design, guides, screenshots
+tools/client-smoke/        run the real game client off-screen for testing
 reference/nydo/            NydoMod 5.5 assets, kept as a design reference only
 ```
 

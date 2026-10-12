@@ -34,6 +34,7 @@ by keyword, using a narrow pattern and limited output. It's 625 KB.
 | `./gradlew build` | Compile and package (`build/libs/noirm-<ver>.jar`). The first run takes about 4 minutes. |
 | `./gradlew runGameTestServer` | Headless server that runs the `@GameTest`s in `com.noirm.gametest` and exits non-zero on failure. Use it to verify features. |
 | `./gradlew runClient` | Launches the game. It needs a display, so the owner runs it locally. |
+| `tools/client-smoke/run.sh` | Runs the **real client off-screen** (Xvfb) in a test arena. Drive it with `xinput.py` and take screenshots. See its README. Use it for anything client-side (HUD, input, rendering, animations). |
 
 Run the build in the background, because Gradle's first setup is slow. A green
 `runGameTestServer` is the bar for "works". Add a game test for each new mechanic where you can, using
@@ -48,6 +49,10 @@ Run the build in the background, because Gradle's first setup is slow. A green
   animations.
 - Make the server authoritative for gameplay state, and use the client for input, rendering and
   animation.
+- Combat tuning: move numbers live in `data/noirm/combat/moves/**.json`; system numbers are the
+  constants at the top of `CombatSystem`. Read `docs/COMBAT_DESIGN.md` before combat work.
+- Client-only classes (anything importing `net.minecraft.client` or PlayerAnimator) stay in
+  `com.noirm.client`, and server→client packets reach them through `DistExecutor`.
 
 ## Keeping context fresh (required)
 

@@ -4,79 +4,76 @@ _Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 
 ## Where we are
 
-**Milestone 1: Shinobi core. ✅ Code done and 8/8 game tests green. It still needs a visual
-check in a real game (`runClient`) by the owner.**
+**Milestone 2: Combat feel v1. ✅ Built, 20/20 game tests green, and checked in the real client**
+(off-screen smoke test, see `docs/screenshots/m2-*.png`). What's left is the owner's hands-on
+feel test, and tuning based on it.
 
 | Area | State |
 |---|---|
-| M0: project skeleton, game tests, docs | ✅ |
-| M1: chakra + stamina data, saved with the player, kept across death and dimensions | ✅ tested |
-| M1: server regen (chakra 1/s; stamina 20/s after a 1 s pause once spent) | ✅ tested |
-| M1: server → client sync packet | ✅ round-trip tested |
-| M1: HUD bars (top-left, hidden with F1/F3/spectator) | ⚠️ compiles, not seen in game yet |
-| M1: `/noirm stats`, `/noirm set\|max chakra\|stamina <v>`, `/noirm refill` | ⚠️ compiles, not run in game yet |
+| M0 Foundation, M1 chakra/stamina + HUD | ✅ (HUD bars seen in the client) |
+| Combat mode toggle, light/heavy/launcher, combo routes (data-driven JSON) | ✅ tested + seen in client |
+| Input buffer (10 ticks, paused in hit-stop), cancel windows, hit-stop, knockback, lunge | ✅ tested |
+| Guard + posture + parry + posture break; dodge i-frames, perfect dodge; focus | ✅ tested; guard/posture seen in client |
+| Perception (proportional wind-up slowdown, cap 2.5×); speed/taijutsu stats | ✅ tested |
+| Sparring ninja (AI, telegraph poses, glint on heavies) | ✅ tested + seen in client |
+| Player animations (PlayerAnimator, MIT Boundless set) | ✅ seen playing in client (kick) |
+| Lock-on, camera shake, focus FOV pulse | ⚠️ compiles and runs; not visually confirmed |
 
 ## In progress
 
-**Milestone 2: Combat feel v1.** The code is written and 19/19 game tests are green: moves and
-combo routes, perception, hits, guard, parry, posture break, dodge i-frames, focus, and the
-sparring ninja AI. Next: an off-screen client smoke test, then a docs pass.
+Nothing. Waiting for the owner to play milestone 2 and report how it feels.
 
 ## Next steps (in order)
 
-0. **Before M2: get the owner's answers to the open questions below** (they shape M2's scope).
-1. **Owner playtest of M1.** Run `runClient`, create a world with cheats on, and try
-   `/noirm set stamina 10`. The green bar should drop, then refill after about 1 second.
-2. **Milestone 2: Combat feel v1.**
-   - Add the PlayerAnimator dependency (maven.kosmx.dev is reachable from the dev container).
-   - A combat-mode toggle key. Vanilla controls apply while it's off.
-   - A 3-hit light combo and a heavy attack. Dodge spends stamina via
-     `ShinobiData.tryConsumeStamina`. Guard, and lock-on.
-   - Game feel: hit-stop, knockback, camera shake, sounds.
-   - Start the animations from the MIT Boundless set in
-     `reference/nydo/assets/animations/player/licensed_boundless/`.
-3. Milestone 3: Training (dummy, taijutsu XP), then milestone 4: Might Guy as the first master.
+1. **Owner feel test of M2.** See "How to test combat" in `docs/GETTING_STARTED.md`. Collect
+   feedback on speed, damage, knockback, how aggressive the ninja is, and the controls.
+2. **Tune** from that feedback. Most numbers are in `data/noirm/combat/moves/basic/*.json`
+   (editable without code) and the constants at the top of `combat/CombatSystem.java`.
+3. **Milestone 3: Training and awakening.** Training dummy and post; taijutsu XP and speed
+   growth; the near-death awakening with the Resolve meter, identity-based (Uchiha, Guy's
+   students, jinchūriki). See `COMBAT_DESIGN.md` §2.
+4. Milestone 4: Might Guy as the first master, teaching a new style (a new
+   `combat/styles/*.json` plus moves) in stages.
 
 ## Code map
 
-| Package | What lives there |
+| Package / path | What lives there |
 |---|---|
-| `com.noirm` | `Noirm`: mod entry point, `Noirm.id(path)` helper |
-| `com.noirm.player` | `ShinobiData` (chakra and stamina rules), `ShinobiCapability` (attaches it to players), `ShinobiEvents` (tick, sync, death and clone) |
-| `com.noirm.network` | `NoirmNetwork` (channel and packet registration), `SyncShinobiDataPacket` |
-| `com.noirm.client` | `ClientShinobiData` (the client's copy), `ShinobiHudOverlay` (bars) |
-| `com.noirm.command` | `NoirmCommand` (`/noirm …`) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests` |
+| `com.noirm` | `Noirm`: entry point; `Noirm.id()` / `Noirm.vanillaId()` helpers |
+| `com.noirm.player` | `ShinobiData` (chakra, stamina, speed, taijutsu), its capability and events |
+| `com.noirm.combat` | `CombatSystem` (all combat rules and tuning constants), `CombatState` (per fighter), `Perception`, `CombatData` (loads moves/styles JSON), `CombatEffects` (sounds/particles/feedback), `CombatEvents` |
+| `data/noirm/combat/` | `styles/basic.json` (combo openers), `moves/basic/*.json` (each move's timing, hit and routes) |
+| `com.noirm.network` | `NoirmNetwork` (channel), `CombatInputPackets` (client → server), `CombatClientPackets` (server → client), `SyncShinobiDataPacket` |
+| `com.noirm.client` | `CombatKeys`, `CombatInput` (mouse → attacks), `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat` (client state), `ShinobiHudOverlay`, `SparringNinjaRenderer` |
+| `com.noirm.entity` | `SparringNinja`, `NinjaFightGoal` (its AI) |
+| `com.noirm.registry` | `NoirmEntities`, `NoirmItems` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests` |
+| `assets/noirm/player_animation/` | MIT Boundless animations (`credits.md`, `license_boundless.txt`) |
+| `tools/client-smoke/` | Run the real client off-screen and drive it (see its README) |
 
 ## Decisions made
 
 - **Forge 1.20.1** (owner's choice), with the official Mojang mappings. Single-player first.
 - **Pillars:** combat feel, then training and masters, then villages and world gen, then
-  exploration. Missions are secondary.
+  exploration. Missions are secondary. **Squads** (recruited allies) come later.
 - **No copying NYDO assets.** We use them for ideas and data formats only. The MIT Boundless
   animations and the CC-BY katana are the exceptions.
-- **Art:** placeholders and vanilla textures until the mechanics are fun, then Blockbench and
-  credited free packs.
-- **Combat is switchable:** a combat-mode toggle. Vanilla controls apply while it's off.
-- **Masters:** there will be many, each teaching their own style and techniques. The first is
-  **Might Guy, a taijutsu master** (e.g. Front/Reverse Lotus, Hirudora). This is a direction,
-  not a spec: the owner welcomes suggestions at any time.
-- **The server is authoritative.** Chakra and stamina live on the server and are synced to the
-  client only for display. On death, values refill but the maximums carry over.
-- Game tests live in the main source set under `com.noirm.gametest`, and only run when the
-  game-test system is enabled. Forge 1.20.1 ships no empty template, so tests use our own
-  `data/noirm/structures/empty.nbt` (`template = "empty"`).
-- Text lives in `assets/noirm/lang/` in English (`en_us`) and Spanish (`es_es`, `es_mx`).
-- **Masters teach in stages.** Techniques need enough strength, mastery and speed to unlock.
-- **Perception mechanic** (owner's idea): stronger fighters see weaker opponents' attacks
-  slower, instead of everything getting faster. **Near-death awakening** at <20% health.
-  Both are agreed in principle; details are in `docs/COMBAT_DESIGN.md`.
+- **Art:** placeholders and vanilla textures until the mechanics are fun.
+- **Combat is switchable** (R). With it off, vanilla controls apply.
+- **Launcher = crouch + heavy** (not forward + heavy, which would trigger whenever you chase).
+- **Masters teach in stages;** Might Guy is the first taijutsu master.
+- **Perception (agreed):** proportional to the strength ratio (20% stronger → 20% slower
+  wind-ups, capped at 2.5×), derived from speed + taijutsu, boosted by dōjutsu later. It applies
+  both ways (a stronger NPC sees *your* wind-ups slower and reacts more often).
+- **Awakening (agreed):** a Resolve meter rather than pure luck; depends on identity. Planned for M3.
+- **Focus moments** slow nearby fighters' actions and movement (not the global game clock), so
+  they also work in multiplayer.
+- **NOIRM hits cancel vanilla knockback** and apply only the move's own, so combos connect.
+- **The server is authoritative** for all gameplay state; the client sends button presses only.
+- Game tests live in `com.noirm.gametest` and use `template = "empty"`. Tests that trigger focus
+  run in their own batch (focus slows everything within 10 blocks, including other tests).
+- Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 
 ## Open questions for the owner
 
-See `docs/COMBAT_DESIGN.md`.
-- Is Perception its own trained stat, or derived from speed and taijutsu mastery?
-- Is awakening chance driven by a "Resolve" meter (proposed) rather than pure luck?
-- Revised milestone 2 scope: buffering and cancels, impact, light/heavy routes, dodge, guard
-  with posture, perfect-dodge focus, a sparring ninja, with lock-on last. Awakening and full
-  perception would move to milestone 3. OK?
+- How does M2 feel? (speed, damage, ninja aggression, knockback, controls)

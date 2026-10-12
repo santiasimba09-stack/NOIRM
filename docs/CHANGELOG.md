@@ -2,6 +2,25 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-12 — Milestone 2: Combat feel v1 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- Combat system: switchable combat mode; data-driven moves and styles
+  (`data/noirm/combat/`); combo routes (L-L-L, L-L-H finisher, H, crouch+H launcher);
+  10-tick input buffer; cancel windows; hit-stop; per-move knockback, lift and lunge.
+- Defence: guard with posture and parry (5-tick window), posture break, dodge with i-frames,
+  perfect dodge, and focus moments that slow nearby fighters.
+- Perception, the owner's idea: wind-ups scale with the strength ratio, capped at 2.5×. Added
+  speed and taijutsu stats, plus `/noirm stat`.
+- Client: keys (R, Alt, V, Z), mouse buttons become attacks, lock-on, camera shake, focus FOV
+  pulse, posture/combat HUD, and a target bar.
+- PlayerAnimator dependency, with 8 MIT Boundless animations (with attribution).
+- Sparring ninja: an enemy using the same combat system, with telegraph poses.
+- Fixes found by the off-screen client smoke test: the mixin refmap remap (the client crashed
+  at launch), lowercase resource names, and vanilla knockback stacking on combo hits.
+- `tools/client-smoke/` to run and drive the real client without a monitor; screenshots are in
+  `docs/screenshots/`.
+- 12 new game tests (20 total, all passing).
+
 ## 2026-10-12 — Combat design ideas (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - Added `docs/COMBAT_DESIGN.md`, recording the owner's perception idea (stronger fighters see

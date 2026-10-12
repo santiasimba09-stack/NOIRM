@@ -52,7 +52,7 @@ Implementation (Minecraft 1.20.1 has no per-player time scale):
    (the end of an attack can cancel into a dodge).
 2. **Impact:** hit-stop scaled by hit weight, knockback, layered sounds, camera kick, hit
    sparks. No custom art needed.
-3. **Combo routes, not mashing:** L-L-L string, L-L-H finisher, forward+H launcher. Masters
+3. **Combo routes, not mashing:** L-L-L string, L-L-H finisher, crouch+H launcher. Masters
    teach new routes.
 4. **Posture / guard-break** meter alongside health (Sekiro-style).
 5. **Perfect dodge or parry** triggers a Focus moment (see section 1).
@@ -64,3 +64,26 @@ Implementation (Minecraft 1.20.1 has no per-player time scale):
 Example, Might Guy: basic taijutsu → Leaf Whirlwind → Front Lotus → Reverse Lotus →
 Eight Gates stages → Hirudora. Each stage requires taijutsu mastery, speed or stamina
 thresholds, and a test from the master.
+
+## 5. As built (milestone 2)
+
+**Controls** (rebindable under Controls → NOIRM): **R** toggles combat mode. In combat mode:
+**left click** = light, **right click** (empty hand or sword) = heavy, **crouch + right click** =
+launcher, **Alt** = dodge (direction from WASD; none = step back), **hold V** = guard,
+**Z** = lock-on. Mining is disabled in combat mode; right click still eats and places blocks
+when holding something else.
+
+**The basic style** (`data/noirm/combat/`): light route jab → hook → spin kick; jab → hook →
+**heavy** = flip-kick finisher (launches); heavy alone = heavy kick; crouch + heavy = uppercut
+launcher. Each move's timing, damage, posture, range, arc, knockback, lift, lunge, hitstun,
+hit-stop and shake are in its JSON.
+
+**Key numbers** (`CombatSystem`): input buffer 10 ticks; parry window 5 ticks; guard keeps 25% of
+damage and costs stamina (4 + half the damage); dodge costs 20 stamina, lasts 10 ticks with 6
+invulnerable (the first 3 count as a perfect dodge); posture 100, a break stuns for 1.5 s; a focus
+moment slows everyone within 10 blocks to 30% speed for 1 s.
+
+**Sparring ninja:** 40 HP, speed/taijutsu 10 by default
+(`/summon noirm:sparring_ninja ~ ~ ~ {Speed:15,Taijutsu:15}` for a stronger one). It picks from
+5 combo patterns, then backs off for 1–2 s; against an opponent's wind-up it guards or dodges
+with a chance of 25% × its perception slow factor.
