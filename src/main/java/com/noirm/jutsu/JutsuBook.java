@@ -76,6 +76,11 @@ public final class JutsuBook {
         return levelFor(xp(id));
     }
 
+    /** XP needed to reach a mastery level (0 for level 0). */
+    public static int xpForLevel(int level) {
+        return level <= 0 ? 0 : LEVEL_XP[Math.min(level, LEVEL_XP.length) - 1];
+    }
+
     public static int levelFor(int xp) {
         int level = 0;
         while (level < LEVEL_XP.length && xp >= LEVEL_XP[level]) {

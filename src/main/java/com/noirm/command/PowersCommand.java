@@ -85,6 +85,11 @@ public final class PowersCommand {
                                 .then(Commands.literal("all").executes(ctx -> learnAll(ctx.getSource())))
                                 .then(Commands.argument("jutsu", ResourceLocationArgument.id()).suggests(JUTSU)
                                         .executes(ctx -> learn(ctx.getSource(), ResourceLocationArgument.getId(ctx, "jutsu")))))
+                        .then(Commands.literal("mastery").requires(s -> s.hasPermission(CHEATS))
+                                .then(Commands.argument("jutsu", ResourceLocationArgument.id()).suggests(JUTSU)
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(0, JutsuBook.MAX_MASTERY))
+                                                .executes(ctx -> setMastery(ctx.getSource(), ResourceLocationArgument.getId(ctx, "jutsu"),
+                                                        IntegerArgumentType.getInteger(ctx, "level"))))))
                         .then(Commands.literal("equip").requires(s -> s.hasPermission(CHEATS))
                                 .then(Commands.argument("slot", IntegerArgumentType.integer(1, JutsuBook.SLOTS))
                                         .then(Commands.argument("jutsu", ResourceLocationArgument.id()).suggests(JUTSU)
@@ -199,6 +204,23 @@ public final class PowersCommand {
         }
         data.markPowersDirty();
         source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.equipped", Component.translatable(Sharingan.jutsuKey(id)), slot + 1), false);
+        return 1;
+    }
+
+    /** Sets a known jutsu's mastery (learning it first if needed), and applies what that unlocks. */
+    private static int setMastery(CommandSourceStack source, ResourceLocation id, int level) throws CommandSyntaxException {
+        if (JutsuData.get(id) == null) {
+            source.sendFailure(Component.translatable("command.noirm.jutsu.unknown", id.toString()));
+            return 0;
+        }
+        ServerPlayer player = source.getPlayerOrException();
+        ShinobiData data = data(source);
+        data.jutsu().learn(id, false);
+        int xp = level <= 0 ? 0 : JutsuBook.xpForLevel(level);
+        data.jutsu().addXp(id, xp - data.jutsu().xp(id));
+        com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id);
+        data.markPowersDirty();
+        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.mastery", Component.translatable(Sharingan.jutsuKey(id)), level), false);
         return 1;
     }
 

@@ -49,6 +49,18 @@ public final class PowerEvents {
             data.markPowersDirty();
         });
         PowerVisuals.broadcast(player);
+        com.noirm.network.NoirmNetwork.sendToPlayer(player, com.noirm.network.JutsuCatalogPacket.fromData());
+    }
+
+    /** After /reload (or joining), everyone gets the up-to-date list of jutsu. */
+    @SubscribeEvent
+    public static void datapackSync(net.minecraftforge.event.OnDatapackSyncEvent event) {
+        com.noirm.network.JutsuCatalogPacket catalog = com.noirm.network.JutsuCatalogPacket.fromData();
+        if (event.getPlayer() != null) {
+            com.noirm.network.NoirmNetwork.sendToPlayer(event.getPlayer(), catalog);
+        } else {
+            event.getPlayerList().getPlayers().forEach(p -> com.noirm.network.NoirmNetwork.sendToPlayer(p, catalog));
+        }
     }
 
     @SubscribeEvent

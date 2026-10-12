@@ -75,6 +75,9 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(PowerPackets.Visuals.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerPackets.Visuals::encode).decoder(PowerPackets.Visuals::decode)
                 .consumerMainThread(PowerPackets.Visuals::handle).add();
+        CHANNEL.messageBuilder(JutsuCatalogPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(JutsuCatalogPacket::encode).decoder(JutsuCatalogPacket::decode)
+                .consumerMainThread(JutsuCatalogPacket::handle).add();
         CHANNEL.messageBuilder(PowerPackets.Precognition.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerPackets.Precognition::encode).decoder(PowerPackets.Precognition::decode)
                 .consumerMainThread(PowerPackets.Precognition::handle).add();
