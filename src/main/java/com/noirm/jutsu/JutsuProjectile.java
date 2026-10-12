@@ -132,18 +132,27 @@ public class JutsuProjectile extends Projectile {
         discard();
     }
 
+    /** Client side: fills a ball the projectile's size with its nature's particles. */
     private void trail() {
         Nature nature = nature();
-        float size = size();
-        int count = Math.max(2, (int) (size * 6));
+        float radius = size() * 0.5f;
+        int count = 4 + (int) (radius * radius * 40);
+        ParticleOptions particle = particle(nature);
         for (int i = 0; i < count; i++) {
-            double ox = (random.nextDouble() - 0.5) * size;
-            double oy = (random.nextDouble() - 0.5) * size;
-            double oz = (random.nextDouble() - 0.5) * size;
-            level().addParticle(particle(nature), getX() + ox, getY() + oy, getZ() + oz, 0, 0, 0);
+            // a random point inside the ball (uniform-ish: push toward the surface)
+            double theta = random.nextDouble() * Math.PI * 2;
+            double phi = Math.acos(2 * random.nextDouble() - 1);
+            double r = radius * Math.cbrt(random.nextDouble());
+            double ox = r * Math.sin(phi) * Math.cos(theta);
+            double oy = r * Math.cos(phi);
+            double oz = r * Math.sin(phi) * Math.sin(theta);
+            level().addParticle(particle, getX() + ox, getY() + oy, getZ() + oz, 0, 0, 0);
         }
-        if (nature == Nature.FIRE && random.nextInt(3) == 0) {
-            level().addParticle(ParticleTypes.LARGE_SMOKE, getX(), getY(), getZ(), 0, 0.02, 0);
+        if (nature == Nature.FIRE) {
+            level().addParticle(ParticleTypes.LAVA, getX(), getY(), getZ(), 0, 0, 0);
+            if (random.nextInt(2) == 0) {
+                level().addParticle(ParticleTypes.LARGE_SMOKE, getX() - getDeltaMovement().x, getY(), getZ() - getDeltaMovement().z, 0, 0.02, 0);
+            }
         }
     }
 

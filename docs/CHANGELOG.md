@@ -2,6 +2,25 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-12 — Milestone 3: Identity & powers (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Clans:** four canon clans (JSON) plus procedurally generated custom clans in a growing,
+  per-world registry. Newcomers roll ~10% canon, otherwise a known or brand-new custom clan.
+  Clans give natures (with affinities), 10 possible traits, stat leanings and an awakening path.
+- **Jutsu:** data-driven definitions on reusable behaviors; a 4-slot loadout cast with keys 1–4
+  in combat mode (tap / charge / channel); the J screen; nature affinity, mastery and cooldowns;
+  9 jutsu.
+- **Sharingan:** 1–3 tomoe, toggle (G), chakra drain, perception boost, precognition, genjutsu,
+  copy at 3 tomoe, and glowing red irises.
+- **Awakening:** the Resolve meter and near-death "locked in" state, with identity paths (Sharingan,
+  nature surge, beast, will), followed by exhaustion.
+- **Jinchūriki:** the chakra cloak (B), and the beast taking over on awakening.
+- **Sparring ninjas** get clans, cast jutsu and (Uchiha) use the Sharingan.
+- **Test commands:** `/noirm clan | nature | jutsu | sharingan | resolve | awaken | biju`.
+- **Client smoke test found and fixed:** a crash on the first jutsu cast (missing projectile
+  renderer); the fireball trail is now a dense ball.
+- 17 new game tests (37 total, all passing).
+
 ## 2026-10-12 — Milestone 2: Combat feel v1 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - Combat system: switchable combat mode; data-driven moves and styles

@@ -48,10 +48,36 @@ gradlew.bat runClient      # Windows
 | **Hold V** | Guard. Raising it right before a hit lands = **parry** |
 | **Z** | Lock on to the enemy you're looking at |
 | **F5** | Third-person view, to see the animations |
+| **1–4** | Cast the jutsu in your loadout (hold for charge/channel jutsu) |
+| **J** | Jutsu screen (change your loadout) |
+| **G** | Sharingan on/off (if you have it) |
+| **B** | Tailed-beast cloak (if you're a jinchūriki) |
 
 Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
 (perception). Or summon a strong one:
 `/summon noirm:sparring_ninja ~ ~ ~3 {Speed:25,Taijutsu:25}`.
+
+## How to test powers (milestone 3)
+
+When you first join a world, chat tells you which clan you were born into, with its natures and
+traits. In combat mode, **keys 1–4** cast the jutsu in your loadout; **J** opens the jutsu
+screen. Shortcuts for testing (cheats on):
+
+| Command | What it does |
+|---|---|
+| `/noirm clan` · `/noirm clan list` | Your clan · all clans this world knows |
+| `/noirm clan set uchiha` (or `hyuga`, `uzumaki`, `senju`) | Become a canon clan |
+| `/noirm clan new` · `/noirm clan reroll` | Join a brand-new generated clan · roll like a newcomer |
+| `/noirm jutsu learn all` | Learn every jutsu (then equip them with J) |
+| `/noirm sharingan 3` | Get the Sharingan with 3 tomoe (press **G** to turn it on) |
+| `/noirm resolve 100` | Full Resolve: the next near-death hit will probably awaken you |
+| `/noirm awaken` | Awaken right now (LOCKED IN) |
+| `/noirm biju seal 9` | Become a jinchūriki (press **B** for the cloak) |
+| `/summon noirm:sparring_ninja ~ ~ ~3 {Clan:"uchiha"}` | An Uchiha ninja (Sharingan, fire jutsu) |
+
+Ideas to try: get the Sharingan to 3 tomoe, turn it on, and watch a ninja cast a jutsu (you
+copy it). Let a ninja beat you down to low health with full Resolve. Use the cloak and fight
+with it on.
 
 ## Useful commands
 

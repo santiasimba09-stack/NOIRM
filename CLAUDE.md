@@ -8,7 +8,8 @@ personal meaning to the owner, so keep it.
 
 1. **`docs/STATUS.md`**: current milestone, what's in progress, next steps, the code map, decisions, open questions.
 2. `docs/ROADMAP.md`: the vision and milestone list. Read it when planning.
-3. `docs/COMBAT_DESIGN.md`: combat design ideas and decisions. Read it before any combat work.
+3. `docs/COMBAT_DESIGN.md` / `docs/POWERS_DESIGN.md`: design and decisions for combat, and for
+   clans, jutsu, Sharingan, awakening and biju. Read the matching one before working on those.
 4. `docs/CHANGELOG.md`: history. Read it only if you need to know when or why something changed.
 
 **Don't explore `reference/nydo/` wholesale.** It's about 1,200 JSON files, some of them several MB.
@@ -53,6 +54,12 @@ Run the build in the background, because Gradle's first setup is slow. A green
   constants at the top of `CombatSystem`. Read `docs/COMBAT_DESIGN.md` before combat work.
 - Client-only classes (anything importing `net.minecraft.client` or PlayerAnimator) stay in
   `com.noirm.client`, and server→client packets reach them through `DistExecutor`.
+- Every entity type needs a client renderer in `client/NoirmRenderers` (even particle-only ones,
+  via `NoopRenderer`), or the client crashes when it spawns. Game tests can't catch this; run the
+  client smoke test after adding entities.
+- New jutsu: add JSON under `data/noirm/jutsu/` using an existing behavior (`JutsuBehaviors`),
+  plus a `jutsu.noirm.<path>` name in the lang files. New player data goes in a sub-object of
+  `ShinobiData` and is synced via `PowerPackets.SyncPowers`.
 
 ## Keeping context fresh (required)
 
