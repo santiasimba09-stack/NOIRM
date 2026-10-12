@@ -2,7 +2,9 @@ package com.noirm.combat;
 
 import com.noirm.awakening.AwakeningSystem;
 import com.noirm.biju.BijuSystem;
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.dojutsu.Sharingan;
+import com.noirm.jutsu.HyugaTechniques;
 import com.noirm.jutsu.Substitution;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.training.TrainingSystem;
@@ -212,7 +214,7 @@ public final class CombatSystem {
             return false;
         }
         Entity attacker = source.getEntity();
-        if (Substitution.trySubstitute(target, attacker)) {
+        if (Substitution.trySubstitute(target, attacker) || HyugaTechniques.deflect(target, attacker)) {
             return true;
         }
         CombatState state = CombatStates.getIfPresent(target);
@@ -257,7 +259,7 @@ public final class CombatSystem {
         if (state.phase == CombatPhase.DODGE && state.phaseTime < DODGE_IFRAMES) {
             return Outcome.DODGED;
         }
-        if (state.guarding && attacker != null && isFacing(target, attacker)) {
+        if (state.guarding && attacker != null && (isFacing(target, attacker) || Byakugan.isActive(target))) {
             long sinceRaised = target.level().getGameTime() - state.guardStartTick;
             return sinceRaised <= PARRY_WINDOW ? Outcome.PARRIED : Outcome.GUARDED;
         }
@@ -343,6 +345,7 @@ public final class CombatSystem {
 
         if (target != null) {
             Sharingan.onAttackWindup(entity, target, Math.round(windup));
+            Byakugan.onAttackWindup(entity, target, Math.round(windup));
         }
         clearBuffer(state);
         state.moveId = id;
@@ -484,7 +487,7 @@ public final class CombatSystem {
     }
 
     private static void applyHit(LivingEntity attacker, CombatState attackerState, LivingEntity target, CombatMove move) {
-        if (Substitution.trySubstitute(target, attacker)) {
+        if (Substitution.trySubstitute(target, attacker) || HyugaTechniques.deflect(target, attacker)) {
             return;
         }
         CombatState targetState = CombatStates.get(target);
@@ -499,12 +502,15 @@ public final class CombatSystem {
         }
         CombatMove.Hit hit = move.hit();
         boolean guarded = outcome == Outcome.GUARDED;
+        // Gentle Fist (Byakugan open): more posture damage, and a guard keeps out less.
+        boolean gentleFist = Byakugan.isActive(attacker);
+        float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
         float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponBonus(attacker);
         if (guarded) {
-            absorbGuardedHit(target, targetState, hit.posture(), damage);
-            damage *= GUARD_DAMAGE_MULTIPLIER;
+            absorbGuardedHit(target, targetState, posture, damage);
+            damage *= gentleFist ? Byakugan.GENTLE_FIST_GUARD : GUARD_DAMAGE_MULTIPLIER;
         } else {
-            addPosture(target, targetState, hit.posture() * UNGUARDED_POSTURE_RATIO);
+            addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
             stagger(target, targetState, hit.hitstun());
         }
 
@@ -532,6 +538,9 @@ public final class CombatSystem {
         target.hurtMarked = true;
 
         TrainingSystem.onHitLanded(attacker, target, hit.isHeavy(), guarded);
+        if (gentleFist) {
+            Byakugan.gentleFist(attacker, target, hit.isHeavy());
+        }
         int hitstop = guarded ? hit.hitstop() / 2 : hit.hitstop();
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);
         targetState.hitstop = Math.max(targetState.hitstop, hitstop);

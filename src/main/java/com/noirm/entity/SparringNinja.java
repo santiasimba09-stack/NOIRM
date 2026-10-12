@@ -9,6 +9,7 @@ import com.noirm.player.ShinobiData;
 import com.noirm.clan.Clan;
 import com.noirm.clan.Nature;
 import com.noirm.clan.WorldClans;
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.jutsu.JutsuData;
 import com.noirm.jutsu.JutsuUser;
@@ -53,6 +54,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private static final EntityDataAccessor<Byte> POSE = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<String> CLAN_NAME = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Byte> SHARINGAN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> BYAKUGAN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
 
     /** Clan id, chosen when first needed (or from the {@code Clan} NBT tag). */
     private String clanId = "";
@@ -81,6 +83,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(POSE, (byte) Pose.IDLE.ordinal());
         entityData.define(CLAN_NAME, "");
         entityData.define(SHARINGAN, (byte) 0);
+        entityData.define(BYAKUGAN, false);
     }
 
     @Override
@@ -106,6 +109,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (clan.hasSharingan() && entityData.get(SHARINGAN) >= 2 && JutsuData.get(Sharingan.GENJUTSU) != null) {
             jutsu.add(Sharingan.GENJUTSU);
         }
+        // Hyūga fight with the Byakugan open and know the Eight Trigrams.
+        entityData.set(BYAKUGAN, clan.hasByakugan());
+        if (clan.hasByakugan()) {
+            Byakugan.JUTSU.stream().filter(id -> JutsuData.get(id) != null).forEach(jutsu::add);
+        }
     }
 
     public String clanId() {
@@ -124,6 +132,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public int activeSharinganStage() {
         return entityData.get(SHARINGAN);
+    }
+
+    @Override
+    public boolean byakuganActive() {
+        return entityData.get(BYAKUGAN);
     }
 
     /** Sets the active Sharingan (0–3 tomoe); only meaningful for clans that carry it. */

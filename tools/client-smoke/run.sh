@@ -8,6 +8,17 @@ cd "$(dirname "$0")/../.."
 RUN=run
 [ -d "$RUN/world" ] || { echo "run/world missing: run ./gradlew runGameTestServer once first"; exit 1; }
 rm -rf "$RUN/saves/smoke" && mkdir -p "$RUN/saves" && cp -r "$RUN/world" "$RUN/saves/smoke" && rm -f "$RUN/saves/smoke/session.lock"
+# Turn cheats on in the copy, so commands can be typed in chat (xinput.py type "/...").
+python3 -I - "$RUN/saves/smoke/level.dat" <<'PY'
+import gzip, sys
+path = sys.argv[1]
+data = bytearray(gzip.open(path).read())
+marker = b"\x01\x00\x0dallowCommands"
+at = data.find(marker)
+if at >= 0:
+    data[at + len(marker)] = 1
+    gzip.open(path, "wb").write(bytes(data))
+PY
 D="$RUN/saves/smoke/datapacks/noirm_smoke"
 mkdir -p "$D/data/smoke/functions" "$D/data/minecraft/tags/functions"
 echo '{ "pack": { "pack_format": 15, "description": "NOIRM client smoke test" } }' > "$D/pack.mcmeta"

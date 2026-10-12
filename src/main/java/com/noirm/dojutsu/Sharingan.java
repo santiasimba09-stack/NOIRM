@@ -55,11 +55,11 @@ public final class Sharingan {
         return 1f + 0.25f * activeStage(entity);
     }
 
-    /** The toggle key. */
+    /** The eye toggle key (G): opens or closes whichever dōjutsu the player has. */
     public static void toggle(ServerPlayer player) {
         ShinobiCapability.get(player).ifPresent(data -> {
             EyeData eyes = data.eyes();
-            if (eyes.sharinganStage() == 0) {
+            if (!eyes.hasEyes()) {
                 player.displayClientMessage(Component.translatable("message.noirm.sharingan.none"), true);
                 return;
             }
@@ -73,7 +73,9 @@ public final class Sharingan {
         }
         data.eyes().setActive(active);
         data.markPowersDirty();
-        if (active) {
+        if (active && data.eyes().isByakuganActive()) {
+            Byakugan.onOpened(player);
+        } else if (active) {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.6f);
         }
         PowerVisuals.broadcast(player);
@@ -82,7 +84,7 @@ public final class Sharingan {
     /** Every server tick for players: drain chakra and grow with use. */
     public static void tick(ServerPlayer player, ShinobiData data) {
         EyeData eyes = data.eyes();
-        if (!eyes.isActive()) {
+        if (eyes.activeStage() == 0) {
             return;
         }
         boolean free = data.awakening().isLockedIn();

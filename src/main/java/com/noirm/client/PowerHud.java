@@ -46,8 +46,12 @@ public final class PowerHud {
         y += LINE;
         if (powers.sharinganStage() > 0) {
             String tomoe = "●".repeat(powers.sharinganStage()) + "○".repeat(3 - powers.sharinganStage());
-            Component text = Component.translatable(powers.sharinganActive() ? "hud.noirm.sharingan.on" : "hud.noirm.sharingan.off", tomoe);
-            graphics.drawString(font, text, X, y, powers.sharinganActive() ? 0xFFFF3030 : 0xFF904040, true);
+            Component text = Component.translatable(powers.eyesActive() ? "hud.noirm.sharingan.on" : "hud.noirm.sharingan.off", tomoe);
+            graphics.drawString(font, text, X, y, powers.eyesActive() ? 0xFFFF3030 : 0xFF904040, true);
+            y += LINE;
+        } else if (powers.byakugan()) {
+            Component text = Component.translatable(powers.eyesActive() ? "hud.noirm.byakugan.on" : "hud.noirm.byakugan.off");
+            graphics.drawString(font, text, X, y, powers.eyesActive() ? 0xFFD8D0FF : 0xFF8080A0, true);
             y += LINE;
         }
         if (combat) {

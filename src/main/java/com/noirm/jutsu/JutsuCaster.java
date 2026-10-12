@@ -6,6 +6,7 @@ import com.noirm.clan.Clan;
 import com.noirm.clan.ClanTrait;
 import com.noirm.clan.Nature;
 import com.noirm.combat.CombatSystem;
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.player.ShinobiData;
@@ -26,7 +27,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, BUSY }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, BUSY, SEALED }
 
     /** A CHARGE or CHANNEL jutsu in progress. */
     public static final class Casting {
@@ -246,12 +247,18 @@ public final class JutsuCaster {
 
     /** Nature and dōjutsu requirements (not chakra or cooldown). */
     public static Result checkRequirements(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
+        if (Byakugan.isSealed(caster)) {
+            return Result.SEALED;
+        }
         if (def.nature().isPresent() && affinity(caster, id, def) <= 0) {
             return Result.NO_NATURE;
         }
         if (def.requires().isPresent()) {
             JutsuDefinition.Requirement requirement = def.requires().get();
             if ("sharingan".equals(requirement.dojutsu()) && Sharingan.activeStage(caster) < requirement.stage()) {
+                return Result.NEEDS_DOJUTSU;
+            }
+            if ("byakugan".equals(requirement.dojutsu()) && !Byakugan.isActive(caster)) {
                 return Result.NEEDS_DOJUTSU;
             }
         }

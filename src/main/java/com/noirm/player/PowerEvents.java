@@ -9,6 +9,8 @@ import com.noirm.clan.ClanTrait;
 import com.noirm.clan.WorldClans;
 import com.noirm.combat.CombatStates;
 import com.noirm.dojutsu.Sharingan;
+import com.noirm.dojutsu.Byakugan;
+import com.noirm.jutsu.HyugaTechniques;
 import com.noirm.jutsu.JutsuCaster;
 import com.noirm.network.NoirmNetwork;
 import com.noirm.network.PowerPackets;
@@ -61,6 +63,7 @@ public final class PowerEvents {
         }
         ShinobiCapability.get(player).ifPresent(data -> {
             Sharingan.tick(player, data);
+            Byakugan.tick(player, data);
             AwakeningSystem.tick(player, data);
             BijuSystem.tick(player, data);
             CombatStates.get(player).setMaxPosture(com.noirm.combat.CombatState.DEFAULT_MAX_POSTURE
@@ -79,6 +82,7 @@ public final class PowerEvents {
     public static void livingTick(LivingEvent.LivingTickEvent event) {
         if (!event.getEntity().level().isClientSide()) {
             JutsuCaster.tick(event.getEntity());
+            HyugaTechniques.tick(event.getEntity());
         }
     }
 

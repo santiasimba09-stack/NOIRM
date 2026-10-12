@@ -13,7 +13,10 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
    import -display :99 -window root shot.png
    ```
    `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`,
-   `move <x> <y>`, `sleep <seconds>`. Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
+   `move <x> <y>`, `sleep <seconds>`, `type "<text>"`. Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
+   Cheats are on in the copied world, so you can run commands:
+   `key t sleep 0.5 type "/time set night" key Return`. Typing `~` is unreliable on the Xvfb
+   keyboard; put positions in `setup.mcfunction` instead. Mouse `move` turns the camera a lot.
 4. Check `client.log` for `Exception` or `ERROR` (the OpenAL/sound errors are expected: no audio
    device). Stop the client by killing its `Xvfb :99` and `java` processes.
 

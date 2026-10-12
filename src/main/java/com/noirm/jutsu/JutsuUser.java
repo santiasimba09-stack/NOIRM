@@ -11,4 +11,9 @@ public interface JutsuUser {
     default int activeSharinganStage() {
         return 0;
     }
+
+    /** Is the Byakugan open? */
+    default boolean byakuganActive() {
+        return false;
+    }
 }

@@ -36,15 +36,17 @@ import java.util.Map;
  * it with {@code "params"}; new jutsu are mostly new JSON.
  */
 public final class JutsuBehaviors {
-    private static final Map<String, JutsuBehavior> BEHAVIORS = Map.of(
-            "projectile", JutsuBehaviors::projectile,
-            "burst", JutsuBehaviors::burst,
-            "wall", JutsuBehaviors::wall,
-            "dash_strike", JutsuBehaviors::dashStrike,
-            "substitution", JutsuBehaviors::substitution,
-            "flicker", JutsuBehaviors::flicker,
-            "genjutsu", JutsuBehaviors::genjutsu,
-            "stream", new Stream());
+    private static final Map<String, JutsuBehavior> BEHAVIORS = Map.ofEntries(
+            Map.entry("projectile", JutsuBehaviors::projectile),
+            Map.entry("burst", JutsuBehaviors::burst),
+            Map.entry("wall", JutsuBehaviors::wall),
+            Map.entry("dash_strike", JutsuBehaviors::dashStrike),
+            Map.entry("substitution", JutsuBehaviors::substitution),
+            Map.entry("flicker", JutsuBehaviors::flicker),
+            Map.entry("genjutsu", JutsuBehaviors::genjutsu),
+            Map.entry("stream", new Stream()),
+            Map.entry("rotation", HyugaTechniques::rotation),
+            Map.entry("palms", HyugaTechniques::palms));
 
     private JutsuBehaviors() {}
 

@@ -121,7 +121,7 @@ public final class PowerPackets {
     public record SyncPowers(String clanName, boolean canonClan, List<Integer> natures, List<Float> affinities,
                              List<Integer> traits, List<JutsuEntry> learned, List<String> loadout, List<Integer> cooldowns,
                              int castingSlot, int castingTicks, int castingMax, boolean castingIsCharge,
-                             int sharinganStage, boolean sharinganActive, int sharinganXp, int sharinganNextXp,
+                             int sharinganStage, boolean eyesActive, boolean byakugan, int sharinganXp, int sharinganNextXp,
                              float resolve, int lockedInTicks, int exhaustionTicks,
                              int tails, int cloakStage, int cloakTicks, int cloakCooldown) {
 
@@ -158,7 +158,7 @@ public final class PowerPackets {
             return new SyncPowers(data.identity().clanName(), data.identity().isCanon(), natures, affinities, traits, learned,
                     loadout, cooldowns, casting == null ? -1 : casting.slot(), casting == null ? 0 : casting.ticks(), castingMax,
                     casting != null && casting.def().cast() == com.noirm.jutsu.CastType.CHARGE,
-                    eyes.sharinganStage(), eyes.isActive(), eyes.sharinganXp(), nextXp,
+                    eyes.sharinganStage(), eyes.isActive(), eyes.hasByakugan(), eyes.sharinganXp(), nextXp,
                     awakening.resolve(), awakening.lockedInTicks(), awakening.exhaustionTicks(),
                     data.biju().tails(), data.biju().cloakStage(), data.biju().cloakTicks(), data.biju().cooldownTicks());
         }
@@ -177,7 +177,8 @@ public final class PowerPackets {
             buf.writeVarInt(castingMax);
             buf.writeBoolean(castingIsCharge);
             buf.writeByte(sharinganStage);
-            buf.writeBoolean(sharinganActive);
+            buf.writeBoolean(eyesActive);
+            buf.writeBoolean(byakugan);
             buf.writeVarInt(sharinganXp);
             buf.writeVarInt(sharinganNextXp);
             buf.writeFloat(resolve);
@@ -195,7 +196,7 @@ public final class PowerPackets {
                     buf.readList(FriendlyByteBuf::readVarInt), buf.readList(JutsuEntry::decode),
                     buf.readList(b -> b.readUtf(256)), buf.readList(FriendlyByteBuf::readVarInt),
                     buf.readVarInt() - 1, buf.readVarInt(), buf.readVarInt(), buf.readBoolean(),
-                    buf.readByte(), buf.readBoolean(), buf.readVarInt(), buf.readVarInt(),
+                    buf.readByte(), buf.readBoolean(), buf.readBoolean(), buf.readVarInt(), buf.readVarInt(),
                     buf.readFloat(), buf.readVarInt(), buf.readVarInt(),
                     buf.readByte(), buf.readByte(), buf.readVarInt(), buf.readVarInt());
         }
@@ -207,15 +208,16 @@ public final class PowerPackets {
     }
 
     /** How a player's powers look to everyone (red eyes, chakra cloak). */
-    public record Visuals(int entityId, int sharinganStage, int cloakStage) {
+    public record Visuals(int entityId, int sharinganStage, boolean byakugan, int cloakStage) {
         public void encode(FriendlyByteBuf buf) {
             buf.writeVarInt(entityId);
             buf.writeByte(sharinganStage);
+            buf.writeBoolean(byakugan);
             buf.writeByte(cloakStage);
         }
 
         public static Visuals decode(FriendlyByteBuf buf) {
-            return new Visuals(buf.readVarInt(), buf.readByte(), buf.readByte());
+            return new Visuals(buf.readVarInt(), buf.readByte(), buf.readBoolean(), buf.readByte());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

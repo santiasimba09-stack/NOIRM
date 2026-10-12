@@ -3,6 +3,7 @@ package com.noirm.combat;
 import com.noirm.awakening.AwakeningSystem;
 import com.noirm.biju.BijuSystem;
 import com.noirm.clan.ClanTrait;
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.player.ShinobiData;
@@ -54,7 +55,7 @@ public final class Perception {
     static float ocularMultiplier(LivingEntity entity) {
         float keenEyes = entity instanceof Player player
                 && ShinobiCapability.get(player).map(d -> d.identity().has(ClanTrait.KEEN_EYES)).orElse(false) ? 1.1f : 1f;
-        return Sharingan.perceptionMultiplier(entity) * keenEyes
+        return Sharingan.perceptionMultiplier(entity) * Byakugan.perceptionMultiplier(entity) * keenEyes
                 * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity);
     }
 

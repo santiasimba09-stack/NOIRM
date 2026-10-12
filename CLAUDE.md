@@ -57,6 +57,10 @@ Run the build in the background, because Gradle's first setup is slow. A green
 - Every entity type needs a client renderer in `client/NoirmRenderers` (even particle-only ones,
   via `NoopRenderer`), or the client crashes when it spawns. Game tests can't catch this; run the
   client smoke test after adding entities.
+- Forge names its generated event-handler classes after the **simple** class name + method +
+  event type, per package. Two nested `Registration` classes in `com.noirm.client` that both have
+  `registerOverlays(RegisterGuiOverlaysEvent)` collide and the client crashes at launch. Give
+  subscriber classes distinct names (`VignetteRegistration`, …).
 - New jutsu: add JSON under `data/noirm/jutsu/` using an existing behavior (`JutsuBehaviors`),
   plus a `jutsu.noirm.<path>` name in the lang files. New player data goes in a sub-object of
   `ShinobiData` and is synced via `PowerPackets.SyncPowers`.

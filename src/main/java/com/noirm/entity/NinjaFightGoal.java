@@ -6,6 +6,7 @@ import com.noirm.combat.CombatState;
 import com.noirm.combat.CombatStates;
 import com.noirm.combat.CombatSystem;
 import com.noirm.combat.Perception;
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.jutsu.JutsuCaster;
 import com.noirm.jutsu.JutsuData;
 import com.noirm.jutsu.JutsuDefinition;
@@ -101,6 +102,11 @@ class NinjaFightGoal extends Goal {
                 && ninja.hasLineOfSight(target) && CombatSystem.canAct(ninja)) {
             castRangedJutsu();
         }
+        if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()
+                && ninja.knownJutsu().contains(Byakugan.SIXTY_FOUR_PALMS) && ninja.getRandom().nextFloat() < 0.04f
+                && JutsuCaster.npcCast(ninja, Byakugan.SIXTY_FOUR_PALMS, 1f)) {
+            attackCooldown = 40;
+        }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()) {
             combo.addAll(COMBOS.get(ninja.getRandom().nextInt(COMBOS.size())));
         }
@@ -155,6 +161,10 @@ class NinjaFightGoal extends Goal {
         combo.clear();
         if (ninja.knownJutsu().contains(SUBSTITUTION) && ninja.getRandom().nextFloat() < 0.25f
                 && JutsuCaster.npcCast(ninja, SUBSTITUTION, 1f)) {
+            return;
+        }
+        if (ninja.knownJutsu().contains(Byakugan.ROTATION) && ninja.getRandom().nextFloat() < 0.35f
+                && JutsuCaster.npcCast(ninja, Byakugan.ROTATION, 1f)) {
             return;
         }
         if (ninja.getRandom().nextFloat() < 0.6f) {

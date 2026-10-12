@@ -1,4 +1,5 @@
-"""Send key presses / mouse clicks to an X display via XTest. Usage: xinput.py :99 key r | click 1 | hold key v 1.5 | move x y"""
+"""Send key presses / mouse clicks to an X display via XTest.
+Usage: xinput.py :99 key r | click 1 | hold v 1.5 | move x y | sleep 1 | type "/tp @s ~ ~ ~ 90 0" """
 import ctypes, sys, time
 x11 = ctypes.cdll.LoadLibrary("libX11.so.6"); xtst = ctypes.cdll.LoadLibrary("libXtst.so.6")
 x11.XOpenDisplay.restype = ctypes.c_void_p
@@ -16,6 +17,21 @@ def key(name, down):
     xtst.XTestFakeKeyEvent(d, code, down, 0); x11.XFlush(d)
 def button(b, down):
     xtst.XTestFakeButtonEvent(d, b, down, 0); x11.XFlush(d)
+# characters typed with Shift held (US layout), and the keysym names of plain punctuation
+SHIFTED = {"~": "asciitilde", "@": "at", "_": "underscore", ":": "colon", "{": "braceleft", "}": "braceright",
+           '"': "quotedbl", "!": "exclam", "+": "plus", "<": "less", ">": "greater", "?": "question"}
+PLAIN = {" ": "space", "/": "slash", "-": "minus", ".": "period", ",": "comma", "=": "equal",
+         "[": "bracketleft", "]": "bracketright", ";": "semicolon", "'": "apostrophe"}
+def type_text(text):
+    for ch in text:
+        shift = ch in SHIFTED or ch.isupper()
+        name = SHIFTED.get(ch) or PLAIN.get(ch) or ch
+        if shift:
+            key("Shift_L", 1)
+        key(name, 1); time.sleep(0.03); key(name, 0)
+        if shift:
+            key("Shift_L", 0)
+        time.sleep(0.02)
 args = sys.argv[2:]
 while args:
     cmd = args.pop(0)
@@ -27,6 +43,8 @@ while args:
         b = int(args.pop(0)); button(b, 1); time.sleep(0.06); button(b, 0)
     elif cmd == "move":
         xtst.XTestFakeMotionEvent(d, -1, int(args.pop(0)), int(args.pop(0)), 0); x11.XFlush(d)
+    elif cmd == "type":
+        type_text(args.pop(0))
     elif cmd == "sleep":
         time.sleep(float(args.pop(0)))
     time.sleep(0.05)

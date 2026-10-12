@@ -42,4 +42,8 @@ public record Clan(String id, String name, boolean canon, Map<Nature, Float> nat
     public boolean hasSharingan() {
         return kekkeiGenkai.filter("sharingan"::equals).isPresent();
     }
+
+    public boolean hasByakugan() {
+        return kekkeiGenkai.filter("byakugan"::equals).isPresent();
+    }
 }

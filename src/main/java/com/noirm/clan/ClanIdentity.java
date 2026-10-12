@@ -55,6 +55,10 @@ public final class ClanIdentity {
         return "sharingan".equals(kekkeiGenkai);
     }
 
+    public boolean hasByakugan() {
+        return "byakugan".equals(kekkeiGenkai);
+    }
+
     public AwakeningPath awakening() {
         return awakening;
     }

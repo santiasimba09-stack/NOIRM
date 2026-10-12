@@ -1,5 +1,6 @@
 package com.noirm.clan;
 
+import com.noirm.dojutsu.Byakugan;
 import com.noirm.jutsu.JutsuData;
 import com.noirm.player.ShinobiData;
 import net.minecraft.ChatFormatting;
@@ -32,6 +33,8 @@ public final class ClanSystem {
         data.refill();
         data.eyes().setSharinganStage(0);
         data.eyes().setSharinganXp(0);
+        data.eyes().setByakugan(identity.hasByakugan());
+        data.eyes().setActive(false);
 
         data.jutsu().clear();
         List<ResourceLocation> starters = new ArrayList<>();
@@ -39,6 +42,9 @@ public final class ClanSystem {
                 .sorted(Map.Entry.<Nature, Float>comparingByValue(Comparator.reverseOrder()))
                 .forEach(e -> starters.addAll(JutsuData.startersFor(e.getKey())));
         starters.addAll(JutsuData.startersFor(null));
+        if (identity.hasByakugan()) {
+            starters.addAll(Byakugan.JUTSU);
+        }
         for (ResourceLocation id : starters) {
             data.jutsu().learn(id, false);
             data.jutsu().equipIfRoom(id);
@@ -64,6 +70,9 @@ public final class ClanSystem {
         text.append("\n").append(Component.translatable("message.noirm.clan.traits", traits));
         if (identity.hasSharingan()) {
             text.append("\n").append(Component.translatable("message.noirm.clan.sharingan_blood").withStyle(ChatFormatting.DARK_RED));
+        }
+        if (identity.hasByakugan()) {
+            text.append("\n").append(Component.translatable("message.noirm.clan.byakugan_blood").withStyle(ChatFormatting.LIGHT_PURPLE));
         }
         return text;
     }

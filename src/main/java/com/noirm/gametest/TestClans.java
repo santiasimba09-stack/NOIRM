@@ -18,6 +18,9 @@ final class TestClans {
     /** Like the Uchiha but without traits: fire + Sharingan. */
     static final Clan SHARINGAN = clan("test_sharingan", Map.of(Nature.FIRE, Clan.PRIMARY_AFFINITY), Optional.of("sharingan"), AwakeningPath.SHARINGAN);
 
+    /** Like the Hyūga but without traits: water + Byakugan. */
+    static final Clan BYAKUGAN = clan("test_byakugan", Map.of(Nature.WATER, Clan.SECONDARY_AFFINITY), Optional.of("byakugan"), AwakeningPath.WILL);
+
     private TestClans() {}
 
     static Clan clan(String id, Map<Nature, Float> natures, Optional<String> kekkeiGenkai, AwakeningPath path) {

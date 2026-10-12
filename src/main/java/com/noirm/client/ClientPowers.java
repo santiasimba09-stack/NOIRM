@@ -53,6 +53,16 @@ public final class ClientPowers {
         return visuals == null ? 0 : visuals.sharinganStage();
     }
 
+    public static boolean byakugan(int entityId) {
+        PowerPackets.Visuals visuals = VISUALS.get(entityId);
+        return visuals != null && visuals.byakugan();
+    }
+
+    /** Is the local player's Byakugan open? */
+    public static boolean localByakuganActive() {
+        return latest != null && latest.byakugan() && latest.eyesActive() && latest.sharinganStage() == 0;
+    }
+
     /** 0..1 strength of the precognition warning flash. */
     public static float precognition() {
         return precognitionTotal <= 0 ? 0f : precognitionTicks / (float) precognitionTotal;
