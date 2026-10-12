@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "nydomod:block/gedo_mazo" },
+    "facing=east": { "model": "nydomod:block/gedo_mazo" },
+    "facing=south": { "model": "nydomod:block/gedo_mazo" },
+    "facing=west": { "model": "nydomod:block/gedo_mazo" }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/frosted_stone" },
+      { "model": "nydomod:block/frosted_stone", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/frosted_stone", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/frosted_stone", "y": 270, "uvlock": true }
+    ]
+  }
+}

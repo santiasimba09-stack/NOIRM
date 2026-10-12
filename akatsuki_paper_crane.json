@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"nydomod:block/akatsuki_paper_crane"},"facing=east":{"model":"nydomod:block/akatsuki_paper_crane","y":90},"facing=south":{"model":"nydomod:block/akatsuki_paper_crane","y":180},"facing=west":{"model":"nydomod:block/akatsuki_paper_crane","y":270}}}

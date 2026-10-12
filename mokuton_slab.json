@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "nydomod:block/mokuton_slab"
+    },
+    "type=double": {
+      "model": "nydomod:block/mokuton_slabks"
+    },
+    "type=top": {
+      "model": "nydomod:block/mokuton_slab_top"
+    }
+  }
+}

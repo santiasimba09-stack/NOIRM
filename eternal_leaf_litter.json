@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/eternal_leaf_litter", "y": 0 },
+      { "model": "nydomod:block/eternal_leaf_litter", "y": 90 },
+      { "model": "nydomod:block/eternal_leaf_litter", "y": 180 },
+      { "model": "nydomod:block/eternal_leaf_litter", "y": 270 }
+    ]
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "variants": {
+    "facing=north,open=false,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d"
+    },
+    "facing=north,open=true,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d"
+    },
+    "facing=east,open=false,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 90
+    },
+    "facing=east,open=true,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 90
+    },
+    "facing=south,open=false,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 180
+    },
+    "facing=south,open=true,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 180
+    },
+    "facing=west,open=false,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 270
+    },
+    "facing=west,open=true,rank=d": {
+      "model": "nydomod:item/jutsu_scroll_rank_d",
+      "y": 270
+    },
+    "facing=north,open=false,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c"
+    },
+    "facing=north,open=true,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c"
+    },
+    "facing=east,open=false,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 90
+    },
+    "facing=east,open=true,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 90
+    },
+    "facing=south,open=false,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 180
+    },
+    "facing=south,open=true,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 180
+    },
+    "facing=west,open=false,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 270
+    },
+    "facing=west,open=true,rank=c": {
+      "model": "nydomod:item/jutsu_scroll_rank_c",
+      "y": 270
+    },
+    "facing=north,open=false,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b"
+    },
+    "facing=north,open=true,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b"
+    },
+    "facing=east,open=false,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 90
+    },
+    "facing=east,open=true,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 90
+    },
+    "facing=south,open=false,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 180
+    },
+    "facing=south,open=true,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 180
+    },
+    "facing=west,open=false,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 270
+    },
+    "facing=west,open=true,rank=b": {
+      "model": "nydomod:item/jutsu_scroll_rank_b",
+      "y": 270
+    },
+    "facing=north,open=false,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a"
+    },
+    "facing=north,open=true,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a"
+    },
+    "facing=east,open=false,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 90
+    },
+    "facing=east,open=true,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 90
+    },
+    "facing=south,open=false,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 180
+    },
+    "facing=south,open=true,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 180
+    },
+    "facing=west,open=false,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 270
+    },
+    "facing=west,open=true,rank=a": {
+      "model": "nydomod:item/jutsu_scroll_rank_a",
+      "y": 270
+    },
+    "facing=north,open=false,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s"
+    },
+    "facing=north,open=true,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s"
+    },
+    "facing=east,open=false,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 90
+    },
+    "facing=east,open=true,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 90
+    },
+    "facing=south,open=false,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 180
+    },
+    "facing=south,open=true,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 180
+    },
+    "facing=west,open=false,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 270
+    },
+    "facing=west,open=true,rank=s": {
+      "model": "nydomod:item/jutsu_scroll_rank_s",
+      "y": 270
+    }
+  }
+}

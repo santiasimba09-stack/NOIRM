@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "nydomod:explosive_tag"
+    },
+    "facing=east": {
+      "model": "nydomod:explosive_tag",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "nydomod:explosive_tag",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nydomod:explosive_tag",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "nydomod:explosive_tag",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "nydomod:explosive_tag",
+      "x": 90
+    }
+  }
+}

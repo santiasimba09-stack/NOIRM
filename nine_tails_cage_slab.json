@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "nydomod:block/nine_tails_cage_slab"
+    },
+    "type=top": {
+      "model": "nydomod:block/nine_tails_cage_slab_top"
+    },
+    "type=double": {
+      "model": "nydomod:block/nine_tails_cage_slab_full"
+    }
+  }
+}

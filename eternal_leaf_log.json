@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "nydomod:block/eternal_leaf_log"
+    },
+    "axis=x": {
+      "model": "nydomod:block/eternal_leaf_log",
+      "x": 90,
+      "y": 90
+    },
+    "axis=z": {
+      "model": "nydomod:block/eternal_leaf_log",
+      "x": 90
+    }
+  }
+}

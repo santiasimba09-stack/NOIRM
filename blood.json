@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "level=0": { "model": "nydomod:block/blood" },
+    "level=1": { "model": "nydomod:block/blood" },
+    "level=2": { "model": "nydomod:block/blood" },
+    "level=3": { "model": "nydomod:block/blood" },
+    "level=4": { "model": "nydomod:block/blood" },
+    "level=5": { "model": "nydomod:block/blood" },
+    "level=6": { "model": "nydomod:block/blood" },
+    "level=7": { "model": "nydomod:block/blood" },
+    "level=8": { "model": "nydomod:block/blood" },
+    "level=9": { "model": "nydomod:block/blood" },
+    "level=10": { "model": "nydomod:block/blood" },
+    "level=11": { "model": "nydomod:block/blood" },
+    "level=12": { "model": "nydomod:block/blood" },
+    "level=13": { "model": "nydomod:block/blood" },
+    "level=14": { "model": "nydomod:block/blood" },
+    "level=15": { "model": "nydomod:block/blood" }
+  }
+}

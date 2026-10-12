@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "head=true": {
+      "model": "nydomod:block/ocular_operating_table"
+    },
+    "head=false": {
+      "model": "nydomod:block/ocular_operating_table_foot"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "nydomod:block/mokuton_spruce_slab"
+    },
+    "type=double": {
+      "model": "nydomod:block/mokuton_spruce_slabks"
+    },
+    "type=top": {
+      "model": "nydomod:block/mokuton_spruce_slab_top"
+    }
+  }
+}

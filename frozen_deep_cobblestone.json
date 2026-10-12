@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/frozen_deep_cobblestone", "weight": 3 },
+      { "model": "nydomod:block/frozen_deep_cobblestone", "y": 90, "uvlock": true, "weight": 3 },
+      { "model": "nydomod:block/frozen_deep_cobblestone_alt", "weight": 1 },
+      { "model": "nydomod:block/frozen_deep_cobblestone_alt", "y": 90, "uvlock": true, "weight": 1 }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"nydomod:block/akatsuki_seal_relief"},"facing=east":{"model":"nydomod:block/akatsuki_seal_relief","y":90},"facing=south":{"model":"nydomod:block/akatsuki_seal_relief","y":180},"facing=west":{"model":"nydomod:block/akatsuki_seal_relief","y":270}}}

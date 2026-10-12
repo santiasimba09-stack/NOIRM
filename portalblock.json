@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "nydomod:block/portalblock" },
+    "facing=south": { "model": "nydomod:block/portalblock", "y": 180 },
+    "facing=east": { "model": "nydomod:block/portalblock", "y": 90 },
+    "facing=west": { "model": "nydomod:block/portalblock", "y": 270 }
+  }
+}
