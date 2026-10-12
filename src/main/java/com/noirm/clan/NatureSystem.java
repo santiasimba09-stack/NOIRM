@@ -93,6 +93,39 @@ public final class NatureSystem {
         data.markPowersDirty();
     }
 
+    /** Learns every jutsu unlocked by a trained stat you've now reached (the Rasengan at Reserves 20). */
+    public static int checkStatUnlocks(Player player, ShinobiData data) {
+        int learned = 0;
+        for (Map.Entry<ResourceLocation, JutsuDefinition> entry : JutsuData.all().entrySet()) {
+            JutsuDefinition.Unlock unlock = entry.getValue().unlock().orElse(null);
+            if (unlock == null || unlock.stat().isEmpty() || data.jutsu().knows(entry.getKey())) {
+                continue;
+            }
+            com.noirm.training.TrainingSystem.Stat stat = null;
+            for (com.noirm.training.TrainingSystem.Stat s : com.noirm.training.TrainingSystem.Stat.values()) {
+                if (s.key().equalsIgnoreCase(unlock.stat().get())) {
+                    stat = s;
+                }
+            }
+            if (stat == null || com.noirm.training.TrainingSystem.stat(data, stat) < unlock.value()) {
+                continue;
+            }
+            JutsuDefinition def = entry.getValue();
+            if (def.nature().isPresent() && data.identity().affinity(def.nature().get()) <= 0f) {
+                continue;
+            }
+            data.jutsu().learn(entry.getKey(), false);
+            data.jutsu().equipIfRoom(entry.getKey());
+            player.sendSystemMessage(Component.translatable("message.noirm.jutsu.unlocked_stat",
+                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(entry.getKey()))).withStyle(ChatFormatting.AQUA));
+            learned++;
+        }
+        if (learned > 0) {
+            data.markPowersDirty();
+        }
+        return learned;
+    }
+
     /**
      * After {@code id} reaches a new mastery level: learn every jutsu that unlocks from it (when
      * you have its nature). Returns how many were learned.
@@ -102,7 +135,7 @@ public final class NatureSystem {
         int learned = 0;
         for (Map.Entry<ResourceLocation, JutsuDefinition> entry : JutsuData.all().entrySet()) {
             JutsuDefinition def = entry.getValue();
-            if (def.unlock().isEmpty() || !def.unlock().get().after().equals(id) || level < def.unlock().get().mastery()
+            if (def.unlock().isEmpty() || !id.equals(def.unlock().get().after()) || level < def.unlock().get().mastery()
                     || data.jutsu().knows(entry.getKey())) {
                 continue;
             }

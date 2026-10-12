@@ -9,9 +9,9 @@
     "mastery": 2
   },
   "params": {
-    "range": 9,
-    "damage": 4,
-    "knockback": 2.6,
-    "posture": 35
+    "range": 12,
+    "damage": 5,
+    "knockback": 3.6,
+    "posture": 40
   }
 }

@@ -19,6 +19,7 @@ public final class NoirmRenderers {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NoirmEntities.SPARRING_NINJA.get(), SparringNinjaRenderer::new);
+        event.registerEntityRenderer(NoirmEntities.SHADOW_CLONE.get(), ShadowCloneRenderer::new);
         event.registerEntityRenderer(NoirmEntities.TRAINING_DUMMY.get(), TrainingDummyRenderer::new);
         event.registerEntityRenderer(NoirmEntities.TAILED_BEAST.get(), TailedBeastRenderer::new);
         // Jutsu projectiles are drawn entirely with particles (see JutsuProjectile#trail).

@@ -1,6 +1,7 @@
 package com.noirm.registry;
 
 import com.noirm.Noirm;
+import com.noirm.entity.ShadowClone;
 import com.noirm.entity.SparringNinja;
 import com.noirm.entity.TailedBeast;
 import com.noirm.entity.TrainingDummy;
@@ -46,6 +47,12 @@ public final class NoirmEntities {
                     .clientTrackingRange(12)
                     .build(Noirm.id("tailed_beast").toString()));
 
+    public static final RegistryObject<EntityType<ShadowClone>> SHADOW_CLONE = ENTITY_TYPES.register("shadow_clone",
+            () -> EntityType.Builder.<ShadowClone>of(ShadowClone::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f)
+                    .clientTrackingRange(10)
+                    .build(Noirm.id("shadow_clone").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -55,6 +62,7 @@ public final class NoirmEntities {
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent event) {
         event.put(SPARRING_NINJA.get(), SparringNinja.createAttributes().build());
+        event.put(SHADOW_CLONE.get(), SparringNinja.createAttributes().build());
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
         event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());
     }

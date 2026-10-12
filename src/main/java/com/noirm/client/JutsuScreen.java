@@ -360,7 +360,14 @@ public class JutsuScreen extends Screen {
             double angle = -Math.PI / 2 + i * 2 * Math.PI / 5;
             pos.put(ring[i], new float[]{centerX + (float) Math.cos(angle) * radius, centerY + (float) Math.sin(angle) * radius});
         }
+        // Yin and Yang aren't elements: they sit in the bottom corners, Yin–Yang between them.
+        pos.put(Nature.YIN, new float[]{cx0 + 18, top + ch - 18});
+        pos.put(Nature.YANG, new float[]{cx0 + cw - 18, top + ch - 18});
+        pos.put(Nature.YIN_YANG, new float[]{centerX, top + ch - 18});
         for (Nature nature : Nature.combined()) {
+            if (!nature.isElemental()) {
+                continue;
+            }
             if (nature.tier() == 2) {
                 float x = 0;
                 float y = 0;
@@ -552,6 +559,11 @@ public class JutsuScreen extends Screen {
     }
 
     private static String unlockText(JutsuCatalogPacket.Entry info) {
+        if (info.unlockAfter().startsWith("stat:")) {
+            String stat = info.unlockAfter().substring(5).toLowerCase(Locale.ROOT);
+            return Component.translatable("screen.noirm.jutsu.unlock_stat",
+                    Component.translatable("stat.noirm." + stat), info.unlockMastery()).getString();
+        }
         if (!info.unlockAfter().isEmpty()) {
             ResourceLocation after = ResourceLocation.tryParse(info.unlockAfter());
             String name = after == null ? info.unlockAfter() : Component.translatable(Sharingan.jutsuKey(after)).getString();

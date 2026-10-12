@@ -1,6 +1,6 @@
 {
   "id": "uchiha", "name": "Uchiha", "weight": 3,
-  "natures": { "fire": 1.5, "lightning": 1.0 },
+  "natures": { "fire": 1.5, "lightning": 1.0, "yin": 0.8 },
   "traits": ["keen_eyes", "fierce"],
   "speed_bonus": 1, "taijutsu_bonus": 1,
   "kekkei_genkai": "sharingan",

@@ -117,6 +117,8 @@ public final class TrainingSystem {
         if (attacker instanceof Player player && !player.level().isClientSide()) {
             float xp = (HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f);
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
+        } else if (attacker instanceof com.noirm.entity.ShadowClone clone) {
+            clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f));
         }
     }
 
@@ -169,6 +171,9 @@ public final class TrainingSystem {
         applyMovementBonus(player, data.getSpeed());
         applyVitality(player, data.getVitality());
         applyReserves(data);
+        if (player.tickCount % 40 == 0) {
+            com.noirm.clan.NatureSystem.checkStatUnlocks(player, data);
+        }
     }
 
     /** Max health from vitality. */

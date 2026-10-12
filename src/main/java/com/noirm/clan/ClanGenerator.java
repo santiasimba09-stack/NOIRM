@@ -37,7 +37,7 @@ public final class ClanGenerator {
         Map<Nature, Float> natures = new EnumMap<>(Nature.class);
         if (random.nextFloat() < BLOODLINE_CHANCE) {
             // A bloodline: a kekkei genkai nature, with both of the natures it mixes.
-            List<Nature> bloodlines = Nature.combined().stream().filter(n -> n.tier() == 2).toList();
+            List<Nature> bloodlines = Nature.combined().stream().filter(n -> n.tier() == 2 && n.isElemental()).toList();
             Nature bloodline = bloodlines.get(random.nextInt(bloodlines.size()));
             List<Nature> parts = new ArrayList<>(bloodline.components());
             parts.sort(java.util.Comparator.naturalOrder());

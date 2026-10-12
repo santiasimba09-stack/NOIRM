@@ -52,7 +52,13 @@ public final class JutsuBehaviors {
             Map.entry("cloud", ElementalBehaviors::cloud),
             Map.entry("rain", ElementalBehaviors::rain),
             Map.entry("beam", ElementalBehaviors::beam),
-            Map.entry("buff", ElementalBehaviors::buff));
+            Map.entry("buff", ElementalBehaviors::buff),
+            Map.entry("mode", ModeSystem::toggle),
+            Map.entry("dome", CanonTechniques::dome),
+            Map.entry("heal", CanonTechniques.HEAL),
+            Map.entry("rasengan", CanonTechniques::rasengan),
+            Map.entry("shadow_bind", CanonTechniques.SHADOW_BIND),
+            Map.entry("shadow_clone", CanonTechniques::shadowClone));
 
     private JutsuBehaviors() {}
 
@@ -75,8 +81,10 @@ public final class JutsuBehaviors {
             return;
         }
         float charge = ctx.charge();
-        float blast = p.radius() * (0.6f + 0.4f * charge);
-        float size = 0.35f + 0.3f * blast;
+        // More chakra and mastery: a bigger ball and a bigger blast (√power, so it grows without exploding).
+        float grow = (float) Math.sqrt(Math.max(0.3f, ctx.power()));
+        float blast = p.radius() * (0.6f + 0.4f * charge) * grow;
+        float size = (0.35f + 0.3f * blast) * (p.radius() >= 3f ? 1.4f : 1f);
         float damage = (p.damage() + p.chargeDamage() * charge) * ctx.power();
         int count = Math.max(1, p.count());
         for (int i = 0; i < count; i++) {
@@ -92,6 +100,9 @@ public final class JutsuBehaviors {
             shot.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());
             shot.configure(nature(ctx), size, damage, p.knockback(), p.posture() * ctx.power(), blast, p.fireSeconds());
             shot.setOnHitEffect(p.effect(), p.effectTicks());
+            if (p.homing() > 0) {
+                shot.setHoming(p.homing(), lookTarget(caster, 40, 25));
+            }
             if (ctx.def().requires().filter(r -> "cloak".equals(r.dojutsu())).isPresent()) {
                 shot.setBeastChakra(); // the Tailed Beast Ball
             }
@@ -120,9 +131,17 @@ public final class JutsuBehaviors {
         }
         ParticleOptions particle = JutsuProjectile.particle(nature(ctx));
         Vec3 eye = caster.getEyePosition().add(0, -0.3, 0);
+        com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(nature(ctx));
         for (double d = 1; d <= p.range(); d += 0.75) {
             Vec3 at = eye.add(look.scale(d));
             JutsuEffects.particlesAt(ctx.level(), at, particle, 6, d * 0.15, 0.05);
+            com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.smoke(palette.mid(), (float) (0.3 + d * 0.12), 14), at, 2, d * 0.12, 0.02);
+            // The blast tears up what's in its way: leaves, glass, plants (and fire scorches).
+            if (nature(ctx) == Nature.FIRE || nature(ctx) == Nature.SCORCH) {
+                com.noirm.world.Destruction.scorch(ctx.level(), at, (float) (0.8 + d * 0.15));
+            } else {
+                com.noirm.world.Destruction.shatterFragile(ctx.level(), BlockPos.containing(at), 1);
+            }
         }
         sound(caster, SoundEvents.ENDER_DRAGON_FLAP, 1f, 1.5f);
     }
@@ -141,7 +160,7 @@ public final class JutsuBehaviors {
         BlockState wall = NoirmBlocks.EARTH_WALL.get().defaultBlockState();
         int placed = 0;
         for (int w = -half; w <= half; w++) {
-            for (int h = 0; h < 3; h++) {
+            for (int h = 0; h < Math.max(3, p.count()); h++) {
                 BlockPos pos = center.relative(side, w).above(h);
                 if (level.getBlockState(pos).canBeReplaced() && level.getEntities(null, new AABB(pos)).isEmpty()) {
                     level.setBlock(pos, wall, 3);
@@ -186,6 +205,15 @@ public final class JutsuBehaviors {
             JutsuEffects.particlesAt(level, start.add(direction.scale(d)).add(0, 1, 0), ParticleTypes.ELECTRIC_SPARK, 3, 0.2, 0.05);
         }
         caster.teleportTo(end.x, end.y, end.z);
+        com.noirm.vfx.Vfx.line(level, start.add(0, 1, 0), end.add(0, 1, 0), com.noirm.vfx.Vfx.palette(Nature.LIGHTNING), 0.18f);
+        for (double d = 0; d <= start.distanceTo(end); d += 1) {
+            com.noirm.world.Destruction.shatterFragile(level, BlockPos.containing(start.add(direction.scale(d))), 1);
+        }
+        // Chidori's weakness (canon): tunnel vision during the charge. The Sharingan sees past it.
+        if (com.noirm.dojutsu.Sharingan.activeStage(caster) == 0) {
+            caster.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 30, 0, false, false));
+            com.noirm.combat.CombatSystem.stun(caster, 6);
+        }
         if (victim != null) {
             JutsuEffects.hit(caster, victim, (p.damage() + p.chargeDamage() * ctx.charge()) * ctx.power(), p.knockback(),
                     p.posture() * ctx.power(), p.fireSeconds(), direction);
@@ -278,6 +306,9 @@ public final class JutsuBehaviors {
             ParticleOptions particle = JutsuProjectile.particle(nature(ctx));
             for (double d = 0.8; d <= p.range(); d += 0.6) {
                 JutsuEffects.particlesAt(ctx.level(), eye.add(look.scale(d)), particle, 3, d * 0.12, 0.02);
+            }
+            if (tick % 10 == 0 && (nature(ctx) == Nature.FIRE || nature(ctx) == Nature.LAVA)) {
+                com.noirm.world.Destruction.scorch(ctx.level(), eye.add(look.scale(p.range() * 0.8)), 1.5f);
             }
             if (tick % 4 == 0) {
                 for (LivingEntity target : inCone(caster, p.range(), 30)) {

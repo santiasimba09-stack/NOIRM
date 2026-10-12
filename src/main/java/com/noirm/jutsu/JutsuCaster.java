@@ -104,6 +104,10 @@ public final class JutsuCaster {
         if (def == null || !data.jutsu().knows(id)) {
             return Result.UNKNOWN;
         }
+        if (def.behavior().equals("mode") && ModeSystem.isActive(player, id)) {
+            ModeSystem.end(player); // switching a mode off is free and ignores its cooldown
+            return Result.OK;
+        }
         if (CASTING.containsKey(player) || !CombatSystem.canAct(player)) {
             return Result.BUSY;
         }
@@ -141,15 +145,32 @@ public final class JutsuCaster {
             stop(entity, casting, false);
             return;
         }
+        if (casting.def.cast() == CastType.CHARGE && casting.ticks < casting.def.maxCharge()
+                && entity instanceof Player player && !player.getAbilities().instabuild) {
+            // Charging pours more chakra in; with none left, the charge stops growing.
+            float extra = cost(player, casting.id, casting.def) * CHARGE_EXTRA_COST / Math.max(1, casting.def.maxCharge());
+            boolean paid = ShinobiCapability.get(player).map(d -> d.tryConsumeChakra(extra)).orElse(false);
+            if (!paid) {
+                return;
+            }
+        }
         casting.ticks++;
         if (casting.def.cast() == CastType.CHARGE) {
-            if (casting.ticks <= casting.def.maxCharge() && casting.ticks % 2 == 0) {
+            if (casting.def.behavior().equals("rasengan")) {
+                CanonTechniques.rasenganOrb(entity, Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge())));
+            } else if (casting.ticks <= casting.def.maxCharge() && casting.ticks % 2 == 0) {
                 // Anticipation: energy gathers in front of the caster, tighter and brighter as it fills.
                 float progress = Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge()));
                 net.minecraft.world.phys.Vec3 hand = entity.getEyePosition().add(entity.getViewVector(1f).scale(0.8)).add(0, -0.35, 0);
                 com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(casting.def.nature().orElse(null));
                 com.noirm.vfx.Vfx.gather(entity.level(), hand, palette, 1.2f - 0.6f * progress, 3 + Math.round(progress * 4));
                 com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.glow(palette.core(), palette.mid(), 0.2f + 0.5f * progress, 0.1f, 4), hand, 1, 0, 0);
+                if (casting.def.behavior().equals("dash_strike")) {
+                    // Chidori: "a thousand birds" chirping in the hand.
+                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                            net.minecraft.sounds.SoundEvents.PARROT_AMBIENT, net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 1.8f + progress * 0.3f);
+                    com.noirm.vfx.Vfx.radial(entity.level(), com.noirm.vfx.Vfx.spark(0x9AD8FF, 0.15f, 5), hand, 3, 0.3);
+                }
             }
             return;
         }
@@ -302,12 +323,24 @@ public final class JutsuCaster {
     }
 
     /** Damage/size multiplier. */
+    /**
+     * How strong a jutsu comes out: nature affinity × <b>chakra</b> (reserves, +2% per point above
+     * 10) × <b>mastery</b> (+15% per level) × states (locked in, nature surge, the cloak).
+     * NPCs use their own strength in place of reserves.
+     */
     public static float power(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
         float power = 0.5f + 0.5f * affinity(caster, id, def);
+        if (def.nature().isPresent() && usesWater(def.nature().get()) && nearWater(caster)) {
+            power *= WATER_SOURCE_BONUS; // water jutsu are far stronger with water to draw from
+        }
+        if (!(caster instanceof Player) && caster instanceof com.noirm.combat.CombatStats stats) {
+            power *= chakraPower((stats.combatSpeed() + stats.combatTaijutsu()) / 2f);
+        }
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {
-                power *= 1f + 0.1f * data.jutsu().masteryLevel(id);
+                power *= chakraPower(data.getReserves());
+                power *= 1f + MASTERY_POWER * data.jutsu().masteryLevel(id);
                 AwakeningData awakening = data.awakening();
                 if (awakening.isLockedIn()) {
                     power *= 1.3f;
@@ -323,6 +356,37 @@ public final class JutsuCaster {
     }
 
     /** Chakra cost (per second for CHANNEL jutsu). */
+    /** Water jutsu with a water source nearby (a river, the sea): +40%. */
+    public static final float WATER_SOURCE_BONUS = 1.4f;
+
+    private static boolean usesWater(com.noirm.clan.Nature nature) {
+        return nature == com.noirm.clan.Nature.WATER || nature == com.noirm.clan.Nature.ICE
+                || nature == com.noirm.clan.Nature.STORM || nature == com.noirm.clan.Nature.BOIL || nature == com.noirm.clan.Nature.WOOD;
+    }
+
+    /** At least 8 water source blocks within 5 blocks. */
+    public static boolean nearWater(LivingEntity entity) {
+        int found = 0;
+        net.minecraft.core.BlockPos center = entity.blockPosition();
+        for (net.minecraft.core.BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(center.offset(-5, -3, -5), center.offset(5, 2, 5))) {
+            net.minecraft.world.level.material.FluidState fluid = entity.level().getFluidState(pos);
+            if (fluid.is(net.minecraft.world.level.material.Fluids.WATER) && fluid.isSource() && ++found >= 8) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** +15% power per mastery level. */
+    public static final float MASTERY_POWER = 0.15f;
+    /** Extra chakra poured in while charging, as a fraction of the cost, spread over the full charge. */
+    public static final float CHARGE_EXTRA_COST = 0.75f;
+
+    /** The chakra behind a jutsu: 1× at 10 reserves, +2% per point (1.4× at 30, 2× at 60). */
+    public static float chakraPower(float reserves) {
+        return Math.max(0.6f, 1f + (reserves - ShinobiData.DEFAULT_STAT) * 0.02f);
+    }
+
     public static float cost(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
         float cost = def.chakraCost() * (1.5f - 0.5f * affinity(caster, id, def));
         if (caster instanceof Player player) {

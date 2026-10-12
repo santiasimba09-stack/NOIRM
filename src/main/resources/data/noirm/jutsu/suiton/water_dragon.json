@@ -12,11 +12,12 @@
     "mastery": 2
   },
   "params": {
-    "damage": 6,
-    "charge_damage": 8,
-    "speed": 0.9,
-    "radius": 2.5,
-    "knockback": 2.2,
-    "posture": 50
+    "damage": 8,
+    "charge_damage": 10,
+    "speed": 0.85,
+    "radius": 3.5,
+    "knockback": 2.8,
+    "posture": 60,
+    "homing": 0.08
   }
 }

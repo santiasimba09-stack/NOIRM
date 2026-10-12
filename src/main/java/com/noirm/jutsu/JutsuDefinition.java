@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 public record JutsuDefinition(Optional<Nature> nature, CastType cast, String behavior, float chakraCost, int cooldown,
                               int minCharge, int maxCharge, int maxDuration, Optional<Requirement> requires,
-                              boolean starter, String rank, Params params, Optional<Unlock> unlock) {
+                              boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode) {
 
     public static final Codec<JutsuDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Nature.CODEC.optionalFieldOf("nature").forGetter(JutsuDefinition::nature),
@@ -38,15 +38,49 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
             Codec.BOOL.optionalFieldOf("starter", false).forGetter(JutsuDefinition::starter),
             Codec.STRING.optionalFieldOf("rank", "C").forGetter(JutsuDefinition::rank),
             Params.CODEC.optionalFieldOf("params", Params.DEFAULT).forGetter(JutsuDefinition::params),
-            Unlock.CODEC.optionalFieldOf("unlock").forGetter(JutsuDefinition::unlock)
+            Unlock.CODEC.optionalFieldOf("unlock").forGetter(JutsuDefinition::unlock),
+            Mode.CODEC.optionalFieldOf("mode").forGetter(JutsuDefinition::mode)
     ).apply(i, JutsuDefinition::new));
 
-    /** {@code {"after": "noirm:katon/great_fireball", "mastery": 2}}: learned when that jutsu reaches ★2. */
-    public record Unlock(net.minecraft.resources.ResourceLocation after, int mastery) {
+    /**
+     * A state you switch on (behavior {@code "mode"}), like Lightning Armor: it lasts until you
+     * switch it off or run out of chakra, draining {@code drain} chakra per second.
+     *
+     * @param speed       extra movement speed (+0.6 = 60% faster)
+     * @param perception  perception multiplier (opponents' wind-ups look slower)
+     * @param damage      taijutsu damage multiplier
+     * @param defense     damage taken multiplier (0.75 = 25% less)
+     * @param actionSpeed how fast your own moves play (1.35 = 35% faster wind-ups and recoveries)
+     * @param drain       chakra per second while it's on
+     */
+    public record Mode(float speed, float perception, float damage, float defense, float actionSpeed, float drain) {
+        public static final Codec<Mode> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.FLOAT.optionalFieldOf("speed", 0f).forGetter(Mode::speed),
+                Codec.FLOAT.optionalFieldOf("perception", 1f).forGetter(Mode::perception),
+                Codec.FLOAT.optionalFieldOf("damage", 1f).forGetter(Mode::damage),
+                Codec.FLOAT.optionalFieldOf("defense", 1f).forGetter(Mode::defense),
+                Codec.FLOAT.optionalFieldOf("action_speed", 1f).forGetter(Mode::actionSpeed),
+                Codec.FLOAT.optionalFieldOf("drain", 1f).forGetter(Mode::drain)
+        ).apply(i, Mode::new));
+    }
+
+    /**
+     * How a jutsu is learned without a clan: {@code {"after": "noirm:katon/great_fireball",
+     * "mastery": 2}} (when that jutsu reaches ★2), or {@code {"stat": "reserves", "value": 20}}
+     * (when a trained stat gets there, e.g. chakra control for the Rasengan).
+     */
+    public record Unlock(Optional<net.minecraft.resources.ResourceLocation> afterJutsu, int mastery, Optional<String> stat, float value) {
         public static final Codec<Unlock> CODEC = RecordCodecBuilder.create(i -> i.group(
-                net.minecraft.resources.ResourceLocation.CODEC.fieldOf("after").forGetter(Unlock::after),
-                Codec.intRange(1, 5).optionalFieldOf("mastery", 2).forGetter(Unlock::mastery)
+                net.minecraft.resources.ResourceLocation.CODEC.optionalFieldOf("after").forGetter(Unlock::afterJutsu),
+                Codec.intRange(1, 5).optionalFieldOf("mastery", 2).forGetter(Unlock::mastery),
+                Codec.STRING.optionalFieldOf("stat").forGetter(Unlock::stat),
+                Codec.FLOAT.optionalFieldOf("value", 0f).forGetter(Unlock::value)
         ).apply(i, Unlock::new));
+
+        /** The jutsu whose mastery unlocks this one, or null. */
+        public net.minecraft.resources.ResourceLocation after() {
+            return afterJutsu.orElse(null);
+        }
     }
 
     /** A dōjutsu needed to cast: e.g. {@code {"dojutsu": "sharingan", "stage": 2}} (must be active). */
@@ -65,11 +99,12 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
      * @param block       a block id whose look the jutsu takes (wood, ice, iron sand…)
      * @param effect      effects on whoever is hit (or on the caster, for buffs): {@code "slowness:1,weakness:0"}
      * @param effectTicks how long those effects last
+     * @param homing      how hard projectiles steer toward their target each tick (0 = straight)
      */
     public record Params(float damage, float chargeDamage, float speed, float radius, float range, float knockback,
                          float posture, int duration, int stun, int fireSeconds,
-                         int count, float spread, String block, String effect, int effectTicks) {
-        public static final Params DEFAULT = new Params(0, 0, 1, 1, 6, 0.5f, 0, 20, 0, 0, 1, 0, "", "", 60);
+                         int count, float spread, String block, String effect, int effectTicks, float homing) {
+        public static final Params DEFAULT = new Params(0, 0, 1, 1, 6, 0.5f, 0, 20, 0, 0, 1, 0, "", "", 60, 0);
         public static final Codec<Params> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.FLOAT.optionalFieldOf("damage", 0f).forGetter(Params::damage),
                 Codec.FLOAT.optionalFieldOf("charge_damage", 0f).forGetter(Params::chargeDamage),
@@ -85,7 +120,8 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
                 Codec.FLOAT.optionalFieldOf("spread", 0f).forGetter(Params::spread),
                 Codec.STRING.optionalFieldOf("block", "").forGetter(Params::block),
                 Codec.STRING.optionalFieldOf("effect", "").forGetter(Params::effect),
-                Codec.INT.optionalFieldOf("effect_ticks", 60).forGetter(Params::effectTicks)
+                Codec.INT.optionalFieldOf("effect_ticks", 60).forGetter(Params::effectTicks),
+                Codec.FLOAT.optionalFieldOf("homing", 0f).forGetter(Params::homing)
         ).apply(i, Params::new));
     }
 }

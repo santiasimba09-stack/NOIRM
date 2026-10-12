@@ -45,7 +45,8 @@ public final class Perception {
      */
     public static float damageMultiplier(LivingEntity entity) {
         float base = Mth.clamp(0.6f + 0.04f * taijutsu(entity), 0.5f, 5f);
-        return base * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity);
+        return base * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
+                * com.noirm.jutsu.ModeSystem.damageMultiplier(entity);
     }
 
     /**
@@ -56,6 +57,7 @@ public final class Perception {
         float keenEyes = entity instanceof Player player
                 && ShinobiCapability.get(player).map(d -> d.identity().has(ClanTrait.KEEN_EYES)).orElse(false) ? 1.1f : 1f;
         return Sharingan.perceptionMultiplier(entity) * Byakugan.perceptionMultiplier(entity) * keenEyes
+                * com.noirm.jutsu.ModeSystem.perceptionMultiplier(entity)
                 * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity);
     }
 

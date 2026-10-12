@@ -195,7 +195,7 @@ public final class CombatSystem {
                 state.comboFrom = null;
             }
         } else {
-            state.phaseTime += state.timeScale;
+            state.phaseTime += state.timeScale * com.noirm.jutsu.ModeSystem.actionSpeed(entity);
             if (state.phase == CombatPhase.ACTIVE) {
                 sweep(entity, state);
             }

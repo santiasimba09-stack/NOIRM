@@ -81,7 +81,13 @@ public final class ElementalBehaviors {
         com.noirm.vfx.Vfx.shockwave(ctx.level(), at, palette, radius * 1.4f);
         com.noirm.vfx.Vfx.radial(ctx.level(), com.noirm.vfx.Vfx.shard(palette.edge(), 0.25f, 30), at.add(0, 0.3, 0), (int) (8 + radius * 6), 0.5);
         com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.smoke(palette.edge(), 0.6f, 40), at.add(0, 0.4, 0), (int) (4 + radius * 3), radius * 0.6, 0.02);
-        if (JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.EXPLOSION) {
+        if (JutsuBehaviors.nature(ctx) != com.noirm.clan.Nature.EXPLOSION && JutsuBehaviors.nature(ctx) != com.noirm.clan.Nature.DUST) {
+            // Real spikes burst from the ground (and crumble back soon after).
+            net.minecraft.world.level.block.state.BlockState spike = spikeBlock(p.block(), JutsuBehaviors.nature(ctx));
+            com.noirm.world.Destruction.spikes(ctx.level(), at, radius, spike, 1 + Math.round(Math.min(3f, ctx.power() * 1.5f)));
+        }
+        if (JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.EXPLOSION || JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.DUST) {
+            com.noirm.world.Destruction.natureImpact(ctx.level(), at, JutsuBehaviors.nature(ctx), radius, ctx.power());
             com.noirm.vfx.Vfx.explosion(ctx.level(), at.add(0, 0.5, 0), palette, radius);
             ctx.level().sendParticles(ParticleTypes.EXPLOSION, at.x, at.y + 0.5, at.z, 3, radius * 0.4, 0.3, radius * 0.4, 0);
         }
@@ -104,6 +110,9 @@ public final class ElementalBehaviors {
         JutsuDefinition.Params p = ctx.params();
         LivingEntity caster = ctx.caster();
         Vec3 at = p.range() <= 0 ? caster.position() : ground(ctx.level(), aim(caster, p.range()));
+        if (p.block().contains("mud")) {
+            com.noirm.world.Destruction.swamp(ctx.level(), at, p.radius());
+        }
         JutsuAreas.add(new JutsuAreas.Area(ctx.level(), at, null, caster, JutsuAreas.Mode.CLOUD, p.radius(),
                 ctx.level().getGameTime() + p.duration(), 10, p.damage() * ctx.power(), p.effect(), Math.max(20, p.effectTicks()), 0, look(ctx)));
         JutsuBehaviors.sound(caster, SoundEvents.FIRE_EXTINGUISH, 1f, 0.6f);
@@ -157,6 +166,7 @@ public final class ElementalBehaviors {
                 Vec3 center = end;
                 level.sendParticles(look, center.x, center.y, center.z, 60, p.radius() * 0.5, p.radius() * 0.5, p.radius() * 0.5, 0.02);
                 com.noirm.vfx.Vfx.explosion(level, center, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), p.radius());
+                com.noirm.world.Destruction.natureImpact(level, center, JutsuBehaviors.nature(ctx), p.radius(), power);
                 for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(p.radius()),
                         e -> e != caster && e.isAlive() && !hit.contains(e) && e.position().distanceTo(center) <= p.radius() + 1)) {
                     hit.add(victim);
@@ -177,6 +187,18 @@ public final class ElementalBehaviors {
     }
 
     // ---------------------------------------------------------------- helpers
+
+    /** The block spikes are made of: the jutsu's {@code block}, else one that fits its nature. */
+    private static net.minecraft.world.level.block.state.BlockState spikeBlock(String id, com.noirm.clan.Nature nature) {
+        net.minecraft.resources.ResourceLocation key = id == null || id.isBlank() ? null : net.minecraft.resources.ResourceLocation.tryParse(id);
+        net.minecraft.world.level.block.Block block = key == null ? null : net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValue(key);
+        if (block != null && block != net.minecraft.world.level.block.Blocks.AIR) {
+            return block.defaultBlockState();
+        }
+        return (nature == com.noirm.clan.Nature.ICE ? net.minecraft.world.level.block.Blocks.PACKED_ICE
+                : nature == com.noirm.clan.Nature.WOOD ? net.minecraft.world.level.block.Blocks.OAK_LOG
+                : net.minecraft.world.level.block.Blocks.PACKED_MUD).defaultBlockState();
+    }
 
     /** The jutsu's look: its {@code block}, else its nature's particle. */
     private static ParticleOptions look(JutsuContext ctx) {

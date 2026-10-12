@@ -1,5 +1,14 @@
 {
-  "nature": "earth", "cast": "tap", "behavior": "wall", "rank": "C", "starter": true,
-  "chakra_cost": 25, "cooldown": 200,
-  "params": { "radius": 2, "duration": 200 }
+  "nature": "earth",
+  "cast": "tap",
+  "behavior": "wall",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 25,
+  "cooldown": 200,
+  "params": {
+    "radius": 3,
+    "duration": 240,
+    "count": 4
+  }
 }

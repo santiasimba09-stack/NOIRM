@@ -46,6 +46,8 @@ public class JutsuProjectile extends Projectile {
     private int life;
     /** Effects on whoever it hits ({@code "slowness:1"}), and for how long. */
     private String effect = "";
+    private float homing;
+    private LivingEntity homingTarget;
     private int effectTicks;
 
     public JutsuProjectile(EntityType<? extends JutsuProjectile> type, Level level) {
@@ -62,6 +64,12 @@ public class JutsuProjectile extends Projectile {
         this.posture = posture;
         this.blastRadius = blastRadius;
         this.fireSeconds = fireSeconds;
+    }
+
+    /** Steers toward {@code target} by {@code strength} each tick (chakra-guided flames, dragons). */
+    public void setHoming(float strength, LivingEntity target) {
+        this.homing = strength;
+        this.homingTarget = target;
     }
 
     public void setOnHitEffect(String effect, int ticks) {
@@ -113,12 +121,28 @@ public class JutsuProjectile extends Projectile {
                 onHit(hit);
                 return;
             }
+            // A big ball hits whatever it visibly touches, not just what its small hitbox does.
+            float reach = size() * 0.5f;
+            if (reach > 0.4f) {
+                for (Entity other : level().getEntities(this, getBoundingBox().inflate(reach), this::canHitEntity)) {
+                    onHit(new EntityHitResult(other));
+                    return;
+                }
+            }
             if (++life > MAX_LIFE || (nature() == Nature.FIRE && isInWater())) {
                 burst();
                 return;
             }
         } else {
             trail();
+        }
+        if (homing > 0 && homingTarget != null && homingTarget.isAlive() && !level().isClientSide()) {
+            Vec3 want = homingTarget.position().add(0, homingTarget.getBbHeight() * 0.5, 0).subtract(position()).normalize();
+            Vec3 now = getDeltaMovement();
+            double speed = now.length();
+            Vec3 turned = now.normalize().add(want.scale(homing)).normalize().scale(speed);
+            setDeltaMovement(turned);
+            hasImpulse = true;
         }
         Vec3 motion = getDeltaMovement();
         setPos(getX() + motion.x, getY() + motion.y, getZ() + motion.z);
@@ -158,9 +182,16 @@ public class JutsuProjectile extends Projectile {
                     JutsuEffects.applyEffects(victim, effect, effectTicks);
                 }
                 com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
+                float destruction = Math.max(0.5f, damage / 8f);
+                if (isBeastChakra()) {
+                    com.noirm.world.Destruction.crater(serverLevel, position(), blastRadius * 0.7f, destruction * 1.5f);
+                } else {
+                    com.noirm.world.Destruction.natureImpact(serverLevel, position(), nature(), blastRadius, destruction);
+                }
                 serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f + blastRadius * 0.1f, 1.3f - Math.min(0.6f, blastRadius * 0.08f));
             } else {
                 com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
+                com.noirm.world.Destruction.shatterFragile(serverLevel, blockPosition(), 1);
             }
             serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 12, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
         }

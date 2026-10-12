@@ -48,7 +48,8 @@ public record JutsuCatalogPacket(List<Entry> entries) {
                     JutsuDefinition def = e.getValue();
                     entries.add(new Entry(e.getKey(), def.nature().map(Enum::ordinal).orElse(-1), def.rank(), def.cast().ordinal(),
                             def.behavior(), def.chakraCost(), def.cooldown(),
-                            def.unlock().map(u -> u.after().toString()).orElse(""), def.unlock().map(JutsuDefinition.Unlock::mastery).orElse(0),
+                            def.unlock().map(u -> u.after() != null ? u.after().toString() : "stat:" + u.stat().orElse("")).orElse(""),
+                            def.unlock().map(u -> u.after() != null ? u.mastery() : Math.round(u.value())).orElse(0),
                             def.requires().map(JutsuDefinition.Requirement::dojutsu).orElse(""), def.starter()));
                 });
         return new JutsuCatalogPacket(entries);

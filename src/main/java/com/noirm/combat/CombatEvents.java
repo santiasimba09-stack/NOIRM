@@ -38,6 +38,11 @@ public final class CombatEvents {
     /** Before damage: dodges and parries avoid the hit completely. */
     @SubscribeEvent
     public static void livingAttack(LivingAttackEvent event) {
+        if (!event.getEntity().level().isClientSide() && event.getSource().getEntity() != null
+                && com.noirm.jutsu.CanonTechniques.deflect(event.getEntity(), event.getSource().getEntity())) {
+            event.setCanceled(true); // behind a Water Formation Wall
+            return;
+        }
         if (!event.getEntity().level().isClientSide() && CombatSystem.onIncomingAttack(event.getEntity(), event.getSource())) {
             event.setCanceled(true);
         }
@@ -55,7 +60,8 @@ public final class CombatEvents {
     @SubscribeEvent
     public static void livingHurt(LivingHurtEvent event) {
         if (!event.getEntity().level().isClientSide()) {
-            event.setAmount(CombatSystem.onIncomingDamage(event.getEntity(), event.getSource(), event.getAmount()));
+            float amount = event.getAmount() * com.noirm.jutsu.ModeSystem.defenseMultiplier(event.getEntity());
+            event.setAmount(CombatSystem.onIncomingDamage(event.getEntity(), event.getSource(), amount));
         }
     }
 }

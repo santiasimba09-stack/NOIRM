@@ -39,11 +39,11 @@ public final class NatureGameTests {
     @GameTest(template = "empty")
     public static void everyNatureHasJutsu(GameTestHelper helper) {
         for (Nature nature : Nature.values()) {
-            helper.assertTrue(JutsuData.allFor(nature).size() >= (nature.isBasic() ? 3 : 2),
-                    nature + " should have at least " + (nature.isBasic() ? 3 : 2) + " jutsu, has " + JutsuData.allFor(nature));
+            helper.assertTrue(JutsuData.allFor(nature).size() >= (nature.isBasic() && nature.isElemental() ? 3 : 2),
+                    nature + " should have at least " + (nature.isBasic() && nature.isElemental() ? 3 : 2) + " jutsu, has " + JutsuData.allFor(nature));
         }
         for (Map.Entry<ResourceLocation, JutsuDefinition> entry : JutsuData.all().entrySet()) {
-            entry.getValue().unlock().ifPresent(u -> helper.assertTrue(JutsuData.get(u.after()) != null,
+            entry.getValue().unlock().filter(u -> u.after() != null).ifPresent(u -> helper.assertTrue(JutsuData.get(u.after()) != null,
                     entry.getKey() + " unlocks after a missing jutsu " + u.after()));
         }
         helper.succeed();
@@ -84,7 +84,7 @@ public final class NatureGameTests {
     }
 
     /** Casts every nature jutsu once (from a ninja with every nature) at a target in front: no errors, and it gets hurt. */
-    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 400)
+    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 900)
     public static void everyNatureJutsuWorks(GameTestHelper helper) {
         floor(helper);
         List<ResourceLocation> ids = new ArrayList<>();

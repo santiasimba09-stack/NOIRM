@@ -1,15 +1,22 @@
 {
   "nature": "lightning",
-  "behavior": "buff",
+  "behavior": "mode",
   "rank": "B",
-  "chakra_cost": 35,
-  "cooldown": 600,
+  "chakra_cost": 20,
+  "cooldown": 60,
   "unlock": {
     "after": "noirm:raiton/chidori",
     "mastery": 2
   },
   "params": {
-    "duration": 300,
-    "effect": "speed:1,strength:0,resistance:0"
+    "duration": 0
+  },
+  "mode": {
+    "speed": 0.6,
+    "perception": 1.6,
+    "damage": 1.3,
+    "defense": 0.75,
+    "action_speed": 1.35,
+    "drain": 2.0
   }
 }
