@@ -35,7 +35,8 @@ by keyword, using a narrow pattern and limited output. It's 625 KB.
 | `./gradlew runClient` | Launches the game. It needs a display, so the owner runs it locally. |
 
 Run the build in the background, because Gradle's first setup is slow. A green
-`runGameTestServer` is the bar for "works". Add a game test for each new mechanic where you can.
+`runGameTestServer` is the bar for "works". Add a game test for each new mechanic where you can, using
+`template = "empty"` (our `data/noirm/structures/empty.nbt`, since Forge 1.20.1 ships none).
 
 ## Code conventions
 

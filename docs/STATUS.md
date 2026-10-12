@@ -4,19 +4,19 @@ _Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 
 ## Where we are
 
-**Milestone 0: Foundation. Nearly done.** `./gradlew build` succeeds. The first
-`runGameTestServer` run (`modIsLoaded`) is still being verified.
+**Milestone 0: Foundation. ✅ Done.** `./gradlew build` succeeds, and `./gradlew runGameTestServer`
+reports "All 1 required tests passed".
 
 | Area | State |
 |---|---|
-| Project skeleton (Forge 1.20.1 / 47.4.10, `com.noirm`) | ✅ builds · game test pending |
+| Project skeleton (Forge 1.20.1 / 47.4.10, `com.noirm`) | ✅ builds, game test green |
 | NYDO reference organized + indexed | ✅ `reference/nydo/README.md` |
 | Docs (roadmap, getting started, context files) | ✅ |
 | Gameplay features | none yet |
 
 ## In progress
 
-- Confirm `./gradlew runGameTestServer` passes, then mark milestone 0 done.
+Nothing. The next session starts milestone 1.
 
 ## Next steps (in order)
 
@@ -43,7 +43,8 @@ _Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 - **Art:** placeholders and vanilla textures until the mechanics are fun, then Blockbench and
   credited free packs.
 - Game tests live in the main source set under `com.noirm.gametest`, and only run when the
-  game-test system is enabled.
+  game-test system is enabled. Forge 1.20.1 ships no empty template, so tests use our own
+  `data/noirm/structures/empty.nbt` (`template = "empty"`).
 
 ## Open questions for the owner
 

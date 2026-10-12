@@ -9,6 +9,7 @@ Newest first. One entry per working session or PR.
   inventory, the reconstructed game systems and licensing.
 - Created the NOIRM Forge 1.20.1 project from the official MDK (Forge 47.4.10): mod id
   `noirm`, main class `com.noirm.Noirm`.
-- Added the first game test (`com.noirm.gametest.NoirmGameTests.modIsLoaded`).
+- Added the first game test (`com.noirm.gametest.NoirmGameTests.modIsLoaded`) and the shared
+  empty test arena `data/noirm/structures/empty.nbt`. `runGameTestServer` passes.
 - Added the docs: `ROADMAP.md`, `GETTING_STARTED.md`, `STATUS.md`, this changelog, and
   `CLAUDE.md` for session context.
