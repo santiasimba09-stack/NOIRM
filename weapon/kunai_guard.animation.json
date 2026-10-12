@@ -1,0 +1,257 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/weapon/kunai_guard": {
+      "animation_length": 1.2,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0": {
+              "vector": [
+                6,
+                -8,
+                -1
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                5.3,
+                -7.3,
+                -0.6
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                6,
+                -8,
+                -1
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                -0.38,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                0,
+                -0.28,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                0,
+                -0.38,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -8,
+                12,
+                3
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                -9,
+                11,
+                2.2
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                -8,
+                12,
+                3
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -82,
+                -24,
+                36
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                -84,
+                -23,
+                -35
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                -82,
+                -24,
+                36
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -68,
+                20,
+                -34
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                -70,
+                19,
+                -33
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                -68,
+                20,
+                -34
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_leg": {
+          "rotation": {
+            "0": {
+              "vector": [
+                16,
+                -6,
+                4
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                15.5,
+                -5.5,
+                3.5
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                16,
+                -6,
+                4
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                0,
+                0.3
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                0,
+                0,
+                0.3
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                0,
+                0,
+                0.3
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_leg": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -18,
+                8,
+                -5
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                -17.5,
+                7.5,
+                -4.5
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                -18,
+                8,
+                -5
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                0,
+                -0.42
+              ],
+              "easing": "linear"
+            },
+            "0.55": {
+              "vector": [
+                0,
+                0,
+                -0.42
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1.2": {
+              "vector": [
+                0,
+                0,
+                -0.42
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      },
+      "loop": true
+    }
+  }
+}

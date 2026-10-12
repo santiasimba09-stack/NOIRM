@@ -1,0 +1,216 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/weapon/greatsword_idle": {
+      "animation_length": 3.2,
+      "bones": {
+        "right_item": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                187.9579,
+                -53.6818,
+                86.9313
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                0.0,
+                3.96,
+                -6.12
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "rightItem": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                187.9579,
+                -53.6818,
+                86.9313
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                0.0,
+                3.96,
+                -6.12
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -1.6291,
+                -3.9467,
+                0.1934
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "1.5": {
+              "vector": [
+                0.0766,
+                -0.1111,
+                0.4358
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -1.8,
+                2.4,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "3.2": {
+              "vector": [
+                -1.6,
+                2.4,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -18.0,
+                6.0,
+                -8.0
+              ],
+              "easing": "linear"
+            },
+            "1.6": {
+              "vector": [
+                -19.2,
+                6.0,
+                -8.0
+              ],
+              "easing": "linear"
+            },
+            "3.2": {
+              "vector": [
+                -18.0,
+                6.0,
+                -8.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                4.0,
+                2.0,
+                -6.0
+              ],
+              "easing": "linear"
+            },
+            "1.6": {
+              "vector": [
+                5.2,
+                2.0,
+                -6.0
+              ],
+              "easing": "linear"
+            },
+            "3.2": {
+              "vector": [
+                4.0,
+                2.0,
+                -6.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_leg": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                1.8,
+                0.8,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "3.2": {
+              "vector": [
+                1.8,
+                0.8,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                0.0,
+                0.1,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_leg": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                2.6605,
+                -0.4545,
+                -0.333
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                -0.1,
+                0.2,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      },
+      "loop": true
+    }
+  },
+  "geckolib_format_version": 2
+}

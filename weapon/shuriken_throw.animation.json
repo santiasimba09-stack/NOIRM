@@ -1,0 +1,167 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/weapon/shuriken_throw": {
+      "loop": false,
+      "animation_length": 0.6,
+      "bones": {
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                4,
+                4,
+                1
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.05": {
+              "vector": [
+                6,
+                12,
+                3
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.15": {
+              "vector": [
+                5,
+                19,
+                4
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.3": {
+              "vector": [
+                3,
+                10,
+                2
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.45": {
+              "vector": [
+                1,
+                -2,
+                -1
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -88,
+                -3,
+                4
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.05": {
+              "vector": [
+                -84,
+                17,
+                -9
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.15": {
+              "vector": [
+                -67,
+                37,
+                -18
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.3": {
+              "vector": [
+                -38,
+                20,
+                -12
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.45": {
+              "vector": [
+                -16,
+                4,
+                -4
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -32,
+                16,
+                -16
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.05": {
+              "vector": [
+                -29,
+                20,
+                -21
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.15": {
+              "vector": [
+                -25,
+                24,
+                -25
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.3": {
+              "vector": [
+                -21,
+                13,
+                -16
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.45": {
+              "vector": [
+                -10,
+                5,
+                -6
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.6": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        }
+      }
+    }
+  }
+}
