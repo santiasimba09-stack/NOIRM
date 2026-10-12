@@ -1,0 +1,1238 @@
+﻿{
+    "format_version":  "1.8.0",
+    "animations":  {
+                       "combat/nydo/naruto/pressure_strike":  {
+                                                                  "animation_length":  0.56,
+                                                                  "bones":  {
+                                                                                "body":  {
+                                                                                             "rotation":  {
+                                                                                                              "0":  {
+                                                                                                                        "vector":  [
+                                                                                                                                       0,
+                                                                                                                                       0,
+                                                                                                                                       0
+                                                                                                                                   ],
+                                                                                                                        "easing":  "linear"
+                                                                                                                    },
+                                                                                                              "0.04":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          3,
+                                                                                                                                          4,
+                                                                                                                                          1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.08":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          7,
+                                                                                                                                          11,
+                                                                                                                                          4
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.11":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          10,
+                                                                                                                                          15,
+                                                                                                                                          5
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.14":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          6,
+                                                                                                                                          7,
+                                                                                                                                          3
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.17":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          1,
+                                                                                                                                          -5,
+                                                                                                                                          -1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.2":  {
+                                                                                                                          "vector":  [
+                                                                                                                                         5,
+                                                                                                                                         -12,
+                                                                                                                                         -4
+                                                                                                                                     ],
+                                                                                                                          "easing":  "linear"
+                                                                                                                      },
+                                                                                                              "0.22":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          7,
+                                                                                                                                          -15,
+                                                                                                                                          -5
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.25":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          8,
+                                                                                                                                          -17,
+                                                                                                                                          -6
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.29":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          6,
+                                                                                                                                          -15,
+                                                                                                                                          -5
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.35":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          3,
+                                                                                                                                          -10,
+                                                                                                                                          -3
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.43":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -1,
+                                                                                                                                          -5,
+                                                                                                                                          1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.5":  {
+                                                                                                                          "vector":  [
+                                                                                                                                         -1,
+                                                                                                                                         -2,
+                                                                                                                                         0
+                                                                                                                                     ],
+                                                                                                                          "easing":  "linear"
+                                                                                                                      },
+                                                                                                              "0.56":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0,
+                                                                                                                                          0,
+                                                                                                                                          0
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       }
+                                                                                                          },
+                                                                                             "position":  {
+                                                                                                              "0":  {
+                                                                                                                        "vector":  [
+                                                                                                                                       0,
+                                                                                                                                       0,
+                                                                                                                                       0
+                                                                                                                                   ],
+                                                                                                                        "easing":  "linear"
+                                                                                                                    },
+                                                                                                              "0.04":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.02,
+                                                                                                                                          -0.08,
+                                                                                                                                          0.03
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.08":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.06,
+                                                                                                                                          -0.2,
+                                                                                                                                          0.08
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.11":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.1,
+                                                                                                                                          -0.3,
+                                                                                                                                          0.12
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.14":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.09,
+                                                                                                                                          -0.24,
+                                                                                                                                          -0.06
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.17":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.05,
+                                                                                                                                          -0.14,
+                                                                                                                                          -0.38
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.2":  {
+                                                                                                                          "vector":  [
+                                                                                                                                         0.02,
+                                                                                                                                         -0.08,
+                                                                                                                                         -0.82
+                                                                                                                                     ],
+                                                                                                                          "easing":  "linear"
+                                                                                                                      },
+                                                                                                              "0.22":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0,
+                                                                                                                                          -0.05,
+                                                                                                                                          -1.08
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.25":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -0.03,
+                                                                                                                                          -0.03,
+                                                                                                                                          -1.22
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.29":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -0.04,
+                                                                                                                                          -0.08,
+                                                                                                                                          -1.16
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.35":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -0.03,
+                                                                                                                                          -0.15,
+                                                                                                                                          -0.86
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.43":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -0.01,
+                                                                                                                                          -0.18,
+                                                                                                                                          -0.46
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.5":  {
+                                                                                                                          "vector":  [
+                                                                                                                                         0,
+                                                                                                                                         -0.07,
+                                                                                                                                         -0.16
+                                                                                                                                     ],
+                                                                                                                          "easing":  "linear"
+                                                                                                                      },
+                                                                                                              "0.56":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0,
+                                                                                                                                          0,
+                                                                                                                                          0
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       }
+                                                                                                          }
+                                                                                         },
+                                                                                "torso":  {
+                                                                                              "rotation":  {
+                                                                                                               "0":  {
+                                                                                                                         "vector":  [
+                                                                                                                                        0,
+                                                                                                                                        0,
+                                                                                                                                        0
+                                                                                                                                    ],
+                                                                                                                         "easing":  "linear"
+                                                                                                                     },
+                                                                                                               "0.05":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           6,
+                                                                                                                                           7,
+                                                                                                                                           3
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.09":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           13,
+                                                                                                                                           17,
+                                                                                                                                           8
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.12":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           17,
+                                                                                                                                           22,
+                                                                                                                                           10
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.15":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           11,
+                                                                                                                                           11,
+                                                                                                                                           5
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.18":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           2,
+                                                                                                                                           -7,
+                                                                                                                                           -2
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.21":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           8,
+                                                                                                                                           -17,
+                                                                                                                                           -7
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.23":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           11,
+                                                                                                                                           -21,
+                                                                                                                                           -9
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.26":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           13,
+                                                                                                                                           -23,
+                                                                                                                                           -10
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.3":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          11,
+                                                                                                                                          -21,
+                                                                                                                                          -9
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                               "0.36":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           6,
+                                                                                                                                           -15,
+                                                                                                                                           -6
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.44":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           1,
+                                                                                                                                           -8,
+                                                                                                                                           -2
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.51":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0,
+                                                                                                                                           -3,
+                                                                                                                                           -1
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.56":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0,
+                                                                                                                                           0,
+                                                                                                                                           0
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        }
+                                                                                                           },
+                                                                                              "position":  {
+                                                                                                               "0":  {
+                                                                                                                         "vector":  [
+                                                                                                                                        0,
+                                                                                                                                        0,
+                                                                                                                                        0
+                                                                                                                                    ],
+                                                                                                                         "easing":  "linear"
+                                                                                                                     },
+                                                                                                               "0.05":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0.01,
+                                                                                                                                           -0.04,
+                                                                                                                                           0.02
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.1":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0.04,
+                                                                                                                                          -0.11,
+                                                                                                                                          0.06
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                               "0.14":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0.05,
+                                                                                                                                           -0.13,
+                                                                                                                                           -0.02
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.18":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0.02,
+                                                                                                                                           -0.07,
+                                                                                                                                           -0.16
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.22":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -0.02,
+                                                                                                                                           -0.02,
+                                                                                                                                           -0.32
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.25":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -0.04,
+                                                                                                                                           0.01,
+                                                                                                                                           -0.4
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.29":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -0.05,
+                                                                                                                                           -0.02,
+                                                                                                                                           -0.38
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.36":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -0.03,
+                                                                                                                                           -0.08,
+                                                                                                                                           -0.27
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.44":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -0.01,
+                                                                                                                                           -0.08,
+                                                                                                                                           -0.13
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.51":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0,
+                                                                                                                                           -0.03,
+                                                                                                                                           -0.04
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                               "0.56":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0,
+                                                                                                                                           0,
+                                                                                                                                           0
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        }
+                                                                                                           }
+                                                                                          },
+                                                                                "head":  {
+                                                                                             "rotation":  {
+                                                                                                              "0":  {
+                                                                                                                        "vector":  [
+                                                                                                                                       0,
+                                                                                                                                       0,
+                                                                                                                                       0
+                                                                                                                                   ],
+                                                                                                                        "easing":  "linear"
+                                                                                                                    },
+                                                                                                              "0.06":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -3,
+                                                                                                                                          -4,
+                                                                                                                                          -1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.11":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -6,
+                                                                                                                                          -11,
+                                                                                                                                          -3
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.15":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          -4,
+                                                                                                                                          -6,
+                                                                                                                                          -2
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.19":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          1,
+                                                                                                                                          8,
+                                                                                                                                          1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.22":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          5,
+                                                                                                                                          18,
+                                                                                                                                          3
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.25":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          7,
+                                                                                                                                          24,
+                                                                                                                                          4
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.29":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          6,
+                                                                                                                                          22,
+                                                                                                                                          4
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.36":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          4,
+                                                                                                                                          15,
+                                                                                                                                          2
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.44":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          2,
+                                                                                                                                          8,
+                                                                                                                                          1
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.51":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0,
+                                                                                                                                          3,
+                                                                                                                                          0
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       },
+                                                                                                              "0.56":  {
+                                                                                                                           "vector":  [
+                                                                                                                                          0,
+                                                                                                                                          0,
+                                                                                                                                          0
+                                                                                                                                      ],
+                                                                                                                           "easing":  "linear"
+                                                                                                                       }
+                                                                                                          }
+                                                                                         },
+                                                                                "right_arm":  {
+                                                                                                  "rotation":  {
+                                                                                                                   "0":  {
+                                                                                                                             "vector":  [
+                                                                                                                                            0,
+                                                                                                                                            0,
+                                                                                                                                            0
+                                                                                                                                        ],
+                                                                                                                             "easing":  "linear"
+                                                                                                                         },
+                                                                                                                   "0.04":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -6,
+                                                                                                                                               -2,
+                                                                                                                                               12
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.08":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               16,
+                                                                                                                                               7,
+                                                                                                                                               26
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.11":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               34,
+                                                                                                                                               12,
+                                                                                                                                               35
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.14":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               40,
+                                                                                                                                               13,
+                                                                                                                                               38
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.17":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               20,
+                                                                                                                                               5,
+                                                                                                                                               33
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.19":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -16,
+                                                                                                                                               -5,
+                                                                                                                                               29
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.21":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -54,
+                                                                                                                                               -13,
+                                                                                                                                               27
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.23":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -80,
+                                                                                                                                               -17,
+                                                                                                                                               25
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.25":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -94,
+                                                                                                                                               -19,
+                                                                                                                                               23
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.28":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -92,
+                                                                                                                                               -18,
+                                                                                                                                               24
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.33":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -76,
+                                                                                                                                               -14,
+                                                                                                                                               25
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.39":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -54,
+                                                                                                                                               -9,
+                                                                                                                                               20
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.46":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -28,
+                                                                                                                                               -4,
+                                                                                                                                               12
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.52":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -9,
+                                                                                                                                               -1,
+                                                                                                                                               4
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.56":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0,
+                                                                                                                                               0,
+                                                                                                                                               0
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            }
+                                                                                                               }
+                                                                                              },
+                                                                                "left_arm":  {
+                                                                                                 "rotation":  {
+                                                                                                                  "0":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           -8,
+                                                                                                                                           -2,
+                                                                                                                                           -6
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                                  "0.05":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -12,
+                                                                                                                                              -8,
+                                                                                                                                              -10
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.1":  {
+                                                                                                                              "vector":  [
+                                                                                                                                             -30,
+                                                                                                                                             -24,
+                                                                                                                                             -20
+                                                                                                                                         ],
+                                                                                                                              "easing":  "linear"
+                                                                                                                          },
+                                                                                                                  "0.14":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -42,
+                                                                                                                                              -36,
+                                                                                                                                              -27
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.17":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -38,
+                                                                                                                                              -20,
+                                                                                                                                              -32
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.2":  {
+                                                                                                                              "vector":  [
+                                                                                                                                             -20,
+                                                                                                                                             8,
+                                                                                                                                             -35
+                                                                                                                                         ],
+                                                                                                                              "easing":  "linear"
+                                                                                                                          },
+                                                                                                                  "0.23":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              4,
+                                                                                                                                              26,
+                                                                                                                                              -36
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.25":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              22,
+                                                                                                                                              34,
+                                                                                                                                              -34
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.28":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              36,
+                                                                                                                                              22,
+                                                                                                                                              -29
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.32":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              42,
+                                                                                                                                              -4,
+                                                                                                                                              -24
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.37":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              22,
+                                                                                                                                              -18,
+                                                                                                                                              -21
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.42":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -4,
+                                                                                                                                              -20,
+                                                                                                                                              -18
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.48":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -18,
+                                                                                                                                              -8,
+                                                                                                                                              -14
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.53":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -11,
+                                                                                                                                              -3,
+                                                                                                                                              -9
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.56":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -8,
+                                                                                                                                              -2,
+                                                                                                                                              -6
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           }
+                                                                                                              }
+                                                                                             },
+                                                                                "right_leg":  {
+                                                                                                  "rotation":  {
+                                                                                                                   "0":  {
+                                                                                                                             "vector":  [
+                                                                                                                                            0.0,
+                                                                                                                                            0.0,
+                                                                                                                                            0.0
+                                                                                                                                        ],
+                                                                                                                             "easing":  "linear"
+                                                                                                                         },
+                                                                                                                   "0.04":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               1.6,
+                                                                                                                                               0.12,
+                                                                                                                                               0.24
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.08":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               5.12,
+                                                                                                                                               0.48,
+                                                                                                                                               0.72
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.12":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               7.68,
+                                                                                                                                               0.84,
+                                                                                                                                               1.08
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.16":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               4.8,
+                                                                                                                                               1.08,
+                                                                                                                                               1.08
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.2":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -0.64,
+                                                                                                                                              1.32,
+                                                                                                                                              1.2
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                   "0.23":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -4.8,
+                                                                                                                                               1.56,
+                                                                                                                                               1.32
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.27":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -6.08,
+                                                                                                                                               1.44,
+                                                                                                                                               1.2
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.32":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -4.48,
+                                                                                                                                               1.08,
+                                                                                                                                               0.96
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.39":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.96,
+                                                                                                                                               0.6,
+                                                                                                                                               0.6
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.46":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               2.24,
+                                                                                                                                               0.24,
+                                                                                                                                               0.24
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.52":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0.96,
+                                                                                                                                               0.12,
+                                                                                                                                               0.12
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.56":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0.0,
+                                                                                                                                               0.0,
+                                                                                                                                               0.0
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            }
+                                                                                                               },
+                                                                                                  "position":  {
+                                                                                                                   "0":  {
+                                                                                                                             "vector":  [
+                                                                                                                                            0.0,
+                                                                                                                                            0.0,
+                                                                                                                                            0.0
+                                                                                                                                        ],
+                                                                                                                             "easing":  "linear"
+                                                                                                                         },
+                                                                                                                   "0.06":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0.009,
+                                                                                                                                               0.0,
+                                                                                                                                               0.04
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.12":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.066,
+                                                                                                                                               0.0,
+                                                                                                                                               0.414
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.17":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0.018,
+                                                                                                                                               0.004,
+                                                                                                                                               0.044
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.22":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.018,
+                                                                                                                                               0.011,
+                                                                                                                                               -0.053
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.23":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.024,
+                                                                                                                                               0.013,
+                                                                                                                                               0.154
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.26":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.04,
+                                                                                                                                               0.015,
+                                                                                                                                               0.114
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.31":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.035,
+                                                                                                                                               0.011,
+                                                                                                                                               0.079
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.32":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.033,
+                                                                                                                                               0.011,
+                                                                                                                                               0.081
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.38":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.022,
+                                                                                                                                               0.004,
+                                                                                                                                               -0.062
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.46":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               -0.009,
+                                                                                                                                               0.0,
+                                                                                                                                               -0.022
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            },
+                                                                                                                   "0.56":  {
+                                                                                                                                "vector":  [
+                                                                                                                                               0.0,
+                                                                                                                                               0.0,
+                                                                                                                                               0.0
+                                                                                                                                           ],
+                                                                                                                                "easing":  "linear"
+                                                                                                                            }
+                                                                                                               }
+                                                                                              },
+                                                                                "left_leg":  {
+                                                                                                 "rotation":  {
+                                                                                                                  "0":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0.0,
+                                                                                                                                           0.0,
+                                                                                                                                           0.0
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                                  "0.04":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.96,
+                                                                                                                                              -0.12,
+                                                                                                                                              -0.24
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.08":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              3.2,
+                                                                                                                                              -0.48,
+                                                                                                                                              -0.6
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.12":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              4.48,
+                                                                                                                                              -0.84,
+                                                                                                                                              -0.96
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.16":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              1.6,
+                                                                                                                                              -1.2,
+                                                                                                                                              -1.08
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.2":  {
+                                                                                                                              "vector":  [
+                                                                                                                                             -3.84,
+                                                                                                                                             -1.56,
+                                                                                                                                             -1.32
+                                                                                                                                         ],
+                                                                                                                              "easing":  "linear"
+                                                                                                                          },
+                                                                                                                  "0.23":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -7.36,
+                                                                                                                                              -1.8,
+                                                                                                                                              -1.56
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.27":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -8.64,
+                                                                                                                                              -1.68,
+                                                                                                                                              -1.44
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.32":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -6.72,
+                                                                                                                                              -1.32,
+                                                                                                                                              -1.2
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.39":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -3.2,
+                                                                                                                                              -0.84,
+                                                                                                                                              -0.84
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.46":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.64,
+                                                                                                                                              -0.36,
+                                                                                                                                              -0.36
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.52":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.64,
+                                                                                                                                              -0.12,
+                                                                                                                                              -0.12
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.56":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.0,
+                                                                                                                                              0.0,
+                                                                                                                                              0.0
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           }
+                                                                                                              },
+                                                                                                 "position":  {
+                                                                                                                  "0":  {
+                                                                                                                            "vector":  [
+                                                                                                                                           0.0,
+                                                                                                                                           0.0,
+                                                                                                                                           0.0
+                                                                                                                                       ],
+                                                                                                                            "easing":  "linear"
+                                                                                                                        },
+                                                                                                                  "0.06":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -0.009,
+                                                                                                                                              0.0,
+                                                                                                                                              0.022
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.12":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -0.11,
+                                                                                                                                              0.0,
+                                                                                                                                              0.326
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.16":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              -0.009,
+                                                                                                                                              0.009,
+                                                                                                                                              -0.026
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.2":  {
+                                                                                                                              "vector":  [
+                                                                                                                                             0.026,
+                                                                                                                                             0.018,
+                                                                                                                                             -0.106
+                                                                                                                                         ],
+                                                                                                                              "easing":  "linear"
+                                                                                                                          },
+                                                                                                                  "0.23":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.053,
+                                                                                                                                              0.022,
+                                                                                                                                              0.282
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.26":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.062,
+                                                                                                                                              0.02,
+                                                                                                                                              0.486
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.27":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.066,
+                                                                                                                                              0.018,
+                                                                                                                                              -0.18
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.31":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.062,
+                                                                                                                                              0.013,
+                                                                                                                                              0.471
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.32":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.059,
+                                                                                                                                              0.011,
+                                                                                                                                              0.475
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.39":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.04,
+                                                                                                                                              0.004,
+                                                                                                                                              -0.11
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.46":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.018,
+                                                                                                                                              0.0,
+                                                                                                                                              -0.048
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.52":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.004,
+                                                                                                                                              0.0,
+                                                                                                                                              -0.013
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           },
+                                                                                                                  "0.56":  {
+                                                                                                                               "vector":  [
+                                                                                                                                              0.0,
+                                                                                                                                              0.0,
+                                                                                                                                              0.0
+                                                                                                                                          ],
+                                                                                                                               "easing":  "linear"
+                                                                                                                           }
+                                                                                                              }
+                                                                                             }
+                                                                            }
+                                                              }
+                   }
+}

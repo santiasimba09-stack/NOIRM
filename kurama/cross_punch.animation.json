@@ -1,0 +1,275 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/kurama/cross_punch": {
+      "animation_length": 0.5,
+      "loop": false,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                4,
+                -22,
+                2
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                8,
+                24,
+                -3
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                4,
+                16,
+                -1
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                -1.6,
+                9.9,
+                -0.5
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                -3.2,
+                -10.8,
+                0.75
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                -1.6,
+                -7.2,
+                0.25
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                -45,
+                -30,
+                24
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                -92,
+                5,
+                3
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                -66,
+                10,
+                8
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                -42,
+                14,
+                -15
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                -43,
+                24,
+                -19
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                -40,
+                18,
+                -14
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                8,
+                9,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                -12,
+                8,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.000": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.050": {
+              "vector": [
+                -9,
+                -6,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.150": {
+              "vector": [
+                9,
+                -8,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.250": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "0.450": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        }
+      }
+    }
+  }
+}

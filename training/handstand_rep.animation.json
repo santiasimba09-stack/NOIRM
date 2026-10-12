@@ -1,0 +1,207 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/training/handstand_rep": {
+      "animation_length": 0.82,
+      "bones": {
+        "body": {
+          "position": {
+            "0": {
+              "vector": [
+                0,
+                0.28,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.42": {
+              "vector": [
+                0,
+                -0.06,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.82": {
+              "vector": [
+                0,
+                0.22,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                174,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                168,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                174,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "head": {
+          "rotation": {
+            "0": {
+              "vector": [
+                16,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                12,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                16,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -168,
+                8,
+                8
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -140,
+                8,
+                8
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -168,
+                8,
+                8
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -168,
+                -8,
+                -8
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -140,
+                -8,
+                -8
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -168,
+                -8,
+                -8
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_leg": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -170,
+                8,
+                5
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -162,
+                6,
+                5
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -170,
+                8,
+                5
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_leg": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -170,
+                -8,
+                -5
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -162,
+                -6,
+                -5
+              ],
+              "easing": "linear"
+            },
+            "1": {
+              "vector": [
+                -170,
+                -8,
+                -5
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      },
+      "loop": "hold_on_last_frame"
+    }
+  }
+}

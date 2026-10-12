@@ -1,0 +1,199 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "combat/nydo/uchiha/elbow_cut": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.5,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.16": {
+              "vector": [
+                -7,
+                -18,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                3,
+                30,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                0,
+                0,
+                -2.1
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0,
+                0,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "0.16": {
+              "vector": [
+                0.0,
+                -23.8,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                6.0,
+                29.4,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -34.0,
+                -6.0,
+                27.6
+              ],
+              "easing": "linear"
+            },
+            "0.16": {
+              "vector": [
+                -64.0,
+                -18.0,
+                52.8
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -88.0,
+                6.0,
+                69.6
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                1,
+                0,
+                -5
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -38.0,
+                6.0,
+                -21.6
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -58.0,
+                8.0,
+                -33.6
+              ],
+              "easing": "linear"
+            },
+            "0.50": {
+              "vector": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      }
+    }
+  }
+}

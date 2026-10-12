@@ -1,0 +1,129 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"combat/nydo/rock_lee/stance_ready": {
+			"loop": true,
+			"animation_length": 1.5,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [0, 0.3, 0],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0.0": {
+							"vector": [4, -8, -2],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [6, -8, -2],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [4, -8, -2],
+							"easing": "linear"
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [-6, 6, 0],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [-4, 3, 0],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [-6, 6, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-90.8567, -20.4933, -77.4328],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [-90.8686, -22.4931, -77.4004]
+						},
+						"1.5": {
+							"vector": [-90.8567, -20.4933, -77.4328],
+							"easing": "linear"
+						}
+					},
+					"position": {
+						"vector": [-0.9, -1.8, 0]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"0.0": {
+							"vector": [10, 15, 28],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [7.5, 15, 28],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [10, 15, 28],
+							"easing": "linear"
+						}
+					},
+					"position": {
+						"vector": [-0.3, 0, 4.3],
+						"easing": "linear"
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"0.0": {
+							"vector": [18, 12, 0],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [16, 12, 0],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [18, 12, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"left_leg": {
+					"rotation": {
+						"0.0": {
+							"vector": [-8, -22, 0],
+							"easing": "linear"
+						},
+						"0.75": {
+							"vector": [-6, -22, 0],
+							"easing": "linear"
+						},
+						"1.5": {
+							"vector": [-8, -22, 0],
+							"easing": "linear"
+						}
+					}
+				}
+			}
+		}
+	}
+}
