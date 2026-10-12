@@ -35,6 +35,9 @@ public final class ShinobiEvents {
                     newData.copyFrom(oldData);
                     if (event.isWasDeath()) {
                         newData.refill();
+                        newData.awakening().setLockedInTicks(0);
+                        newData.awakening().setExhaustionTicks(0);
+                        newData.eyes().setActive(false);
                     }
                 }));
         original.invalidateCaps();

@@ -6,6 +6,10 @@ import com.noirm.combat.CombatState;
 import com.noirm.combat.CombatStates;
 import com.noirm.combat.CombatSystem;
 import com.noirm.combat.Perception;
+import com.noirm.jutsu.JutsuCaster;
+import com.noirm.jutsu.JutsuData;
+import com.noirm.jutsu.JutsuDefinition;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -15,8 +19,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * How the sparring ninja fights: close in, throw a combo, back off, and react to the opponent's
- * wind-ups with a guard or a dodge. It reacts more often to weaker opponents, since their attacks
+ * How the sparring ninja fights: close in, throw a combo, back off, cast its clan's jutsu from
+ * range, and react to the opponent's wind-ups with a guard, a dodge or a substitution. It reacts more often to weaker opponents, since their attacks
  * look slower to it (perception works both ways).
  */
 class NinjaFightGoal extends Goal {
@@ -29,9 +33,13 @@ class NinjaFightGoal extends Goal {
             List.of(AttackInput.HEAVY),
             List.of(AttackInput.LAUNCHER, AttackInput.LIGHT));
 
+    private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
+    private static final java.util.Set<String> RANGED_BEHAVIORS = java.util.Set.of("projectile", "genjutsu", "dash_strike");
+
     private final SparringNinja ninja;
     private final Deque<AttackInput> combo = new ArrayDeque<>();
     private int attackCooldown;
+    private int jutsuCooldown = 40;
     private int guardTicks;
     private boolean reactedToCurrentWindup;
 
@@ -89,6 +97,10 @@ class NinjaFightGoal extends Goal {
             ninja.getNavigation().stop();
         }
 
+        if (combo.isEmpty() && distance > ATTACK_RANGE + 1 && distance < 14 && jutsuCooldown-- <= 0
+                && ninja.hasLineOfSight(target) && CombatSystem.canAct(ninja)) {
+            castRangedJutsu();
+        }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()) {
             combo.addAll(COMBOS.get(ninja.getRandom().nextInt(COMBOS.size())));
         }
@@ -102,6 +114,23 @@ class NinjaFightGoal extends Goal {
                 }
             }
         }
+    }
+
+    /** At range: throw one of its clan's jutsu (fireball, water bullet, genjutsu…). */
+    private void castRangedJutsu() {
+        List<ResourceLocation> options = ninja.knownJutsu().stream()
+                .filter(id -> RANGED_BEHAVIORS.contains(behavior(id)))
+                .toList();
+        jutsuCooldown = 40 + ninja.getRandom().nextInt(60);
+        if (!options.isEmpty()) {
+            ResourceLocation id = options.get(ninja.getRandom().nextInt(options.size()));
+            JutsuCaster.npcCast(ninja, id, 0.4f + 0.6f * ninja.getRandom().nextFloat());
+        }
+    }
+
+    private static String behavior(ResourceLocation id) {
+        JutsuDefinition def = JutsuData.get(id);
+        return def == null ? "" : def.behavior();
     }
 
     /** When the opponent winds up nearby, maybe guard or dodge — once per wind-up. */
@@ -124,6 +153,10 @@ class NinjaFightGoal extends Goal {
             return;
         }
         combo.clear();
+        if (ninja.knownJutsu().contains(SUBSTITUTION) && ninja.getRandom().nextFloat() < 0.25f
+                && JutsuCaster.npcCast(ninja, SUBSTITUTION, 1f)) {
+            return;
+        }
         if (ninja.getRandom().nextFloat() < 0.6f) {
             CombatSystem.setGuard(ninja, true);
             guardTicks = 15;

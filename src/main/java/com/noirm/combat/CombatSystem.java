@@ -1,5 +1,9 @@
 package com.noirm.combat;
 
+import com.noirm.awakening.AwakeningSystem;
+import com.noirm.biju.BijuSystem;
+import com.noirm.dojutsu.Sharingan;
+import com.noirm.jutsu.Substitution;
 import com.noirm.player.ShinobiCapability;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -119,12 +123,37 @@ public final class CombatSystem {
     /** Raise or lower guard. A raised request waits until the fighter is free. */
     public static void setGuard(LivingEntity entity, boolean raised) {
         CombatState state = CombatStates.get(entity);
-        state.wantsGuard = raised;
-        if (!raised) {
+        state.wantsGuard = raised && BijuSystem.canGuard(entity);
+        if (!state.wantsGuard) {
             stopGuard(entity, state);
         } else if (canGuard(state)) {
             startGuard(entity, state);
         }
+    }
+
+    /** Free to start a jutsu: not mid-attack, dodging, staggered or guarding. */
+    public static boolean canAct(LivingEntity entity) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        return state == null || (!state.guarding
+                && (state.phase == CombatPhase.IDLE || state.phase == CombatPhase.RECOVERY));
+    }
+
+    /** Stuns a fighter (interrupting what they were doing) for {@code ticks}. Used by jutsu. */
+    public static void stun(LivingEntity entity, int ticks) {
+        CombatState state = CombatStates.get(entity);
+        stopGuard(entity, state);
+        stagger(entity, state, ticks);
+    }
+
+    /** Posture damage from a jutsu (may break the guard). */
+    public static void addPostureDamage(LivingEntity entity, float amount) {
+        addPosture(entity, CombatStates.get(entity), amount);
+    }
+
+    /** Is the fighter staggered right now? */
+    public static boolean isStaggered(LivingEntity entity) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        return state != null && state.phase == CombatPhase.STAGGER;
     }
 
     /** Could this fighter start an attack this tick (rather than buffering it)? */
@@ -181,11 +210,14 @@ public final class CombatSystem {
         if (applyingHit) {
             return false;
         }
+        Entity attacker = source.getEntity();
+        if (Substitution.trySubstitute(target, attacker)) {
+            return true;
+        }
         CombatState state = CombatStates.getIfPresent(target);
         if (state == null) {
             return false;
         }
-        Entity attacker = source.getEntity();
         return switch (classify(target, state, attacker)) {
             case DODGED -> {
                 onDodged(target, state);
@@ -303,6 +335,9 @@ public final class CombatSystem {
         LivingEntity target = findTarget(entity, move.hit().range() + 1.5f);
         float windup = move.timing().windup() * (target == null ? 1f : Perception.slowFactor(target, entity));
 
+        if (target != null) {
+            Sharingan.onAttackWindup(entity, target, Math.round(windup));
+        }
         clearBuffer(state);
         state.moveId = id;
         state.move = move;
@@ -442,6 +477,9 @@ public final class CombatSystem {
     }
 
     private static void applyHit(LivingEntity attacker, CombatState attackerState, LivingEntity target, CombatMove move) {
+        if (Substitution.trySubstitute(target, attacker)) {
+            return;
+        }
         CombatState targetState = CombatStates.get(target);
         Outcome outcome = classify(target, targetState, attacker);
         if (outcome == Outcome.DODGED) {
@@ -496,12 +534,14 @@ public final class CombatSystem {
         if (!state.perfectDodgeUsed && state.phaseTime < PERFECT_DODGE_TICKS) {
             state.perfectDodgeUsed = true;
             CombatEffects.perfectDodge(target);
+            AwakeningSystem.onClutch(target);
             focus(target);
         }
     }
 
     private static void onParried(LivingEntity defender, CombatState defenderState, Entity attacker) {
         CombatEffects.parry(defender);
+        AwakeningSystem.onClutch(defender);
         if (attacker instanceof LivingEntity livingAttacker) {
             CombatState attackerState = CombatStates.get(livingAttacker);
             addPosture(livingAttacker, attackerState, PARRY_POSTURE_DAMAGE);

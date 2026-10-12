@@ -2,6 +2,7 @@ package com.noirm.registry;
 
 import com.noirm.Noirm;
 import com.noirm.entity.SparringNinja;
+import com.noirm.jutsu.JutsuProjectile;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -22,6 +23,13 @@ public final class NoirmEntities {
                     .sized(0.6f, 1.8f)
                     .clientTrackingRange(10)
                     .build(Noirm.id("sparring_ninja").toString()));
+
+    public static final RegistryObject<EntityType<JutsuProjectile>> JUTSU_PROJECTILE = ENTITY_TYPES.register("jutsu_projectile",
+            () -> EntityType.Builder.<JutsuProjectile>of(JutsuProjectile::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f)
+                    .clientTrackingRange(8)
+                    .updateInterval(1)
+                    .build(Noirm.id("jutsu_projectile").toString()));
 
     private NoirmEntities() {}
 

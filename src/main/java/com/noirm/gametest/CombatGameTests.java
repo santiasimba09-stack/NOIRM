@@ -217,9 +217,12 @@ public final class CombatGameTests {
 
     // ------------------------------------------------------------ helpers
 
+    /** A ninja with AI off and a plain clan, so no random Sharingan changes the timings. */
     private static SparringNinja ninja(GameTestHelper helper, float x, float z) {
         floor(helper);
-        return helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.joinClan(TestClans.PLAIN);
+        return ninja;
     }
 
     private static void floor(GameTestHelper helper) {

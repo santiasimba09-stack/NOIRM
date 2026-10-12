@@ -25,6 +25,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
 
     public SparringNinjaRenderer(EntityRendererProvider.Context context) {
         super(context, new NinjaModel(context.bakeLayer(ModelLayers.PLAYER)), 0.5f);
+        addLayer(new SharinganEyesLayer<>(this));
     }
 
     @Override

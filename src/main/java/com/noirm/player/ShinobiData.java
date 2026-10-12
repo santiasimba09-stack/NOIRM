@@ -1,11 +1,18 @@
 package com.noirm.player;
 
+import com.noirm.awakening.AwakeningData;
+import com.noirm.biju.BijuData;
+import com.noirm.clan.ClanIdentity;
+import com.noirm.clan.ClanTrait;
+import com.noirm.dojutsu.EyeData;
+import com.noirm.jutsu.JutsuBook;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
 /**
- * A player's shinobi resources (chakra for jutsu, stamina for defensive actions) and combat
- * stats (speed, taijutsu).
+ * Everything NOIRM saves about a player: resources (chakra for jutsu, stamina for defensive
+ * actions), combat stats (speed, taijutsu), and their powers: clan identity, jutsu, eyes,
+ * awakening and tailed beast.
  *
  * <p>The server owns this data; the client only receives copies for the HUD. All values are
  * floats so regeneration can add fractions per tick (20 ticks = 1 second).
@@ -19,7 +26,7 @@ public final class ShinobiData {
     public static final float STAMINA_REGEN_PER_TICK = 1f;
     /** After spending stamina, it waits this many ticks (1 second) before recovering. */
     public static final int STAMINA_REGEN_DELAY_TICKS = 20;
-    /** Starting value of the combat stats. Training (milestone 3) will raise them. */
+    /** Starting value of the combat stats. Clans and (later) training raise them. */
     public static final float DEFAULT_STAT = 10f;
     public static final float MAX_STAT = 100f;
 
@@ -34,6 +41,44 @@ public final class ShinobiData {
     private float taijutsu = DEFAULT_STAT;
     /** True when the client's copy is out of date and needs a sync packet. */
     private boolean dirty = true;
+    /** Same, for the powers (clan, jutsu, eyes, awakening, biju) — synced separately, less often. */
+    private boolean powersDirty = true;
+
+    private final ClanIdentity identity = new ClanIdentity();
+    private final JutsuBook jutsu = new JutsuBook();
+    private final EyeData eyes = new EyeData();
+    private final AwakeningData awakening = new AwakeningData();
+    private final BijuData biju = new BijuData();
+
+    public ClanIdentity identity() {
+        return identity;
+    }
+
+    public JutsuBook jutsu() {
+        return jutsu;
+    }
+
+    public EyeData eyes() {
+        return eyes;
+    }
+
+    public AwakeningData awakening() {
+        return awakening;
+    }
+
+    public BijuData biju() {
+        return biju;
+    }
+
+    public void markPowersDirty() {
+        powersDirty = true;
+    }
+
+    public boolean consumePowersDirty() {
+        boolean wasDirty = powersDirty;
+        powersDirty = false;
+        return wasDirty;
+    }
 
     public float getChakra() {
         return chakra;
@@ -117,12 +162,33 @@ public final class ShinobiData {
 
     /** Called once per server tick: regenerates chakra and (after its delay) stamina. */
     public void tick() {
-        setChakra(chakra + CHAKRA_REGEN_PER_TICK);
+        setChakra(chakra + CHAKRA_REGEN_PER_TICK * chakraRegenMultiplier());
         if (staminaRegenDelay > 0) {
             staminaRegenDelay--;
         } else {
-            setStamina(stamina + STAMINA_REGEN_PER_TICK);
+            setStamina(stamina + STAMINA_REGEN_PER_TICK * staminaRegenMultiplier());
         }
+        jutsu.tickCooldowns();
+    }
+
+    /** Exhaustion halves chakra recovery; a tailed beast's cloak triples it. */
+    public float chakraRegenMultiplier() {
+        float multiplier = awakening.isExhausted() ? 0.5f : 1f;
+        return biju.cloakStage() > 0 ? multiplier * 3f : multiplier;
+    }
+
+    /** Quick Recovery (+30%), being locked in (×2) and the cloak (×1.5) speed up stamina. */
+    public float staminaRegenMultiplier() {
+        float multiplier = identity.has(ClanTrait.QUICK_RECOVERY) ? 1.3f : 1f;
+        if (awakening.isLockedIn()) {
+            multiplier *= 2f;
+        }
+        return biju.cloakStage() > 0 ? multiplier * 1.5f : multiplier;
+    }
+
+    public void refillStamina() {
+        setStamina(maxStamina);
+        staminaRegenDelay = 0;
     }
 
     public void refill() {
@@ -154,6 +220,11 @@ public final class ShinobiData {
         tag.putFloat("Stamina", stamina);
         tag.putFloat("Speed", speed);
         tag.putFloat("Taijutsu", taijutsu);
+        tag.put("Identity", identity.save());
+        tag.put("Jutsu", jutsu.save());
+        tag.put("Eyes", eyes.save());
+        tag.put("Awakening", awakening.save());
+        tag.put("Biju", biju.save());
         return tag;
     }
 
@@ -164,7 +235,13 @@ public final class ShinobiData {
         stamina = Mth.clamp(tag.contains("Stamina") ? tag.getFloat("Stamina") : maxStamina, 0f, maxStamina);
         speed = Mth.clamp(tag.contains("Speed") ? tag.getFloat("Speed") : DEFAULT_STAT, 1f, MAX_STAT);
         taijutsu = Mth.clamp(tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : DEFAULT_STAT, 1f, MAX_STAT);
+        identity.load(tag.getCompound("Identity"));
+        jutsu.load(tag.getCompound("Jutsu"));
+        eyes.load(tag.getCompound("Eyes"));
+        awakening.load(tag.getCompound("Awakening"));
+        biju.load(tag.getCompound("Biju"));
         staminaRegenDelay = 0;
         dirty = true;
+        powersDirty = true;
     }
 }

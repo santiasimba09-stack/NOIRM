@@ -1,0 +1,5 @@
+{
+  "cast": "tap", "behavior": "substitution", "rank": "E", "starter": true,
+  "chakra_cost": 15, "cooldown": 160,
+  "params": { "duration": 15 }
+}

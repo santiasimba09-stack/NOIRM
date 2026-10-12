@@ -1,5 +1,9 @@
 package com.noirm.combat;
 
+import com.noirm.awakening.AwakeningSystem;
+import com.noirm.biju.BijuSystem;
+import com.noirm.clan.ClanTrait;
+import com.noirm.dojutsu.Sharingan;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.player.ShinobiData;
 import net.minecraft.util.Mth;
@@ -16,7 +20,7 @@ public final class Perception {
 
     private Perception() {}
 
-    /** How well a fighter reads combat: the average of speed and taijutsu, times dōjutsu bonuses. */
+    /** How well a fighter reads combat: the average of speed and taijutsu, times eyes and states. */
     public static float perception(LivingEntity entity) {
         return (speed(entity) + taijutsu(entity)) / 2f * ocularMultiplier(entity);
     }
@@ -29,14 +33,24 @@ public final class Perception {
         return Mth.clamp(perception(defender) / perception(attacker), 1f, MAX_SLOW_FACTOR);
     }
 
-    /** Unarmed damage scaling from taijutsu: 1.0 at the starting value of 10. */
+    /**
+     * Unarmed damage scaling: 1.0 at taijutsu 10, more while locked in (awakening) or in a
+     * tailed beast's cloak.
+     */
     public static float damageMultiplier(LivingEntity entity) {
-        return Mth.clamp(0.6f + 0.04f * taijutsu(entity), 0.5f, 5f);
+        float base = Mth.clamp(0.6f + 0.04f * taijutsu(entity), 0.5f, 5f);
+        return base * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity);
     }
 
-    /** Hook for dōjutsu (Sharingan etc.), which will raise perception. Nothing yet. */
+    /**
+     * Everything that sharpens perception beyond stats: the active Sharingan (+25% per tomoe),
+     * the Keen Eyes clan trait (+10%), being locked in (+30%) and the beast's cloak.
+     */
     static float ocularMultiplier(LivingEntity entity) {
-        return 1f;
+        float keenEyes = entity instanceof Player player
+                && ShinobiCapability.get(player).map(d -> d.identity().has(ClanTrait.KEEN_EYES)).orElse(false) ? 1.1f : 1f;
+        return Sharingan.perceptionMultiplier(entity) * keenEyes
+                * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity);
     }
 
     private static float speed(LivingEntity entity) {

@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "3";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -53,6 +53,28 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(CombatClientPackets.Feedback.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(CombatClientPackets.Feedback::encode).decoder(CombatClientPackets.Feedback::decode)
                 .consumerMainThread(CombatClientPackets.Feedback::handle).add();
+
+        // Powers: client → server
+        CHANNEL.messageBuilder(PowerPackets.JutsuKey.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PowerPackets.JutsuKey::encode).decoder(PowerPackets.JutsuKey::decode)
+                .consumerMainThread(PowerPackets.JutsuKey::handle).add();
+        CHANNEL.messageBuilder(PowerPackets.EquipJutsu.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PowerPackets.EquipJutsu::encode).decoder(PowerPackets.EquipJutsu::decode)
+                .consumerMainThread(PowerPackets.EquipJutsu::handle).add();
+        CHANNEL.messageBuilder(PowerPackets.TogglePower.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PowerPackets.TogglePower::encode).decoder(PowerPackets.TogglePower::decode)
+                .consumerMainThread(PowerPackets.TogglePower::handle).add();
+
+        // Powers: server → client
+        CHANNEL.messageBuilder(PowerPackets.SyncPowers.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerPackets.SyncPowers::encode).decoder(PowerPackets.SyncPowers::decode)
+                .consumerMainThread(PowerPackets.SyncPowers::handle).add();
+        CHANNEL.messageBuilder(PowerPackets.Visuals.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerPackets.Visuals::encode).decoder(PowerPackets.Visuals::decode)
+                .consumerMainThread(PowerPackets.Visuals::handle).add();
+        CHANNEL.messageBuilder(PowerPackets.Precognition.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerPackets.Precognition::encode).decoder(PowerPackets.Precognition::decode)
+                .consumerMainThread(PowerPackets.Precognition::handle).add();
     }
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

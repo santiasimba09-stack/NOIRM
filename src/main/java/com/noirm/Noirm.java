@@ -2,6 +2,7 @@ package com.noirm;
 
 import com.mojang.logging.LogUtils;
 import com.noirm.network.NoirmNetwork;
+import com.noirm.registry.NoirmBlocks;
 import com.noirm.registry.NoirmEntities;
 import com.noirm.registry.NoirmItems;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,7 @@ public final class Noirm {
     public Noirm(FMLJavaModLoadingContext context) {
         LOGGER.info("NOIRM is loading");
         IEventBus modBus = context.getModEventBus();
+        NoirmBlocks.register(modBus);
         NoirmEntities.register(modBus);
         NoirmItems.register(modBus);
         NoirmNetwork.register();
