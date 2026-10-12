@@ -4,56 +4,56 @@ _Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 
 ## Where we are
 
-**Milestone 3: Identity & powers. ✅ Built, 37/37 game tests green, and checked in the real
-client** (screenshots: `docs/screenshots/m3-*.png`). Design and numbers are in
-`docs/POWERS_DESIGN.md`. M2 combat is also done. Both wait on the owner's hands-on feedback.
+**Milestone 3.5: Training, plus the Byakugan and tailed beasts. ✅ Built, 58/58 game tests
+green, checked in the real client.** Design and numbers: `docs/POWERS_DESIGN.md` (sections 8–10).
+M2 combat and M3 powers are also done. All of it waits on the owner's hands-on feedback.
 
 | Area | State |
 |---|---|
 | M0–M2: foundation, chakra/stamina, combat feel v1 | ✅ (see `COMBAT_DESIGN.md`) |
-| Clans: canon JSON + generated per world, natures, traits, first-join roll | ✅ tested + seen in client (chat + HUD) |
-| Jutsu: 4-slot loadout (keys 1–4 in combat mode), J screen, 9 jutsu, mastery, cooldowns | ✅ tested; fireball, charge bar, cooldown, screen seen in client |
-| Sharingan: toggle G, perception, precognition, genjutsu, copy, red eyes | ✅ tested; HUD + eyes seen in client |
-| Awakening: Resolve, locked in → exhausted, identity paths | ✅ tested (not seen in client: needs a near-death fight) |
-| Jinchūriki cloak (B), beast takeover | ✅ tested; cloak aura seen in client |
-| Sparring ninjas with clans, jutsu, Sharingan | ✅ tested (fireball/genjutsu/precog); ranged AI casting not seen yet |
+| M3: clans, jutsu loadout, Sharingan, awakening, cloak, ninjas with clans | ✅ tested + seen in client |
+| Training: dummy (item + recipe), taijutsu/speed XP, speed → movement | ✅ tested; dummy, combo counter, stat bars seen in client |
+| Byakugan (Hyūga): x-ray chakra sight, all-round guard and warnings, Gentle Fist, Rotation, 64 Palms | ✅ tested; eyes, silhouettes seen in client |
+| Tailed beasts: beast (1–9 tails), subdue, Sealing Scroll, born/NPC jinchūriki, Tailed Beast Ball | ✅ tested; see the smoke notes in the CHANGELOG |
 
 ## In progress
 
-Nothing. Waiting for the owner to play M2 and M3 (see `docs/GETTING_STARTED.md`, "How to test").
+Nothing. Waiting for the owner to play (see `docs/GETTING_STARTED.md`, "How to test").
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback** on combat (M2) and powers (M3). Then tune: JSON in
-   `data/noirm/combat/` and `data/noirm/jutsu/`, constants in `CombatSystem`, `Sharingan`,
-   `AwakeningSystem` and `BijuSystem`.
-2. **Training (M3.5):** a training dummy and post; taijutsu XP and speed growth; very hard nature
-   training (the only way to gain a nature besides imitation).
+1. **Owner playtest + feedback** on combat, powers, training, Byakugan and beasts. Then tune: JSON
+   in `data/noirm/combat/` and `data/noirm/jutsu/`, constants in `CombatSystem`,
+   `TrainingSystem`, `Sharingan`, `Byakugan`, `AwakeningSystem`, `BijuSystem`, `TailedBeast`.
+2. **Training, part 2:** the training post (speed drills), very hard nature training (the only
+   way to gain a nature besides imitation), chakra control.
 3. **Might Guy (M4):** the first master. He teaches a taijutsu style in stages (new
    `combat/styles` + moves); the Eight Gates as his students' awakening path.
-4. Later: villages (where clans live), squads, missions, Mangekyō, full tailed beasts.
+4. Later: where beasts live in the world (rare lairs, exploration), villages (where clans live),
+   squads, missions, Mangekyō, beast art.
 
 ## Code map
 
 | Package / path | What lives there |
 |---|---|
 | `com.noirm` | `Noirm`: entry point; `id()` / `vanillaId()` helpers |
+| `com.noirm.training` | `TrainingSystem` (XP sources, curve, drill cap, speed → movement), `TrainingData`, `TrainingDummyItem` |
 | `com.noirm.player` | `ShinobiData` (the hub of all player data: resources, stats and the powers sub-objects), capability, `ShinobiEvents` (resources), `PowerEvents` (powers: first-join clan, ticking, sync, Resolve and awakening hooks), `PowerVisuals` |
 | `com.noirm.combat` | `CombatSystem` (rules + constants), `CombatState`, `Perception` (incl. eye/state multipliers), `CombatData`, `CombatEffects`, `CombatEvents` |
 | `com.noirm.clan` | `Clan`, `Nature`, `ClanTrait`, `AwakeningPath`, `ClanGenerator`, `WorldClans` (per-world registry), `ClanData` (canon), `ClanIdentity` (on the player), `ClanSystem` (joining) |
-| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
-| `com.noirm.dojutsu` | `Sharingan`, `EyeData` |
+| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
+| `com.noirm.dojutsu` | `Sharingan`, `Byakugan` (incl. Gentle Fist, chakra points), `EyeData` |
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
-| `com.noirm.biju` | `BijuSystem`, `BijuData` |
+| `com.noirm.biju` | `BijuSystem` (cloak, sealing, born jinchūriki, beast names), `BijuData`, `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
-| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer` |
-| `com.noirm.entity` | `SparringNinja`, `NinjaFightGoal` |
+| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ByakuganVision` (x-ray silhouettes) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki), `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TestClans` |
-| `data/noirm/` | `combat/` (moves, styles), `clans/` (canon), `jutsu/` (by nature), `structures/empty.nbt` |
-| `tools/client-smoke/` | Run the real client off-screen (Uchiha + 3 tomoe + 9 tails + a Hyūga ninja) |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `TestClans` |
+| `data/noirm/` | `combat/` (moves, styles: basic, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
+| `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
 ## Decisions made
 
@@ -76,15 +76,20 @@ Nothing. Waiting for the owner to play M2 and M3 (see `docs/GETTING_STARTED.md`,
   only through the near-death awakening, then grows with use.
 - **Awakening (owner):** Resolve-based, identity-dependent (Uchiha → Sharingan, jinchūriki → beast
   takes over, nature-surge clans, will). Guy's students → gates (M4).
-- **Biju (owner):** start with the jinchūriki cloak; full beasts later (they need art).
+- **Biju (owner):** all three routes to becoming a jinchūriki: born one (3%), defeating and
+  sealing a beast, or someone sealing one into you. Beasts can be sealed into yourself, other
+  players or ninjas. Beasts are subdued, never killed by fighting. Placeholder art (scaled zoglin).
+- **Byakugan (owner):** continue with it for the Hyūga (born with it, no awakening needed).
+- **Training (owner):** first part = the dummy plus speed and taijutsu growth. Solo drills cap at 30;
+  past that only real opponents teach (stronger = more).
 - Game tests use fixed clans (`TestClans`) so random rolls never change timings; tests that
   trigger focus or eye effects run in their own batches.
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 
 ## Open questions for the owner
 
-- How do combat (M2) and powers (M3) feel? Balance: chakra costs, Sharingan drain, awakening
-  chance, cloak strength, ninja aggression.
-- How should players *become* jinchūriki for real (a sealing event, a boss, a village ritual)?
-- Should Hyūga get the Byakugan next, or other clans' kekkei genkai (e.g. generated clans with
-  rare bloodlines)?
+- How do combat, powers, training, the Byakugan and the beasts feel? Balance: XP speed, drill cap,
+  beast strength, Tailed Beast Ball damage, how rare jinchūriki should be.
+- Where should tailed beasts live in the world (lairs, special biomes, events)? Right now they
+  come from spawn eggs, fallen jinchūriki ninjas and released scrolls.
+- Should other clans get rare bloodlines (generated kekkei genkai)?

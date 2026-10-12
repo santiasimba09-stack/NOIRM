@@ -77,7 +77,7 @@ change after playtesting. All numbers are tunable (where is noted per section)._
 
 ## 6. Jinchūriki cloak (owner: start with the cloak)
 
-- Become one with `/noirm biju seal <1–9>` (a story way comes later). **B** toggles the chakra
+- Become one by birth (3%), a Sealing Scroll (section 10), or `/noirm biju seal <1–9>`. **B** toggles the chakra
   cloak: 20 s + 2 s per tail, then a 60 s cooldown. Cloak: +20% speed, ×1.3 damage, ×1.15
   perception, ×1.2 jutsu power, ×3 chakra regen, ×1.5 stamina regen; an orange aura.
 - **The beast takes over** (awakening): the red cloak for 20 s: +40% speed, ×1.6 damage, ×1.3
@@ -90,8 +90,57 @@ They roll a clan like players (so they show the world's clans, e.g. "Sparring Ni
 cast their clan's jutsu from range, sometimes escape with Substitution, and Uchiha ninjas fight
 with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninja ~ ~ ~ {Clan:"uchiha"}`.
 
+## 8. Training (owner: the dummy, speed and taijutsu growth first)
+
+- **Taijutsu XP:** a landed NOIRM hit gives 2 (heavy +1, blocked ×0.5); a parry gives 6.
+  **Speed XP:** a dodge gives 1, a perfect dodge 6, sprinting 1 every 2 s.
+- A point costs `20 + 8 × stat` XP (100 at 10, 260 at 30, 500 at 60); stats cap at 100.
+- **Drills** (the dummy, plain dodges, running) only teach up to **30**. **Real opponents**
+  (hostile mobs, ninjas, players, beasts) teach ×1.5 × their strength ÷ yours (clamped
+  0.25–3). Animals teach nothing.
+- **Speed moves you faster:** +0.4% movement per point above 10 (+36% at 100).
+- The **training dummy** (crafted from 2 hay bales + 4 sticks) never dies, never moves, shows
+  your combo and its damage, and is picked up by crouch-punching it outside combat mode.
+
+## 9. Byakugan (owner: continue with it)
+
+- **Hyūga are born with it**; G opens it (0.6 chakra/s). They start knowing Eight Trigrams Palm
+  Rotation and 64 Palms.
+- **Open:** chakra silhouettes of everything within 40 blocks, **through walls** (hostiles
+  reddish); perception ×1.15; a warning for every attack aimed at you; **guard from any
+  direction**.
+- **Gentle Fist** (your melee with it open): posture damage ×1.4, blocked hits keep 50% damage
+  (not 25%), each hit drains 4 chakra (heavy 8) and closes 2 chakra points (heavy 4). **24 closed
+  points = no jutsu for 6 s.** Points reopen after 5 s without a Gentle Fist hit.
+- **Eight Trigrams Palm Rotation** (A, tap, 30 chakra, 12 s): a 0.8 s spinning dome; throws
+  everyone within 3.5 blocks back, turns projectiles around, nothing gets through.
+- **Eight Trigrams 64 Palms** (A, tap, 35 chakra, 20 s): six waves on the enemy in front (2, 4, 8,
+  16, 32, 64 palms), holding them in place, closing enough points to seal their jutsu; the last
+  palm sends them flying.
+
+## 10. Tailed beasts (owner: be born one, fight them, seal them into yourself or others)
+
+- **Beasts** have 1–9 tails: health 100 + 50/tail, speed/taijutsu 14 + 5/tail, size ×(0.8 +
+  0.2/tail). They use the combat system with the **beast style** (claw, back-claw, slam: long,
+  readable wind-ups) and, from range, stop and charge a **Tailed Beast Ball** for 1.5 s.
+- **Subdued, not killed:** at 10% health a beast lies down for 60 s, then gets up at 50%, angry.
+- **Sealing Scroll** (6 paper + 2 ink + 1 gold → 2): use it on a subdued beast to capture it. A
+  full scroll seals the beast **into whoever you use it on** (a player or a sparring ninja), or
+  **into yourself** (use in the air). Crouch + use on the ground releases it (it attacks you).
+  One beast per host.
+- **Born jinchūriki:** 3% of newcomers get a random beast at birth.
+- **Ninja jinchūriki:** 5% of sparring ninjas; below 35% health they take the cloak (×1.3
+  damage, perception), and can throw a Tailed Beast Ball; **when one dies, its beast breaks free**
+  and goes for the killer.
+- **Tailed Beast Ball** (S, charge, 40 chakra, 30 s, needs the cloak): huge dark explosion.
+  Every jinchūriki learns it when a beast is sealed in them.
+- Names: Shukaku, Matatabi, Isobu, Son Gokū, Kokuō, Saiken, Chōmei, Gyūki, Kurama.
+
 ## Where to tune
 
 - Clans: `data/noirm/clans/*.json`, `ClanGenerator`, `WorldClans` (chances).
 - Jutsu: `data/noirm/jutsu/**.json`; behaviors in `JutsuBehaviors`; formulas in `JutsuCaster`.
-- Sharingan: constants in `Sharingan`. Awakening: `AwakeningSystem`. Cloak: `BijuSystem`.
+- Sharingan: constants in `Sharingan`. Byakugan: `Byakugan`, `data/noirm/jutsu/byakugan/`.
+  Awakening: `AwakeningSystem`. Cloak and jinchūriki chances: `BijuSystem`.
+- Training: constants in `TrainingSystem`. Beasts: `TailedBeast`, `BeastFightGoal`,
+  `data/noirm/combat/moves/beast/`, `data/noirm/jutsu/biju/`.

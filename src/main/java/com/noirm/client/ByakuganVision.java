@@ -1,5 +1,6 @@
 package com.noirm.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -55,6 +56,7 @@ public final class ByakuganVision {
             float partialTick = event.getPartialTick();
             PoseStack poseStack = event.getPoseStack();
             MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
+            buffers.endBatch(); // draw anything pending normally first
             AABB area = minecraft.player.getBoundingBox().inflate(Byakugan.SIGHT_RANGE);
             for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
                     e -> e != minecraft.player && e.isAlive() && !e.isInvisible())) {
@@ -73,7 +75,10 @@ public final class ByakuganVision {
                 }
                 poseStack.popPose();
             }
+            // Vanilla's NO_DEPTH_TEST shard only works if depth testing is already off; mid-level it's on.
+            RenderSystem.disableDepthTest();
             buffers.endBatch(XRayType.SILHOUETTE);
+            RenderSystem.enableDepthTest();
         }
     }
 

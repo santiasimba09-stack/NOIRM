@@ -2,6 +2,28 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-12 — Training, the Byakugan and tailed beasts (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Training:** a training dummy (item + recipe: hay bales and sticks) that never dies, stays
+  planted and shows your combo and damage. Landing hits and parrying train taijutsu; dodging
+  and sprinting train speed; each point costs more. Solo drills stop at 30, real opponents teach
+  more the stronger they are. Speed now also makes you move faster. Stat bars in the combat HUD.
+- **Byakugan (Hyūga):** born with it, G opens it. Everyone nearby is drawn as a chakra
+  silhouette through walls; +15% perception; warned of every attack; guard from any direction.
+  Gentle Fist: more posture damage, half damage through guard, drains chakra, closes chakra
+  points (24 closed = no jutsu for 6 s). Eight Trigrams Palm Rotation and 64 Palms. Hyūga
+  ninjas use them.
+- **Tailed beasts:** 1–9 tails (bigger, tougher and stronger with more tails), fighting with the
+  combat system (claw combo, slam) and a charged Tailed Beast Ball. Beaten down, they are
+  subdued; a Sealing Scroll captures them, then seals them into you, another player or a ninja.
+  3% of newcomers are born jinchūriki; 5% of sparring ninjas secretly are (cloak at low health,
+  and the beast breaks free when they fall). Jinchūriki learn the Tailed Beast Ball (cloak only).
+- **Client smoke test found and fixed:** a launch crash from two event subscribers named
+  `Registration` with the same handler (Forge's generated class names collided). The smoke tool
+  can now type chat commands (cheats on in the copied world).
+- **Tests:** tests where fighters swing or knock things back now run in their own batches and
+  clean up what leaves the test area. 21 new game tests (58 total, all passing).
+
 ## 2026-10-12 — Milestone 3: Identity & powers (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Clans:** four canon clans (JSON) plus procedurally generated custom clans in a growing,

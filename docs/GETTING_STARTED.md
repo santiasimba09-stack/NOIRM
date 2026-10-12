@@ -50,8 +50,8 @@ gradlew.bat runClient      # Windows
 | **F5** | Third-person view, to see the animations |
 | **1–4** | Cast the jutsu in your loadout (hold for charge/channel jutsu) |
 | **J** | Jutsu screen (change your loadout) |
-| **G** | Sharingan on/off (if you have it) |
 | **B** | Tailed-beast cloak (if you're a jinchūriki) |
+| **G** | Open your eyes: Sharingan or Byakugan (if you have one) |
 
 Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
 (perception). Or summon a strong one:
@@ -78,6 +78,29 @@ screen. Shortcuts for testing (cheats on):
 Ideas to try: get the Sharingan to 3 tomoe, turn it on, and watch a ninja cast a jutsu (you
 copy it). Let a ninja beat you down to low health with full Resolve. Use the cloak and fight
 with it on.
+
+## How to test training, the Byakugan and tailed beasts
+
+**Training:** craft a **Training Dummy** (a hay bale on top, a hay bale in the middle with sticks
+on both sides, a stick below) or take it from the Combat tab, place it, press **R** and hit it.
+Watch the combo counter, and the Taijutsu/Speed bars in the HUD. You get faster as speed rises.
+Past 30, the dummy stops teaching: fight ninjas (stronger ones teach more). Crouch-punch the
+dummy with combat mode off to pick it up.
+
+**Byakugan:** `/noirm clan set hyuga`, then **G**. Look around: ninjas and mobs glow through
+walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **J**.
+
+**Tailed beasts:**
+
+| What | How |
+|---|---|
+| Summon a beast | Spawn egg (Spawn Eggs tab) or `/summon noirm:tailed_beast ~ ~ ~5 {Tails:9}` |
+| Seal it | Beat it down until it lies down (subdued), then use a **Sealing Scroll** on it |
+| Become its jinchūriki | Use the full scroll in the air, then press **B** for the cloak |
+| Seal it into someone else | Use the full scroll on a ninja or another player |
+| Let it out again | Crouch + use the full scroll on the ground (it will attack you) |
+| Tailed Beast Ball | Equip it with **J**, turn on the cloak (**B**), hold its key to charge |
+| A jinchūriki ninja | `/summon noirm:sparring_ninja ~ ~ ~3 {Tails:4}`: beat it and its beast breaks free |
 
 ## Useful commands
 
