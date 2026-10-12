@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/sage_bricks" },
+      { "model": "nydomod:block/sage_bricks", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/sage_bricks", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/sage_bricks", "y": 270, "uvlock": true }
+    ]
+  }
+}

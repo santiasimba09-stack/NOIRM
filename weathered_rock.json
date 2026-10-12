@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/weathered_rock" },
+      { "model": "nydomod:block/weathered_rock", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/weathered_rock", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/weathered_rock", "y": 270, "uvlock": true }
+    ]
+  }
+}

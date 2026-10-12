@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=x": {"model":"nydomod:block/sage_rootwood_horizontal","x":90,"y":90},
+    "axis=y": {"model":"nydomod:block/sage_rootwood"},
+    "axis=z": {"model":"nydomod:block/sage_rootwood_horizontal","x":90}
+  }
+}

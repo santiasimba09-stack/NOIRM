@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "level=0": { "model": "nydomod:block/water_still" },
+    "level=1": { "model": "nydomod:block/water_still" },
+    "level=2": { "model": "nydomod:block/water_still" },
+    "level=3": { "model": "nydomod:block/water_still" },
+    "level=4": { "model": "nydomod:block/water_still" },
+    "level=5": { "model": "nydomod:block/water_still" },
+    "level=6": { "model": "nydomod:block/water_still" },
+    "level=7": { "model": "nydomod:block/water_still" },
+    "level=8": { "model": "nydomod:block/water_still" },
+    "level=9": { "model": "nydomod:block/water_still" },
+    "level=10": { "model": "nydomod:block/water_still" },
+    "level=11": { "model": "nydomod:block/water_still" },
+    "level=12": { "model": "nydomod:block/water_still" },
+    "level=13": { "model": "nydomod:block/water_still" },
+    "level=14": { "model": "nydomod:block/water_still" },
+    "level=15": { "model": "nydomod:block/water_still" }
+  }
+}

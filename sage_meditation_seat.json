@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "nydomod:block/sage_meditation_seat" },
+    "facing=east": { "model": "nydomod:block/sage_meditation_seat", "y": 90 },
+    "facing=south": { "model": "nydomod:block/sage_meditation_seat", "y": 180 },
+    "facing=west": { "model": "nydomod:block/sage_meditation_seat", "y": 270 }
+  }
+}

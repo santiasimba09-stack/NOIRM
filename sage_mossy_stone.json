@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/sage_mossy_stone" },
+      { "model": "nydomod:block/sage_mossy_stone", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/sage_mossy_stone", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/sage_mossy_stone", "y": 270, "uvlock": true }
+    ]
+  }
+}

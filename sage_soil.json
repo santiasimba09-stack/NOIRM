@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/sage_soil" },
+      { "model": "nydomod:block/sage_soil", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/sage_soil", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/sage_soil", "y": 270, "uvlock": true }
+    ]
+  }
+}

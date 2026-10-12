@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "nydomod:block/snowbound_slate" },
+      { "model": "nydomod:block/snowbound_slate", "y": 90, "uvlock": true },
+      { "model": "nydomod:block/snowbound_slate", "y": 180, "uvlock": true },
+      { "model": "nydomod:block/snowbound_slate", "y": 270, "uvlock": true }
+    ]
+  }
+}
