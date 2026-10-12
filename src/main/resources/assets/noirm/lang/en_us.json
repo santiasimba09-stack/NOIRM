@@ -15,7 +15,7 @@
   "key.noirm.lock_on": "Lock on",
   "entity.noirm.sparring_ninja": "Sparring Ninja",
   "item.noirm.sparring_ninja_spawn_egg": "Sparring Ninja Spawn Egg",
-  "command.noirm.stat": "Speed: %s · Taijutsu: %s · Perception: %s",
+  "command.noirm.stat": "Speed: %s · Taijutsu: %s · Perception: %s · Vitality: %s · Reserves: %s",
   "nature.noirm.fire": "Katon (Fire)",
   "nature.noirm.water": "Suiton (Water)",
   "nature.noirm.wind": "Fūton (Wind)",
@@ -120,8 +120,8 @@
   "message.noirm.training.drill_cap": "Drills alone won't take you any further. Find real opponents: stronger ones teach more.",
   "message.noirm.dummy.combo": "Combo ×%s · %s damage",
   "message.noirm.dummy.no_xp": " · the dummy can't teach you more",
-  "hud.noirm.training.taijutsu": "Taijutsu %s",
-  "hud.noirm.training.speed": "Speed %s",
+  "hud.noirm.training.taijutsu": "Tai %s",
+  "hud.noirm.training.speed": "Spd %s",
   "jutsu.noirm.byakugan.rotation": "Eight Trigrams Palm Rotation",
   "jutsu.noirm.byakugan.sixty_four_palms": "Eight Trigrams 64 Palms",
   "message.noirm.jutsu.sealed": "Your chakra points are closed: no jutsu for now",
@@ -162,5 +162,9 @@
   "message.noirm.scroll.sealed_you": "%s is now sealed inside you. Press B for its cloak.",
   "message.noirm.scroll.sealed_other": "You sealed %s into %s.",
   "command.noirm.byakugan.given": "You have the Byakugan. Press G to open it.",
-  "command.noirm.byakugan.removed": "The Byakugan is gone."
+  "command.noirm.byakugan.removed": "The Byakugan is gone.",
+  "hud.noirm.training.vitality": "Vit %s",
+  "hud.noirm.training.reserves": "Rsv %s",
+  "message.noirm.training.vitality_up": "Your vitality rose to %s! (more health)",
+  "message.noirm.training.reserves_up": "Your chakra reserves rose to %s! (more chakra)"
 }

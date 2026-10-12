@@ -27,6 +27,9 @@ public final class ClanSystem {
         ClanIdentity identity = data.identity();
         identity.setFrom(clan);
         data.setMaxChakra(ShinobiData.DEFAULT_MAX_CHAKRA + (identity.has(ClanTrait.DEEP_RESERVES) ? 30 : 0));
+        data.training().setAppliedChakraBonus(0f); // the Reserves bonus is re-added next tick
+        data.setVitality(ShinobiData.DEFAULT_STAT);
+        data.setReserves(ShinobiData.DEFAULT_STAT);
         data.setMaxStamina(ShinobiData.DEFAULT_MAX_STAMINA + (identity.has(ClanTrait.ENDURANCE) ? 30 : 0));
         data.setSpeed(ShinobiData.DEFAULT_STAT + clan.speedBonus() + (identity.has(ClanTrait.SWIFT) ? 3 : 0));
         data.setTaijutsu(ShinobiData.DEFAULT_STAT + clan.taijutsuBonus() + (identity.has(ClanTrait.FIERCE) ? 3 : 0));

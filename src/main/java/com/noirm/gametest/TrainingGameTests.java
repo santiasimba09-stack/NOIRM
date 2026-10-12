@@ -149,6 +149,57 @@ public final class TrainingGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty")
+    public static void vitalityRaisesMaxHealth(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        TrainingSystem.applyVitality(player, 30f);
+        assertNear(helper, 30f, player.getMaxHealth(), "vitality 30 = 20 + 10 health");
+        TrainingSystem.applyVitality(player, 10f);
+        assertNear(helper, 20f, player.getMaxHealth(), "vitality 10 = normal health");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void reservesRaiseMaxChakra(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = data(player);
+        data.setReserves(30f);
+        TrainingSystem.applyReserves(data);
+        assertNear(helper, 200f, data.getMaxChakra(), "reserves 30 doubles the chakra pool");
+        TrainingSystem.applyReserves(data);
+        assertNear(helper, 200f, data.getMaxChakra(), "applying again changes nothing");
+        data.setReserves(20f);
+        TrainingSystem.applyReserves(data);
+        assertNear(helper, 150f, data.getMaxChakra(), "the pool follows the stat");
+        helper.assertTrue(data.chakraRegenMultiplier() > 1.15f, "and chakra comes back faster");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void spendingChakraTrainsReserves(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = data(player);
+        helper.assertTrue(data.tryConsumeChakra(40f), "spend 40 chakra");
+        TrainingSystem.tick(player, data);
+        assertNear(helper, 40f * TrainingSystem.RESERVES_XP_PER_CHAKRA, data.training().xp(Stat.RESERVES), "chakra spent becomes reserves XP");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void survivingHitsTrainsVitality(GameTestHelper helper) {
+        floor(helper);
+        Player player = helper.makeMockPlayer();
+        net.minecraft.world.entity.monster.Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 1.5f, 1f, 1.5f);
+        TrainingSystem.onDamageTaken(player, player.damageSources().mobAttack(zombie), 5f);
+        assertNear(helper, 5f * TrainingSystem.VITALITY_XP_PER_DAMAGE * TrainingSystem.REAL_FIGHT_BONUS,
+                data(player).training().xp(Stat.VITALITY), "a zombie's hit (an equal) trains vitality");
+        data(player).training().setXp(Stat.VITALITY, 0f);
+        TrainingSystem.onDamageTaken(player, player.damageSources().fall(), 4f);
+        assertNear(helper, 4f * TrainingSystem.VITALITY_XP_PER_DAMAGE, data(player).training().xp(Stat.VITALITY), "a fall is a drill");
+        zombie.discard();
+        helper.succeed();
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static ShinobiData data(Player player) {

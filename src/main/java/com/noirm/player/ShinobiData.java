@@ -7,12 +7,13 @@ import com.noirm.clan.ClanTrait;
 import com.noirm.dojutsu.EyeData;
 import com.noirm.jutsu.JutsuBook;
 import com.noirm.training.TrainingData;
+import com.noirm.training.TrainingSystem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
 /**
  * Everything NOIRM saves about a player: resources (chakra for jutsu, stamina for defensive
- * actions), combat stats (speed, taijutsu), and their powers: clan identity, jutsu, eyes,
+ * actions), trained stats (speed, taijutsu, vitality, reserves), and their powers: clan identity, jutsu, eyes,
  * awakening and tailed beast.
  *
  * <p>The server owns this data; the client only receives copies for the HUD. All values are
@@ -40,6 +41,10 @@ public final class ShinobiData {
     private float speed = DEFAULT_STAT;
     /** Hand-to-hand skill: feeds perception and unarmed damage. */
     private float taijutsu = DEFAULT_STAT;
+    /** Toughness: raises max health. */
+    private float vitality = DEFAULT_STAT;
+    /** Chakra reserves: raise max chakra and its regen. */
+    private float reserves = DEFAULT_STAT;
     /** True when the client's copy is out of date and needs a sync packet. */
     private boolean dirty = true;
     /** Same, for the powers (clan, jutsu, eyes, awakening, biju) — synced separately, less often. */
@@ -110,6 +115,24 @@ public final class ShinobiData {
         return taijutsu;
     }
 
+    public float getVitality() {
+        return vitality;
+    }
+
+    public float getReserves() {
+        return reserves;
+    }
+
+    public void setVitality(float value) {
+        vitality = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
+    }
+
+    public void setReserves(float value) {
+        reserves = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
+    }
+
     public void setSpeed(float value) {
         speed = Mth.clamp(value, 1f, MAX_STAT);
         dirty = true;
@@ -155,6 +178,7 @@ public final class ShinobiData {
             return false;
         }
         setChakra(chakra - amount);
+        training.addChakraSpent(amount);
         return true;
     }
 
@@ -179,9 +203,12 @@ public final class ShinobiData {
         jutsu.tickCooldowns();
     }
 
-    /** Exhaustion halves chakra recovery; a tailed beast's cloak triples it. */
+    /** Reserves add 2% per point above 10; exhaustion halves recovery; a tailed beast's cloak triples it. */
     public float chakraRegenMultiplier() {
-        float multiplier = awakening.isExhausted() ? 0.5f : 1f;
+        float multiplier = Math.max(0.5f, 1f + (reserves - DEFAULT_STAT) * TrainingSystem.REGEN_PER_RESERVES);
+        if (awakening.isExhausted()) {
+            multiplier *= 0.5f;
+        }
         return biju.cloakStage() > 0 ? multiplier * 3f : multiplier;
     }
 
@@ -228,6 +255,8 @@ public final class ShinobiData {
         tag.putFloat("Stamina", stamina);
         tag.putFloat("Speed", speed);
         tag.putFloat("Taijutsu", taijutsu);
+        tag.putFloat("Vitality", vitality);
+        tag.putFloat("Reserves", reserves);
         tag.put("Identity", identity.save());
         tag.put("Jutsu", jutsu.save());
         tag.put("Eyes", eyes.save());
@@ -244,6 +273,8 @@ public final class ShinobiData {
         stamina = Mth.clamp(tag.contains("Stamina") ? tag.getFloat("Stamina") : maxStamina, 0f, maxStamina);
         speed = Mth.clamp(tag.contains("Speed") ? tag.getFloat("Speed") : DEFAULT_STAT, 1f, MAX_STAT);
         taijutsu = Mth.clamp(tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : DEFAULT_STAT, 1f, MAX_STAT);
+        vitality = Mth.clamp(tag.contains("Vitality") ? tag.getFloat("Vitality") : DEFAULT_STAT, 1f, MAX_STAT);
+        reserves = Mth.clamp(tag.contains("Reserves") ? tag.getFloat("Reserves") : DEFAULT_STAT, 1f, MAX_STAT);
         identity.load(tag.getCompound("Identity"));
         jutsu.load(tag.getCompound("Jutsu"));
         eyes.load(tag.getCompound("Eyes"));

@@ -25,6 +25,9 @@ public final class PowerHud {
     private static final int RESOLVE_COLOR = 0xFFA45CFF;
     private static final int TAIJUTSU_COLOR = 0xFFE8A060;
     private static final int SPEED_COLOR = 0xFF70D0E0;
+    private static final int VITALITY_COLOR = 0xFFE86060;
+    private static final int RESERVES_COLOR = 0xFF6090FF;
+    private static final int STAT_COLUMN = 84;
     private static final int SLOT_WIDTH = 132;
     private static final int SLOT_HEIGHT = 15;
 
@@ -61,9 +64,11 @@ public final class PowerHud {
             y += LINE;
             SyncShinobiDataPacket stats = ClientShinobiData.get();
             if (stats != null) {
-                drawStat(graphics, font, y, "hud.noirm.training.taijutsu", stats.taijutsu(), stats.taijutsuProgress(), TAIJUTSU_COLOR);
+                drawStat(graphics, font, X, y, "hud.noirm.training.taijutsu", stats.taijutsu(), stats.taijutsuProgress(), TAIJUTSU_COLOR);
+                drawStat(graphics, font, X + STAT_COLUMN, y, "hud.noirm.training.speed", stats.speed(), stats.speedProgress(), SPEED_COLOR);
                 y += LINE;
-                drawStat(graphics, font, y, "hud.noirm.training.speed", stats.speed(), stats.speedProgress(), SPEED_COLOR);
+                drawStat(graphics, font, X, y, "hud.noirm.training.vitality", stats.vitality(), stats.vitalityProgress(), VITALITY_COLOR);
+                drawStat(graphics, font, X + STAT_COLUMN, y, "hud.noirm.training.reserves", stats.reserves(), stats.reservesProgress(), RESERVES_COLOR);
                 y += LINE;
             }
         }
@@ -93,12 +98,12 @@ public final class PowerHud {
     }
 
     /** A trained stat with a thin bar showing progress toward its next point. */
-    private static void drawStat(GuiGraphics graphics, Font font, int y, String key, float value, float progress, int color) {
+    private static void drawStat(GuiGraphics graphics, Font font, int x, int y, String key, float value, float progress, int color) {
         Component label = Component.translatable(key, Math.round(value));
-        graphics.drawString(font, label, X, y, color, true);
-        int barX = X + 62;
-        graphics.fill(barX - 1, y + 2, barX + 41, y + 7, 0xA0000000);
-        graphics.fill(barX, y + 3, barX + Math.round(40 * progress), y + 6, color);
+        graphics.drawString(font, label, x, y, color, true);
+        int barX = x + 46;
+        graphics.fill(barX - 1, y + 2, barX + 31, y + 7, 0xA0000000);
+        graphics.fill(barX, y + 3, barX + Math.round(30 * progress), y + 6, color);
     }
 
     /** Bottom-right: the four jutsu slots with key, name, cooldown/mastery and a charge bar. */

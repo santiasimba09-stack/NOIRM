@@ -24,7 +24,7 @@ import java.util.function.BiConsumer;
  *   <li>{@code /noirm set chakra|stamina <value>}: set the current value (cheats)</li>
  *   <li>{@code /noirm max chakra|stamina <value>}: set the maximum (cheats)</li>
  *   <li>{@code /noirm refill}: fill both (cheats)</li>
- *   <li>{@code /noirm stat speed|taijutsu <value>}: set a combat stat, 1–100 (cheats)</li>
+ *   <li>{@code /noirm stat speed|taijutsu|vitality|reserves <value>}: set a combat stat, 1–100 (cheats)</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
@@ -47,7 +47,9 @@ public final class NoirmCommand {
                 .then(Commands.literal("stat").requires(s -> s.hasPermission(CHEAT_PERMISSION))
                         .executes(ctx -> showCombatStats(ctx.getSource()))
                         .then(statArgument("speed", ShinobiData::setSpeed))
-                        .then(statArgument("taijutsu", ShinobiData::setTaijutsu)))
+                        .then(statArgument("taijutsu", ShinobiData::setTaijutsu))
+                        .then(statArgument("vitality", ShinobiData::setVitality))
+                        .then(statArgument("reserves", ShinobiData::setReserves)))
                 .then(Commands.literal("refill").requires(s -> s.hasPermission(CHEAT_PERMISSION))
                         .executes(ctx -> {
                             data(ctx.getSource()).refill();
@@ -75,7 +77,8 @@ public final class NoirmCommand {
         ServerPlayer player = source.getPlayerOrException();
         ShinobiData data = data(source);
         source.sendSuccess(() -> Component.translatable("command.noirm.stat",
-                Math.round(data.getSpeed()), Math.round(data.getTaijutsu()), Math.round(Perception.perception(player))), false);
+                Math.round(data.getSpeed()), Math.round(data.getTaijutsu()), Math.round(Perception.perception(player)),
+                Math.round(data.getVitality()), Math.round(data.getReserves())), false);
         return 1;
     }
 

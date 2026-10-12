@@ -9,16 +9,19 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Server → client: the player's chakra, stamina and trained stats (with progress toward the
+ * Server → client: the player's chakra, stamina and the four trained stats (with progress toward the
  * next point, 0..1), for the HUD.
  */
 public record SyncShinobiDataPacket(float chakra, float maxChakra, float stamina, float maxStamina,
-                                    float taijutsu, float taijutsuProgress, float speed, float speedProgress) {
+                                    float taijutsu, float taijutsuProgress, float speed, float speedProgress,
+                                    float vitality, float vitalityProgress, float reserves, float reservesProgress) {
 
     public static SyncShinobiDataPacket of(ShinobiData data) {
         return new SyncShinobiDataPacket(data.getChakra(), data.getMaxChakra(), data.getStamina(), data.getMaxStamina(),
                 data.getTaijutsu(), TrainingSystem.progress(data, TrainingSystem.Stat.TAIJUTSU),
-                data.getSpeed(), TrainingSystem.progress(data, TrainingSystem.Stat.SPEED));
+                data.getSpeed(), TrainingSystem.progress(data, TrainingSystem.Stat.SPEED),
+                data.getVitality(), TrainingSystem.progress(data, TrainingSystem.Stat.VITALITY),
+                data.getReserves(), TrainingSystem.progress(data, TrainingSystem.Stat.RESERVES));
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -30,10 +33,15 @@ public record SyncShinobiDataPacket(float chakra, float maxChakra, float stamina
         buf.writeFloat(taijutsuProgress);
         buf.writeFloat(speed);
         buf.writeFloat(speedProgress);
+        buf.writeFloat(vitality);
+        buf.writeFloat(vitalityProgress);
+        buf.writeFloat(reserves);
+        buf.writeFloat(reservesProgress);
     }
 
     public static SyncShinobiDataPacket decode(FriendlyByteBuf buf) {
         return new SyncShinobiDataPacket(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(),
                 buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
     }
 

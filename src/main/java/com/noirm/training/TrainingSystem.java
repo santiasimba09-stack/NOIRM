@@ -23,14 +23,29 @@ import java.util.UUID;
 
 /**
  * Practice makes you stronger. Landing hits and parrying train <b>taijutsu</b>; dodging and
- * sprinting train <b>speed</b>. Each point costs more experience than the last.
+ * sprinting train <b>speed</b>; taking hits and surviving trains <b>vitality</b> (max health);
+ * spending chakra trains <b>reserves</b> (max chakra and its regen). Each point costs more
+ * experience than the last.
  *
  * <p>Solo drills (the training dummy, running, dodging in the air) only take you to
  * {@link #DRILL_CAP}. Past that you need real opponents, and stronger ones teach more. Speed
  * also makes you move faster ({@link #MOVE_BONUS_PER_POINT}).
  */
 public final class TrainingSystem {
-    public enum Stat { TAIJUTSU, SPEED }
+    public enum Stat {
+        TAIJUTSU("Taijutsu"), SPEED("Speed"), VITALITY("Vitality"), RESERVES("Reserves");
+
+        private final String key;
+
+        Stat(String key) {
+            this.key = key;
+        }
+
+        /** Name used in save data and translation keys. */
+        public String key() {
+            return key;
+        }
+    }
 
     /** Solo drills stop teaching at this stat value. */
     public static final float DRILL_CAP = 30f;
@@ -51,6 +66,18 @@ public final class TrainingSystem {
     /** +0.4% movement speed per speed point above 10 (speed 100 = +36%). */
     public static final double MOVE_BONUS_PER_POINT = 0.004;
 
+    /** Vitality: XP per point of damage taken (and survived). */
+    public static final float VITALITY_XP_PER_DAMAGE = 2f;
+    /** +0.5 max health per vitality point above 10 (+5 hearts at 30). */
+    public static final double HEALTH_PER_VITALITY = 0.5;
+    /** Reserves: XP per point of chakra spent (jutsu, eyes…). */
+    public static final float RESERVES_XP_PER_CHAKRA = 0.25f;
+    /** +5 max chakra per reserves point above 10 (double at 30). */
+    public static final float CHAKRA_PER_RESERVES = 5f;
+    /** +2% chakra regen per reserves point above 10. */
+    public static final float REGEN_PER_RESERVES = 0.02f;
+
+    private static final UUID HEALTH_MODIFIER_ID = UUID.fromString("8b1e2c3d-4f5a-4b6c-9d7e-0a1b2c3d4e5f");
     private static final UUID SPEED_MODIFIER_ID = UUID.fromString("3c1f8e52-6a0b-4d8e-9b7f-2e5a4c6d8f10");
 
     private TrainingSystem() {}
@@ -61,7 +88,21 @@ public final class TrainingSystem {
     }
 
     public static float stat(ShinobiData data, Stat stat) {
-        return stat == Stat.TAIJUTSU ? data.getTaijutsu() : data.getSpeed();
+        return switch (stat) {
+            case TAIJUTSU -> data.getTaijutsu();
+            case SPEED -> data.getSpeed();
+            case VITALITY -> data.getVitality();
+            case RESERVES -> data.getReserves();
+        };
+    }
+
+    public static void setStat(ShinobiData data, Stat stat, float value) {
+        switch (stat) {
+            case TAIJUTSU -> data.setTaijutsu(value);
+            case SPEED -> data.setSpeed(value);
+            case VITALITY -> data.setVitality(value);
+            case RESERVES -> data.setReserves(value);
+        }
     }
 
     /** Progress toward the next point, 0..1 (for the HUD). */
@@ -100,12 +141,64 @@ public final class TrainingSystem {
         }
     }
 
-    /** Every server tick: running trains speed, and speed sets how fast you move. */
-    public static void tick(ServerPlayer player, ShinobiData data) {
+    /**
+     * Damage taken (after armor). Surviving real fights trains vitality; falls, fire and the like
+     * are drills.
+     */
+    public static void onDamageTaken(Player player, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (player.level().isClientSide() || amount <= 0 || player.getAbilities().invulnerable) {
+            return;
+        }
+        Entity attacker = source.getEntity();
+        float factor = attacker != null && attacker != player ? opponentFactor(player, attacker, Stat.VITALITY) : drillFactor(player, Stat.VITALITY);
+        grant(player, Stat.VITALITY, amount * VITALITY_XP_PER_DAMAGE * factor);
+    }
+
+    /**
+     * Every server tick: running trains speed, chakra spent trains reserves, and the stats set
+     * movement speed, max health and max chakra.
+     */
+    public static void tick(Player player, ShinobiData data) {
         if (player.isSprinting() && player.onGround() && data.training().sprintTick(SPRINT_INTERVAL)) {
             grant(player, Stat.SPEED, drillFactor(player, Stat.SPEED) * SPRINT_XP);
         }
+        float spent = data.training().takeChakraSpent();
+        if (spent > 0 && !player.getAbilities().instabuild) {
+            grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA);
+        }
         applyMovementBonus(player, data.getSpeed());
+        applyVitality(player, data.getVitality());
+        applyReserves(data);
+    }
+
+    /** Max health from vitality. */
+    public static void applyVitality(Player player, float vitality) {
+        AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
+        if (health == null) {
+            return;
+        }
+        double amount = (vitality - ShinobiData.DEFAULT_STAT) * HEALTH_PER_VITALITY;
+        AttributeModifier current = health.getModifier(HEALTH_MODIFIER_ID);
+        if (current != null && Math.abs(current.getAmount() - amount) < 1e-6) {
+            return;
+        }
+        health.removeModifier(HEALTH_MODIFIER_ID);
+        if (amount != 0) {
+            health.addTransientModifier(new AttributeModifier(HEALTH_MODIFIER_ID, "noirm_vitality", amount, AttributeModifier.Operation.ADDITION));
+        }
+        if (player.getHealth() > player.getMaxHealth()) {
+            player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    /** Max chakra from reserves: adjusts the max by the change in bonus since last time. */
+    public static void applyReserves(ShinobiData data) {
+        float bonus = (data.getReserves() - ShinobiData.DEFAULT_STAT) * CHAKRA_PER_RESERVES;
+        float applied = data.training().appliedChakraBonus();
+        if (Math.abs(bonus - applied) > 1e-4) {
+            data.setMaxChakra(data.getMaxChakra() - applied + bonus);
+            data.training().setAppliedChakraBonus(bonus);
+        }
     }
 
     // ---------------------------------------------------------------- rules (public for tests)
@@ -149,11 +242,7 @@ public final class TrainingSystem {
             }
             data.training().setXp(stat, total);
             if (gained > 0) {
-                if (stat == Stat.TAIJUTSU) {
-                    data.setTaijutsu(value);
-                } else {
-                    data.setSpeed(value);
-                }
+                setStat(data, stat, value);
                 announce(player, stat, value);
             }
             data.markDirty();
@@ -161,7 +250,7 @@ public final class TrainingSystem {
     }
 
     private static void announce(Player player, Stat stat, float value) {
-        String key = stat == Stat.TAIJUTSU ? "message.noirm.training.taijutsu_up" : "message.noirm.training.speed_up";
+        String key = "message.noirm.training." + stat.key().toLowerCase(java.util.Locale.ROOT) + "_up";
         player.sendSystemMessage(Component.translatable(key, Math.round(value)).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
         if (value >= DRILL_CAP && value - 1 < DRILL_CAP) {

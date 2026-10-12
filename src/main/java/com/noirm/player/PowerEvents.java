@@ -107,6 +107,9 @@ public final class PowerEvents {
         if (victim instanceof Player player && event.getSource().getEntity() != null) {
             AwakeningSystem.onDamageTaken(player, event.getAmount());
         }
+        if (victim instanceof Player player) {
+            com.noirm.training.TrainingSystem.onDamageTaken(player, event.getSource(), event.getAmount());
+        }
         if (event.getSource().getEntity() instanceof Player attacker && attacker != victim) {
             AwakeningSystem.onDamageDealt(attacker, victim, event.getAmount());
         }
