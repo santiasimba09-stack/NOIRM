@@ -1,0 +1,184 @@
+{
+  "texture": "nydomod:textures/wardrobe/samurai_armorhelmet.png",
+  "texture_size": [
+    64,
+    64
+  ],
+  "source_item": "samurai_armorhelmet",
+  "outfit": "samuraiarmor",
+  "slot": "head",
+  "parts": [
+    {
+      "name": "head",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            8,
+            5,
+            8
+          ],
+          "uv": [
+            0,
+            0
+          ],
+          "inflate": 0.35,
+          "from": [
+            -4,
+            -8,
+            -4
+          ]
+        },
+        {
+          "size": [
+            1,
+            4,
+            1
+          ],
+          "uv": [
+            46,
+            0
+          ],
+          "inflate": 0,
+          "from": [
+            -0.5,
+            -12,
+            -3.8
+          ]
+        }
+      ],
+      "children": [
+        {
+          "name": "helmet_guard_1",
+          "pivot": [
+            -4,
+            -4,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            12
+          ],
+          "cubes": [
+            {
+              "size": [
+                2.2,
+                3.6,
+                4.4
+              ],
+              "uv": [
+                32,
+                0
+              ],
+              "inflate": 0.1,
+              "from": [
+                -1.1,
+                -1.8,
+                -2.2
+              ]
+            }
+          ],
+          "children": []
+        },
+        {
+          "name": "helmet_guard_2",
+          "pivot": [
+            4,
+            -4,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            -12
+          ],
+          "cubes": [
+            {
+              "size": [
+                2.2,
+                3.6,
+                4.4
+              ],
+              "uv": [
+                32,
+                0
+              ],
+              "inflate": 0.1,
+              "from": [
+                -1.1,
+                -1.8,
+                -2.2
+              ]
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "hat",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "body",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "right_arm",
+      "pivot": [
+        -5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_arm",
+      "pivot": [
+        5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "right_leg",
+      "pivot": [
+        -1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_leg",
+      "pivot": [
+        1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    }
+  ]
+}

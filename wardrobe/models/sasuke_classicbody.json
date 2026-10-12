@@ -1,0 +1,240 @@
+{
+  "texture": "nydomod:textures/wardrobe/sasuke_classicbody.png",
+  "texture_size": [
+    64,
+    64
+  ],
+  "source_item": "sasuke_classicbody",
+  "outfit": "sasuke_classic",
+  "slot": "chest",
+  "parts": [
+    {
+      "name": "head",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "hat",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "body",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            8,
+            12,
+            4
+          ],
+          "uv": [
+            0,
+            0
+          ],
+          "inflate": 0.18,
+          "from": [
+            -4,
+            0,
+            -2
+          ]
+        },
+        {
+          "size": [
+            9.2,
+            3,
+            1
+          ],
+          "uv": [
+            40,
+            0
+          ],
+          "inflate": 0.05,
+          "from": [
+            -4.6,
+            -3,
+            3.65
+          ]
+        }
+      ],
+      "children": [
+        {
+          "name": "collar_left_4",
+          "pivot": [
+            4.2,
+            0.1,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            7
+          ],
+          "cubes": [
+            {
+              "size": [
+                0.8,
+                3,
+                8
+              ],
+              "uv": [
+                0,
+                16
+              ],
+              "inflate": 0.04,
+              "from": [
+                -0.4,
+                -3,
+                -3.8
+              ]
+            }
+          ],
+          "children": []
+        },
+        {
+          "name": "collar_right_5",
+          "pivot": [
+            -4.2,
+            0.1,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            -7
+          ],
+          "cubes": [
+            {
+              "size": [
+                0.8,
+                3,
+                8
+              ],
+              "uv": [
+                0,
+                16
+              ],
+              "inflate": 0.04,
+              "from": [
+                -0.4,
+                -3,
+                -3.8
+              ]
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "right_arm",
+      "pivot": [
+        -5,
+        2,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            4,
+            5,
+            4
+          ],
+          "uv": [
+            24,
+            0
+          ],
+          "inflate": 0.18,
+          "from": [
+            -3,
+            -2,
+            -2
+          ],
+          "slim_from": [
+            -2,
+            -2,
+            -2
+          ],
+          "slim_size": [
+            3,
+            5,
+            4
+          ]
+        }
+      ],
+      "children": []
+    },
+    {
+      "name": "left_arm",
+      "pivot": [
+        5,
+        2,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            4,
+            5,
+            4
+          ],
+          "uv": [
+            24,
+            0
+          ],
+          "inflate": 0.18,
+          "from": [
+            -1,
+            -2,
+            -2
+          ],
+          "slim_from": [
+            -1,
+            -2,
+            -2
+          ],
+          "slim_size": [
+            3,
+            5,
+            4
+          ]
+        }
+      ],
+      "children": []
+    },
+    {
+      "name": "right_leg",
+      "pivot": [
+        -1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_leg",
+      "pivot": [
+        1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    }
+  ]
+}

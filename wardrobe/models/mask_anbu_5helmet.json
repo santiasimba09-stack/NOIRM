@@ -1,0 +1,337 @@
+{
+  "texture": "nydomod:textures/wardrobe/mask_anbu_5helmet.png",
+  "texture_size": [
+    32,
+    32
+  ],
+  "source_item": "mask_anbu_5helmet",
+  "outfit": "mask_anbu5",
+  "slot": "head",
+  "parts": [
+    {
+      "name": "head",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            8,
+            8,
+            2
+          ],
+          "uv": [
+            0,
+            0
+          ],
+          "inflate": 0.28,
+          "from": [
+            -4.0,
+            -8.0,
+            -4.25
+          ]
+        },
+        {
+          "size": [
+            2,
+            1,
+            1
+          ],
+          "uv": [
+            20,
+            0
+          ],
+          "inflate": 0,
+          "from": [
+            -3.0,
+            -5.8,
+            -4.65
+          ]
+        },
+        {
+          "size": [
+            2,
+            1,
+            1
+          ],
+          "uv": [
+            26,
+            0
+          ],
+          "inflate": 0,
+          "from": [
+            1.0,
+            -5.8,
+            -4.65
+          ]
+        },
+        {
+          "size": [
+            2,
+            2,
+            1
+          ],
+          "uv": [
+            0,
+            10
+          ],
+          "inflate": 0,
+          "from": [
+            -3.5,
+            -3.0,
+            -4.73
+          ]
+        },
+        {
+          "size": [
+            2,
+            2,
+            1
+          ],
+          "uv": [
+            6,
+            10
+          ],
+          "inflate": 0,
+          "from": [
+            1.5,
+            -3.0,
+            -4.73
+          ]
+        },
+        {
+          "size": [
+            1,
+            2,
+            1
+          ],
+          "uv": [
+            12,
+            10
+          ],
+          "inflate": 0,
+          "from": [
+            -0.5,
+            -4.4,
+            -4.79
+          ]
+        },
+        {
+          "size": [
+            1,
+            1,
+            1
+          ],
+          "uv": [
+            16,
+            10
+          ],
+          "inflate": 0,
+          "from": [
+            -0.5,
+            -2.7,
+            -4.92
+          ]
+        },
+        {
+          "size": [
+            1,
+            1,
+            6
+          ],
+          "uv": [
+            0,
+            13
+          ],
+          "inflate": 0,
+          "from": [
+            -4.15,
+            -5.0,
+            -2.0
+          ]
+        },
+        {
+          "size": [
+            1,
+            1,
+            6
+          ],
+          "uv": [
+            0,
+            13
+          ],
+          "inflate": 0,
+          "from": [
+            3.15,
+            -5.0,
+            -2.0
+          ]
+        },
+        {
+          "size": [
+            8,
+            1,
+            1
+          ],
+          "uv": [
+            14,
+            13
+          ],
+          "inflate": 0,
+          "from": [
+            -4.0,
+            -5.0,
+            3.15
+          ]
+        },
+        {
+          "size": [
+            1,
+            2,
+            1
+          ],
+          "uv": [
+            20,
+            10
+          ],
+          "inflate": 0,
+          "from": [
+            -0.5,
+            -5.4,
+            3.8
+          ]
+        }
+      ],
+      "children": [
+        {
+          "name": "mask_left_cloth_end_11",
+          "pivot": [
+            -0.28,
+            -3.5,
+            4.2
+          ],
+          "rotation": [
+            0,
+            0,
+            -16
+          ],
+          "cubes": [
+            {
+              "size": [
+                1,
+                2,
+                1
+              ],
+              "uv": [
+                20,
+                10
+              ],
+              "inflate": 0,
+              "from": [
+                -0.5,
+                0.0,
+                -0.5
+              ]
+            }
+          ],
+          "children": []
+        },
+        {
+          "name": "mask_right_cloth_end_12",
+          "pivot": [
+            0.28,
+            -3.5,
+            4.2
+          ],
+          "rotation": [
+            0,
+            0,
+            16
+          ],
+          "cubes": [
+            {
+              "size": [
+                1,
+                2,
+                1
+              ],
+              "uv": [
+                20,
+                10
+              ],
+              "inflate": 0,
+              "from": [
+                -0.5,
+                0.0,
+                -0.5
+              ]
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "hat",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "body",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "right_arm",
+      "pivot": [
+        -5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_arm",
+      "pivot": [
+        5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "right_leg",
+      "pivot": [
+        -1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_leg",
+      "pivot": [
+        1.9,
+        12,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    }
+  ]
+}

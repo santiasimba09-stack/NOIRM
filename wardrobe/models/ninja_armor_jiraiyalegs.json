@@ -1,0 +1,187 @@
+{
+  "texture": "nydomod:textures/wardrobe/ninja_armor_jiraiyalegs.png",
+  "texture_size": [
+    64,
+    64
+  ],
+  "source_item": "ninja_armor_jiraiyalegs",
+  "outfit": "jiraiyaarmor",
+  "slot": "legs",
+  "parts": [
+    {
+      "name": "head",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "hat",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "body",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            8,
+            1.7,
+            4
+          ],
+          "uv": [
+            32,
+            0
+          ],
+          "inflate": 0.14,
+          "from": [
+            -4,
+            10.3,
+            -2
+          ]
+        }
+      ],
+      "children": []
+    },
+    {
+      "name": "right_arm",
+      "pivot": [
+        -5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "left_arm",
+      "pivot": [
+        5,
+        2,
+        0
+      ],
+      "cubes": [],
+      "children": []
+    },
+    {
+      "name": "right_leg",
+      "pivot": [
+        -1.9,
+        12,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            4,
+            12,
+            4
+          ],
+          "uv": [
+            0,
+            0
+          ],
+          "inflate": 0.13,
+          "from": [
+            -2,
+            0,
+            -2
+          ]
+        },
+        {
+          "size": [
+            4,
+            2,
+            4
+          ],
+          "uv": [
+            16,
+            0
+          ],
+          "inflate": 0.16,
+          "from": [
+            -2,
+            7.5,
+            -2
+          ]
+        },
+        {
+          "size": [
+            1.1,
+            3,
+            2.7
+          ],
+          "uv": [
+            56,
+            0
+          ],
+          "inflate": 0.05,
+          "from": [
+            -2.75,
+            2,
+            0.1
+          ]
+        }
+      ],
+      "children": []
+    },
+    {
+      "name": "left_leg",
+      "pivot": [
+        1.9,
+        12,
+        0
+      ],
+      "cubes": [
+        {
+          "size": [
+            4,
+            12,
+            4
+          ],
+          "uv": [
+            0,
+            0
+          ],
+          "inflate": 0.13,
+          "from": [
+            -2,
+            0,
+            -2
+          ]
+        },
+        {
+          "size": [
+            4,
+            2,
+            4
+          ],
+          "uv": [
+            16,
+            0
+          ],
+          "inflate": 0.16,
+          "from": [
+            -2,
+            7.5,
+            -2
+          ]
+        }
+      ],
+      "children": []
+    }
+  ]
+}

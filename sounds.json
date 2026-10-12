@@ -1,0 +1,1782 @@
+{
+  "amaterasu": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:amaterasu",
+        "stream": false
+      }
+    ]
+  },
+  "shinratensei": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:shinratensei",
+        "stream": false
+      }
+    ]
+  },
+  "chibakutensei": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:chibakutensei",
+        "stream": false
+      }
+    ]
+  },
+  "byakugan": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:byakugan_neji",
+        "stream": false
+      }
+    ]
+  },
+  "furryroar": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:chewbacca_sound_byte",
+        "stream": false
+      }
+    ]
+  },
+  "kamuisfx": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kamui_sound_efect",
+        "stream": false
+      }
+    ]
+  },
+  "monstergrowl": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:monster_growl",
+        "stream": false
+      }
+    ]
+  },
+  "koh_spawn": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:koh_spawn",
+        "stream": false
+      }
+    ]
+  },
+  "hakkerokujuuyonshou": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hakke_rokujuu_yonshou",
+        "stream": false
+      }
+    ]
+  },
+  "hakkeshokaiten": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hakkeshokaiten",
+        "stream": false
+      }
+    ]
+  },
+  "hakkekusho": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hakkekusho",
+        "stream": false
+      }
+    ]
+  },
+  "hand_shoot": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_hand_press",
+        "stream": false
+      }
+    ]
+  },
+  "nagiharai": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_nagiharai",
+        "stream": false
+      }
+    ]
+  },
+  "80godspunch": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:eightygodspunch",
+        "stream": false
+      }
+    ]
+  },
+  "kaguya_finaltsb": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bigtruthseekerball",
+        "stream": false
+      }
+    ]
+  },
+  "banshotenin": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:banshotenin",
+        "stream": false
+      }
+    ]
+  },
+  "sekizo": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:sekizo",
+        "stream": false
+      }
+    ]
+  },
+  "yagai": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:yagai",
+        "stream": false
+      }
+    ]
+  },
+  "howl_youth": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:howlyouth",
+        "stream": false
+      }
+    ]
+  },
+  "crow_call": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:call",
+        "stream": false
+      }
+    ]
+  },
+  "genkaihakurinojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:jinton_genkaihakurinojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "suiton_suiryuudan": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:suiton_suiryuudan",
+        "stream": false
+      }
+    ]
+  },
+  "kirigakurenojutsu": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:kirigakurenojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "rasenshuriken": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rasenshuriken",
+        "stream": false
+      }
+    ]
+  },
+  "wind": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:wind",
+        "stream": false
+      }
+    ]
+  },
+  "rasenshuriken_explode": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rasenshuriken_explode",
+        "stream": false
+      }
+    ]
+  },
+  "poof": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:poof",
+        "stream": false
+      }
+    ]
+  },
+  "rasengan_start": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rasengan_start",
+        "stream": false
+      }
+    ]
+  },
+  "sharingansfx": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:sharingansfx",
+        "stream": false
+      }
+    ]
+  },
+  "cinematic_sharingan_reveal": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:cinematic/sharingan_reveal",
+        "stream": false
+      }
+    ]
+  },
+  "genjutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:genjutsu",
+        "stream": false
+      }
+    ]
+  },
+  "laser_long": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:laser_long",
+        "stream": false
+      }
+    ]
+  },
+  "kagebunshin": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kagebushin",
+        "stream": false
+      }
+    ]
+  },
+  "suironojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:suironojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "bullet": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bullet",
+        "stream": false
+      }
+    ]
+  },
+  "bullet_impact": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bullet_impact",
+        "stream": false
+      }
+    ]
+  },
+  "rocks": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rocks",
+        "stream": false
+      }
+    ]
+  },
+  "rinbo_hengoku": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rinbo_hengoku",
+        "stream": false
+      }
+    ]
+  },
+  "ground_charge": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_hakai_charge_ground",
+        "stream": false
+      }
+    ]
+  },
+  "jutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:jutsu",
+        "stream": false
+      }
+    ]
+  },
+  "hiding_in_ash": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hiding_in_ash",
+        "stream": false
+      }
+    ]
+  },
+  "bijudama": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bijudama",
+        "stream": false
+      }
+    ]
+  },
+  "tengaishinsei": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:tengaishinsei",
+        "stream": false
+      }
+    ]
+  },
+  "sando_no_jutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:doton_sando_no_jutsu",
+        "stream": false
+      }
+    ]
+  },
+  "yominuma": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:doton_yominuma",
+        "stream": false
+      }
+    ]
+  },
+  "suikodannojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:suiton_suikodannojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "daibakusuishoha": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:suiton_daibakusuishoha",
+        "stream": false
+      }
+    ]
+  },
+  "sabakusoso": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "nydomod:sabakusoso",
+        "stream": false
+      }
+    ]
+  },
+  "spiked": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:spiked",
+        "stream": false
+      }
+    ]
+  },
+  "ice_shoot": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:ice_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "makyohyosho": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:makyohyosho",
+        "stream": false
+      }
+    ]
+  },
+  "ice_formation": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:ice_formation",
+        "stream": false
+      }
+    ]
+  },
+  "ice_shoot_small": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:ice_shoot_small",
+        "stream": false
+      }
+    ]
+  },
+  "c3": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:c3",
+        "stream": false
+      }
+    ]
+  },
+  "katsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:katsu",
+        "stream": false
+      }
+    ]
+  },
+  "hand_press": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_hand_press",
+        "stream": false
+      }
+    ]
+  },
+  "chains": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:chains",
+        "stream": false
+      }
+    ]
+  },
+  "kyuubi_howl": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:kyuubi_howl",
+        "stream": false
+      }
+    ]
+  },
+  "kyuubi_death": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:kyuubi_death",
+        "stream": false
+      }
+    ]
+  },
+  "movement": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:movement",
+        "stream": false
+      }
+    ]
+  },
+  "lasercircus": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:lasercircus",
+        "stream": false
+      }
+    ]
+  },
+  "mokujin_no_jutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:mokujin_no_jutsu",
+        "stream": false
+      }
+    ]
+  },
+  "kairikimuso": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kairikimuso",
+        "stream": false
+      }
+    ]
+  },
+  "mindtransfer": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:mindtransfer_sfx",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_sfx": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:shadow_sfx",
+        "stream": false
+      }
+    ]
+  },
+  "charging_chakra": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:charging_chakra",
+        "stream": false
+      }
+    ]
+  },
+  "charge_ground": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:charge_ground",
+        "stream": false
+      }
+    ]
+  },
+  "explosion": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:explosion",
+        "stream": false
+      }
+    ]
+  },
+  "bonecrack": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bonecrack",
+        "stream": false
+      }
+    ]
+  },
+  "katon_gokamekeku": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:katon_gokamekeku",
+        "stream": false
+      }
+    ]
+  },
+  "flamethrow": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:flamethrow",
+        "stream": false
+      }
+    ]
+  },
+  "woodspawn": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:woodspawn",
+        "stream": false
+      }
+    ]
+  },
+  "electricity": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:espark1",
+        "stream": false
+      }
+    ]
+  },
+  "chidori": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:chidori",
+        "stream": false
+      }
+    ]
+  },
+  "bugs": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:bugs",
+        "stream": false
+      }
+    ]
+  },
+  "woodgrow": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:woodgrow",
+        "stream": false
+      }
+    ]
+  },
+  "amaterasu2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:amaterasu2",
+        "stream": false
+      }
+    ]
+  },
+  "throwpunch": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_swing",
+        "stream": false
+      }
+    ]
+  },
+  "tenseiblastcharge": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:tenseiblastcharge",
+        "stream": false
+      }
+    ]
+  },
+  "laser": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_hakai_charge_hand",
+        "stream": false
+      }
+    ]
+  },
+  "magatama_spin": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:magatama_spin",
+        "stream": false
+      }
+    ]
+  },
+  "laser_short": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_finger_laser",
+        "stream": false
+      }
+    ]
+  },
+  "intonraiha": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:intonraiha",
+        "stream": false
+      }
+    ]
+  },
+  "rasengan_during": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:rasengan_during",
+        "stream": false
+      }
+    ]
+  },
+  "windecho": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:windecho",
+        "stream": false
+      }
+    ]
+  },
+  "opengate": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:opengate",
+        "stream": false
+      }
+    ]
+  },
+  "eightgatesrelease": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:eightgatesrelease",
+        "stream": false
+      }
+    ]
+  },
+  "waterblast": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:waterblast",
+        "stream": false
+      }
+    ]
+  },
+  "kuchiyosenojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kuchiyosenojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "dragon_roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:dragon_roar",
+        "stream": false
+      }
+    ]
+  },
+  "lightning_shoot": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:lightning_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "kirin_dialog": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kirin_dialog",
+        "stream": false
+      }
+    ]
+  },
+  "shinsusenju": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:shinsusenju",
+        "stream": false
+      }
+    ]
+  },
+  "snake_hiss": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:snake_hiss",
+        "stream": false
+      }
+    ]
+  },
+  "dingding": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:ding",
+        "stream": false
+      }
+    ]
+  },
+  "senbon": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "nydomod:senbon",
+        "stream": false
+      }
+    ]
+  },
+  "gunbaiwind": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gunbaiwind",
+        "stream": false
+      }
+    ]
+  },
+  "chainsound": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "nydomod:hidansscythechain",
+        "stream": false
+      }
+    ]
+  },
+  "hiruko_tail": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hiruko_tail",
+        "stream": false
+      }
+    ]
+  },
+  "senbon_impact": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:senbon_impact",
+        "stream": false
+      }
+    ]
+  },
+  "roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:roar",
+        "stream": false
+      }
+    ]
+  },
+  "hirudora": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hirudora",
+        "stream": false
+      }
+    ]
+  },
+  "dojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:dojutsu",
+        "stream": false
+      }
+    ]
+  },
+  "swoosh": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:swoosh",
+        "stream": false
+      }
+    ]
+  },
+  "highpitch": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:highpitch",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_idle1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:4tails_idle1",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_idle2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:4tails_idle2",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_defeat": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:4tails_defeat",
+        "stream": false
+      }
+    ]
+  },
+  "shukaku_roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:1tails_roar",
+        "stream": false
+      }
+    ]
+  },
+  "guttural": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:guttural",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_hurt": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:4tails_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "spitbig": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:spitbig",
+        "stream": false
+      }
+    ]
+  },
+  "waterstream": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:waterstream",
+        "stream": false
+      }
+    ]
+  },
+  "wood_click": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:wood_click",
+        "stream": false
+      }
+    ]
+  },
+  "waterfall": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:waterfall",
+        "stream": false
+      }
+    ]
+  },
+  "shot": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_decopin_shot",
+        "stream": false
+      }
+    ]
+  },
+  "ting": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:ting",
+        "stream": false
+      }
+    ]
+  },
+  "shuriken1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:shuriken1",
+        "stream": false
+      }
+    ]
+  },
+  "chakraflow": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:chakraflow",
+        "stream": false
+      }
+    ]
+  },
+  "windblast": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:windblast",
+        "stream": false
+      }
+    ]
+  },
+  "toadchant": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:toadchant",
+        "stream": false
+      }
+    ]
+  },
+  "hidan": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hidan",
+        "stream": false
+      }
+    ]
+  },
+  "groundshock": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gal_se_groundshock",
+        "stream": false
+      }
+    ]
+  },
+  "hiramekarei_release": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:hiramekarei_release",
+        "stream": false
+      }
+    ]
+  },
+  "gunbai_deflect": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:gunbai_deflect",
+        "stream": false
+      }
+    ]
+  },
+  "biju_first_mode": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:biju_first_mode",
+        "stream": false
+      }
+    ]
+  },
+  "kcm_activate": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kcm_activate",
+        "stream": false
+      }
+    ]
+  },
+  "loop_kcm_cloak": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:loop_kcm_cloak",
+        "stream": true
+      }
+    ]
+  },
+  "mangekyou_activate": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:mangekyou_activate",
+        "stream": false
+      }
+    ]
+  },
+  "kamui_ms_type2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:kamui_ms_type2",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_guard_impact": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_guard_impact",
+        "stream": false,
+        "volume": 0.82,
+        "pitch": 0.9
+      }
+    ]
+  },
+  "kurama_growl": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:kyuubi_howl",
+        "stream": false,
+        "volume": 1.0,
+        "pitch": 0.92
+      },
+      {
+        "name": "nydomod:monster_growl",
+        "stream": false,
+        "volume": 0.9,
+        "pitch": 0.72
+      },
+      {
+        "name": "nydomod:guttural",
+        "stream": false,
+        "volume": 0.9,
+        "pitch": 0.78
+      },
+      {
+        "name": "nydomod:roar",
+        "stream": false,
+        "volume": 0.85,
+        "pitch": 0.82
+      }
+    ]
+  },
+  "kurama_roar": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:kyuubi_howl",
+        "stream": false,
+        "volume": 1.0,
+        "pitch": 0.9
+      },
+      {
+        "name": "nydomod:roar",
+        "stream": false,
+        "volume": 0.9,
+        "pitch": 0.8
+      }
+    ]
+  },
+  "flying_thunder_god": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "nydomod:hiraishin_sound_effect",
+        "stream": false
+      }
+    ]
+  },
+  "blast_charge": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:blast_charge",
+        "stream": false
+      }
+    ]
+  },
+  "grill_open": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:grill_open",
+        "stream": false
+      }
+    ]
+  },
+  "gunshot": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:gunshot",
+        "stream": false
+      }
+    ]
+  },
+  "heartbeat": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:heartbeat",
+        "stream": false
+      }
+    ]
+  },
+  "kamui": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:kamui_sound_efect_",
+        "stream": false
+      }
+    ]
+  },
+  "maniacal_laughter": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:maniacal_laughter",
+        "stream": false
+      }
+    ]
+  },
+  "paperflip": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:paperflip",
+        "stream": false
+      }
+    ]
+  },
+  "ray": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:ray",
+        "stream": false
+      }
+    ]
+  },
+  "activate_1": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:activate_1",
+        "stream": false
+      }
+    ]
+  },
+  "activate_2": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:activate_2",
+        "stream": false
+      }
+    ]
+  },
+  "activate_3": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:activate_3",
+        "stream": false
+      }
+    ]
+  },
+  "activate_4": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:activate_4",
+        "stream": false
+      }
+    ]
+  },
+  "activate_finish": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:activate_finish",
+        "stream": false
+      }
+    ]
+  },
+  "bijuu_mindscape_music": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "nydomod:bijuu_mindscape_music",
+        "stream": true
+      }
+    ]
+  },
+  "biju_bond_trial_start": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/trial_start",
+        "stream": false
+      }
+    ]
+  },
+  "biju_bond_inner_pressure": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/inner_pressure",
+        "stream": false
+      }
+    ]
+  },
+  "biju_bond_trial_end": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/trial_end",
+        "stream": false
+      }
+    ]
+  },
+  "biju_bond_spawn": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/spawn",
+        "stream": false
+      }
+    ]
+  },
+  "biju_bond_despawn": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/despawn",
+        "stream": false
+      }
+    ]
+  },
+  "biju_bond_laughter": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:biju_bond/laughter",
+        "stream": false
+      }
+    ]
+  },
+  "skill_purchase": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:skill_purchase",
+        "stream": false
+      }
+    ]
+  },
+  "mainmenu_ambient": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "nydomod:mainmenu/ambient",
+        "stream": true
+      }
+    ]
+  },
+  "mainmenu_hover": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "nydomod:mainmenu/hover",
+        "stream": false
+      }
+    ]
+  },
+  "amaterasu_sasuke": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:amaterasu_sasuke",
+        "stream": false
+      }
+    ]
+  },
+  "kagutsuchi_hit": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:kagutsuchi_hit",
+        "stream": false
+      }
+    ]
+  },
+  "kagutsuchi_shoot": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:kagutsuchi_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "kamui2": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:kamui2",
+        "stream": false
+      }
+    ]
+  },
+  "rinnegan_open": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:rinnegan_open",
+        "stream": false
+      }
+    ]
+  },
+  "sasuke_perfect": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:sasuke_perfect",
+        "stream": false
+      }
+    ]
+  },
+  "sharingan_dodge": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:sharingan_dodge",
+        "stream": false
+      }
+    ]
+  },
+  "sharingan_end": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:sharingan_end",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_attack_perfect": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_attack_perfect",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_attack2_perfect": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_attack2_perfect",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_block": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_block",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_complete": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_complete",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_perfect": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_perfect",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_random_roar": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_random_roar",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_rib": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_rib",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_shoot": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_skeleton": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_skeleton",
+        "stream": false
+      }
+    ]
+  },
+  "tailbeast_bomb_explode": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:tailbeast_bomb_explode",
+        "stream": false
+      }
+    ]
+  },
+  "tsukuyomi": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:tsukuyomi",
+        "stream": false
+      }
+    ]
+  },
+  "ura_renge_punch": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:ura_renge_punch",
+        "stream": false
+      }
+    ]
+  },
+  "taijutsu_punch": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "nydomod:taijutsu/attack1",
+        "stream": false
+      },
+      {
+        "name": "nydomod:taijutsu/attack2",
+        "stream": false
+      },
+      {
+        "name": "nydomod:taijutsu/attack3",
+        "stream": false
+      },
+      {
+        "name": "nydomod:taijutsu/attack4",
+        "stream": false
+      }
+    ]
+  },
+  "susanoo_chakra_aura_loop": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name": "nydomod:susanoo_chakra_aura_loop",
+        "stream": false
+      }
+    ]
+  },
+  "biju_consciousness_fall": {
+    "subtitle": "subtitles.nydomod.biju_consciousness_fall",
+    "sounds": [
+      {
+        "name": "nydomod:biju/consciousness/fall",
+        "stream": false,
+        "volume": 1.0
+      }
+    ]
+  },
+  "biju_consciousness_surge": {
+    "subtitle": "subtitles.nydomod.biju_consciousness_surge",
+    "sounds": [
+      {
+        "name": "nydomod:biju/consciousness/surge",
+        "stream": false,
+        "volume": 1.0
+      }
+    ]
+  },
+  "biju_consciousness_wake": {
+    "subtitle": "subtitles.nydomod.biju_consciousness_wake",
+    "sounds": [
+      {
+        "name": "nydomod:biju/consciousness/wake",
+        "stream": false,
+        "volume": 1.0
+      }
+    ]
+  },
+  "biju_mantle_idle_1": {
+    "subtitle": "subtitles.nydomod.biju_mantle_idle_1",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/idle_1a",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/idle_1b",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_idle_2": {
+    "subtitle": "subtitles.nydomod.biju_mantle_idle_2",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/idle_2a",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/idle_2b",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_idle_3": {
+    "subtitle": "subtitles.nydomod.biju_mantle_idle_3",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/idle_3a",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/idle_3b",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_idle_4": {
+    "subtitle": "subtitles.nydomod.biju_mantle_idle_4",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/idle_4a",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/idle_4b",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_roar": {
+    "subtitle": "subtitles.nydomod.biju_mantle_roar",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/roar",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_claw": {
+    "subtitle": "subtitles.nydomod.biju_mantle_claw",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/claw_1",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/claw_2",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_air": {
+    "subtitle": "subtitles.nydomod.biju_mantle_air",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/air_1",
+        "stream": false
+      },
+      {
+        "name": "nydomod:biju/mantle/air_2",
+        "stream": false
+      }
+    ]
+  },
+  "biju_mantle_land": {
+    "subtitle": "subtitles.nydomod.biju_mantle_land",
+    "sounds": [
+      {
+        "name": "nydomod:biju/mantle/land",
+        "stream": false
+      }
+    ]
+  }
+
+}
