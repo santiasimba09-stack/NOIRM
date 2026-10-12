@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 1,
+  "max_distance": 48.0,
+  "bounds": 1.9,
+  "emitters": [
+    {
+      "name": "subsurface_chakra_membrane",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, -0.012, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+      "rotation": [-18, 18], "spin": [-0.30, 0.30],
+      "size": [[0.0, 0.10], [0.12, 0.23], [0.58, 0.31], [1.0, 0.38]],
+      "alpha": [[0.0, 0.0], [0.10, 0.72], [0.58, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFE4FAFF", "end": "#FF168CFF" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 30, "thickness": 0.044, "arc_degrees": 330.0 }
+    },
+    {
+      "name": "water_pressure_echo",
+      "start": 3, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.002, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+      "rotation": [30, 300],
+      "size": [[0.0, 0.16], [0.24, 0.36], [0.72, 0.64], [1.0, 0.78]],
+      "alpha": [[0.0, 0.0], [0.12, 0.34], [0.60, 0.14], [1.0, 0.0]],
+      "color": { "start": "#FFCFF5FF", "end": "#FF287DCC" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "geometry_settings": { "segments": 32, "thickness": 0.028, "arc_degrees": 302.0 }
+    },
+    {
+      "name": "outer_water_ripple",
+      "start": 8, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.004, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [16, 16], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.30], [0.24, 0.54], [0.72, 0.94], [1.0, 1.14]],
+      "alpha": [[0.0, 0.0], [0.12, 0.25], [0.58, 0.10], [1.0, 0.0]],
+      "color": { "start": "#FFBDEEFF", "end": "#FF246FAE" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "geometry_settings": { "segments": 34, "thickness": 0.023, "arc_degrees": 318.0 }
+    },
+    {
+      "name": "water_foam_crest",
+      "start": 8, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.006, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [13, 13], "drag": 1.0,
+      "rotation": [18, 342],
+      "size": [[0.0, 0.32], [0.24, 0.56], [0.72, 0.96], [1.0, 1.10]],
+      "alpha": [[0.0, 0.0], [0.08, 0.58], [0.34, 0.42], [0.72, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB9EAFF" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "geometry_settings": { "segments": 36, "thickness": 0.014, "arc_degrees": 292.0 }
+    },
+    {
+      "name": "water_control_shimmer",
+      "start": 0, "duration": 4, "burst": 2, "rate": 0.45, "max_particles": 5,
+      "geometry": "fire_wisp",
+      "shape": { "type": "sphere", "radius": 0.19, "offset": [0.0, -0.014, 0.0], "scale": [1.0, 0.78, 0.06], "direction": "forward" },
+      "speed": [0.008, 0.026], "lifetime": [7, 11],
+      "gravity": 0.0, "drag": 0.95, "turbulence": 0.07,
+      "rotation": [-24, 24], "spin": [-0.75, 0.75],
+      "size": [[0.0, 0.020], [0.16, 0.075], [0.58, 0.115], [0.84, 0.058], [1.0, 0.0]],
+      "size_variation": 0.24,
+      "alpha": [[0.0, 0.0], [0.10, 0.50], [0.56, 0.27], [0.84, 0.10], [1.0, 0.0]],
+      "color": { "start": "#FFE8FAFF", "end": "#FF087DFA" },
+      "color_variation": 0.04,
+      "material": { "texture": "nydomod:textures/chakra_surface_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 8 },
+      "geometry_settings": { "segments": 6, "length": 0.22 }
+    }
+  ]
+}

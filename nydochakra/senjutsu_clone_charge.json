@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "duration": 12,
+  "priority": 2,
+  "max_distance": 96.0,
+  "bounds": 3.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": true,
+  "follow_source_direction": false,
+  "hide_in_first_person": true,
+  "emitters": [
+    {
+      "name": "senjutsu_mist",
+      "duration": 12,
+      "rate": 1.0,
+      "max_particles": 14,
+      "geometry": "billboard",
+      "shape": {
+        "type": "sphere",
+        "scale": [
+          1.0,
+          1.0,
+          1.45
+        ],
+        "radius": 0.34,
+        "direction": "radial"
+      },
+      "speed": [
+        0.01,
+        0.045
+      ],
+      "lifetime": [
+        28,
+        38
+      ],
+      "gravity": -0.006,
+      "drag": 0.96,
+      "turbulence": 0.08,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -0.6,
+        0.6
+      ],
+      "size": [
+        [
+          0.0,
+          0.12
+        ],
+        [
+          0.2,
+          0.3
+        ],
+        [
+          0.72,
+          0.42
+        ],
+        [
+          1.0,
+          0.12
+        ]
+      ],
+      "size_variation": 0.22,
+      "alpha": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.16,
+          0.18
+        ],
+        [
+          0.72,
+          0.11
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "color": {
+        "start": "#FFD8FFF0",
+        "end": "#FF70C8A8"
+      },
+      "color_variation": 0.05,
+      "material": {
+        "texture": "nydomod:textures/fire_blob_flipbook.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true,
+      "atlas": {
+        "columns": 16,
+        "rows": 1,
+        "frames": 16
+      }
+    },
+    {
+      "name": "natural_energy_points",
+      "duration": 12,
+      "rate": 0.75,
+      "max_particles": 10,
+      "geometry": "billboard",
+      "shape": {
+        "type": "sphere",
+        "scale": [
+          1.0,
+          1.0,
+          1.55
+        ],
+        "radius": 0.43,
+        "direction": "random"
+      },
+      "speed": [
+        0.025,
+        0.07
+      ],
+      "lifetime": [
+        16,
+        26
+      ],
+      "gravity": -0.008,
+      "drag": 0.97,
+      "turbulence": 0.09,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -1.2,
+        1.2
+      ],
+      "size": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.2,
+          0.025
+        ],
+        [
+          0.65,
+          0.04
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "size_variation": 0.28,
+      "alpha": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.18,
+          0.55
+        ],
+        [
+          0.72,
+          0.3
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "color": {
+        "start": "#FFF1FFF8",
+        "end": "#FF86DDBD"
+      },
+      "color_variation": 0.04,
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "follow_origin": true
+    }
+  ]
+}

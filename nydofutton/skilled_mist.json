@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "duration": 240,
+  "priority": 1,
+  "max_distance": 128.0,
+  "bounds": 9.5,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "follow_source_direction": false,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "rolling_acid_body",
+      "start": 0, "duration": 236, "burst": 14, "rate": 2.8, "max_particles": 112,
+      "follow_origin": true,
+      "shape": { "type": "sphere", "scale": [1.0, 0.58, 1.0], "radius": 2.85, "inner_radius": 0.10, "direction": "radial" },
+      "speed": [0.012, 0.052], "lifetime": [42, 78],
+      "gravity": -0.005, "drag": 0.95, "turbulence": 0.18, "vortex": 0.28,
+      "size": [[0.0, 0.38], [0.18, 1.08], [0.72, 1.58], [1.0, 1.04]],
+      "size_variation": 0.38,
+      "alpha": [[0.0, 0.0], [0.08, 0.31], [0.62, 0.24], [1.0, 0.0]],
+      "color": { "start": "#FFF5F6EE", "end": "#FFB8C6C1" },
+      "near_fade": 1.25,
+      "material": { "texture": "nydomod:textures/water_mass_soft.png", "blend": "alpha", "depth_write": false, "fullbright": false, "shader": "lit" },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "forward_pressure_rolls",
+      "start": 0, "duration": 234, "burst": 7, "rate": 1.35, "max_particles": 50,
+      "follow_origin": true,
+      "shape": { "type": "cone", "offset": [0.0, -0.15, -0.45], "length": 3.8, "angle": 38.0, "direction": "backward" },
+      "speed": [0.025, 0.085], "lifetime": [24, 48],
+      "gravity": -0.004, "drag": 0.92, "turbulence": 0.20, "vortex": 0.55,
+      "size": [[0.0, 0.18], [0.24, 0.64], [0.74, 0.95], [1.0, 0.48]],
+      "alpha": [[0.0, 0.0], [0.10, 0.23], [0.60, 0.14], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9BAEAA" },
+      "collision": { "mode": "world", "response": "clip", "padding": 0.10 }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "ground_hugging_residue",
+      "start": 4, "duration": 228, "burst": 5, "rate": 0.8, "max_particles": 34,
+      "follow_origin": true,
+      "shape": { "type": "ring", "offset": [0.0, -0.65, 0.0], "inner_radius": 0.5, "radius": 2.5, "direction": "radial" },
+      "speed": [0.006, 0.026], "lifetime": [34, 62],
+      "gravity": -0.002, "drag": 0.96, "turbulence": 0.10,
+      "size": [[0.0, 0.24], [0.28, 0.78], [0.76, 1.16], [1.0, 0.70]],
+      "alpha": [[0.0, 0.0], [0.12, 0.16], [0.70, 0.11], [1.0, 0.0]],
+      "color": { "start": "#FFF1F4ED", "end": "#FFB3C0BA" }
+    }
+  ]
+}

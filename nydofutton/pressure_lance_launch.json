@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 5.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/collar",
+      "name": "muzzle_pressure_ring",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [10, 10],
+      "size": [[0.0, 0.08], [0.18, 0.58], [0.60, 0.88], [1.0, 1.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.88], [0.46, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9BBDB7" }
+    },
+    {
+      "name": "muzzle_lance_core",
+      "start": 0, "duration": 8, "burst": 8, "rate": 1.0, "max_particles": 14,
+      "geometry": "tapered_streak",
+      "shape": { "type": "cone", "offset": [0.0, 0.0, 0.25], "length": 2.2, "angle": 8.0, "direction": "forward" },
+      "speed": [0.30, 0.70], "lifetime": [7, 13], "drag": 0.90,
+      "size": [[0.0, 0.016], [0.12, 0.10], [0.72, 0.05], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 1.0], [0.64, 0.42], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA7D0C8" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 1.5 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "muzzle_vapour",
+      "start": 0, "duration": 11, "burst": 12, "rate": 1.0, "max_particles": 24,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, 0.18], "length": 2.5, "angle": 17.0, "direction": "forward" },
+      "speed": [0.18, 0.46], "lifetime": [9, 18],
+      "gravity": -0.004, "drag": 0.90, "turbulence": 0.10,
+      "size": [[0.0, 0.10], [0.20, 0.36], [0.72, 0.54], [1.0, 0.24]],
+      "alpha": [[0.0, 0.0], [0.08, 0.32], [0.58, 0.15], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA8C2BD" }
+    }
+  ]
+}

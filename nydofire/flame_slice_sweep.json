@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "duration": 12,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 5.0,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "burning_weapon_arc", "burst": 2, "max_particles": 2, "geometry": "ring",
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [8, 10], "rotation": [-34, -18],
+      "size": [[0.0, 0.05], [0.12, 0.45], [0.42, 1.05], [0.78, 1.42], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.92], [0.62, 0.72], [1.0, 0.0]],
+      "color": { "start": "#FFFFA126", "end": "#FFE43A08" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 20, "thickness": 0.045, "arc_degrees": 148.0 }
+    },
+    {
+      "name": "arc_flame_tongues", "burst": 9, "max_particles": 9, "geometry": "billboard",
+      "shape": { "type": "ring", "inner_radius": 0.42, "radius": 1.05, "direction": "radial" },
+      "speed": [0.06, 0.16], "lifetime": [6, 10], "drag": 0.88, "turbulence": 0.12,
+      "rotation": [-25, 25], "spin": [-3, 3],
+      "size": [[0.0, 0.10], [0.20, 0.28], [0.60, 0.36], [1.0, 0.15]], "size_variation": 0.22,
+      "alpha": [[0.0, 0.0], [0.08, 0.82], [0.68, 0.58], [1.0, 0.0]],
+      "color": { "start": "#FFFFC24A", "end": "#FFE23606" },
+      "material": { "texture": "nydomod:textures/flame_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "cutting_heat_lines", "burst": 6, "max_particles": 6, "geometry": "tapered_streak",
+      "shape": { "type": "ring", "inner_radius": 0.28, "radius": 0.92, "direction": "radial" },
+      "speed": [0.16, 0.34], "lifetime": [4, 7], "drag": 0.84,
+      "size": [[0.0, 0.012], [0.16, 0.038], [0.62, 0.024], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.86], [0.60, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFFF9C2C" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 0.82 }
+    },
+    {
+      "name": "slice_embers", "start": 1, "burst": 8, "max_particles": 8, "geometry": "cube",
+      "shape": { "type": "ring", "inner_radius": 0.28, "radius": 1.02, "direction": "radial" },
+      "speed": [0.10, 0.28], "lifetime": [7, 12], "gravity": 0.012, "drag": 0.90,
+      "rotation": [0, 90], "spin": [-14, 14],
+      "size": [[0.0, 0.012], [0.16, 0.05], [0.62, 0.065], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.92], [0.70, 0.58], [1.0, 0.0]],
+      "color": { "start": "#FFFFC649", "end": "#FFD93608" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true }
+    }
+  ]
+}

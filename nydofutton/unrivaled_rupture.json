@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "duration": 30,
+  "priority": 2,
+  "max_distance": 112.0,
+  "bounds": 4.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/collar",
+      "name": "rupture_collapse",
+      "start": 0, "burst": 2, "max_particles": 2,
+      "lifetime": [11, 15],
+      "size": [[0.0, 0.14], [0.20, 0.92], [0.72, 1.24], [1.0, 1.38]],
+      "alpha": [[0.0, 0.0], [0.06, 0.80], [0.48, 0.28], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF89AAA3" }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "rupture_steam_shatter",
+      "start": 0, "duration": 12, "burst": 14, "rate": 1.2, "max_particles": 28,
+      "shape": { "type": "sphere", "radius": 0.85, "direction": "radial" },
+      "speed": [0.12, 0.38], "lifetime": [9, 18],
+      "gravity": -0.007, "drag": 0.88, "turbulence": 0.12,
+      "size": [[0.0, 0.11], [0.22, 0.40], [0.68, 0.58], [1.0, 0.24]],
+      "alpha": [[0.0, 0.0], [0.08, 0.34], [0.60, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF91B2AA" }
+    }
+  ]
+}

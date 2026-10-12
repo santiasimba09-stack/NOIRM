@@ -1,0 +1,15 @@
+{
+  "schema": 1, "duration": 28, "priority": 3, "max_distance": 144.0, "bounds": 8.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/waves/implosion", "name": "pressure_snap", "start": 0, "duration": 9, "burst": 4, "rate": 0.4, "max_particles": 8, "shape": { "type": "point", "direction": "radial" }, "lifetime": [7, 11] },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "body_vent",
+      "start": 0, "duration": 16, "burst": 36, "rate": 2.0, "max_particles": 64,
+      "shape": { "type": "sphere", "radius": 0.95, "inner_radius": 0.25, "direction": "radial" },
+      "speed": [0.20, 0.66], "lifetime": [10, 24], "drag": 0.88, "turbulence": 0.16,
+      "size": [[0.0, 0.10], [0.18, 0.48], [0.72, 0.82], [1.0, 0.28]],
+      "alpha": [[0.0, 0.0], [0.05, 0.40], [0.62, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA1B9B4" }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema": 1, "duration": 230, "priority": 1, "max_distance": 112.0, "bounds": 8.5,
+  "follow_source": true, "stop_when_source_missing": true, "follow_source_direction": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/mist", "name": "compressed_floor_layer",
+      "start": 0, "duration": 226, "burst": 10, "rate": 1.8, "max_particles": 70,
+      "follow_origin": true,
+      "shape": { "type": "sphere", "offset": [0.0, -0.55, 0.0], "scale": [1.18, 0.34, 1.18], "radius": 2.8, "inner_radius": 0.2, "direction": "radial" },
+      "speed": [0.005, 0.024], "lifetime": [46, 82], "gravity": -0.002, "drag": 0.97, "turbulence": 0.08,
+      "size": [[0.0, 0.42], [0.25, 1.10], [0.78, 1.46], [1.0, 0.92]],
+      "alpha": [[0.0, 0.0], [0.10, 0.29], [0.72, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FFF7F8F2", "end": "#FFA9BBB5" }
+    }
+  ]
+}

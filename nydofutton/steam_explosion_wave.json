@@ -1,0 +1,17 @@
+{
+  "schema": 1, "duration": 34, "priority": 3, "max_distance": 160.0, "bounds": 10.0,
+  "follow_source": true, "stop_when_source_missing": true, "follow_source_direction": false, "source_anchor": "center",
+  "emitters": [
+    {
+      "name": "expanding_pressure_shell", "start": 0, "duration": 28, "burst": 4, "rate": 0.65, "max_particles": 18,
+      "geometry": "shock_wave", "follow_origin": true,
+      "shape": { "type": "point", "direction": "radial" }, "speed": [0.0, 0.0], "lifetime": [15, 24],
+      "size": [[0.0, 0.18], [0.12, 0.52], [0.72, 1.0], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 0.68], [0.72, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9EB9B3" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 44, "thickness": 0.075 }
+    },
+    { "preset": "nydomod:_presets/waves/blast", "name": "secondary_wave", "start": 1, "duration": 22, "burst": 5, "rate": 0.55, "max_particles": 14, "follow_origin": true, "shape": { "type": "point", "direction": "radial" }, "lifetime": [10, 18] }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 112,
+  "duration": 240,
+  "bounds": 3.2,
+  "emitters": [
+    {
+      "name": "amaterasu_flames",
+      "geometry": "black_flame",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 240,
+      "follow_origin": true,
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.5
+        ],
+        [
+          0.94,
+          0.5
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.012,
+          0.96
+        ],
+        [
+          0.94,
+          0.96
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF08070B",
+        "end": "#FF100D15"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 24,
+        "length": 1.85
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "inherit_source_scale": true,
+  "source_scale_base": 0.8,
+  "source_scale_power": 0.62,
+  "source_scale_limit": 6
+}

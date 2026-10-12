@@ -1,0 +1,462 @@
+{
+  "schema": 1,
+  "duration": 14,
+  "priority": 2,
+  "max_distance": 64,
+  "bounds": 5,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "air_jump_1_pressure_0",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          -0.0
+        ],
+        "direction": "forward"
+      },
+      "speed": 0.008,
+      "lifetime": 8,
+      "drag": 0.94,
+      "rotation": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.18,
+          0.81
+        ],
+        [
+          1,
+          1.5
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.88
+        ],
+        [
+          0.3,
+          0.66
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF4E8",
+        "end": "#FFC52940"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 32,
+        "thickness": 0.085,
+        "arc_degrees": 360
+      }
+    },
+    {
+      "name": "air_jump_1_pressure_1",
+      "start": 1,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          -0.12
+        ],
+        "direction": "forward"
+      },
+      "speed": 0.008,
+      "lifetime": 9,
+      "drag": 0.94,
+      "rotation": [
+        23,
+        23
+      ],
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.18,
+          0.81
+        ],
+        [
+          1,
+          1.72
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.54
+        ],
+        [
+          0.3,
+          0.38
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFF342E",
+        "end": "#FFC52940"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 32,
+        "thickness": 0.055,
+        "arc_degrees": 290
+      }
+    },
+    {
+      "name": "air_jump_1_pressure_2",
+      "start": 2,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          -0.24
+        ],
+        "direction": "forward"
+      },
+      "speed": 0.008,
+      "lifetime": 10,
+      "drag": 0.94,
+      "rotation": [
+        46,
+        46
+      ],
+      "size": [
+        [
+          0,
+          0.18
+        ],
+        [
+          0.18,
+          0.81
+        ],
+        [
+          1,
+          1.94
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.54
+        ],
+        [
+          0.3,
+          0.38
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFF342E",
+        "end": "#FFC52940"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 32,
+        "thickness": 0.055,
+        "arc_degrees": 290
+      }
+    },
+    {
+      "name": "air_jump_1_air_cut_0",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0.48,
+          -0.48,
+          -0.1
+        ],
+        "direction": "backward"
+      },
+      "speed": 0.14,
+      "lifetime": 6,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.065
+        ],
+        [
+          0.25,
+          0.12
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.72
+        ],
+        [
+          0.2,
+          0.86
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFE6D8",
+        "end": "#FFFA3740"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.95
+      }
+    },
+    {
+      "name": "air_jump_1_air_cut_1",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "point",
+        "offset": [
+          -0.48,
+          -0.48,
+          -0.1
+        ],
+        "direction": "backward"
+      },
+      "speed": 0.14,
+      "lifetime": 6,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.065
+        ],
+        [
+          0.25,
+          0.12
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.72
+        ],
+        [
+          0.2,
+          0.86
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFE6D8",
+        "end": "#FFFA3740"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.95
+      }
+    },
+    {
+      "name": "air_jump_1_air_cut_2",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0.48,
+          0.48,
+          -0.1
+        ],
+        "direction": "backward"
+      },
+      "speed": 0.14,
+      "lifetime": 6,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.065
+        ],
+        [
+          0.25,
+          0.12
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.72
+        ],
+        [
+          0.2,
+          0.86
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFE6D8",
+        "end": "#FFFA3740"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.95
+      }
+    },
+    {
+      "name": "air_jump_1_air_cut_3",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "point",
+        "offset": [
+          -0.48,
+          0.48,
+          -0.1
+        ],
+        "direction": "backward"
+      },
+      "speed": 0.14,
+      "lifetime": 6,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.065
+        ],
+        [
+          0.25,
+          0.12
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.72
+        ],
+        [
+          0.2,
+          0.86
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFE6D8",
+        "end": "#FFFA3740"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "length": 0.95
+      }
+    }
+  ]
+}

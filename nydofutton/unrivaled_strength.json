@@ -1,0 +1,27 @@
+{
+  "schema": 1, "duration": 760, "priority": 1, "max_distance": 128.0, "bounds": 5.0,
+  "follow_source": true, "stop_when_source_missing": true, "follow_source_direction": false, "source_anchor": "center", "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "pressure_mantle",
+      "start": 0, "duration": 754, "burst": 9, "rate": 1.55, "max_particles": 50,
+      "follow_origin": true,
+      "shape": { "type": "sphere", "scale": [0.72, 1.30, 0.72], "radius": 0.84, "inner_radius": 0.40, "direction": "radial" },
+      "speed": [0.03, 0.10], "lifetime": [15, 30], "gravity": -0.014, "drag": 0.91, "turbulence": 0.16, "vortex": 0.38,
+      "size": [[0.0, 0.16], [0.22, 0.54], [0.70, 0.82], [1.0, 0.36]],
+      "alpha": [[0.0, 0.0], [0.08, 0.25], [0.62, 0.17], [1.0, 0.0]],
+      "color": { "start": "#FFF9FAF7", "end": "#FFAABDBA" },
+      "collision": { "mode": "world", "response": "clip", "padding": 0.08 }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/fading_wisp", "name": "back_vents",
+      "start": 1, "duration": 750, "burst": 3, "rate": 0.62, "max_particles": 22,
+      "follow_origin": true,
+      "shape": { "type": "cone", "offset": [0.0, 0.35, -0.38], "length": 1.25, "angle": 24.0, "direction": "backward" },
+      "speed": [0.04, 0.13], "lifetime": [16, 30], "gravity": -0.010, "drag": 0.91,
+      "size": [[0.0, 0.12], [0.24, 0.44], [0.74, 0.68], [1.0, 0.28]],
+      "alpha": [[0.0, 0.0], [0.10, 0.20], [0.64, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFAABAB8" }
+    }
+  ]
+}

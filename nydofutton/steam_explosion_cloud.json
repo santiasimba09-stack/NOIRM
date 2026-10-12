@@ -1,0 +1,25 @@
+{
+  "schema": 1, "duration": 42, "priority": 2, "max_distance": 144.0, "bounds": 10.0,
+  "follow_source": true, "stop_when_source_missing": true, "follow_source_direction": false, "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "expanding_superheated_cloud",
+      "start": 0, "duration": 34, "burst": 42, "rate": 2.4, "max_particles": 96,
+      "follow_origin": true,
+      "shape": { "type": "sphere", "radius": 2.2, "inner_radius": 0.35, "direction": "radial" },
+      "speed": [0.18, 0.56], "lifetime": [16, 34], "gravity": -0.006, "drag": 0.90, "turbulence": 0.18, "vortex": 0.22,
+      "size": [[0.0, 0.14], [0.18, 0.62], [0.72, 1.05], [1.0, 0.42]],
+      "alpha": [[0.0, 0.0], [0.05, 0.36], [0.64, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA6BCB7" }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow", "name": "heavy_outer_billow",
+      "start": 2, "duration": 34, "burst": 18, "rate": 1.0, "max_particles": 42,
+      "follow_origin": true,
+      "shape": { "type": "sphere", "radius": 2.5, "inner_radius": 1.25, "direction": "radial" },
+      "speed": [0.07, 0.25], "lifetime": [20, 42], "gravity": -0.008, "drag": 0.92, "turbulence": 0.12,
+      "size": [[0.0, 0.20], [0.24, 0.74], [0.76, 1.16], [1.0, 0.50]],
+      "alpha": [[0.0, 0.0], [0.08, 0.22], [0.68, 0.11], [1.0, 0.0]]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "duration": 48,
+  "priority": 3,
+  "max_distance": 256,
+  "bounds": 2,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "replace_on_trigger": true,
+  "emitters": [
+    {
+      "name": "body",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "biju_beam",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 48,
+      "drag": 1,
+      "follow_origin": true,
+      "size": [
+        [
+          0,
+          0.36
+        ],
+        [
+          0.06,
+          0.72
+        ],
+        [
+          1,
+          0.72
+        ]
+      ],
+      "alpha": 0.97,
+      "color": {
+        "start": "#FF1B061E",
+        "end": "#FF1B061E"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 12,
+        "length": 96
+      },
+      "near_fade": 1.4
+    },
+    {
+      "name": "red_pressure",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "biju_beam",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 48,
+      "drag": 1,
+      "follow_origin": true,
+      "size": [
+        [
+          0,
+          0.5
+        ],
+        [
+          0.06,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "alpha": 0.36,
+      "color": {
+        "start": "#FFFF313F",
+        "end": "#FFFF313F"
+      },
+      "material": {
+        "texture": "nydomod:textures/chakra_surface_flipbook.png",
+        "blend": "additive",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 12,
+        "length": 96
+      },
+      "near_fade": 1.4,
+      "atlas": {
+        "columns": 16,
+        "rows": 1,
+        "frames": 1
+      }
+    },
+    {
+      "name": "violet_pressure",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "biju_beam",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 48,
+      "drag": 1,
+      "follow_origin": true,
+      "size": [
+        [
+          0,
+          0.54
+        ],
+        [
+          0.06,
+          1.08
+        ],
+        [
+          1,
+          1.08
+        ]
+      ],
+      "alpha": 0.095,
+      "color": {
+        "start": "#FFAA38E7",
+        "end": "#FFAA38E7"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 12,
+        "length": 96
+      },
+      "near_fade": 1.4
+    }
+  ]
+}

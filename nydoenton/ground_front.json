@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "duration": 6,
+  "max_distance": 128,
+  "bounds": 4,
+  "replace_on_trigger": true,
+  "snapshot_interpolation_ticks": 2,
+  "follow_source": false,
+  "emitters": [{
+    "name": "connected_ground_amaterasu",
+    "geometry": "enton_ground",
+    "burst": 1,
+    "max_particles": 1,
+    "lifetime": 6,
+    "shape": {"type": "point", "direction": "forward"},
+    "speed": [0, 0],
+    "size": [[0, 1], [0.75, 1], [1, 0.65]],
+    "alpha": [[0, 1], [0.75, 1], [1, 0]],
+    "color": {"start": "#FF05050B", "end": "#FF05050B"},
+    "material": {
+      "texture": "nydomod:textures/white_square.png",
+      "blend": "alpha",
+      "depth_write": false,
+      "fullbright": true
+    },
+    "near_fade": 0.4,
+    "geometry_settings": {"segments": 12}
+  }]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": 1, "duration": 34, "priority": 2, "max_distance": 128.0, "bounds": 5.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/waves/blast", "name": "pressure_bloom", "start": 0, "duration": 14, "burst": 4, "rate": 0.4, "max_particles": 10, "shape": { "type": "point", "direction": "radial" }, "lifetime": [10, 18] },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "activation_vents",
+      "start": 0, "duration": 16, "burst": 24, "rate": 1.1, "max_particles": 42,
+      "shape": { "type": "sphere", "scale": [0.8, 1.25, 0.8], "radius": 0.9, "inner_radius": 0.35, "direction": "radial" },
+      "speed": [0.12, 0.38], "lifetime": [10, 22], "drag": 0.89, "turbulence": 0.14,
+      "size": [[0.0, 0.10], [0.22, 0.42], [0.70, 0.66], [1.0, 0.24]],
+      "alpha": [[0.0, 0.0], [0.06, 0.34], [0.60, 0.15], [1.0, 0.0]]
+    }
+  ]
+}

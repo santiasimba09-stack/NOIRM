@@ -1,0 +1,25 @@
+{
+  "schema":1,"duration":72,"priority":4,"max_distance":128.0,"bounds":8.0,
+  "follow_source":true,"stop_when_source_missing":true,"source_anchor":"origin","preserve_trigger_offset":true,
+  "emitters":[
+    {"name":"bloodline_double_helix","start":0,"burst":2,"max_particles":2,"geometry":"ring",
+     "shape":{"type":"point","direction":"up"},"lifetime":[58,68],
+     "size":[[0,0.12],[0.18,0.72],[0.68,1.18],[1,1.55]],"alpha":[[0,0],[0.08,0.92],[0.72,0.45],[1,0]],
+     "color":{"start":"#FFFF2438","end":"#FF25000A"},
+     "material":{"texture":"nydomod:textures/white_square.png","blend":"additive","depth_write":false,"fullbright":true},
+     "follow_origin":true,"geometry_settings":{"segments":48,"thickness":0.035,"arc_degrees":320}},
+    {"name":"inherited_chakra_motes","start":8,"rate":2.4,"max_particles":44,"geometry":"fire_wisp",
+     "shape":{"type":"ring","inner_radius":0.25,"radius":1.15,"scale":[1,1.6,1],"direction":"inward"},
+     "speed":[0.025,0.09],"lifetime":[18,34],"gravity":-0.002,"drag":0.94,"turbulence":0.08,
+     "size":[[0,0.018],[0.2,0.08],[0.7,0.05],[1,0]],"alpha":[[0,0],[0.12,0.84],[0.72,0.42],[1,0]],
+     "color":{"start":"#FFFFA0A6","end":"#FF8B0016"},
+     "material":{"texture":"nydomod:textures/white_square.png","blend":"additive","depth_write":false,"fullbright":true},
+     "geometry_settings":{"segments":6,"length":0.26}},
+    {"name":"eternal_reveal","start":50,"burst":1,"max_particles":1,"geometry":"ring",
+     "shape":{"type":"point","direction":"up"},"lifetime":20,
+     "size":[[0,0.05],[0.18,0.9],[0.62,2.1],[1,2.8]],"alpha":[[0,0],[0.08,1],[0.52,0.55],[1,0]],
+     "color":{"start":"#FFFFFFFF","end":"#FFFF1838"},
+     "material":{"texture":"nydomod:textures/white_square.png","blend":"additive","depth_write":false,"fullbright":true},
+     "follow_origin":true,"geometry_settings":{"segments":64,"thickness":0.055,"arc_degrees":360}}
+  ]
+}

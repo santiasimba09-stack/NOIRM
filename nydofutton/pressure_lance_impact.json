@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "duration": 34,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 6.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/blast",
+      "name": "pressure_cap_break",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [14, 14],
+      "size": [[0.0, 0.08], [0.16, 0.72], [0.48, 1.18], [1.0, 1.48]],
+      "alpha": [[0.0, 0.0], [0.04, 0.94], [0.44, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9DC1BA" },
+      "geometry_settings": { "segments": 32, "thickness": 0.30, "arc_degrees": 230.0, "edge": 0.98, "roll": 13.0, "crest": 0.50, "wave": 0.12, "lobes": 5.0 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "impact_flash_steam",
+      "start": 0, "duration": 14, "burst": 24, "rate": 1.4, "max_particles": 44,
+      "shape": { "type": "sphere", "radius": 1.05, "inner_radius": 0.15, "direction": "radial" },
+      "speed": [0.16, 0.52], "lifetime": [9, 21],
+      "gravity": -0.007, "drag": 0.88, "turbulence": 0.14, "vortex": 0.22,
+      "size": [[0.0, 0.10], [0.22, 0.44], [0.70, 0.72], [1.0, 0.30]],
+      "alpha": [[0.0, 0.0], [0.06, 0.38], [0.58, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9BB6B0" }
+    }
+  ]
+}

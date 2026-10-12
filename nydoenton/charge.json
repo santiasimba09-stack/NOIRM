@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 64,
+  "duration": 4,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "enton_charge",
+      "geometry": "black_flame",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 4,
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0.6,
+          0.22
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.95
+        ],
+        [
+          0.6,
+          0.9
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF08070B",
+        "end": "#FF100D15"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 24,
+        "length": 0.9
+      }
+    }
+  ]
+}

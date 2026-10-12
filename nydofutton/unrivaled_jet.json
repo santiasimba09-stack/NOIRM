@@ -1,0 +1,14 @@
+{
+  "schema": 1, "duration": 24, "priority": 2, "max_distance": 112.0, "bounds": 5.5,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "directional_steam_jet",
+      "start": 0, "duration": 13, "burst": 16, "rate": 1.8, "max_particles": 34,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, -0.20], "length": 3.0, "angle": 14.0, "direction": "forward" },
+      "speed": [0.24, 0.66], "lifetime": [8, 18], "gravity": -0.003, "drag": 0.87, "turbulence": 0.07,
+      "size": [[0.0, 0.08], [0.20, 0.34], [0.64, 0.55], [1.0, 0.20]],
+      "alpha": [[0.0, 0.0], [0.05, 0.38], [0.56, 0.17], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9FBAB5" }
+    }
+  ]
+}

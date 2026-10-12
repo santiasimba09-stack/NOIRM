@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "duration": 60,
+  "priority": 3,
+  "max_distance": 256,
+  "bounds": 2,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "replace_on_trigger": true,
+  "emitters": [
+    {
+      "name": "body",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 60,
+      "drag": 1,
+      "follow_origin": true,
+      "size": 0.92,
+      "alpha": [
+        [
+          0,
+          0.5
+        ],
+        [
+          0.06,
+          0.95
+        ],
+        [
+          0.98,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF090411",
+        "end": "#FF090411"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 16,
+        "flow": 1.15,
+        "flow_tile": 1,
+        "wave": 0.015,
+        "lobes": 3,
+        "swirl": 0.32,
+        "glow": 0,
+        "rim": 0
+      },
+      "near_fade": 1.3
+    },
+    {
+      "name": "compression",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 60,
+      "drag": 1,
+      "follow_origin": true,
+      "size": 1,
+      "alpha": 0.27,
+      "color": {
+        "start": "#FFB02C60",
+        "end": "#FFB02C60"
+      },
+      "material": {
+        "texture": "nydomod:textures/chakra_surface_flipbook.png",
+        "blend": "additive",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "atlas": {
+        "columns": 16,
+        "rows": 1,
+        "frames": 1
+      },
+      "geometry_settings": {
+        "segments": 16,
+        "flow": -0.7,
+        "flow_tile": 2,
+        "wave": 0.045,
+        "lobes": 3,
+        "swirl": 1.35,
+        "glow": 0,
+        "rim": 0.25
+      },
+      "near_fade": 1.3
+    },
+    {
+      "name": "red_equator",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "random"
+      },
+      "speed": 0,
+      "lifetime": 60,
+      "drag": 1,
+      "follow_origin": true,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": 3.5,
+      "size": 1.06,
+      "alpha": 0.38,
+      "color": {
+        "start": "#FFFF3B37",
+        "end": "#FFFF3B37"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.038,
+        "arc_degrees": 285
+      },
+      "near_fade": 1.3
+    },
+    {
+      "name": "violet_meridian",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "random"
+      },
+      "speed": 0,
+      "lifetime": 60,
+      "drag": 1,
+      "follow_origin": true,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": -2.7,
+      "size": 1.09,
+      "alpha": 0.3,
+      "color": {
+        "start": "#FF9E45E3",
+        "end": "#FF9E45E3"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "fullbright": true,
+        "depth_write": false
+      },
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.022,
+        "arc_degrees": 220
+      },
+      "near_fade": 1.3
+    }
+  ]
+}

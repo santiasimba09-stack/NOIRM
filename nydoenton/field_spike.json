@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "duration": 5,
+  "max_distance": 64,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "rooted_black_spike",
+      "geometry": "black_flame",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 5,
+      "follow_origin": false,
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.325
+        ],
+        [
+          0.25,
+          0.65
+        ],
+        [
+          0.8,
+          0.65
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.8
+        ],
+        [
+          0.2,
+          0.95
+        ],
+        [
+          0.8,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF08070B",
+        "end": "#FF100D15"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 24,
+        "length": 2.4
+      }
+    }
+  ]
+}

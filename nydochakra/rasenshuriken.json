@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "duration": 600,
+  "priority": 3,
+  "max_distance": 176.0,
+  "bounds": 27.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "projectile_disc",
+  "source_scale_mode": "entity_width",
+  "source_scale_base": 1.50,
+  "source_scale_power": 1.0,
+  "source_scale_floor": 0.05,
+  "source_scale_limit": 10.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_hot_core",
+      "name": "glow_volume",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.04], [0.035, 0.40], [1.0, 0.40]],
+      "alpha": [[0.0, 0.02], [0.035, 0.09], [0.94, 0.09], [1.0, 0.0]],
+      "color": { "start": "#FF77D6FF", "end": "#FF348BEF" },
+      "geometry_settings": {
+        "segments": 16, "rim": 0.34,
+        "flow": -0.72, "flow_tile": 1.0, "wave": 0.035, "lobes": 4.0,
+        "swirl": -0.28, "glow": 0.18
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_core",
+      "name": "core_outer",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.03], [0.035, 0.35], [1.0, 0.35]],
+      "alpha": [[0.0, 0.08], [0.035, 0.62], [0.94, 0.62], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_core",
+      "name": "core_mid",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.024], [0.035, 0.255], [1.0, 0.255]],
+      "alpha": [[0.0, 0.07], [0.035, 0.48], [0.94, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FF74CBFF", "end": "#FF328EEA" },
+      "geometry_settings": {
+        "segments": 20, "rim": 0.08,
+        "flow": -1.9, "flow_tile": 1.5, "wave": 0.09, "lobes": 4.0,
+        "swirl": -0.65, "glow": 0.38
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_hot_core",
+      "name": "core_hot",
+      "follow_origin": true, "near_fade": 0.0,
+      "color": { "start": "#FF65D5FF", "end": "#FF2B93FF" },
+      "geometry_settings": {
+        "segments": 28, "rim": 0.025,
+        "flow": 2.7, "flow_tile": 1.0, "wave": 0.025, "lobes": 5.0,
+        "swirl": 0.32, "glow": 0.68
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_crossed_currents",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.026], [0.05, 0.285], [1.0, 0.285]]
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_counter_currents",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.026], [0.05, 0.305], [1.0, 0.305]],
+      "alpha": [[0.0, 0.0], [0.03, 0.52], [0.94, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FF185EE8", "end": "#FF3DAEF8" },
+      "geometry_settings": {
+        "segments": 24, "thickness": 0.022,
+        "lobes": 5.0, "flow": -2.2, "flow_tile": 1.8,
+        "wave": 0.62, "swirl": -0.70, "rim": 0.14, "glow": 0.62,
+        "crest": 0.56
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_micro_filaments",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.027], [0.05, 0.325], [1.0, 0.325]],
+      "alpha": [[0.0, 0.0], [0.03, 0.30], [0.94, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FF1559E8", "end": "#FF3AAFFC" },
+      "geometry_settings": {
+        "segments": 22, "thickness": 0.012,
+        "lobes": 3.0, "flow": 3.6, "flow_tile": 3.2,
+        "wave": 0.78, "swirl": 1.20, "rim": 0.12, "glow": 0.76,
+        "crest": 0.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "outer_soft_currents",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.032], [0.05, 0.36], [1.0, 0.36]],
+      "alpha": [[0.0, 0.0], [0.03, 0.22], [0.94, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FF1A65D8", "end": "#FF4DB9EE" },
+      "geometry_settings": {
+        "segments": 28, "thickness": 0.040,
+        "lobes": 4.0, "flow": 1.15, "flow_tile": 1.25,
+        "wave": 0.34, "swirl": 0.48, "rim": 0.42, "glow": 0.42,
+        "crest": 0.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_sparks",
+      "name": "orbit_sparks",
+      "follow_origin": true, "near_fade": 0.0
+    },
+    {
+      "name": "compressed_wind_collar",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [600, 600], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [-18.0, -18.0],
+      "size": [[0.0, 0.04], [0.05, 0.48], [0.16, 0.58], [1.0, 0.56]],
+      "alpha": [[0.0, 0.0], [0.04, 0.30], [0.94, 0.24], [1.0, 0.0]],
+      "color": { "start": "#FFA9EBFF", "end": "#FF62C7F2" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 32, "thickness": 0.040, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "four_futon_blades",
+      "start": 18, "duration": 582, "burst": 1, "max_particles": 1,
+      "geometry": "futon_shuriken", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [582, 582], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [34.4, 34.4],
+      "size": [[0.0, 0.08], [0.05, 1.54], [0.12, 1.74], [0.36, 1.70], [0.68, 1.76], [1.0, 1.72]],
+      "alpha": [[0.0, 0.12], [0.04, 0.92], [0.96, 0.92], [1.0, 0.0]],
+      "color": { "start": "#FF43B2FF", "end": "#FF86DEFF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 24, "thickness": 0.48, "rim": 0.17, "crest": 0.94
+      }
+    },
+    {
+      "name": "tip_pressure_north",
+      "start": 4, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [596, 596], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [34.4, 34.4],
+      "size": [[0.0, 1.62], [0.05, 1.86], [1.0, 1.82]],
+      "alpha": [[0.0, 0.0], [0.06, 0.16], [0.94, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FF3BAAFF", "end": "#FF9BEAFF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 12, "thickness": 0.028, "arc_degrees": 34.0 }
+    },
+    {
+      "name": "tip_pressure_east",
+      "start": 4, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [596, 596], "drag": 1.0,
+      "rotation": [90.0, 90.0], "spin": [34.4, 34.4],
+      "size": [[0.0, 1.62], [0.05, 1.86], [1.0, 1.82]],
+      "alpha": [[0.0, 0.0], [0.06, 0.16], [0.94, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FF3BAAFF", "end": "#FF9BEAFF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 12, "thickness": 0.028, "arc_degrees": 34.0 }
+    },
+    {
+      "name": "tip_pressure_south",
+      "start": 4, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [596, 596], "drag": 1.0,
+      "rotation": [180.0, 180.0], "spin": [34.4, 34.4],
+      "size": [[0.0, 1.62], [0.05, 1.86], [1.0, 1.82]],
+      "alpha": [[0.0, 0.0], [0.06, 0.16], [0.94, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FF3BAAFF", "end": "#FF9BEAFF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 12, "thickness": 0.028, "arc_degrees": 34.0 }
+    },
+    {
+      "name": "tip_pressure_west",
+      "start": 4, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [596, 596], "drag": 1.0,
+      "rotation": [270.0, 270.0], "spin": [34.4, 34.4],
+      "size": [[0.0, 1.62], [0.05, 1.86], [1.0, 1.82]],
+      "alpha": [[0.0, 0.0], [0.06, 0.16], [0.94, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FF3BAAFF", "end": "#FF9BEAFF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "segments": 12, "thickness": 0.028, "arc_degrees": 34.0 }
+    },
+    {
+      "name": "cutting_tip_filaments",
+      "start": 8, "duration": 592, "burst": 3, "rate": 0.18, "max_particles": 6,
+      "geometry": "tapered_streak", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "ring", "radius": 1.28, "inner_radius": 1.02, "scale": [1.0, 1.0, 0.05], "direction": "radial" },
+      "speed": [0.025, 0.075], "lifetime": [6, 11],
+      "gravity": 0.0, "drag": 0.90, "turbulence": 0.025, "vortex": 6.4, "vortex_pull": 0.08,
+      "size": [[0.0, 0.010], [0.18, 0.040], [0.66, 0.026], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.10, 0.72], [0.62, 0.38], [1.0, 0.0]],
+      "color": { "start": "#FF4DBAFF", "end": "#FFB5F1FF" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "length": 0.38 }
+    }
+  ]
+}

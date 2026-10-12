@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "duration": 84,
+  "priority": 3,
+  "max_distance": 192.0,
+  "bounds": 33.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "source_scale_mode": "entity_width",
+  "source_scale_base": 0.30,
+  "source_scale_power": 1.0,
+  "source_scale_limit": 10.0,
+  "emitters": [
+    {
+      "name": "detonation_core",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_sphere", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [82, 82], "drag": 1.0,
+      "size": [[0.0, 0.06], [0.08, 0.30], [0.34, 0.36], [0.82, 0.34], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 0.72], [0.46, 0.46], [0.84, 0.28], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9EDCF4" },
+      "material": { "texture": "nydomod:textures/chakra_surface_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 24, "rim": 0.10,
+        "flow": 3.4, "flow_tile": 1.6, "wave": 0.16, "lobes": 6.0,
+        "swirl": 0.84, "glow": 0.30
+      }
+    },
+    {
+      "name": "counter_rotating_wind_cell",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_sphere", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [82, 82], "drag": 1.0,
+      "size": [[0.0, 0.08], [0.10, 0.38], [0.38, 0.46], [0.82, 0.43], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.24], [0.56, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFE8F9FF", "end": "#FF78C8E9" },
+      "material": { "texture": "nydomod:textures/chakra_surface_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 28, "rim": 0.42,
+        "flow": -2.8, "flow_tile": 1.25, "wave": 0.22, "lobes": 7.0,
+        "swirl": -0.78, "glow": 0.16
+      }
+    },
+    {
+      "name": "surface_cutting_vortices",
+      "start": 2, "burst": 6, "max_particles": 6,
+      "geometry": "spiral_vortex", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "sphere", "radius": 0.26, "inner_radius": 0.08, "scale": [1.0, 1.0, 1.0], "direction": "radial" },
+      "speed": [0.0, 0.0], "lifetime": [74, 74], "drag": 1.0,
+      "rotation": [-180.0, 180.0], "spin": [-31.0, -18.0],
+      "size": [[0.0, 0.04], [0.12, 0.18], [0.64, 0.20], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.52], [0.64, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFACE2F7" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 14, "thickness": 0.055, "turns": -0.88,
+        "wave": 0.38, "crest": 0.58, "lobes": 3.0, "rim": 0.18
+      }
+    },
+    {
+      "name": "microscopic_wind_blades",
+      "start": 1, "duration": 72, "burst": 18, "rate": 0.48, "max_particles": 42,
+      "geometry": "tapered_streak", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "sphere", "radius": 0.34, "inner_radius": 0.04, "scale": [1.0, 1.0, 1.0], "direction": "radial" },
+      "speed": [0.16, 0.52], "lifetime": [9, 20],
+      "gravity": 0.0, "drag": 0.91, "turbulence": 0.13, "vortex": 5.4, "vortex_pull": -0.18,
+      "size": [[0.0, 0.012], [0.16, 0.050], [0.68, 0.035], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.84], [0.58, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9CD9F2" },
+      "color_variation": 0.05,
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": { "length": 0.44 }
+    },
+    {
+      "name": "slicing_pressure_fronts",
+      "start": 0, "burst": 4, "max_particles": 4,
+      "geometry": "shock_wave", "follow_origin": true, "near_fade": 0.0,
+      "shape": { "type": "sphere", "radius": 0.06, "scale": [1.0, 1.0, 1.0], "direction": "radial" },
+      "speed": [0.035, 0.035], "lifetime": [82, 82], "drag": 0.96,
+      "rotation": [-180.0, 180.0],
+      "size": [[0.0, 0.04], [0.20, 0.26], [0.72, 0.42], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.42], [0.60, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FFF5FCFF", "end": "#FF8CCFEA" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 24, "thickness": 0.045, "arc_degrees": 318.0,
+        "edge": 0.92, "roll": 12.0, "crest": 0.30, "wave": 0.18, "lobes": 6.0
+      }
+    }
+  ]
+}

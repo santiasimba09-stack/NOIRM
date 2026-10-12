@@ -1,0 +1,19 @@
+{
+  "schema": 1, "duration": 34, "priority": 2, "max_distance": 128.0, "bounds": 6.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "violent_exhale",
+      "start": 0, "duration": 16, "burst": 24, "rate": 2.2, "max_particles": 52,
+      "shape": { "type": "cone", "length": 4.4, "angle": 34.0, "direction": "forward" },
+      "speed": [0.20, 0.62], "lifetime": [14, 30], "gravity": -0.006, "drag": 0.89, "turbulence": 0.14,
+      "size": [[0.0, 0.10], [0.20, 0.48], [0.72, 0.84], [1.0, 0.40]],
+      "alpha": [[0.0, 0.0], [0.06, 0.34], [0.64, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA8BDB8" }
+    },
+    {
+      "preset": "nydomod:_presets/waves/cone", "name": "release_pressure",
+      "start": 0, "duration": 12, "burst": 3, "rate": 0.4, "max_particles": 8,
+      "shape": { "type": "point", "direction": "forward" }, "lifetime": [9, 15]
+    }
+  ]
+}

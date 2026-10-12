@@ -1,0 +1,18 @@
+{
+  "schema": 1, "duration": 36, "priority": 2, "max_distance": 112.0, "bounds": 6.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/vortex_ring", "name": "ph_control_ring",
+      "start": 0, "duration": 18, "burst": 4, "rate": 0.25, "max_particles": 8,
+      "shape": { "type": "point", "direction": "radial" }, "lifetime": [12, 20]
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "chemistry_shift",
+      "start": 0, "duration": 22, "burst": 16, "rate": 0.9, "max_particles": 28,
+      "shape": { "type": "sphere", "radius": 1.9, "inner_radius": 0.8, "direction": "radial" },
+      "speed": [0.025, 0.10], "lifetime": [13, 26], "drag": 0.91, "turbulence": 0.18, "vortex": 0.55,
+      "size": [[0.0, 0.12], [0.26, 0.50], [0.72, 0.72], [1.0, 0.28]],
+      "alpha": [[0.0, 0.0], [0.08, 0.32], [0.64, 0.14], [1.0, 0.0]]
+    }
+  ]
+}

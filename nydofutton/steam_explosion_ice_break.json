@@ -1,0 +1,14 @@
+{
+  "schema": 1, "duration": 28, "priority": 2, "max_distance": 128.0, "bounds": 7.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/waves/collar", "name": "melt_ring", "start": 0, "duration": 14, "burst": 4, "rate": 0.35, "max_particles": 10, "shape": { "type": "point", "direction": "radial" }, "lifetime": [9, 15] },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "flash_melt_vapor",
+      "start": 0, "duration": 18, "burst": 22, "rate": 1.0, "max_particles": 38,
+      "shape": { "type": "ring", "inner_radius": 0.5, "radius": 2.6, "direction": "radial" },
+      "speed": [0.10, 0.34], "lifetime": [11, 25], "gravity": -0.012, "drag": 0.90,
+      "size": [[0.0, 0.10], [0.22, 0.42], [0.72, 0.72], [1.0, 0.26]],
+      "alpha": [[0.0, 0.0], [0.06, 0.34], [0.60, 0.14], [1.0, 0.0]]
+    }
+  ]
+}

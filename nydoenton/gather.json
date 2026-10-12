@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 64,
+  "duration": 7,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "continuous_black_fuel_gather",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "black_flame",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": 7,
+      "size": [
+        [
+          0,
+          0.5
+        ],
+        [
+          0.6,
+          0.28
+        ],
+        [
+          1,
+          0.16
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.97
+        ],
+        [
+          0.72,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF08070B",
+        "end": "#FF100D15"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 48,
+        "length": 0.75
+      },
+      "follow_origin": false
+    }
+  ]
+}

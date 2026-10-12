@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "duration": 5,
+  "max_distance": 64,
+  "bounds": 2,
+  "replace_on_trigger": true,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "main_hand",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "blade",
+  "emitters": [
+    {
+      "name": "black_weapon_coating",
+      "geometry": "flame",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 5,
+      "follow_origin": true,
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.13
+        ],
+        [
+          0.25,
+          0.13
+        ],
+        [
+          0.8,
+          0.13
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.95
+        ],
+        [
+          0.2,
+          0.95
+        ],
+        [
+          0.8,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFB7D3E6",
+        "end": "#FF52758D"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 8,
+        "length": 0.95
+      }
+    },
+    {
+      "name": "violet_weapon_vein",
+      "geometry": "flame",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 5,
+      "follow_origin": true,
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.02
+        ],
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.035
+        ],
+        [
+          0.25,
+          0.035
+        ],
+        [
+          0.8,
+          0.035
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.95
+        ],
+        [
+          0.2,
+          0.95
+        ],
+        [
+          0.8,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFB7D3E6",
+        "end": "#FF52758D"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 6,
+        "length": 0.8
+      }
+    }
+  ]
+}

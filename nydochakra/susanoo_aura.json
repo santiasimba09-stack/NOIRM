@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "duration": 1200,
+  "priority": 2,
+  "max_distance": 72.0,
+  "bounds": 2.6,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": false,
+  "hide_in_first_person": true,
+  "source_scale_mode": "entity_bounds",
+  "source_scale_base": 2.4,
+  "source_scale_power": 0.78,
+  "source_scale_floor": 0.80,
+  "source_scale_limit": 5.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/chakra/susanoo/aura_body", "name": "susanoo_soft_chakra_mass" },
+    { "preset": "nydomod:_presets/chakra/susanoo/aura_licks", "name": "susanoo_sharp_chakra_licks" },
+    { "preset": "nydomod:_presets/chakra/susanoo/hero_wisps", "name": "susanoo_curved_hero_wisps" },
+    { "preset": "nydomod:_presets/chakra/susanoo/edge_smoke", "name": "susanoo_soft_edge_smoke" },
+    { "preset": "nydomod:_presets/chakra/susanoo/filaments", "name": "susanoo_fast_inner_filaments" },
+    { "preset": "nydomod:_presets/chakra/susanoo/motes", "name": "susanoo_sparse_detached_motes" }
+  ]
+}

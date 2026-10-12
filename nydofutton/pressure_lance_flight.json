@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "duration": 70,
+  "priority": 1,
+  "max_distance": 144.0,
+  "bounds": 7.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "name": "compressed_white_core",
+      "start": 0, "duration": 66, "burst": 3, "rate": 1.7, "max_particles": 18,
+      "geometry": "tapered_streak",
+      "follow_origin": true,
+      "shape": { "type": "point", "direction": "backward" },
+      "speed": [0.03, 0.08], "lifetime": [5, 9], "drag": 0.86,
+      "size": [[0.0, 0.018], [0.10, 0.115], [0.70, 0.060], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.03, 1.0], [0.68, 0.50], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB6EEE4" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "length": 2.25 }
+    },
+    {
+      "name": "pressure_shell",
+      "start": 0, "duration": 66, "burst": 2, "rate": 0.62, "max_particles": 14,
+      "geometry": "spiral_vortex",
+      "follow_origin": true,
+      "shape": { "type": "ring", "inner_radius": 0.10, "radius": 0.30, "direction": "backward" },
+      "speed": [0.02, 0.07], "lifetime": [8, 14],
+      "spin": [-26.0, -16.0], "rotation": [-180.0, 180.0],
+      "size": [[0.0, 0.02], [0.12, 0.12], [0.76, 0.16], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.05, 0.76], [0.70, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FFE8FFF9", "end": "#FF7EA89F" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 18, "thickness": 0.045, "turns": 0.9, "wave": 0.20, "crest": 0.72, "lobes": 3.0 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "superheated_wake",
+      "start": 0, "duration": 66, "burst": 5, "rate": 1.4, "max_particles": 36,
+      "follow_origin": true,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, -0.15], "length": 2.8, "angle": 13.0, "direction": "backward" },
+      "speed": [0.08, 0.22], "lifetime": [10, 20],
+      "gravity": -0.003, "drag": 0.88, "turbulence": 0.11, "vortex": 0.24,
+      "size": [[0.0, 0.09], [0.20, 0.34], [0.72, 0.56], [1.0, 0.24]],
+      "alpha": [[0.0, 0.0], [0.08, 0.30], [0.62, 0.14], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA5C0BA" }
+    }
+  ]
+}

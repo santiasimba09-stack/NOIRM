@@ -1,0 +1,14 @@
+{
+  "schema": 1, "duration": 28, "priority": 2, "max_distance": 128.0, "bounds": 7.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/waves/cone", "name": "narrow_pressure_front", "start": 0, "duration": 18, "burst": 4, "rate": 0.35, "max_particles": 10, "shape": { "type": "point", "direction": "forward" }, "lifetime": [11, 18] },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "shock_followthrough",
+      "start": 0, "duration": 16, "burst": 18, "rate": 1.0, "max_particles": 32,
+      "shape": { "type": "cone", "length": 4.6, "angle": 13.0, "direction": "forward" },
+      "speed": [0.18, 0.52], "lifetime": [9, 20], "drag": 0.89,
+      "size": [[0.0, 0.07], [0.22, 0.28], [0.72, 0.48], [1.0, 0.16]],
+      "alpha": [[0.0, 0.0], [0.05, 0.34], [0.60, 0.13], [1.0, 0.0]]
+    }
+  ]
+}

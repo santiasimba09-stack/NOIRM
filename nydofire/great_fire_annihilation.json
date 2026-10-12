@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "duration": 180,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 18.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "emitters": [
+    { "preset": "nydomod:_presets/fire/jet_core", "name": "annihilation_thin_jet_core" },
+    { "preset": "nydomod:_presets/fire/annihilation/body_mid", "name": "annihilation_body_mid_blobs" },
+    { "preset": "nydomod:_presets/fire/annihilation/front_boil", "name": "annihilation_front_boil_mass" },
+    { "preset": "nydomod:_presets/fire/annihilation/front_glow", "name": "annihilation_front_hot_glow" },
+    { "preset": "nydomod:_presets/fire/annihilation/body_licks", "name": "annihilation_body_lick_sprites" },
+    { "preset": "nydomod:_presets/fire/annihilation/smoke_crown", "name": "annihilation_smoke_crown" },
+    { "preset": "nydomod:_presets/fire/annihilation/shed_flames", "name": "annihilation_shed_flame_tongues" },
+    { "preset": "nydomod:_presets/fire/annihilation/embers", "name": "annihilation_sparse_terminal_embers" }
+  ]
+}

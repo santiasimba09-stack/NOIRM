@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 160,
+  "duration": 400,
+  "bounds": 48,
+  "emitters": [
+    {
+      "name": "posed_black_flames",
+      "geometry": "enton_mantle",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 400,
+      "follow_origin": true,
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.05,
+          0.96
+        ],
+        [
+          0.82,
+          0.94
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF08070B",
+        "end": "#FF100D15"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 24,
+        "length": 2
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false
+}

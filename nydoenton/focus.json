@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 64,
+  "duration": 4,
+  "bounds": 1.5,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "preserve_trigger_offset": true,
+  "hide_in_first_person": true,
+  "replace_on_trigger": true,
+  "emitters": [
+    {
+      "name": "amaterasu_inward_flame_tears",
+      "geometry": "enton_focus",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": 4,
+      "follow_origin": true,
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "size": [
+        [
+          0,
+          0.78
+        ],
+        [
+          1,
+          0.78
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.96
+        ],
+        [
+          0.75,
+          0.96
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF2C1838",
+        "end": "#FF08050D"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 16
+      }
+    }
+  ]
+}

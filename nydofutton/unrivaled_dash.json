@@ -1,0 +1,22 @@
+{
+  "schema": 1, "duration": 28, "priority": 2, "max_distance": 144.0, "bounds": 9.0,
+  "follow_source": true, "stop_when_source_missing": true, "follow_source_direction": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "steam_dash_exhaust",
+      "start": 0, "duration": 22, "burst": 26, "rate": 3.0, "max_particles": 72,
+      "follow_origin": true,
+      "shape": { "type": "cone", "offset": [0.0, 0.20, -0.35], "length": 4.8, "angle": 17.0, "direction": "backward" },
+      "speed": [0.24, 0.74], "lifetime": [10, 24], "gravity": -0.004, "drag": 0.88, "turbulence": 0.09,
+      "size": [[0.0, 0.10], [0.18, 0.42], [0.68, 0.72], [1.0, 0.24]],
+      "alpha": [[0.0, 0.0], [0.05, 0.38], [0.58, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA1BAB5" }
+    },
+    {
+      "preset": "nydomod:_presets/waves/collar", "name": "dash_pressure_rings",
+      "start": 0, "duration": 18, "burst": 3, "rate": 0.65, "max_particles": 12,
+      "follow_origin": true, "shape": { "type": "point", "direction": "backward" }, "lifetime": [8, 14]
+    }
+  ]
+}

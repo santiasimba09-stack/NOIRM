@@ -1,0 +1,294 @@
+{
+  "schema": 1,
+  "duration": 14,
+  "priority": 2,
+  "max_distance": 64,
+  "bounds": 5,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "slam_second_impulse",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0.08,
+          1.65
+        ],
+        "direction": "forward"
+      },
+      "speed": 0.015,
+      "lifetime": 9,
+      "drag": 0.94,
+      "rotation": [
+        90,
+        90
+      ],
+      "size": [
+        [
+          0,
+          0.22999999999999998
+        ],
+        [
+          0.18,
+          0.8280000000000001
+        ],
+        [
+          1,
+          2.07
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.9
+        ],
+        [
+          0.28,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFD1C8",
+        "end": "#FF87001F"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.025,
+        "arc_degrees": 310
+      }
+    },
+    {
+      "name": "slam_counter_pressure",
+      "start": 1,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0.08,
+          1.5499999999999998
+        ],
+        "direction": "forward"
+      },
+      "speed": 0.015,
+      "lifetime": 9,
+      "drag": 0.94,
+      "rotation": [
+        125,
+        125
+      ],
+      "size": [
+        [
+          0,
+          0.22999999999999998
+        ],
+        [
+          0.18,
+          1.012
+        ],
+        [
+          1,
+          2.53
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.9
+        ],
+        [
+          0.28,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFF2219",
+        "end": "#FF87001F"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.025,
+        "arc_degrees": 220
+      }
+    },
+    {
+      "name": "slam_tail_pressure_0",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "fire_wisp",
+      "shape": {
+        "type": "point",
+        "direction": "backward",
+        "offset": [
+          0.4,
+          0.08,
+          1.5299999999999998
+        ]
+      },
+      "start": 0,
+      "speed": 0.015,
+      "lifetime": 7,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.207
+        ],
+        [
+          0.16,
+          0.414
+        ],
+        [
+          0.7,
+          0.184
+        ],
+        [
+          1,
+          0.0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.9
+        ],
+        [
+          0.25,
+          0.7
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFF2320",
+        "end": "#FFC00020"
+      },
+      "material": {
+        "texture": "nydomod:textures/chakra_surface_flipbook.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "atlas": {
+        "columns": 16,
+        "rows": 1,
+        "frames": 8
+      },
+      "geometry_settings": {
+        "segments": 8,
+        "length": 1.1
+      },
+      "rotation": [
+        160,
+        160
+      ]
+    },
+    {
+      "name": "slam_tail_pressure_1",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "fire_wisp",
+      "shape": {
+        "type": "point",
+        "direction": "backward",
+        "offset": [
+          -0.4,
+          0.08,
+          1.5299999999999998
+        ]
+      },
+      "start": 1,
+      "speed": 0.015,
+      "lifetime": 7,
+      "drag": 0.9,
+      "size": [
+        [
+          0,
+          0.207
+        ],
+        [
+          0.16,
+          0.414
+        ],
+        [
+          0.7,
+          0.184
+        ],
+        [
+          1,
+          0.0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.9
+        ],
+        [
+          0.25,
+          0.7
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFC4C0",
+        "end": "#FFC00020"
+      },
+      "material": {
+        "texture": "nydomod:textures/chakra_surface_flipbook.png",
+        "blend": "additive",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "atlas": {
+        "columns": 16,
+        "rows": 1,
+        "frames": 8
+      },
+      "geometry_settings": {
+        "segments": 8,
+        "length": 1.1
+      },
+      "rotation": [
+        195,
+        195
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1, "duration": 34, "priority": 3, "max_distance": 144.0, "bounds": 8.0,
+  "emitters": [
+    { "preset": "nydomod:_presets/waves/blast", "name": "strong_foot_shock", "start": 0, "duration": 16, "burst": 6, "rate": 0.5, "max_particles": 14, "shape": { "type": "point", "direction": "forward" }, "lifetime": [10, 18] },
+    { "preset": "nydomod:_presets/waves/collar", "name": "impact_ring", "start": 0, "duration": 14, "burst": 4, "rate": 0.35, "max_particles": 10, "shape": { "type": "point", "direction": "forward" }, "lifetime": [9, 15] },
+    {
+      "preset": "nydomod:_presets/wind/vapor", "name": "eruption_plume",
+      "start": 0, "duration": 20, "burst": 30, "rate": 1.4, "max_particles": 54,
+      "shape": { "type": "cone", "length": 3.8, "angle": 30.0, "direction": "forward" },
+      "speed": [0.20, 0.64], "lifetime": [10, 24], "drag": 0.88, "turbulence": 0.12,
+      "size": [[0.0, 0.09], [0.18, 0.40], [0.70, 0.72], [1.0, 0.26]],
+      "alpha": [[0.0, 0.0], [0.05, 0.40], [0.60, 0.17], [1.0, 0.0]]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "priority": 3,
+  "max_distance": 64,
+  "duration": 5,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "chakra_continuous_black_fuel_lance",
+      "start": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "black_flame",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": 5,
+      "size": [
+        [
+          0,
+          0.22
+        ],
+        [
+          0.6,
+          0.19
+        ],
+        [
+          1,
+          0.04
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.97
+        ],
+        [
+          0.72,
+          0.95
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFB7D3E6",
+        "end": "#FF7C9EB9"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.6,
+      "geometry_settings": {
+        "segments": 48,
+        "length": 2.6
+      },
+      "follow_origin": false
+    }
+  ]
+}

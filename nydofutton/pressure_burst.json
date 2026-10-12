@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "duration": 42,
+  "priority": 2,
+  "max_distance": 112.0,
+  "bounds": 7.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/blast",
+      "name": "radial_pressure_front",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [18, 18],
+      "size": [[0.0, 0.08], [0.16, 0.82], [0.48, 1.45], [1.0, 1.78]],
+      "alpha": [[0.0, 0.0], [0.05, 0.76], [0.40, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFABC1BE" },
+      "geometry_settings": { "segments": 36, "thickness": 0.38, "arc_degrees": 360.0, "edge": 0.98, "roll": 16.0, "crest": 0.42, "wave": 0.12, "lobes": 6.0 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/vapor",
+      "name": "overpressure_steam",
+      "start": 0, "duration": 18, "burst": 24, "rate": 2.4, "max_particles": 68,
+      "shape": { "type": "sphere", "scale": [1.0, 0.70, 1.0], "radius": 1.35, "inner_radius": 0.25, "direction": "radial" },
+      "speed": [0.18, 0.62], "lifetime": [13, 28],
+      "gravity": -0.006, "drag": 0.89, "turbulence": 0.16, "vortex": 0.22,
+      "rotation": [-70, 70], "spin": [-2.6, 2.6],
+      "size": [[0.0, 0.16], [0.20, 0.58], [0.66, 0.92], [1.0, 0.42]],
+      "alpha": [[0.0, 0.0], [0.08, 0.34], [0.58, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA6BCB9" },
+      "collision": { "mode": "world", "response": "clip", "padding": 0.10 }
+    },
+    {
+      "preset": "nydomod:_presets/ninja_smoke/soft_billow",
+      "name": "residual_hot_vapour",
+      "start": 1, "duration": 22, "burst": 10, "rate": 0.9, "max_particles": 28,
+      "shape": { "type": "sphere", "scale": [1.0, 0.76, 1.0], "radius": 1.15, "direction": "radial" },
+      "speed": [0.035, 0.15], "lifetime": [18, 34],
+      "gravity": -0.010, "drag": 0.92, "turbulence": 0.12,
+      "size": [[0.0, 0.18], [0.28, 0.62], [0.72, 0.90], [1.0, 0.48]],
+      "alpha": [[0.0, 0.0], [0.12, 0.20], [0.66, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FFF9F8F1", "end": "#FFB6C5C3" }
+    }
+  ]
+}

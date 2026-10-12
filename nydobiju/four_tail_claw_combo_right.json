@@ -1,0 +1,526 @@
+{
+  "schema": 1,
+  "duration": 8,
+  "priority": 2,
+  "max_distance": 64,
+  "bounds": 4,
+  "follow_source": false,
+  "emitters": [
+    {
+      "name": "claw_0_red",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFA1812",
+        "end": "#FF6B0211"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_0_core",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF7EE",
+        "end": "#FFFF8B68"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_1_red",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFA1812",
+        "end": "#FF6B0211"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_1_core",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF7EE",
+        "end": "#FFFF8B68"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_2_red",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFA1812",
+        "end": "#FF6B0211"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_2_core",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF7EE",
+        "end": "#FFFF8B68"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_3_red",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFA1812",
+        "end": "#FF6B0211"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_3_core",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.92
+        ],
+        [
+          0.22,
+          1
+        ],
+        [
+          0.58,
+          0.72
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF7EE",
+        "end": "#FFFF8B68"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_0_air",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.18,
+          0.36
+        ],
+        [
+          0.58,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFDDF8FF",
+        "end": "#FFEFB7AB"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_1_air",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.18,
+          0.36
+        ],
+        [
+          0.58,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFDDF8FF",
+        "end": "#FFEFB7AB"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_2_air",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.18,
+          0.36
+        ],
+        [
+          0.58,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFDDF8FF",
+        "end": "#FFEFB7AB"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    },
+    {
+      "name": "claw_3_air",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "four_tail_claw",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": 0,
+      "lifetime": 6,
+      "drag": 1,
+      "size": 1,
+      "near_fade": 0,
+      "alpha": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.18,
+          0.36
+        ],
+        [
+          0.58,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFDDF8FF",
+        "end": "#FFEFB7AB"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      }
+    }
+  ]
+}

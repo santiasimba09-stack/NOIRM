@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "duration": 600,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 10.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/fire/jet_core",
+      "name": "stream_thin_jet_core",
+      "duration": 600,
+      "lifetime": [600, 600],
+      "size": [[0.0, 0.16], [0.03, 0.24], [0.92, 0.26], [0.97, 0.18], [1.0, 0.0]],
+      "geometry_settings": { "segments": 6, "length": 7.0, "front_scale": 1.0 }
+    },
+    { "preset": "nydomod:_presets/fire/stream/body", "name": "stream_narrow_body_blobs", "duration": 597 },
+    { "preset": "nydomod:_presets/fire/stream/bloom", "name": "stream_compact_terminal_bloom", "duration": 594 },
+    { "preset": "nydomod:_presets/fire/stream/licks", "name": "stream_edge_licks", "duration": 596 },
+    { "preset": "nydomod:_presets/fire/stream/sparks", "name": "stream_terminal_sparks", "duration": 594 }
+  ]
+}

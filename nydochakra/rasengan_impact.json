@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "duration": 48,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 9.0,
+  "follow_source": true,
+  "stop_when_source_missing": false,
+  "source_anchor": "center",
+  "preserve_trigger_offset": true,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "name": "struck_face_vortex",
+      "start": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [46, 46], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [-28.0, -28.0],
+      "size": [[0.0, 0.08], [0.08, 0.72], [0.28, 0.94], [0.76, 0.82], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.04, 0.90], [0.48, 0.70], [0.84, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFBDE9FA" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 28, "thickness": 0.16, "turns": -1.20,
+        "wave": 0.22, "crest": 0.76, "lobes": 7.0, "rim": 0.13
+      }
+    },
+    {
+      "name": "ragged_outer_spiral",
+      "start": 1, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [43, 43], "drag": 1.0,
+      "rotation": [18.0, 18.0], "spin": [-20.0, -20.0],
+      "size": [[0.0, 0.10], [0.10, 0.84], [0.34, 1.12], [0.78, 1.02], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.06, 0.54], [0.52, 0.38], [1.0, 0.0]],
+      "color": { "start": "#FFF6FCFF", "end": "#FFAADDF4" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 24, "thickness": 0.105, "turns": -0.92,
+        "wave": 0.34, "crest": 0.48, "lobes": 8.0, "rim": 0.17
+      }
+    },
+    {
+      "name": "launched_vortex_wake",
+      "start": 1, "duration": 30, "burst": 1, "rate": 0.13, "max_particles": 5,
+      "geometry": "spiral_vortex", "follow_origin": false,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [15, 19], "drag": 1.0,
+      "rotation": [-14.0, 14.0], "spin": [-24.0, -18.0],
+      "size": [[0.0, 0.16], [0.18, 0.58], [0.56, 0.72], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.10, 0.42], [0.58, 0.26], [1.0, 0.0]],
+      "color": { "start": "#FFEAF9FF", "end": "#FF9ED7F1" },
+      "material": { "texture": "nydomod:textures/bijudama_solid.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 1, "rows": 1, "frames": 1 },
+      "geometry_settings": {
+        "segments": 18, "thickness": 0.075, "turns": -0.82,
+        "wave": 0.38, "crest": 0.34, "lobes": 4.0, "rim": 0.20
+      }
+    }
+  ]
+}

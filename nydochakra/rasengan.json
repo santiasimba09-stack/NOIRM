@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "duration": 600,
+  "priority": 2,
+  "max_distance": 96.0,
+  "bounds": 3.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_hot_core",
+      "name": "glow_volume",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.04], [0.035, 0.38], [1.0, 0.38]],
+      "alpha": [[0.0, 0.025], [0.035, 0.10], [0.94, 0.10], [1.0, 0.0]],
+      "color": { "start": "#FF77D6FF", "end": "#FF348BEF" },
+      "geometry_settings": {
+        "segments": 16, "rim": 0.34,
+        "flow": -0.72, "flow_tile": 1.0, "wave": 0.035, "lobes": 4.0,
+        "swirl": -0.28, "glow": 0.18
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_core",
+      "name": "core_outer",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.03], [0.035, 0.33], [1.0, 0.33]],
+      "alpha": [[0.0, 0.08], [0.035, 0.58], [0.94, 0.58], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_core",
+      "name": "core_mid",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.024], [0.035, 0.255], [1.0, 0.255]],
+      "alpha": [[0.0, 0.07], [0.035, 0.48], [0.94, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FF74CBFF", "end": "#FF328EEA" },
+      "geometry_settings": {
+        "segments": 20, "rim": 0.08,
+        "flow": -1.9, "flow_tile": 1.5, "wave": 0.09, "lobes": 4.0,
+        "swirl": -0.65, "glow": 0.38
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_hot_core",
+      "name": "core_hot",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.014], [0.035, 0.13], [1.0, 0.13]],
+      "alpha": [[0.0, 0.10], [0.035, 0.64], [0.94, 0.64], [1.0, 0.0]],
+      "color": { "start": "#FF65D5FF", "end": "#FF2B93FF" },
+      "geometry_settings": {
+        "segments": 28, "rim": 0.025,
+        "flow": 2.7, "flow_tile": 1.0, "wave": 0.025, "lobes": 5.0,
+        "swirl": 0.32, "glow": 0.68
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_crossed_currents",
+      "follow_origin": true, "near_fade": 0.0
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_counter_currents",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.025], [0.05, 0.295], [1.0, 0.295]],
+      "alpha": [[0.0, 0.0], [0.03, 0.52], [0.94, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FF185EE8", "end": "#FF3DAEF8" },
+      "geometry_settings": {
+        "segments": 24, "thickness": 0.022,
+        "lobes": 5.0, "flow": -2.2, "flow_tile": 1.8,
+        "wave": 0.62, "swirl": -0.70, "rim": 0.14, "glow": 0.62,
+        "crest": 0.56
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "inner_micro_filaments",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.026], [0.05, 0.315], [1.0, 0.315]],
+      "alpha": [[0.0, 0.0], [0.03, 0.30], [0.94, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FF1559E8", "end": "#FF3AAFFC" },
+      "geometry_settings": {
+        "segments": 22, "thickness": 0.012,
+        "lobes": 3.0, "flow": 3.6, "flow_tile": 3.2,
+        "wave": 0.78, "swirl": 1.20, "rim": 0.12, "glow": 0.76,
+        "crest": 0.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "outer_soft_currents",
+      "follow_origin": true, "near_fade": 0.0,
+      "size": [[0.0, 0.03], [0.05, 0.345], [1.0, 0.345]],
+      "alpha": [[0.0, 0.0], [0.03, 0.22], [0.94, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FF1A65D8", "end": "#FF4DB9EE" },
+      "geometry_settings": {
+        "segments": 28, "thickness": 0.040,
+        "lobes": 4.0, "flow": 1.15, "flow_tile": 1.25,
+        "wave": 0.34, "swirl": 0.48, "rim": 0.42, "glow": 0.42,
+        "crest": 0.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_sparks",
+      "name": "orbit_sparks",
+      "follow_origin": true, "near_fade": 0.0
+    }
+  ]
+}
