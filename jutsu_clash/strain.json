@@ -1,0 +1,196 @@
+{
+  "schema": 1,
+  "duration": 14,
+  "priority": 3,
+  "max_distance": 64,
+  "bounds": 4,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_currents",
+      "name": "opposed_spiral",
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": [
+        14,
+        14
+      ],
+      "size": [
+        [
+          0,
+          0.2
+        ],
+        [
+          0.3,
+          0.43
+        ],
+        [
+          1,
+          0.52
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.2,
+          0.45
+        ],
+        [
+          0.7,
+          0.3
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "geometry_settings": {
+        "segments": 18,
+        "thickness": 0.015,
+        "lobes": 3,
+        "flow": 2.3,
+        "flow_tile": 1.5,
+        "wave": 0.42,
+        "swirl": 0.8,
+        "rim": 0.1,
+        "glow": 0.55
+      },
+      "color": {
+        "start": "#FF57DFFF",
+        "end": "#FF7FA4FF"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/blue_bolt",
+      "name": "fracture_filaments",
+      "burst": 5,
+      "max_particles": 5,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.1,
+        "direction": "radial"
+      },
+      "lifetime": [
+        6,
+        10
+      ],
+      "geometry_settings": {
+        "segments": 10,
+        "length": 0.7,
+        "thickness": 0.016,
+        "jitter": 0.1,
+        "branches": 1,
+        "branch_length": 0.28,
+        "core": 0.85,
+        "topology_ticks": 3
+      }
+    },
+    {
+      "preset": "nydomod:_presets/raiton/impact_ring",
+      "name": "compression_plane",
+      "geometry_settings": {
+        "segments": 40,
+        "thickness": 0.04,
+        "arc_degrees": 360,
+        "lay_flat": false,
+        "edge": 0.85,
+        "crest": 0.65
+      },
+      "size": [
+        [
+          0,
+          0.16
+        ],
+        [
+          0.5,
+          0.38
+        ],
+        [
+          1,
+          0.6
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.2,
+          0.25
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "lifetime": [
+        14,
+        14
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/chakra/rasengan_core",
+      "name": "collision_core",
+      "burst": 1,
+      "max_particles": 1,
+      "lifetime": [
+        12,
+        12
+      ],
+      "size": [
+        [
+          0,
+          0.08
+        ],
+        [
+          0.18,
+          0.24
+        ],
+        [
+          0.75,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.55
+        ],
+        [
+          0.7,
+          0.35
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE1F9FF",
+        "end": "#FF969CFF"
+      },
+      "geometry_settings": {
+        "segments": 20,
+        "rim": 0.22,
+        "flow": 2.2,
+        "flow_tile": 1.5,
+        "wave": 0.06,
+        "lobes": 3,
+        "swirl": 0.6,
+        "glow": 0.35
+      }
+    }
+  ]
+}

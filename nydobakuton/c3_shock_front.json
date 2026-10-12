@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 3,
+  "max_distance": 160,
+  "bounds": 1.1,
+  "emitters": [
+    {
+      "name": "authoritative_annular_front",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        24,
+        24
+      ],
+      "size": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.82
+        ],
+        [
+          0.8,
+          0.7
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFD391",
+        "end": "#FFD47838"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 64,
+        "thickness": 0.055,
+        "edge": 0.9,
+        "crest": 0.35
+      }
+    },
+    {
+      "name": "charcoal_pressure_edge",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        24,
+        24
+      ],
+      "size": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.8
+        ],
+        [
+          0.82,
+          0.65
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF423730",
+        "end": "#FF181D22"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 64,
+        "thickness": 0.016
+      }
+    }
+  ]
+}

@@ -1,0 +1,519 @@
+{
+  "schema": 1,
+  "duration": 6,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 2.4,
+  "emitters": [
+    {
+      "name": "cloth_turn_1",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.43
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        6,
+        6
+      ],
+      "size": [
+        [
+          0,
+          0.79
+        ],
+        [
+          0.25,
+          0.72
+        ],
+        [
+          0.8,
+          0.66
+        ],
+        [
+          1,
+          0.64
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.82
+        ],
+        [
+          0.74,
+          0.78
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFEDCC",
+        "end": "#FFB9A987"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        0,
+        0
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 30,
+        "thickness": 0.12,
+        "edge": 0.3,
+        "arc_degrees": 326,
+        "turns": 0.23,
+        "roll": 58,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 0
+    },
+    {
+      "name": "cloth_stitched_edge_1",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.472
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        6,
+        6
+      ],
+      "size": [
+        [
+          0,
+          0.795
+        ],
+        [
+          0.25,
+          0.725
+        ],
+        [
+          0.8,
+          0.665
+        ],
+        [
+          1,
+          0.645
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.55
+        ],
+        [
+          0.74,
+          0.48
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFF0",
+        "end": "#FFE4D1AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        0,
+        0
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.017,
+        "edge": 0.3,
+        "arc_degrees": 312,
+        "turns": 0.23,
+        "roll": 62,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 0
+    },
+    {
+      "name": "cloth_turn_2",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.88
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        5,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.79
+        ],
+        [
+          0.25,
+          0.72
+        ],
+        [
+          0.8,
+          0.66
+        ],
+        [
+          1,
+          0.64
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.82
+        ],
+        [
+          0.74,
+          0.78
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFEDCC",
+        "end": "#FFB9A987"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        113,
+        113
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 30,
+        "thickness": 0.12,
+        "edge": 0.3,
+        "arc_degrees": 326,
+        "turns": 0.23,
+        "roll": 58,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 1
+    },
+    {
+      "name": "cloth_stitched_edge_2",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.922
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        5,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.795
+        ],
+        [
+          0.25,
+          0.725
+        ],
+        [
+          0.8,
+          0.665
+        ],
+        [
+          1,
+          0.645
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.55
+        ],
+        [
+          0.74,
+          0.48
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFF0",
+        "end": "#FFE4D1AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        113,
+        113
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.017,
+        "edge": 0.3,
+        "arc_degrees": 312,
+        "turns": 0.23,
+        "roll": 62,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 1
+    },
+    {
+      "name": "cloth_turn_3",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          1.33
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        4,
+        4
+      ],
+      "size": [
+        [
+          0,
+          0.79
+        ],
+        [
+          0.25,
+          0.72
+        ],
+        [
+          0.8,
+          0.66
+        ],
+        [
+          1,
+          0.64
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.82
+        ],
+        [
+          0.74,
+          0.78
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFEDCC",
+        "end": "#FFB9A987"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        226,
+        226
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 30,
+        "thickness": 0.12,
+        "edge": 0.3,
+        "arc_degrees": 326,
+        "turns": 0.23,
+        "roll": 58,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 2
+    },
+    {
+      "name": "cloth_stitched_edge_3",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          1.372
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        4,
+        4
+      ],
+      "size": [
+        [
+          0,
+          0.795
+        ],
+        [
+          0.25,
+          0.725
+        ],
+        [
+          0.8,
+          0.665
+        ],
+        [
+          1,
+          0.645
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.15,
+          0.55
+        ],
+        [
+          0.74,
+          0.48
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFFFF0",
+        "end": "#FFE4D1AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        226,
+        226
+      ],
+      "spin": [
+        22,
+        22
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.017,
+        "edge": 0.3,
+        "arc_degrees": 312,
+        "turns": 0.23,
+        "roll": 62,
+        "taper": 0.45
+      },
+      "follow_origin": true,
+      "start": 2
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": true,
+  "replace_on_trigger": true,
+  "snapshot_interpolation_ticks": 2
+}

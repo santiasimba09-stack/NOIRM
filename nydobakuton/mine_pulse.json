@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "duration": 480,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 1,
+  "emitters": [
+    {
+      "name": "quiet_armed_boundary",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        480,
+        480
+      ],
+      "size": [
+        [
+          0,
+          0.52
+        ],
+        [
+          1,
+          0.52
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.15
+        ],
+        [
+          0.25,
+          0.35
+        ],
+        [
+          0.5,
+          0.16
+        ],
+        [
+          0.75,
+          0.35
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FFD47838"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.018,
+        "arc_degrees": 315
+      }
+    },
+    {
+      "name": "slow_fuse_breath",
+      "start": 0,
+      "duration": 470,
+      "burst": 0,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        14,
+        14
+      ],
+      "size": [
+        [
+          0,
+          0.12
+        ],
+        [
+          1,
+          0.46
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.3
+        ],
+        [
+          0.65,
+          0.21
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 20,
+        "thickness": 0.02
+      },
+      "rate": 0.07
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "replace_on_trigger": true
+}

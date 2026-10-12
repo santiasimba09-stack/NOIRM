@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "duration": 6,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 1.8,
+  "emitters": [
+    {
+      "name": "contact_compression_wedge",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": [
+        5,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.06
+        ],
+        [
+          0.18,
+          0.22
+        ],
+        [
+          0.65,
+          0.42
+        ],
+        [
+          1,
+          0.54
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.12
+        ],
+        [
+          0.08,
+          0.8
+        ],
+        [
+          0.3,
+          0.56
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        -14,
+        -14
+      ],
+      "geometry_settings": {
+        "segments": 22,
+        "thickness": 0.032,
+        "edge": 1,
+        "arc_degrees": 208,
+        "wave": 0.04,
+        "lobes": 3,
+        "roll": -12
+      }
+    },
+    {
+      "name": "recoil_counterpressure",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": [
+        4,
+        4
+      ],
+      "size": [
+        [
+          0,
+          0.07
+        ],
+        [
+          0.24,
+          0.17
+        ],
+        [
+          1,
+          0.4
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.05
+        ],
+        [
+          0.2,
+          0.42
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        153,
+        153
+      ],
+      "geometry_settings": {
+        "segments": 16,
+        "thickness": 0.016,
+        "edge": 1,
+        "arc_degrees": 135,
+        "wave": 0.04,
+        "lobes": 3,
+        "roll": 8
+      },
+      "start": 1
+    },
+    {
+      "name": "contact_speed_lines",
+      "burst": 4,
+      "max_particles": 4,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "ring",
+        "radius": 0.08,
+        "direction": "radial"
+      },
+      "lifetime": [
+        3,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.012
+        ],
+        [
+          0.2,
+          0.028
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.85
+        ],
+        [
+          0.55,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "speed": [
+        0.09,
+        0.18
+      ],
+      "drag": 0.91,
+      "geometry_settings": {
+        "length": 0.38
+      },
+      "rotation": [
+        0,
+        0
+      ]
+    }
+  ]
+}

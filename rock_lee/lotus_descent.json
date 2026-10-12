@@ -1,0 +1,239 @@
+{
+  "schema": 1,
+  "duration": 6,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 3.8,
+  "emitters": [
+    {
+      "name": "descending_spiral",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "spiral_vortex",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          0.85
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        6,
+        6
+      ],
+      "size": [
+        [
+          0,
+          0.72
+        ],
+        [
+          0.16,
+          1.02
+        ],
+        [
+          0.65,
+          1.4
+        ],
+        [
+          1,
+          1.54
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.04
+        ],
+        [
+          0.15,
+          0.7
+        ],
+        [
+          0.75,
+          0.48
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "spin": [
+        -40,
+        -40
+      ],
+      "geometry_settings": {
+        "segments": 28,
+        "thickness": 0.058,
+        "turns": 0.86,
+        "lobes": 3,
+        "rim": 0.38,
+        "wave": 0.11,
+        "crest": 0.18
+      },
+      "follow_origin": true
+    },
+    {
+      "name": "spiral_wake",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "offset": [
+          0,
+          0,
+          1.4
+        ],
+        "direction": "forward"
+      },
+      "lifetime": [
+        5,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.55
+        ],
+        [
+          0.2,
+          1.02
+        ],
+        [
+          1,
+          1.42
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.85
+        ],
+        [
+          0.55,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        150,
+        150
+      ],
+      "spin": [
+        -34,
+        -34
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.082,
+        "edge": 0.85,
+        "arc_degrees": 240,
+        "turns": 0.25,
+        "taper": 0.23,
+        "roll": 25
+      },
+      "follow_origin": true,
+      "start": 1
+    },
+    {
+      "name": "falling_velocity",
+      "burst": 6,
+      "max_particles": 6,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "ring",
+        "radius": 0.72,
+        "direction": "forward"
+      },
+      "lifetime": [
+        4,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.012
+        ],
+        [
+          0.2,
+          0.035
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.85
+        ],
+        [
+          0.55,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "speed": [
+        0.16,
+        0.28
+      ],
+      "geometry_settings": {
+        "length": 1.42
+      },
+      "follow_origin": true
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": true,
+  "replace_on_trigger": true,
+  "snapshot_interpolation_ticks": 2
+}

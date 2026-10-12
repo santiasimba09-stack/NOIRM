@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 3,
+  "emitters": [
+    {
+      "name": "dragon_clay_assembly",
+      "start": 0,
+      "duration": 0,
+      "burst": 18,
+      "max_particles": 18,
+      "geometry": "cube",
+      "shape": {
+        "type": "sphere",
+        "radius": 1.6,
+        "scale": [
+          1,
+          0.6,
+          1.4
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        -0.16,
+        -0.09
+      ],
+      "lifetime": [
+        13,
+        23
+      ],
+      "size": [
+        [
+          0,
+          0.08
+        ],
+        [
+          0.45,
+          0.13
+        ],
+        [
+          1,
+          0.03
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.9
+        ],
+        [
+          0.65,
+          0.63
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -9,
+        9
+      ],
+      "gravity": 0,
+      "drag": 0.98
+    },
+    {
+      "name": "segmented_wing_seal",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        22,
+        22
+      ],
+      "size": [
+        [
+          0,
+          1.25
+        ],
+        [
+          0.8,
+          0.45
+        ],
+        [
+          1,
+          0.35
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.65
+        ],
+        [
+          0.65,
+          0.45499999999999996
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FFD47838"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 36,
+        "thickness": 0.045,
+        "arc_degrees": 300
+      },
+      "rotation": [
+        0,
+        15
+      ],
+      "spin": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "clay_molding_dust",
+      "start": 0,
+      "duration": 0,
+      "burst": 5,
+      "max_particles": 5,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.24,
+        "direction": "radial"
+      },
+      "speed": [
+        0.025,
+        0.045
+      ],
+      "lifetime": [
+        18,
+        28
+      ],
+      "size": [
+        [
+          0,
+          0.05
+        ],
+        [
+          0.45,
+          0.22
+        ],
+        [
+          1,
+          0.35
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.28
+        ],
+        [
+          0.65,
+          0.196
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "gravity": -0.004,
+      "drag": 0.91,
+      "turbulence": 0.015,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -0.7,
+        0.7
+      ],
+      "geometry_settings": {
+        "segments": 16
+      }
+    }
+  ],
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "replace_on_trigger": true
+}

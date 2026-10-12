@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "duration": 20,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 2,
+  "emitters": [
+    {
+      "name": "raiton_neutralization_crack",
+      "start": 0,
+      "duration": 0,
+      "burst": 3,
+      "max_particles": 3,
+      "geometry": "lightning_bolt",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.2,
+        "direction": "radial"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        5,
+        9
+      ],
+      "size": [
+        [
+          0,
+          0.035
+        ],
+        [
+          0.45,
+          0.065
+        ],
+        [
+          1,
+          0.018
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.9
+        ],
+        [
+          0.65,
+          0.63
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFEAFBFF",
+        "end": "#FF7BA5BD"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 12,
+        "length": 1,
+        "branches": 1,
+        "jitter": 0.12,
+        "branch_length": 0.35,
+        "core": 0.9
+      }
+    },
+    {
+      "name": "inert_clay_fall",
+      "start": 0,
+      "duration": 0,
+      "burst": 12,
+      "max_particles": 12,
+      "geometry": "cube",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.44,
+        "direction": "radial"
+      },
+      "speed": [
+        0.02,
+        0.045
+      ],
+      "lifetime": [
+        13,
+        20
+      ],
+      "size": [
+        [
+          0,
+          0.025
+        ],
+        [
+          0.45,
+          0.021
+        ],
+        [
+          1,
+          0.015
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.65
+        ],
+        [
+          0.65,
+          0.45499999999999996
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFCBC5B9",
+        "end": "#FF777A75"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -9,
+        9
+      ],
+      "gravity": 0.018,
+      "drag": 0.96
+    }
+  ]
+}

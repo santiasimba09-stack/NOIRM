@@ -1,0 +1,292 @@
+{
+  "schema": 1,
+  "duration": 8,
+  "priority": 2,
+  "max_distance": 96,
+  "bounds": 3.0,
+  "emitters": [
+    {
+      "name": "heel_crescent",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": [
+        6,
+        6
+      ],
+      "size": [
+        [
+          0,
+          0.44
+        ],
+        [
+          0.25,
+          0.82
+        ],
+        [
+          1,
+          1.18
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.05
+        ],
+        [
+          0.1,
+          0.86
+        ],
+        [
+          0.4,
+          0.68
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        -18,
+        -18
+      ],
+      "spin": [
+        15,
+        15
+      ],
+      "geometry_settings": {
+        "segments": 30,
+        "thickness": 0.115,
+        "edge": 0.85,
+        "arc_degrees": 215,
+        "turns": 0.35,
+        "roll": 26,
+        "taper": 0.2
+      }
+    },
+    {
+      "name": "heel_counterstroke",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": [
+        5,
+        5
+      ],
+      "size": [
+        [
+          0,
+          0.35
+        ],
+        [
+          0.3,
+          0.72
+        ],
+        [
+          1,
+          1.08
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.85
+        ],
+        [
+          0.55,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        136,
+        136
+      ],
+      "spin": [
+        -13,
+        -13
+      ],
+      "geometry_settings": {
+        "segments": 24,
+        "thickness": 0.026,
+        "edge": 0.8,
+        "arc_degrees": 168,
+        "turns": -0.2,
+        "taper": 0.26,
+        "roll": -20
+      },
+      "start": 1
+    },
+    {
+      "name": "heel_shear_lines",
+      "burst": 5,
+      "max_particles": 5,
+      "geometry": "tapered_streak",
+      "shape": {
+        "type": "ring",
+        "radius": 0.16,
+        "direction": "radial",
+        "inner_radius": 0.05
+      },
+      "lifetime": [
+        4,
+        6
+      ],
+      "size": [
+        [
+          0,
+          0.012
+        ],
+        [
+          0.2,
+          0.03
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.12,
+          0.85
+        ],
+        [
+          0.55,
+          0.62
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "speed": [
+        0.1,
+        0.2
+      ],
+      "drag": 0.93,
+      "geometry_settings": {
+        "length": 0.72
+      }
+    },
+    {
+      "name": "heel_release_edge",
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "wind_gust",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "lifetime": [
+        4,
+        4
+      ],
+      "size": [
+        [
+          0,
+          0.35
+        ],
+        [
+          0.35,
+          0.7
+        ],
+        [
+          1,
+          1.03
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.2,
+          0.46
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFF5DB",
+        "end": "#FFC4D0AA"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "rotation": [
+        -66,
+        -66
+      ],
+      "spin": [
+        12,
+        12
+      ],
+      "geometry_settings": {
+        "segments": 18,
+        "thickness": 0.02,
+        "edge": 0.8,
+        "arc_degrees": 118,
+        "turns": -0.2,
+        "taper": 0.26,
+        "roll": 38
+      },
+      "start": 2
+    }
+  ]
+}

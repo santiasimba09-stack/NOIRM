@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "duration": 8,
+  "priority": 3,
+  "max_distance": 160,
+  "bounds": 1.1,
+  "emitters": [
+    {
+      "name": "locked_impact_boundary",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        8,
+        8
+      ],
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.85
+        ],
+        [
+          0.78,
+          0.85
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFD47838",
+        "end": "#FFFFD391"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 64,
+        "thickness": 0.016
+      }
+    },
+    {
+      "name": "eight_tick_release_iris",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        8,
+        8
+      ],
+      "size": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0.025
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.45
+        ],
+        [
+          0.78,
+          0.8
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FFFFD391"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 48,
+        "thickness": 0.011,
+        "arc_degrees": 320
+      }
+    },
+    {
+      "name": "fixed_impact_cross_cut",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "ring",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        8,
+        8
+      ],
+      "size": [
+        [
+          0,
+          0.13
+        ],
+        [
+          1,
+          0.13
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0.7
+        ],
+        [
+          0.8,
+          0.9
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFD47838",
+        "end": "#FFFFD391"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 20,
+        "thickness": 0.015,
+        "arc_degrees": 275
+      }
+    }
+  ],
+  "replace_on_trigger": true
+}

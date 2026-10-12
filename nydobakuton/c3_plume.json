@@ -1,0 +1,322 @@
+{
+  "schema": 1,
+  "duration": 45,
+  "priority": 3,
+  "max_distance": 160,
+  "bounds": 1.4,
+  "emitters": [
+    {
+      "name": "black_ceramic_column",
+      "start": 0,
+      "duration": 0,
+      "burst": 8,
+      "max_particles": 8,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.1,
+        "scale": [
+          1,
+          1,
+          0.7
+        ],
+        "offset": [
+          0,
+          0,
+          0.09
+        ],
+        "direction": "forward"
+      },
+      "speed": [
+        0.005,
+        0.012
+      ],
+      "lifetime": [
+        31,
+        45
+      ],
+      "size": [
+        [
+          0,
+          0.035
+        ],
+        [
+          0.45,
+          0.16
+        ],
+        [
+          1,
+          0.26
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.84
+        ],
+        [
+          0.65,
+          0.588
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FF624830",
+        "end": "#FF222127"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "gravity": -0.0005,
+      "drag": 0.98,
+      "turbulence": 0.015,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -0.7,
+        0.7
+      ],
+      "geometry_settings": {
+        "segments": 16
+      }
+    },
+    {
+      "name": "ochre_outer_crown",
+      "start": 4,
+      "duration": 0,
+      "burst": 6,
+      "max_particles": 6,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "ring",
+        "radius": 0.19,
+        "offset": [
+          0,
+          0,
+          0.08
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.003,
+        0.008
+      ],
+      "lifetime": [
+        29,
+        40
+      ],
+      "size": [
+        [
+          0,
+          0.02
+        ],
+        [
+          0.45,
+          0.11
+        ],
+        [
+          1,
+          0.21
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.62
+        ],
+        [
+          0.65,
+          0.434
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFCCB08B",
+        "end": "#FF554F46"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "gravity": -0.004,
+      "drag": 0.91,
+      "turbulence": 0.015,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -0.7,
+        0.7
+      ],
+      "geometry_settings": {
+        "segments": 16
+      }
+    },
+    {
+      "name": "heavy_shell_fallout",
+      "start": 0,
+      "duration": 0,
+      "burst": 18,
+      "max_particles": 18,
+      "geometry": "cube",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.04,
+        "direction": "radial"
+      },
+      "speed": [
+        0.012,
+        0.033
+      ],
+      "lifetime": [
+        20,
+        36
+      ],
+      "size": [
+        [
+          0,
+          0.015
+        ],
+        [
+          0.45,
+          0.012
+        ],
+        [
+          1,
+          0.007
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.9
+        ],
+        [
+          0.65,
+          0.63
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -9,
+        9
+      ],
+      "gravity": 0.0008,
+      "drag": 0.96
+    },
+    {
+      "name": "white_hot_compression_core",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {
+        "type": "point",
+        "direction": "forward"
+      },
+      "speed": [
+        0,
+        0
+      ],
+      "lifetime": [
+        8,
+        8
+      ],
+      "size": [
+        [
+          0,
+          0.02
+        ],
+        [
+          1,
+          0.3
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.8
+        ],
+        [
+          0.65,
+          0.5599999999999999
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFFFD391",
+        "end": "#FFD47838"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "additive",
+        "shader": "standard",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "near_fade": 0.3,
+      "geometry_settings": {
+        "segments": 36,
+        "thickness": 0.04,
+        "edge": 0.9
+      }
+    }
+  ]
+}

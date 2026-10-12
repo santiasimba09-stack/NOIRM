@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "duration": 28,
+  "priority": 2,
+  "max_distance": 128,
+  "bounds": 1.15,
+  "emitters": [
+    {
+      "name": "harmless_clay_wash",
+      "start": 0,
+      "duration": 0,
+      "burst": 8,
+      "max_particles": 8,
+      "geometry": "ninja_smoke",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.55,
+        "scale": [
+          1,
+          1,
+          0.45
+        ],
+        "direction": "radial"
+      },
+      "speed": [
+        0.002,
+        0.006
+      ],
+      "lifetime": [
+        17,
+        28
+      ],
+      "size": [
+        [
+          0,
+          0.03
+        ],
+        [
+          0.45,
+          0.08
+        ],
+        [
+          1,
+          0.12
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.2
+        ],
+        [
+          0.65,
+          0.13999999999999999
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "gravity": -0.0001,
+      "drag": 0.91,
+      "turbulence": 0.015,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -0.7,
+        0.7
+      ],
+      "geometry_settings": {
+        "segments": 16
+      }
+    },
+    {
+      "name": "neutral_grain_settle",
+      "start": 0,
+      "duration": 0,
+      "burst": 8,
+      "max_particles": 8,
+      "geometry": "cube",
+      "shape": {
+        "type": "sphere",
+        "radius": 0.65,
+        "scale": [
+          1,
+          1,
+          0.45
+        ],
+        "direction": "random"
+      },
+      "speed": [
+        0.001,
+        0.003
+      ],
+      "lifetime": [
+        13,
+        25
+      ],
+      "size": [
+        [
+          0,
+          0.005
+        ],
+        [
+          0.45,
+          0.004
+        ],
+        [
+          1,
+          0.002
+        ]
+      ],
+      "alpha": [
+        [
+          0,
+          0
+        ],
+        [
+          0.08,
+          0.4
+        ],
+        [
+          0.65,
+          0.27999999999999997
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "color": {
+        "start": "#FFE9D9B6",
+        "end": "#FF827260"
+      },
+      "material": {
+        "texture": "nydomod:textures/white_square.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "near_fade": 0.3,
+      "rotation": [
+        0,
+        360
+      ],
+      "spin": [
+        -9,
+        9
+      ],
+      "gravity": 0.0005,
+      "drag": 0.96
+    }
+  ]
+}
