@@ -4,7 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
 /**
- * A player's shinobi resources: chakra for jutsu, stamina for movement and combat actions.
+ * A player's shinobi resources (chakra for jutsu, stamina for defensive actions) and combat
+ * stats (speed, taijutsu).
  *
  * <p>The server owns this data; the client only receives copies for the HUD. All values are
  * floats so regeneration can add fractions per tick (20 ticks = 1 second).
@@ -18,12 +19,19 @@ public final class ShinobiData {
     public static final float STAMINA_REGEN_PER_TICK = 1f;
     /** After spending stamina, it waits this many ticks (1 second) before recovering. */
     public static final int STAMINA_REGEN_DELAY_TICKS = 20;
+    /** Starting value of the combat stats. Training (milestone 3) will raise them. */
+    public static final float DEFAULT_STAT = 10f;
+    public static final float MAX_STAT = 100f;
 
     private float maxChakra = DEFAULT_MAX_CHAKRA;
     private float chakra = DEFAULT_MAX_CHAKRA;
     private float maxStamina = DEFAULT_MAX_STAMINA;
     private float stamina = DEFAULT_MAX_STAMINA;
     private int staminaRegenDelay;
+    /** How fast you are: feeds perception (how slow opponents' attacks look to you). */
+    private float speed = DEFAULT_STAT;
+    /** Hand-to-hand skill: feeds perception and unarmed damage. */
+    private float taijutsu = DEFAULT_STAT;
     /** True when the client's copy is out of date and needs a sync packet. */
     private boolean dirty = true;
 
@@ -41,6 +49,22 @@ public final class ShinobiData {
 
     public float getMaxStamina() {
         return maxStamina;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public float getTaijutsu() {
+        return taijutsu;
+    }
+
+    public void setSpeed(float value) {
+        speed = Mth.clamp(value, 1f, MAX_STAT);
+    }
+
+    public void setTaijutsu(float value) {
+        taijutsu = Mth.clamp(value, 1f, MAX_STAT);
     }
 
     public void setChakra(float value) {
@@ -128,6 +152,8 @@ public final class ShinobiData {
         tag.putFloat("Chakra", chakra);
         tag.putFloat("MaxStamina", maxStamina);
         tag.putFloat("Stamina", stamina);
+        tag.putFloat("Speed", speed);
+        tag.putFloat("Taijutsu", taijutsu);
         return tag;
     }
 
@@ -136,6 +162,8 @@ public final class ShinobiData {
         maxStamina = tag.contains("MaxStamina") ? Math.max(1f, tag.getFloat("MaxStamina")) : DEFAULT_MAX_STAMINA;
         chakra = Mth.clamp(tag.contains("Chakra") ? tag.getFloat("Chakra") : maxChakra, 0f, maxChakra);
         stamina = Mth.clamp(tag.contains("Stamina") ? tag.getFloat("Stamina") : maxStamina, 0f, maxStamina);
+        speed = Mth.clamp(tag.contains("Speed") ? tag.getFloat("Speed") : DEFAULT_STAT, 1f, MAX_STAT);
+        taijutsu = Mth.clamp(tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : DEFAULT_STAT, 1f, MAX_STAT);
         staminaRegenDelay = 0;
         dirty = true;
     }

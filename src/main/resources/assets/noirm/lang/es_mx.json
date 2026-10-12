@@ -1,5 +1,19 @@
 {
   "hud.noirm.chakra": "Chakra %s/%s",
   "hud.noirm.stamina": "Resistencia %s/%s",
-  "command.noirm.stats": "Chakra: %s/%s · Resistencia: %s/%s"
+  "command.noirm.stats": "Chakra: %s/%s · Resistencia: %s/%s",
+  "hud.noirm.posture": "Postura %s/%s",
+  "hud.noirm.combat_mode": "⚔ Modo combate",
+  "hud.noirm.guarding": "⚔ En guardia",
+  "hud.noirm.locked_on": "◆ %s",
+  "message.noirm.combat_mode.on": "Modo combate ACTIVADO",
+  "message.noirm.combat_mode.off": "Modo combate DESACTIVADO",
+  "key.categories.noirm": "NOIRM",
+  "key.noirm.combat_mode": "Activar modo combate",
+  "key.noirm.dodge": "Esquivar",
+  "key.noirm.guard": "Guardia (mantener)",
+  "key.noirm.lock_on": "Fijar objetivo",
+  "entity.noirm.sparring_ninja": "Ninja de entrenamiento",
+  "item.noirm.sparring_ninja_spawn_egg": "Huevo de Ninja de entrenamiento",
+  "command.noirm.stat": "Velocidad: %s · Taijutsu: %s · Percepción: %s"
 }

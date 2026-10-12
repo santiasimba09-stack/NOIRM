@@ -18,7 +18,9 @@ check in a real game (`runClient`) by the owner.**
 
 ## In progress
 
-Nothing. Waiting for the owner's in-game check of the HUD and the command.
+**Milestone 2: Combat feel v1.** The code is written and 19/19 game tests are green: moves and
+combo routes, perception, hits, guard, parry, posture break, dodge i-frames, focus, and the
+sparring ninja AI. Next: an off-screen client smoke test, then a docs pass.
 
 ## Next steps (in order)
 

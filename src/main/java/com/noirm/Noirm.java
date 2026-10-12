@@ -2,8 +2,12 @@ package com.noirm;
 
 import com.mojang.logging.LogUtils;
 import com.noirm.network.NoirmNetwork;
+import com.noirm.registry.NoirmEntities;
+import com.noirm.registry.NoirmItems;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 /**
@@ -16,8 +20,11 @@ public final class Noirm {
     public static final String MOD_ID = "noirm";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Noirm() {
+    public Noirm(FMLJavaModLoadingContext context) {
         LOGGER.info("NOIRM is loading");
+        IEventBus modBus = context.getModEventBus();
+        NoirmEntities.register(modBus);
+        NoirmItems.register(modBus);
         NoirmNetwork.register();
     }
 
@@ -25,5 +32,11 @@ public final class Noirm {
     @SuppressWarnings("removal")
     public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID, path);
+    }
+
+    /** Builds a {@code minecraft:<path>} id, for vanilla assets. */
+    @SuppressWarnings("removal")
+    public static ResourceLocation vanillaId(String path) {
+        return new ResourceLocation("minecraft", path);
     }
 }

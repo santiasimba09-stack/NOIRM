@@ -9,35 +9,44 @@ _Living design doc. "Proposed" items are waiting on the owner's OK; "Agreed" one
 - Power comes from training under masters, in stages. A technique is only usable once
   strength, mastery and speed are high enough for it.
 
-## 1. Perception: stronger fighters see attacks slower (owner's idea, agreed in principle)
+## 1. Perception: stronger fighters see attacks slower (owner's idea, agreed)
 
 Speed should not mean "everything moves faster than your eyes". The faster or stronger you
 are relative to an opponent, the **slower their attacks look to you**.
 
-Proposed implementation (Minecraft 1.20.1 has no per-player time scale):
+- **Proportional (agreed):** if you're 20% stronger than an opponent, their attacks play 20%
+  slower against you. Formula: `slow factor = clamp(your perception ÷ their perception, 1, 2.5)`.
+  The cap keeps it from ever becoming absurd. If you're weaker, there's no speed-up penalty;
+  they simply get no slowdown.
+- **Perception (agreed):** derived from **speed and taijutsu**, and boosted by **dōjutsu**
+  (Sharingan: see attacks slower or before they happen). Until training exists (M3), speed and
+  taijutsu are plain stats in `ShinobiData`, defaulting to 10.
 
-- **Wind-up scaling.** Every attack has a telegraphed wind-up. Its length is scaled by
-  `defender perception ÷ attacker speed`, so weaker enemies give long, readable windows and
-  equals or stronger ones don't. This is game logic, so it works in multiplayer too.
-- **Projectile slowdown.** Projectiles slow down inside a radius around a much faster target.
-- **Focus moments.** A perfect dodge or parry briefly slows the whole game for about 0.5–1 s.
-  This works in single-player only, by slowing the game clock. In multiplayer it would fall back
-  to wind-up scaling only.
-- Always relative: strong enemies stay fast and dangerous.
-- Open question: is Perception its own trained stat, or derived from speed and taijutsu mastery?
+Implementation (Minecraft 1.20.1 has no per-player time scale):
 
-## 2. Near-death awakening, the "locked in" state (owner's idea, agreed in principle)
+- **Wind-up scaling.** Every NOIRM attack has a telegraphed wind-up. When an attack starts, its
+  wind-up length is multiplied by the target's slow factor. This is game logic, so it also
+  works in multiplayer.
+- **Focus moments.** A perfect dodge or parry briefly slows nearby enemies' actions (to 30%
+  speed) and movement for about 1 s. It uses the same per-fighter time scale as perception, so
+  it also works in multiplayer. (A true whole-game slow-motion is possible later in
+  single-player only.)
+- **Projectile slowdown:** later, once there are projectiles.
+- Vanilla mobs don't use NOIRM's attack system, so perception only affects NOIRM fighters
+  (e.g. the sparring ninja).
 
-- Trigger: health under 20%, plus a chance check. The proposal is that the chance comes from a
-  hidden **Resolve** meter (filled by hard fights, training and protecting allies) rather than
-  pure luck.
+## 2. Near-death awakening, the "locked in" state (owner's idea, agreed; planned for M3)
+
+- Trigger: health under 20%, plus a chance check driven by a hidden **Resolve** meter (agreed),
+  filled by hard fights, training and protecting allies (see Squads in the roadmap).
 - Effect: a flash, a sound cue and about 1 s of invulnerability. Then about 15–30 s of boosted
   speed, damage, stamina regen and perception.
 - Cost: an exhaustion debuff afterwards, and a long cooldown.
-- Progression hook: a first awakening can permanently unlock something, e.g. the first of the
-  Eight Gates for Guy's students.
+- **Depends on who you are (agreed):** an Uchiha may awaken the Sharingan or gain a tomoe; a
+  student of Guy may open an inner gate; a jinchūriki may *lose control* as the beast takes
+  over, which is powerful but dangerous. Awakenings can permanently unlock things.
 
-## 3. Feel checklist (proposed)
+## 3. Feel checklist (agreed: all of it is milestone 2)
 
 1. **Responsiveness:** input buffering (an early press is remembered) and cancel windows
    (the end of an attack can cancel into a dodge).

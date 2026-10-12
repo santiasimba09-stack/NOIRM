@@ -35,13 +35,13 @@ Each milestone ends with something you can play and test.
 |---|---|---|
 | 0 | **Foundation** ✅ | The project builds and the mod loads in Minecraft. An automated test proves it boots. |
 | 1 | **Shinobi core** ✅ | Chakra and stamina: saved with the world, regenerating, and shown as HUD bars. A `/noirm` debug command. (Stats like taijutsu and agility come with training.) |
-| 2 | **Combat feel v1** | A switchable combat mode, a 3-hit light combo, a heavy attack, a stamina dodge, guard, and lock-on. Player animations come through PlayerAnimator, plus hit-stop, knockback and sounds. |
-| 3 | **Training** | A training dummy and training post. Taijutsu XP comes from practice and unlocks combo extensions. |
+| 2 | **Combat feel v1** | A switchable combat mode, input buffering and cancels, light/heavy combo routes, a dodge with i-frames, guard with posture and parry, perfect-dodge focus, perception slowdown, impact (hit-stop, knockback, shake, sound), lock-on, a sparring ninja, and PlayerAnimator animations. See `COMBAT_DESIGN.md`. |
+| 3 | **Training & awakening** | A training dummy and training post. Taijutsu XP and speed grow from practice. Near-death awakening with the Resolve meter. |
 | 4 | **First master** | Might Guy, a taijutsu master who tests you with a spar, then teaches techniques (e.g. Lotus, Hirudora). More masters follow. |
 | 5 | **First jutsu** | Hand seals, a chakra cost, and three starter jutsu with data-driven VFX. |
 | 6 | **First village** | A generated village structure with a dojo and training grounds, where masters live. |
 | 7 | **Exploration** | Ruins, scroll loot, rare wandering masters, and a first custom biome. |
-| later | Missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
+| later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
 
 ## Art without an artist
 

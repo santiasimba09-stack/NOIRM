@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.noirm.Noirm;
+import com.noirm.combat.Perception;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.player.ShinobiData;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,6 +24,7 @@ import java.util.function.BiConsumer;
  *   <li>{@code /noirm set chakra|stamina <value>}: set the current value (cheats)</li>
  *   <li>{@code /noirm max chakra|stamina <value>}: set the maximum (cheats)</li>
  *   <li>{@code /noirm refill}: fill both (cheats)</li>
+ *   <li>{@code /noirm stat speed|taijutsu <value>}: set a combat stat, 1–100 (cheats)</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
@@ -42,6 +44,10 @@ public final class NoirmCommand {
                 .then(Commands.literal("max").requires(s -> s.hasPermission(CHEAT_PERMISSION))
                         .then(valueArgument("chakra", ShinobiData::setMaxChakra))
                         .then(valueArgument("stamina", ShinobiData::setMaxStamina)))
+                .then(Commands.literal("stat").requires(s -> s.hasPermission(CHEAT_PERMISSION))
+                        .executes(ctx -> showCombatStats(ctx.getSource()))
+                        .then(statArgument("speed", ShinobiData::setSpeed))
+                        .then(statArgument("taijutsu", ShinobiData::setTaijutsu)))
                 .then(Commands.literal("refill").requires(s -> s.hasPermission(CHEAT_PERMISSION))
                         .executes(ctx -> {
                             data(ctx.getSource()).refill();
@@ -55,6 +61,22 @@ public final class NoirmCommand {
                     setter.accept(data(ctx.getSource()), FloatArgumentType.getFloat(ctx, "value"));
                     return showStats(ctx.getSource());
                 }));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> statArgument(String name, BiConsumer<ShinobiData, Float> setter) {
+        return Commands.literal(name).then(Commands.argument("value", FloatArgumentType.floatArg(1f, ShinobiData.MAX_STAT))
+                .executes(ctx -> {
+                    setter.accept(data(ctx.getSource()), FloatArgumentType.getFloat(ctx, "value"));
+                    return showCombatStats(ctx.getSource());
+                }));
+    }
+
+    private static int showCombatStats(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ShinobiData data = data(source);
+        source.sendSuccess(() -> Component.translatable("command.noirm.stat",
+                Math.round(data.getSpeed()), Math.round(data.getTaijutsu()), Math.round(Perception.perception(player))), false);
+        return 1;
     }
 
     private static int showStats(CommandSourceStack source) throws CommandSyntaxException {
