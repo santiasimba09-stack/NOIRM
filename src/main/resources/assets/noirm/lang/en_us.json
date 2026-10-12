@@ -1,0 +1,5 @@
+{
+  "hud.noirm.chakra": "Chakra %s/%s",
+  "hud.noirm.stamina": "Stamina %s/%s",
+  "command.noirm.stats": "Chakra: %s/%s · Stamina: %s/%s"
+}

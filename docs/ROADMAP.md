@@ -34,10 +34,10 @@ Each milestone ends with something you can play and test.
 | # | Milestone | What it gives you |
 |---|---|---|
 | 0 | **Foundation** ✅ | The project builds and the mod loads in Minecraft. An automated test proves it boots. |
-| 1 | **Shinobi core** | Player data: chakra, stamina and basic stats. It's saved with the world and shown as HUD bars. |
-| 2 | **Combat feel v1** | Combat mode, a 3-hit light combo, a heavy attack, a stamina dodge, guard, and lock-on. Player animations come through PlayerAnimator, plus hit-stop, knockback and sounds. |
+| 1 | **Shinobi core** ✅ | Chakra and stamina: saved with the world, regenerating, and shown as HUD bars. A `/noirm` debug command. (Stats like taijutsu and agility come with training.) |
+| 2 | **Combat feel v1** | A switchable combat mode, a 3-hit light combo, a heavy attack, a stamina dodge, guard, and lock-on. Player animations come through PlayerAnimator, plus hit-stop, knockback and sounds. |
 | 3 | **Training** | A training dummy and training post. Taijutsu XP comes from practice and unlocks combo extensions. |
-| 4 | **First master** | A master NPC who tests you with a spar, then teaches you a style or technique. |
+| 4 | **First master** | Might Guy, a taijutsu master who tests you with a spar, then teaches techniques (e.g. Lotus, Hirudora). More masters follow. |
 | 5 | **First jutsu** | Hand seals, a chakra cost, and three starter jutsu with data-driven VFX. |
 | 6 | **First village** | A generated village structure with a dojo and training grounds, where masters live. |
 | 7 | **Exploration** | Ruins, scroll loot, rare wandering masters, and a first custom biome. |

@@ -1,6 +1,8 @@
 package com.noirm;
 
 import com.mojang.logging.LogUtils;
+import com.noirm.network.NoirmNetwork;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 
@@ -16,5 +18,12 @@ public final class Noirm {
 
     public Noirm() {
         LOGGER.info("NOIRM is loading");
+        NoirmNetwork.register();
+    }
+
+    /** Builds a {@code noirm:<path>} id. Newer Minecraft versions rename this constructor; update it here only. */
+    @SuppressWarnings("removal")
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 }

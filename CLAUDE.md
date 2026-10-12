@@ -6,7 +6,7 @@ personal meaning to the owner, so keep it.
 
 ## Read first (and only this, unless the task needs more)
 
-1. **`docs/STATUS.md`**: current milestone, what's in progress, next steps, decisions, open questions.
+1. **`docs/STATUS.md`**: current milestone, what's in progress, next steps, the code map, decisions, open questions.
 2. `docs/ROADMAP.md`: the vision and milestone list. Read it when planning.
 3. `docs/CHANGELOG.md`: history. Read it only if you need to know when or why something changed.
 
