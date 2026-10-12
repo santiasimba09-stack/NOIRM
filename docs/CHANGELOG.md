@@ -2,6 +2,12 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-12 — Combat design ideas (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- Added `docs/COMBAT_DESIGN.md`, recording the owner's perception idea (stronger fighters see
+  attacks slower), the near-death awakening, staged teaching by masters, and the proposed
+  combat-feel checklist. Open questions are listed in `STATUS.md`.
+
 ## 2026-10-12 — Milestone 1: Shinobi core (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - Chakra and stamina (`ShinobiData`) attached to every player through a Forge capability. They're

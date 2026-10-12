@@ -22,6 +22,7 @@ Nothing. Waiting for the owner's in-game check of the HUD and the command.
 
 ## Next steps (in order)
 
+0. **Before M2: get the owner's answers to the open questions below** (they shape M2's scope).
 1. **Owner playtest of M1.** Run `runClient`, create a world with cheats on, and try
    `/noirm set stamina 10`. The green bar should drop, then refill after about 1 second.
 2. **Milestone 2: Combat feel v1.**
@@ -65,6 +66,16 @@ Nothing. Waiting for the owner's in-game check of the HUD and the command.
   `data/noirm/structures/empty.nbt` (`template = "empty"`).
 - Text lives in `assets/noirm/lang/` in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 
+- **Masters teach in stages.** Techniques need enough strength, mastery and speed to unlock.
+- **Perception mechanic** (owner's idea): stronger fighters see weaker opponents' attacks
+  slower, instead of everything getting faster. **Near-death awakening** at <20% health.
+  Both are agreed in principle; details are in `docs/COMBAT_DESIGN.md`.
+
 ## Open questions for the owner
 
-- None right now. Suggestions are always welcome.
+See `docs/COMBAT_DESIGN.md`.
+- Is Perception its own trained stat, or derived from speed and taijutsu mastery?
+- Is awakening chance driven by a "Resolve" meter (proposed) rather than pure luck?
+- Revised milestone 2 scope: buffering and cancels, impact, light/heavy routes, dodge, guard
+  with posture, perfect-dodge focus, a sparring ninja, with lock-on last. Awakening and full
+  perception would move to milestone 3. OK?

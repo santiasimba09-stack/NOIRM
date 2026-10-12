@@ -8,7 +8,8 @@ personal meaning to the owner, so keep it.
 
 1. **`docs/STATUS.md`**: current milestone, what's in progress, next steps, the code map, decisions, open questions.
 2. `docs/ROADMAP.md`: the vision and milestone list. Read it when planning.
-3. `docs/CHANGELOG.md`: history. Read it only if you need to know when or why something changed.
+3. `docs/COMBAT_DESIGN.md`: combat design ideas and decisions. Read it before any combat work.
+4. `docs/CHANGELOG.md`: history. Read it only if you need to know when or why something changed.
 
 **Don't explore `reference/nydo/` wholesale.** It's about 1,200 JSON files, some of them several MB.
 Start from `reference/nydo/README.md` (the index and system summary), then open only the
