@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "duration": 28,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 6.0,
+  "emitters": [
+    {
+      "name": "water_gathering_shell",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "impact_dome",
+      "shape": { "type": "point", "offset": [0.0, 0.12, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [20, 20], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.10], [0.18, 0.74], [0.58, 1.08], [1.0, 0.66]],
+      "alpha": [[0.0, 0.0], [0.06, 0.70], [0.54, 0.32], [1.0, 0.0]],
+      "color": { "start": "#FF7AD7F6", "end": "#FF0A609B" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 30, "length": 0.56 }
+    },
+    {
+      "name": "inward_surface_current",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex",
+      "shape": { "type": "point", "offset": [0.0, 0.035, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [24, 24], "drag": 1.0,
+      "rotation": [0, 0], "spin": [22.0, 22.0],
+      "size": [[0.0, 0.12], [0.16, 0.82], [0.56, 1.42], [1.0, 0.90]],
+      "alpha": [[0.0, 0.0], [0.07, 0.72], [0.58, 0.42], [1.0, 0.0]],
+      "color": { "start": "#FF4FC1EC", "end": "#FF075890" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 42, "thickness": 0.15, "turns": 1.18,
+        "wave": 0.22, "crest": 0.54, "lobes": 8.0, "rim": 0.12
+      }
+    },
+    {
+      "name": "forward_birth_crest",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0, 0.08, 0.12], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+      "rotation": [-50.0, -50.0],
+      "size": [[0.0, 0.12], [0.20, 0.72], [0.66, 1.30], [1.0, 1.62]],
+      "alpha": [[0.0, 0.0], [0.06, 0.94], [0.52, 0.44], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF9CE8FF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": {
+        "segments": 38, "thickness": 0.070, "arc_degrees": 148.0,
+        "edge": 0.96, "roll": 2.0, "lay_flat": true,
+        "crest": 0.94, "wave": 0.12, "lobes": 9.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "launch_foam_mass",
+      "start": 0, "duration": 13, "burst": 16, "rate": 0.90, "max_particles": 30,
+      "shape": { "type": "sphere", "offset": [0.0, 0.14, 0.0], "radius": 0.82, "scale": [1.0, 0.38, 1.0], "direction": "radial" },
+      "speed": [0.12, 0.44], "lifetime": [8, 16]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "launch_round_spray",
+      "start": 0, "duration": 14, "burst": 14, "rate": 0.78, "max_particles": 28,
+      "shape": { "type": "sphere", "offset": [0.0, 0.22, 0.0], "radius": 0.78, "scale": [1.0, 0.65, 1.0], "direction": "radial" },
+      "speed": [0.18, 0.56], "lifetime": [11, 22], "gravity": 0.050
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "launch_cool_haze",
+      "start": 2, "duration": 10, "burst": 4, "rate": 0.38, "max_particles": 9,
+      "shape": { "type": "sphere", "offset": [0.0, 0.28, 0.0], "radius": 0.62, "scale": [1.2, 0.72, 1.0], "direction": "radial" },
+      "speed": [0.03, 0.10], "lifetime": [14, 24]
+    }
+  ]
+}

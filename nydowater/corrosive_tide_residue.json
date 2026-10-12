@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "duration": 158,
+  "priority": 3,
+  "max_distance": 120.0,
+  "bounds": 3.2,
+  "emitters": [
+    {
+      "name": "corrosive_pool_mass",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix",
+      "shape": {"type": "point", "offset": [0, 0.018, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [156, 156],
+      "rotation": [0, 360], "spin": [0.018, 0.018],
+      "size": [[0, 0.08], [0.07, 1.0], [0.86, 1.06], [1, 0]],
+      "alpha": [[0, 0], [0.06, 0.58], [0.80, 0.42], [1, 0]],
+      "color": {"start": "#FFDFFF78", "end": "#FF24523C"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": false, "shader": "lit"},
+      "geometry_settings": {"segments": 26, "length": 0.055, "thickness": 1.18, "turns": 2.25, "flare": 0.25, "sag": 0.0, "wave": 0.08, "crest": 0.38}
+    },
+    {
+      "name": "acid_pool_foam_rim",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {"type": "point", "offset": [0, 0.038, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [150, 150],
+      "rotation": [0, 360], "spin": [-0.012, -0.012],
+      "size": [[0, 0.12], [0.08, 0.92], [0.82, 1.0], [1, 0]],
+      "alpha": [[0, 0], [0.07, 0.62], [0.72, 0.24], [1, 0]],
+      "color": {"start": "#FFF7FFD5", "end": "#FF82C45D"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 24, "thickness": 0.115, "arc_degrees": 360, "edge": 0.92, "lay_flat": true, "crest": 0.62, "wave": 0.07, "lobes": 7}
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "acid_pool_bubbles",
+      "start": 5, "duration": 142, "burst": 3, "rate": 0.055, "max_particles": 10,
+      "shape": {"type": "ring", "offset": [0, 0.045, 0], "radius": 1.0, "direction": "random"},
+      "speed": [0.01, 0.05], "lifetime": [16, 28], "gravity": -0.008,
+      "color": {"start": "#FFE2FF82", "end": "#FF39754F"}
+    }
+  ]
+}

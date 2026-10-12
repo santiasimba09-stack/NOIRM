@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "duration": 240,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 8.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "emitters": [
+    {
+      "name": "disc_pressure_mass",
+      "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave", "follow_origin": true, "near_fade": 0.12,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [18.0, 18.0],
+      "size": [[0.0, 0.0], [0.015, 0.56], [0.98, 0.56], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.015, 0.62], [0.98, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFF0F5F5", "end": "#FF819197" },
+      "material": {
+        "texture": "nydomod:textures/white_square.png", "blend": "alpha",
+        "shader": "standard", "depth_write": false, "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 36, "thickness": 0.48, "arc_degrees": 360.0,
+        "edge": 0.86, "roll": 0.0, "crest": 0.20,
+        "wave": 0.035, "lobes": 14.0, "lay_flat": false
+      }
+    },
+    {
+      "name": "disc_turbulent_spiral",
+      "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true, "near_fade": 0.12,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240], "drag": 1.0,
+      "rotation": [8.0, 8.0], "spin": [-42.0, -42.0],
+      "size": [[0.0, 0.0], [0.015, 0.54], [0.98, 0.54], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.015, 0.82], [0.98, 0.60], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFAEC7CE" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png", "blend": "additive",
+        "depth_write": false, "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 20, "thickness": 0.075, "turns": 1.32,
+        "wave": 0.16, "crest": 0.72, "lobes": 3.0, "rim": 0.11
+      }
+    },
+    {
+      "name": "razor_saw_rim",
+      "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave", "follow_origin": true, "near_fade": 0.12,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [53.0, 53.0],
+      "size": [[0.0, 0.0], [0.015, 0.615], [0.98, 0.615], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.015, 1.0], [0.98, 0.78], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFC7DDE2" },
+      "material": {
+        "texture": "nydomod:textures/white_square.png", "blend": "additive",
+        "depth_write": false, "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 36, "thickness": 0.048, "arc_degrees": 360.0,
+        "edge": 0.97, "roll": 0.0, "crest": 0.96,
+        "wave": 0.042, "lobes": 16.0, "lay_flat": false
+      }
+    },
+    {
+      "name": "counter_pressure_rim",
+      "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave", "follow_origin": true, "near_fade": 0.12,
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [-61.0, -61.0],
+      "size": [[0.0, 0.0], [0.015, 0.425], [0.98, 0.425], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.015, 0.64], [0.98, 0.38], [1.0, 0.0]],
+      "color": { "start": "#FFF6FAFB", "end": "#FF92A7AE" },
+      "material": {
+        "texture": "nydomod:textures/white_square.png", "blend": "additive",
+        "depth_write": false, "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 32, "thickness": 0.058, "arc_degrees": 360.0,
+        "edge": 0.90, "roll": 0.0, "crest": 0.68,
+        "wave": 0.055, "lobes": 11.0, "lay_flat": false
+      }
+    },
+    {
+      "name": "crossflow_spiral_echo",
+      "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true, "near_fade": 0.12,
+      "shape": { "type": "point", "offset": [0.0, 0.0, -0.015], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240], "drag": 1.0,
+      "rotation": [-16.0, -16.0], "spin": [27.0, 27.0],
+      "size": [[0.0, 0.0], [0.015, 0.48], [0.98, 0.48], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.015, 0.34], [0.98, 0.20], [1.0, 0.0]],
+      "color": { "start": "#FFE9EFF0", "end": "#FF718188" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png", "blend": "alpha",
+        "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "geometry_settings": {
+        "segments": 14, "thickness": 0.10, "turns": -0.86,
+        "wave": 0.22, "crest": 0.38, "lobes": 2.0, "rim": 0.16
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point_trail",
+      "name": "left_rotor_wake",
+      "follow_origin": false, "near_fade": 0.12,
+      "burst": 1, "max_particles": 1,
+      "shape": { "type": "point", "offset": [-0.43, 0.0, -0.08], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240],
+      "size": [[0.0, 0.0], [0.025, 0.044], [0.97, 0.026], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.025, 0.44], [0.97, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFF1F5F5", "end": "#FF75858B" },
+      "geometry_settings": {
+        "trail_points": 16, "trail_taper": 2.4,
+        "trail_min_distance": 0.07, "trail_break_distance": 8.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point_trail",
+      "name": "right_rotor_wake",
+      "follow_origin": false, "near_fade": 0.12,
+      "burst": 1, "max_particles": 1,
+      "shape": { "type": "point", "offset": [0.43, 0.0, -0.08], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [240, 240],
+      "size": [[0.0, 0.0], [0.025, 0.044], [0.97, 0.026], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.025, 0.44], [0.97, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFF1F5F5", "end": "#FF75858B" },
+      "geometry_settings": {
+        "trail_points": 16, "trail_taper": 2.4,
+        "trail_min_distance": 0.07, "trail_break_distance": 8.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/filaments",
+      "name": "centrifugal_edge_shed",
+      "duration": 240, "burst": 3, "rate": 0.48, "max_particles": 10,
+      "near_fade": 0.12,
+      "shape": {
+        "type": "box", "offset": [0.0, 0.0, -0.16], "radius": 0.48,
+        "length": 0.10, "scale": [1.0, 1.0, 0.12], "direction": "backward"
+      },
+      "speed": [0.06, 0.17], "lifetime": [4, 8], "drag": 0.90,
+      "turbulence": 0.10, "vortex": 4.2, "vortex_pull": -0.62,
+      "size": [[0.0, 0.024], [0.18, 0.095], [0.64, 0.065], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.34], [0.58, 0.13], [1.0, 0.0]],
+      "color": { "start": "#FFF0F3F3", "end": "#FF6D7B80" },
+      "geometry_settings": { "length": 0.62 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/whisper_stroke",
+      "name": "rotor_cavitation",
+      "duration": 240, "rate": 0.16, "max_particles": 4,
+      "follow_origin": false, "near_fade": 0.12,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, -0.25], "radius": 0.18,
+        "scale": [1.0, 1.0, 0.22], "direction": "backward"
+      },
+      "speed": [0.03, 0.08], "lifetime": [5, 9],
+      "size": [[0.0, 0.05], [0.22, 0.15], [0.66, 0.09], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.10, 0.17], [0.60, 0.06], [1.0, 0.0]],
+      "color": { "start": "#FFC4CBCC", "end": "#FF5B666A" }
+    }
+  ]
+}

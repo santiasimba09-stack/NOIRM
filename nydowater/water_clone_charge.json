@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "duration": 18,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 5.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_scale_mode": "entity_bounds",
+  "source_scale_base": 1.8,
+  "emitters": [
+    {
+      "name": "gathering_water_collar",
+      "start": 0,
+      "duration": 0,
+      "burst": 2,
+      "max_particles": 2,
+      "geometry": "ring",
+      "follow_origin": true,
+      "shape": {"type": "point", "offset": [0, -0.72, 0], "direction": "forward"},
+      "speed": [0, 0],
+      "lifetime": [16, 17],
+      "rotation": [0, 360],
+      "spin": [-0.18, 0.18],
+      "size": [[0, 1.18], [0.54, 0.72], [1, 0.18]],
+      "alpha": [[0, 0], [0.08, 0.82], [0.7, 0.38], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF36BCEB"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 34, "thickness": 0.075, "arc_degrees": 360}
+    },
+    {
+      "name": "forming_water_memory",
+      "start": 1,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "water_helix",
+      "follow_origin": true,
+      "shape": {"type": "point", "offset": [0, -0.76, 0], "direction": "forward"},
+      "speed": [0, 0],
+      "lifetime": [16, 16],
+      "size": [[0, 0.06], [0.24, 0.42], [0.82, 0.5], [1, 0]],
+      "alpha": [[0, 0], [0.08, 0.76], [0.72, 0.34], [1, 0]],
+      "color": {"start": "#FFAEEFFF", "end": "#FF0872AA"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false},
+      "geometry_settings": {"segments": 28, "length": 1.7, "thickness": 0.11, "turns": 1.8, "flare": 0.34, "wave": 0.12, "crest": 0.82}
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "memory_drops",
+      "start": 0,
+      "duration": 15,
+      "burst": 8,
+      "rate": 0.5,
+      "max_particles": 18,
+      "shape": {"type": "sphere", "offset": [0, 0.7, 0], "radius": 0.62, "scale": [1, 1.45, 1], "direction": "body_tangent"},
+      "speed": [0.05, 0.2],
+      "lifetime": [10, 18],
+      "gravity": 0.018
+    }
+  ]
+}

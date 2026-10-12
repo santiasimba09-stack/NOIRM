@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "duration": 26,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 22.0,
+  "follow_source": true,
+  "source_anchor": "eyes",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/waves/implosion",
+      "name": "intake",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "follow_origin": true,
+      "near_fade": 1.6,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 1.35], "direction": "forward" },
+      "lifetime": [8, 8],
+      "size": [[0.0, 0.90], [0.42, 0.72], [0.74, 0.40], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.14, 0.34], [0.62, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FF", "end": "#FFA8D8E8" }
+    },
+    {
+      "preset": "nydomod:_presets/waves/collar",
+      "name": "muzzle_collar",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "follow_origin": true,
+      "near_fade": 1.6,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 1.80], "direction": "forward" },
+      "size": [[0.0, 0.16], [0.30, 0.46], [1.0, 0.60]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFCDEFF7" }
+    },
+    {
+      "preset": "nydomod:_presets/waves/cone",
+      "name": "pressure_cone",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "follow_origin": true,
+      "near_fade": 2.2,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 2.20], "direction": "forward" },
+      "lifetime": [10, 10],
+      "size": [[0.0, 0.14], [0.24, 0.44], [1.0, 0.60]],
+      "alpha": [[0.0, 0.0], [0.10, 0.40], [0.55, 0.28], [1.0, 0.0]],
+      "color": { "start": "#FFF2FBFF", "end": "#FF9FD4E6" },
+      "geometry_settings": {
+        "segments": 22, "thickness": 0.34, "arc_degrees": 360.0,
+        "edge": 1.0, "roll": 74.0, "crest": 0.42, "wave": 0.10, "lobes": 6.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/waves/vortex_ring",
+      "name": "bullet_ring",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 2.4,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 2.00], "direction": "forward" },
+      "speed": [1.0, 1.0], "lifetime": [18, 18],
+      "size": [[0.0, 0.26], [0.18, 0.58], [0.60, 0.72], [1.0, 0.92]],
+      "alpha": [[0.0, 0.0], [0.07, 0.92], [0.60, 0.62], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFAFDEEE" },
+      "geometry_settings": {
+        "segments": 26, "thickness": 0.28, "arc_degrees": 360.0,
+        "edge": 0.78, "roll": 64.0, "crest": 0.48, "wave": 0.16, "lobes": 3.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point",
+      "name": "core_point",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 1.2,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 2.00], "direction": "forward" },
+      "speed": [1.0, 1.0], "lifetime": [18, 18]
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point_trail",
+      "name": "core_wake",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 1.2,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 2.00], "direction": "forward" },
+      "speed": [1.0, 1.0], "lifetime": [18, 18]
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point_shed",
+      "name": "core_shed",
+      "start": 0, "duration": 18, "burst": 3, "rate": 1.6, "max_particles": 22,
+      "near_fade": 1.2,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, 2.00], "radius": 0.09,
+        "scale": [1.0, 1.0, 1.0], "direction": "forward"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/air_point_aura",
+      "name": "core_aura",
+      "start": 0, "duration": 18, "burst": 2, "rate": 0.7, "max_particles": 12,
+      "near_fade": 1.6,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, 2.00], "radius": 0.14,
+        "scale": [1.0, 1.0, 1.0], "direction": "forward"
+      },
+      "size": [[0.0, 0.08], [0.22, 0.22], [0.66, 0.28], [1.0, 0.10]],
+      "alpha": [[0.0, 0.0], [0.10, 0.16], [0.62, 0.10], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/wind/filaments",
+      "name": "flow_filaments",
+      "start": 0, "duration": 14, "burst": 5, "rate": 1.4, "max_particles": 20,
+      "near_fade": 2.0,
+      "shape": { "type": "line", "offset": [0.0, 0.0, 2.20], "length": 3.2, "direction": "forward" },
+      "speed": [0.62, 0.94]
+    },
+    {
+      "preset": "nydomod:_presets/wind/crescents",
+      "name": "cutting_edges",
+      "start": 0, "duration": 12, "burst": 3, "rate": 0.7, "max_particles": 12,
+      "near_fade": 2.0,
+      "shape": { "type": "line", "offset": [0.0, 0.0, 2.40], "length": 3.0, "direction": "forward" },
+      "speed": [0.66, 0.98]
+    },
+    {
+      "preset": "nydomod:_presets/wind/dust",
+      "name": "entrained_dust",
+      "start": 0, "duration": 12, "burst": 4, "rate": 0.6, "max_particles": 14,
+      "near_fade": 1.4,
+      "shape": {
+        "type": "cone", "offset": [0.0, 0.0, 1.40], "scale": [1.0, 1.0, 1.0],
+        "length": 3.0, "angle": 22.0, "direction": "shape"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/grit",
+      "name": "entrained_grit",
+      "start": 0, "duration": 12, "burst": 5, "rate": 0.5, "max_particles": 12,
+      "near_fade": 1.4,
+      "shape": {
+        "type": "cone", "offset": [0.0, 0.0, 1.20], "scale": [1.0, 1.0, 1.0],
+        "length": 3.2, "angle": 26.0, "direction": "shape"
+      }
+    }
+  ]
+}

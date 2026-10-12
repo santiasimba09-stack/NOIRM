@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "duration": 3,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 6.0,
+  "follow_source": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/dragon/head",
+      "name": "skull",
+      "start": 0,
+      "duration": 3,
+      "material": {
+        "texture": "nydomod:textures/water_flow_surface.png"
+      },
+      "geometry_settings": {
+        "segments": 14,
+        "rim": 0.88,
+        "glow": 0.68,
+        "mouth": 0.55,
+        "horns": 0.62
+      },
+      "lifetime": [
+        2,
+        3
+      ],
+      "size": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.12,
+          0.34
+        ],
+        [
+          0.88,
+          0.34
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/glow",
+      "name": "skull_bloom",
+      "start": 0,
+      "duration": 3,
+      "lifetime": [
+        2,
+        3
+      ]
+    }
+  ]
+}

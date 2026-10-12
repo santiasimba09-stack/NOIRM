@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "duration": 28,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 7.0,
+  "emitters": [
+    {
+      "name": "contact_flash",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "billboard",
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [4, 4], "drag": 1.0,
+      "size": [[0.0, 0.24], [0.20, 0.62], [1.0, 0.30]],
+      "alpha": [[0.0, 0.0], [0.10, 1.0], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFD6F2FF" },
+      "material": { "texture": "nydomod:textures/wind_point_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "preset": "nydomod:_presets/waves/collar",
+      "name": "contact_collar",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [8, 8],
+      "size": [[0.0, 0.18], [0.30, 0.72], [1.0, 1.05]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFCDEFF7" }
+    },
+    {
+      "preset": "nydomod:_presets/waves/blast",
+      "name": "contact_wave",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [15, 15],
+      "size": [[0.0, 0.12], [0.22, 0.95], [0.52, 1.40], [1.0, 1.70]],
+      "alpha": [[0.0, 0.0], [0.06, 0.78], [0.40, 0.40], [1.0, 0.0]],
+      "color": { "start": "#FFF4FCFF", "end": "#FF9FD4E6" },
+      "geometry_settings": {
+        "segments": 30, "thickness": 0.24, "arc_degrees": 360.0,
+        "edge": 0.95, "roll": 22.0, "crest": 0.45, "wave": 0.18, "lobes": 5.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/waves/cone",
+      "name": "contact_backblast",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [11, 11],
+      "size": [[0.0, 0.16], [0.24, 0.72], [1.0, 1.05]],
+      "alpha": [[0.0, 0.0], [0.10, 0.46], [0.55, 0.26], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FF", "end": "#FF8FC4DA" },
+      "geometry_settings": {
+        "segments": 22, "thickness": 0.62, "arc_degrees": 360.0,
+        "edge": 1.0, "roll": -68.0, "crest": 0.45, "wave": 0.16, "lobes": 5.0
+      }
+    },
+    {
+      "name": "contact_fan",
+      "start": 0, "duration": 7, "burst": 14, "rate": 1.6, "max_particles": 26,
+      "geometry": "billboard",
+      "shape": {
+        "type": "cone", "offset": [0.0, 0.0, -0.05], "scale": [1.0, 1.0, 1.0],
+        "length": 0.10, "angle": 86.0, "direction": "shape"
+      },
+      "speed": [0.44, 1.05], "lifetime": [6, 13],
+      "gravity": 0.004, "drag": 0.88, "turbulence": 0.14,
+      "rotation": [-40, 40], "spin": [-2.6, 2.6],
+      "size": [[0.0, 0.14], [0.24, 0.46], [0.66, 0.58], [1.0, 0.24]],
+      "size_variation": 0.42,
+      "alpha": [[0.0, 0.0], [0.10, 0.34], [0.62, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FFE6F6FF", "end": "#FF93C9DE" },
+      "color_variation": 0.05,
+      "material": { "texture": "nydomod:textures/wind_dust_flipbook.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "contact_crescents",
+      "start": 0, "duration": 6, "burst": 8, "rate": 1.2, "max_particles": 16,
+      "geometry": "directional_billboard",
+      "shape": {
+        "type": "cone", "scale": [1.0, 1.0, 1.0],
+        "length": 0.12, "angle": 78.0, "direction": "shape"
+      },
+      "speed": [0.50, 1.00], "lifetime": [5, 9],
+      "gravity": 0.0, "drag": 0.90, "turbulence": 0.10,
+      "rotation": [-180, 180], "spin": [-6.0, 6.0],
+      "size": [[0.0, 0.22], [0.22, 0.62], [0.62, 0.74], [1.0, 0.28]],
+      "size_variation": 0.34,
+      "alpha": [[0.0, 0.0], [0.08, 0.78], [0.58, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFC2E9F5" },
+      "color_variation": 0.04,
+      "material": { "texture": "nydomod:textures/wind_crescent_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "contact_filaments",
+      "start": 0, "duration": 8, "burst": 12, "rate": 1.8, "max_particles": 24,
+      "geometry": "streak",
+      "shape": {
+        "type": "cone", "scale": [1.0, 1.0, 1.0],
+        "length": 0.10, "angle": 74.0, "direction": "shape"
+      },
+      "speed": [0.55, 1.20], "lifetime": [5, 10],
+      "gravity": 0.0, "drag": 0.89, "turbulence": 0.16, "vortex": 2.0,
+      "size": [[0.0, 0.11], [0.24, 0.28], [0.64, 0.31], [1.0, 0.0]],
+      "size_variation": 0.36,
+      "alpha": [[0.0, 0.0], [0.10, 0.36], [0.62, 0.24], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FF", "end": "#FFA4D6E8" },
+      "color_variation": 0.05,
+      "material": { "texture": "nydomod:textures/wind_filament_flipbook.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "length": 1.3 }
+    },
+    {
+      "name": "contact_dust",
+      "start": 0, "duration": 10, "burst": 9, "rate": 1.0, "max_particles": 20,
+      "geometry": "billboard",
+      "shape": {
+        "type": "cone", "offset": [0.0, 0.0, -0.10], "scale": [1.2, 1.0, 1.2],
+        "length": 0.18, "angle": 68.0, "direction": "shape"
+      },
+      "speed": [0.20, 0.58], "lifetime": [11, 22],
+      "gravity": 0.016, "drag": 0.93, "turbulence": 0.12, "vortex_pull": 0.5,
+      "rotation": [-40, 40], "spin": [-2.0, 2.0],
+      "size": [[0.0, 0.16], [0.26, 0.46], [0.66, 0.58], [1.0, 0.28]],
+      "size_variation": 0.42,
+      "alpha": [[0.0, 0.0], [0.12, 0.32], [0.66, 0.22], [1.0, 0.0]],
+      "color": { "start": "#FFC4B294", "end": "#FF6F6252" },
+      "color_variation": 0.10,
+      "material": { "texture": "nydomod:textures/wind_dust_flipbook.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "contact_grit",
+      "start": 0, "duration": 8, "burst": 12, "rate": 0.8, "max_particles": 18,
+      "geometry": "billboard",
+      "shape": {
+        "type": "cone", "scale": [1.0, 1.0, 1.0],
+        "length": 0.14, "angle": 72.0, "direction": "shape"
+      },
+      "speed": [0.42, 1.10], "lifetime": [10, 22],
+      "gravity": 0.032, "drag": 0.94, "turbulence": 0.05,
+      "rotation": [0, 360], "spin": [-9.0, 9.0],
+      "size": [[0.0, 0.020], [0.14, 0.050], [0.62, 0.056], [1.0, 0.0]],
+      "size_variation": 0.45,
+      "alpha": [[0.0, 0.0], [0.08, 0.78], [0.70, 0.48], [1.0, 0.0]],
+      "color": { "start": "#FFB6A88E", "end": "#FF615546" },
+      "color_variation": 0.12,
+      "material": { "texture": "nydomod:textures/wind_dust_flipbook.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    }
+  ]
+}

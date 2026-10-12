@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "duration": 28,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 4.0,
+  "emitters": [
+    {
+      "name": "folding_liquid_contact",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "impact_dome",
+      "shape": { "type": "point", "offset": [0.0, 0.08, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [15, 15], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.08], [0.16, 0.58], [0.58, 0.86], [1.0, 0.46]],
+      "alpha": [[0.0, 0.0], [0.07, 0.74], [0.54, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FF83DAF8", "end": "#FF176FA8" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 28, "length": 0.42 }
+    },
+    {
+      "name": "white_cutting_release",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0, 0.045, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [15, 15], "drag": 1.0,
+      "rotation": [-62.0, -62.0],
+      "size": [[0.0, 0.16], [0.15, 0.78], [0.68, 1.28], [1.0, 1.52]],
+      "alpha": [[0.0, 0.0], [0.05, 0.96], [0.48, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8DDFF9" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": {
+        "segments": 32, "thickness": 0.075, "arc_degrees": 124.0,
+        "edge": 0.94, "roll": 3.0, "lay_flat": true,
+        "crest": 0.88, "wave": 0.11, "lobes": 7.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "breaking_contact_foam",
+      "start": 0, "duration": 9, "burst": 12, "rate": 0.85, "max_particles": 22,
+      "shape": { "type": "sphere", "offset": [0.0, 0.06, 0.0], "radius": 0.52, "scale": [1.35, 0.52, 0.92], "direction": "radial" },
+      "speed": [0.12, 0.38], "lifetime": [8, 15],
+      "size": [[0.0, 0.10], [0.22, 0.42], [0.66, 0.50], [1.0, 0.12]]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "round_contact_drops",
+      "start": 1, "duration": 10, "burst": 10, "rate": 0.70, "max_particles": 18,
+      "shape": { "type": "sphere", "offset": [0.0, 0.10, 0.0], "radius": 0.56, "scale": [1.20, 0.80, 0.92], "direction": "radial" },
+      "speed": [0.12, 0.42], "lifetime": [12, 22], "gravity": 0.050,
+      "size": [[0.0, 0.03], [0.18, 0.11], [0.74, 0.08], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "low_contact_haze",
+      "start": 1, "duration": 7, "burst": 4, "rate": 0.45, "max_particles": 8,
+      "shape": { "type": "sphere", "offset": [0.0, 0.10, 0.0], "radius": 0.42, "scale": [1.30, 0.48, 0.90], "direction": "radial" },
+      "speed": [0.02, 0.08], "lifetime": [13, 22],
+      "size": [[0.0, 0.24], [0.26, 0.58], [0.72, 0.68], [1.0, 0.30]],
+      "alpha": [[0.0, 0.0], [0.18, 0.13], [0.68, 0.06], [1.0, 0.0]]
+    }
+  ]
+}

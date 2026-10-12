@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "duration": 120,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 18.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_scale_mode": "entity_width",
+  "source_scale_base": 1.0,
+  "source_scale_power": 1.0,
+  "source_scale_limit": 6.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/intake",
+      "name": "dragon_emergence_intake",
+      "start": 0,
+      "duration": 20,
+      "color": { "start": "#FFE9FBFF", "end": "#FF3B9FDD" }
+    },
+    {
+      "preset": "nydomod:_presets/water/flash",
+      "name": "dragon_emergence_flash",
+      "start": 0,
+      "duration": 8,
+      "color": { "start": "#FFF8FEFF", "end": "#FF70D5FF" }
+    },
+    {
+      "preset": "nydomod:_presets/water/rings",
+      "name": "dragon_emergence_rings",
+      "start": 0,
+      "duration": 20,
+      "shape": {
+        "type": "point",
+        "offset": [0.0, -0.5, 0.0],
+        "direction": "radial"
+      },
+      "color": { "start": "#FFDDF8FF", "end": "#FF2F91D3" }
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "dragon_body_mist",
+      "start": 4,
+      "duration": 116,
+      "rate": 4.2,
+      "max_particles": 36,
+      "color": { "start": "#FF9EDFFF", "end": "#FF1C609B" },
+      "shape": {
+        "type": "sphere",
+        "offset": [0.0, 0.0, -1.0],
+        "radius": 2.8,
+        "scale": [1.0, 0.72, 1.55],
+        "direction": "radial"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "dragon_foam_wake",
+      "start": 5,
+      "duration": 115,
+      "rate": 5.4,
+      "max_particles": 42,
+      "color": { "start": "#FFFFFFFF", "end": "#FF9FE1FF" },
+      "shape": {
+        "type": "cone",
+        "offset": [0.0, 0.0, -0.8],
+        "length": 5.4,
+        "angle": 34.0,
+        "direction": "radial"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "dragon_runoff",
+      "start": 6,
+      "duration": 114,
+      "rate": 7.0,
+      "max_particles": 52,
+      "color": { "start": "#FFD8F7FF", "end": "#FF2C8FD0" },
+      "shape": {
+        "type": "sphere",
+        "offset": [0.0, -0.2, -1.1],
+        "radius": 2.6,
+        "scale": [1.0, 0.65, 1.65],
+        "direction": "radial"
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/streamers",
+      "name": "dragon_streaming_sheets",
+      "start": 8,
+      "duration": 112,
+      "rate": 2.8,
+      "max_particles": 22,
+      "color": { "start": "#FF8DDBFF", "end": "#FF1467AC" },
+      "shape": {
+        "type": "sphere",
+        "offset": [0.0, 0.0, -1.4],
+        "radius": 2.2,
+        "scale": [1.0, 0.72, 1.75],
+        "direction": "radial"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 9.0,
+  "emitters": [
+    {
+      "name": "water_memory_transfer",
+      "start": 0,
+      "duration": 0,
+      "burst": 1,
+      "max_particles": 1,
+      "geometry": "water_helix",
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0],
+      "lifetime": [22, 22],
+      "size": [[0, 0.06], [0.12, 0.28], [0.72, 0.22], [1, 0]],
+      "alpha": [[0, 0], [0.06, 0.88], [0.68, 0.36], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF199AD0"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 38, "length": 5.0, "thickness": 0.16, "turns": 1.2, "flare": 0.36, "wave": 0.16, "crest": 0.86}
+    },
+    {
+      "name": "transfer_foam_rings",
+      "start": 1,
+      "duration": 0,
+      "burst": 3,
+      "max_particles": 3,
+      "geometry": "ring",
+      "shape": {"type": "line", "length": 5.0, "direction": "forward"},
+      "speed": [0, 0],
+      "lifetime": [14, 21],
+      "size": [[0, 0.08], [0.22, 0.54], [1, 0.82]],
+      "alpha": [[0, 0], [0.07, 0.9], [0.56, 0.3], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF62D5F2"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 28, "thickness": 0.06, "arc_degrees": 360}
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "transfer_spray",
+      "start": 0,
+      "duration": 12,
+      "burst": 12,
+      "rate": 0.65,
+      "max_particles": 24,
+      "shape": {"type": "line", "length": 5.0, "direction": "radial"},
+      "speed": [0.08, 0.3],
+      "lifetime": [10, 22],
+      "gravity": 0.026
+    }
+  ]
+}

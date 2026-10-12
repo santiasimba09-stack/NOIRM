@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "duration": 6,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 4.0,
+  "follow_source": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/glow",
+      "name": "body_bloom",
+      "start": 0,
+      "duration": 4,
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/surface",
+      "name": "body_mass",
+      "start": 0,
+      "duration": 4,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.55,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/ribbons",
+      "name": "body_wrap",
+      "start": 0,
+      "duration": 4,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.5,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "body_mist",
+      "start": 0,
+      "duration": 5,
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "body_foam",
+      "start": 0,
+      "duration": 4,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.58,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/streamers",
+      "name": "body_runoff",
+      "start": 0,
+      "duration": 4,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.5,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "body_shed",
+      "start": 0,
+      "duration": 5,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.6,
+        "scale": [
+          1.0,
+          0.6,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/droplets",
+      "name": "body_drip",
+      "start": 0,
+      "duration": 5,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.62,
+        "scale": [
+          1.0,
+          0.6,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        7
+      ]
+    }
+  ]
+}

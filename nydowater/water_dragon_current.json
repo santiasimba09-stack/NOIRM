@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "duration": 122,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 16.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "name": "current_body",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.035, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [34, 34], "drag": 1.0,
+      "rotation": [0, 0],
+      "size": [[0.0, 0.05], [0.25, 2.43], [0.50, 3.68], [0.75, 4.13], [1.0, 4.20]],
+      "alpha": [[0.0, 0.82], [0.36, 0.58], [0.78, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FF28A9EA", "end": "#FF06457F" },
+      "material": { "texture": "nydomod:textures/water_blob_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "segments": 64, "thickness": 0.34, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "current_foam_rim",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.075, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [34, 34], "drag": 1.0,
+      "rotation": [0, 0],
+      "size": [[0.0, 0.08], [0.25, 2.43], [0.50, 3.68], [0.75, 4.13], [1.0, 4.20]],
+      "alpha": [[0.0, 0.96], [0.30, 0.90], [0.72, 0.62], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8FDFFF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "segments": 64, "thickness": 0.085, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "inner_recoil",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.09, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [25, 25], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.10], [0.36, 1.45], [0.72, 2.22], [1.0, 2.48]],
+      "alpha": [[0.0, 0.0], [0.10, 0.68], [0.70, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFF2FDFF", "end": "#FF38ABE6" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 48, "thickness": 0.07, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "well_deep_vortex",
+      "start": 18, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.08, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [102, 102], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [-16.0, -16.0],
+      "size": [[0.0, 0.18], [0.10, 1.20], [0.36, 1.48], [0.84, 1.40], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.78], [0.64, 0.60], [0.92, 0.36], [1.0, 0.0]],
+      "color": { "start": "#FF0C67AE", "end": "#FF031F4F" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 48, "thickness": 0.22, "turns": -1.55,
+        "wave": 0.28, "crest": 0.62, "lobes": 7.0, "rim": 0.16
+      }
+    },
+    {
+      "name": "well_foam_spiral",
+      "start": 20, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.12, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [100, 100], "drag": 1.0,
+      "rotation": [18.0, 18.0], "spin": [-22.0, -22.0],
+      "size": [[0.0, 0.20], [0.12, 1.48], [0.40, 1.82], [0.86, 1.70], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.08, 0.72], [0.60, 0.46], [0.94, 0.24], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF74D2FA" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 52, "thickness": 0.095, "turns": -1.85,
+        "wave": 0.34, "crest": 0.72, "lobes": 9.0, "rim": 0.12
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "rolling_foam",
+      "start": 0, "duration": 100, "burst": 15, "rate": 0.34, "max_particles": 42,
+      "shape": { "type": "sphere", "radius": 0.82, "scale": [1.7, 0.20, 1.7], "direction": "radial" },
+      "speed": [0.18, 0.55], "lifetime": [10, 20],
+      "size": [[0.0, 0.16], [0.24, 0.55], [0.70, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8FDCFF" }
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "current_spray",
+      "start": 0, "duration": 104, "burst": 18, "rate": 0.30, "max_particles": 46,
+      "shape": { "type": "sphere", "radius": 0.95, "scale": [1.8, 0.36, 1.8], "direction": "radial" },
+      "speed": [0.26, 0.82], "lifetime": [12, 25], "gravity": 0.045,
+      "size": [[0.0, 0.025], [0.16, 0.10], [0.72, 0.065], [1.0, 0.0]],
+      "color": { "start": "#FFC5F2FF", "end": "#FF1F79BE" }
+    }
+  ]
+}

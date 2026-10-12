@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 2,
+  "max_distance": 96.0,
+  "bounds": 3.0,
+  "emitters": [
+    {
+      "name": "thin_white_waterline",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.012, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.16], [0.18, 0.46], [0.70, 0.86], [1.0, 1.08]],
+      "alpha": [[0.0, 0.0], [0.06, 0.82], [0.52, 0.34], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA9E9FF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "segments": 36, "thickness": 0.045, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "subsurface_blue_echo",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.006, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [20, 20], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.22], [0.22, 0.54], [0.72, 0.92], [1.0, 1.16]],
+      "alpha": [[0.0, 0.0], [0.08, 0.42], [0.58, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FF59BCE8", "end": "#FF0D5E96" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false },
+      "geometry_settings": { "segments": 38, "thickness": 0.030, "arc_degrees": 360.0 }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "broken_wake_foam",
+      "start": 0, "duration": 5, "burst": 4, "rate": 0.65, "max_particles": 8,
+      "shape": { "type": "sphere", "offset": [0.0, 0.03, 0.0], "radius": 0.28, "scale": [1.45, 0.12, 0.82], "direction": "radial" },
+      "speed": [0.03, 0.12], "lifetime": [7, 12],
+      "size": [[0.0, 0.07], [0.24, 0.24], [0.72, 0.28], [1.0, 0.08]]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "duration": 4,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 3.0,
+  "follow_source": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/body",
+      "name": "link_mass",
+      "start": 0,
+      "duration": 3,
+      "size": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.15,
+          1.05
+        ],
+        [
+          0.85,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "geometry_settings": {
+        "segments": 10,
+        "length": 1.1,
+        "flare": 1.0,
+        "sag": 0.0,
+        "wave": 0.16,
+        "lobes": 5.0,
+        "rim": 0.88,
+        "taper": 0.0,
+        "flow": 3.4,
+        "flow_tile": 3.0,
+        "bloom": 1.15,
+        "glow": 0.68
+      },
+      "lifetime": [
+        3,
+        4
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/surface",
+      "name": "link_relief",
+      "start": 0,
+      "duration": 4,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.34,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "geometry_settings": {
+        "length": 1.2,
+        "sag": 0.0
+      },
+      "lifetime": [
+        3,
+        4
+      ]
+    }
+  ]
+}

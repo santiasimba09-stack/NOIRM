@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "duration": 22,
+  "priority": 3,
+  "max_distance": 160.0,
+  "bounds": 28.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/wind/gust/blade",
+      "name": "compression_front",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 0.16,
+      "rotation": [-95.0, -95.0],
+      "lifetime": [12, 12],
+      "size": [[0.0, 0.12], [0.10, 0.46], [0.64, 0.46], [1.0, 0.43]],
+      "alpha": [[0.0, 0.0], [0.06, 0.86], [0.58, 0.68], [1.0, 0.0]],
+      "color": { "start": "#FFF8FEFF", "end": "#FFB8D7E1" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 56, "arc_degrees": 190.0, "thickness": 0.022,
+        "taper": 0.50, "turns": 0.018, "edge": 0.92,
+        "roll": 0.0, "crest": 1.0, "lay_flat": true, "flow": 3.4
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/blade",
+      "name": "pressure_body",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 0.16,
+      "rotation": [-93.0, -93.0],
+      "lifetime": [15, 15],
+      "size": [[0.0, 0.08], [0.12, 0.425], [0.68, 0.425], [1.0, 0.39]],
+      "alpha": [[0.0, 0.0], [0.08, 0.24], [0.62, 0.17], [1.0, 0.0]],
+      "color": { "start": "#FFD5E3E9", "end": "#FF788C96" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "geometry_settings": {
+        "segments": 52, "arc_degrees": 186.0, "thickness": 0.115,
+        "taper": 0.44, "turns": -0.105, "edge": 0.30,
+        "roll": 4.0, "crest": 0.24, "lay_flat": true, "flow": -1.45
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/blade",
+      "name": "delayed_pressure_echo",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 0.16,
+      "rotation": [-95.0, -95.0],
+      "lifetime": [15, 15],
+      "size": [[0.0, 0.34], [0.18, 0.47], [0.58, 0.49], [1.0, 0.51]],
+      "alpha": [[0.0, 0.0], [0.07, 0.28], [0.48, 0.16], [1.0, 0.0]],
+      "color": { "start": "#FFEAF6FA", "end": "#FF91ADBA" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png",
+        "blend": "alpha",
+        "shader": "lit",
+        "depth_write": false,
+        "fullbright": false
+      },
+      "geometry_settings": {
+        "segments": 52, "arc_degrees": 190.0, "thickness": 0.040,
+        "taper": 0.54, "turns": -0.035, "edge": 0.76,
+        "roll": -2.0, "crest": 0.58, "lay_flat": true, "flow": 4.2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/blade",
+      "name": "inner_counter_edge",
+      "start": 1, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 0.14,
+      "rotation": [-80.0, -80.0],
+      "lifetime": [10, 10],
+      "size": [[0.0, 0.08], [0.12, 0.31], [0.62, 0.31], [1.0, 0.28]],
+      "alpha": [[0.0, 0.0], [0.08, 0.48], [0.56, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB7DCE8" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png",
+        "blend": "additive",
+        "depth_write": false,
+        "fullbright": true
+      },
+      "geometry_settings": {
+        "segments": 48, "arc_degrees": 160.0, "thickness": 0.014,
+        "taper": 0.48, "turns": 0.045, "edge": 0.96,
+        "roll": 0.0, "crest": 1.0, "lay_flat": true, "flow": -3.1
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/rarefaction_sleeve",
+      "name": "rarefaction_sleeve",
+      "start": 1, "duration": 0, "burst": 1, "max_particles": 1,
+      "near_fade": 0.14,
+      "rotation": [-97.0, -97.0]
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/shards",
+      "name": "sheared_air",
+      "start": 0, "duration": 5, "burst": 5, "rate": 0.85, "max_particles": 13,
+      "near_fade": 0.10,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, 0.08], "radius": 0.34,
+        "scale": [1.0, 0.22, 1.0], "direction": "radial"
+      },
+      "speed": [0.06, 0.20], "lifetime": [6, 11],
+      "alpha": [[0.0, 0.0], [0.10, 0.22], [0.64, 0.12], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/whisper_stroke",
+      "name": "torn_air",
+      "start": 0, "duration": 7, "burst": 4, "rate": 1.0, "max_particles": 15,
+      "near_fade": 0.10,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, -0.05], "radius": 0.44,
+        "scale": [1.0, 0.28, 1.0], "direction": "radial"
+      },
+      "speed": [0.02, 0.10], "lifetime": [9, 16],
+      "alpha": [[0.0, 0.0], [0.14, 0.13], [0.40, 0.03], [0.68, 0.11], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/whisper_turbulence",
+      "name": "vacuum_curl",
+      "start": 1, "duration": 8, "burst": 3, "rate": 0.75, "max_particles": 12,
+      "near_fade": 0.10,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, -0.18], "radius": 0.38,
+        "scale": [1.0, 0.32, 1.0], "direction": "radial"
+      },
+      "speed": [0.02, 0.08], "lifetime": [11, 18],
+      "vortex": 2.2, "vortex_pull": 0.48,
+      "alpha": [[0.0, 0.0], [0.12, 0.13], [0.34, 0.03], [0.66, 0.11], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/haze",
+      "name": "pressure_haze",
+      "start": 0, "duration": 6, "burst": 2, "rate": 0.45, "max_particles": 7,
+      "near_fade": 0.10,
+      "shape": {
+        "type": "sphere", "offset": [0.0, 0.0, -0.10], "radius": 0.52,
+        "scale": [1.0, 0.24, 1.0], "direction": "radial"
+      },
+      "speed": [0.01, 0.045], "lifetime": [15, 24],
+      "material": {
+        "texture": "nydomod:textures/wind_gust_stroke.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "alpha": [[0.0, 0.0], [0.20, 0.065], [0.64, 0.04], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/wind/filaments",
+      "name": "cutline_suction_threads",
+      "start": 1, "duration": 8, "burst": 5, "rate": 0.70, "max_particles": 11,
+      "near_fade": 0.10,
+      "shape": {
+        "type": "box", "offset": [0.0, 0.0, -0.06], "radius": 0.36,
+        "length": 0.10, "scale": [1.0, 0.16, 1.0], "direction": "backward"
+      },
+      "speed": [0.025, 0.085], "lifetime": [7, 13],
+      "vortex": 1.9, "vortex_pull": 0.62,
+      "size": [[0.0, 0.04], [0.20, 0.13], [0.68, 0.09], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.10, 0.18], [0.62, 0.09], [1.0, 0.0]],
+      "geometry_settings": { "length": 0.52 }
+    }
+  ]
+}

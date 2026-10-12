@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "duration": 80,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 6.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "motion",
+  "source_scale_mode": "entity_width",
+  "source_scale_base": 1.0,
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/intake",
+      "name": "gather_intake",
+      "start": 0, "duration": 8, "burst": 5, "rate": 2.8, "max_particles": 20,
+      "follow_origin": true, "near_fade": 0.25,
+      "shape": {
+        "type": "sphere", "offset": [0.0, -0.06, 0.0], "radius": 1.30,
+        "scale": [1.0, 0.85, 1.0], "direction": "radial"
+      },
+      "speed": [0.02, 0.08], "lifetime": [8, 14],
+      "vortex": 1.6, "vortex_pull": 2.2,
+      "size": [[0.0, 0.10], [0.30, 0.26], [0.80, 0.20], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/water/droplets",
+      "name": "gather_spray",
+      "start": 0, "duration": 8, "burst": 6, "rate": 2.1, "max_particles": 18,
+      "follow_origin": true, "near_fade": 0.25,
+      "shape": {
+        "type": "sphere", "offset": [0.0, -0.06, 0.0], "radius": 1.10,
+        "scale": [1.0, 0.85, 1.0], "direction": "radial"
+      },
+      "speed": [0.04, 0.14], "lifetime": [6, 12],
+      "vortex_pull": 1.8
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "body_sheeting",
+      "start": 6, "duration": 74, "burst": 6, "rate": 3.2, "max_particles": 40,
+      "follow_origin": true, "near_fade": 0.25,
+      "shape": {
+        "type": "box", "offset": [0.0, -0.06, -0.04],
+        "radius": 0.30, "length": 1.05,
+        "scale": [1.85, 0.75, 1.0], "direction": "radial"
+      },
+      "speed": [0.02, 0.09], "lifetime": [5, 10],
+      "size": [[0.0, 0.12], [0.25, 0.30], [0.66, 0.36], [1.0, 0.13]]
+    },
+    {
+      "preset": "nydomod:_presets/water/shards",
+      "name": "bow_spray",
+      "start": 7, "duration": 73, "burst": 3, "rate": 2.2, "max_particles": 24,
+      "near_fade": 0.0,
+      "shape": {
+        "type": "sphere", "offset": [0.0, -0.04, 0.86], "radius": 0.34,
+        "scale": [1.5, 0.9, 0.7], "direction": "radial"
+      },
+      "speed": [0.10, 0.30], "lifetime": [5, 10],
+      "gravity": 0.012,
+      "size": [[0.0, 0.08], [0.20, 0.34], [0.72, 0.28], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "shed_drops",
+      "start": 8, "duration": 72, "burst": 4, "rate": 2.0, "max_particles": 34,
+      "near_fade": 0.25,
+      "shape": {
+        "type": "box", "offset": [0.0, -0.06, -0.55],
+        "radius": 0.30, "length": 0.55,
+        "scale": [1.70, 0.80, 1.0], "direction": "backward"
+      },
+      "speed": [0.05, 0.24], "lifetime": [12, 26],
+      "gravity": 0.030
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "wake_mist",
+      "start": 8, "duration": 72, "burst": 3, "rate": 1.3, "max_particles": 22,
+      "near_fade": 0.25,
+      "shape": {
+        "type": "sphere", "offset": [0.0, -0.06, -1.30], "radius": 0.55,
+        "scale": [1.0, 0.85, 1.0], "direction": "backward"
+      },
+      "speed": [0.02, 0.10], "lifetime": [14, 26],
+      "size": [[0.0, 0.24], [0.30, 0.80], [0.72, 1.00], [1.0, 0.55]]
+    },
+    {
+      "preset": "nydomod:_presets/water/streamers",
+      "name": "wake_streamers",
+      "start": 8, "duration": 72, "burst": 3, "rate": 1.1, "max_particles": 16,
+      "near_fade": 0.25,
+      "shape": {
+        "type": "sphere", "offset": [0.0, -0.06, -1.15], "radius": 0.42,
+        "scale": [1.0, 0.85, 1.0], "direction": "backward"
+      },
+      "speed": [0.06, 0.20], "lifetime": [8, 16]
+    }
+  ]
+}

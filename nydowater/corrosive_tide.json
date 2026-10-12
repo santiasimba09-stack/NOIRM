@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "duration": 38,
+  "priority": 3,
+  "max_distance": 120.0,
+  "bounds": 19.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "name": "corrosive_pressure_jet",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0], "lifetime": [37, 37],
+      "size": [[0, 0.04], [0.08, 0.78], [0.7, 0.92], [1, 0]],
+      "alpha": [[0, 0], [0.05, 0.82], [0.68, 0.5], [1, 0]],
+      "color": {"start": "#FFE9FF8D", "end": "#FF2C6848"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 28, "length": 12.0, "thickness": 0.34, "turns": 0.9, "flare": 1.55, "sag": 0.08, "wave": 0.2, "crest": 0.84}
+    },
+    {
+      "preset": "nydomod:_presets/water/droplets",
+      "name": "corrosive_spall",
+      "start": 0, "duration": 28, "burst": 8, "rate": 0.7, "max_particles": 24,
+      "shape": {"type": "cone", "length": 10.0, "angle": 12, "direction": "forward"},
+      "speed": [0.32, 0.76], "lifetime": [9, 18], "gravity": 0.045,
+      "color": {"start": "#FFDFFF78", "end": "#FF34724F"}
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "reaction_vapour",
+      "start": 4, "duration": 24, "burst": 2, "rate": 0.18, "max_particles": 8,
+      "shape": {"type": "cone", "length": 8.0, "angle": 16, "direction": "forward"},
+      "speed": [0.04, 0.12], "lifetime": [16, 26],
+      "color": {"start": "#667FDF69", "end": "#18345947"}
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "duration": 38,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 15.0,
+  "emitters": [
+    {
+      "name": "emergence_surface_mass",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex",
+      "shape": { "type": "point", "offset": [0.0, 0.035, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [32, 32], "drag": 1.0,
+      "rotation": [0.0, 0.0], "spin": [20.0, 20.0],
+      "size": [[0.0, 0.18], [0.16, 1.30], [0.48, 2.20], [0.82, 2.55], [1.0, 2.20]],
+      "alpha": [[0.0, 0.0], [0.08, 0.72], [0.54, 0.58], [0.86, 0.28], [1.0, 0.0]],
+      "color": { "start": "#FF46BFF0", "end": "#FF07528F" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 52, "thickness": 0.20, "turns": 1.55,
+        "wave": 0.32, "crest": 0.70, "lobes": 8.0, "rim": 0.16
+      }
+    },
+    {
+      "name": "emergence_foam_crown",
+      "start": 1, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.09, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [27, 27], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.12], [0.18, 1.10], [0.55, 2.28], [1.0, 2.78]],
+      "alpha": [[0.0, 0.0], [0.08, 0.94], [0.62, 0.52], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF82D9FF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "segments": 56, "thickness": 0.10, "arc_degrees": 360.0 }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "emergence_breaking_foam",
+      "start": 0, "duration": 18, "burst": 18, "rate": 1.25, "max_particles": 38,
+      "shape": { "type": "sphere", "offset": [0.0, 0.18, 0.0], "radius": 1.05, "scale": [1.35, 0.62, 1.35], "direction": "radial" },
+      "speed": [0.24, 0.72], "lifetime": [10, 20],
+      "gravity": 0.024, "drag": 0.92, "turbulence": 0.12,
+      "size": [[0.0, 0.18], [0.22, 0.58], [0.68, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF91DEFF" }
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "emergence_vertical_spray",
+      "start": 0, "duration": 22, "burst": 24, "rate": 1.1, "max_particles": 48,
+      "shape": { "type": "cone", "offset": [0.0, 0.10, 0.0], "length": 2.6, "angle": 38.0, "direction": "forward" },
+      "speed": [0.38, 1.05], "lifetime": [14, 30],
+      "gravity": 0.050, "drag": 0.96, "turbulence": 0.045,
+      "size": [[0.0, 0.035], [0.14, 0.13], [0.72, 0.09], [1.0, 0.0]],
+      "color": { "start": "#FFD9F7FF", "end": "#FF2385C8" }
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "emergence_low_mist",
+      "start": 3, "duration": 24, "burst": 7, "rate": 0.65, "max_particles": 20,
+      "shape": { "type": "sphere", "offset": [0.0, 0.18, 0.0], "radius": 1.30, "scale": [1.5, 0.35, 1.5], "direction": "radial" },
+      "speed": [0.04, 0.18], "lifetime": [18, 32],
+      "size": [[0.0, 0.65], [0.30, 1.50], [0.72, 2.10], [1.0, 1.50]],
+      "alpha": [[0.0, 0.0], [0.18, 0.18], [0.66, 0.10], [1.0, 0.0]],
+      "color": { "start": "#FF8DCCE8", "end": "#FF245A7D" }
+    }
+  ]
+}

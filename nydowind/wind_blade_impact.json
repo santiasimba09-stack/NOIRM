@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 5.0,
+  "emitters": [
+    {
+      "name": "contact_flash",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "billboard",
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [4, 4], "drag": 1.0,
+      "size": [[0.0, 0.12], [0.18, 0.42], [1.0, 0.16]],
+      "alpha": [[0.0, 0.0], [0.08, 1.0], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFD8F3FC" },
+      "material": {
+        "texture": "nydomod:textures/wind_point_flipbook.png",
+        "blend": "additive", "depth_write": false, "fullbright": true
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/blade_edge",
+      "name": "incision",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "rotation": [-0.66, -0.66],
+      "lifetime": [9, 9],
+      "size": [[0.0, 0.10], [0.12, 0.54], [0.62, 0.58], [1.0, 0.60]],
+      "alpha": [[0.0, 0.0], [0.07, 0.92], [0.54, 0.66], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB8DEE9" },
+      "geometry_settings": {
+        "segments": 38, "thickness": 0.024, "arc_degrees": 76.0,
+        "taper": 0.50, "turns": 0.02, "edge": 0.95,
+        "roll": 0.0, "crest": 1.0, "lay_flat": true, "flow": 3.2
+      }
+    },
+    {
+      "preset": "nydomod:_presets/wind/blade_edge",
+      "name": "incision_echo",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "rotation": [-0.70, -0.70],
+      "lifetime": [12, 12],
+      "size": [[0.0, 0.42], [0.22, 0.66], [0.64, 0.72], [1.0, 0.76]],
+      "alpha": [[0.0, 0.0], [0.08, 0.24], [0.52, 0.14], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FB", "end": "#FF819EAA" },
+      "material": {
+        "texture": "nydomod:textures/wind_gust_flow.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "geometry_settings": {
+        "segments": 36, "thickness": 0.070, "arc_degrees": 80.0,
+        "taper": 0.46, "turns": -0.055, "edge": 0.38,
+        "roll": 4.0, "crest": 0.28, "lay_flat": true, "flow": -1.5
+      }
+    },
+    {
+      "preset": "nydomod:_presets/waves/blast",
+      "name": "pressure_release",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [13, 13],
+      "size": [[0.0, 0.06], [0.20, 0.38], [0.54, 0.58], [1.0, 0.72]],
+      "alpha": [[0.0, 0.0], [0.06, 0.26], [0.40, 0.12], [1.0, 0.0]],
+      "color": { "start": "#FFF1FAFD", "end": "#FF8EB5C4" },
+      "geometry_settings": {
+        "segments": 28, "thickness": 0.095, "arc_degrees": 360.0,
+        "edge": 0.92, "roll": 20.0, "crest": 0.72, "wave": 0.18, "lobes": 5.0
+      }
+    },
+    {
+      "name": "edge_spray",
+      "start": 0, "duration": 7, "burst": 9, "rate": 1.0, "max_particles": 18,
+      "geometry": "streak",
+      "shape": {
+        "type": "cone", "length": 0.08, "angle": 72.0, "direction": "shape"
+      },
+      "speed": [0.46, 1.05], "lifetime": [4, 8],
+      "gravity": 0.0, "drag": 0.89, "turbulence": 0.10, "vortex": 1.2,
+      "size": [[0.0, 0.06], [0.22, 0.18], [0.62, 0.17], [1.0, 0.0]],
+      "size_variation": 0.34,
+      "alpha": [[0.0, 0.0], [0.08, 0.38], [0.60, 0.20], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FF", "end": "#FF91BFCE" },
+      "color_variation": 0.05,
+      "material": {
+        "texture": "nydomod:textures/wind_filament_flipbook.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "length": 0.92 }
+    },
+    {
+      "name": "drawn_debris",
+      "start": 0, "duration": 9, "burst": 6, "rate": 0.6, "max_particles": 13,
+      "geometry": "billboard",
+      "shape": {
+        "type": "cone", "offset": [0.0, 0.0, -0.05],
+        "length": 0.12, "angle": 66.0, "direction": "shape"
+      },
+      "speed": [0.16, 0.42], "lifetime": [10, 18],
+      "gravity": 0.018, "drag": 0.93, "turbulence": 0.10,
+      "vortex": 1.4, "vortex_pull": 0.62,
+      "rotation": [-40, 40], "spin": [-2.0, 2.0],
+      "size": [[0.0, 0.10], [0.24, 0.32], [0.66, 0.38], [1.0, 0.0]],
+      "size_variation": 0.40,
+      "alpha": [[0.0, 0.0], [0.12, 0.24], [0.64, 0.13], [1.0, 0.0]],
+      "color": { "start": "#FFB7AA91", "end": "#FF62584B" },
+      "color_variation": 0.10,
+      "material": {
+        "texture": "nydomod:textures/wind_dust_flipbook.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    }
+  ]
+}

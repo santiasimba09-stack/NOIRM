@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "duration": 11,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 3.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "name": "finger_pressure_reservoir",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0], "lifetime": [10, 10],
+      "size": [[0, 0.06], [0.16, 0.58], [0.78, 0.5], [1, 0]],
+      "alpha": [[0, 0], [0.08, 0.86], [0.7, 0.46], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF1498CF"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 16, "length": 0.62, "thickness": 0.12, "turns": 1.7, "flare": 0.25, "wave": 0.08, "crest": 0.92}
+    },
+    {
+      "name": "triple_compression_signature",
+      "start": 0, "duration": 0, "burst": 3, "max_particles": 3,
+      "geometry": "ring", "follow_origin": true,
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0], "lifetime": [6, 10],
+      "size": [[0, 0.08], [0.24, 0.44], [1, 0.7]],
+      "alpha": [[0, 0], [0.08, 0.9], [0.58, 0.34], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF64D8F4"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 18, "thickness": 0.045, "arc_degrees": 360}
+    }
+  ]
+}

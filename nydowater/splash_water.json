@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "duration": 36,
+  "priority": 2,
+  "max_distance": 112.0,
+  "bounds": 7.0,
+  "emitters": [
+    {
+      "name": "surface_ring",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.04], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [20, 20], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.22], [0.35, 1.60], [1.0, 2.70]],
+      "alpha": [[0.0, 0.0], [0.10, 0.80], [0.50, 0.38], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF8FD2F6" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 40, "thickness": 0.075, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "surface_ring_echo",
+      "start": 5, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.03], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [22, 22], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.15], [0.40, 1.05], [1.0, 1.95]],
+      "alpha": [[0.0, 0.0], [0.12, 0.44], [0.55, 0.20], [1.0, 0.0]],
+      "color": { "start": "#FFDDF2FF", "end": "#FF5AA8E4" },
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 32, "thickness": 0.05, "arc_degrees": 360.0 }
+    },
+    {
+      "name": "crown_foam",
+      "start": 0, "duration": 8, "burst": 14, "rate": 1.4, "max_particles": 26,
+      "geometry": "billboard",
+      "shape": { "type": "sphere", "radius": 0.34, "scale": [1.25, 1.25, 0.55], "direction": "radial" },
+      "speed": [0.22, 0.52], "lifetime": [8, 14],
+      "gravity": 0.022, "drag": 0.91, "turbulence": 0.10,
+      "rotation": [0, 360], "spin": [-3.0, 3.0],
+      "size": [[0.0, 0.20], [0.24, 0.62], [0.66, 0.78], [1.0, 0.34]],
+      "size_variation": 0.30,
+      "alpha": [[0.0, 0.0], [0.08, 0.86], [0.62, 0.58], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFDDF2FF" },
+      "color_variation": 0.03,
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "crown_water",
+      "start": 0, "duration": 8, "burst": 11, "rate": 1.1, "max_particles": 20,
+      "geometry": "billboard",
+      "shape": { "type": "sphere", "radius": 0.28, "scale": [1.1, 1.1, 0.7], "direction": "radial" },
+      "speed": [0.16, 0.42], "lifetime": [9, 15],
+      "gravity": 0.024, "drag": 0.92, "turbulence": 0.08,
+      "rotation": [0, 360], "spin": [-2.0, 2.0],
+      "size": [[0.0, 0.26], [0.24, 0.72], [0.66, 0.90], [1.0, 0.40]],
+      "size_variation": 0.26,
+      "alpha": [[0.0, 0.0], [0.08, 0.62], [0.62, 0.44], [1.0, 0.0]],
+      "color": { "start": "#FF7FC8F0", "end": "#FF2A6BC0" },
+      "color_variation": 0.05,
+      "material": { "texture": "nydomod:textures/water_mass_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "splash_droplets",
+      "start": 0, "duration": 10, "burst": 18, "rate": 1.0, "max_particles": 28,
+      "geometry": "cube",
+      "shape": { "type": "sphere", "radius": 0.40, "scale": [1.2, 1.2, 0.6], "direction": "radial" },
+      "speed": [0.40, 1.05], "lifetime": [12, 26],
+      "gravity": 0.032, "drag": 0.95, "turbulence": 0.03,
+      "rotation": [0, 90], "spin": [-13, 13],
+      "size": [[0.0, 0.012], [0.12, 0.046], [0.60, 0.060], [1.0, 0.0]],
+      "size_variation": 0.32,
+      "alpha": [[0.0, 0.0], [0.06, 0.92], [0.70, 0.56], [1.0, 0.0]],
+      "color": { "start": "#FFDFF6FF", "end": "#FF6FB6EC" },
+      "color_variation": 0.05,
+      "material": { "texture": "nydomod:textures/white_square.png", "blend": "additive", "depth_write": false, "fullbright": true }
+    }
+  ]
+}

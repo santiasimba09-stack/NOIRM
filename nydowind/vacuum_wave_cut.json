@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "duration": 20,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 3.0,
+  "emitters": [
+    {
+      "name": "contact_flash",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "billboard",
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [4, 4], "drag": 1.0,
+      "size": [[0.0, 0.12], [0.18, 0.44], [1.0, 0.15]],
+      "alpha": [[0.0, 0.0], [0.08, 0.92], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFD9F3FA" },
+      "material": {
+        "texture": "nydomod:textures/wind_point_flipbook.png",
+        "blend": "additive", "depth_write": false, "fullbright": true
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "body_incision",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "directional_billboard",
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [9, 9], "drag": 1.0,
+      "rotation": [0.56, 0.56],
+      "size": [[0.0, 0.28], [0.16, 1.08], [0.64, 1.16], [1.0, 0.92]],
+      "alpha": [[0.0, 0.0], [0.07, 0.96], [0.52, 0.72], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFB5DCE8" },
+      "material": {
+        "texture": "nydomod:textures/wind_crescent_flipbook.png",
+        "blend": "alpha", "depth_write": false, "fullbright": true
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "name": "incision_afterimage",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "directional_billboard",
+      "shape": { "type": "point", "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [11, 11], "drag": 1.0,
+      "rotation": [0.50, 0.50],
+      "size": [[0.0, 0.82], [0.18, 1.22], [0.68, 1.28], [1.0, 1.02]],
+      "alpha": [[0.0, 0.0], [0.08, 0.26], [0.54, 0.14], [1.0, 0.0]],
+      "color": { "start": "#FFDCEBF0", "end": "#FF839DA8" },
+      "material": {
+        "texture": "nydomod:textures/wind_crescent_flipbook.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 }
+    },
+    {
+      "preset": "nydomod:_presets/waves/collar",
+      "name": "cut_pressure_collar",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "lifetime": [9, 9],
+      "size": [[0.0, 0.08], [0.24, 0.48], [1.0, 0.72]],
+      "alpha": [[0.0, 0.0], [0.08, 0.34], [0.58, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFF4FCFF", "end": "#FF9FC5D2" }
+    },
+    {
+      "name": "vacuum_spray",
+      "start": 0, "duration": 7, "burst": 8, "rate": 0.9, "max_particles": 16,
+      "geometry": "streak",
+      "shape": {
+        "type": "cone", "length": 0.07, "angle": 64.0, "direction": "shape"
+      },
+      "speed": [0.32, 0.78], "lifetime": [4, 8],
+      "gravity": 0.0, "drag": 0.88, "turbulence": 0.10,
+      "vortex": 1.8, "vortex_pull": 0.54,
+      "size": [[0.0, 0.05], [0.22, 0.15], [0.62, 0.14], [1.0, 0.0]],
+      "size_variation": 0.34,
+      "alpha": [[0.0, 0.0], [0.08, 0.36], [0.60, 0.18], [1.0, 0.0]],
+      "color": { "start": "#FFEAF7FF", "end": "#FF8FBBCB" },
+      "color_variation": 0.05,
+      "material": {
+        "texture": "nydomod:textures/wind_filament_flipbook.png",
+        "blend": "alpha", "shader": "lit", "depth_write": false, "fullbright": false
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "length": 0.74 }
+    }
+  ]
+}

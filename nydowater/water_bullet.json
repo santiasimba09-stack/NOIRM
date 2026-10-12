@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "duration": 120,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 14.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    { "preset": "nydomod:_presets/water/intake", "name": "bullet_anticipation" },
+    { "preset": "nydomod:_presets/water/flash", "name": "bullet_birth_flash" },
+    { "preset": "nydomod:_presets/water/glow", "name": "bullet_bloom_halo" },
+    {
+      "preset": "nydomod:_presets/water/body",
+      "name": "bullet_jet_body",
+      "geometry_settings": {
+        "segments": 20, "length": 12.0, "flare": 2.4, "sag": 0.11,
+        "wave": 0.16, "lobes": 5.0, "rim": 0.88, "taper": 0.0,
+        "flow": 3.4, "flow_tile": 3.0, "bloom": 1.15, "glow": 0.68
+      }
+    },
+    { "preset": "nydomod:_presets/water/core_beam", "name": "bullet_core_beam" },
+    { "preset": "nydomod:_presets/water/ribbons", "name": "bullet_wrap_ribbons" },
+    { "preset": "nydomod:_presets/water/mist", "name": "bullet_wet_mist" },
+    { "preset": "nydomod:_presets/water/crest", "name": "bullet_front_crown" },
+    { "preset": "nydomod:_presets/water/foam", "name": "bullet_foam_accents" },
+    { "preset": "nydomod:_presets/water/drops", "name": "bullet_shed_drops" },
+    { "preset": "nydomod:_presets/water/streamers", "name": "bullet_liquid_streamers" },
+    { "preset": "nydomod:_presets/water/droplets", "name": "bullet_motes" }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 2,
+  "max_distance": 112.0,
+  "bounds": 5.5,
+  "emitters": [
+    {
+      "name": "momentum_water_pulse",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0, 0.025, -0.18], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [18, 18], "drag": 1.0,
+      "rotation": [-62.0, -62.0],
+      "size": [[0.0, 0.18], [0.18, 0.70], [0.64, 1.28], [1.0, 1.58]],
+      "alpha": [[0.0, 0.0], [0.06, 0.58], [0.52, 0.26], [1.0, 0.0]],
+      "color": { "start": "#FF5CC8EF", "end": "#FF0A5D96" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 36, "thickness": 0.20, "arc_degrees": 188.0,
+        "edge": 0.44, "roll": 5.0, "lay_flat": true,
+        "crest": 0.56, "wave": 0.15, "lobes": 8.0
+      }
+    },
+    {
+      "name": "momentum_white_waterline",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0, 0.045, -0.14], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [17, 17], "drag": 1.0,
+      "rotation": [-60.0, -60.0],
+      "size": [[0.0, 0.18], [0.18, 0.74], [0.64, 1.32], [1.0, 1.62]],
+      "alpha": [[0.0, 0.0], [0.06, 0.82], [0.50, 0.32], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA4EAFF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": {
+        "segments": 38, "thickness": 0.054, "arc_degrees": 182.0,
+        "edge": 0.96, "roll": 2.0, "lay_flat": true,
+        "crest": 0.94, "wave": 0.10, "lobes": 9.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "wake_foam_patch",
+      "start": 0, "duration": 8, "burst": 8, "rate": 0.65, "max_particles": 15,
+      "shape": { "type": "sphere", "offset": [0.0, 0.04, -0.12], "radius": 0.58, "scale": [1.50, 0.18, 0.92], "direction": "radial" },
+      "speed": [0.05, 0.20], "lifetime": [8, 15]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "wake_round_drops",
+      "start": 0, "duration": 8, "burst": 7, "rate": 0.55, "max_particles": 14,
+      "shape": { "type": "sphere", "offset": [0.0, 0.08, -0.08], "radius": 0.52, "scale": [1.42, 0.34, 0.90], "direction": "radial" },
+      "speed": [0.08, 0.28], "lifetime": [10, 18], "gravity": 0.046
+    }
+  ]
+}

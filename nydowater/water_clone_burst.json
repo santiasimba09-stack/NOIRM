@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "duration": 40,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 8.0,
+  "emitters": [
+    {
+      "name": "identity_collapse_undertow",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "spiral_vortex",
+      "shape": {"type": "point", "offset": [0, -0.58, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [35, 35], "spin": [-18, -18],
+      "size": [[0, 0.16], [0.18, 1.35], [1, 2.8]],
+      "alpha": [[0, 0], [0.06, 0.82], [0.54, 0.3], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF34B6E1"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 24, "thickness": 0.1, "turns": 1.2, "wave": 0.14, "crest": 0.8, "lobes": 4, "rim": 0.1}
+    },
+    {
+      "name": "floor_return_crescent",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0], "lifetime": [32, 32],
+      "size": [[0, 0.18], [0.2, 1.3], [1, 2.95]],
+      "alpha": [[0, 0], [0.06, 0.78], [0.52, 0.28], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF63CDEB"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 26, "thickness": 0.08, "arc_degrees": 230, "edge": 0.94, "lay_flat": true, "crest": 0.84, "wave": 0.1, "lobes": 6}
+    },
+    {
+      "preset": "nydomod:_presets/water/shards",
+      "name": "collapsed_water_memory",
+      "start": 0, "duration": 10, "burst": 14, "rate": 0.55, "max_particles": 22,
+      "shape": {"type": "sphere", "radius": 0.82, "scale": [1.15, 1.0, 1.15], "direction": "radial"},
+      "speed": [0.2, 0.58], "lifetime": [10, 21], "gravity": 0.045
+    }
+  ]
+}

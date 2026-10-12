@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "duration": 1200,
+  "priority": 2,
+  "max_distance": 144.0,
+  "bounds": 18.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_anchor": "origin",
+  "preserve_trigger_offset": false,
+  "follow_source_direction": true,
+  "source_direction": "look",
+  "emitters": [
+    {
+      "name": "thrust_compression_spine",
+      "duration": 1200, "burst": 5, "rate": 2.2, "max_particles": 36,
+      "geometry": "tapered_streak", "follow_origin": true, "near_fade": 0.10,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, 0.18], "length": 14.0, "angle": 3.0, "direction": "forward" },
+      "speed": [0.28, 0.62], "lifetime": [7, 13], "drag": 0.91,
+      "turbulence": 0.08, "vortex": 3.4,
+      "size": [[0.0, 0.025], [0.12, 0.095], [0.68, 0.075], [1.0, 0.0]],
+      "size_variation": 0.38,
+      "alpha": [[0.0, 0.0], [0.08, 0.40], [0.62, 0.20], [1.0, 0.0]],
+      "color": { "start": "#FFF8FDFF", "end": "#FF9FC4D2" },
+      "material": { "texture": "nydomod:textures/wind_gust_flow.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "collision": { "mode": "world", "response": "clip", "padding": 0.06, "probe_radius": 0.8 },
+      "geometry_settings": { "length": 1.7 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/great_breakthrough_pressure_ring",
+      "name": "thrust_pulse_train",
+      "duration": 1200, "rate": 0.42, "max_particles": 7,
+      "shape": { "type": "line", "offset": [0.0, 0.0, 0.8], "length": 13.6, "direction": "forward" },
+      "speed": [0.22, 0.36], "lifetime": [7, 10],
+      "size": [[0.0, 0.10], [0.16, 0.20], [0.66, 0.23], [1.0, 0.26]],
+      "alpha": [[0.0, 0.0], [0.08, 0.28], [0.58, 0.12], [1.0, 0.0]],
+      "geometry_settings": { "segments": 28, "thickness": 0.035, "arc_degrees": 360.0, "edge": 0.88, "roll": 79.0, "wave": 0.06, "crest": 0.62, "lobes": 4.0 }
+    },
+    {
+      "preset": "nydomod:_presets/wind/gust/whisper_turbulence",
+      "name": "thrust_cavitation",
+      "duration": 1200, "burst": 4, "rate": 0.95, "max_particles": 22,
+      "near_fade": 0.10,
+      "shape": { "type": "cone", "offset": [0.0, 0.0, 0.5], "length": 13.8, "angle": 3.4, "direction": "forward" },
+      "speed": [0.16, 0.32], "lifetime": [8, 14], "vortex": 3.8, "vortex_pull": 0.18,
+      "size": [[0.0, 0.14], [0.26, 0.34], [0.72, 0.42], [1.0, 0.0]],
+      "alpha": [[0.0, 0.0], [0.12, 0.12], [0.68, 0.06], [1.0, 0.0]]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "duration": 7,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 4.0,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "follow_source_direction": false,
+  "source_anchor": "center",
+  "preserve_trigger_offset": false,
+  "emitters": [
+    {
+      "name": "undertow_body_coil",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, -0.72, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [7, 7], "drag": 1.0,
+      "size": [[0.0, 0.08], [0.14, 0.58], [0.78, 0.68], [1.0, 0.20]],
+      "alpha": [[0.0, 0.0], [0.08, 0.76], [0.72, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FF63CDF2", "end": "#FF0A5F99" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": {
+        "segments": 28, "length": 1.48, "thickness": 0.16,
+        "turns": 1.35, "flare": 0.48, "sag": 0.0,
+        "wave": 0.18, "crest": 0.66
+      }
+    },
+    {
+      "name": "undertow_foam_coil",
+      "start": 1, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, -0.70, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [7, 7], "drag": 1.0,
+      "size": [[0.0, 0.06], [0.14, 0.60], [0.78, 0.70], [1.0, 0.18]],
+      "alpha": [[0.0, 0.0], [0.07, 0.86], [0.68, 0.44], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FFA1E8FF" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": {
+        "segments": 28, "length": 1.52, "thickness": 0.052,
+        "turns": 1.35, "flare": 0.50, "sag": 0.0,
+        "wave": 0.14, "crest": 0.82
+      }
+    },
+    {
+      "name": "undertow_waist_ring",
+      "start": 2, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "ring", "follow_origin": true,
+      "shape": { "type": "point", "offset": [0.0, 0.0, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [6, 6], "drag": 1.0,
+      "rotation": [0, 360], "spin": [20.0, 20.0],
+      "size": [[0.0, 0.20], [0.18, 0.62], [0.76, 0.72], [1.0, 0.30]],
+      "alpha": [[0.0, 0.0], [0.06, 0.72], [0.64, 0.30], [1.0, 0.0]],
+      "color": { "start": "#FF6DD2F3", "end": "#FF166CA5" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 34, "thickness": 0.080, "arc_degrees": 360.0 }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "undertow_foam",
+      "start": 0, "duration": 5, "burst": 5, "rate": 0.48, "max_particles": 10,
+      "shape": { "type": "sphere", "radius": 0.46, "scale": [1.0, 1.45, 1.0], "direction": "radial" },
+      "speed": [0.04, 0.16], "lifetime": [5, 7]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "undertow_drops",
+      "start": 0, "duration": 5, "burst": 4, "rate": 0.42, "max_particles": 9,
+      "shape": { "type": "sphere", "radius": 0.48, "scale": [1.0, 1.55, 1.0], "direction": "radial" },
+      "speed": [0.08, 0.26], "lifetime": [5, 8], "gravity": 0.038
+    }
+  ]
+}

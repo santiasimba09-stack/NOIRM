@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "duration": 28,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 7.0,
+  "emitters": [
+    {
+      "name": "undertow_collapse",
+      "start": 0, "duration": 0, "burst": 2, "max_particles": 2,
+      "geometry": "ring",
+      "shape": { "type": "point", "offset": [0.0, 0.02, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [20, 24], "drag": 1.0,
+      "rotation": [0, 360], "spin": [-0.22, 0.22],
+      "near_fade": 0.0,
+      "size": [[0.0, 2.85], [0.24, 2.35], [0.70, 0.85], [1.0, 0.16]],
+      "alpha": [[0.0, 0.0], [0.08, 0.92], [0.62, 0.62], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF68C9F2" },
+      "material": {
+        "texture": "nydomod:textures/water_foam_flipbook.png",
+        "blend": "alpha", "depth_write": false, "fullbright": true
+      },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": { "segments": 48, "thickness": 0.18, "arc_degrees": 360.0 }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "undertow_foam",
+      "start": 0, "duration": 12, "burst": 12, "rate": 1.0, "max_particles": 24,
+      "near_fade": 0.0,
+      "shape": {
+        "type": "ring", "offset": [0.0, 0.04, 0.0], "radius": 2.35,
+        "scale": [1.0, 0.10, 1.0], "direction": "shape"
+      },
+      "speed": [0.16, 0.40], "lifetime": [10, 18],
+      "vortex": 1.1, "vortex_pull": 1.8,
+      "size": [[0.0, 0.14], [0.22, 0.48], [0.70, 0.34], [1.0, 0.0]]
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "undertow_haze",
+      "start": 1, "duration": 12, "burst": 4, "rate": 0.6, "max_particles": 12,
+      "near_fade": 0.15,
+      "shape": {
+        "type": "ring", "offset": [0.0, 0.02, 0.0], "radius": 1.85,
+        "scale": [1.0, 0.12, 1.0], "direction": "shape"
+      },
+      "speed": [0.04, 0.12], "lifetime": [15, 24],
+      "vortex": 0.8, "vortex_pull": 1.2,
+      "size": [[0.0, 0.45], [0.35, 1.20], [1.0, 0.20]]
+    }
+  ]
+}

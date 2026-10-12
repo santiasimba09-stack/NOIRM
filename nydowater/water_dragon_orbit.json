@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "duration": 8,
+  "priority": 2,
+  "max_distance": 128.0,
+  "bounds": 3.0,
+  "follow_source": false,
+  "source_anchor": "center",
+  "emitters": [
+    {
+      "preset": "nydomod:_presets/water/ribbons",
+      "name": "orbit_ribbon",
+      "start": 0,
+      "duration": 6,
+      "geometry_settings": {
+        "segments": 20,
+        "length": 1.6,
+        "thickness": 0.34,
+        "turns": 0.7,
+        "flare": 1.0,
+        "sag": 0.0,
+        "sag_length": 1.6,
+        "wave": 0.2,
+        "crest": 0.8
+      },
+      "lifetime": [
+        4,
+        6
+      ]
+    },
+    {
+      "preset": "nydomod:_presets/water/droplets",
+      "name": "orbit_shed",
+      "start": 0,
+      "duration": 6,
+      "shape": {
+        "type": "sphere",
+        "radius": 0.22,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": "radial"
+      },
+      "lifetime": [
+        4,
+        6
+      ]
+    }
+  ]
+}

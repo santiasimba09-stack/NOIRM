@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "duration": 26,
+  "priority": 3,
+  "max_distance": 128.0,
+  "bounds": 5.0,
+  "emitters": [
+    {
+      "name": "impacting_water_fold",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "impact_dome",
+      "shape": { "type": "point", "offset": [0.0, 0.06, 0.0], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [16, 16], "drag": 1.0,
+      "rotation": [0, 360],
+      "size": [[0.0, 0.10], [0.17, 0.78], [0.60, 1.14], [1.0, 0.58]],
+      "alpha": [[0.0, 0.0], [0.06, 0.80], [0.54, 0.36], [1.0, 0.0]],
+      "color": { "start": "#FF82DCF8", "end": "#FF126AA4" },
+      "material": { "texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true },
+      "geometry_settings": { "segments": 30, "length": 0.54 }
+    },
+    {
+      "name": "split_breaking_crest",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave",
+      "shape": { "type": "point", "offset": [0.0, 0.06, 0.02], "direction": "forward" },
+      "speed": [0.0, 0.0], "lifetime": [16, 16], "drag": 1.0,
+      "rotation": [-48.0, -48.0],
+      "size": [[0.0, 0.15], [0.16, 0.82], [0.66, 1.34], [1.0, 1.58]],
+      "alpha": [[0.0, 0.0], [0.05, 0.96], [0.48, 0.46], [1.0, 0.0]],
+      "color": { "start": "#FFFFFFFF", "end": "#FF98E5FD" },
+      "material": { "texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true },
+      "atlas": { "columns": 16, "rows": 1, "frames": 16 },
+      "geometry_settings": {
+        "segments": 36, "thickness": 0.074, "arc_degrees": 150.0,
+        "edge": 0.95, "roll": 3.0, "lay_flat": true,
+        "crest": 0.94, "wave": 0.12, "lobes": 9.0
+      }
+    },
+    {
+      "preset": "nydomod:_presets/water/foam",
+      "name": "impact_foam_mass",
+      "start": 0, "duration": 9, "burst": 14, "rate": 0.90, "max_particles": 26,
+      "shape": { "type": "sphere", "offset": [0.0, 0.08, 0.0], "radius": 0.58, "scale": [1.42, 0.62, 0.94], "direction": "radial" },
+      "speed": [0.15, 0.48], "lifetime": [8, 16]
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "impact_round_spray",
+      "start": 0, "duration": 10, "burst": 13, "rate": 0.80, "max_particles": 24,
+      "shape": { "type": "sphere", "offset": [0.0, 0.12, 0.0], "radius": 0.62, "scale": [1.30, 0.85, 0.96], "direction": "radial" },
+      "speed": [0.18, 0.54], "lifetime": [11, 21], "gravity": 0.052
+    },
+    {
+      "preset": "nydomod:_presets/water/mist",
+      "name": "impact_haze",
+      "start": 1, "duration": 8, "burst": 5, "rate": 0.42, "max_particles": 10,
+      "shape": { "type": "sphere", "offset": [0.0, 0.14, 0.0], "radius": 0.50, "scale": [1.30, 0.72, 0.96], "direction": "radial" },
+      "speed": [0.02, 0.09], "lifetime": [14, 24]
+    }
+  ]
+}

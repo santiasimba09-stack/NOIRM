@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "duration": 9,
+  "priority": 3,
+  "max_distance": 144.0,
+  "bounds": 40.0,
+  "emitters": [
+    {
+      "name": "compressed_water_seam",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_lance",
+      "shape": {"type": "point", "direction": "forward"},
+      "speed": [0, 0], "lifetime": [8, 8],
+      "size": [[0, 0.04], [0.08, 0.10], [0.68, 0.07], [1, 0]],
+      "alpha": [[0, 0], [0.04, 0.72], [0.72, 0.42], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF158FC4"},
+      "near_fade": 1.15,
+      "collision": {"mode": "world", "response": "clip", "padding": 0.04, "fluids": "surface"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 10, "length": 12.0, "flare": 0.38, "sag": 0.0, "wave": 0.06, "lobes": 4, "rim": 0.92, "taper": 1.0, "flow": 7.2, "flow_tile": 4.8, "bloom": 1.10, "glow": 0.58}
+    },
+    {
+      "name": "compressed_water_round",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "chakra_sphere",
+      "shape": {"type": "point", "offset": [0, 0, 11.55], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [8, 8],
+      "size": [[0, 0.04], [0.08, 0.15], [0.62, 0.13], [1, 0]],
+      "alpha": [[0, 0], [0.04, 0.96], [0.68, 0.74], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF168FC5"},
+      "near_fade": 0.55,
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 12, "rim": 0.90, "flow": 8.0, "flow_tile": 2.4, "wave": 0.12, "lobes": 5, "swirl": 1.8, "glow": 0.72}
+    },
+    {
+      "name": "pressure_collars",
+      "start": 0, "duration": 0, "burst": 3, "max_particles": 3,
+      "geometry": "ring",
+      "shape": {"type": "line", "offset": [0, 0, 0.12], "length": 10.8, "direction": "forward"},
+      "speed": [0, 0], "lifetime": [5, 7],
+      "size": [[0, 0.04], [0.16, 0.17], [0.62, 0.12], [1, 0]],
+      "alpha": [[0, 0], [0.06, 0.82], [0.54, 0.28], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF78DDF5"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 14, "thickness": 0.038, "arc_degrees": 360}
+    }
+  ]
+}

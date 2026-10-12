@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "duration": 168,
+  "priority": 3,
+  "max_distance": 96.0,
+  "bounds": 3.5,
+  "follow_source": true,
+  "stop_when_source_missing": true,
+  "source_scale_mode": "entity_bounds",
+  "source_scale_base": 1.8,
+  "emitters": [
+    {
+      "name": "ankle_water_memory",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "shock_wave", "follow_origin": true,
+      "shape": {"type": "point", "offset": [0, -0.82, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [166, 166],
+      "rotation": [0, 360], "spin": [0.05, 0.05],
+      "size": [[0, 0.12], [0.08, 0.62], [0.88, 0.7], [1, 0]],
+      "alpha": [[0, 0], [0.08, 0.42], [0.82, 0.18], [1, 0]],
+      "color": {"start": "#FFE9FBFF", "end": "#FF197FAF"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 20, "thickness": 0.055, "arc_degrees": 300, "edge": 0.88, "lay_flat": true, "crest": 0.62, "wave": 0.07, "lobes": 5}
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "sparse_memory_drops",
+      "start": 4, "duration": 150, "burst": 2, "rate": 0.035, "max_particles": 7,
+      "follow_origin": true,
+      "shape": {"type": "ring", "offset": [0, -0.72, 0], "radius": 0.52, "direction": "random"},
+      "speed": [0.02, 0.075], "lifetime": [12, 22], "gravity": 0.03
+    }
+  ]
+}

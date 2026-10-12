@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "duration": 38,
+  "priority": 3,
+  "max_distance": 112.0,
+  "bounds": 6.0,
+  "emitters": [
+    {
+      "name": "memory_water_rise",
+      "start": 0, "duration": 0, "burst": 1, "max_particles": 1,
+      "geometry": "water_helix",
+      "shape": {"type": "point", "offset": [0, -0.82, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [34, 34],
+      "size": [[0, 0.06], [0.18, 0.82], [0.7, 0.9], [1, 0]],
+      "alpha": [[0, 0], [0.06, 0.78], [0.64, 0.38], [1, 0]],
+      "color": {"start": "#FFE9FBFF", "end": "#FF0872A8"},
+      "material": {"texture": "nydomod:textures/water_flow_surface.png", "blend": "alpha", "depth_write": false, "fullbright": true},
+      "geometry_settings": {"segments": 28, "length": 1.9, "thickness": 0.16, "turns": 2.1, "flare": 0.32, "wave": 0.14, "crest": 0.84}
+    },
+    {
+      "name": "identity_lock_rings",
+      "start": 1, "duration": 0, "burst": 3, "max_particles": 3,
+      "geometry": "ring",
+      "shape": {"type": "point", "offset": [0, -0.72, 0], "direction": "forward"},
+      "speed": [0, 0], "lifetime": [20, 31],
+      "size": [[0, 0.12], [0.2, 0.82], [1, 1.55]],
+      "alpha": [[0, 0], [0.06, 0.9], [0.52, 0.32], [1, 0]],
+      "color": {"start": "#FFFFFFFF", "end": "#FF64D0EF"},
+      "material": {"texture": "nydomod:textures/water_foam_flipbook.png", "blend": "additive", "depth_write": false, "fullbright": true},
+      "atlas": {"columns": 16, "rows": 1, "frames": 16},
+      "geometry_settings": {"segments": 20, "thickness": 0.065, "arc_degrees": 360}
+    },
+    {
+      "preset": "nydomod:_presets/water/drops",
+      "name": "remembered_body_drops",
+      "start": 0, "duration": 18, "burst": 14, "rate": 0.45, "max_particles": 22,
+      "shape": {"type": "sphere", "radius": 0.68, "scale": [1, 1.55, 1], "direction": "body_tangent"},
+      "speed": [0.1, 0.4], "lifetime": [10, 22], "gravity": 0.035
+    }
+  ]
+}
