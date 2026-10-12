@@ -1,0 +1,20 @@
+{
+  "schema":1,"duration":72,"priority":190,"hide_hud":true,"lock_input":true,"skippable":false,
+  "snapshot_anchors":true,"letterbox":0.09,"fade_in":4,"fade_out":8,
+  "camera":{"collision":true,"keyframes":[
+    {"tick":0,"position_actor":"caster","position_offset":[-1.8,1.55,2.7],"space":"actor","look_actor":"caster","look_offset":[0,1.46,0],"fov":52,"roll":0,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":18,"position_actor":"caster","position_offset":[1.35,1.68,1.9],"space":"actor","look_actor":"caster","look_offset":[0,1.48,0],"fov":43,"roll":-2,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":38,"position_actor":"caster","position_offset":[0.42,1.62,1.28],"space":"actor","look_actor":"caster","look_offset":[0,1.53,0],"fov":34,"roll":1.5,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":54,"position_actor":"caster","position_offset":[-0.36,1.61,1.12],"space":"actor","look_actor":"caster","look_offset":[0,1.55,0],"fov":30,"roll":0,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":72,"position_actor":"caster","position_offset":[-1.7,1.62,2.55],"space":"actor","look_actor":"caster","look_offset":[0,1.46,0],"fov":50,"roll":0,"ease":"in_out_cubic","curve":"catmull_rom"}
+  ]},
+  "actors":[{"name":"eternal_awakening","actor":"caster","hide_original":true,"start":0,"end":72,"keyframes":[
+    {"tick":0,"anchor":"caster","offset":[0,0,0],"space":"actor","yaw":0,"pitch":0,"roll":0,"scale":1,"ease":"linear"},
+    {"tick":72,"anchor":"caster","offset":[0,0,0],"space":"actor","yaw":0,"pitch":0,"roll":0,"scale":1,"ease":"linear"}
+  ]}],
+  "markers":[
+    {"tick":8,"name":"dojutsu/eternal_heartbeat","actor":"caster"},
+    {"tick":28,"name":"dojutsu/eternal_memory","actor":"caster"},
+    {"tick":52,"name":"dojutsu/eternal_reveal","actor":"caster"}
+  ]
+}

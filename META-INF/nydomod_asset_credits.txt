@@ -1,0 +1,19 @@
+NYDOmod credits
+
+Target inspection HUD based on the mod by playgamesjavi185.
+Written from scratch for NYDOmod, with direct permission from the creator.
+
+MosixDev — creator of textures and visual designs for NYDO.
+
+Myoboku landmark-tree structural references supplied by the project owner:
+- "cherry matica" Litematica build, embedded author metadata: juhzoh; distributed via Abfielder.
+- "Sakura Serenity" Sponge schematic, filename attribution: doeeyedfaerie.
+NYDO stores palette-remapped structural blueprints only; terrain pads, entities and interactive
+blocks are not imported. Procedural trunks, roots, branches, crowns and placement code are original.
+The Sage Spires sanctuary uses a 0.62-scale, palette-remapped derivative of Sakura Serenity;
+its original terrain pad is discarded and the tree is anchored by NYDO's chunk-sliced engine.
+
+White Zetsu NYDO botanical atlas (textures/entity/white_zetsu_nydo.png):
+Original pixel artwork generated for NYDO with OpenAI image generation, 2026-10-07.
+Design: living ivory bark, sage sap veins, amber eyes and an asymmetric moss fissure.
+No third-party skin was used as source; mapped to NYDO base cuboids and original bark details.

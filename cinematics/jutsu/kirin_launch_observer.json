@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "duration": 24,
+  "priority": 195,
+  "hide_hud": false,
+  "lock_input": false,
+  "skippable": false,
+  "snapshot_anchors": false,
+  "letterbox": 0.045,
+  "fade_in": 0,
+  "fade_out": 5,
+  "camera": {
+    "collision": false,
+    "keyframes": [
+      {"tick": 0, "position_actor": "target", "position_offset": [18.0, 8.0, -24.0], "space": "actor", "look_actor": "target", "look_offset": [0.0, -3.0, 0.0], "fov": 88.0, "roll": -0.2, "ease": "out_quad", "curve": "catmull_rom"},
+      {"tick": 11, "position_actor": "target", "position_offset": [12.0, 6.0, -26.0], "space": "actor", "look_actor": "target", "look_offset": [0.0, -4.0, 0.0], "fov": 90.0, "roll": 0.0, "ease": "in_out_cubic", "curve": "catmull_rom"},
+      {"tick": 12, "position_actor": "target", "position_offset": [-18.0, 10.0, -22.0], "space": "actor", "look_actor": "target", "look_offset": [0.0, -3.0, 0.0], "fov": 90.0, "roll": 0.2, "ease": "linear", "curve": "linear"},
+      {"tick": 24, "position_actor": "target", "position_offset": [-10.0, 7.0, -28.0], "space": "actor", "look_actor": "target", "look_offset": [0.0, -5.0, 0.0], "fov": 92.0, "roll": 0.0, "ease": "in_out_cubic", "curve": "catmull_rom"}
+    ]
+  },
+  "markers": [
+    {"tick": 0, "name": "kirin/observer_fall_first", "actor": "target"},
+    {"tick": 12, "name": "kirin/observer_fall_second", "actor": "target"}
+  ]
+}

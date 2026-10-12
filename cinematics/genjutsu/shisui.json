@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "duration": 360,
+  "priority": 245,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.055,
+  "fade_in": 4,
+  "fade_out": 10,
+  "scene": {
+    "renderer": "nydomod:shisui",
+    "start": 0,
+    "end": 326,
+    "fade_in": 4,
+    "fade_out": 10,
+    "seed": 31415926,
+    "intensity": 1.0,
+    "altitude": 96.0,
+    "grade": {
+      "mode": "muted",
+      "tint": [0.16, 0.018, 0.006],
+      "tint_strength": 0.24,
+      "desaturation": 0.38,
+      "vignette": 1.0,
+      "pulse": 0.006
+    },
+    "lens": {
+      "compression": 0.93,
+      "breathing": 0.95,
+      "period": 82.0
+    },
+    "roles": ["caster", "target"]
+  },
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {"tick":0,"position_actor":"caster","position_offset":[0.0,12.0,6.05],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,0.0],"fov":42.0,"roll":0.0,"ease":"linear","curve":"linear"},
+      {"tick":18,"position_actor":"caster","position_offset":[0.0,12.0,4.05],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,0.0],"fov":38.0,"roll":-0.10,"ease":"in_quad","curve":"linear"},
+      {"tick":34,"position_actor":"caster","position_offset":[0.0,12.0,2.35],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,0.0],"fov":33.0,"roll":-0.18,"ease":"linear","curve":"linear"},
+      {"tick":44,"position_actor":"caster","position_offset":[0.0,12.0,1.42],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,0.0],"fov":30.0,"roll":-0.24,"ease":"linear","curve":"linear"},
+      {"tick":54,"position_actor":"caster","position_offset":[0.0,12.0,0.35],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,-6.0],"fov":28.0,"roll":-0.20,"ease":"linear","curve":"linear"},
+      {"tick":64,"position_actor":"caster","position_offset":[0.0,12.0,0.24],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,-18.0],"fov":32.0,"roll":-0.10,"ease":"linear","curve":"linear"},
+      {"tick":72,"position_actor":"caster","position_offset":[0.0,12.0,-0.90],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,-30.0],"fov":38.0,"roll":0.0,"ease":"out_quad","curve":"linear"},
+      {"tick":80,"position_actor":"caster","position_offset":[0.0,12.0,-3.20],"space":"scene","look_actor":"caster","look_offset":[0.0,12.0,-40.0],"fov":42.0,"roll":0.0,"ease":"out_quad","curve":"linear"},
+      {"tick":81,"position_actor":"target","position_offset":[9.0,4.5,18.0],"space":"scene","look_actor":"target","look_offset":[0.0,19.0,-32.0],"fov":50.0,"roll":-0.5,"ease":"linear","curve":"linear"},
+      {"tick":118,"position_actor":"target","position_offset":[-6.0,3.4,21.0],"space":"scene","look_actor":"target","look_offset":[14.5,22.0,-46.0],"fov":54.0,"roll":0.0,"ease":"in_out_cubic","curve":"catmull_rom"},
+      {"tick":119,"position_actor":"target","position_offset":[0.0,1.85,5.4],"space":"scene","look_actor":"target","look_offset":[0.0,1.04,0.0],"fov":49.0,"roll":0.0,"ease":"linear","curve":"linear"},
+      {"tick":168,"position_actor":"target","position_offset":[0.0,1.56,4.7],"space":"scene","look_actor":"target","look_offset":[0.0,0.82,0.0],"fov":43.0,"roll":0.8,"ease":"in_out_cubic","curve":"catmull_rom"},
+      {"tick":169,"position_actor":"target","position_offset":[4.4,1.72,5.8],"space":"scene","look_actor":"target","look_offset":[0.0,0.95,-1.0],"fov":48.0,"roll":-1.1,"ease":"linear","curve":"linear"},
+      {"tick":205,"position_actor":"target","position_offset":[-5.2,2.15,7.2],"space":"scene","look_actor":"target","look_offset":[7.1,17.0,-29.0],"fov":56.0,"roll":0.7,"ease":"in_out_cubic","curve":"catmull_rom"},
+      {"tick":229,"position_actor":"target","position_offset":[-7.0,3.2,10.0],"space":"scene","look_actor":"target","look_offset":[4.1,15.1,-22.3],"fov":62.0,"roll":-0.4,"ease":"in_out_cubic","curve":"catmull_rom"},
+      {"tick":230,"position_actor":"target","position_offset":[18.0,8.4,20.0],"space":"scene","look_actor":"target","look_offset":[4.0,15.0,-22.0],"fov":67.0,"roll":-1.0,"ease":"linear","curve":"linear"},
+      {"tick":258,"position_actor":"target","position_offset":[13.0,4.0,11.5],"space":"scene","look_actor":"target","look_offset":[0.27,9.54,-1.47],"fov":45.0,"roll":1.3,"ease":"in_quad","curve":"catmull_rom"},
+      {"tick":260,"position_actor":"target","position_offset":[10.0,3.2,8.0],"space":"scene","look_actor":"target","look_offset":[0.0,9.15,0.0],"fov":38.0,"roll":-1.4,"ease":"out_quad","curve":"linear"},
+      {"tick":285,"position_actor":"target","position_offset":[12.0,4.2,10.0],"space":"scene","look_actor":"target","look_offset":[0.0,4.2,0.0],"fov":48.0,"roll":0.0,"ease":"out_quad","curve":"catmull_rom"},
+      {"tick":286,"position_actor":"target","position_offset":[0.0,28.0,0.5],"space":"scene","look_actor":"target","look_offset":[0.0,7.2,0.0],"fov":46.0,"roll":0.0,"ease":"linear","curve":"linear"},
+      {"tick":318,"position_actor":"target","position_offset":[0.0,36.0,1.4],"space":"scene","look_actor":"target","look_offset":[0.0,7.2,0.0],"fov":35.0,"roll":0.0,"ease":"in_out_cubic","curve":"catmull_rom"},
+      {"tick":325,"position_actor":"target","position_offset":[0.0,36.0,1.4],"space":"scene","look_actor":"target","look_offset":[0.0,7.2,0.0],"fov":35.0,"roll":0.0,"ease":"linear","curve":"linear"},
+      {"tick":326,"position_actor":"caster","position_offset":[0.46,1.67,1.08],"space":"actor","look_actor":"caster","look_offset":[0.43,1.68,0.0],"fov":14.0,"roll":0.0,"ease":"in_quad","curve":"linear"},
+      {"tick":342,"position_actor":"caster","position_offset":[0.36,1.60,1.56],"space":"actor","look_actor":"caster","look_offset":[0.24,1.53,0.0],"fov":23.0,"roll":0.4,"ease":"out_quad","curve":"catmull_rom"},
+      {"tick":360,"position_actor":"caster","position_offset":[0.0,1.42,5.2],"space":"actor","look_actor":"caster","look_offset":[0.0,1.34,0.0],"fov":46.0,"roll":0.0,"ease":"in_out_cubic","curve":"catmull_rom"}
+    ]
+  },
+  "animations": [
+    {"tick":119,"actor":"target","animation":"cinematic/nydo/shisui_target_sink","duration":50,"speed":0.76,"mirror":false},
+    {"tick":169,"actor":"target","animation":"cinematic/nydo/shisui_target_shield","duration":157,"speed":0.76,"mirror":false},
+    {"tick":326,"actor":"caster","animation":"cinematic/nydo/shisui_caster_reveal","duration":34,"speed":0.72,"mirror":false}
+  ],
+  "actors": [
+    {
+      "name": "shisui_caster_reality",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 326,
+      "end": 360,
+      "keyframes": [
+        {"tick":326,"anchor":"caster","offset":[0.0,0.0,0.0],"space":"actor","yaw":0.0,"pitch":0.0,"roll":0.0,"scale":1.0,"ease":"linear"},
+        {"tick":360,"anchor":"caster","offset":[0.0,0.0,0.0],"space":"actor","yaw":0.0,"pitch":0.0,"roll":0.0,"scale":1.0,"ease":"linear"}
+      ]
+    }
+  ],
+  "markers": [
+    {"tick":4,"name":"shisui/eye_awaken","actor":"caster"},
+    {"tick":44,"name":"shisui/eye_becomes_moon","actor":"caster"},
+    {"tick":81,"name":"shisui/moon_in_sky","actor":"target"},
+    {"tick":119,"name":"shisui/black_sea","actor":"target"},
+    {"tick":169,"name":"shisui/moon_reflection","actor":"target"},
+    {"tick":230,"name":"shisui/moon_descends","actor":"target"},
+    {"tick":260,"name":"shisui/moon_impact","actor":"target"},
+    {"tick":286,"name":"shisui/sharingan_surface","actor":"caster"},
+    {"tick":326,"name":"shisui/caster_return","actor":"caster"},
+    {"tick":350,"name":"shisui/reality_return","actor":"caster"}
+  ]
+}

@@ -1,0 +1,50 @@
+NYDOmod includes modified or redistributed player-animation resources from
+Boundless / Strongest by LeBoundlessJame.
+
+The animation IDs and resource filenames used by NYDOmod were renamed. These
+renames identify NYDOmod's integration points; they do not remove the original
+copyright or MIT attribution.
+
+Original Boundless ID -> NYDOmod runtime ID:
+
+- jab -> combat/licensed_boundless/quick_jab
+- hook -> combat/licensed_boundless/turning_hook
+- uppercut -> combat/licensed_boundless/rising_uppercut
+- spin_kick -> combat/licensed_boundless/rotating_kick
+- dropkick -> combat/licensed_boundless/flying_drop_kick
+- flip_kick -> combat/licensed_boundless/aerial_flip_kick
+- front_handspring -> combat/licensed_boundless/forward_handspring
+- manji_kick_parry -> combat/licensed_boundless/counter_kick
+- roll_forward -> movement/licensed_boundless/forward_roll
+- roll_back -> movement/licensed_boundless/backward_roll
+- double_kick -> combat/licensed_boundless/aerial_double_kick
+- grab_and_punch -> combat/licensed_boundless/grab_and_punch
+- suplex -> combat/licensed_boundless/suplex
+
+The modified NYDO animation combat/nydo/core/light_spin also derives from the
+Boundless spin_kick resource.
+
+The following standard Boundless animation objects were present in NYDOmod
+4.5.0 but had no runtime call and are not redistributed in the current package:
+
+- aura
+- clap
+- cleave
+- dismantle_1
+- domain_expansion_shrine
+- idle
+- landing
+- manji_kick_indicator
+- open
+- punch_barrage
+- revive
+- shrine_heal
+- spiderweb_cleave
+
+double_kick.json is an additional Emotecraft-format resource outside the 25
+standard PlayerAnimator animation objects and retains its embedded author field
+identifying Bryan.
+
+Copyright (c) 2025 LeBoundlessJame
+Licensed under the MIT License. The complete license text is included in
+META-INF/LICENSE_boundless.

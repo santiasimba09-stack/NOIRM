@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "duration": 12,
+  "priority": 180,
+  "hide_hud": false,
+  "lock_input": false,
+  "skippable": true,
+  "snapshot_anchors": false,
+  "letterbox": 0,
+  "fade_in": 0,
+  "fade_out": 3,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "target",
+        "position_offset": [
+          -2.8,
+          1.8,
+          0.48
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          1.1,
+          0.48
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 12,
+        "position_actor": "target",
+        "position_offset": [
+          -2.912,
+          1.8,
+          0.48
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          1.1,
+          0.48
+        ],
+        "fov": 58,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_escape_attacker",
+      "duration": 12,
+      "speed": 1,
+      "mirror": false
+    },
+    {
+      "tick": 0,
+      "actor": "target",
+      "animation": "cinematic/nydo/eye_escape_defender",
+      "duration": 12,
+      "speed": 1,
+      "mirror": true
+    }
+  ],
+  "actors": [
+    {
+      "name": "eye_escape_attacker_stage",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 0,
+      "end": 12,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            -0.06,
+            0,
+            0.735
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 12,
+          "anchor": "target",
+          "offset": [
+            -0.06,
+            0,
+            0.86
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        }
+      ]
+    },
+    {
+      "name": "eye_escape_defender_stage",
+      "actor": "target",
+      "hide_original": true,
+      "start": 0,
+      "end": 12,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 12,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        }
+      ]
+    }
+  ],
+  "markers": []
+}

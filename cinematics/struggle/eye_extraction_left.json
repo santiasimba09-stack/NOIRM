@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "duration": 900,
+  "priority": 180,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0,
+  "fade_in": 3,
+  "fade_out": 4,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "target",
+        "position_offset": [
+          -3,
+          1.8,
+          0.48
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          1.1,
+          0.48
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 14,
+        "position_actor": "target",
+        "position_offset": [
+          -2.8,
+          1.8,
+          0.48
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          1.1,
+          0.48
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 900,
+        "position_actor": "target",
+        "position_offset": [
+          -2.8,
+          1.8,
+          0.48
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          1.1,
+          0.48
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_attacker_engage",
+      "duration": 14,
+      "speed": 1.5714285714285714,
+      "mirror": false
+    },
+    {
+      "tick": 14,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_attacker",
+      "duration": 886,
+      "speed": 1,
+      "mirror": false
+    },
+    {
+      "tick": 0,
+      "actor": "target",
+      "animation": "cinematic/nydo/eye_extract_defender_engage",
+      "duration": 14,
+      "speed": 1.5714285714285714,
+      "mirror": true
+    },
+    {
+      "tick": 14,
+      "actor": "target",
+      "animation": "cinematic/nydo/eye_extract_defender",
+      "duration": 886,
+      "speed": 1,
+      "mirror": true
+    }
+  ],
+  "actors": [
+    {
+      "name": "eye_extract_attacker_stage",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 0,
+      "end": 900,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            -0.06,
+            0,
+            0.735
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 900,
+          "anchor": "target",
+          "offset": [
+            -0.06,
+            0,
+            0.735
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        }
+      ]
+    },
+    {
+      "name": "eye_extract_defender_stage",
+      "actor": "target",
+      "hide_original": true,
+      "start": 0,
+      "end": 900,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 900,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        }
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "tick": 8,
+      "name": "struggle/eye_engage",
+      "actor": "target"
+    },
+    {
+      "tick": 892,
+      "name": "struggle/eye_release",
+      "actor": "target"
+    }
+  ]
+}

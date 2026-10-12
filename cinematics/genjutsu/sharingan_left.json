@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "duration": 84,
+  "priority": 110,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.06,
+  "fade_in": 6,
+  "fade_out": 9,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {"tick": 0, "position_actor": "caster", "position_offset": [0.0, 1.67, 3.6], "space": "actor", "look_actor": "caster", "look_offset": [0.0, 1.62, 0.0], "fov": 62.0, "roll": 0.0, "ease": "in_out_cubic", "curve": "catmull_rom"},
+      {"tick": 12, "position_actor": "caster", "position_offset": [-0.24, 1.68, 2.45], "space": "actor", "look_actor": "caster", "look_offset": [0.0, 1.63, 0.0], "fov": 49.0, "roll": -0.8, "ease": "out_quad", "curve": "catmull_rom"},
+      {"tick": 34, "position_actor": "caster", "position_offset": [0.30, 1.64, 1.32], "space": "actor", "look_actor": "caster", "look_offset": [0.0, 1.64, 0.0], "fov": 31.0, "roll": 0.9, "ease": "in_out_cubic", "curve": "catmull_rom"},
+      {"tick": 58, "position_actor": "caster", "position_offset": [0.46, 1.63, 0.78], "space": "actor", "look_actor": "caster", "look_offset": [0.0, 1.64, 0.0], "fov": 22.0, "roll": -0.5, "ease": "in_out_cubic", "curve": "catmull_rom"},
+      {"tick": 84, "position_actor": "caster", "position_offset": [0.12, 1.68, 2.25], "space": "actor", "look_actor": "caster", "look_offset": [0.0, 1.61, 0.0], "fov": 48.0, "roll": 0.0, "ease": "in_out_cubic", "curve": "catmull_rom"}
+    ]
+  },
+  "animations": [
+    {"tick": 0, "actor": "caster", "animation": "combat/nydo/core/stance_neutral", "duration": 82, "speed": 0.72, "mirror": false}
+  ],
+  "markers": [
+    {"tick": 8, "name": "sharingan/panel_enter", "actor": "caster"},
+    {"tick": 30, "name": "sharingan/eye_focus", "actor": "caster"},
+    {"tick": 56, "name": "sharingan/eye_open", "actor": "caster"},
+    {"tick": 61, "name": "sharingan/screen_zoom", "actor": "caster"},
+    {"tick": 74, "name": "sharingan/panel_exit", "actor": "caster"}
+  ],
+  "panels": [
+    {
+      "name": "sharingan_left_reveal",
+      "actor": "caster",
+      "style": "sharingan_reveal",
+      "framing": "face",
+      "start": 4,
+      "end": 78,
+      "seed": 196393,
+      "entity_offset_x": -0.23,
+      "entity_offset_y": -0.025,
+      "keyframes": [
+        {"tick": 4, "x": 1.04, "y": 0.09, "width": 0.92, "height": 0.70, "alpha": 0.0, "scale": 0.62, "yaw": 205.0, "pitch": -2.0, "ease": "out_back"},
+        {"tick": 13, "x": 0.035, "y": 0.085, "width": 0.93, "height": 0.72, "alpha": 1.0, "scale": 0.78, "yaw": 190.0, "pitch": -2.0, "ease": "out_back"},
+        {"tick": 34, "x": 0.025, "y": 0.075, "width": 0.95, "height": 0.75, "alpha": 1.0, "scale": 0.88, "yaw": 181.0, "pitch": -3.0, "ease": "in_out_cubic"},
+        {"tick": 58, "x": 0.015, "y": 0.06, "width": 0.97, "height": 0.78, "alpha": 1.0, "scale": 1.04, "yaw": 174.0, "pitch": -4.0, "ease": "in_out_cubic"},
+        {"tick": 72, "x": -0.015, "y": 0.035, "width": 1.04, "height": 0.83, "alpha": 0.96, "scale": 1.14, "yaw": 168.0, "pitch": -5.0, "ease": "in_out_cubic"},
+        {"tick": 78, "x": -0.17, "y": -0.02, "width": 1.22, "height": 0.90, "alpha": 0.0, "scale": 1.24, "yaw": 162.0, "pitch": -6.0, "ease": "in_quad"}
+      ]
+    }
+  ]
+}

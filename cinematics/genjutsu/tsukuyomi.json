@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "duration": 200,
+  "priority": 240,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.045,
+  "fade_in": 5,
+  "fade_out": 12,
+  "scene": {
+    "renderer": "nydomod:tsukuyomi",
+    "start": 0,
+    "end": 200,
+    "fade_in": 5,
+    "fade_out": 12,
+    "seed": 19780609,
+    "intensity": 1.0,
+    "altitude": 96.0,
+    "grade": {
+      "mode": "negative",
+      "tint": [0.48, 0.0, 0.018],
+      "tint_strength": 0.12,
+      "desaturation": 0.22,
+      "vignette": 0.82,
+      "pulse": 0.022
+    },
+    "lens": {
+      "compression": 0.92,
+      "breathing": 1.65,
+      "period": 68.0
+    },
+    "roles": ["caster", "target"]
+  },
+  "camera": {
+    "collision": false,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "target",
+        "position_offset": [0.0, 2.0, 10.5],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.85, 0.0],
+        "fov": 62.0,
+        "roll": 0.0,
+        "ease": "out_quad",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 24,
+        "position_actor": "target",
+        "position_offset": [5.8, 2.35, 8.2],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.85, 0.0],
+        "fov": 50.0,
+        "roll": -1.2,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 52,
+        "position_actor": "target",
+        "position_offset": [-7.5, 3.1, 6.4],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.72, 0.0],
+        "fov": 55.0,
+        "roll": 1.0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 84,
+        "position_actor": "target",
+        "position_offset": [0.45, 1.72, 3.45],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.78, 0.0],
+        "fov": 37.0,
+        "roll": 0.0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 118,
+        "position_actor": "target",
+        "position_offset": [10.5, 4.7, 12.0],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.6, -0.8],
+        "fov": 66.0,
+        "roll": -1.8,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 158,
+        "position_actor": "target",
+        "position_offset": [-3.8, 2.2, 5.2],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.8, 0.0],
+        "fov": 43.0,
+        "roll": 1.5,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 184,
+        "position_actor": "target",
+        "position_offset": [0.0, 7.5, 17.5],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 3.5, 0.0],
+        "fov": 72.0,
+        "roll": 0.0,
+        "ease": "out_quad",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 200,
+        "position_actor": "target",
+        "position_offset": [0.0, 1.68, 2.35],
+        "space": "scene",
+        "look_actor": "target",
+        "look_offset": [0.0, 2.78, 0.0],
+        "fov": 31.0,
+        "roll": 0.0,
+        "ease": "in_quad",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "target",
+      "animation": "cinematic/nydo/tsukuyomi_victim",
+      "duration": 199,
+      "speed": 1.0,
+      "mirror": false
+    },
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/tsukuyomi_executioner",
+      "duration": 199,
+      "speed": 0.82,
+      "mirror": false
+    }
+  ],
+  "markers": [
+    {"tick": 5, "name": "tsukuyomi/world_replace", "actor": "target"},
+    {"tick": 24, "name": "tsukuyomi/cross_reveal", "actor": "target"},
+    {"tick": 48, "name": "tsukuyomi/clones_manifest", "actor": "caster"},
+    {"tick": 58, "name": "tsukuyomi/torture_cycle", "actor": "target"},
+    {"tick": 76, "name": "tsukuyomi/torture_impact", "actor": "target"},
+    {"tick": 94, "name": "tsukuyomi/torture_impact", "actor": "target"},
+    {"tick": 112, "name": "tsukuyomi/torture_impact", "actor": "target"},
+    {"tick": 130, "name": "tsukuyomi/torture_impact", "actor": "target"},
+    {"tick": 148, "name": "tsukuyomi/torture_impact", "actor": "target"},
+    {"tick": 166, "name": "tsukuyomi/mental_collapse", "actor": "target"},
+    {"tick": 188, "name": "tsukuyomi/reality_return", "actor": "target"}
+  ]
+}

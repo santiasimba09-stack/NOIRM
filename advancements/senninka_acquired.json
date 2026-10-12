@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "nydomod:senninka"
+    },
+    "title": {
+      "translate": "advancements.senninka_acquired.title"
+    },
+    "description": {
+      "translate": "advancements.senninka_acquired.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "senninka_acquired": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "nydomod:ninjaachievement"
+}

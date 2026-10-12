@@ -1,0 +1,5 @@
+NYDO — Créditos adicionales
+
+ahnzb — agradecimientos y crédito.
+
+Se conservan los créditos existentes en META-INF/mods.toml.

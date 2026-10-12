@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "duration": 900,
+  "priority": 175,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0,
+  "fade_in": 3,
+  "fade_out": 4,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "caster",
+        "position_offset": [
+          -1.5,
+          1.9,
+          1.7
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.35,
+          0
+        ],
+        "fov": 48,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 22,
+        "position_actor": "caster",
+        "position_offset": [
+          -1.3,
+          1.9,
+          1.7
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.35,
+          0
+        ],
+        "fov": 48,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 900,
+        "position_actor": "caster",
+        "position_offset": [
+          -1.3,
+          1.9,
+          1.7
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.35,
+          0
+        ],
+        "fov": 48,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_self_engage",
+      "duration": 22,
+      "speed": 1,
+      "mirror": true
+    },
+    {
+      "tick": 22,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_self",
+      "duration": 878,
+      "speed": 1,
+      "mirror": true
+    }
+  ],
+  "actors": [
+    {
+      "name": "eye_extract_self",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 0,
+      "end": 900,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "caster",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        },
+        {
+          "tick": 900,
+          "anchor": "caster",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        }
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "tick": 22,
+      "name": "struggle/self_engage",
+      "actor": "caster"
+    }
+  ]
+}

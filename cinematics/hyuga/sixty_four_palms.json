@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "duration": 136,
+  "priority": 255,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.06,
+  "fade_in": 0,
+  "fade_out": 8,
+  "scene": {
+    "renderer": "nydomod:hyuga_sixty_four",
+    "start": 0,
+    "end": 136,
+    "fade_in": 0,
+    "fade_out": 8,
+    "seed": 64,
+    "intensity": 1.0,
+    "altitude": 96.0,
+    "grade": {
+      "mode": "normal",
+      "tint": [0.54, 0.88, 0.98],
+      "tint_strength": 0.0,
+      "desaturation": 0.0,
+      "vignette": 0.0,
+      "pulse": 0.0
+    },
+    "lens": { "compression": 1.0, "breathing": 0.08, "period": 96.0 },
+    "roles": ["caster"]
+  },
+  "camera": {
+    "collision": false,
+    "keyframes": [
+      {"tick":0,"position_actor":"caster","position_offset":[0,11,5],"space":"scene","look_actor":"caster","look_offset":[0,0,0],"fov":60,"curve":"linear"},
+      {"tick":136,"position_actor":"caster","position_offset":[0,15,2],"space":"scene","look_actor":"caster","look_offset":[0,0,0],"fov":60,"curve":"linear"}
+    ]
+  }
+}

@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "duration": 100,
+  "priority": 100,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.085,
+  "fade_in": 7,
+  "fade_out": 10,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "caster",
+        "position_offset": [0.0, 1.65, 3.8],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [0.0, 1.45, 0.0],
+        "fov": 61.0,
+        "roll": 0.0,
+        "ease": "in_out_cubic"
+      },
+      {
+        "tick": 16,
+        "position_actor": "caster",
+        "position_offset": [-0.55, 1.58, 2.45],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [0.0, 1.52, 0.0],
+        "fov": 48.0,
+        "roll": -1.2,
+        "ease": "out_quad"
+      },
+      {
+        "tick": 44,
+        "position_actor": "caster",
+        "position_offset": [0.72, 1.50, 2.05],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [0.0, 1.58, 0.0],
+        "fov": 40.0,
+        "roll": 1.0,
+        "ease": "in_out_cubic"
+      },
+      {
+        "tick": 72,
+        "position_actor": "target",
+        "position_offset": [0.95, 1.62, 2.75],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [0.0, 1.46, 0.0],
+        "fov": 50.0,
+        "roll": 0.0,
+        "ease": "in_out_cubic"
+      },
+      {
+        "tick": 100,
+        "position_actor": "caster",
+        "position_offset": [0.0, 1.70, 3.8],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [0.0, 1.45, 0.0],
+        "fov": 62.0,
+        "roll": 0.0,
+        "ease": "in_out_cubic"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/sharingan_reveal",
+      "duration": 96,
+      "speed": 0.72,
+      "mirror": false
+    }
+  ],
+  "markers": [
+    { "tick": 18, "name": "sharingan/eye_open", "actor": "caster" },
+    { "tick": 48, "name": "genjutsu/victim_fall", "actor": "target" },
+    { "tick": 90, "name": "genjutsu/release", "actor": "self" }
+  ],
+  "actors": [
+    {
+      "name": "victim_fall",
+      "actor": "target",
+      "hide_original": true,
+      "start": 48,
+      "end": 100,
+      "keyframes": [
+        {
+          "tick": 48,
+          "anchor": "target",
+          "offset": [0.0, 0.0, 0.0],
+          "space": "actor",
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "roll": 0.0,
+          "scale": 1.0,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 60,
+          "anchor": "target",
+          "offset": [0.0, -0.04, 0.0],
+          "space": "actor",
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "roll": -3.0,
+          "scale": 1.0,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 76,
+          "anchor": "target",
+          "offset": [0.0, -0.32, 0.18],
+          "space": "actor",
+          "yaw": -5.0,
+          "pitch": 73.0,
+          "roll": 4.0,
+          "scale": 1.03,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 90,
+          "anchor": "target",
+          "offset": [0.0, -0.88, 0.32],
+          "space": "actor",
+          "yaw": -8.0,
+          "pitch": 90.0,
+          "roll": 2.0,
+          "scale": 1.04,
+          "ease": "out_quad"
+        },
+        {
+          "tick": 100,
+          "anchor": "target",
+          "offset": [0.0, -1.05, 0.36],
+          "space": "actor",
+          "yaw": -8.0,
+          "pitch": 90.0,
+          "roll": 0.0,
+          "scale": 1.04,
+          "ease": "out_quad"
+        }
+      ]
+    }
+  ],
+  "panels": [
+    {
+      "name": "caster_reveal",
+      "actor": "caster",
+      "style": "sharingan",
+      "framing": "face",
+      "start": 7,
+      "end": 55,
+      "seed": 17391,
+      "entity_offset_y": -0.03,
+      "keyframes": [
+        {
+          "tick": 7,
+          "x": 1.03,
+          "y": 0.035,
+          "width": 0.42,
+          "height": 0.31,
+          "alpha": 0.0,
+          "scale": 0.82,
+          "yaw": 205.0,
+          "pitch": -3.0,
+          "ease": "out_back"
+        },
+        {
+          "tick": 15,
+          "x": 0.57,
+          "y": 0.035,
+          "width": 0.42,
+          "height": 0.31,
+          "alpha": 1.0,
+          "scale": 0.94,
+          "yaw": 188.0,
+          "pitch": -2.0,
+          "ease": "out_back"
+        },
+        {
+          "tick": 45,
+          "x": 0.55,
+          "y": 0.025,
+          "width": 0.44,
+          "height": 0.33,
+          "alpha": 1.0,
+          "scale": 1.02,
+          "yaw": 176.0,
+          "pitch": -4.0,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 55,
+          "x": 0.45,
+          "y": -0.08,
+          "width": 0.58,
+          "height": 0.18,
+          "alpha": 0.0,
+          "scale": 1.08,
+          "yaw": 170.0,
+          "pitch": -6.0,
+          "ease": "in_quad"
+        }
+      ]
+    },
+    {
+      "name": "genjutsu_victim",
+      "actor": "target",
+      "style": "genjutsu",
+      "framing": "face",
+      "start": 48,
+      "end": 90,
+      "seed": 917311,
+      "entity_offset_y": -0.02,
+      "keyframes": [
+        {
+          "tick": 48,
+          "x": -0.42,
+          "y": 0.56,
+          "width": 0.46,
+          "height": 0.30,
+          "alpha": 0.0,
+          "scale": 0.80,
+          "yaw": 160.0,
+          "pitch": 2.0,
+          "ease": "out_back"
+        },
+        {
+          "tick": 58,
+          "x": 0.02,
+          "y": 0.60,
+          "width": 0.46,
+          "height": 0.30,
+          "alpha": 1.0,
+          "scale": 0.92,
+          "yaw": 178.0,
+          "pitch": 0.0,
+          "ease": "out_back"
+        },
+        {
+          "tick": 80,
+          "x": 0.02,
+          "y": 0.58,
+          "width": 0.49,
+          "height": 0.32,
+          "alpha": 0.92,
+          "scale": 1.00,
+          "yaw": 186.0,
+          "pitch": -2.0,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 90,
+          "x": -0.18,
+          "y": 0.66,
+          "width": 0.62,
+          "height": 0.16,
+          "alpha": 0.0,
+          "scale": 1.06,
+          "yaw": 194.0,
+          "pitch": -4.0,
+          "ease": "in_quad"
+        }
+      ]
+    }
+  ]
+}

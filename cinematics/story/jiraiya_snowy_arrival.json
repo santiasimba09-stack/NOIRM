@@ -1,0 +1,10 @@
+{
+  "schema": 1, "duration": 80, "priority": 180, "hide_hud": true, "lock_input": true,
+  "skippable": false, "snapshot_anchors": true, "letterbox": 0.09, "fade_in": 0, "fade_out": 12,
+  "markers":[{"tick":3,"name":"jiraiya/snow","actor":"self"}],
+  "camera": { "collision": true, "keyframes": [
+    {"tick":0,"position_actor":"self","position_offset":[2.0,3.0,4.0],"space":"actor","look_actor":"self","look_offset":[0,1.0,0],"fov":54,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":32,"position_actor":"self","position_offset":[-2.0,3.6,-5.0],"space":"actor","look_actor":"self","look_offset":[0,1.5,7],"fov":70,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":80,"position_actor":"self","position_offset":[0,1.7,-2.8],"space":"actor","look_actor":"self","look_offset":[0,1.7,18],"fov":75,"ease":"in_out_cubic","curve":"catmull_rom"}
+  ]}
+}

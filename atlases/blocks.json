@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "block",
+      "prefix": "block/"
+    },
+    {
+      "type": "directory",
+      "source": "blocks",
+      "prefix": "blocks/"
+    },
+    {
+      "type": "directory",
+      "source": "item",
+      "prefix": "item/"
+    },
+    {
+      "type": "directory",
+      "source": "items",
+      "prefix": "items/"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema": 1, "duration": 70, "priority": 180, "hide_hud": true, "lock_input": true,
+  "skippable": false, "snapshot_anchors": true, "letterbox": 0.09, "fade_in": 4, "fade_out": 0,
+  "markers":[{"tick":9,"name":"jiraiya/voice","actor":"caster"},{"tick":24,"name":"jiraiya/contract","actor":"caster"},{"tick":55,"name":"jiraiya/departure","actor":"target"}],
+  "camera": { "collision": true, "keyframes": [
+    {"tick":0,"position_actor":"caster","position_offset":[3.2,2.4,4.2],"space":"actor","look_actor":"caster","look_offset":[0,0.9,0],"fov":57,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":22,"position_actor":"caster","position_offset":[1.2,1.3,2.4],"space":"actor","look_actor":"caster","look_offset":[0,0.9,0],"fov":42,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":42,"position_actor":"target","position_offset":[2.5,3.2,3.5],"space":"actor","look_actor":"target","look_offset":[0,0.4,0],"fov":63,"ease":"in_out_cubic","curve":"catmull_rom"},
+    {"tick":70,"position_actor":"target","position_offset":[0.2,7.0,0.8],"space":"actor","look_actor":"target","look_offset":[0,0.3,0],"fov":74,"ease":"in_out_cubic","curve":"catmull_rom"}
+  ]}
+}

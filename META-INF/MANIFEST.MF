@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: nydomod
+Specification-Vendor: Yeyo, Daniel
+Specification-Version: 1
+Implementation-Title: NydoMod
+Implementation-Version: 5.5
+Implementation-Vendor: Yeyo, Daniel
+MixinConfigs: nydomod.mixins.json
+

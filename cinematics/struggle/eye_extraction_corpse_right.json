@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "duration": 900,
+  "priority": 175,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0,
+  "fade_in": 3,
+  "fade_out": 4,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "target",
+        "position_offset": [
+          2.5,
+          2.3,
+          2.35
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          0.65,
+          0.7
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 26,
+        "position_actor": "target",
+        "position_offset": [
+          2.3,
+          2.3,
+          2.35
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          0.65,
+          0.7
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 900,
+        "position_actor": "target",
+        "position_offset": [
+          2.3,
+          2.3,
+          2.35
+        ],
+        "space": "actor",
+        "look_actor": "target",
+        "look_offset": [
+          0,
+          0.65,
+          0.7
+        ],
+        "fov": 56,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_corpse_engage",
+      "duration": 22,
+      "speed": 1,
+      "mirror": true
+    },
+    {
+      "tick": 22,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_extract_corpse",
+      "duration": 878,
+      "speed": 1,
+      "mirror": true
+    }
+  ],
+  "actors": [
+    {
+      "name": "eye_extract_corpse_caster",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 0,
+      "end": 900,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            0.1,
+            0,
+            1.65
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        },
+        {
+          "tick": 900,
+          "anchor": "target",
+          "offset": [
+            0.1,
+            0,
+            1.65
+          ],
+          "space": "actor",
+          "yaw": 180,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "in_out_cubic"
+        }
+      ]
+    },
+    {
+      "name": "eye_extract_corpse_body",
+      "actor": "target",
+      "hide_original": true,
+      "start": 0,
+      "end": 900,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        },
+        {
+          "tick": 900,
+          "anchor": "target",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        }
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "tick": 8,
+      "name": "struggle/corpse_engage",
+      "actor": "target"
+    },
+    {
+      "tick": 892,
+      "name": "struggle/corpse_release",
+      "actor": "target"
+    }
+  ]
+}

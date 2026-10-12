@@ -1,0 +1,61 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="nydomod"
+version="5.5"
+displayName="NydoMod"
+authors="Yeyo, Daniel"
+credits="El HUD de objetivo esta basado en el mod de playgamesjavi185, usado con su permiso. MosixDev — creador de texturas y diseños visuales. Agradecimientos: ahnzb."
+description='''NydoMod 5.5 - Naruto RPG for Minecraft Forge 1.20.1.
+
+El HUD de objetivo (estadisticas del jugador o NPC al que miras) esta basado
+en el mod de playgamesjavi185 y se usa con su permiso.'''
+logoFile="logo.png"
+
+[[dependencies.nydomod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.3.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.nydomod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.nydomod]]
+    modId="geckolib"
+    mandatory=true
+    versionRange="[4.8.2,5.0.0)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.nydomod]]
+    modId="playeranimator"
+    mandatory=true
+    versionRange="[1.0.2-rc1,2.0.0)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.nydomod]]
+    modId="bendylib"
+    mandatory=true
+    versionRange="[4.0.0,5.0.0)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.nydomod]]
+    modId="terrablender"
+    mandatory=true
+    versionRange="[3.0.1.10,3.1.0)"
+    ordering="AFTER"
+    side="BOTH"
+
+# Configuracion de mixins de NYDO (necesario para el lock-on estilo lock-on de combate).
+[[mixins]]
+config="nydomod.mixins.json"

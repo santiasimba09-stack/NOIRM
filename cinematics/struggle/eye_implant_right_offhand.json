@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "duration": 36,
+  "priority": 175,
+  "hide_hud": true,
+  "lock_input": true,
+  "skippable": false,
+  "snapshot_anchors": true,
+  "letterbox": 0.075,
+  "fade_in": 2,
+  "fade_out": 4,
+  "camera": {
+    "collision": true,
+    "keyframes": [
+      {
+        "tick": 0,
+        "position_actor": "caster",
+        "position_offset": [
+          1.1,
+          1.73,
+          1.7
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.45,
+          0
+        ],
+        "fov": 48,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 10,
+        "position_actor": "caster",
+        "position_offset": [
+          0.95,
+          1.73,
+          1.55
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.45,
+          0
+        ],
+        "fov": 43,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 22,
+        "position_actor": "caster",
+        "position_offset": [
+          0.82,
+          1.73,
+          1.48
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.45,
+          0
+        ],
+        "fov": 41,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      },
+      {
+        "tick": 36,
+        "position_actor": "caster",
+        "position_offset": [
+          1.15,
+          1.73,
+          1.7
+        ],
+        "space": "actor",
+        "look_actor": "caster",
+        "look_offset": [
+          0,
+          1.45,
+          0
+        ],
+        "fov": 48,
+        "roll": 0,
+        "ease": "in_out_cubic",
+        "curve": "catmull_rom"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "tick": 0,
+      "actor": "caster",
+      "animation": "cinematic/nydo/eye_implant_right_offhand",
+      "duration": 36,
+      "speed": 1,
+      "mirror": false
+    }
+  ],
+  "actors": [
+    {
+      "name": "eye_implant_right_offhand",
+      "actor": "caster",
+      "hide_original": true,
+      "start": 0,
+      "end": 36,
+      "keyframes": [
+        {
+          "tick": 0,
+          "anchor": "caster",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        },
+        {
+          "tick": 36,
+          "anchor": "caster",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "space": "actor",
+          "yaw": 0,
+          "pitch": 0,
+          "roll": 0,
+          "scale": 1,
+          "ease": "linear"
+        }
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "tick": 6,
+      "name": "struggle/vial_unseal",
+      "actor": "caster"
+    },
+    {
+      "tick": 24,
+      "name": "struggle/vial_implant",
+      "actor": "caster"
+    }
+  ]
+}
