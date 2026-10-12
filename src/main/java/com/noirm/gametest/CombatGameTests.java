@@ -174,7 +174,7 @@ public final class CombatGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_posture")
     public static void blockedHitsBreakPosture(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);

@@ -8,4 +8,9 @@ public interface CombatStats {
     float combatSpeed();
 
     float combatTaijutsu();
+
+    /** The fighting style this fighter uses ({@code data/noirm/combat/styles/}), or null for the basic one. */
+    default net.minecraft.resources.ResourceLocation combatStyle() {
+        return null;
+    }
 }

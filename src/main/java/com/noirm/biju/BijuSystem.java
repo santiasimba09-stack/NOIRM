@@ -1,6 +1,14 @@
 package com.noirm.biju;
 
+import com.noirm.Noirm;
+import com.noirm.entity.TailedBeast;
+import com.noirm.jutsu.JutsuData;
+import com.noirm.jutsu.JutsuUser;
 import com.noirm.player.PowerVisuals;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import com.noirm.player.ShinobiCapability;
 import com.noirm.player.ShinobiData;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -31,6 +39,13 @@ public final class BijuSystem {
     /** The beast's chakra burns its host while it has control: damage every 2 s. */
     public static final float RAGE_BURN = 1f;
 
+    /** The jutsu every jinchūriki learns: usable only in the cloak. */
+    public static final ResourceLocation BEAST_BALL = Noirm.id("biju/tailed_beast_ball");
+    /** Chance a newcomer is born with a beast sealed inside. */
+    public static final float BORN_JINCHURIKI_CHANCE = 0.03f;
+    /** Chance a sparring ninja is secretly a jinchūriki. */
+    public static final float NPC_JINCHURIKI_CHANCE = 0.05f;
+
     private static final UUID SPEED_ID = UUID.fromString("3c2f1b0e-9a8d-4c7b-8e6f-5d4c3b2a1908");
 
     private BijuSystem() {}
@@ -41,7 +56,29 @@ public final class BijuSystem {
             endCloak(player, data);
         }
         data.biju().setTails(tails);
+        if (tails > 0 && JutsuData.get(BEAST_BALL) != null && data.jutsu().learn(BEAST_BALL, false)) {
+            data.jutsu().equipIfRoom(BEAST_BALL);
+        }
         data.markPowersDirty();
+    }
+
+    /** The beast's name: "Kurama (Nine-Tails)" and so on. */
+    public static Component beastName(int tails) {
+        return Component.translatable("biju.noirm." + Mth.clamp(tails, 1, BijuData.MAX_TAILS));
+    }
+
+    /**
+     * A newcomer may be born a jinchūriki ({@code roll} below {@link #BORN_JINCHURIKI_CHANCE}).
+     * Returns the tails sealed, or 0.
+     */
+    public static int maybeBornJinchuriki(Player player, ShinobiData data, float roll, RandomSource random) {
+        if (roll >= BORN_JINCHURIKI_CHANCE || data.biju().isJinchuriki()) {
+            return 0;
+        }
+        int tails = 1 + random.nextInt(BijuData.MAX_TAILS);
+        seal(player, data, tails);
+        player.sendSystemMessage(Component.translatable("message.noirm.biju.born", beastName(tails)).withStyle(ChatFormatting.GOLD));
+        return tails;
     }
 
     public static void toggleCloak(ServerPlayer player) {
@@ -128,7 +165,15 @@ public final class BijuSystem {
     }
 
     public static int cloakStage(LivingEntity entity) {
-        return entity instanceof Player player ? ShinobiCapability.get(player).map(d -> d.biju().cloakStage()).orElse(0) : 0;
+        if (entity instanceof Player player) {
+            return ShinobiCapability.get(player).map(d -> d.biju().cloakStage()).orElse(0);
+        }
+        return entity instanceof JutsuUser user ? user.bijuCloakStage() : 0;
+    }
+
+    /** Can use tailed-beast jutsu: a jinchūriki in the cloak, or a tailed beast itself. */
+    public static boolean hasBeastChakra(LivingEntity entity) {
+        return cloakStage(entity) > 0 || entity instanceof TailedBeast beast && !beast.isSubdued();
     }
 
     /** Cloak: ×1.3 damage; the beast in control: ×1.6. */

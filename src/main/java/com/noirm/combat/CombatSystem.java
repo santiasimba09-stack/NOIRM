@@ -312,6 +312,9 @@ public final class CombatSystem {
 
     /** The fighting style an entity uses. Masters will change this later. */
     static ResourceLocation styleFor(LivingEntity entity) {
+        if (entity instanceof CombatStats stats && stats.combatStyle() != null) {
+            return stats.combatStyle();
+        }
         return CombatData.DEFAULT_STYLE;
     }
 

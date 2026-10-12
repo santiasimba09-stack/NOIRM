@@ -40,6 +40,9 @@ by keyword, using a narrow pattern and limited output. It's 625 KB.
 Run the build in the background, because Gradle's first setup is slow. A green
 `runGameTestServer` is the bar for "works". Add a game test for each new mechanic where you can, using
 `template = "empty"` (our `data/noirm/structures/empty.nbt`, since Forge 1.20.1 ships none).
+Tests in one batch run side by side, a few blocks apart: give any test where fighters swing,
+knock things back or spawn big entities its own `batch`, and remove anything it throws out of
+its 3×3 area (cleanup only clears entities inside it). Leftovers break later tests.
 
 ## Code conventions
 

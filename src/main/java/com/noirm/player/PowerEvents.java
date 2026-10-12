@@ -42,6 +42,7 @@ public final class PowerEvents {
                 Clan clan = WorldClans.get(player.server).rollForNewcomer(player.getRandom());
                 ClanSystem.assign(player, data, clan);
                 player.sendSystemMessage(ClanSystem.describe(data.identity()));
+                BijuSystem.maybeBornJinchuriki(player, data, player.getRandom().nextFloat(), player.getRandom());
                 player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.noirm.clan.hint"));
             }
             data.markPowersDirty();

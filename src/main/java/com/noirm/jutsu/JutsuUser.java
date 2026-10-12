@@ -12,6 +12,11 @@ public interface JutsuUser {
         return 0;
     }
 
+    /** 0 = no tailed-beast cloak, 1 = cloak, 2 = the beast in control. */
+    default int bijuCloakStage() {
+        return 0;
+    }
+
     /** Is the Byakugan open? */
     default boolean byakuganActive() {
         return false;

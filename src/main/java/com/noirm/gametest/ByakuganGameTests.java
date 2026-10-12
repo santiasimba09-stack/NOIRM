@@ -57,7 +57,7 @@ public final class ByakuganGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_gentle_fist")
     public static void gentleFistHurtsThroughGuard(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);
         SparringNinja target = ninja(helper, 1.5f, 2.0f, TestClans.PLAIN);
@@ -72,7 +72,7 @@ public final class ByakuganGameTests {
         });
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_gentle_fist_2")
     public static void byakuganGuardsFromBehind(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.PLAIN);
         SparringNinja hyuga = ninja(helper, 1.5f, 2.0f, TestClans.BYAKUGAN);
@@ -121,7 +121,7 @@ public final class ByakuganGameTests {
         assertNear(helper, before, hyuga.getHealth(), "no attack gets through the spin");
         helper.runAfterDelay(30, () -> {
             helper.assertFalse(HyugaTechniques.isSpinning(hyuga), "the spin ends");
-            helper.succeed();
+            clearKnockedAway(helper);
         });
     }
 
@@ -131,14 +131,24 @@ public final class ByakuganGameTests {
         SparringNinja target = ninja(helper, 1.5f, 2.0f, TestClans.PLAIN);
         face(hyuga, target);
         helper.assertTrue(JutsuCaster.npcCast(hyuga, Byakugan.SIXTY_FOUR_PALMS, 1f), "64 Palms should find the target in front");
-        helper.succeedWhen(() -> {
-            helper.assertFalse(HyugaTechniques.isStriking(hyuga), "still striking");
+        helper.onEachTick(() -> {
+            if (HyugaTechniques.isStriking(hyuga)) {
+                return;
+            }
             helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the palms should hurt");
             helper.assertTrue(Byakugan.isSealed(target), "64 palms close enough points to seal");
+            clearKnockedAway(helper);
         });
     }
 
     // ------------------------------------------------------------ helpers
+
+    /** Rotation and 64 Palms throw ninjas out of the test area, where cleanup can't see them. */
+    private static void clearKnockedAway(GameTestHelper helper) {
+        net.minecraft.world.phys.AABB area = new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(1, 1, 1))).inflate(10);
+        helper.getLevel().getEntitiesOfClass(SparringNinja.class, area).forEach(SparringNinja::discard);
+        helper.succeed();
+    }
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
         for (int bx = 0; bx < 3; bx++) {

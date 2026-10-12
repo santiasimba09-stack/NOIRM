@@ -1,6 +1,7 @@
 package com.noirm.registry;
 
 import com.noirm.Noirm;
+import com.noirm.biju.SealingScrollItem;
 import com.noirm.training.TrainingDummyItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -24,6 +25,12 @@ public final class NoirmItems {
     public static final RegistryObject<Item> TRAINING_DUMMY = ITEMS.register("training_dummy",
             () -> new TrainingDummyItem(new Item.Properties().stacksTo(16)));
 
+    public static final RegistryObject<Item> SEALING_SCROLL = ITEMS.register("sealing_scroll",
+            () -> new SealingScrollItem(new Item.Properties().stacksTo(16)));
+
+    public static final RegistryObject<Item> TAILED_BEAST_SPAWN_EGG = ITEMS.register("tailed_beast_spawn_egg",
+            () -> new ForgeSpawnEggItem(NoirmEntities.TAILED_BEAST, 0xD9661E, 0x3B1D0E, new Item.Properties()));
+
     private NoirmItems() {}
 
     public static void register(IEventBus modBus) {
@@ -34,8 +41,10 @@ public final class NoirmItems {
     public static void creativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(SPARRING_NINJA_SPAWN_EGG);
+            event.accept(TAILED_BEAST_SPAWN_EGG);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(TRAINING_DUMMY);
+            event.accept(SEALING_SCROLL);
         }
     }
 }

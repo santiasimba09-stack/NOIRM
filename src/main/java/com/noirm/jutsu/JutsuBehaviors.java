@@ -77,6 +77,9 @@ public final class JutsuBehaviors {
         projectile.setOwner(caster);
         projectile.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());
         projectile.configure(nature(ctx), size, damage, p.knockback(), p.posture() * ctx.power(), blast, p.fireSeconds());
+        if (ctx.def().requires().filter(r -> "cloak".equals(r.dojutsu())).isPresent()) {
+            projectile.setBeastChakra(); // the Tailed Beast Ball
+        }
         projectile.setDeltaMovement(look.scale(p.speed()));
         ctx.level().addFreshEntity(projectile);
         sound(caster, castSound(nature(ctx)), 1f, 1f);

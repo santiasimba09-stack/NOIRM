@@ -121,7 +121,7 @@ public final class TrainingGameTests {
         });
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_dummy")
     public static void ninjaComboLandsOnTheDummy(GameTestHelper helper) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 0.5f);

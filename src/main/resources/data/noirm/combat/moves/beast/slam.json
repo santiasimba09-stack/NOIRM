@@ -1,0 +1,4 @@
+{
+  "timing": { "windup": 22, "active": 4, "recovery": 22, "cancel_after": 18 },
+  "hit": { "damage": 5, "posture": 50, "range": 4.0, "arc": 360, "knockback": 2.4, "lift": 0.5, "hitstun": 20, "hitstop": 8, "shake": 1.0 }
+}

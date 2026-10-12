@@ -2,6 +2,7 @@ package com.noirm.registry;
 
 import com.noirm.Noirm;
 import com.noirm.entity.SparringNinja;
+import com.noirm.entity.TailedBeast;
 import com.noirm.entity.TrainingDummy;
 import com.noirm.jutsu.JutsuProjectile;
 import net.minecraft.world.entity.EntityType;
@@ -38,6 +39,13 @@ public final class NoirmEntities {
                     .clientTrackingRange(10)
                     .build(Noirm.id("training_dummy").toString()));
 
+    /** Base size of a one-tailed beast; more tails scale it up (see {@link TailedBeast#scaleFor}). */
+    public static final RegistryObject<EntityType<TailedBeast>> TAILED_BEAST = ENTITY_TYPES.register("tailed_beast",
+            () -> EntityType.Builder.of(TailedBeast::new, MobCategory.MONSTER)
+                    .sized(1.4f, 1.4f)
+                    .clientTrackingRange(12)
+                    .build(Noirm.id("tailed_beast").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -48,5 +56,6 @@ public final class NoirmEntities {
     public static void attributes(EntityAttributeCreationEvent event) {
         event.put(SPARRING_NINJA.get(), SparringNinja.createAttributes().build());
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
+        event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());
     }
 }

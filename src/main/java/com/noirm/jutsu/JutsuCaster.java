@@ -6,6 +6,7 @@ import com.noirm.clan.Clan;
 import com.noirm.clan.ClanTrait;
 import com.noirm.clan.Nature;
 import com.noirm.combat.CombatSystem;
+import com.noirm.biju.BijuSystem;
 import com.noirm.dojutsu.Byakugan;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.player.ShinobiCapability;
@@ -27,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, BUSY, SEALED }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED }
 
     /** A CHARGE or CHANNEL jutsu in progress. */
     public static final class Casting {
@@ -260,6 +261,9 @@ public final class JutsuCaster {
             }
             if ("byakugan".equals(requirement.dojutsu()) && !Byakugan.isActive(caster)) {
                 return Result.NEEDS_DOJUTSU;
+            }
+            if ("cloak".equals(requirement.dojutsu()) && !BijuSystem.hasBeastChakra(caster)) {
+                return Result.NEEDS_CLOAK;
             }
         }
         return Result.OK;

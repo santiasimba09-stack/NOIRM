@@ -32,6 +32,11 @@ public class JutsuProjectile extends Projectile {
     private static final EntityDataAccessor<Byte> NATURE = SynchedEntityData.defineId(JutsuProjectile.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(JutsuProjectile.class, EntityDataSerializers.FLOAT);
     private static final int MAX_LIFE = 80;
+    private static final byte BEAST_CHAKRA = -2;
+    private static final net.minecraft.core.particles.DustParticleOptions BEAST_DARK =
+            new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.2f, 0.02f, 0.3f), 2f);
+    private static final net.minecraft.core.particles.DustParticleOptions BEAST_RED =
+            new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.9f, 0.1f, 0.1f), 1.5f);
 
     private float damage;
     private float knockback;
@@ -54,6 +59,22 @@ public class JutsuProjectile extends Projectile {
         this.posture = posture;
         this.blastRadius = blastRadius;
         this.fireSeconds = fireSeconds;
+    }
+
+    /** Marks this as tailed-beast chakra (the Tailed Beast Ball): dark, violent particles. */
+    public void setBeastChakra() {
+        entityData.set(NATURE, BEAST_CHAKRA);
+    }
+
+    public boolean isBeastChakra() {
+        return entityData.get(NATURE) == BEAST_CHAKRA;
+    }
+
+    private ParticleOptions trailParticle() {
+        if (isBeastChakra()) {
+            return random.nextInt(3) == 0 ? BEAST_RED : BEAST_DARK;
+        }
+        return particle(nature());
     }
 
     public Nature nature() {
@@ -127,7 +148,7 @@ public class JutsuProjectile extends Projectile {
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1 + (int) blastRadius, blastRadius * 0.3, blastRadius * 0.3, blastRadius * 0.3, 0);
                 serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f, 1.2f);
             }
-            serverLevel.sendParticles(particle(nature()), getX(), getY(), getZ(), 20, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
+            serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 20, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
         }
         discard();
     }
@@ -137,8 +158,8 @@ public class JutsuProjectile extends Projectile {
         Nature nature = nature();
         float radius = size() * 0.5f;
         int count = 4 + (int) (radius * radius * 40);
-        ParticleOptions particle = particle(nature);
         for (int i = 0; i < count; i++) {
+            ParticleOptions particle = trailParticle();
             // a random point inside the ball (uniform-ish: push toward the surface)
             double theta = random.nextDouble() * Math.PI * 2;
             double phi = Math.acos(2 * random.nextDouble() - 1);
