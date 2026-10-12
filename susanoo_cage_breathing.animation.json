@@ -1,0 +1,177 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "idle": {
+      "loop": true,
+      "animation_length": 5.0834,
+      "bones": {
+        "bipedBody": {
+          "scale": [
+            "1 + 0.024 * (0.5 - 0.5 * math.cos(query.anim_time * 360 / 5.0834 + 24 * (1 - math.cos(query.anim_time * 360 / 5.0834))))",
+            "1 + 0.006 * (0.5 - 0.5 * math.cos(query.anim_time * 360 / 5.0834 + 24 * (1 - math.cos(query.anim_time * 360 / 5.0834))))",
+            "1 + 0.032 * (0.5 - 0.5 * math.cos(query.anim_time * 360 / 5.0834 + 24 * (1 - math.cos(query.anim_time * 360 / 5.0834))))"
+          ],
+          "position": [
+            0,
+            "0.12 * (0.5 - 0.5 * math.cos(query.anim_time * 360 / 5.0834 + 24 * (1 - math.cos(query.anim_time * 360 / 5.0834))))",
+            0
+          ]
+        }
+      },
+      "particle_effects": {
+        "0.0": {
+          "effect": "susanooaura",
+          "locator": "a1"
+        },
+        "0.01": {
+          "effect": "susanoofire",
+          "locator": "sf1"
+        },
+        "0.02": {
+          "effect": "susanooaura",
+          "locator": "a2"
+        },
+        "0.03": {
+          "effect": "susanooaura",
+          "locator": "a3"
+        },
+        "0.04": {
+          "effect": "susanooaura",
+          "locator": "a4"
+        },
+        "0.05": {
+          "effect": "susanooaura",
+          "locator": "a5"
+        },
+        "0.06": {
+          "effect": "susanooaura",
+          "locator": "a6"
+        },
+        "0.07": {
+          "effect": "susanooaura",
+          "locator": "a7"
+        },
+        "0.08": {
+          "effect": "susanooaura",
+          "locator": "a8"
+        },
+        "0.09": {
+          "effect": "susanooaura",
+          "locator": "a9"
+        },
+        "0.2083": {
+          "effect": "susanoofire",
+          "locator": "sf12"
+        },
+        "0.4167": {
+          "effect": "susanoofire",
+          "locator": "sf2"
+        },
+        "0.625": {
+          "effect": "susanoofire",
+          "locator": "sf10"
+        },
+        "0.8333": {
+          "effect": "susanoofire",
+          "locator": "sf6"
+        },
+        "1.0417": {
+          "effect": "susanoofire",
+          "locator": "sf5"
+        },
+        "1.25": {
+          "effect": "susanoofire",
+          "locator": "sf4"
+        },
+        "1.4583": {
+          "effect": "susanoofire",
+          "locator": "sf9"
+        },
+        "1.6667": {
+          "effect": "susanoofire",
+          "locator": "sf3"
+        },
+        "1.875": {
+          "effect": "susanoofire",
+          "locator": "sf11"
+        },
+        "2.5417": {
+          "effect": "susanooaura",
+          "locator": "a1"
+        },
+        "2.5517": {
+          "effect": "susanoofire",
+          "locator": "sf1"
+        },
+        "2.5617": {
+          "effect": "susanooaura",
+          "locator": "a2"
+        },
+        "2.5717": {
+          "effect": "susanooaura",
+          "locator": "a3"
+        },
+        "2.5817": {
+          "effect": "susanooaura",
+          "locator": "a4"
+        },
+        "2.5917": {
+          "effect": "susanooaura",
+          "locator": "a5"
+        },
+        "2.6017": {
+          "effect": "susanooaura",
+          "locator": "a6"
+        },
+        "2.6117": {
+          "effect": "susanooaura",
+          "locator": "a7"
+        },
+        "2.6217": {
+          "effect": "susanooaura",
+          "locator": "a8"
+        },
+        "2.6317": {
+          "effect": "susanooaura",
+          "locator": "a9"
+        },
+        "2.75": {
+          "effect": "susanoofire",
+          "locator": "sf12"
+        },
+        "2.9584": {
+          "effect": "susanoofire",
+          "locator": "sf2"
+        },
+        "3.1667": {
+          "effect": "susanoofire",
+          "locator": "sf10"
+        },
+        "3.375": {
+          "effect": "susanoofire",
+          "locator": "sf6"
+        },
+        "3.5834": {
+          "effect": "susanoofire",
+          "locator": "sf5"
+        },
+        "3.7917": {
+          "effect": "susanoofire",
+          "locator": "sf4"
+        },
+        "4.0": {
+          "effect": "susanoofire",
+          "locator": "sf9"
+        },
+        "4.2084": {
+          "effect": "susanoofire",
+          "locator": "sf3"
+        },
+        "4.4167": {
+          "effect": "susanoofire",
+          "locator": "sf11"
+        }
+      }
+    }
+  }
+}

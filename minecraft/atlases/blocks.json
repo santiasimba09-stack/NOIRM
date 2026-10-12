@@ -1,0 +1,41 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "block",
+      "prefix": "block/"
+    },
+    {
+      "type": "directory",
+      "source": "blocks",
+      "prefix": "blocks/"
+    },
+    {
+      "type": "directory",
+      "source": "item",
+      "prefix": "item/"
+    },
+    {
+      "type": "directory",
+      "source": "items",
+      "prefix": "items/"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "nydomod:block/withered_root_bark",
+      "sprite": "nydomod:block/mokuton_door_top"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "nydomod:block/withered_root_bark",
+      "sprite": "nydomod:block/mokuton_trapdoor_cutout"
+    },
+    {
+      "type": "minecraft:filter",
+      "pattern": {
+        "namespace": "^nydomod$",
+        "path": "^block/source/shinobi_(mountain_material|cold_multiface|sacred_multiface)_atlas$"
+      }
+    }
+  ]
+}
