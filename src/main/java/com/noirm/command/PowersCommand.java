@@ -93,6 +93,9 @@ public final class PowersCommand {
                 .then(Commands.literal("sharingan").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.argument("tomoe", IntegerArgumentType.integer(0, EyeData.MAX_STAGE))
                                 .executes(ctx -> setSharingan(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "tomoe")))))
+                .then(Commands.literal("byakugan").requires(s -> s.hasPermission(CHEATS))
+                        .executes(ctx -> setByakugan(ctx.getSource(), true))
+                        .then(Commands.literal("remove").executes(ctx -> setByakugan(ctx.getSource(), false))))
                 .then(Commands.literal("resolve").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.argument("value", FloatArgumentType.floatArg(0, 100))
                                 .executes(ctx -> setResolve(ctx.getSource(), FloatArgumentType.getFloat(ctx, "value")))))
@@ -213,6 +216,24 @@ public final class PowersCommand {
         }
         data.markPowersDirty();
         PowerVisuals.broadcast(player);
+        return 1;
+    }
+
+    /** Gives (or takes away) the Byakugan and its two jutsu, whatever your clan. */
+    private static int setByakugan(CommandSourceStack source, boolean give) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ShinobiData data = data(source);
+        data.eyes().setByakugan(give);
+        if (give) {
+            for (net.minecraft.resources.ResourceLocation id : com.noirm.dojutsu.Byakugan.JUTSU) {
+                if (JutsuData.get(id) != null && data.jutsu().learn(id, false)) {
+                    data.jutsu().equipIfRoom(id);
+                }
+            }
+        }
+        data.markPowersDirty();
+        PowerVisuals.broadcast(player);
+        source.sendSuccess(() -> Component.translatable(give ? "command.noirm.byakugan.given" : "command.noirm.byakugan.removed"), false);
         return 1;
     }
 

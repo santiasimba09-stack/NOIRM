@@ -160,5 +160,7 @@
   "message.noirm.scroll.captured": "%s queda sellado en el pergamino.",
   "message.noirm.scroll.already": "%s ya lleva una bestia con cola",
   "message.noirm.scroll.sealed_you": "%s está sellado en tu interior. Pulsa B para su manto.",
-  "message.noirm.scroll.sealed_other": "Sellaste a %s dentro de %s."
+  "message.noirm.scroll.sealed_other": "Sellaste a %s dentro de %s.",
+  "command.noirm.byakugan.given": "Tienes el Byakugan. Pulsa G para abrirlo.",
+  "command.noirm.byakugan.removed": "El Byakugan ha desaparecido."
 }

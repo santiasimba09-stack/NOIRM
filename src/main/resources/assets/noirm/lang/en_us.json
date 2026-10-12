@@ -160,5 +160,7 @@
   "message.noirm.scroll.captured": "%s is sealed in the scroll.",
   "message.noirm.scroll.already": "%s already carries a tailed beast",
   "message.noirm.scroll.sealed_you": "%s is now sealed inside you. Press B for its cloak.",
-  "message.noirm.scroll.sealed_other": "You sealed %s into %s."
+  "message.noirm.scroll.sealed_other": "You sealed %s into %s.",
+  "command.noirm.byakugan.given": "You have the Byakugan. Press G to open it.",
+  "command.noirm.byakugan.removed": "The Byakugan is gone."
 }

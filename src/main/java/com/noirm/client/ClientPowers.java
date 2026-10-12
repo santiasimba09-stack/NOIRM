@@ -8,16 +8,13 @@ import java.util.Map;
 
 /**
  * The client's copy of the local player's powers (for the HUD and the jutsu screen), plus how
- * other players' powers look (eyes, cloak), plus the precognition warning.
+ * other players' powers look (eyes, cloak). Warnings are drawn by {@link EyeEffects}.
  */
 public final class ClientPowers {
     private static PowerPackets.SyncPowers latest;
     /** Client ticks since {@link #latest} arrived, to count cooldowns down smoothly. */
     private static int ticksSinceSync;
     private static final Map<Integer, PowerPackets.Visuals> VISUALS = new HashMap<>();
-    private static int precognitionTicks;
-    private static int precognitionTotal;
-    private static int precognitionAttacker = -1;
 
     private ClientPowers() {}
 
@@ -63,29 +60,21 @@ public final class ClientPowers {
         return latest != null && latest.byakugan() && latest.eyesActive() && latest.sharinganStage() == 0;
     }
 
-    /** 0..1 strength of the precognition warning flash. */
-    public static float precognition() {
-        return precognitionTotal <= 0 ? 0f : precognitionTicks / (float) precognitionTotal;
-    }
-
-    public static int precognitionAttacker() {
-        return precognitionTicks > 0 ? precognitionAttacker : -1;
-    }
-
     static void tick() {
         ticksSinceSync++;
-        if (precognitionTicks > 0) {
-            precognitionTicks--;
-        }
+        EyeEffects.tick();
     }
 
     static void reset() {
         latest = null;
         VISUALS.clear();
-        precognitionTicks = 0;
+        EyeEffects.reset();
     }
 
     public static void sync(PowerPackets.SyncPowers packet) {
+        if (latest != null && !latest.eyesActive() && packet.eyesActive()) {
+            EyeEffects.onActivated(packet.sharinganStage() > 0);
+        }
         latest = packet;
         ticksSinceSync = 0;
     }
@@ -95,12 +84,6 @@ public final class ClientPowers {
     }
 
     public static void precognition(PowerPackets.Precognition packet) {
-        precognitionAttacker = packet.attackerId();
-        precognitionTotal = Math.max(8, packet.ticks());
-        precognitionTicks = precognitionTotal;
-        net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
-        if (minecraft.player != null) {
-            minecraft.player.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_CHIME.value(), 0.5f, 2f);
-        }
+        EyeEffects.onWarning(packet);
     }
 }

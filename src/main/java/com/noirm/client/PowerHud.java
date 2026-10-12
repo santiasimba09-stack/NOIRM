@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /**
  * Powers HUD: status lines under the bars (clan, Sharingan, Resolve, locked in / exhausted,
- * cloak), the jutsu slots bottom-right in combat mode, and the red precognition flash.
+ * cloak) and the jutsu slots bottom-right in combat mode. Eye warnings: {@link EyeEffects}.
  */
 public final class PowerHud {
     private static final int X = 6;
@@ -38,7 +38,6 @@ public final class PowerHud {
             return;
         }
         Font font = minecraft.font;
-        drawPrecognition(graphics, width, height);
         boolean combat = ClientCombat.isCombatMode();
         int y = combat ? 6 + 18 * 3 + 12 : 6 + 18 * 2 + 2;
 
@@ -139,22 +138,6 @@ public final class PowerHud {
             }
         }
         graphics.drawString(font, Component.translatable("hud.noirm.jutsu.hint"), x, top - 10, 0xFF909090, true);
-    }
-
-    /** Red pulse at the screen edges while the Sharingan warns of an incoming hit. */
-    private static void drawPrecognition(GuiGraphics graphics, int width, int height) {
-        float strength = ClientPowers.precognition();
-        if (strength <= 0) {
-            return;
-        }
-        int alpha = Math.round(140 * strength);
-        int color = (alpha << 24) | 0xC00000;
-        int thickness = 18;
-        graphics.fillGradient(0, 0, width, thickness, color, 0);
-        graphics.fillGradient(0, height - thickness, width, height, 0, color);
-        graphics.fill(0, 0, 4, height, (alpha / 2) << 24 | 0xC00000);
-        graphics.fill(width - 4, 0, width, height, (alpha / 2) << 24 | 0xC00000);
-        graphics.drawCenteredString(Minecraft.getInstance().font, "!", width / 2, height / 2 - 16, 0xFFFF4040);
     }
 
     @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
