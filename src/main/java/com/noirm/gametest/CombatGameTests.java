@@ -104,6 +104,21 @@ public final class CombatGameTests {
     }
 
     @GameTest(template = "empty")
+    public static void jabKeepsTargetInComboRange(GameTestHelper helper) {
+        SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
+        SparringNinja target = ninja(helper, 1.5f, 2.0f);
+        face(attacker, target);
+        net.minecraft.world.phys.Vec3 start = target.position();
+        CombatSystem.requestAttack(attacker, AttackInput.LIGHT);
+        helper.runAfterDelay(20, () -> {
+            helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the jab should have landed");
+            double pushed = target.position().distanceTo(start);
+            helper.assertTrue(pushed < 0.7, "a jab should barely push (vanilla knockback must not stack), pushed " + pushed);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "empty")
     public static void earlyPressIsBufferedIntoTheCombo(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);

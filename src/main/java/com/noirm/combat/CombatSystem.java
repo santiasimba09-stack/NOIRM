@@ -231,6 +231,14 @@ public final class CombatSystem {
         return Outcome.HIT;
     }
 
+    /**
+     * Vanilla adds its own knockback to every hit. For NOIRM's attacks only the move's own
+     * {@code knockback} should apply, so light hits keep the target in range and combos connect.
+     */
+    public static boolean shouldCancelVanillaKnockback() {
+        return applyingHit;
+    }
+
     // ---------------------------------------------------------------- focus
 
     /** A perfect dodge or parry: everyone near {@code center} slows down for a moment. */

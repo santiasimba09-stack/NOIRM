@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -38,6 +39,14 @@ public final class CombatEvents {
     @SubscribeEvent
     public static void livingAttack(LivingAttackEvent event) {
         if (!event.getEntity().level().isClientSide() && CombatSystem.onIncomingAttack(event.getEntity(), event.getSource())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** NOIRM hits apply their own knockback; skip vanilla's extra push. */
+    @SubscribeEvent
+    public static void knockback(LivingKnockBackEvent event) {
+        if (CombatSystem.shouldCancelVanillaKnockback()) {
             event.setCanceled(true);
         }
     }
