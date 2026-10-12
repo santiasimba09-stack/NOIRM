@@ -95,7 +95,7 @@ public final class ShinobiGameTests {
 
     @GameTest(template = "empty")
     public static void syncPacketKeepsItsValues(GameTestHelper helper) {
-        SyncShinobiDataPacket sent = new SyncShinobiDataPacket(12.5f, 150f, 33f, 90f);
+        SyncShinobiDataPacket sent = new SyncShinobiDataPacket(12.5f, 150f, 33f, 90f, 14f, 0.25f, 11f, 0.5f);
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         sent.encode(buf);
         SyncShinobiDataPacket received = SyncShinobiDataPacket.decode(buf);

@@ -112,5 +112,14 @@
   "command.noirm.jutsu.equipped": "%s está ahora en la ranura %s",
   "command.noirm.resolve": "Determinación ajustada a %s",
   "command.noirm.biju.released": "La bestia con cola se fue",
-  "command.noirm.biju.sealed": "Una bestia de %s colas está sellada en ti — pulsa B"
+  "command.noirm.biju.sealed": "Una bestia de %s colas está sellada en ti — pulsa B",
+  "entity.noirm.training_dummy": "Muñeco de entrenamiento",
+  "item.noirm.training_dummy": "Muñeco de entrenamiento",
+  "message.noirm.training.taijutsu_up": "¡Tu taijutsu subió a %s!",
+  "message.noirm.training.speed_up": "¡Tu velocidad subió a %s!",
+  "message.noirm.training.drill_cap": "Los ejercicios solos ya no te harán avanzar. Busca rivales de verdad: los más fuertes enseñan más.",
+  "message.noirm.dummy.combo": "Combo ×%s · %s de daño",
+  "message.noirm.dummy.no_xp": " · el muñeco ya no puede enseñarte más",
+  "hud.noirm.training.taijutsu": "Taijutsu %s",
+  "hud.noirm.training.speed": "Velocidad %s"
 }

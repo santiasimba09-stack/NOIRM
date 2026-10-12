@@ -6,6 +6,7 @@ import com.noirm.clan.ClanIdentity;
 import com.noirm.clan.ClanTrait;
 import com.noirm.dojutsu.EyeData;
 import com.noirm.jutsu.JutsuBook;
+import com.noirm.training.TrainingData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -49,6 +50,7 @@ public final class ShinobiData {
     private final EyeData eyes = new EyeData();
     private final AwakeningData awakening = new AwakeningData();
     private final BijuData biju = new BijuData();
+    private final TrainingData training = new TrainingData();
 
     public ClanIdentity identity() {
         return identity;
@@ -68,6 +70,10 @@ public final class ShinobiData {
 
     public BijuData biju() {
         return biju;
+    }
+
+    public TrainingData training() {
+        return training;
     }
 
     public void markPowersDirty() {
@@ -106,10 +112,12 @@ public final class ShinobiData {
 
     public void setSpeed(float value) {
         speed = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
     }
 
     public void setTaijutsu(float value) {
         taijutsu = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
     }
 
     public void setChakra(float value) {
@@ -225,6 +233,7 @@ public final class ShinobiData {
         tag.put("Eyes", eyes.save());
         tag.put("Awakening", awakening.save());
         tag.put("Biju", biju.save());
+        tag.put("Training", training.save());
         return tag;
     }
 
@@ -240,6 +249,7 @@ public final class ShinobiData {
         eyes.load(tag.getCompound("Eyes"));
         awakening.load(tag.getCompound("Awakening"));
         biju.load(tag.getCompound("Biju"));
+        training.load(tag.getCompound("Training"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

@@ -5,6 +5,7 @@ import com.noirm.biju.BijuSystem;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.jutsu.Substitution;
 import com.noirm.player.ShinobiCapability;
+import com.noirm.training.TrainingSystem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -271,6 +272,11 @@ public final class CombatSystem {
         return applyingHit;
     }
 
+    /** True while a NOIRM move's hit is being applied (rather than a vanilla attack). */
+    public static boolean isApplyingHit() {
+        return applyingHit;
+    }
+
     // ---------------------------------------------------------------- focus
 
     /** A perfect dodge or parry: everyone near {@code center} slows down for a moment. */
@@ -382,6 +388,7 @@ public final class CombatSystem {
         state.perfectDodgeUsed = false;
         enterPhase(entity, state, CombatPhase.DODGE, DODGE_TICKS);
         CombatEffects.dodge(entity, forward >= 0, DODGE_TICKS);
+        TrainingSystem.onDodge(entity);
         return true;
     }
 
@@ -524,6 +531,7 @@ public final class CombatSystem {
         }
         target.hurtMarked = true;
 
+        TrainingSystem.onHitLanded(attacker, target, hit.isHeavy(), guarded);
         int hitstop = guarded ? hit.hitstop() / 2 : hit.hitstop();
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);
         targetState.hitstop = Math.max(targetState.hitstop, hitstop);
@@ -534,6 +542,7 @@ public final class CombatSystem {
         if (!state.perfectDodgeUsed && state.phaseTime < PERFECT_DODGE_TICKS) {
             state.perfectDodgeUsed = true;
             CombatEffects.perfectDodge(target);
+            TrainingSystem.onPerfectDodge(target);
             AwakeningSystem.onClutch(target);
             focus(target);
         }
@@ -541,6 +550,7 @@ public final class CombatSystem {
 
     private static void onParried(LivingEntity defender, CombatState defenderState, Entity attacker) {
         CombatEffects.parry(defender);
+        TrainingSystem.onParry(defender, attacker);
         AwakeningSystem.onClutch(defender);
         if (attacker instanceof LivingEntity livingAttacker) {
             CombatState attackerState = CombatStates.get(livingAttacker);

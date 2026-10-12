@@ -25,6 +25,11 @@ public final class Perception {
         return (speed(entity) + taijutsu(entity)) / 2f * ocularMultiplier(entity);
     }
 
+    /** Raw strength from stats alone (no eyes or states): the average of speed and taijutsu. */
+    public static float basePower(LivingEntity entity) {
+        return (speed(entity) + taijutsu(entity)) / 2f;
+    }
+
     /**
      * How much longer {@code attacker}'s wind-up lasts against {@code defender}. 1 = normal.
      * Weaker defenders get no slowdown (but are never sped up either).

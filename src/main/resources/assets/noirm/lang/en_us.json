@@ -112,5 +112,14 @@
   "command.noirm.jutsu.equipped": "%s is now in slot %s",
   "command.noirm.resolve": "Resolve set to %s",
   "command.noirm.biju.released": "The tailed beast is gone",
-  "command.noirm.biju.sealed": "A %s-tailed beast is now sealed inside you — press B"
+  "command.noirm.biju.sealed": "A %s-tailed beast is now sealed inside you — press B",
+  "entity.noirm.training_dummy": "Training Dummy",
+  "item.noirm.training_dummy": "Training Dummy",
+  "message.noirm.training.taijutsu_up": "Your taijutsu rose to %s!",
+  "message.noirm.training.speed_up": "Your speed rose to %s!",
+  "message.noirm.training.drill_cap": "Drills alone won't take you any further. Find real opponents: stronger ones teach more.",
+  "message.noirm.dummy.combo": "Combo ×%s · %s damage",
+  "message.noirm.dummy.no_xp": " · the dummy can't teach you more",
+  "hud.noirm.training.taijutsu": "Taijutsu %s",
+  "hud.noirm.training.speed": "Speed %s"
 }

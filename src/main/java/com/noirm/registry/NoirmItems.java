@@ -1,6 +1,7 @@
 package com.noirm.registry;
 
 import com.noirm.Noirm;
+import com.noirm.training.TrainingDummyItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -20,6 +21,9 @@ public final class NoirmItems {
     public static final RegistryObject<Item> SPARRING_NINJA_SPAWN_EGG = ITEMS.register("sparring_ninja_spawn_egg",
             () -> new ForgeSpawnEggItem(NoirmEntities.SPARRING_NINJA, 0x2B2B33, 0xC23B22, new Item.Properties()));
 
+    public static final RegistryObject<Item> TRAINING_DUMMY = ITEMS.register("training_dummy",
+            () -> new TrainingDummyItem(new Item.Properties().stacksTo(16)));
+
     private NoirmItems() {}
 
     public static void register(IEventBus modBus) {
@@ -30,6 +34,8 @@ public final class NoirmItems {
     public static void creativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(SPARRING_NINJA_SPAWN_EGG);
+        } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(TRAINING_DUMMY);
         }
     }
 }

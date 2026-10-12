@@ -2,6 +2,7 @@ package com.noirm.registry;
 
 import com.noirm.Noirm;
 import com.noirm.entity.SparringNinja;
+import com.noirm.entity.TrainingDummy;
 import com.noirm.jutsu.JutsuProjectile;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -31,6 +32,12 @@ public final class NoirmEntities {
                     .updateInterval(1)
                     .build(Noirm.id("jutsu_projectile").toString()));
 
+    public static final RegistryObject<EntityType<TrainingDummy>> TRAINING_DUMMY = ENTITY_TYPES.register("training_dummy",
+            () -> EntityType.Builder.of(TrainingDummy::new, MobCategory.MISC)
+                    .sized(0.6f, 1.9f)
+                    .clientTrackingRange(10)
+                    .build(Noirm.id("training_dummy").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -40,5 +47,6 @@ public final class NoirmEntities {
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent event) {
         event.put(SPARRING_NINJA.get(), SparringNinja.createAttributes().build());
+        event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
     }
 }

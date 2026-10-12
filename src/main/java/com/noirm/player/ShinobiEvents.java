@@ -3,6 +3,7 @@ package com.noirm.player;
 import com.noirm.Noirm;
 import com.noirm.network.NoirmNetwork;
 import com.noirm.network.SyncShinobiDataPacket;
+import com.noirm.training.TrainingSystem;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -50,6 +51,7 @@ public final class ShinobiEvents {
         }
         ShinobiCapability.get(player).ifPresent(data -> {
             data.tick();
+            TrainingSystem.tick(player, data);
             if (data.consumeDirty()) {
                 NoirmNetwork.sendToPlayer(player, SyncShinobiDataPacket.of(data));
             }

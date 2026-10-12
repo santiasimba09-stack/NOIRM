@@ -4,6 +4,7 @@ import com.noirm.Noirm;
 import com.noirm.clan.Nature;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.network.PowerPackets;
+import com.noirm.network.SyncShinobiDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,6 +23,8 @@ public final class PowerHud {
     private static final int X = 6;
     private static final int LINE = 10;
     private static final int RESOLVE_COLOR = 0xFFA45CFF;
+    private static final int TAIJUTSU_COLOR = 0xFFE8A060;
+    private static final int SPEED_COLOR = 0xFF70D0E0;
     private static final int SLOT_WIDTH = 132;
     private static final int SLOT_HEIGHT = 15;
 
@@ -53,6 +56,13 @@ public final class PowerHud {
             graphics.fill(barX - 1, y + 2, barX + 51, y + 7, 0xA0000000);
             graphics.fill(barX, y + 3, barX + Math.round(50 * powers.resolve() / 100f), y + 6, RESOLVE_COLOR);
             y += LINE;
+            SyncShinobiDataPacket stats = ClientShinobiData.get();
+            if (stats != null) {
+                drawStat(graphics, font, y, "hud.noirm.training.taijutsu", stats.taijutsu(), stats.taijutsuProgress(), TAIJUTSU_COLOR);
+                y += LINE;
+                drawStat(graphics, font, y, "hud.noirm.training.speed", stats.speed(), stats.speedProgress(), SPEED_COLOR);
+                y += LINE;
+            }
         }
         int sinceSync = ClientPowers.ticksSinceSync();
         int lockedIn = Math.max(0, powers.lockedInTicks() - sinceSync);
@@ -77,6 +87,15 @@ public final class PowerHud {
         if (combat) {
             drawSlots(graphics, font, powers, width, height);
         }
+    }
+
+    /** A trained stat with a thin bar showing progress toward its next point. */
+    private static void drawStat(GuiGraphics graphics, Font font, int y, String key, float value, float progress, int color) {
+        Component label = Component.translatable(key, Math.round(value));
+        graphics.drawString(font, label, X, y, color, true);
+        int barX = X + 62;
+        graphics.fill(barX - 1, y + 2, barX + 41, y + 7, 0xA0000000);
+        graphics.fill(barX, y + 3, barX + Math.round(40 * progress), y + 6, color);
     }
 
     /** Bottom-right: the four jutsu slots with key, name, cooldown/mastery and a charge bar. */
