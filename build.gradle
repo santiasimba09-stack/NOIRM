@@ -74,6 +74,11 @@ minecraft {
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
 
+            // Mixin-based libraries (PlayerAnimator) ship with obfuscated (SRG) method names.
+            // These remap them to the dev environment's names; without them the client crashes at launch.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
             mods {
                 "${mod_id}" {
                     source sourceSets.main

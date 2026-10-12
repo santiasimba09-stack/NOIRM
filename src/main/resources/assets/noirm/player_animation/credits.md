@@ -1,7 +1,7 @@
 # Player animation credits
 
 The animations in this folder come from **Boundless / Strongest** by **LeBoundlessJame**
-(Copyright (c) 2025), under the MIT License (see `LICENSE_boundless.txt`).
+(Copyright (c) 2025), under the MIT License (see `license_boundless.txt`).
 
 | NOIRM file | Original Boundless animation |
 |---|---|
