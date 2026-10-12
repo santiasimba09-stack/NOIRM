@@ -1,0 +1,14 @@
+{
+  "targets": ["swap"],
+  "passes": [
+    {
+      "name": "nydomod:shinra_impact",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        { "name": "ShaderPack", "values": [1.0] }
+      ]
+    },
+    { "name": "blit", "intarget": "swap", "outtarget": "minecraft:main" }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "nydo.susanoo.catalog.v1",
+  "phase1": "shared:geo/susanoo_cage.geo.json",
+  "sound_assets": [],
+  "paint": "NYDO profile color and white_square neutral surface",
+  "creator_credit": "HytMO — hired through Fiverr and a supporter of NYDO's work; creator of the Susanoo models and animations.",
+  "profiles": {
+    "sasuke": { "family": "A", "color": "profile-owned", "phases": [2,3,4,5,6], "geo": "geo/susanoo/sasuke/nf{phase}_body.geo.json", "animations": "animations/susanoo/sasuke/nf{phase}_body.animation.json", "powers": "SasukeSusanooAbilitySystem" },
+    "itachi": { "family": "B", "color": "0x20F28C18", "phases": [2,3,4,5,6], "geo": "geo/susanoo/itachi/nf{phase}_i_body.geo.json", "animations": "animations/susanoo/itachi/nf{phase}_i_body.animation.json", "powers": "ItachiSusanooAnimations + SasukeSusanooAbilitySystem" },
+    "kakashi": { "family": "C", "color": "0x205A8CFF", "phases": [2,3,4,5,6], "geo": "geo/susanoo/kakashi/nf{phase}_k_body.geo.json", "animations": "animations/susanoo/kakashi/nf{phase}_k_body.animation.json", "powers": "KakashiSusanooAnimations + SasukeSusanooAbilitySystem" },
+    "shisui": { "family": "D", "color": "0x2025D65A", "phases": [2,3,4,5,6], "geo": "geo/susanoo/shisui/nf{phase}_s_body.geo.json", "animations": "animations/susanoo/shisui/nf{phase}_s_body.animation.json", "powers": "ShisuiSusanooAnimations + SasukeSusanooAbilitySystem" },
+    "madara": { "family": "E", "color": "0x203067E8", "phases": [2,3,4,5,6], "geo": "geo/susanoo/madara/nf{phase}_m_body.geo.json", "animations": "animations/susanoo/madara/nf{phase}_m_body.animation.json", "powers": "MadaraSusanooAnimations + SasukeSusanooAbilitySystem" }
+  }
+}

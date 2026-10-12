@@ -1,0 +1,24 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "1-srcalpha"
+  },
+  "vertex": "nydomod:jutsu_charge_hud",
+  "fragment": "nydomod:jutsu_seal_hud",
+  "attributes": [
+    "Position",
+    "UV0",
+    "Color"
+  ],
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] },
+    { "name": "PendingColor", "type": "float", "count": 4, "values": [0.35, 0.39, 0.45, 1.0] },
+    { "name": "CompletedColor", "type": "float", "count": 4, "values": [0.45, 0.79, 0.91, 1.0] },
+    { "name": "AccentColor", "type": "float", "count": 4, "values": [0.51, 0.75, 0.82, 1.0] },
+    { "name": "SealData", "type": "float", "count": 4, "values": [7.0, 0.0, 0.0, 0.0] },
+    { "name": "BarData", "type": "float", "count": 4, "values": [138.0, 13.0, 0.0, 0.0] }
+  ]
+}

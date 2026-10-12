@@ -1,0 +1,18 @@
+{
+  "targets": ["swap"],
+  "passes": [
+    {
+      "name": "nydomod:shinra_charge",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        { "name": "Stage", "values": [0.0] }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}
