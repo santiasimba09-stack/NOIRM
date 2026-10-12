@@ -1,0 +1,11 @@
+{
+  "format_version":"1.8.0",
+  "animations":{"cinematic/nydo/shisui_target_shield":{"loop":"hold_on_last_frame","animation_length":7.8,"bones":{
+    "body":{"rotation":{"0.0":{"vector":[10.0,0.0,0.0],"lerp_mode":"catmullrom"},"2.0":{"vector":[-7.0,8.0,0.0],"lerp_mode":"catmullrom"},"7.8":{"vector":[-10.0,4.0,0.0],"lerp_mode":"catmullrom"}}},
+    "head":{"rotation":{"0.0":{"vector":[18.0,0.0,0.0],"lerp_mode":"catmullrom"},"2.0":{"vector":[-32.0,-8.0,2.0],"lerp_mode":"catmullrom"},"7.8":{"vector":[-43.0,2.0,0.0],"lerp_mode":"catmullrom"}}},
+    "right_arm":{"rotation":{"0.0":{"vector":[18.0,4.0,20.0],"lerp_mode":"catmullrom"},"1.8":{"vector":[-118.0,-18.0,46.0],"lerp_mode":"catmullrom"},"7.8":{"vector":[-127.0,-10.0,38.0],"lerp_mode":"catmullrom"}}},
+    "left_arm":{"rotation":{"0.0":{"vector":[18.0,-4.0,-20.0],"lerp_mode":"catmullrom"},"1.8":{"vector":[-118.0,18.0,-46.0],"lerp_mode":"catmullrom"},"7.8":{"vector":[-127.0,10.0,-38.0],"lerp_mode":"catmullrom"}}},
+    "right_leg":{"rotation":{"0.0":{"vector":[8.0,-2.0,0.0]},"7.8":{"vector":[15.0,-2.0,0.0]}}},
+    "left_leg":{"rotation":{"0.0":{"vector":[-6.0,2.0,0.0]},"7.8":{"vector":[-12.0,2.0,0.0]}}}
+  }}}
+}

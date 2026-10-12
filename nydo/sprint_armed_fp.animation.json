@@ -1,0 +1,107 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"movement/nydo/sprint_armed_fp": {
+			"animation_length": 0.5,
+			"bones": {
+				"right_arm": {
+					"rotation": {
+						"0": {
+							"vector": [34, -10, 12],
+							"easing": "linear"
+						},
+						"0.12": {
+							"vector": [39, -12, 14],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [32, -8, 10],
+							"easing": "linear"
+						},
+						"0.38": {
+							"vector": [38, -11, 13],
+							"easing": "linear"
+						},
+						"0.5": {
+							"vector": [34, -10, 12],
+							"easing": "linear"
+						}
+					},
+					"position": {
+						"0": {
+							"vector": [0.2, -0.18, -0.32],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [0.22, -0.15, -0.36],
+							"easing": "linear"
+						},
+						"0.5": {
+							"vector": [0.2, -0.18, -0.32],
+							"easing": "linear"
+						}
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"0": {
+							"vector": [58, 10, -18],
+							"easing": "linear"
+						},
+						"0.12": {
+							"vector": [63, 12, -20],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [56, 8, -16],
+							"easing": "linear"
+						},
+						"0.38": {
+							"vector": [62, 11, -19],
+							"easing": "linear"
+						},
+						"0.5": {
+							"vector": [58, 10, -18],
+							"easing": "linear"
+						}
+					},
+					"position": {
+						"0": {
+							"vector": [-0.24, -0.22, -0.46],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [-0.26, -0.2, -0.52],
+							"easing": "linear"
+						},
+						"0.5": {
+							"vector": [-0.24, -0.22, -0.46],
+							"easing": "linear"
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0": {
+							"vector": [16, 0, 0],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [18, 0, 0],
+							"easing": "linear"
+						},
+						"0.5": {
+							"vector": [16, 0, 0],
+							"easing": "linear"
+						}
+					}
+				}
+			},
+			"loop": true
+		}
+	},
+	"geometry.animations": {
+		"texturewidth": 64,
+		"textureheight": 64
+	}
+}

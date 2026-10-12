@@ -1,0 +1,29 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "shinra_charge_dual": {
+      "loop": true,
+      "animation_length": 0.8,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.0": { "vector": [0, 0, 0] },
+            "0.8": { "vector": [0, 0, 0] }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": { "vector": [-90, -5, 0] },
+            "0.8": { "vector": [-90, -5, 0] }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": { "vector": [-90, 5, 0] },
+            "0.8": { "vector": [-90, 5, 0] }
+          }
+        }
+      }
+    }
+  }
+}

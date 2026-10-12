@@ -1,0 +1,53 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "rasengan_hold": {
+      "loop": true,
+      "animation_length": 1.0,
+      "bones": {
+        "body": {
+          "position": {
+            "0.0": { "vector": [0, -1.4, 0], "easing": "easeInOutSine" },
+            "1.0": { "vector": [0, -1.4, 0], "easing": "easeInOutSine" }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0.0": { "vector": [0, 7.3352, 1.56791], "easing": "easeInOutSine" },
+            "1.0": { "vector": [0, 7.3352, 1.56791], "easing": "easeInOutSine" }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": { "vector": [-46.99988, 56.20325, 17.99301], "easing": "easeInOutSine" },
+            "0.125": { "vector": [-49.11634, 50.83446, 9.15814], "easing": "easeInOutSine" },
+            "0.25": { "vector": [-46.99988, 56.20325, 17.99301], "easing": "easeInOutSine" },
+            "0.375": { "vector": [-49.11634, 50.83446, 9.15814], "easing": "easeInOutSine" },
+            "0.5": { "vector": [-46.99988, 56.20325, 17.99301], "easing": "easeInOutSine" },
+            "0.625": { "vector": [-49.11634, 50.83446, 9.15814], "easing": "easeInOutSine" },
+            "0.75": { "vector": [-46.99988, 56.20325, 17.99301], "easing": "easeInOutSine" },
+            "0.875": { "vector": [-49.11634, 50.83446, 9.15814], "easing": "easeInOutSine" },
+            "1.0": { "vector": [-46.99988, 56.20325, 17.99301], "easing": "easeInOutSine" }
+          },
+          "position": {
+            "0.0": { "vector": [-0.4, 0, -0.9], "easing": "easeInOutSine" },
+            "1.0": { "vector": [-0.4, 0, -0.9], "easing": "easeInOutSine" }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": { "vector": [-37.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.125": { "vector": [-42.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.25": { "vector": [-37.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.375": { "vector": [-42.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.5": { "vector": [-37.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.625": { "vector": [-42.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.75": { "vector": [-37.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "0.875": { "vector": [-42.14285, 8.4326, 7.52528], "easing": "easeInOutSine" },
+            "1.0": { "vector": [-37.14285, 8.4326, 7.52528], "easing": "easeInOutSine" }
+          }
+        }
+      }
+    }
+  }
+}

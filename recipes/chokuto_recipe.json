@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " I ",
+    " I ",
+    "WSF"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_block" },
+    "W": { "item": "minecraft:white_wool" },
+    "S": { "item": "minecraft:stick" },
+    "F": { "item": "minecraft:string" }
+  },
+  "result": {
+    "item": "nydomod:chokuto",
+    "count": 1
+  }
+}

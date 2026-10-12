@@ -1,0 +1,179 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "movement/nydo/sprint_unarmed_fp": {
+      "animation_length": 0.5,
+      "bones": {
+        "right_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                70,
+                -8,
+                8
+              ],
+              "easing": "linear"
+            },
+            "0.12": {
+              "vector": [
+                76,
+                -9,
+                10
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                69,
+                -7,
+                7
+              ],
+              "easing": "linear"
+            },
+            "0.38": {
+              "vector": [
+                75,
+                -9,
+                9
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                70,
+                -8,
+                8
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0": {
+              "vector": [
+                0.2,
+                -0.28,
+                -0.56
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                0.22,
+                -0.25,
+                -0.62
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                0.2,
+                -0.28,
+                -0.56
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                70,
+                8,
+                -8
+              ],
+              "easing": "linear"
+            },
+            "0.12": {
+              "vector": [
+                76,
+                9,
+                -10
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                69,
+                7,
+                -7
+              ],
+              "easing": "linear"
+            },
+            "0.38": {
+              "vector": [
+                75,
+                9,
+                -9
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                70,
+                8,
+                -8
+              ],
+              "easing": "linear"
+            }
+          },
+          "position": {
+            "0": {
+              "vector": [
+                -0.2,
+                -0.28,
+                -0.56
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                -0.22,
+                -0.25,
+                -0.62
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -0.2,
+                -0.28,
+                -0.56
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                18,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.25": {
+              "vector": [
+                20,
+                0,
+                0
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                18,
+                0,
+                0
+              ],
+              "easing": "linear"
+            }
+          }
+        }
+      },
+      "loop": true
+    }
+  }
+}

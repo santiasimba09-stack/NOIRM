@@ -1,0 +1,44 @@
+{
+  "group": "nydomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "nydomod:senbon"
+    },
+    "1": {
+      "item": "nydomod:senbon"
+    },
+    "2": {
+      "item": "nydomod:senbon"
+    },
+    "3": {
+      "item": "nydomod:senbon"
+    },
+    "4": {
+      "item": "minecraft:lingering_potion",
+      "type": "minecraft:item_nbt",
+      "nbt": "{Potion:\"minecraft:strong_poison\"}"
+    },
+    "5": {
+      "item": "nydomod:senbon"
+    },
+    "6": {
+      "item": "nydomod:senbon"
+    },
+    "7": {
+      "item": "nydomod:senbon"
+    },
+    "8": {
+      "item": "nydomod:senbon"
+    }
+  },
+  "result": {
+    "item": "nydomod:poison_senbon",
+    "count": 8
+  }
+}

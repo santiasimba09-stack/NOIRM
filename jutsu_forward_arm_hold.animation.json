@@ -1,0 +1,33 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "jutsu_forward_arm_hold": {
+      "loop": true,
+      "animation_length": 0.6,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.0": { "vector": [-0.8, 0.0, 0.0], "easing": "linear" },
+            "0.3": { "vector": [-1.4, 0.4, 0.0], "easing": "linear" },
+            "0.6": { "vector": [-0.8, 0.0, 0.0], "easing": "linear" }
+          }
+        },
+        "right_arm": {
+          "rotation": {
+            "0.0": { "vector": [-81.0, -1.0, 0.0], "easing": "linear" },
+            "0.3": { "vector": [-82.5, -1.0, 0.0], "easing": "linear" },
+            "0.6": { "vector": [-81.0, -1.0, 0.0], "easing": "linear" }
+          }
+        },
+        "left_arm": {
+          "rotation": {
+            "0.0": { "vector": [8.0, 0.0, -7.0], "easing": "linear" },
+            "0.3": { "vector": [6.5, 1.0, -8.0], "easing": "linear" },
+            "0.6": { "vector": [8.0, 0.0, -7.0], "easing": "linear" }
+          }
+        }
+      }
+    }
+  },
+  "geckolib_format_version": 2
+}
