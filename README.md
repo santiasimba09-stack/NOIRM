@@ -1,13 +1,20 @@
 # NOIRM
 
-A Naruto/Boruto-inspired mod for Minecraft, built from scratch.
+A Naruto-inspired mod for **Minecraft Forge 1.20.1**, focused on smooth combat, training under
+masters, and exploring a world of shinobi villages.
+
+- **New here?** Read [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) to run the mod on your computer.
+- **Where we're going:** [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Repository layout
 
-- `reference/nydo/`: the extracted assets of NydoMod 5.5, kept as a design reference.
-  It has no code and no textures, and it's "All Rights Reserved", so it's inspiration only.
-  See [`reference/nydo/README.md`](reference/nydo/README.md) for the inventory, a breakdown of the
-  game systems, and the licensing notes.
+```
+src/main/java/com/noirm/   mod code (Forge 1.20.1, Java 17)
+src/main/resources/        mod assets and data
+docs/                      roadmap and guides
+reference/nydo/            NydoMod 5.5 assets, kept as a design reference only
+```
 
-Our own mod source will live alongside it once we pick the platform (loader and Minecraft version)
-and the first milestone.
+`reference/nydo/` has no code and no textures, and it's "All Rights Reserved", so it's
+inspiration only. See [`reference/nydo/README.md`](reference/nydo/README.md) for the inventory,
+a breakdown of its game systems, and the licensing notes.
