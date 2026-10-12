@@ -38,6 +38,7 @@ Each milestone ends with something you can play and test.
 | 2 | **Combat feel v1** ✅ | A switchable combat mode, input buffering and cancels, light/heavy combo routes, a dodge with i-frames, guard with posture and parry, perfect-dodge focus, perception slowdown, impact (hit-stop, knockback, shake, sound), lock-on, a sparring ninja, and PlayerAnimator animations. See `COMBAT_DESIGN.md`. |
 | 3 | **Identity & powers** ✅ | Clans (canon + generated per world), natures, 4-slot jutsu loadout with 9 jutsu, the Sharingan (perception, precognition, genjutsu, copy), the near-death awakening (Resolve), the jinchūriki cloak. See `POWERS_DESIGN.md`. |
 | 3.5 | **Training** ✅ (part 1) | A training dummy; taijutsu and speed grow from practice (drills to 30, then real fights). Also built: the Byakugan and tailed beasts (fight, subdue, seal). Part 2: training post, very hard nature training. |
+| 3.6 | **Playtest round 1** ✅ | Animations fixed; eyes vs all mobs; living Sharingan; Vitality and Reserves; the nature tree with 9 combinations; 39 jutsu; the new jutsu screen. |
 | 4 | **First master** | Might Guy, a taijutsu master who tests you with a spar, then teaches techniques (e.g. Lotus, Hirudora). More masters follow. |
 | 5 | **First jutsu** | Hand seals, a chakra cost, and three starter jutsu with data-driven VFX. |
 | 6 | **First village** | A generated village structure with a dojo and training grounds, where masters live. |

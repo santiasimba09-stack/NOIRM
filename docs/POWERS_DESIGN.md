@@ -48,6 +48,37 @@ change after playtesting. All numbers are tunable (where is noted per section)._
 - **Mastery:** every cast earns XP; 5 levels; each level is +10% power, −8% cost and cooldown.
 - Jutsu hits go through guard, parry, dodge and substitution like melee does.
 
+## 3b. Nature tree and the jutsu list (owner: variety per nature and combination)
+
+- **Combined natures** (kekkei genkai): Wood = Earth + Water, Ice = Wind + Water, Lava = Fire +
+  Earth, Storm = Water + Lightning, Boil = Fire + Water, Explosion = Earth + Lightning, Magnet =
+  Wind + Earth, Scorch = Fire + Wind. **Dust** (kekkei tōta) = Fire + Wind + Earth.
+- A combination is **available** when you own all its parts and have a jutsu of each at **★2**;
+  unlock it in the jutsu screen's Nature Tree. Its affinity is your weakest part's (max 1.0).
+  8% of new clans carry a combination in their blood (with both parts).
+- **Learning jutsu:** your clan's natures give their starters; the rest come by **mastery chains**
+  (★2 on one jutsu teaches the next, shown on the card); combinations give theirs on unlock.
+
+| Nature | Jutsu (★2 chain order) |
+|---|---|
+| Fire | Great Fireball → Phoenix Flower (5-shot fan) → Fire Stream |
+| Water | Water Bullet → Water Dragon (charge, blast) → Water Prison (bind) |
+| Wind | Air Palm → Vacuum Bullets (3-shot) → Great Breakthrough (huge cone) |
+| Earth | Earth Wall → Earth Spikes (pillar) → Swamp of the Underworld (slowing area) |
+| Lightning | Chidori → Lightning Armor (speed, strength, resistance) → False Darkness (beam) |
+| Wood | Wood Binding (bind), Deep Forest Spears (pillar) |
+| Ice | Ice Needles (7-shot, slows), Ice Prison (bind) |
+| Lava | Lava Globs (3 burning blasts), Melting Apparition (channel) |
+| Storm | Laser Circus (5 beams), Thunder Cloud (lightning rain) |
+| Boil | Skilled Mist (weakening mist), Boiling Burst (cone) |
+| Explosion | Explosive Clay (charge, big blast), Landmine Fist (pillar) |
+| Magnet | Iron Sand Bind, Iron Sand Spears (4-shot) |
+| Scorch | Scorching Orbs, Scorch Wave |
+| Dust | Detachment of the Primitive World (charged beam), Dust Cube |
+
+- New reusable behaviors: **bind**, **pillar**, **cloud**, **rain**, **beam**, **buff**; projectiles
+  take `count`/`spread` (fans) and `effect` (e.g. `"slowness:1"`); `block` gives a jutsu its look.
+
 ## 4. Sharingan (owner: all four abilities)
 
 - Uchiha only (the clan's `kekkei_genkai`). It's **awakened by the near-death awakening**, then
@@ -58,6 +89,13 @@ change after playtesting. All numbers are tunable (where is noted per section)._
   lands) and the **Sharingan genjutsu** jutsu.
 - **3 tomoe:** **copy**: watch someone cast a jutsu (within 16 blocks, in view) and you learn it.
 - Red glowing irises render on players (everyone sees them) and on Uchiha ninjas.
+- **Against everything (owner):** precognition (2+ tomoe, or the Byakugan) also reads vanilla
+  mobs: a melee mob in reach, a skeleton drawing, a creeper swelling, a spider about to leap, and
+  any projectile on a collision course. Perception (same ratio rule) slows projectiles within 8
+  blocks; arrows keep their damage (`ThreatSense`).
+- **Alive (owner):** the warning is a heartbeat (lub-dub edge pulse + sound) that speeds up as the
+  hit nears, with markers pointing at each threat; attackers leave afterimages; opening the eyes
+  flashes and spins three tomoe; a faint red tint while active (`EyeEffects`).
 
 ## 5. Awakening (owner: Resolve, identity-based)
 
@@ -135,6 +173,13 @@ with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninj
 - **Tailed Beast Ball** (S, charge, 40 chakra, 30 s, needs the cloak): huge dark explosion.
   Every jinchūriki learns it when a beast is sealed in them.
 - Names: Shukaku, Matatabi, Isobu, Son Gokū, Kokuō, Saiken, Chōmei, Gyūki, Kurama.
+
+## 11. Vitality and Reserves (owner: health and chakra grow too)
+
+- **Vitality:** +0.5 max health per point above 10 (+5 hearts at 30). XP = 2 per damage taken;
+  real opponents × their strength, falls/fire/etc. are drills (cap 30).
+- **Reserves:** +5 max chakra and +2% chakra regen per point above 10 (double chakra at 30).
+  XP = 0.25 per chakra spent (jutsu, eyes).
 
 ## Where to tune
 

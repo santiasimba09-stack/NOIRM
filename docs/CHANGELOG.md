@@ -2,6 +2,26 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-12 — Playtest feedback round 1 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Fixed: combat animations never showed** (a PlayerAnimator layer with a modifier in front of
+  the animation reported "inactive"). Combos and kicks now play in full.
+- **Eyes against everything:** Sharingan (2+ tomoe) and Byakugan precognition now warn about
+  vanilla mobs (melee reach, bow draw, creeper swell, spider leap) and projectiles; perception
+  slows projectiles coming at you (arrows keep their damage).
+- **A living Sharingan:** heartbeat warning that quickens as the hit nears, markers pointing at
+  each threat, afterimages on attackers, an activation flash with spinning tomoe, a faint tint.
+- **Two new stats:** Vitality (max health; trained by surviving hits) and Reserves (max chakra and
+  regen; trained by spending chakra). The HUD shows all four.
+- **Nature tree:** 9 combined natures (Wood, Ice, Lava, Storm, Boil, Explosion, Magnet, Scorch,
+  Dust), unlocked by owning the parts and mastering a jutsu of each; 8% of new clans carry one.
+- **39 jutsu:** mastery chains for the basic natures, 2 for each combination; new behaviors bind,
+  pillar, cloud, rain, beam, buff; multi-shot projectiles with effects. Ninjas use them all.
+- **New jutsu screen (J):** cards by nature with lock reasons and details, plus the nature tree
+  with unlocking.
+- Commands: `/noirm byakugan`, `/noirm jutsu mastery`, `/noirm stat vitality|reserves`.
+- 13 new game tests (71 total), including one that casts every nature jutsu.
+
 ## 2026-10-12 — Training, the Byakugan and tailed beasts (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Training:** a training dummy (item + recipe: hay bales and sticks) that never dies, stays

@@ -52,6 +52,7 @@ gradlew.bat runClient      # Windows
 | **J** | Jutsu screen (change your loadout) |
 | **B** | Tailed-beast cloak (if you're a jinchūriki) |
 | **G** | Open your eyes: Sharingan or Byakugan (if you have one) |
+| **J** | Jutsu screen: your jutsu by nature, the loadout, and the **Nature Tree** tab |
 
 Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
 (perception). Or summon a strong one:
@@ -87,7 +88,7 @@ Watch the combo counter, and the Taijutsu/Speed bars in the HUD. You get faster 
 Past 30, the dummy stops teaching: fight ninjas (stronger ones teach more). Crouch-punch the
 dummy with combat mode off to pick it up.
 
-**Byakugan:** `/noirm clan set hyuga`, then **G**. Look around: ninjas and mobs glow through
+**Byakugan:** `/noirm byakugan` (or `/noirm clan set hyuga`), then **G**. Look around: ninjas and mobs glow through
 walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **J**.
 
 **Tailed beasts:**
@@ -101,6 +102,19 @@ walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **
 | Let it out again | Crouch + use the full scroll on the ground (it will attack you) |
 | Tailed Beast Ball | Equip it with **J**, turn on the cloak (**B**), hold its key to charge |
 | A jinchūriki ninja | `/summon noirm:sparring_ninja ~ ~ ~3 {Tails:4}`: beat it and its beast breaks free |
+
+## How to test the nature tree and the new jutsu
+
+1. `/noirm clan set senju` (Earth + Water).
+2. `/noirm jutsu mastery noirm:doton/earth_wall 2` and `/noirm jutsu mastery noirm:suiton/water_bullet 2`.
+   Mastering them also teaches Earth Spikes and Water Dragon (mastery chains).
+3. Press **J** → **Nature Tree**: Wood glows gold. Click it, then **Unlock**. You learn Wood
+   Binding and Deep Forest Spears.
+4. To try every jutsu: `/noirm nature add <nature>` for each nature you want, then
+   `/noirm jutsu learn all`, and equip with **J**.
+
+**Stats:** `/noirm stat vitality 30` (more hearts), `/noirm stat reserves 30` (double chakra).
+**Eyes vs mobs:** `/noirm sharingan 3`, **G**, and let a skeleton shoot at you.
 
 ## Useful commands
 
