@@ -5,7 +5,7 @@ _Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 ## Where we are
 
 **Milestone 3.5: Training, plus the Byakugan and tailed beasts. ✅ Built, 58/58 game tests
-green, checked in the real client.** Design and numbers: `docs/POWERS_DESIGN.md` (sections 8–10).
+green, checked in the real client** (screenshots: `docs/screenshots/m35-*.png`). Design and numbers: `docs/POWERS_DESIGN.md` (sections 8–10).
 M2 combat and M3 powers are also done. All of it waits on the owner's hands-on feedback.
 
 | Area | State |
@@ -14,7 +14,7 @@ M2 combat and M3 powers are also done. All of it waits on the owner's hands-on f
 | M3: clans, jutsu loadout, Sharingan, awakening, cloak, ninjas with clans | ✅ tested + seen in client |
 | Training: dummy (item + recipe), taijutsu/speed XP, speed → movement | ✅ tested; dummy, combo counter, stat bars seen in client |
 | Byakugan (Hyūga): x-ray chakra sight, all-round guard and warnings, Gentle Fist, Rotation, 64 Palms | ✅ tested; eyes, silhouettes seen in client |
-| Tailed beasts: beast (1–9 tails), subdue, Sealing Scroll, born/NPC jinchūriki, Tailed Beast Ball | ✅ tested; see the smoke notes in the CHANGELOG |
+| Tailed beasts: beast (1–9 tails), subdue, Sealing Scroll, born/NPC jinchūriki, Tailed Beast Ball | ✅ tested; subdued beast → scroll → sealed into self → cloak seen in client (beast AI fights and the Beast Ball not seen yet) |
 
 ## In progress
 
