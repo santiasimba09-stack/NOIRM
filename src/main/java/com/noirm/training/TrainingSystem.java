@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * <p>Solo drills (the training dummy, running, dodging in the air) only take you to
  * {@link #DRILL_CAP}. Past that you need real opponents, and stronger ones teach more. Speed
- * also makes you move faster ({@link #MOVE_BONUS_PER_POINT}).
+ * also makes you move faster (see {@code Movement}).
  */
 public final class TrainingSystem {
     public enum Stat {
@@ -64,7 +64,6 @@ public final class TrainingSystem {
     public static final float MIN_OPPONENT_RATIO = 0.25f;
     public static final float MAX_OPPONENT_RATIO = 3f;
     /** +0.4% movement speed per speed point above 10 (speed 100 = +36%). */
-    public static final double MOVE_BONUS_PER_POINT = 0.004;
 
     /** Vitality: XP per point of damage taken (and survived). */
     public static final float VITALITY_XP_PER_DAMAGE = 2f;
@@ -272,12 +271,30 @@ public final class TrainingSystem {
     }
 
     /** Keeps the movement-speed modifier in line with the speed stat. */
+    private static final UUID STEP_MODIFIER_ID = UUID.fromString("5d2b9a14-7c3e-4f21-8a6b-0e9c1d2f3a4b");
+
+    private static void applyStep(Player player, double amount) {
+        AttributeInstance step = player.getAttribute(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get());
+        if (step == null) {
+            return;
+        }
+        AttributeModifier current = step.getModifier(STEP_MODIFIER_ID);
+        if (current != null && Math.abs(current.getAmount() - amount) < 1e-6) {
+            return;
+        }
+        step.removeModifier(STEP_MODIFIER_ID);
+        if (amount > 0) {
+            step.addTransientModifier(new AttributeModifier(STEP_MODIFIER_ID, "noirm_speed_step", amount, AttributeModifier.Operation.ADDITION));
+        }
+    }
+
     public static void applyMovementBonus(Player player, float speed) {
         AttributeInstance movement = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (movement == null) {
             return;
         }
-        double amount = (speed - ShinobiData.DEFAULT_STAT) * MOVE_BONUS_PER_POINT;
+        double amount = com.noirm.player.Movement.runMultiplier(speed) - 1.0;
+        applyStep(player, com.noirm.player.Movement.stepBonus(speed));
         AttributeModifier current = movement.getModifier(SPEED_MODIFIER_ID);
         if (current != null && Math.abs(current.getAmount() - amount) < 1e-6) {
             return;

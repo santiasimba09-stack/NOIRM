@@ -15,6 +15,7 @@ public final class ClientShinobiData {
 
     public static void update(SyncShinobiDataPacket packet) {
         latest = packet;
+        com.noirm.player.Movement.clientSpeed = packet.speed();
     }
 
     /** The latest values, or null before the server has sent any (e.g. on the title screen). */

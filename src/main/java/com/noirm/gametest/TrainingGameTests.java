@@ -145,10 +145,14 @@ public final class TrainingGameTests {
     public static void speedMakesYouFaster(GameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         double base = player.getAttributeValue(Attributes.MOVEMENT_SPEED);
-        TrainingSystem.applyMovementBonus(player, 60f);
+        TrainingSystem.applyMovementBonus(player, 100f);
         double fast = player.getAttributeValue(Attributes.MOVEMENT_SPEED);
-        double expected = base * (1 + 50 * TrainingSystem.MOVE_BONUS_PER_POINT);
-        helper.assertTrue(Math.abs(fast - expected) < 1e-4, "speed 60 should move " + expected + ", got " + fast);
+        double expected = base * Math.sqrt(10);
+        helper.assertTrue(Math.abs(fast - expected) < 1e-4, "speed 100 should move ×3.16: " + expected + ", got " + fast);
+        helper.assertTrue(com.noirm.player.Movement.jumpBonus(100f) > 0.3, "and jump much higher");
+        helper.assertTrue(com.noirm.player.Movement.leap(100f) > 0.6, "and a sprint-jump is a long leap");
+        helper.assertTrue(player.getAttributeValue(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get()) >= 1.0, "and step up whole blocks");
+        helper.assertTrue(com.noirm.player.Movement.runMultiplier(100000f) <= com.noirm.player.Movement.MAX_RUN_MULTIPLIER, "within what the world can keep up with");
         TrainingSystem.applyMovementBonus(player, 10f);
         helper.assertTrue(Math.abs(player.getAttributeValue(Attributes.MOVEMENT_SPEED) - base) < 1e-6, "speed 10 is the normal pace");
         helper.succeed();
