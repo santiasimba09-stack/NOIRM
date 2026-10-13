@@ -327,5 +327,13 @@
   "screen.noirm.ally.dismiss": "Dismiss",
   "message.noirm.ally.stat_up": "%s's %s rose to %s!",
   "message.noirm.ally.taught": "You taught %s %s.",
-  "message.noirm.ally.dismissed": "%s goes their own way."
+  "message.noirm.ally.dismissed": "%s goes their own way.",
+  "entity.noirm.village_merchant": "Village Merchant",
+  "item.noirm.village_merchant_spawn_egg": "Village Merchant Spawn Egg",
+  "item.noirm.ramen": "Ramen",
+  "item.noirm.kunai": "Kunai",
+  "item.noirm.flak_vest": "Flak Vest",
+  "entity.noirm.kage.hokage": "Hokage",
+  "entity.noirm.kage.kazekage": "Kazekage",
+  "entity.noirm.kage.village_head": "Village Head"
 }

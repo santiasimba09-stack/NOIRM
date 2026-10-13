@@ -31,6 +31,14 @@ public final class NoirmItems {
     public static final RegistryObject<Item> TAILED_BEAST_SPAWN_EGG = ITEMS.register("tailed_beast_spawn_egg",
             () -> new ForgeSpawnEggItem(NoirmEntities.TAILED_BEAST, 0xD9661E, 0x3B1D0E, new Item.Properties()));
 
+    /** A bowl of ramen from a village stand: a filling meal (gives the bowl back). */
+    public static final RegistryObject<Item> RAMEN = ITEMS.register("ramen",
+            () -> new net.minecraft.world.item.BowlFoodItem(new Item.Properties().stacksTo(16)
+                    .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(10).saturationMod(0.9f).build())));
+
+    public static final RegistryObject<Item> VILLAGE_MERCHANT_SPAWN_EGG = ITEMS.register("village_merchant_spawn_egg",
+            () -> new ForgeSpawnEggItem(NoirmEntities.VILLAGE_MERCHANT, 0xE8D3A9, 0xD9661E, new Item.Properties()));
+
     private NoirmItems() {}
 
     public static void register(IEventBus modBus) {
@@ -42,6 +50,9 @@ public final class NoirmItems {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(SPARRING_NINJA_SPAWN_EGG);
             event.accept(TAILED_BEAST_SPAWN_EGG);
+            event.accept(VILLAGE_MERCHANT_SPAWN_EGG);
+        } else if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
+            event.accept(RAMEN);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(TRAINING_DUMMY);
             event.accept(SEALING_SCROLL);

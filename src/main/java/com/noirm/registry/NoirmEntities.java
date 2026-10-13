@@ -53,6 +53,13 @@ public final class NoirmEntities {
                     .clientTrackingRange(10)
                     .build(Noirm.id("shadow_clone").toString()));
 
+    /** A shopkeeper in a ninja village (see {@code com.noirm.world.village}). */
+    public static final RegistryObject<EntityType<com.noirm.entity.VillageMerchant>> VILLAGE_MERCHANT = ENTITY_TYPES.register("village_merchant",
+            () -> EntityType.Builder.of(com.noirm.entity.VillageMerchant::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f)
+                    .clientTrackingRange(10)
+                    .build(Noirm.id("village_merchant").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -65,5 +72,6 @@ public final class NoirmEntities {
         event.put(SHADOW_CLONE.get(), SparringNinja.createAttributes().build());
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
         event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());
+        event.put(VILLAGE_MERCHANT.get(), com.noirm.entity.VillageMerchant.createAttributes().build());
     }
 }
