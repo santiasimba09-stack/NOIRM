@@ -35,11 +35,15 @@ public class SharinganEyesLayer<T extends LivingEntity, M extends HumanoidModel<
         }
         int stage = entity instanceof SparringNinja ninja ? ninja.activeSharinganStage() : ClientPowers.eyeStage(entity.getId());
         boolean byakugan = entity instanceof SparringNinja ninja ? ninja.byakuganActive() : ClientPowers.byakugan(entity.getId());
-        if (stage > 0) {
-            getParentModel().head.render(poseStack, buffers.getBuffer(EYES), FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
-        } else if (byakugan) {
-            getParentModel().head.render(poseStack, buffers.getBuffer(BYAKUGAN), FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        if (stage <= 0 && !byakugan) {
+            return;
         }
+        poseStack.pushPose();
+        if (getParentModel() instanceof BendyNinjaModel bendy) {
+            bendy.applyUpperBodyTransform(poseStack); // the head rides the bent torso
+        }
+        getParentModel().head.render(poseStack, buffers.getBuffer(stage > 0 ? EYES : BYAKUGAN), FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        poseStack.popPose();
     }
 
     @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

@@ -142,6 +142,32 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.175": {
+       "vector": [
+        8
+       ],
+       "easing": "linear"
+      },
+      "0.3": {
+       "vector": [
+        10
+       ],
+       "easing": "linear"
+      },
+      "0.5": {
+       "vector": [
+        8
+       ],
+       "easing": "linear"
+      }
      }
     },
     "head": {
@@ -282,6 +308,32 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.175": {
+       "vector": [
+        20
+       ],
+       "easing": "linear"
+      },
+      "0.3": {
+       "vector": [
+        70
+       ],
+       "easing": "linear"
+      },
+      "0.5": {
+       "vector": [
+        90
+       ],
+       "easing": "linear"
+      }
      }
     },
     "left_arm": {
@@ -349,6 +401,32 @@
         0,
         0,
         0
+       ],
+       "easing": "linear"
+      }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.175": {
+       "vector": [
+        20
+       ],
+       "easing": "linear"
+      },
+      "0.3": {
+       "vector": [
+        70
+       ],
+       "easing": "linear"
+      },
+      "0.5": {
+       "vector": [
+        90
        ],
        "easing": "linear"
       }
@@ -422,6 +500,32 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.175": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      },
+      "0.3": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.5": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      }
      }
     },
     "left_leg": {
@@ -488,6 +592,32 @@
        "vector": [
         0,
         0,
+        0
+       ],
+       "easing": "linear"
+      }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.175": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      },
+      "0.3": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.5": {
+       "vector": [
         0
        ],
        "easing": "linear"

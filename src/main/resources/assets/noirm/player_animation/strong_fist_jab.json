@@ -282,6 +282,32 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      },
+      "0.105": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.21": {
+       "vector": [
+        5
+       ],
+       "easing": "linear"
+      },
+      "0.35": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      }
      }
     },
     "left_arm": {
@@ -349,6 +375,32 @@
         0,
         0,
         0
+       ],
+       "easing": "linear"
+      }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        30
+       ],
+       "easing": "linear"
+      },
+      "0.105": {
+       "vector": [
+        30
+       ],
+       "easing": "linear"
+      },
+      "0.21": {
+       "vector": [
+        30
+       ],
+       "easing": "linear"
+      },
+      "0.35": {
+       "vector": [
+        30
        ],
        "easing": "linear"
       }
@@ -422,6 +474,32 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.105": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      },
+      "0.21": {
+       "vector": [
+        10
+       ],
+       "easing": "linear"
+      },
+      "0.35": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      }
      }
     },
     "left_leg": {
@@ -488,6 +566,32 @@
        "vector": [
         0,
         0,
+        0
+       ],
+       "easing": "linear"
+      }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        0
+       ],
+       "easing": "linear"
+      },
+      "0.105": {
+       "vector": [
+        10
+       ],
+       "easing": "linear"
+      },
+      "0.21": {
+       "vector": [
+        5
+       ],
+       "easing": "linear"
+      },
+      "0.35": {
+       "vector": [
         0
        ],
        "easing": "linear"

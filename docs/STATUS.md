@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-13 (round 3) · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
+_Last updated: 2026-10-13 (round 4, NPC animation) · branch `round4-animation`_
 
 ## Where we are
 
@@ -18,12 +18,15 @@ client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
 | **Killable tailed beasts** (seal or finish once subdued) | ✅ tested |
 | **Deeper Shadow Clones**: real health, your jutsu, Sharingan, mode, cloak | ✅ tested |
 | **Clan outfits**: 23 generated skins (`tools/skingen`) | ✅ |
+| **NPCs animate like the player** (same JSON, synced per move/dodge, stances, cross-fades) | ✅ tested (server side); visuals not yet seen in client |
+| **Bendy NPC model**: elbows, knees, waist; `"bend"` keyframes; natural walk bends | ✅ UVs checked (`check_uv.py`); visuals not yet seen in client |
 | **Speed movement**: run ×√(speed/10), higher jumps, sprint-jump leap, step-ups | ✅ tested |
 | **No stat cap**: power ∝ stat, durability √, beasts 30→470, Tailed Beast Bomb at beast scale | ✅ tested |
 
 ## In progress
 
-Nothing. Waiting for the owner's next playtest.
+Round 4 animation: **needs a look in the real client** (smoke test): ninja stance in a fight,
+moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams at the joints.
 
 ## Next steps (in order)
 
@@ -51,6 +54,7 @@ Nothing. Waiting for the owner's next playtest.
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork` (protocol 6), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.client.anim` | NPC animation: `KeyframeAnimation` (reads `player_animation/*.json`, plain Java so tests use it), `SkeletonPose`, `NpcAnimations` (client reload listener), `NpcAnimator` (layers + cross-fades); the model is `client/BendyNinjaModel` |
 | `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
@@ -60,7 +64,7 @@ Nothing. Waiting for the owner's next playtest.
 | `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `TestClans` |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
 | `tools/skingen/` | `gen_skins.py`: the clan outfit skins |
-| `tools/animgen/` | `gen_anims.py`: generates our own player animations from simple poses |
+| `tools/animgen/` | `gen_anims.py`: generates our own animations from simple poses (with `bend`s); `check_uv.py`: checks the bendy model's skin UVs |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
 ## Decisions made
@@ -98,10 +102,14 @@ Nothing. Waiting for the owner's next playtest.
 - **Jutsu learning:** clan starters, then mastery chains (★2 on one teaches the next).
 - **Eyes vs the world (owner):** the same rules apply to vanilla mobs and projectiles.
 - **Stats (owner):** four trained stats: taijutsu, speed, vitality (health), reserves (chakra).
+- **NPC animation:** NPCs play the player's animation files on a jointed model (elbows, knees,
+  waist); players stay on PlayerAnimator without bends (bendy-lib = possible follow-up). See
+  `docs/COMBAT_DESIGN.md`, "NPC animation and bendy limbs".
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 
 ## Open questions for the owner
 
+- Do the NPCs' bent limbs look right? Should the player bend too (needs bendy-lib, an extra mod)?
 - How do the animations feel now that they show? Which moves need new or different ones?
 - Jutsu balance: costs, cooldowns, how fast mastery chains unlock; which natures need more jutsu?
 - How hard should training a basic nature you weren't born with be (time, a master, an item)?

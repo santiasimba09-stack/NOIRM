@@ -164,6 +164,26 @@
        ],
        "easing": "linear"
       }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      },
+      "0.8": {
+       "vector": [
+        20
+       ],
+       "easing": "linear"
+      },
+      "1.6": {
+       "vector": [
+        15
+       ],
+       "easing": "linear"
+      }
      }
     },
     "left_arm": {
@@ -215,6 +235,26 @@
         1,
         0,
         2
+       ],
+       "easing": "linear"
+      }
+     },
+     "bend": {
+      "0.0": {
+       "vector": [
+        30
+       ],
+       "easing": "linear"
+      },
+      "0.8": {
+       "vector": [
+        30
+       ],
+       "easing": "linear"
+      },
+      "1.6": {
+       "vector": [
+        30
        ],
        "easing": "linear"
       }

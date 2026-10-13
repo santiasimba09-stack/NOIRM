@@ -2,6 +2,18 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-13 — NPC animation and bendy limbs (branch `round4-animation`)
+
+- **NPCs play the same animations as the player:** a client keyframe evaluator reads
+  `assets/noirm/player_animation/*.json`; the server syncs each NPC move/dodge (animation, length,
+  counter) so the client plays it at the move's timing. Style stances while fighting, rolls on
+  dodges, guard and hit flinch, all cross-faded (2–4 ticks) instead of snapping.
+- **More moving parts:** a new NPC model (`BendyNinjaModel`) with elbows, knees and a bending
+  waist, on the normal player skin. Animations can have `"bend"` keyframes; `gen_anims.py` adds
+  them to all generated moves and stances. NPCs walk with soft knee and elbow bends.
+- Players are unchanged (PlayerAnimator ignores `bend`). Research notes on Better Combat and
+  Epic Fight in `docs/COMBAT_DESIGN.md`. 4 new game tests (101 total).
+
 ## 2026-10-13 — Playtest feedback round 3, v0.3.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Fixed:** the Great Fireball burst on its caster. Jutsu never hit their caster, clones or crew.
