@@ -78,7 +78,7 @@ public final class Perception {
         if (entity instanceof Player player) {
             stat = ShinobiCapability.get(player).map(ShinobiData::getVitality).orElse(ShinobiData.DEFAULT_STAT);
         } else if (entity instanceof CombatStats stats) {
-            stat = (stats.combatSpeed() + stats.combatTaijutsu()) / 2f;
+            stat = stats.combatVitality();
         } else {
             return 1f;
         }

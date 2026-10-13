@@ -889,11 +889,11 @@ public final class CombatSystem {
                 : attacker.damageSources().mobAttack(attacker);
     }
 
-    /** Holding a weapon in combat mode adds half its bonus damage on top of taijutsu. */
+    /** A weapon in hand adds half its bonus damage on top of taijutsu (players and armed crew mates). */
     private static float weaponBonus(LivingEntity attacker) {
-        if (!(attacker instanceof Player player)) {
+        if (attacker.getAttribute(Attributes.ATTACK_DAMAGE) == null) {
             return 0;
         }
-        return Math.max(0f, (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1f) * 0.5f;
+        return Math.max(0f, (float) attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1f) * 0.5f;
     }
 }

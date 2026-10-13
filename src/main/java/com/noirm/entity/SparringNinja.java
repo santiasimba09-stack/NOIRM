@@ -79,8 +79,6 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Beaten: waiting for {@code yieldedTo} to invite them, until {@code yieldedUntil}. */
     private java.util.UUID yieldedTo;
     private long yieldedUntil;
-    /** A crew mate told to wait here. */
-    private boolean waiting;
     /** Outfit: {@code "<folder>/<n>"} under {@code textures/entity/ninja/}, picked for the clan. */
     private static final EntityDataAccessor<String> SKIN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
     /** How many outfits each folder has (mirrors {@code textures/entity/ninja/catalog.json}). */
@@ -90,6 +88,14 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private ResourceLocation style;
     private float speed = ShinobiData.DEFAULT_STAT;
     private float taijutsu = ShinobiData.DEFAULT_STAT;
+    /** Below 0: "same as their speed/taijutsu average" (until they train it on their own). */
+    private float vitality = -1;
+    private float reserves = -1;
+    /** Training XP per stat (crew mates grow; see {@code AllyTraining}). */
+    private final float[] statXp = new float[com.noirm.training.TrainingSystem.Stat.values().length];
+    private com.noirm.ally.Order order = com.noirm.ally.Order.FOLLOW;
+    /** Jutsu their leader taught them (kept on top of their clan's). */
+    private final List<ResourceLocation> taught = new ArrayList<>();
 
     public SparringNinja(EntityType<? extends SparringNinja> type, Level level) {
         super(type, level);
@@ -148,6 +154,30 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return entityData.get(SKIN);
     }
 
+    /** Every outfit in the catalog, in order (the ally screen cycles through them). */
+    public static List<String> allOutfits() {
+        List<String> all = new ArrayList<>();
+        for (String folder : List.of("uchiha", "senju", "hyuga", "uzumaki", "generic")) {
+            for (int i = 0; i < OUTFITS.get(folder); i++) {
+                all.add(folder + "/" + i);
+            }
+        }
+        return all;
+    }
+
+    public void changeOutfit(String outfit) {
+        setOutfit(outfit);
+    }
+
+    /** Leaves their leader's crew (dismissed): back to being their own ninja, no hard feelings. */
+    public void leaveCrew() {
+        leader = null;
+        order = com.noirm.ally.Order.FOLLOW;
+        entityData.set(IN_CREW, false);
+        setTarget(null);
+        setPose(net.minecraft.world.entity.Pose.STANDING);
+    }
+
     protected void setOutfit(String outfit) {
         entityData.set(SKIN, outfit);
     }
@@ -169,7 +199,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public void joinCrew(java.util.UUID player) {
         leader = player;
         yieldedTo = null;
-        waiting = false;
+        order = com.noirm.ally.Order.FOLLOW;
+        // From now on they train their own toughness and chakra.
+        vitality = combatVitality();
+        reserves = combatReserves();
         entityData.set(IN_CREW, true);
         setTarget(null);
         setPose(net.minecraft.world.entity.Pose.STANDING);
@@ -177,7 +210,74 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     }
 
     public boolean isWaiting() {
-        return waiting;
+        return order != com.noirm.ally.Order.FOLLOW;
+    }
+
+    public com.noirm.ally.Order order() {
+        return order;
+    }
+
+    public void setOrder(com.noirm.ally.Order order) {
+        this.order = order;
+        getNavigation().stop();
+        if (order != com.noirm.ally.Order.MEDITATE && getPose() == net.minecraft.world.entity.Pose.CROUCHING && !isYielded()) {
+            setPose(net.minecraft.world.entity.Pose.STANDING);
+        }
+    }
+
+    public List<ResourceLocation> taughtJutsu() {
+        return taught;
+    }
+
+    /** Their leader teaches them a jutsu. */
+    public void teach(ResourceLocation id) {
+        if (!taught.contains(id)) {
+            taught.add(id);
+        }
+        if (!jutsu.contains(id)) {
+            jutsu.add(id);
+        }
+    }
+
+    // ---------------------------------------------------------------- stats (crew mates train)
+
+    public float stat(com.noirm.training.TrainingSystem.Stat stat) {
+        return switch (stat) {
+            case SPEED -> speed;
+            case TAIJUTSU -> taijutsu;
+            case VITALITY -> combatVitality();
+            case RESERVES -> combatReserves();
+        };
+    }
+
+    public void setStat(com.noirm.training.TrainingSystem.Stat stat, float value) {
+        switch (stat) {
+            case SPEED -> setCombatStats(value, taijutsu);
+            case TAIJUTSU -> setCombatStats(speed, value);
+            case VITALITY -> {
+                vitality = Mth.clamp(value, 1f, ShinobiData.MAX_STAT);
+                setCombatStats(speed, taijutsu);
+            }
+            case RESERVES -> reserves = Mth.clamp(value, 1f, ShinobiData.MAX_STAT);
+        }
+    }
+
+    public float xp(com.noirm.training.TrainingSystem.Stat stat) {
+        return statXp[stat.ordinal()];
+    }
+
+    public void setXp(com.noirm.training.TrainingSystem.Stat stat, float value) {
+        statXp[stat.ordinal()] = Math.max(0, value);
+    }
+
+    @Override
+    public float combatVitality() {
+        return vitality >= 0 ? vitality : (speed + taijutsu) / 2f;
+    }
+
+    @Override
+    public float combatReserves() {
+        return reserves >= 0 ? reserves : (speed + taijutsu) / 2f;
     }
 
     private net.minecraft.world.entity.player.Player leaderPlayer() {
@@ -213,12 +313,31 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 setTarget(pick);
             }
         }
+        if (order == com.noirm.ally.Order.TRAIN && (getTarget() == null || getTarget() instanceof TrainingDummy)) {
+            if (getTarget() == null && tickCount % 20 == 0) {
+                level().getEntitiesOfClass(TrainingDummy.class, getBoundingBox().inflate(24)).stream()
+                        .min(java.util.Comparator.comparingDouble(this::distanceToSqr)).ifPresent(this::setTarget);
+            }
+        }
+        if (order == com.noirm.ally.Order.MEDITATE && getTarget() == null) {
+            getNavigation().stop();
+            setPose(net.minecraft.world.entity.Pose.CROUCHING);
+            if (tickCount % 20 == 0) {
+                com.noirm.ally.AllyTraining.onMeditate(this);
+                heal(com.noirm.ally.Crew.REGEN_PER_SECOND * 2);
+                if (level() instanceof net.minecraft.server.level.ServerLevel level) {
+                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANT, getX(), getY() + 1.2, getZ(), 6, 0.4, 0.4, 0.4, 0.4);
+                }
+            }
+            return;
+        }
         if (getTarget() == null) {
             double distance = distanceTo(player);
-            if (!waiting && distance > com.noirm.ally.Crew.TELEPORT_DISTANCE && player.onGround()) {
+            boolean follows = order == com.noirm.ally.Order.FOLLOW;
+            if (follows && distance > com.noirm.ally.Crew.TELEPORT_DISTANCE && player.onGround()) {
                 teleportTo(player.getX(), player.getY(), player.getZ());
                 getNavigation().stop();
-            } else if (!waiting && distance > 5) {
+            } else if (follows && distance > 5) {
                 getNavigation().moveTo(player, distance > 12 ? 1.25 : 1.0);
             }
             if (tickCount % 20 == 0 && getHealth() < getMaxHealth()) {
@@ -242,6 +361,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             return false; // a stray hit from your own side
         }
         boolean hurt = super.hurt(source, amount);
+        if (hurt && !level().isClientSide()) {
+            com.noirm.ally.AllyTraining.onDamageTaken(this, source.getEntity(), amount);
+        }
         if (hurt && !level().isClientSide() && isAlive() && canYield() && source.getEntity() instanceof Player player
                 && getHealth() < getMaxHealth() * com.noirm.ally.Crew.YIELD_HEALTH && !isYielded()) {
             com.noirm.ally.Crew.yieldTo(this, player);
@@ -271,13 +393,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         if (player.getUUID().equals(leader)) {
             if (player.isShiftKeyDown()) {
-                waiting = !waiting;
-                getNavigation().stop();
-                player.displayClientMessage(Component.translatable(waiting ? "message.noirm.crew.wait" : "message.noirm.crew.follow",
+                setOrder(order == com.noirm.ally.Order.FOLLOW ? com.noirm.ally.Order.WAIT : com.noirm.ally.Order.FOLLOW);
+                player.displayClientMessage(Component.translatable(isWaiting() ? "message.noirm.crew.wait" : "message.noirm.crew.follow",
                         getDisplayName()), true);
-            } else {
-                player.displayClientMessage(Component.translatable("message.noirm.crew.status", getDisplayName(),
-                        Math.round(getHealth()), Math.round(getMaxHealth())), true);
+            } else if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                com.noirm.ally.AllyMenu.open(serverPlayer, this);
             }
             return net.minecraft.world.InteractionResult.CONSUME;
         }
@@ -299,6 +419,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             jutsu.addAll(JutsuData.allFor(nature)); // ninjas have mastered their clan's natures
         }
         jutsu.addAll(JutsuData.startersFor(null));
+        taught.stream().filter(id -> JutsuData.get(id) != null && !jutsu.contains(id)).forEach(jutsu::add);
         entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : 0));
         if (clan.hasSharingan() && entityData.get(SHARINGAN) >= 2 && JutsuData.get(Sharingan.GENJUTSU) != null) {
             jutsu.add(Sharingan.GENJUTSU);
@@ -494,7 +615,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         var health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             boolean full = getHealth() >= getMaxHealth();
-            health.setBaseValue(Mth.clamp(40 + ((this.speed + this.taijutsu) / 2f - ShinobiData.DEFAULT_STAT), 20, 1024));
+            health.setBaseValue(Mth.clamp(40 + (combatVitality() - ShinobiData.DEFAULT_STAT), 20, 1024));
             if (full || getHealth() > getMaxHealth()) {
                 setHealth(getMaxHealth());
             }
@@ -515,7 +636,17 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         tag.putString("Skin", outfit());
         if (leader != null) {
             tag.putUUID("Leader", leader);
-            tag.putBoolean("Waiting", waiting);
+            tag.putString("Order", order.name());
+            tag.putFloat("Vitality", vitality);
+            tag.putFloat("Reserves", reserves);
+            net.minecraft.nbt.CompoundTag xpTag = new net.minecraft.nbt.CompoundTag();
+            for (var stat : com.noirm.training.TrainingSystem.Stat.values()) {
+                xpTag.putFloat(stat.key(), xp(stat));
+            }
+            tag.put("StatXp", xpTag);
+            net.minecraft.nbt.ListTag taughtTag = new net.minecraft.nbt.ListTag();
+            taught.forEach(id -> taughtTag.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
+            tag.put("Taught", taughtTag);
         }
     }
 
@@ -532,7 +663,30 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         if (tag.hasUUID("Leader")) {
             joinCrew(tag.getUUID("Leader"));
-            waiting = tag.getBoolean("Waiting");
+            if (tag.contains("Order")) {
+                try {
+                    order = com.noirm.ally.Order.valueOf(tag.getString("Order"));
+                } catch (IllegalArgumentException ignored) {
+                    order = com.noirm.ally.Order.FOLLOW;
+                }
+            } else if (tag.getBoolean("Waiting")) {
+                order = com.noirm.ally.Order.WAIT;
+            }
+            if (tag.contains("Vitality")) {
+                vitality = tag.getFloat("Vitality");
+                reserves = tag.getFloat("Reserves");
+            }
+            net.minecraft.nbt.CompoundTag xpTag = tag.getCompound("StatXp");
+            for (var stat : com.noirm.training.TrainingSystem.Stat.values()) {
+                setXp(stat, xpTag.getFloat(stat.key()));
+            }
+            taught.clear();
+            tag.getList("Taught", net.minecraft.nbt.Tag.TAG_STRING).forEach(t -> {
+                ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
+                if (id != null) {
+                    taught.add(id);
+                }
+            });
         }
         String savedClan = tag.getString("Clan");
         ResourceLocation savedStyle = ResourceLocation.tryParse(tag.getString("Style"));

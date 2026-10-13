@@ -123,6 +123,8 @@ public final class TrainingSystem {
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
         } else if (attacker instanceof com.noirm.entity.ShadowClone clone) {
             clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f));
+        } else if (attacker instanceof com.noirm.entity.SparringNinja ninja) {
+            com.noirm.ally.AllyTraining.onHitLanded(ninja, target, heavy, guarded);
         }
     }
 
@@ -135,6 +137,9 @@ public final class TrainingSystem {
 
     /** Any dodge: a drill, so it only teaches below the cap. */
     public static void onDodge(LivingEntity entity) {
+        if (entity instanceof com.noirm.entity.SparringNinja ninja) {
+            com.noirm.ally.AllyTraining.onDodge(ninja);
+        }
         if (entity instanceof Player player && !player.level().isClientSide()) {
             grant(player, Stat.SPEED, drillFactor(player, Stat.SPEED) * DODGE_XP);
         }

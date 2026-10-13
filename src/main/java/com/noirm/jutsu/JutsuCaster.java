@@ -243,6 +243,9 @@ public final class JutsuCaster {
         }
         execute(caster, id, def, charge);
         ready.put(id, now + cooldown(caster, id, def));
+        if (caster instanceof com.noirm.entity.SparringNinja ninja) {
+            com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
+        }
         return true;
     }
 
@@ -341,7 +344,7 @@ public final class JutsuCaster {
             power *= WATER_SOURCE_BONUS; // water jutsu are far stronger with water to draw from
         }
         if (!(caster instanceof Player) && caster instanceof com.noirm.combat.CombatStats stats) {
-            power *= chakraPower((stats.combatSpeed() + stats.combatTaijutsu()) / 2f);
+            power *= chakraPower(stats.combatReserves());
         }
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);

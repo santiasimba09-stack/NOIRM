@@ -9,6 +9,16 @@ public interface CombatStats {
 
     float combatTaijutsu();
 
+    /** Toughness (see {@code Perception.durability}): by default the average of speed and taijutsu. */
+    default float combatVitality() {
+        return (combatSpeed() + combatTaijutsu()) / 2f;
+    }
+
+    /** Chakra behind jutsu: by default the average of speed and taijutsu. */
+    default float combatReserves() {
+        return (combatSpeed() + combatTaijutsu()) / 2f;
+    }
+
     /** The fighting style this fighter uses ({@code data/noirm/combat/styles/}), or null for the basic one. */
     default net.minecraft.resources.ResourceLocation combatStyle() {
         return null;

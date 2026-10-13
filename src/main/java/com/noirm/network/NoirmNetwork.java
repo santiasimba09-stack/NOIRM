@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "6";
+    private static final String PROTOCOL_VERSION = "7";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -84,6 +84,12 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(PowerPackets.Precognition.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerPackets.Precognition::encode).decoder(PowerPackets.Precognition::decode)
                 .consumerMainThread(PowerPackets.Precognition::handle).add();
+        CHANNEL.messageBuilder(com.noirm.ally.AllyPackets.Info.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.noirm.ally.AllyPackets.Info::encode).decoder(com.noirm.ally.AllyPackets.Info::decode)
+                .consumerMainThread(com.noirm.ally.AllyPackets.Info::handle).add();
+        CHANNEL.messageBuilder(com.noirm.ally.AllyPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.noirm.ally.AllyPackets.Command::encode).decoder(com.noirm.ally.AllyPackets.Command::decode)
+                .consumerMainThread(com.noirm.ally.AllyPackets.Command::handle).add();
         CHANNEL.messageBuilder(VfxPackets.Bolt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(VfxPackets.Bolt::encode).decoder(VfxPackets.Bolt::decode)
                 .consumerMainThread(VfxPackets.Bolt::handle).add();

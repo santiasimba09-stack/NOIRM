@@ -95,6 +95,35 @@ public final class CrewGameTests {
         clearAround(helper);
     }
 
+    @GameTest(template = "empty", batch = "noirm_crew_growth")
+    public static void crewMatesGrowAndLearn(GameTestHelper helper) {
+        SparringNinja mate = ninja(helper, 1.5f, 1.5f, TestClans.FIRE);
+        mate.joinCrew(java.util.UUID.randomUUID());
+        var taijutsu = com.noirm.training.TrainingSystem.Stat.TAIJUTSU;
+        float before = mate.stat(taijutsu);
+        com.noirm.ally.AllyTraining.grant(mate, taijutsu, 1000f);
+        helper.assertTrue(mate.stat(taijutsu) > before + 3, "XP raises a crew mate's stats, got " + mate.stat(taijutsu));
+        // Drills stop teaching at the cap; real fights don't.
+        mate.setStat(taijutsu, 40f);
+        mate.setXp(taijutsu, 0f);
+        com.noirm.ally.AllyTraining.onHitLanded(mate, helper.spawnWithNoFreeWill(NoirmEntities.TRAINING_DUMMY.get(), 0.5f, 1f, 0.5f), false, false);
+        helper.assertTrue(mate.xp(taijutsu) == 0f, "the dummy teaches nothing past the drill cap");
+        // Orders.
+        mate.setOrder(com.noirm.ally.Order.MEDITATE);
+        helper.assertTrue(mate.order() == com.noirm.ally.Order.MEDITATE && mate.isWaiting(), "they take orders");
+        // Teaching: their natures only, and stronger jutsu need more reserves.
+        var fireball = com.noirm.jutsu.JutsuData.get(Noirm.id("katon/great_fireball"));
+        var waterDragon = com.noirm.jutsu.JutsuData.get(Noirm.id("suiton/water_dragon"));
+        helper.assertTrue(com.noirm.ally.AllyPackets.blockerFor(mate, waterDragon).equals("screen.noirm.ally.teach.nature"), "not their nature");
+        mate.setStat(com.noirm.training.TrainingSystem.Stat.RESERVES, 10f);
+        var kirin = com.noirm.jutsu.JutsuData.get(Noirm.id("raiton/kirin"));
+        helper.assertTrue(com.noirm.ally.AllyPackets.blockerFor(mate, kirin).equals("screen.noirm.ally.teach.reserves"), "S rank needs reserves");
+        helper.assertTrue(com.noirm.ally.AllyPackets.blockerFor(mate, fireball).isEmpty(), "but a fire user can learn the Great Fireball");
+        mate.teach(Noirm.id("raiton/kirin"));
+        helper.assertTrue(mate.knownJutsu().contains(Noirm.id("raiton/kirin")) && mate.taughtJutsu().contains(Noirm.id("raiton/kirin")), "taught jutsu are kept");
+        clearAround(helper);
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
