@@ -61,9 +61,48 @@ public final class PowersCommand {
 
     private PowersCommand() {}
 
+    /** {@code /noirm ninja <clan> [tails] [strength]}: a ninja of exactly that clan, in front of you. */
+    private static int spawnNinja(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx, String clanId, int tails, int strength)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        CommandSourceStack source = ctx.getSource();
+        var clan = WorldClans.get(source.getServer()).find(clanId).orElse(null);
+        if (clan == null) {
+            source.sendFailure(Component.translatable("commands.noirm.clan.unknown", clanId));
+            return 0;
+        }
+        net.minecraft.server.level.ServerLevel level = source.getLevel();
+        var ninja = com.noirm.registry.NoirmEntities.SPARRING_NINJA.get().create(level);
+        if (ninja == null) {
+            return 0;
+        }
+        net.minecraft.world.phys.Vec3 at = source.getPosition();
+        if (source.getEntity() != null) {
+            net.minecraft.world.phys.Vec3 look = source.getEntity().getViewVector(1f);
+            at = at.add(look.x * 3, 0, look.z * 3);
+        }
+        ninja.moveTo(at.x, at.y, at.z, source.getRotation().y + 180f, 0f);
+        ninja.finalizeSpawn(level, level.getCurrentDifficultyAt(ninja.blockPosition()), net.minecraft.world.entity.MobSpawnType.COMMAND, null, null);
+        ninja.joinClan(clan);
+        ninja.sealBeast(tails); // 0 = no beast: exactly what you asked for
+        if (strength > 0) {
+            ninja.setCombatStats(strength, strength);
+        }
+        level.addFreshEntity(ninja);
+        source.sendSuccess(() -> Component.translatable("commands.noirm.ninja.spawned", clan.name()), true);
+        return 1;
+    }
+
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("noirm")
+                .then(Commands.literal("ninja").requires(s -> s.hasPermission(CHEATS))
+                        .then(Commands.argument("clan", StringArgumentType.word()).suggests(CLANS)
+                                .executes(ctx -> spawnNinja(ctx, StringArgumentType.getString(ctx, "clan"), 0, 0))
+                                .then(Commands.argument("tails", IntegerArgumentType.integer(0, BijuData.MAX_TAILS))
+                                        .executes(ctx -> spawnNinja(ctx, StringArgumentType.getString(ctx, "clan"), IntegerArgumentType.getInteger(ctx, "tails"), 0))
+                                        .then(Commands.argument("strength", IntegerArgumentType.integer(1, 10000))
+                                                .executes(ctx -> spawnNinja(ctx, StringArgumentType.getString(ctx, "clan"),
+                                                        IntegerArgumentType.getInteger(ctx, "tails"), IntegerArgumentType.getInteger(ctx, "strength")))))))
                 .then(Commands.literal("clan")
                         .executes(ctx -> showClan(ctx.getSource()))
                         .then(Commands.literal("list").executes(ctx -> listClans(ctx.getSource())))

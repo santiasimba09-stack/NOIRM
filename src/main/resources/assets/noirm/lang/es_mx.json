@@ -327,5 +327,12 @@
   "screen.noirm.ally.dismiss": "Despedir",
   "message.noirm.ally.stat_up": "¡%s subió %s a %s!",
   "message.noirm.ally.taught": "Le enseñaste a %s %s.",
-  "message.noirm.ally.dismissed": "%s sigue su propio camino."
+  "message.noirm.ally.dismissed": "%s sigue su propio camino.",
+  "commands.noirm.clan.unknown": "No hay un clan llamado %s en este mundo (prueba /noirm clan list)",
+  "commands.noirm.ninja.spawned": "Aparece un ninja %s.",
+  "item.noirm.clan_ninja_spawn_egg": "Huevo de ninja %s",
+  "clan.noirm.uchiha": "Uchiha",
+  "clan.noirm.senju": "Senju",
+  "clan.noirm.hyuga": "Hyūga",
+  "clan.noirm.uzumaki": "Uzumaki"
 }

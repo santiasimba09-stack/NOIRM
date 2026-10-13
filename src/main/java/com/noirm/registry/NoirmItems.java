@@ -41,6 +41,17 @@ public final class NoirmItems {
     public static void creativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(SPARRING_NINJA_SPAWN_EGG);
+            // One egg per canon clan: exactly that clan, never a surprise jinchūriki.
+            for (String clan : java.util.List.of("uchiha", "senju", "hyuga", "uzumaki")) {
+                net.minecraft.world.item.ItemStack egg = new net.minecraft.world.item.ItemStack(SPARRING_NINJA_SPAWN_EGG.get());
+                net.minecraft.nbt.CompoundTag entity = new net.minecraft.nbt.CompoundTag();
+                entity.putString("Clan", clan);
+                entity.putInt("Tails", 0);
+                egg.getOrCreateTag().put("EntityTag", entity);
+                egg.setHoverName(net.minecraft.network.chat.Component.translatable("item.noirm.clan_ninja_spawn_egg",
+                        net.minecraft.network.chat.Component.translatable("clan.noirm." + clan)).withStyle(s -> s.withItalic(false)));
+                event.accept(egg);
+            }
             event.accept(TAILED_BEAST_SPAWN_EGG);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(TRAINING_DUMMY);

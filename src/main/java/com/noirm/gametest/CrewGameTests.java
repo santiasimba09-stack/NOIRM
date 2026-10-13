@@ -124,6 +124,22 @@ public final class CrewGameTests {
         clearAround(helper);
     }
 
+    /** Clan spawn eggs carry {Clan, Tails:0}: exactly that clan, and no surprise beast. */
+    @GameTest(template = "empty", batch = "noirm_clan_eggs", timeoutTicks = 30)
+    public static void clanEggsSpawnThatClan(GameTestHelper helper) {
+        SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 1.5f);
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        ninja.saveWithoutId(tag);
+        tag.putString("Clan", "uchiha");
+        tag.putInt("Tails", 0);
+        ninja.load(tag);
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue("uchiha".equals(ninja.clanId()), "an Uchiha egg makes an Uchiha, got " + ninja.clanId());
+            helper.assertTrue(ninja.tails() == 0, "and never a jinchūriki");
+            clearAround(helper);
+        });
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
