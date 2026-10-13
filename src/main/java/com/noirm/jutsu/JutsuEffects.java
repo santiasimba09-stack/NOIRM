@@ -50,6 +50,11 @@ public final class JutsuEffects {
      * Are {@code a} and {@code b} on the same side: the same person, a shadow clone and its
      * owner (or two clones of one owner), or crew mates? Friendly jutsu don't hurt each other.
      */
+    /** Can {@code caster}'s jutsu affect {@code e}? Not themselves, and not their own side. */
+    public static boolean isTarget(LivingEntity caster, Entity e) {
+        return e != caster && !isFriendly(caster, e);
+    }
+
     public static boolean isFriendly(Entity a, Entity b) {
         if (a == b) {
             return true;

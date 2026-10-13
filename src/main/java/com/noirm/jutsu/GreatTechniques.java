@@ -95,7 +95,7 @@ public final class GreatTechniques {
             level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 4f, 0.5f);
             level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.GENERIC_EXPLODE, SoundSource.WEATHER, 3f, 0.6f);
             for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(ground, ground).inflate(radius),
-                    e -> e != caster && e.isAlive() && e.position().distanceTo(ground) <= radius + e.getBbWidth())) {
+                    e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && e.position().distanceTo(ground) <= radius + e.getBbWidth())) {
                 float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(ground) / (radius + 1));
                 Vec3 push = victim.position().subtract(ground);
                 JutsuEffects.hit(caster, victim, p.damage() * power * (0.4f + 0.6f * falloff), p.knockback(), p.posture() * power, 0, push);
@@ -146,7 +146,7 @@ public final class GreatTechniques {
                 }
             }
             AABB band = new AABB(front.add(side.scale(-halfWidth)).add(0, -1, 0), front.add(side.scale(halfWidth)).add(0, height, 0)).inflate(0.8);
-            for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, band, e -> e != caster && e.isAlive() && !e.isSpectator())) {
+            for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, band, e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator())) {
                 if (hit.add(victim)) {
                     JutsuEffects.hit(caster, victim, p.damage() * power, 0, p.posture() * power, p.fireSeconds(), dir);
                     JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
@@ -187,7 +187,7 @@ public final class GreatTechniques {
             Vfx.discharge(level, center, radius, 10, Vfx.LIGHTNING);
         }
         for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(radius),
-                e -> e != caster && e.isAlive() && e.distanceTo(caster) <= radius)) {
+                e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && e.distanceTo(caster) <= radius)) {
             if (nature == Nature.LIGHTNING) {
                 Vfx.bolt(level, center, victim.position().add(0, victim.getBbHeight() * 0.5, 0), Vfx.LIGHTNING, 0.08f, 6, 1);
             }

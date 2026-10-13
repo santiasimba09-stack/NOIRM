@@ -77,7 +77,7 @@ public final class HyugaTechniques {
         }
         AABB area = caster.getBoundingBox().inflate(spin.radius);
         for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, area,
-                e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceTo(caster) <= spin.radius)) {
+                e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && e.distanceTo(caster) <= spin.radius)) {
             if (first) {
                 JutsuEffects.hit(caster, other, spin.damage, 0, spin.posture, 0, other.position().subtract(caster.position()));
             }

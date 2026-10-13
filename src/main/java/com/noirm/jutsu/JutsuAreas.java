@@ -100,7 +100,8 @@ public final class JutsuAreas {
     private static void hitAround(Area area, Vec3 at, double radius) {
         AABB box = new AABB(at, at).inflate(radius, 2, radius);
         for (LivingEntity victim : area.level().getEntitiesOfClass(LivingEntity.class, box,
-                e -> e.isAlive() && e != area.owner() && e != area.follow() && e.position().distanceTo(at) <= radius + 0.5)) {
+                e -> e.isAlive() && e != area.owner() && e != area.follow() && !(area.owner() != null && JutsuEffects.isFriendly(area.owner(), e))
+                        && e.position().distanceTo(at) <= radius + 0.5)) {
             if (area.damage() > 0) {
                 JutsuEffects.hit(area.owner() != null ? area.owner() : victim, victim, area.damage(), 0, 0, 0, Vec3.ZERO);
             }

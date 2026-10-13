@@ -198,7 +198,7 @@ public final class JutsuBehaviors {
                 break;
             }
             end = next;
-            List<LivingEntity> hits = level.getEntitiesOfClass(LivingEntity.class, box.inflate(0.4), e -> e != caster && e.isAlive() && !e.isSpectator());
+            List<LivingEntity> hits = level.getEntitiesOfClass(LivingEntity.class, box.inflate(0.4), e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator());
             if (!hits.isEmpty()) {
                 victim = hits.get(0);
                 break;
@@ -357,7 +357,7 @@ public final class JutsuBehaviors {
     static List<LivingEntity> inCone(LivingEntity caster, double range, double halfAngle) {
         AABB area = caster.getBoundingBox().inflate(range);
         return caster.level().getEntitiesOfClass(LivingEntity.class, area,
-                e -> e != caster && e.isAlive() && !e.isSpectator() && inCone(caster, e.position().add(0, e.getBbHeight() / 2, 0), range, halfAngle));
+                e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && inCone(caster, e.position().add(0, e.getBbHeight() / 2, 0), range, halfAngle));
     }
 
     private static boolean inCone(LivingEntity caster, Vec3 point, double range, double halfAngle) {
@@ -378,7 +378,7 @@ public final class JutsuBehaviors {
         Vec3 eye = caster.getEyePosition();
         Vec3 look = caster.getViewVector(1f);
         return caster.level().getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(range),
-                        e -> e != caster && e.isAlive() && !e.isSpectator() && caster.hasLineOfSight(e))
+                        e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && caster.hasLineOfSight(e))
                 .stream()
                 .filter(e -> angle(eye, look, e) <= maxAngle + apparentRadius(eye, e) && e.distanceTo(caster) <= range)
                 .min(Comparator.comparingDouble(e -> angle(eye, look, e)))

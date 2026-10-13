@@ -93,7 +93,7 @@ public final class ElementalBehaviors {
         }
         AABB box = new AABB(at, at).inflate(radius, 2.5, radius);
         for (LivingEntity victim : ctx.level().getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && !e.isSpectator() && horizontal(e.position(), at) <= radius + e.getBbWidth() / 2)) {
+                e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && horizontal(e.position(), at) <= radius + e.getBbWidth() / 2)) {
             JutsuEffects.hit(caster, victim, p.damage() * ctx.power(), 0, p.posture() * ctx.power(), p.fireSeconds(), Vec3.ZERO);
             Vec3 motion = victim.getDeltaMovement();
             victim.setDeltaMovement(motion.x, Math.max(motion.y, p.knockback()), motion.z);
@@ -156,7 +156,7 @@ public final class ElementalBehaviors {
                 Vec3 point = start.add(dir.scale(d));
                 JutsuEffects.particlesAt(level, point, look, 1, 0.05, 0);
                 for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(0.5),
-                        e -> e != caster && e.isAlive() && !e.isSpectator() && !hit.contains(e))) {
+                        e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && !hit.contains(e))) {
                     hit.add(victim);
                     JutsuEffects.hit(caster, victim, p.damage() * power, p.knockback(), p.posture() * power, p.fireSeconds(), dir);
                     JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
@@ -172,7 +172,7 @@ public final class ElementalBehaviors {
                 com.noirm.vfx.Vfx.explosion(level, center, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), p.radius());
                 com.noirm.world.Destruction.natureImpact(level, center, JutsuBehaviors.nature(ctx), p.radius(), power);
                 for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(p.radius()),
-                        e -> e != caster && e.isAlive() && !hit.contains(e) && e.position().distanceTo(center) <= p.radius() + 1)) {
+                        e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !hit.contains(e) && e.position().distanceTo(center) <= p.radius() + 1)) {
                     hit.add(victim);
                     JutsuEffects.hit(caster, victim, p.damage() * power, p.knockback(), p.posture() * power, p.fireSeconds(), dir);
                 }

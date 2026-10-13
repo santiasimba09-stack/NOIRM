@@ -260,6 +260,7 @@ public final class JutsuCaster {
             return;
         }
         JutsuContext context = new JutsuContext(caster, id, def, power(caster, id, def), charge);
+        FriendlyZones.mark(caster);
         if (start) {
             behavior.cast(context);
             Sharingan.onJutsuCast(caster, id);

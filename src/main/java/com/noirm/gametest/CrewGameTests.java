@@ -63,6 +63,38 @@ public final class CrewGameTests {
         clearAround(helper);
     }
 
+    /** Playtest 4: allies' jutsu hurt the player. Nothing from your own side may hurt you. */
+    @GameTest(template = "empty", batch = "noirm_crew_jutsu")
+    public static void crewJutsuSpareTheirSide(GameTestHelper helper) {
+        floor(helper);
+        java.util.UUID leader = java.util.UUID.randomUUID();
+        SparringNinja caster = ninja(helper, 1.5f, 1.5f, TestClans.PLAIN);
+        SparringNinja mate = ninja(helper, 0.5f, 1.5f, TestClans.PLAIN);
+        SparringNinja enemy = ninja(helper, 2.5f, 1.5f, TestClans.PLAIN);
+        caster.joinCrew(leader);
+        mate.joinCrew(leader);
+        mate.setInvulnerable(false);
+        enemy.setInvulnerable(false);
+        helper.assertTrue(Crew.sameSide(caster, mate), "two crew mates of one leader are on the same side");
+        var id = Noirm.id("raiton/chidori_current");
+        var def = com.noirm.jutsu.JutsuData.get(id);
+        com.noirm.jutsu.JutsuBehaviors.get(def.behavior()).cast(new com.noirm.jutsu.JutsuContext(caster, id, def, 1f, 1f));
+        helper.assertTrue(com.noirm.combat.CombatSystem.isStaggered(enemy) && enemy.getHealth() < enemy.getMaxHealth(), "the enemy is shocked");
+        helper.assertFalse(com.noirm.combat.CombatSystem.isStaggered(mate), "the crew mate isn't stunned");
+        helper.assertTrue(mate.getHealth() == mate.getMaxHealth(), "nor hurt");
+        // The aftermath (burning ground, craters) spares the caster's side too.
+        com.noirm.jutsu.FriendlyZones.mark(caster);
+        float before = mate.getHealth();
+        mate.hurt(mate.damageSources().inFire(), 4f);
+        mate.hurt(mate.damageSources().fall(), 6f);
+        helper.assertTrue(mate.getHealth() == before, "fire and falls near their own side's jutsu don't hurt");
+        enemy.invulnerableTime = 0;
+        float enemyBefore = enemy.getHealth();
+        enemy.hurt(enemy.damageSources().inFire(), 4f);
+        helper.assertTrue(enemy.getHealth() < enemyBefore, "but they still hurt the enemy");
+        clearAround(helper);
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
