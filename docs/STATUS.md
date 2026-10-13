@@ -1,37 +1,32 @@
 # Project status
 
-_Last updated: 2026-10-13 (round 4, v0.4.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-13 (villages v2, v0.5.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**The owner's fourth feedback round is done (v0.4.0). 114/114 game tests green; checked in the
-real client** (screenshots `docs/screenshots/r4-*.png`). Details per item in `CHANGELOG.md`.
+**Villages v2 is done (v0.5.0). 119/119 game tests green; checked in the real client**
+(screenshots `docs/screenshots/r5-*.png`). Round 4 (v0.4.0) is in `CHANGELOG.md`.
 
 | Area | State |
 |---|---|
-| **Dramatic jutsu VFX** (vivid palettes, cast flourish, shockwaves, camera shake, orbs, cones) | ✅ seen in client |
-| **Deep allies**: stat growth, jutsu mastery, 4-jutsu loadout, respect, traits, morale, orders (train/meditate), ally screen | ✅ tested |
-| **Tailed beasts part 2**: creative sealing, tails 1→9 one press at a time, bond with requests, takeovers, chakra both ways | ✅ tested |
-| **NPCs use the player's animations** on a jointed model (elbows, knees, waist) | ✅ tested; seen in client (bends subtle) |
-| **Wearable clan gear** (16 pieces, armor points) and **random looks** from 55 parts | ✅ seen in client |
-| **Ninja villages**: hidden village with Kage tower and Kage, outposts, residents, merchants | ✅ seen in client |
-| **Spawn by clan**: clan spawn eggs, `/noirm ninja <clan> [tails] [strength]` | ✅ tested |
-| **Cleanup**: dead code removed, shared test helpers (`TestKit`) | ✅ |
+| **Hidden village ~250 blocks**: wall and gate, Kage tower, Kage Rock, Academy, hospital, clan district, shrine, hot spring, training grounds, ~130 buildings with interiors | ✅ seen in client (Leaf and Sand) |
+| **Towns** (~110 blocks) and outposts | ✅ seen in client |
+| **Villagers**: shop roles, day/night routine, children, chief, dialogue | ✅ tested |
+| **Village ninjas**: rooftop runners, wall patrols, trainees, clan district | ✅ tested; runners seen moving in client |
+| `/noirm village` to build one on the spot | ✅ |
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.4.0.
+Nothing. Waiting on the owner's playtest of v0.5.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback** on round 4: ally respect and growth speed, beast bond pacing,
-   village rarity (capitals are about 1,500–2,000 blocks apart), gear balance.
-2. **Villages, part 2:** residents from the village's clan, an academy, a mission board, masters
-   living in villages; the Kage as a teacher or boss.
+1. **Owner playtest + feedback**: village size and density, how often villages appear, villager behaviour.
+2. **Villages, part 3:** missions board, masters living in villages, the Kage as a teacher, residents
+   from the village's own clans; districts beyond the 250-block limit if wanted.
 3. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
 4. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
-5. **More canon jutsu** on the existing behaviors (one JSON each).
-6. Later: beasts' homes, squads on missions, Mangekyō.
+5. More canon jutsu on the existing behaviors.
 
 ## Code map
 
@@ -54,8 +49,8 @@ Nothing. Waiting on the owner's playtest of v0.4.0.
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
-| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go), `VillagePiece` (saved per chunk), `VillageBuilder` (every building, in code), `VillageCanvas` (rotated, chunk-clipped drawing), `VillagePalette` (Leaf/Sand/Snow), `VillageKind` (capital/outpost), `VillageResidents` (spawning, alarm) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag), `VillageMerchant` (emerald trades), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed, cached), `VillageBuilder` (ground, streets, walls, Kage Rock; draws lots per chunk), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops), `Landmarks` (Kage tower, Academy, hospital, clan district, shrine, training grounds, hot spring), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind` (capital/outpost/town), `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
 | `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `TestClans`, `TestKit` (shared helpers) |
@@ -121,5 +116,5 @@ Nothing. Waiting on the owner's playtest of v0.4.0.
 - How hard should training a basic nature you weren't born with be (time, a master, an item)?
 - Should Yin, Yang and Yin-Yang join the tree (genjutsu and medical / body jutsu)?
 - Where should tailed beasts live in the world?
-- Villages: should each village belong to a clan (Uchiha district…)? Should the Kage teach or
-  give missions? Is the capital too rare (about one per 1,000 blocks at best)?
+- Villages: big enough now? Denser or more open? Should the Kage teach or give missions? Capitals are rare
+  (often 1,500–2,500 blocks apart): more often?

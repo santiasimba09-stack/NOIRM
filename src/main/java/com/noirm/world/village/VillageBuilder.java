@@ -101,6 +101,30 @@ public final class VillageBuilder {
         build(level, clip, kind, palette, origin, rotation, seed, kind.height);
     }
 
+    /**
+     * Builds a whole village at once in a live world, centred on {@code centre} (the ground under it
+     * becomes the village floor), then joins up fences, panes and stairs the way world generation
+     * would. Used by {@code /noirm village}.
+     */
+    public static void buildNow(net.minecraft.server.level.ServerLevel level, BlockPos centre, VillageKind kind, VillagePalette palette, long seed) {
+        int r = kind.radius + 2;
+        int top = kind.height + 12;
+        BoundingBox box = new BoundingBox(centre.getX() - r, centre.getY() - 41, centre.getZ() - r,
+                centre.getX() + r, centre.getY() + top, centre.getZ() + r);
+        build(level, box, kind, palette, centre, Rotation.NONE, seed, kind.height);
+        for (BlockPos pos : BlockPos.betweenClosed(box.minX(), centre.getY() - 3, box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+            BlockState state = level.getBlockState(pos);
+            Block block = state.getBlock();
+            if (block instanceof net.minecraft.world.level.block.FenceBlock || block instanceof net.minecraft.world.level.block.IronBarsBlock
+                    || block instanceof net.minecraft.world.level.block.WallBlock || block instanceof net.minecraft.world.level.block.StairBlock) {
+                BlockState joined = Block.updateFromNeighbourShapes(state, level, pos);
+                if (joined != state) {
+                    level.setBlock(pos, joined, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                }
+            }
+        }
+    }
+
     /** Builds only the Kage tower (and its Kage), centred on {@code origin}. Used by the game tests. */
     public static void buildKageTower(WorldGenLevel level, BoundingBox clip, VillagePalette palette, BlockPos origin, boolean withKage) {
         VillageCanvas canvas = new VillageCanvas(level, clip, origin, Rotation.NONE);
@@ -336,6 +360,9 @@ public final class VillageBuilder {
                 if (!inDisk(x, z, r)) {
                     continue;
                 }
+                if (z > face - recess(x)) {
+                    continue; // the cliff isn't a straight line, except where the faces are carved
+                }
                 int top = rockHeight(x, z);
                 for (int y = 0; y < top; y++) {
                     double n = noise(x + y * 3, z, 5, plan.seed + 7);
@@ -343,7 +370,7 @@ public final class VillageBuilder {
                 }
                 if (top > 2) {
                     c.set(x, top - 1, z, Blocks.GRASS_BLOCK);
-                    if (Math.floorMod(hash(x, z, plan.seed) , 61) == 0 && z < face - 6) {
+                    if (Math.floorMod(hash(x, z, plan.seed), 23) == 0 && z < face - 6 && top > 12) {
                         rockTree(x, top, z);
                     }
                 }
@@ -353,6 +380,16 @@ public final class VillageBuilder {
         for (int i = 0; i < centres.length; i++) {
             carveFace(centres[i], face, i);
         }
+    }
+
+    /** How far the cliff steps back from its line at x: nothing at the carved faces, up to 4 blocks between them. */
+    private int recess(int x) {
+        for (int centre : new int[] {-51, -17, 17, 51}) {
+            if (Math.abs(x - centre) <= 10) {
+                return 0;
+            }
+        }
+        return (int) Math.round(noise(x, 0, 7, plan.seed + 3) * 4);
     }
 
     private int rockHeight(int x, int z) {
@@ -503,10 +540,9 @@ public final class VillageBuilder {
             int x = prop.x(), z = prop.z();
             switch (prop.type()) {
                 case LANTERN -> {
-                    c.set(x, 0, z, Blocks.STONE_BRICK_WALL);
-                    c.set(x, 1, z, Blocks.STONE_BRICK_WALL);
+                    c.set(x, 0, z, p.lanternPost());
+                    c.set(x, 1, z, p.lanternPost());
                     c.set(x, 2, z, Blocks.LANTERN);
-                    c.set(x, 3, z, slab(Blocks.STONE_BRICK_SLAB, SlabType.BOTTOM));
                 }
                 case POLE -> {
                     c.fill(x, 0, z, x, POLE_HEIGHT + 1, z, p.log);

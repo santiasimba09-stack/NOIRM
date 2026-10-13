@@ -106,6 +106,7 @@ final class VillagePlanner {
         powerLines(4);
         plazaBenches(0, TOWER_Z, PLAZA - 3);
         streetTrees(CROSS_Z);
+        scatterTrees(90);
 
         // ---- the people
         capitalPeople(w);
@@ -182,6 +183,7 @@ final class VillagePlanner {
         powerLines(2);
         plan.props.add(new Prop(PropType.WELL, 0, 0, Direction.SOUTH, 0));
         plazaBenches(0, 0, 6);
+        scatterTrees(30);
 
         Lot chief = plan.first(LotType.CHIEF_HOUSE);
         add(new Spawn(Role.CHIEF, chief.cx(), 0, chief.cz(), chief.cx(), 0, chief.cz(), 3, 0, 0, 0, List.of()));
@@ -485,6 +487,21 @@ final class VillagePlanner {
         }
     }
 
+    /** Trees in the leftover lawns between buildings (the Hidden Leaf is full of them). */
+    private void scatterTrees(int count) {
+        int placed = 0;
+        for (int tries = 0; tries < count * 30 && placed < count; tries++) {
+            int x = rnd.nextInt(limit * 2 + 1) - limit;
+            int z = rnd.nextInt(limit * 2 + 1) - limit;
+            int style = rnd.nextInt(4);
+            if (free(x - 2, z - 2, x + 2, z + 2)) {
+                plan.props.add(new Prop(PropType.TREE, x, z, Direction.SOUTH, style));
+                mark(x - 3, z - 3, x + 3, z + 3);
+                placed++;
+            }
+        }
+    }
+
     /** Trees down the middle of the cross avenue's pavements. */
     private void streetTrees(int z) {
         for (int x = -100; x <= 100; x += 18) {
@@ -503,10 +520,15 @@ final class VillagePlanner {
             Lot here = roofs.remove(rnd.nextInt(roofs.size()));
             List<int[]> route = new ArrayList<>();
             route.add(new int[] {here.cx(), here.roofTop(), here.cz()});
+            java.util.Set<Lot> visited = new java.util.HashSet<>();
+            visited.add(here);
             for (int step = 0; step < 12; step++) {
                 Lot next = null;
                 double best = Double.MAX_VALUE;
                 for (Lot other : roofs) {
+                    if (visited.contains(other)) {
+                        continue;
+                    }
                     double d = Math.hypot(other.cx() - here.cx(), other.cz() - here.cz());
                     int climb = other.roofTop() - here.roofTop();
                     if (d > 4 && d < 21 && climb < 9 && d < best) {
@@ -518,6 +540,7 @@ final class VillagePlanner {
                     break;
                 }
                 route.add(new int[] {next.cx(), next.roofTop(), next.cz()});
+                visited.add(next);
                 here = next;
             }
             if (route.size() >= 3) {

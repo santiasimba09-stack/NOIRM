@@ -34,6 +34,9 @@ public class VillageRoutineGoal extends Goal {
     private boolean leaping;
     private int airTicks;
     private int stuckTicks;
+    /** Leaps in a row that didn't land on their roof. */
+    private int misses;
+    private Vec3 aim;
     private long practiceUntil;
     private long nextPractice;
 
@@ -106,6 +109,8 @@ public class VillageRoutineGoal extends Goal {
             if ((ninja.onGround() && airTicks > 3) || airTicks > 80) {
                 leaping = false;
                 cooldown = 15 + ninja.getRandom().nextInt(40);
+                boolean landed = aim != null && ninja.position().distanceToSqr(aim) < 2.5 * 2.5;
+                misses = landed ? 0 : misses + 1;
             }
             return;
         }
@@ -122,17 +127,30 @@ public class VillageRoutineGoal extends Goal {
             cooldown = 10 + ninja.getRandom().nextInt(30);
             return;
         }
-        if (flat > 24) {
-            // Lost the route (knocked off, or after a fight): walk back towards it.
-            if (ninja.getNavigation().isDone()) {
-                ninja.getNavigation().moveTo(goal.getX() + 0.5, goal.getY(), goal.getZ() + 0.5, 1.0);
-            }
+        Vec3 target = new Vec3(goal.getX() + 0.5, goal.getY() + 0.1, goal.getZ() + 0.5);
+        if (flat > 24 || misses >= 2) {
+            // Knocked off the route, or a wall in the way: vanish in a puff of smoke and
+            // reappear on the roof (the Body Flicker).
+            flicker(target);
             return;
         }
-        leap(new Vec3(goal.getX() + 0.5, goal.getY() + 0.1, goal.getZ() + 0.5));
+        leap(target);
+    }
+
+    private void flicker(Vec3 target) {
+        if (ninja.level() instanceof ServerLevel level) {
+            level.sendParticles(ParticleTypes.POOF, ninja.getX(), ninja.getY() + 1, ninja.getZ(), 12, 0.3, 0.5, 0.3, 0.02);
+            level.sendParticles(ParticleTypes.POOF, target.x, target.y + 1, target.z, 12, 0.3, 0.5, 0.3, 0.02);
+        }
+        ninja.getNavigation().stop();
+        ninja.teleportTo(target.x, target.y, target.z);
+        ninja.setDeltaMovement(Vec3.ZERO);
+        misses = 0;
+        cooldown = 20 + ninja.getRandom().nextInt(30);
     }
 
     private void leap(Vec3 target) {
+        aim = target;
         Vec3 velocity = leapVelocity(ninja.position(), target);
         ninja.getNavigation().stop();
         ninja.setDeltaMovement(velocity);

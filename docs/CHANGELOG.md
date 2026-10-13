@@ -2,6 +2,38 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-13 — Villages v2: big hidden villages, towns, living villagers, v0.5.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Hidden villages ~250 blocks across** (3× wider, ~9× the area; about the most one structure
+  can cover). Planned from a seed (`VillagePlan`/`VillagePlanner`), then built chunk by chunk.
+  - **Landmarks:**
+    - a great wall with a wall walk and lookouts;
+    - the great gate (open painted doors);
+    - a much bigger Kage tower (reception, archives, council room, office);
+    - the Kage Rock: a real mountain with four carved faces (the desert village gets a ring of cliffs instead);
+    - the Academy (classrooms, swing tree), the hospital, a clan district (Uchiha or Hyūga, with crest and koi pond);
+    - a shrine with torii, a hot spring, two training grounds (one with a lake), the ramen shop.
+  - **Streets and buildings:** ~130 lots of houses (1–4 storeys), apartment blocks with galleries,
+    round towers, shops, restaurants, stalls and parks, along avenues and streets with lanterns,
+    power lines and trees.
+  - **Interiors:** kitchens, beds, tables, ladders, shop counters and shelves; chimneys with smoke
+    and rooftop water tanks.
+  - **Desert look:** vaulted and flat roofs.
+- **Towns** (new, ~110 blocks): a chief, an inn, a shrine, shops and houses inside a fence. They
+  share a placement set with outposts and keep away from capitals.
+- **Living villagers:**
+  - shopkeepers by shop (ramen, weapons with real gear, scrolls, flowers, teahouse);
+  - villagers who go out by day and home at night;
+  - children at the Academy, a village chief;
+  - everyone has something to say.
+- **Village ninjas:**
+  - rooftop runners leap from roof to roof (and Body Flicker back if they fall);
+  - patrols walk the wall walk;
+  - trainees practise on dummies;
+  - the clan district has its own clan.
+- `/noirm village <capital|town|outpost> [leaf|sand|snow]` builds one where you stand.
+- 6 new game tests (119 in all). Screenshots `docs/screenshots/r5-*.png`. Design in `docs/WORLDGEN.md`.
+
 ## 2026-10-13 — Playtest feedback round 4, v0.4.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Every jutsu is more dramatic:** vivid four-tone palettes, a cast flourish on every jutsu,

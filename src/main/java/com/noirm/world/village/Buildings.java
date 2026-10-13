@@ -693,7 +693,7 @@ final class Buildings {
         f.fill(u1 + 1, 0, v1 + 1, u2 - 1, h - 2, v2 - 1, Blocks.AIR);
         for (int u : new int[] {u1, u2}) {
             for (int v : new int[] {v1, v2}) {
-                f.fill(u, 0, v, u, h - 1, v, f.p.log);
+                f.fill(u, 0, v, u, h - 1, v, f.p.trim());
             }
         }
         for (int k = 1; k < floors; k++) {
@@ -746,6 +746,10 @@ final class Buildings {
 
     /** A tiled gable roof over (u1, v1)–(u2, v2), ridge running across the front, eaves overhanging by one. */
     static void pitchedRoof(LotFrame f, int u1, int v1, int u2, int v2, int y, Block gable) {
+        if (f.p == VillagePalette.SAND) {
+            vault(f, u1, v1, u2, v2, y);
+            return;
+        }
         List<Block> stairs = f.p.roofStairs();
         int i = f.rnd.nextInt(stairs.size());
         f.fill(u1, y, v1, u2, y, v2, f.p.planks);
@@ -771,6 +775,20 @@ final class Buildings {
             int v = v1 + layers;
             f.fill(u1, y + layers, v, u2, y + layers, v, slab(slabBlock, SlabType.BOTTOM));
             f.fill(u1 + 1, y + layers - 1, v, u2 - 1, y + layers - 1, v, gable);
+        }
+    }
+
+    /** A desert roof: a low rounded vault of smooth sandstone over a flat deck. */
+    static void vault(LotFrame f, int u1, int v1, int u2, int v2, int y) {
+        f.fill(u1, y, v1, u2, y, v2, f.p.planks);
+        double half = (v2 - v1) / 2.0 + 0.5;
+        double mid = (v1 + v2) / 2.0;
+        for (int v = v1; v <= v2; v++) {
+            double off = Math.abs(v - mid);
+            int rise = (int) Math.round(Math.sqrt(Math.max(0, half * half - off * off)) * 0.6);
+            for (int u = u1; u <= u2; u++) {
+                f.fill(u, y + 1, v, u, y + rise, v, Blocks.SMOOTH_SANDSTONE);
+            }
         }
     }
 

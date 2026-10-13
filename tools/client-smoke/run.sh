@@ -25,11 +25,11 @@ echo '{ "pack": { "pack_format": 15, "description": "NOIRM client smoke test" } 
 echo '{ "values": ["smoke:tick"] }' > "$D/data/minecraft/tags/functions/tick.json"
 echo 'execute as @a[tag=!smoke_setup] at @s run function smoke:setup' > "$D/data/smoke/functions/tick.mcfunction"
 cp tools/client-smoke/setup.mcfunction "$D/data/smoke/functions/setup.mcfunction"
-cat > "$RUN/options.txt" <<'OPTS'
+cat > "$RUN/options.txt" <<OPTS
 onboardAccessibility:false
 tutorialStep:none
 pauseOnLostFocus:false
-renderDistance:4
+renderDistance:${RENDER_DISTANCE:-4}
 simulationDistance:5
 narrator:0
 OPTS

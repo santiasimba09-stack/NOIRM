@@ -127,9 +127,40 @@ public final class PowersCommand {
         return 1;
     }
 
+    /** {@code /noirm village <size> [look]}: builds a whole village right here, on the spot (no site checks). */
+    private static int buildVillage(CommandSourceStack source, String size, String look) {
+        com.noirm.world.village.VillageKind kind;
+        com.noirm.world.village.VillagePalette palette;
+        try {
+            kind = com.noirm.world.village.VillageKind.valueOf(size.toUpperCase(Locale.ROOT));
+            palette = look.isEmpty()
+                    ? com.noirm.world.village.VillagePalette.forBiome(source.getLevel().getBiome(net.minecraft.core.BlockPos.containing(source.getPosition())))
+                    : com.noirm.world.village.VillagePalette.valueOf(look.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            source.sendFailure(Component.translatable("commands.noirm.village.unknown"));
+            return 0;
+        }
+        // The village floor is the ground under you (even if you're flying).
+        net.minecraft.core.BlockPos centre = source.getLevel().getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                net.minecraft.core.BlockPos.containing(source.getPosition()));
+        long seed = source.getLevel().getRandom().nextLong();
+        com.noirm.world.village.VillageBuilder.buildNow(source.getLevel(), centre, kind, palette, seed);
+        source.sendSuccess(() -> Component.translatable("commands.noirm.village.built", kind.getSerializedName(),
+                palette.name().toLowerCase(Locale.ROOT)), true);
+        return 1;
+    }
+
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("noirm")
+                .then(Commands.literal("village").requires(s -> s.hasPermission(CHEATS))
+                        .then(Commands.argument("size", StringArgumentType.word())
+                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(new String[] {"capital", "town", "outpost"}, builder))
+                                .executes(ctx -> buildVillage(ctx.getSource(), StringArgumentType.getString(ctx, "size"), ""))
+                                .then(Commands.argument("look", StringArgumentType.word())
+                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(new String[] {"leaf", "sand", "snow"}, builder))
+                                        .executes(ctx -> buildVillage(ctx.getSource(), StringArgumentType.getString(ctx, "size"),
+                                                StringArgumentType.getString(ctx, "look"))))))
                 .then(Commands.literal("ninja").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.argument("clan", StringArgumentType.word()).suggests(CLANS)
                                 .executes(ctx -> spawnNinja(ctx, StringArgumentType.getString(ctx, "clan"), 0, 0))

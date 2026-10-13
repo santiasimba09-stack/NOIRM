@@ -118,6 +118,23 @@ public enum VillagePalette {
         };
     }
 
+    /** Corner posts and frames of houses. */
+    public Block trim() {
+        return switch (this) {
+            case LEAF -> Blocks.STRIPPED_OAK_LOG;
+            case SAND -> Blocks.TERRACOTTA;
+            case SNOW -> Blocks.SPRUCE_LOG;
+        };
+    }
+
+    /** The post of a street lantern. */
+    public Block lanternPost() {
+        return switch (this) {
+            case LEAF, SNOW -> Blocks.STONE_BRICK_WALL;
+            case SAND -> Blocks.SANDSTONE_WALL;
+        };
+    }
+
     /** The great gate's door leaves. */
     public Block gateDoor() {
         return switch (this) {

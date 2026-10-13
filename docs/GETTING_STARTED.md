@@ -155,12 +155,24 @@ Uzumaki clothes, flak vests and ANBU gear. Each piece gives armor points and has
 
 ## How to find ninja villages
 
-Villages are only built in **newly generated land**: start a new world, or explore far from where
-you've already been. Then run `/locate structure noirm:ninja_outpost` (small outposts, common) or
-`/locate structure noirm:hidden_village` (the big hidden village with the Kage tower, rare), and
-`/tp` to the coordinates it prints. Village ninjas leave you alone in combat mode unless you
-attack the village. Right-click a **Village Merchant** to trade emeralds. To see one right away,
-`/place structure noirm:ninja_outpost` builds one where you stand, if the ground is flat enough.
+**See one right away:** stand on fairly open ground and type `/noirm village capital` (or `town`,
+`outpost`). Add `leaf`, `sand` or `snow` to choose the look. A capital is ~250 blocks across, so
+give it room (and a few seconds to build).
+
+**Find natural ones:** they're only built in **newly generated land**, so start a new world or
+explore far away. Then `/locate structure noirm:hidden_village` (rare), `noirm:ninja_town` or
+`noirm:ninja_outpost`, and `/tp` to the coordinates it prints.
+
+**Things to try in a hidden village:**
+- Walk through the great gate up the main avenue to the Kage tower; climb its ladder to the
+  Kage's office on the balcony.
+- Look for ninjas leaping across the rooftops, and patrols on the wall walk.
+- Visit the Academy (swing tree), the ramen shop, the hot spring, the shrine and the clan district.
+- Right-click shopkeepers to trade (each shop sells different things) and anyone else to chat.
+- Stay until night: villagers go home and the lanterns light the streets.
+
+Village ninjas leave you alone in combat mode unless you attack someone in the village. Then
+every ninja nearby comes for you.
 
 ## Useful commands
 
