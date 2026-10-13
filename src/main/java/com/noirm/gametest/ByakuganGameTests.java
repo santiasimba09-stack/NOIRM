@@ -57,6 +57,30 @@ public final class ByakuganGameTests {
         helper.succeed();
     }
 
+    /** The Byakugan is not a Sharingan: no prediction, no perception boost, just no blind spot. */
+    @GameTest(template = "empty")
+    public static void byakuganSeesAllAroundButDoesNotPredict(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        ClanSystem.assign(player, data, ClanData.canon("hyuga").orElseThrow(IllegalStateException::new));
+        float before = com.noirm.combat.Perception.perception(player);
+        data.eyes().setActive(true);
+        helper.assertFalse(com.noirm.dojutsu.ThreatSense.hasForesight(player), "the Byakugan doesn't predict");
+        helper.assertTrue(Math.abs(com.noirm.combat.Perception.perception(player) - before) < 0.001f, "nor speed up perception");
+        helper.assertTrue(com.noirm.combat.CombatSystem.styleFor(player).equals(com.noirm.combat.StyleSystem.GENTLE_FIST),
+                "Hyūga fight with the Gentle Fist by default");
+        player.setYRot(0);
+        player.setYHeadRot(0);
+        SparringNinja front = ninja(helper, 1.5f, 3.5f, TestClans.PLAIN);
+        SparringNinja back = ninja(helper, 1.5f, 0.5f, TestClans.PLAIN);
+        player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 1, 2)));
+        helper.assertFalse(com.noirm.dojutsu.ThreatSense.isBehind(player, front), "facing south, the ninja to the south is in front");
+        helper.assertTrue(com.noirm.dojutsu.ThreatSense.isBehind(player, back), "and the one to the north is behind");
+        front.discard();
+        back.discard();
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = "noirm_gentle_fist")
     public static void gentleFistHurtsThroughGuard(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);

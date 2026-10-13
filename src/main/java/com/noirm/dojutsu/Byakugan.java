@@ -25,9 +25,10 @@ import java.util.WeakHashMap;
  * The Byakugan, the Hyūga's eye. Hyūga are born with it; G opens it (it drains a little chakra).
  * While open:
  * <ul>
- *   <li>you see everyone nearby as chakra silhouettes, through walls (client side);</li>
- *   <li>perception +15%, and nearly 360° vision: you're warned of every attack aimed at you and
- *       can guard from any direction;</li>
+ *   <li>you see everyone nearby as chakra silhouettes, through walls, with their chakra points
+ *       (tenketsu) lit up, and a 360° radar of chakra signatures (client side);</li>
+ *   <li>no blind spot: attacks from behind show up like attacks from the front, and you can
+ *       guard in any direction. It does <em>not</em> predict or copy: that's the Sharingan;</li>
  *   <li><b>Gentle Fist</b>: your taijutsu hits strike chakra points. Extra posture damage, a
  *       guard keeps out less, and each hit drains the target's chakra and closes chakra points.
  *       Close {@link #SEAL_POINTS} and their jutsu are sealed for a while.</li>
@@ -41,7 +42,6 @@ public final class Byakugan {
 
     /** Chakra per tick while open: 0.6/s (regen is 1/s). */
     public static final float DRAIN_PER_TICK = 0.03f;
-    public static final float PERCEPTION_MULTIPLIER = 1.15f;
     /** How far the client draws chakra silhouettes. */
     public static final double SIGHT_RANGE = 40;
     public static final float GENTLE_FIST_POSTURE = 1.4f;
@@ -69,10 +69,6 @@ public final class Byakugan {
         return entity instanceof JutsuUser user && user.byakuganActive();
     }
 
-    public static float perceptionMultiplier(LivingEntity entity) {
-        return isActive(entity) ? PERCEPTION_MULTIPLIER : 1f;
-    }
-
     static void onOpened(ServerPlayer player) {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.PLAYERS, 1f, 1.6f);
         player.displayClientMessage(Component.translatable("message.noirm.byakugan.open"), true);
@@ -89,9 +85,13 @@ public final class Byakugan {
         }
     }
 
-    /** Someone winds up an attack at {@code target}: with the Byakugan open, they see it coming. */
+    /**
+     * Someone winds up an attack at {@code target}. The Byakugan doesn't predict: it just has no
+     * blind spot, so a wind-up <em>behind</em> you shows up like one in front would.
+     */
     public static void onAttackWindup(LivingEntity attacker, LivingEntity target, int windupTicks) {
-        if (attacker != target && target instanceof ServerPlayer player && isActive(player) && Sharingan.activeStage(player) == 0) {
+        if (attacker != target && target instanceof ServerPlayer player && isActive(player) && Sharingan.activeStage(player) == 0
+                && ThreatSense.isBehind(player, attacker)) {
             NoirmNetwork.sendToPlayer(player, new PowerPackets.Precognition(attacker.getId(), windupTicks));
         }
     }

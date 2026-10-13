@@ -100,7 +100,7 @@ public final class StyleGameTests {
         });
     }
 
-    @GameTest(template = "empty", batch = "noirm_gentle_fist", timeoutTicks = 60)
+    @GameTest(template = "empty", batch = "noirm_gentle_style", timeoutTicks = 60)
     public static void gentleFistGetsThroughGuard(GameTestHelper helper) {
         floor(helper);
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.PLAIN);

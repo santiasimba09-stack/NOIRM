@@ -28,9 +28,12 @@ import java.util.Collections;
  * The eyes against <b>everything</b>, not just ninjas. NOIRM fighters telegraph their attacks
  * through the combat system; vanilla mobs and projectiles don't, so this watches them:
  * <ul>
- *   <li><b>Precognition</b> (Sharingan 2+ tomoe, or the Byakugan): a warning before a mob's
- *       attack lands (a melee mob reaching you, a skeleton drawing its bow, a creeper swelling,
- *       a spider about to leap) and before a projectile on a collision course hits you.</li>
+ *   <li><b>Precognition</b> (Sharingan 2+ tomoe): a warning before a mob's attack lands (a
+ *       melee mob reaching you, a skeleton drawing its bow, a creeper swelling, a spider about to
+ *       leap) and before a projectile on a collision course hits you.</li>
+ *   <li><b>No blind spot</b> (the Byakugan): it doesn't predict anything, but it sees all
+ *       around. Threats from <em>behind</em> are shown the moment they happen, the way you'd see
+ *       them coming from the front.</li>
  *   <li><b>Perception</b> (the same rule as against ninjas: your perception ÷ theirs): projectiles
  *       slow down as they come near you, so you have time to dodge. Arrows keep their damage.</li>
  * </ul>
@@ -54,9 +57,23 @@ public final class ThreatSense {
 
     private ThreatSense() {}
 
-    /** Can this player foresee attacks? */
+    /** Outside this angle from where you look, you can't see it (without the Byakugan). */
+    public static final double FIELD_OF_VIEW = 70;
+
+    /** Can this player foresee attacks? Only the Sharingan predicts. */
     public static boolean hasForesight(LivingEntity entity) {
-        return Sharingan.activeStage(entity) >= Sharingan.PRECOGNITION_STAGE || Byakugan.isActive(entity);
+        return Sharingan.activeStage(entity) >= Sharingan.PRECOGNITION_STAGE;
+    }
+
+    /** Is {@code threat} behind {@code viewer}, out of normal sight? */
+    public static boolean isBehind(LivingEntity viewer, Entity threat) {
+        Vec3 offset = threat.position().subtract(viewer.position());
+        Vec3 flat = new Vec3(offset.x, 0, offset.z);
+        if (flat.lengthSqr() < 0.01) {
+            return false;
+        }
+        Vec3 look = Vec3.directionFromRotation(0, viewer.getYHeadRot());
+        return look.dot(flat.normalize()) < Math.cos(Math.toRadians(FIELD_OF_VIEW));
     }
 
     /** Every other server tick for each player. */
@@ -65,15 +82,16 @@ public final class ThreatSense {
             return;
         }
         boolean foresight = hasForesight(player);
+        boolean allAround = Byakugan.isActive(player);
         long now = player.level().getGameTime();
         Map<Integer, Long> warned = WARNED.computeIfAbsent(player, p -> new HashMap<>());
         warned.values().removeIf(at -> now - at > 200);
         AABB area = player.getBoundingBox().inflate(RANGE);
 
-        if (foresight) {
+        if (foresight || allAround) {
             for (Mob mob : player.level().getEntitiesOfClass(Mob.class, area, m -> m.isAlive() && m.getTarget() == player)) {
                 int ticks = imminentAttack(mob, player);
-                if (ticks >= 0) {
+                if (ticks >= 0 && (foresight || isBehind(player, mob))) {
                     warn(player, mob, ticks, warned, now, REWARN_TICKS);
                 }
             }
@@ -84,7 +102,7 @@ public final class ThreatSense {
             if (impact < 0) {
                 continue;
             }
-            if (foresight && impact <= PROJECTILE_WARNING_TICKS) {
+            if ((foresight || allAround && isBehind(player, projectile)) && impact <= PROJECTILE_WARNING_TICKS) {
                 warn(player, projectile, impact, warned, now, Integer.MAX_VALUE);
             }
             if (projectile.distanceTo(player) <= SLOW_RADIUS && SLOWED.add(projectile)) {
