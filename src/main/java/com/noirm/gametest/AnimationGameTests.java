@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.noirm.Noirm;
@@ -162,11 +164,7 @@ public final class AnimationGameTests {
     }
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z) {
-        for (int bx = 0; bx < 3; bx++) {
-            for (int bz = 0; bz < 3; bz++) {
-                helper.setBlock(new BlockPos(bx, 0, bz), Blocks.STONE);
-            }
-        }
+        floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
         ninja.setCombatStyle(CombatData.DEFAULT_STYLE);
         ninja.joinClan(TestClans.PLAIN);

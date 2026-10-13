@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.combat.AttackInput;
 import com.noirm.combat.CombatSystem;
@@ -213,23 +215,6 @@ public final class TrainingGameTests {
 
     private static ShinobiData data(Player player) {
         return ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
-    }
-
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
-    }
-
-    private static void face(LivingEntity entity, LivingEntity other) {
-        float yaw = (float) (Mth.atan2(other.getZ() - entity.getZ(), other.getX() - entity.getX()) * Mth.RAD_TO_DEG) - 90f;
-        entity.setYRot(yaw);
-        entity.yRotO = yaw;
-        entity.setYHeadRot(yaw);
-        entity.yHeadRotO = yaw;
-        entity.setYBodyRot(yaw);
     }
 
     private static void assertNear(GameTestHelper helper, float expected, float actual, String what) {

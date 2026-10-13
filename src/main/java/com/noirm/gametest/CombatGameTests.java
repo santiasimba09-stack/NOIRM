@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.combat.AttackInput;
 import com.noirm.combat.CombatData;
@@ -234,23 +236,7 @@ public final class CombatGameTests {
         return ninja;
     }
 
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
-    }
-
     /** Turns {@code entity} to face {@code other}. Mobs with AI off keep this rotation. */
-    private static void face(LivingEntity entity, LivingEntity other) {
-        float yaw = (float) (Mth.atan2(other.getZ() - entity.getZ(), other.getX() - entity.getX()) * Mth.RAD_TO_DEG) - 90f;
-        entity.setYRot(yaw);
-        entity.yRotO = yaw;
-        entity.setYHeadRot(yaw);
-        entity.yHeadRotO = yaw;
-        entity.setYBodyRot(yaw);
-    }
 
     private static void assertRoute(GameTestHelper helper, Player player, String from, AttackInput input, String expected) {
         ResourceLocation result = CombatSystem.resolveMove(player, from == null ? null : Noirm.id(from), input);

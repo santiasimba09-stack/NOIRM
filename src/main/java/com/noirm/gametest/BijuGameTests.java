@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.biju.BijuSystem;
 import com.noirm.biju.SealingScrollItem;
@@ -237,13 +239,5 @@ public final class BijuGameTests {
         helper.assertTrue(com.noirm.biju.SealingScrollItem.capture(player, scroll, beast), "in creative, a beast can be sealed at full health");
         player.discard();
         helper.succeed();
-    }
-
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
     }
 }

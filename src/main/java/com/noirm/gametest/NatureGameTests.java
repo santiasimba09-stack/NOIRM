@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.clan.Clan;
 import com.noirm.clan.Nature;
@@ -160,29 +162,5 @@ public final class NatureGameTests {
         ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(clan);
         return ninja;
-    }
-
-    private static void clearAround(GameTestHelper helper) {
-        AABB area = new AABB(helper.absolutePos(new BlockPos(1, 1, 1))).inflate(14);
-        helper.getLevel().getEntitiesOfClass(LivingEntity.class, area, e -> !(e instanceof Player)).forEach(LivingEntity::discard);
-        helper.succeed();
-    }
-
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
-    }
-
-    private static void face(LivingEntity entity, LivingEntity other) {
-        float yaw = (float) (Mth.atan2(other.getZ() - entity.getZ(), other.getX() - entity.getX()) * Mth.RAD_TO_DEG) - 90f;
-        entity.setYRot(yaw);
-        entity.yRotO = yaw;
-        entity.setYHeadRot(yaw);
-        entity.yHeadRotO = yaw;
-        entity.setYBodyRot(yaw);
-        entity.setXRot(0);
     }
 }

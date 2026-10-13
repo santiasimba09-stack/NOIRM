@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.clan.Clan;
 import com.noirm.clan.ClanData;
@@ -175,24 +177,11 @@ public final class ByakuganGameTests {
     }
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
-        for (int bx = 0; bx < 3; bx++) {
-            for (int bz = 0; bz < 3; bz++) {
-                helper.setBlock(new BlockPos(bx, 0, bz), Blocks.STONE);
-            }
-        }
+        floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
         ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(clan);
         return ninja;
-    }
-
-    private static void face(LivingEntity entity, LivingEntity other) {
-        float yaw = (float) (Mth.atan2(other.getZ() - entity.getZ(), other.getX() - entity.getX()) * Mth.RAD_TO_DEG) - 90f;
-        entity.setYRot(yaw);
-        entity.yRotO = yaw;
-        entity.setYHeadRot(yaw);
-        entity.yHeadRotO = yaw;
-        entity.setYBodyRot(yaw);
     }
 
     private static void assertNear(GameTestHelper helper, float expected, float actual, String what) {

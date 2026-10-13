@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.ally.Crew;
 import com.noirm.clan.Clan;
@@ -176,19 +178,5 @@ public final class CrewGameTests {
         ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE);
         ninja.joinClan(clan);
         return ninja;
-    }
-
-    private static void clearAround(GameTestHelper helper) {
-        AABB area = new AABB(helper.absolutePos(new BlockPos(1, 1, 1))).inflate(14);
-        helper.getLevel().getEntitiesOfClass(LivingEntity.class, area, e -> !(e instanceof Player)).forEach(LivingEntity::discard);
-        helper.succeed();
-    }
-
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
     }
 }

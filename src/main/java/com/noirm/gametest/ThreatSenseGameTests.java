@@ -1,5 +1,7 @@
 package com.noirm.gametest;
 
+import static com.noirm.gametest.TestKit.*;
+
 import com.noirm.Noirm;
 import com.noirm.dojutsu.ThreatSense;
 import com.noirm.player.ShinobiCapability;
@@ -97,13 +99,5 @@ public final class ThreatSenseGameTests {
         net.minecraft.world.phys.AABB area = new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(1, 1, 1))).inflate(14);
         helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.Entity.class, area, e -> !(e instanceof Player)).forEach(e -> e.discard());
         helper.succeed();
-    }
-
-    private static void floor(GameTestHelper helper) {
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
     }
 }
