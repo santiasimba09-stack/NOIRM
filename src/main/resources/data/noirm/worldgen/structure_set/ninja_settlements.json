@@ -1,0 +1,13 @@
+{
+  "structures": [
+    { "structure": "noirm:ninja_outpost", "weight": 3 },
+    { "structure": "noirm:ninja_town", "weight": 2 }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 26,
+    "separation": 11,
+    "salt": 551390827,
+    "exclusion_zone": { "other_set": "noirm:hidden_villages", "chunk_count": 12 }
+  }
+}

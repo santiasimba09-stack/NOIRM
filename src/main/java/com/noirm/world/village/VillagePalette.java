@@ -95,6 +95,73 @@ public enum VillagePalette {
         this.kageTitle = kageTitle;
     }
 
+    /** Whether the village sits under a Kage Rock (the Sand village is ringed by cliffs instead). */
+    public boolean hasKageRock() {
+        return this != SAND;
+    }
+
+    /** Stairs for pitched roofs (tiles). */
+    public List<Block> roofStairs() {
+        return switch (this) {
+            case LEAF -> List.of(Blocks.BRICK_STAIRS, Blocks.MUD_BRICK_STAIRS, Blocks.RED_NETHER_BRICK_STAIRS, Blocks.DARK_OAK_STAIRS);
+            case SAND -> List.of(Blocks.SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_STAIRS, Blocks.RED_SANDSTONE_STAIRS);
+            case SNOW -> List.of(Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DARK_OAK_STAIRS, Blocks.SPRUCE_STAIRS);
+        };
+    }
+
+    /** The slab matching {@link #roofStairs()} (same index), for ridges and eaves. */
+    public List<Block> roofSlabs() {
+        return switch (this) {
+            case LEAF -> List.of(Blocks.BRICK_SLAB, Blocks.MUD_BRICK_SLAB, Blocks.RED_NETHER_BRICK_SLAB, Blocks.DARK_OAK_SLAB);
+            case SAND -> List.of(Blocks.SANDSTONE_SLAB, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.RED_SANDSTONE_SLAB);
+            case SNOW -> List.of(Blocks.DEEPSLATE_TILE_SLAB, Blocks.DARK_OAK_SLAB, Blocks.SPRUCE_SLAB);
+        };
+    }
+
+    /** The great gate's door leaves. */
+    public Block gateDoor() {
+        return switch (this) {
+            case LEAF -> Blocks.GREEN_TERRACOTTA;
+            case SAND -> Blocks.ACACIA_PLANKS;
+            case SNOW -> Blocks.SPRUCE_PLANKS;
+        };
+    }
+
+    /** How each kind of street is paved. */
+    public Block paving(VillagePlan.Paving paving) {
+        return switch (this) {
+            case LEAF -> switch (paving) {
+                case AVENUE -> Blocks.PACKED_MUD;
+                case STREET -> Blocks.DIRT_PATH;
+                case PATH -> Blocks.COARSE_DIRT;
+                case PLAZA -> Blocks.STONE_BRICKS;
+            };
+            case SAND -> switch (paving) {
+                case AVENUE, PLAZA -> Blocks.SMOOTH_SANDSTONE;
+                case STREET -> Blocks.CUT_SANDSTONE;
+                case PATH -> Blocks.SANDSTONE;
+            };
+            case SNOW -> switch (paving) {
+                case AVENUE, PLAZA -> Blocks.POLISHED_ANDESITE;
+                case STREET -> Blocks.STONE_BRICKS;
+                case PATH -> Blocks.COARSE_DIRT;
+            };
+        };
+    }
+
+    /** Trees in parks and gardens: log and leaves. */
+    public Block[] tree(int variant) {
+        return switch (this) {
+            case LEAF -> switch (variant % 4) {
+                case 0 -> new Block[] {Blocks.CHERRY_LOG, Blocks.CHERRY_LEAVES};
+                case 1 -> new Block[] {Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES};
+                default -> new Block[] {Blocks.OAK_LOG, Blocks.OAK_LEAVES};
+            };
+            case SAND -> variant % 2 == 0 ? new Block[] {Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES} : new Block[] {Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES};
+            case SNOW -> new Block[] {Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES};
+        };
+    }
+
     /** Picks the palette for the biome at the village's centre. */
     public static VillagePalette forBiome(Holder<Biome> biome) {
         if (biome.is(Tags.Biomes.IS_DESERT) || biome.is(BiomeTags.IS_BADLANDS) || biome.is(BiomeTags.IS_SAVANNA)) {

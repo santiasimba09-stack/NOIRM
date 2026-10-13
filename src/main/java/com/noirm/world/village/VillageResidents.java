@@ -10,7 +10,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
+import com.noirm.clan.ClanData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The people who live in a ninja village: who they are, how they're placed when the village is
@@ -49,6 +54,78 @@ public final class VillageResidents {
     }
 
     // ------------------------------------------------------------ placing residents at generation
+
+    /**
+     * Puts a planned resident into the world (when the chunk they live in is built). Their stats
+     * come from {@code seed}, so the same village always has the same people.
+     */
+    public static void spawn(VillageCanvas c, VillagePlan plan, VillagePlan.Spawn s, long seed) {
+        ServerLevelAccessor level = c.level;
+        RandomSource r = RandomSource.create(seed);
+        BlockPos pos = c.world(s.x(), s.y(), s.z());
+        BlockPos home = c.world(s.homeX(), s.homeY(), s.homeZ());
+        BlockPos work = c.world(s.workX(), 0, s.workZ());
+        switch (s.role()) {
+            case KAGE -> kage(level, pos, 120 + r.nextFloat() * 80, 120 + r.nextFloat() * 80, plan.palette.kageTitle);
+            case GUARD -> resident(level, pos, home, s.radius(), 20 + r.nextFloat() * 15, 20 + r.nextFloat() * 15, "GUARD", null, null);
+            case TRAINEE -> resident(level, pos, home, s.radius(), 12 + r.nextFloat() * 15, 12 + r.nextFloat() * 15, "TRAINEE", null, null);
+            case NINJA -> resident(level, pos, home, 24, 15 + r.nextFloat() * 15, 15 + r.nextFloat() * 15, "", null, null);
+            case CLAN_NINJA -> resident(level, pos, home, s.radius(), 20 + r.nextFloat() * 20, 20 + r.nextFloat() * 20, "", plan.compoundClan, null);
+            case TEACHER -> {
+                SparringNinja teacher = create(level, pos, home, s.radius(), 25 + r.nextFloat() * 10, 25 + r.nextFloat() * 10);
+                if (teacher != null) {
+                    teacher.setCustomName(Component.translatable("entity.noirm.villager.academy_teacher"));
+                    place(level, teacher);
+                }
+            }
+            case PATROL, RUNNER -> {
+                List<BlockPos> route = new ArrayList<>();
+                for (int[] point : s.route()) {
+                    route.add(c.world(point[0], point[1], point[2]));
+                }
+                boolean runner = s.role() == VillagePlan.Role.RUNNER;
+                float speed = runner ? 25 + r.nextFloat() * 20 : 18 + r.nextFloat() * 12;
+                resident(level, pos, home, 128, speed, 18 + r.nextFloat() * 15, s.role().name(), null, route);
+            }
+            case MERCHANT, CIVILIAN, CHILD, CHIEF -> villager(level, pos, s, home, work);
+            case DUMMY -> dummy(level, pos);
+        }
+    }
+
+    private static void resident(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius, float speed, float taijutsu,
+                                 String role, String clan, List<BlockPos> route) {
+        SparringNinja ninja = create(level, pos, home, radius, speed, taijutsu);
+        if (ninja == null) {
+            return;
+        }
+        ninja.setVillageRole(role);
+        if (route != null) {
+            ninja.setRoute(route);
+        }
+        if (clan != null && !clan.isEmpty()) {
+            ClanData.canon(clan).ifPresent(ninja::joinClan);
+        }
+        place(level, ninja);
+    }
+
+    private static void villager(ServerLevelAccessor level, BlockPos pos, VillagePlan.Spawn s, BlockPos home, BlockPos work) {
+        VillageMerchant villager = NoirmEntities.VILLAGE_MERCHANT.get().create(level.getLevel());
+        if (villager == null) {
+            return;
+        }
+        VillageMerchant.Role role = switch (s.role()) {
+            case CIVILIAN -> VillageMerchant.Role.CIVILIAN;
+            case CHILD -> VillageMerchant.Role.CHILD;
+            case CHIEF -> VillageMerchant.Role.CHIEF;
+            default -> VillageMerchant.Role.MERCHANT;
+        };
+        villager.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.getRandom().nextFloat() * 360f, 0f);
+        villager.setup(role, s.shop(), home, work, role == VillageMerchant.Role.MERCHANT ? s.radius() : 10);
+        if (role == VillageMerchant.Role.CHIEF) {
+            villager.setCustomName(Component.translatable("entity.noirm.villager.village_chief"));
+        }
+        place(level, villager);
+    }
 
     /**
      * A ninja who lives here, with {@code speed}/{@code taijutsu} stats, staying within

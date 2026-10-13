@@ -10,6 +10,8 @@ import com.noirm.world.village.NinjaVillageStructure;
 import com.noirm.world.village.VillageBuilder;
 import com.noirm.world.village.VillageKind;
 import com.noirm.world.village.VillagePalette;
+import com.noirm.world.village.VillagePlan;
+import com.noirm.world.village.VillageRoutineGoal;
 import com.noirm.world.village.VillageResidents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -43,10 +45,12 @@ public final class VillageGameTests {
         var structures = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
         var capital = structures.get(Noirm.id("hidden_village"));
         var outpost = structures.get(Noirm.id("ninja_outpost"));
+        var town = structures.get(Noirm.id("ninja_town"));
         helper.assertTrue(capital instanceof NinjaVillageStructure village && village.kind() == VillageKind.CAPITAL, "the hidden village is registered");
         helper.assertTrue(outpost instanceof NinjaVillageStructure village && village.kind() == VillageKind.OUTPOST, "the outpost is registered");
+        helper.assertTrue(town instanceof NinjaVillageStructure village && village.kind() == VillageKind.TOWN, "the town is registered");
         var sets = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
-        helper.assertTrue(sets.containsKey(Noirm.id("hidden_villages")) && sets.containsKey(Noirm.id("ninja_outposts")), "and both have placement rules");
+        helper.assertTrue(sets.containsKey(Noirm.id("hidden_villages")) && sets.containsKey(Noirm.id("ninja_settlements")), "and they have placement rules");
         helper.succeed();
     }
 
@@ -82,22 +86,24 @@ public final class VillageGameTests {
     public static void kageTowerIsBuilt(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(new BlockPos(1, 1, 1));
-        BoundingBox area = new BoundingBox(origin.getX() - 12, origin.getY() - 2, origin.getZ() - 12,
-                origin.getX() + 12, origin.getY() + VillageBuilder.TOWER_HEIGHT + 14, origin.getZ() + 12);
+        int r = VillageBuilder.TOWER_RADIUS;
+        int h = VillageBuilder.TOWER_HEIGHT;
+        BoundingBox area = new BoundingBox(origin.getX() - 16, origin.getY() - 2, origin.getZ() - 16,
+                origin.getX() + 16, origin.getY() + h + 22, origin.getZ() + 16);
         Snapshot snapshot = new Snapshot(level, area);
         VillageBuilder.buildKageTower(level, area, VillagePalette.LEAF, origin, true);
         try {
-            int r = VillageBuilder.TOWER_RADIUS;
-            int h = VillageBuilder.TOWER_HEIGHT;
             expect(helper, level, origin.offset(r, 1, 0), Blocks.RED_TERRACOTTA, "a red drum");
             expect(helper, level, origin.offset(-r, h - 1, 0), Blocks.RED_TERRACOTTA, "all the way up");
             expect(helper, level, origin.offset(0, 1, r), Blocks.AIR, "with a door in front");
             expect(helper, level, origin.offset(0, 3, -(r - 1)), Blocks.LADDER, "a ladder inside");
             expect(helper, level, origin.offset(0, h, r + 2), Blocks.OAK_PLANKS, "a balcony on top");
             expect(helper, level, origin.offset(0, h + 1, r + 3), Blocks.OAK_FENCE, "with a railing");
-            // The fire symbol: ". # . # ." on its top row.
-            expect(helper, level, origin.offset(-2, h - 4, r + 1), Blocks.WHITE_CONCRETE, "a white plaque");
-            expect(helper, level, origin.offset(-1, h - 4, r + 1), Blocks.RED_CONCRETE, "painted with the village symbol");
+            // The fire symbol, two blocks per pixel: its top row is ". # . # .".
+            expect(helper, level, origin.offset(-6, h - 3, r + 1), Blocks.ORANGE_TERRACOTTA, "a framed plaque");
+            expect(helper, level, origin.offset(-5, h - 3, r + 1), Blocks.WHITE_CONCRETE, "a white plaque");
+            expect(helper, level, origin.offset(-3, h - 3, r + 1), Blocks.RED_CONCRETE, "painted with the village symbol");
+            expect(helper, level, origin.offset(0, h + 1, -3), Blocks.LECTERN, "the Kage's office");
             var kage = level.getEntitiesOfClass(SparringNinja.class, AABB.of(area), SparringNinja::hasCustomName);
             helper.assertTrue(kage.size() == 1, "the Kage is in the tower, found " + kage.size());
             SparringNinja leader = kage.get(0);
@@ -109,6 +115,153 @@ public final class VillageGameTests {
             helper.assertTrue(leader.isResident(), "and lives here");
         } finally {
             snapshot.restore();
+        }
+        helper.succeed();
+    }
+
+    /** The great gate and the wall of a hidden village, built from just the chunks around the gate. */
+    @GameTest(template = "empty", batch = "noirm_village_gate", timeoutTicks = 40)
+    public static void greatGateIsBuilt(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        int w = VillageKind.CAPITAL.wall;
+        // Put the village centre far to the north, so its gate lands in the test area.
+        BlockPos origin = helper.absolutePos(new BlockPos(1, 1, 1 - w));
+        BlockPos gate = origin.offset(0, 0, w);
+        BoundingBox area = new BoundingBox(gate.getX() - 24, gate.getY() - 4, gate.getZ() - 14,
+                gate.getX() + 24, gate.getY() + 26, gate.getZ() + 4);
+        Snapshot snapshot = new Snapshot(level, area);
+        VillageBuilder.build(level, area, VillageKind.CAPITAL, VillagePalette.LEAF, origin, Rotation.NONE, 7L, VillageKind.CAPITAL.height);
+        try {
+            expect(helper, level, gate.offset(8, 10, 0), Blocks.OAK_LOG, "the gate's great pillars");
+            expect(helper, level, gate.offset(0, 6, 0), Blocks.AIR, "an open gateway");
+            expect(helper, level, gate.offset(0, 18, -1), Blocks.OAK_PLANKS, "a lintel over it");
+            expect(helper, level, gate.offset(-6, 3, -5), Blocks.GREEN_TERRACOTTA, "the great doors stand open");
+            expect(helper, level, origin.offset(20, 5, 117), Blocks.STONE_BRICKS, "the wall");
+            expect(helper, level, origin.offset(0, -1, w - 2), Blocks.PACKED_MUD, "the avenue runs through");
+            var guards = level.getEntitiesOfClass(SparringNinja.class, AABB.of(area), SparringNinja::isResident);
+            helper.assertTrue(guards.size() >= 2, "guards at the gate, found " + guards.size());
+        } finally {
+            snapshot.restore();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_village_plan")
+    public static void capitalPlanIsSound(GameTestHelper helper) {
+        VillagePlan plan = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.LEAF, 1234L);
+        VillagePlan again = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.LEAF, 1234L);
+        helper.assertTrue(plan.lots.equals(again.lots) && plan.spawns.size() == again.spawns.size(), "the same seed gives the same village");
+        helper.assertTrue(!plan.lots.equals(VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.LEAF, 99L).lots), "another seed, another village");
+        helper.assertTrue(plan.lots.size() >= 110, "a big village: " + plan.lots.size() + " lots");
+        for (VillagePlan.LotType landmark : new VillagePlan.LotType[] {VillagePlan.LotType.KAGE_TOWER, VillagePlan.LotType.ACADEMY,
+                VillagePlan.LotType.HOSPITAL, VillagePlan.LotType.CLAN_COMPOUND, VillagePlan.LotType.SHRINE, VillagePlan.LotType.ONSEN,
+                VillagePlan.LotType.RAMEN_SHOP, VillagePlan.LotType.GUARD_POST}) {
+            helper.assertTrue(plan.first(landmark) != null, "it has a " + landmark);
+        }
+        helper.assertTrue(plan.count(VillagePlan.LotType.TRAINING_GROUND) >= 2, "training grounds");
+        helper.assertTrue(plan.count(VillagePlan.LotType.APARTMENT) + plan.count(VillagePlan.LotType.ROUND_TOWER) >= 4, "tall buildings");
+        helper.assertTrue(plan.count(VillagePlan.LotType.SHOP) + plan.count(VillagePlan.LotType.RESTAURANT) >= 8, "a market");
+        int wall = VillageKind.CAPITAL.wall;
+        for (int i = 0; i < plan.lots.size(); i++) {
+            VillagePlan.Lot a = plan.lots.get(i);
+            for (int[] corner : new int[][] {{a.x1(), a.z1()}, {a.x1(), a.z2()}, {a.x2(), a.z1()}, {a.x2(), a.z2()}}) {
+                helper.assertTrue(corner[0] * corner[0] + corner[1] * corner[1] < wall * wall, a + " is inside the wall");
+            }
+            for (int j = i + 1; j < plan.lots.size(); j++) {
+                helper.assertFalse(a.overlaps(plan.lots.get(j).x1(), plan.lots.get(j).z1(), plan.lots.get(j).x2(), plan.lots.get(j).z2(), 0),
+                        a + " overlaps " + plan.lots.get(j));
+            }
+            for (VillagePlan.Road road : plan.roads) {
+                boolean tower = a.type() == VillagePlan.LotType.KAGE_TOWER; // stands in the middle of its plaza
+                helper.assertFalse(!tower && road.contains(a.cx(), a.cz()), a + " sits on a street");
+            }
+        }
+        java.util.Map<VillagePlan.Role, Long> people = plan.spawns.stream()
+                .collect(java.util.stream.Collectors.groupingBy(VillagePlan.Spawn::role, java.util.stream.Collectors.counting()));
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.KAGE, 0L) == 1, "one Kage");
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.RUNNER, 0L) >= 3, "rooftop runners: " + people + " flat roofs " + plan.lots.stream().filter(l -> l.roofTop() > 0).count()
+                + " types " + plan.lots.stream().collect(java.util.stream.Collectors.groupingBy(VillagePlan.Lot::type, java.util.stream.Collectors.counting())));
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.PATROL, 0L) >= 3, "wall patrols: " + people);
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.MERCHANT, 0L) >= 8, "shopkeepers: " + people);
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.CIVILIAN, 0L) >= 10, "townsfolk: " + people);
+        helper.assertTrue(people.getOrDefault(VillagePlan.Role.CHILD, 0L) >= 3, "children: " + people);
+        for (VillagePlan.Spawn spawn : plan.spawns) {
+            if (spawn.role() == VillagePlan.Role.RUNNER) {
+                for (int[] point : spawn.route()) {
+                    helper.assertTrue(plan.lots.stream().anyMatch(l -> l.roofTop() == point[1] && l.cx() == point[0] && l.cz() == point[2]),
+                            "runners hop between flat roofs");
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_village_plan")
+    public static void townPlanIsSound(GameTestHelper helper) {
+        VillagePlan plan = VillagePlan.uncached(VillageKind.TOWN, VillagePalette.SNOW, 55L);
+        helper.assertTrue(plan.first(VillagePlan.LotType.CHIEF_HOUSE) != null && plan.first(VillagePlan.LotType.INN) != null
+                && plan.first(VillagePlan.LotType.SHRINE) != null, "a chief's house, an inn and a shrine");
+        helper.assertTrue(plan.lots.size() >= 20, "a real town: " + plan.lots.size() + " lots");
+        helper.assertTrue(plan.first(VillagePlan.LotType.KAGE_TOWER) == null, "but no Kage");
+        helper.assertTrue(plan.spawns.stream().anyMatch(s -> s.role() == VillagePlan.Role.CHIEF), "with a village chief");
+        helper.succeed();
+    }
+
+    /** A rooftop runner's jump lands where it was aimed. */
+    @GameTest(template = "empty", batch = "noirm_village_leap", timeoutTicks = 80)
+    public static void ninjaLeapsBetweenRoofs(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos from = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos to = from.offset(11, 3, 4);
+        level.setBlock(from.below(), Blocks.STONE.defaultBlockState(), 3);
+        for (int y = 0; y < 4; y++) {
+            level.setBlock(to.below().below(y), Blocks.STONE.defaultBlockState(), 3);
+        }
+        SparringNinja ninja = NoirmEntities.SPARRING_NINJA.get().create(level);
+        ninja.moveTo(from.getX() + 0.5, from.getY(), from.getZ() + 0.5, 0, 0);
+        ninja.setNoAi(false);
+        level.addFreshEntity(ninja);
+        net.minecraft.world.phys.Vec3 target = new net.minecraft.world.phys.Vec3(to.getX() + 0.5, to.getY() + 0.1, to.getZ() + 0.5);
+        ninja.setDeltaMovement(VillageRoutineGoal.leapVelocity(ninja.position(), target));
+        ninja.hasImpulse = true;
+        helper.runAfterDelay(45, () -> {
+            double miss = Math.hypot(ninja.getX() - target.x, ninja.getZ() - target.z);
+            boolean landed = ninja.getY() >= to.getY() - 0.1 && miss < 2.5;
+            BlockPos landedAt = ninja.blockPosition();
+            ninja.discard();
+            level.setBlock(from.below(), Blocks.AIR.defaultBlockState(), 3);
+            for (int y = 0; y < 4; y++) {
+                level.setBlock(to.below().below(y), Blocks.AIR.defaultBlockState(), 3);
+            }
+            helper.assertTrue(landed, "the leap lands on the far roof (landed at " + landedAt + ", aimed at " + to + ")");
+            helper.succeed();
+        });
+    }
+
+    /** Villagers go out by day and home at night. */
+    @GameTest(template = "empty", batch = "noirm_village_schedule")
+    public static void villagersGoHomeAtNight(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        long time = level.getDayTime();
+        BlockPos home = helper.absolutePos(new BlockPos(0, 1, 0));
+        BlockPos work = helper.absolutePos(new BlockPos(2, 1, 2));
+        VillageMerchant villager = helper.spawnWithNoFreeWill(NoirmEntities.VILLAGE_MERCHANT.get(), 1.5f, 1f, 1.5f);
+        try {
+            villager.setup(VillageMerchant.Role.CIVILIAN, 0, home, work, 8);
+            helper.assertTrue(villager.getOffers().isEmpty(), "ordinary villagers don't trade");
+            level.setDayTime(6000);
+            villager.followSchedule();
+            helper.assertTrue(villager.getRestrictCenter().equals(work), "out in the village by day");
+            level.setDayTime(18000);
+            villager.followSchedule();
+            helper.assertTrue(villager.getRestrictCenter().equals(home), "home at night");
+            VillageMerchant child = helper.spawnWithNoFreeWill(NoirmEntities.VILLAGE_MERCHANT.get(), 0.5f, 1f, 0.5f);
+            child.setup(VillageMerchant.Role.CHILD, 0, home, work, 8);
+            helper.assertTrue(child.isBaby(), "children are small");
+            child.discard();
+        } finally {
+            level.setDayTime(time);
+            villager.discard();
         }
         helper.succeed();
     }

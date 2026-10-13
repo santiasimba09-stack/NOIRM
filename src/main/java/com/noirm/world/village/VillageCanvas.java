@@ -51,6 +51,25 @@ public final class VillageCanvas {
         return origin.offset(wx, y, wz);
     }
 
+    /** The local (x, z) of a world column (the inverse of {@link #world}). */
+    public int[] local(int worldX, int worldZ) {
+        int dx = worldX - origin.getX();
+        int dz = worldZ - origin.getZ();
+        return switch (rotation) {
+            case CLOCKWISE_90 -> new int[] {dz, -dx};
+            case CLOCKWISE_180 -> new int[] {-dx, -dz};
+            case COUNTERCLOCKWISE_90 -> new int[] {-dz, dx};
+            default -> new int[] {dx, dz};
+        };
+    }
+
+    /** The clip as a local box: {min x, min z, max x, max z}. */
+    public int[] localBounds() {
+        int[] a = local(clip.minX(), clip.minZ());
+        int[] b = local(clip.maxX(), clip.maxZ());
+        return new int[] {Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])};
+    }
+
     public boolean inside(int x, int y, int z) {
         return clip.isInside(world(x, y, z));
     }
@@ -82,7 +101,10 @@ public final class VillageCanvas {
 
     /** Fills the box between two local corners (inclusive). */
     public void fill(int x1, int y1, int z1, int x2, int y2, int z2, Block block) {
-        BlockState state = block.defaultBlockState();
+        fill(x1, y1, z1, x2, y2, z2, block.defaultBlockState());
+    }
+
+    public void fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) {
         for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
             for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
                 for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {

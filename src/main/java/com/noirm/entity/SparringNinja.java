@@ -116,6 +116,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
      * entering combat mode; they fight back when attacked, or when their village is attacked.
      */
     private boolean resident;
+    /** What a resident does in their village ({@code VillagePlan.Role} name; "" = just lives there). */
+    private String villageRole = "";
+    /** A resident's route: rooftops for runners, the wall walk for patrols (see {@code VillageRoutineGoal}). */
+    private final List<net.minecraft.core.BlockPos> route = new ArrayList<>();
 
     public SparringNinja(EntityType<? extends SparringNinja> type, Level level) {
         super(type, level);
@@ -649,6 +653,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new NinjaFightGoal(this));
         // Residents walk back home after a fight (does nothing for ninjas without a home).
+        // Village life: patrols, rooftop running, practice (does nothing for ninjas without a role).
+        goalSelector.addGoal(3, new com.noirm.world.village.VillageRoutineGoal(this));
         goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal(this, 1.0));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8f));
@@ -681,6 +687,24 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         resident = true;
         restrictTo(home, radius);
         setPersistenceRequired();
+    }
+
+    public String villageRole() {
+        return villageRole;
+    }
+
+    public void setVillageRole(String role) {
+        villageRole = role == null ? "" : role;
+    }
+
+    /** The waypoints of this resident's routine (empty for most). */
+    public List<net.minecraft.core.BlockPos> route() {
+        return route;
+    }
+
+    public void setRoute(List<net.minecraft.core.BlockPos> points) {
+        route.clear();
+        route.addAll(points);
     }
 
     // ---------------------------------------------------------------- animation (synced to the client model)
@@ -808,6 +832,12 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 tag.putLong("Home", getRestrictCenter().asLong());
                 tag.putInt("HomeRadius", (int) getRestrictRadius());
             }
+            if (!villageRole.isEmpty()) {
+                tag.putString("VillageRole", villageRole);
+            }
+            if (!route.isEmpty()) {
+                tag.putLongArray("Route", route.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+            }
         }
         if (leader != null) {
             tag.putUUID("Leader", leader);
@@ -848,6 +878,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         gearRolled = tag.getBoolean("GearRolled");
         if (tag.getBoolean("Resident")) {
             resident = true;
+            villageRole = tag.getString("VillageRole");
+            route.clear();
+            for (long point : tag.getLongArray("Route")) {
+                route.add(net.minecraft.core.BlockPos.of(point));
+            }
             if (tag.contains("Home")) {
                 restrictTo(net.minecraft.core.BlockPos.of(tag.getLong("Home")), Math.max(2, tag.getInt("HomeRadius")));
             }

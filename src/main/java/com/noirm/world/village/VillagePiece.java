@@ -27,9 +27,12 @@ public class VillagePiece extends StructurePiece {
     private final BlockPos origin;
     private final Rotation rotation;
     private final long seed;
+    /** How high above the ground to clear (enough to take off the hills on the site). */
+    private final int clearHeight;
 
-    public VillagePiece(VillageKind kind, VillagePalette palette, BlockPos origin, Rotation rotation, long seed) {
+    public VillagePiece(VillageKind kind, VillagePalette palette, BlockPos origin, Rotation rotation, long seed, int clearHeight) {
         super(NoirmStructures.VILLAGE_PIECE.get(), 0, box(kind, origin));
+        this.clearHeight = clearHeight;
         this.kind = kind;
         this.palette = palette;
         this.origin = origin;
@@ -47,6 +50,7 @@ public class VillagePiece extends StructurePiece {
         int turn = tag.getInt("Rotation");
         this.rotation = turn >= 0 && turn < rotations.length ? rotations[turn] : Rotation.NONE;
         this.seed = tag.getLong("Seed");
+        this.clearHeight = tag.contains("Clear") ? tag.getInt("Clear") : kind.height;
     }
 
     private static BoundingBox box(VillageKind kind, BlockPos origin) {
@@ -62,11 +66,12 @@ public class VillagePiece extends StructurePiece {
         tag.putLong("Origin", origin.asLong());
         tag.putInt("Rotation", rotation.ordinal());
         tag.putLong("Seed", seed);
+        tag.putInt("Clear", clearHeight);
     }
 
     @Override
     public void postProcess(WorldGenLevel level, StructureManager structures, ChunkGenerator generator, RandomSource random,
                             BoundingBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        VillageBuilder.build(level, chunkBox, kind, palette, origin, rotation, seed);
+        VillageBuilder.build(level, chunkBox, kind, palette, origin, rotation, seed, clearHeight);
     }
 }

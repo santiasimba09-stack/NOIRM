@@ -45,7 +45,11 @@ public class NinjaVillageStructure extends Structure {
         int cz = context.chunkPos().getMiddleBlockZ();
         ChunkGenerator generator = context.chunkGenerator();
         int r = kind.radius - 2;
-        int[] offsets = kind == VillageKind.CAPITAL ? new int[] {-r, -r / 2, 0, r / 2, r} : new int[] {-r, 0, r};
+        int[] offsets = switch (kind) {
+            case CAPITAL -> new int[] {-r, -3 * r / 4, -r / 2, -r / 4, 0, r / 4, r / 2, 3 * r / 4, r};
+            case TOWN -> new int[] {-r, -r / 2, 0, r / 2, r};
+            default -> new int[] {-r, 0, r};
+        };
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
         long sum = 0;
@@ -53,6 +57,9 @@ public class NinjaVillageStructure extends Structure {
         int wet = 0;
         for (int dx : offsets) {
             for (int dz : offsets) {
+                if (dx * dx + dz * dz > r * r + r) {
+                    continue; // outside the round site
+                }
                 int floor = generator.getBaseHeight(cx + dx, cz + dz, Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState());
                 int surface = generator.getBaseHeight(cx + dx, cz + dz, Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
                 if (surface > floor) {
@@ -69,6 +76,8 @@ public class NinjaVillageStructure extends Structure {
             return Optional.empty();
         }
         int ground = (int) Math.round((double) sum / samples);
+        // Clear high enough to take the hills off the site.
+        int clear = Math.max(kind.height, max - ground + 8);
         if (ground <= generator.getSeaLevel()) {
             return Optional.empty();
         }
@@ -78,7 +87,7 @@ public class NinjaVillageStructure extends Structure {
         Rotation rotation = Rotation.getRandom(context.random());
         long seed = context.random().nextLong();
         BlockPos origin = new BlockPos(cx, ground, cz);
-        return Optional.of(new GenerationStub(origin, pieces -> pieces.addPiece(new VillagePiece(kind, palette, origin, rotation, seed))));
+        return Optional.of(new GenerationStub(origin, pieces -> pieces.addPiece(new VillagePiece(kind, palette, origin, rotation, seed, clear))));
     }
 
     @Override
