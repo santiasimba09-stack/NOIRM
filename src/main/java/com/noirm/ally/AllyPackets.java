@@ -175,10 +175,9 @@ public final class AllyPackets {
                 }
             }
             case OUTFIT_NEXT, OUTFIT_PREV -> {
-                List<String> outfits = SparringNinja.allOutfits();
-                int index = outfits.indexOf(ally.outfit());
+                // Step through the endless looks of their own clan (same seed, same look).
                 int step = action == Action.OUTFIT_NEXT ? 1 : -1;
-                ally.changeOutfit(outfits.get(Math.floorMod(index + step, outfits.size())));
+                ally.changeOutfit(com.noirm.entity.NinjaLook.cycle(ally.outfit(), step));
             }
             case TEACH -> {
                 ResourceLocation id = ResourceLocation.tryParse(arg);

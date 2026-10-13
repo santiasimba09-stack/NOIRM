@@ -2,6 +2,21 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-13 — Real ninja gear and random looks (branch `round4-outfits`)
+
+- **Wearable gear** (`com.noirm.gear`): 16 armor pieces with their own armor points, textures,
+  icons and recipes, in the Combat creative tab: forehead protectors (navy, black, red), Senju
+  battle armor (chest, thigh guards, shin guards; better than iron), Uchiha high-collar tunic and
+  pants, Hyūga robe and trousers, Uzumaki coat, flak vest, ANBU mask and armor, shinobi pants and
+  sandals. Art by `tools/gear/gen_gear.py`.
+- **Ninjas wear their clan's gear** (`ClanOutfits`): mixed pieces, some wear nothing, 5% drop
+  chance. Crew mates you dressed keep their clothes. Shadow Clones copy their owner's look and gear.
+- **Clean, random looks** instead of 23 baked outfits: each ninja has a look key (clan + seed) that
+  the client turns into a skin from 55 generated parts (12 hair styles, 5 eye styles, brows, 6
+  undershirts, 3 pants, wraps, 10 face marks, 6 accessories; clan-typical colors; generated clans
+  share a family look). Old saves keep working. The ally screen's arrows step through looks.
+- Preview: `docs/screenshots/gear-and-skins.png`. 3 new game tests (100 in all).
+
 ## 2026-10-13 — Playtest feedback round 3, v0.3.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Fixed:** the Great Fireball burst on its caster. Jutsu never hit their caster, clones or crew.

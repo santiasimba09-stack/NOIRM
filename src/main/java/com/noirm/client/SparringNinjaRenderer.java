@@ -10,7 +10,8 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Draws the sparring ninja with the vanilla player model and skin (placeholder art), posed by
+ * Draws the sparring ninja with the vanilla player model and a skin built from its look
+ * ({@link NinjaSkins}), with any worn gear on top, posed by
  * its combat state so attacks are readable: arm cocked back = light wind-up, both arms raised =
  * heavy wind-up, arms crossed = guard.
  */
@@ -30,11 +31,9 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
 
     @Override
     public ResourceLocation getTextureLocation(SparringNinja ninja) {
-        String outfit = ninja.outfit();
-        return outfit.isEmpty() ? TEXTURE : OUTFITS.computeIfAbsent(outfit, o -> Noirm.id("textures/entity/ninja/" + o + ".png"));
+        String look = ninja.outfit();
+        return look.isEmpty() ? TEXTURE : NinjaSkins.texture(look); // built from their look key
     }
-
-    private static final java.util.Map<String, ResourceLocation> OUTFITS = new java.util.HashMap<>();
 
     static final class NinjaModel extends PlayerModel<SparringNinja> {
         NinjaModel(ModelPart root) {

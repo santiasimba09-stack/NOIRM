@@ -166,7 +166,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         Component style = Component.translatable("style.noirm." + info.style());
         g.drawCenteredString(font, style, x + 141, py + 3, GOLD);
         g.drawString(font, Component.translatable("screen.noirm.ally.outfit"), x, py + 19, DIM, false);
-        g.drawCenteredString(font, Component.literal(info.outfit().replace('/', ' ')), x + 141, py + 19, 0xFFDDDDDD);
+        g.drawCenteredString(font, Component.literal(com.noirm.entity.NinjaLook.label(info.outfit())), x + 141, py + 19, 0xFFDDDDDD);
         // Teaching list.
         int tx = 176;
         int ty = AllyMenu.INVENTORY_Y - 12;

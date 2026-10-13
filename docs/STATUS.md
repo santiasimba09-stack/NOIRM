@@ -1,10 +1,10 @@
 # Project status
 
-_Last updated: 2026-10-13 (round 3) · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
+_Last updated: 2026-10-13 (round 4: gear) · branch `round4-outfits`_
 
 ## Where we are
 
-**The owner's third feedback round is done (v0.3.0). 95/95 game tests green; checked in the real
+**Round 4 adds wearable ninja gear and random ninja looks. 100/100 game tests green. Round 3 (v0.3.0) was checked in the real
 client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
 
 | Area | State |
@@ -17,13 +17,16 @@ client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
 | **Crew (allies)**: beat ninjas low → they yield → invite; follow, fight, wait; no friendly fire | ✅ tested |
 | **Killable tailed beasts** (seal or finish once subdued) | ✅ tested |
 | **Deeper Shadow Clones**: real health, your jutsu, Sharingan, mode, cloak | ✅ tested |
-| **Clan outfits**: 23 generated skins (`tools/skingen`) | ✅ |
+| **Wearable ninja gear**: 16 armor pieces (headbands, Senju armor, Uchiha/Hyūga/Uzumaki clothes, flak, ANBU, pants, sandals) | ✅ tested |
+| **Clan gear on ninjas** (`ClanOutfits`) + **random clean looks** (runtime skin composer, 50+ looks per clan) | ✅ tested (skins not yet seen in the real client) |
 | **Speed movement**: run ×√(speed/10), higher jumps, sprint-jump leap, step-ups | ✅ tested |
 | **No stat cap**: power ∝ stat, durability √, beasts 30→470, Tailed Beast Bomb at beast scale | ✅ tested |
 
 ## In progress
 
-Nothing. Waiting for the owner's next playtest.
+Round 4 gear and looks are done but **not yet checked in the real client**: run
+`tools/client-smoke/run.sh` and look at a few ninjas (skins are built at runtime by `NinjaSkins`)
+and at the gear worn and in the inventory.
 
 ## Next steps (in order)
 
@@ -50,16 +53,18 @@ Nothing. Waiting for the owner's next playtest.
 | `com.noirm.biju` | `BijuSystem` (cloak, sealing, born jinchūriki, beast names), `BijuData`, `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork` (protocol 6), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
-| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `NinjaSkins` (builds ninja skins from parts), `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.gear` | `GearMaterial` (armor stats), `GearItem` (armor texture per item), `NoirmGear` (registry, creative tab), `ClanOutfits` (clan gear on ninjas) |
 | `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style), `NinjaLook` (look keys: clan + seed → features), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `TestClans` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `GearGameTests`, `TestClans` |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
-| `tools/skingen/` | `gen_skins.py`: the clan outfit skins |
+| `tools/skingen/` | `gen_parts.py`: ninja look parts + `looks.json` tables; `looks.py` (Python twin of `NinjaLook`/`NinjaSkins`); `pixlib.py` (shared PNG helpers) |
+| `tools/gear/` | `gen_gear.py`: armor textures, item icons, preview `docs/screenshots/gear-and-skins.png` |
 | `tools/animgen/` | `gen_anims.py`: generates our own player animations from simple poses |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
@@ -99,8 +104,14 @@ Nothing. Waiting for the owner's next playtest.
 - **Eyes vs the world (owner):** the same rules apply to vanilla mobs and projectiles.
 - **Stats (owner):** four trained stats: taijutsu, speed, vitality (health), reserves (chakra).
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
+- **Looks and gear (owner):** skins are clean bases (skin, dark undershirt, pants); clothing is real
+  armor you can wear. A ninja's look is a key `"<clan folder>:<hex seed>"`; the server only syncs it.
+  Test clans (`test_*`) never get gear, so armor can't change test numbers.
 
 ## Open questions for the owner
+
+- Gear balance: are the armor values right (Senju chest 7, flak 5, cloth 3)? Should Hyūga robes give speed?
+- Which other clans or villages should get their own gear?
 
 - How do the animations feel now that they show? Which moves need new or different ones?
 - Jutsu balance: costs, cooldowns, how fast mastery chains unlock; which natures need more jutsu?

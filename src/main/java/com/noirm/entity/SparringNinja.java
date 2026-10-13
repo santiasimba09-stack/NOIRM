@@ -79,10 +79,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Beaten: waiting for {@code yieldedTo} to invite them, until {@code yieldedUntil}. */
     private java.util.UUID yieldedTo;
     private long yieldedUntil;
-    /** Outfit: {@code "<folder>/<n>"} under {@code textures/entity/ninja/}, picked for the clan. */
+    /** Their look: a {@link NinjaLook} key ({@code "<clan folder>:<hex seed>"}), picked for the clan. */
     private static final EntityDataAccessor<String> SKIN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
-    /** How many outfits each folder has (mirrors {@code textures/entity/ninja/catalog.json}). */
-    public static final java.util.Map<String, Integer> OUTFITS = java.util.Map.of("uchiha", 5, "senju", 4, "hyuga", 4, "uzumaki", 4, "generic", 6);
+    /** Whether their clan gear was handed out already (see {@code gear/ClanOutfits}). */
+    private boolean gearRolled;
     private static final EntityDataAccessor<Boolean> IN_CREW = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     /** Fighting style; chosen when first needed (or from the {@code Style} NBT tag). */
     private ResourceLocation style;
@@ -149,24 +149,26 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return leader;
     }
 
-    /** The outfit texture path (under {@code textures/entity/ninja/}), or "" before a clan is known. */
+    /** Their look key ({@link NinjaLook}), or "" before a clan is known. */
     public String outfit() {
         return entityData.get(SKIN);
     }
 
-    /** Every outfit in the catalog, in order (the ally screen cycles through them). */
+    /** A few fixed looks per clan (the ally screen now steps through looks with {@link NinjaLook#cycle}). */
     public static List<String> allOutfits() {
-        List<String> all = new ArrayList<>();
-        for (String folder : List.of("uchiha", "senju", "hyuga", "uzumaki", "generic")) {
-            for (int i = 0; i < OUTFITS.get(folder); i++) {
-                all.add(folder + "/" + i);
-            }
-        }
-        return all;
+        return NinjaLook.presets(10);
     }
 
     public void changeOutfit(String outfit) {
-        setOutfit(outfit);
+        setOutfit(NinjaLook.normalize(outfit));
+    }
+
+    public boolean gearRolled() {
+        return gearRolled;
+    }
+
+    public void setGearRolled(boolean rolled) {
+        gearRolled = rolled;
     }
 
     /** Leaves their leader's crew (dismissed): back to being their own ninja, no hard feelings. */
@@ -408,10 +410,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public void joinClan(Clan clan) {
         clanId = clan.id();
         entityData.set(CLAN_NAME, clan.name());
-        String folder = OUTFITS.containsKey(clan.id()) ? clan.id() : "generic";
-        if (!entityData.get(SKIN).startsWith(folder + "/")) {
-            entityData.set(SKIN, folder + "/" + getRandom().nextInt(OUTFITS.get(folder)));
+        if (!NinjaLook.fits(entityData.get(SKIN), clan.id())) {
+            entityData.set(SKIN, NinjaLook.random(clan.id(), getRandom()));
         }
+        if (!level().isClientSide() && !(this instanceof ShadowClone)) com.noirm.gear.ClanOutfits.equip(this, clan, getRandom());
         natures.clear();
         natures.putAll(clan.natures());
         jutsu.clear();
@@ -634,6 +636,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             tag.putString("Style", style.toString());
         }
         tag.putString("Skin", outfit());
+        tag.putBoolean("GearRolled", gearRolled);
         if (leader != null) {
             tag.putUUID("Leader", leader);
             tag.putString("Order", order.name());
@@ -659,8 +662,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             sealBeast(tag.getInt("Tails"));
         }
         if (!tag.getString("Skin").isEmpty()) {
-            entityData.set(SKIN, tag.getString("Skin"));
+            entityData.set(SKIN, NinjaLook.normalize(tag.getString("Skin"))); // old "clan/n" outfits too
         }
+        // Ninjas saved before clan gear existed get theirs once, when they rejoin their clan below.
+        gearRolled = tag.getBoolean("GearRolled");
         if (tag.hasUUID("Leader")) {
             joinCrew(tag.getUUID("Leader"));
             if (tag.contains("Order")) {
