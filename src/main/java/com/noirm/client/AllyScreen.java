@@ -37,6 +37,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
 
     private AllyPackets.Info info;
     private int teachScroll;
+    /** The list at the bottom right: false = jutsu you can teach, true = their jutsu (equip up to 4). */
+    private boolean jutsuTab;
 
     public AllyScreen(AllyMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -91,11 +93,37 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         }
         addRenderableWidget(Button.builder(Component.literal("◀"), b -> send(AllyPackets.Action.OUTFIT_PREV, "")).bounds(x + 52, y + 16, 14, 14).build());
         addRenderableWidget(Button.builder(Component.literal("▶"), b -> send(AllyPackets.Action.OUTFIT_NEXT, "")).bounds(x + 216, y + 16, 14, 14).build());
-        // Teaching.
-        int ty = topPos + AllyMenu.INVENTORY_Y - 2;
-        int rows = Math.min(TEACH_ROWS, info.teachable().size() - teachScroll);
+        // Tabs: teach / their jutsu.
+        int tabY = topPos + AllyMenu.INVENTORY_Y - 14;
+        Button teachTab = Button.builder(Component.translatable("screen.noirm.ally.tab.teach"), b -> {
+            jutsuTab = false;
+            teachScroll = 0;
+            rebuild();
+        }).bounds(leftPos + 176, tabY, 70, 12).build();
+        teachTab.active = jutsuTab;
+        addRenderableWidget(teachTab);
+        Button jutsuButton = Button.builder(Component.translatable("screen.noirm.ally.tab.jutsu", info.loadout().size(), com.noirm.entity.SparringNinja.LOADOUT_SLOTS),
+                b -> {
+                    jutsuTab = true;
+                    teachScroll = 0;
+                    rebuild();
+                }).bounds(leftPos + 248, tabY, 86, 12).build();
+        jutsuButton.active = !jutsuTab;
+        addRenderableWidget(jutsuButton);
+        int ty = topPos + AllyMenu.INVENTORY_Y + 2;
+        int rows = Math.min(TEACH_ROWS, listSize() - teachScroll);
         for (int i = 0; i < rows; i++) {
-            AllyPackets.Teachable t = info.teachable().get(teachScroll + i);
+            int index = teachScroll + i;
+            if (jutsuTab) {
+                var id = info.known().get(index);
+                boolean equipped = info.loadout().contains(id);
+                Button equip = Button.builder(Component.translatable(equipped ? "screen.noirm.ally.unequip" : "screen.noirm.ally.equip"),
+                        b -> send(AllyPackets.Action.EQUIP, id.toString())).bounds(leftPos + imageWidth - 50, ty + i * 16, 44, 14).build();
+                equip.active = equipped || info.loadout().size() < com.noirm.entity.SparringNinja.LOADOUT_SLOTS;
+                addRenderableWidget(equip);
+                continue;
+            }
+            AllyPackets.Teachable t = info.teachable().get(index);
             Button teach = Button.builder(Component.translatable("screen.noirm.ally.teach"), b -> send(AllyPackets.Action.TEACH, t.id().toString()))
                     .bounds(leftPos + imageWidth - 50, ty + i * 16, 44, 14).build();
             teach.active = t.blocker().isEmpty();
@@ -111,7 +139,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         if (info != null && mouseX >= leftPos + 176 && mouseY >= topPos + AllyMenu.INVENTORY_Y - 12) {
-            int max = Math.max(0, info.teachable().size() - TEACH_ROWS);
+            int max = Math.max(0, listSize() - TEACH_ROWS);
             int scroll = Math.max(0, Math.min(max, teachScroll - (int) Math.signum(delta)));
             if (scroll != teachScroll) {
                 teachScroll = scroll;
@@ -141,6 +169,13 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     @Override
     protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
         g.drawString(font, title, 8, 8, GOLD, false);
+        if (info != null) {
+            // Respect and personality.
+            int respectColor = info.respect() >= 70 ? 0xFF60E070 : info.respect() >= 20 ? 0xFFE0C060 : 0xFFE05050;
+            Component respect = Component.translatable("screen.noirm.ally.respect", Math.round(info.respect()),
+                    Component.translatable("screen.noirm.ally.trait." + info.trait().toLowerCase(Locale.ROOT)));
+            g.drawString(font, respect, RIGHT_X + 20, 8, respectColor, false);
+        }
         g.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, DIM, false);
         if (info == null) {
             return;
@@ -167,23 +202,35 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         g.drawCenteredString(font, style, x + 141, py + 3, GOLD);
         g.drawString(font, Component.translatable("screen.noirm.ally.outfit"), x, py + 19, DIM, false);
         g.drawCenteredString(font, Component.literal(info.outfit().replace('/', ' ')), x + 141, py + 19, 0xFFDDDDDD);
-        // Teaching list.
+        // The list: jutsu to teach, or their own jutsu with mastery stars (equipped ones in gold).
         int tx = 176;
-        int ty = AllyMenu.INVENTORY_Y - 12;
-        g.drawString(font, Component.translatable("screen.noirm.ally.teach_title", info.known().size()), tx, ty, DIM, false);
-        if (info.teachable().isEmpty()) {
-            g.drawString(font, Component.translatable("screen.noirm.ally.teach_none"), tx, ty + 14, 0xFF6A6A70, false);
+        int ty = AllyMenu.INVENTORY_Y + 2;
+        if (listSize() == 0) {
+            g.drawString(font, Component.translatable(jutsuTab ? "screen.noirm.ally.jutsu_none" : "screen.noirm.ally.teach_none"), tx, ty + 3, 0xFF6A6A70, false);
         }
-        int rows = Math.min(TEACH_ROWS, info.teachable().size() - teachScroll);
+        int rows = Math.min(TEACH_ROWS, listSize() - teachScroll);
         for (int i = 0; i < rows; i++) {
-            AllyPackets.Teachable t = info.teachable().get(teachScroll + i);
+            int index = teachScroll + i;
+            if (jutsuTab) {
+                var id = info.known().get(index);
+                int stars = index < info.mastery().size() ? info.mastery().get(index) : 0;
+                boolean equipped = info.loadout().contains(id);
+                String name = font.plainSubstrByWidth(Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id)).getString(), 100);
+                g.drawString(font, name + " " + "★".repeat(stars), tx, ty + 3 + i * 16, equipped ? GOLD : 0xFFE8E8E8, false);
+                continue;
+            }
+            AllyPackets.Teachable t = info.teachable().get(index);
             int color = t.blocker().isEmpty() ? 0xFFE8E8E8 : 0xFF7A7A80;
             String name = font.plainSubstrByWidth(Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(t.id())).getString(), 106);
-            g.drawString(font, "[" + t.rank() + "] " + name, tx, ty + 14 + i * 16, color, false);
+            g.drawString(font, "[" + t.rank() + "] " + name, tx, ty + 3 + i * 16, color, false);
         }
-        if (info.teachable().size() > TEACH_ROWS) {
-            g.drawString(font, (teachScroll + 1) + "-" + (teachScroll + rows) + "/" + info.teachable().size(), tx + 120, ty, 0xFF6A6A70, false);
+        if (listSize() > TEACH_ROWS) {
+            g.drawString(font, (teachScroll + 1) + "-" + (teachScroll + rows) + "/" + listSize(), tx + 130, AllyMenu.INVENTORY_Y + 68, 0xFF6A6A70, false);
         }
+    }
+
+    private int listSize() {
+        return info == null ? 0 : jutsuTab ? info.known().size() : info.teachable().size();
     }
 
     private void bar(GuiGraphics g, int x, int y, int w, float fraction, int color) {

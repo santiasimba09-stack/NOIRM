@@ -31,7 +31,8 @@ public final class AllyPackets {
     public record Teachable(ResourceLocation id, String rank, String blocker) {}
 
     public record Info(int entityId, float health, float maxHealth, float[] stats, float[] progress, int order,
-                       String style, List<String> styles, String outfit, List<ResourceLocation> known, List<Teachable> teachable) {
+                       String style, List<String> styles, String outfit, List<ResourceLocation> known, List<Teachable> teachable,
+                       float respect, String trait, List<ResourceLocation> loadout, List<Integer> mastery) {
 
         public static Info of(ServerPlayer player, SparringNinja ally) {
             float[] stats = new float[Stat.values().length];
@@ -61,8 +62,11 @@ public final class AllyPackets {
                 }
             });
             teachable.sort((a, b) -> a.id().toString().compareTo(b.id().toString()));
+            List<ResourceLocation> known = List.copyOf(ally.knownJutsu());
+            List<Integer> mastery = known.stream().map(ally::jutsuMastery).toList();
             return new Info(ally.getId(), ally.getHealth(), ally.getMaxHealth(), stats, progress, ally.order().ordinal(),
-                    com.noirm.combat.CombatSystem.styleFor(ally).getPath(), styles, ally.outfit(), List.copyOf(ally.knownJutsu()), teachable);
+                    com.noirm.combat.CombatSystem.styleFor(ally).getPath(), styles, ally.outfit(), known, teachable,
+                    ally.respect(), ally.trait().name(), List.copyOf(ally.loadout()), mastery);
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -83,6 +87,10 @@ public final class AllyPackets {
                 b.writeUtf(t.rank(), 4);
                 b.writeUtf(t.blocker(), 128);
             });
+            buf.writeFloat(respect);
+            buf.writeUtf(trait, 16);
+            buf.writeCollection(loadout, FriendlyByteBuf::writeResourceLocation);
+            buf.writeCollection(mastery, FriendlyByteBuf::writeVarInt);
         }
 
         public static Info decode(FriendlyByteBuf buf) {
@@ -102,7 +110,11 @@ public final class AllyPackets {
             String outfit = buf.readUtf(64);
             List<ResourceLocation> known = buf.readList(FriendlyByteBuf::readResourceLocation);
             List<Teachable> teachable = buf.readList(b -> new Teachable(b.readResourceLocation(), b.readUtf(4), b.readUtf(128)));
-            return new Info(id, health, max, stats, progress, order, style, styles, outfit, known, teachable);
+            float respect = buf.readFloat();
+            String trait = buf.readUtf(16);
+            List<ResourceLocation> loadout = buf.readList(FriendlyByteBuf::readResourceLocation);
+            List<Integer> mastery = buf.readList(FriendlyByteBuf::readVarInt);
+            return new Info(id, health, max, stats, progress, order, style, styles, outfit, known, teachable, respect, trait, loadout, mastery);
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {
@@ -129,7 +141,7 @@ public final class AllyPackets {
         return "";
     }
 
-    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS }
+    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP }
 
     public record Command(int entityId, Action action, String arg) {
         public void encode(FriendlyByteBuf buf) {
@@ -161,10 +173,20 @@ public final class AllyPackets {
     public static void apply(ServerPlayer player, SparringNinja ally, Action action, String arg) {
         switch (action) {
             case ORDER -> {
+                if (!AllyMind.obeys(ally)) {
+                    player.displayClientMessage(Component.translatable("message.noirm.ally.refuses", ally.getDisplayName()), true);
+                    return;
+                }
                 try {
                     ally.setOrder(Order.valueOf(arg));
                 } catch (IllegalArgumentException ignored) {
                     // unknown order: nothing
+                }
+            }
+            case EQUIP -> {
+                ResourceLocation id = ResourceLocation.tryParse(arg);
+                if (id != null) {
+                    ally.toggleLoadout(id);
                 }
             }
             case STYLE -> {
@@ -186,6 +208,7 @@ public final class AllyPackets {
                 boolean knows = ShinobiCapability.get(player).map(d -> id != null && d.jutsu().knows(id)).orElse(false);
                 if (def != null && knows && blocker(ally, def).isEmpty()) {
                     ally.teach(id);
+                    AllyMind.respect(ally, 5f, "message.noirm.ally.grateful");
                     player.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
                             Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
                 }

@@ -366,5 +366,21 @@
   "commands.noirm.beast.kind.release": "usar su manto (segundos)",
   "commands.noirm.beast.kind.strong": "derrotar a alguien tan fuerte como tú",
   "commands.noirm.beast.kind.offer": "una ofrenda",
-  "commands.noirm.beast.kind.rest": "nada de manto por un rato"
+  "commands.noirm.beast.kind.rest": "nada de manto por un rato",
+  "screen.noirm.ally.respect": "Respeto %s · %s",
+  "screen.noirm.ally.trait.brave": "Valiente",
+  "screen.noirm.ally.trait.cautious": "Cauteloso",
+  "screen.noirm.ally.trait.loyal": "Leal",
+  "screen.noirm.ally.trait.proud": "Orgulloso",
+  "screen.noirm.ally.tab.teach": "Enseñar",
+  "screen.noirm.ally.tab.jutsu": "Sus jutsu %s/%s",
+  "screen.noirm.ally.equip": "Equipar",
+  "screen.noirm.ally.unequip": "Quitar",
+  "screen.noirm.ally.jutsu_none": "Aún no sabe ningún jutsu.",
+  "message.noirm.ally.mastery": "%s dominó %s: ★%s",
+  "message.noirm.ally.devoted": "%s te seguiría a cualquier parte.",
+  "message.noirm.ally.leaves": "%s te perdió todo el respeto y deja el equipo.",
+  "message.noirm.ally.refuses": "%s ignora tu orden.",
+  "message.noirm.ally.hurt_by_you": "A %s no le gustó eso.",
+  "message.noirm.ally.grateful": "%s agradece la lección."
 }

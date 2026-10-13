@@ -96,6 +96,14 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private com.noirm.ally.Order order = com.noirm.ally.Order.FOLLOW;
     /** Jutsu their leader taught them (kept on top of their clan's). */
     private final List<ResourceLocation> taught = new ArrayList<>();
+    /** Respect for their leader, 0–100 (see {@code AllyMind}). */
+    private float respect = 50f;
+    private com.noirm.ally.Trait trait;
+    /** Jutsu mastery XP (crew mates master what they use). */
+    private final java.util.Map<ResourceLocation, Integer> jutsuXp = new java.util.HashMap<>();
+    /** The jutsu a crew mate has equipped (up to 4); empty = they pick from what they know. */
+    private final List<ResourceLocation> loadout = new ArrayList<>();
+    public static final int LOADOUT_SLOTS = 4;
 
     public SparringNinja(EntityType<? extends SparringNinja> type, Level level) {
         super(type, level);
@@ -229,6 +237,66 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return taught;
     }
 
+    // ---------------------------------------------------------------- mind (crew mates)
+
+    public float respect() {
+        return respect;
+    }
+
+    public void setRespect(float value) {
+        respect = Mth.clamp(value, 0f, 100f);
+    }
+
+    public com.noirm.ally.Trait trait() {
+        if (trait == null) {
+            trait = com.noirm.ally.Trait.values()[getRandom().nextInt(com.noirm.ally.Trait.values().length)];
+        }
+        return trait;
+    }
+
+    public int jutsuMastery(ResourceLocation id) {
+        return com.noirm.jutsu.JutsuBook.levelFor(jutsuXp.getOrDefault(id, 0));
+    }
+
+    public void addJutsuXp(ResourceLocation id, int amount) {
+        if (leader == null) {
+            return; // only crew mates grow
+        }
+        int before = jutsuMastery(id);
+        jutsuXp.merge(id, amount, Integer::sum);
+        if (jutsuMastery(id) > before) {
+            var player = leaderPlayer();
+            if (player != null) {
+                player.sendSystemMessage(Component.translatable("message.noirm.ally.mastery", getDisplayName(),
+                        Component.translatable(Sharingan.jutsuKey(id)), jutsuMastery(id)).withStyle(net.minecraft.ChatFormatting.AQUA));
+            }
+        }
+    }
+
+    public List<ResourceLocation> loadout() {
+        return loadout;
+    }
+
+    /** Equips {@code id} (or unequips it if it's already equipped). Returns whether it's equipped now. */
+    public boolean toggleLoadout(ResourceLocation id) {
+        if (loadout.remove(id)) {
+            return false;
+        }
+        if (loadout.size() < LOADOUT_SLOTS && jutsu.contains(id)) {
+            loadout.add(id);
+            return true;
+        }
+        return false;
+    }
+
+    /** What they actually cast: their equipped jutsu, or everything they know if none are. */
+    public List<ResourceLocation> castableJutsu() {
+        if (leader != null && !loadout.isEmpty()) {
+            return loadout;
+        }
+        return jutsu;
+    }
+
     /** Their leader teaches them a jutsu. */
     public void teach(ResourceLocation id) {
         if (!taught.contains(id)) {
@@ -298,6 +366,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (player == null || !player.isAlive()) {
             return;
         }
+        if (tickCount % 100 == 0) {
+            com.noirm.ally.AllyMind.drift(this, player);
+        }
+        com.noirm.ally.AllyMind.support(this, player);
         LivingEntity target = getTarget();
         if (target != null && com.noirm.ally.Crew.sameSide(this, target)) {
             setTarget(null);
@@ -358,6 +430,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public boolean hurt(DamageSource source, float amount) {
         if (!level().isClientSide() && source.getEntity() instanceof LivingEntity attacker && leader != null
                 && com.noirm.ally.Crew.sameSide(this, attacker)) {
+            if (attacker instanceof Player && tickCount % 10 == 0) {
+                com.noirm.ally.AllyMind.respect(this, -3f, "message.noirm.ally.hurt_by_you");
+            }
             return false; // a stray hit from your own side
         }
         boolean hurt = super.hurt(source, amount);
@@ -647,6 +722,14 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             net.minecraft.nbt.ListTag taughtTag = new net.minecraft.nbt.ListTag();
             taught.forEach(id -> taughtTag.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
             tag.put("Taught", taughtTag);
+            tag.putFloat("Respect", respect);
+            tag.putString("Trait", trait().name());
+            net.minecraft.nbt.CompoundTag masteryTag = new net.minecraft.nbt.CompoundTag();
+            jutsuXp.forEach((id, xp) -> masteryTag.putInt(id.toString(), xp));
+            tag.put("JutsuXp", masteryTag);
+            net.minecraft.nbt.ListTag loadoutTag = new net.minecraft.nbt.ListTag();
+            loadout.forEach(id -> loadoutTag.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
+            tag.put("Loadout", loadoutTag);
         }
     }
 
@@ -685,6 +768,29 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
                 if (id != null) {
                     taught.add(id);
+                }
+            });
+            if (tag.contains("Respect")) {
+                respect = tag.getFloat("Respect");
+            }
+            try {
+                trait = tag.contains("Trait") ? com.noirm.ally.Trait.valueOf(tag.getString("Trait")) : null;
+            } catch (IllegalArgumentException ignored) {
+                trait = null;
+            }
+            jutsuXp.clear();
+            net.minecraft.nbt.CompoundTag masteryTag = tag.getCompound("JutsuXp");
+            for (String key : masteryTag.getAllKeys()) {
+                ResourceLocation id = ResourceLocation.tryParse(key);
+                if (id != null) {
+                    jutsuXp.put(id, masteryTag.getInt(key));
+                }
+            }
+            loadout.clear();
+            tag.getList("Loadout", net.minecraft.nbt.Tag.TAG_STRING).forEach(t -> {
+                ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
+                if (id != null && loadout.size() < LOADOUT_SLOTS) {
+                    loadout.add(id);
                 }
             });
         }

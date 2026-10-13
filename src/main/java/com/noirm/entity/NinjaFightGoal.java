@@ -100,6 +100,22 @@ class NinjaFightGoal extends Goal {
         }
         reactToOpponent(target, distance);
 
+        // Badly hurt crew mates back off to recover, guard up, and only throw jutsu from range.
+        if (com.noirm.ally.AllyMind.shouldRetreat(ninja)) {
+            combo.clear();
+            if (distance < 8) {
+                net.minecraft.world.phys.Vec3 away = ninja.position().subtract(target.position()).normalize().scale(6);
+                ninja.getNavigation().moveTo(ninja.getX() + away.x, ninja.getY(), ninja.getZ() + away.z, 1.2);
+            }
+            if (distance < 3 && !self.isGuarding()) {
+                CombatSystem.setGuard(ninja, true);
+                guardTicks = 20;
+            }
+            if (distance > ATTACK_RANGE + 1 && jutsuCooldown-- <= 0 && CombatSystem.canAct(ninja)) {
+                castRangedJutsu();
+            }
+            return;
+        }
         boolean busy = self.phase() != CombatPhase.IDLE || self.isGuarding();
         if (busy) {
             ninja.getNavigation().stop();
@@ -144,7 +160,7 @@ class NinjaFightGoal extends Goal {
 
     /** At range: throw one of its clan's jutsu (fireball, water bullet, genjutsu…). */
     private void castRangedJutsu() {
-        List<ResourceLocation> options = ninja.knownJutsu().stream()
+        List<ResourceLocation> options = ninja.castableJutsu().stream()
                 .filter(id -> RANGED_BEHAVIORS.contains(behavior(id)))
                 .toList();
         jutsuCooldown = 40 + ninja.getRandom().nextInt(60);

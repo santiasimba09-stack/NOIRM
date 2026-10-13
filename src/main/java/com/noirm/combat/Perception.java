@@ -44,7 +44,8 @@ public final class Perception {
      */
     public static float damageMultiplier(LivingEntity entity) {
         float base = statPower(taijutsu(entity));
-        return base * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
+        float morale = entity instanceof com.noirm.entity.SparringNinja ninja ? com.noirm.ally.AllyMind.morale(ninja) : 1f;
+        return base * morale * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
                 * com.noirm.jutsu.ModeSystem.damageMultiplier(entity);
     }
 

@@ -366,5 +366,21 @@
   "commands.noirm.beast.kind.release": "wear its cloak (seconds)",
   "commands.noirm.beast.kind.strong": "defeat someone as strong as you",
   "commands.noirm.beast.kind.offer": "an offering",
-  "commands.noirm.beast.kind.rest": "no cloak for a while"
+  "commands.noirm.beast.kind.rest": "no cloak for a while",
+  "screen.noirm.ally.respect": "Respect %s · %s",
+  "screen.noirm.ally.trait.brave": "Brave",
+  "screen.noirm.ally.trait.cautious": "Cautious",
+  "screen.noirm.ally.trait.loyal": "Loyal",
+  "screen.noirm.ally.trait.proud": "Proud",
+  "screen.noirm.ally.tab.teach": "Teach",
+  "screen.noirm.ally.tab.jutsu": "Their jutsu %s/%s",
+  "screen.noirm.ally.equip": "Equip",
+  "screen.noirm.ally.unequip": "Remove",
+  "screen.noirm.ally.jutsu_none": "They know no jutsu yet.",
+  "message.noirm.ally.mastery": "%s mastered %s: ★%s",
+  "message.noirm.ally.devoted": "%s would follow you anywhere now.",
+  "message.noirm.ally.leaves": "%s has lost all respect for you and leaves the crew.",
+  "message.noirm.ally.refuses": "%s ignores your order.",
+  "message.noirm.ally.hurt_by_you": "%s didn't like that.",
+  "message.noirm.ally.grateful": "%s is grateful for the lesson."
 }

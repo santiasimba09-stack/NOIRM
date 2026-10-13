@@ -35,6 +35,25 @@ public final class Crew {
 
     private Crew() {}
 
+    /** Victories together: a kill by the leader or a crew mate earns respect from the crew around. */
+    @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = com.noirm.Noirm.MOD_ID)
+    public static final class CrewEvents {
+        private CrewEvents() {}
+
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public static void death(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
+            if (!(event.getSource().getEntity() instanceof LivingEntity killer) || killer.level().isClientSide()
+                    || event.getEntity() instanceof SparringNinja dead && dead.leaderId() != null) {
+                return;
+            }
+            UUID side = sideOf(killer);
+            for (SparringNinja mate : killer.level().getEntitiesOfClass(SparringNinja.class, event.getEntity().getBoundingBox().inflate(24),
+                    m -> side.equals(m.leaderId()))) {
+                AllyMind.respect(mate, 1.5f, null);
+            }
+        }
+    }
+
     /** How many crew mates {@code player} can lead: 3, +1 per 20 taijutsu above 10. */
     public static int maxSize(Player player) {
         float taijutsu = ShinobiCapability.get(player).map(d -> d.getTaijutsu()).orElse(10f);
@@ -87,6 +106,7 @@ public final class Crew {
             return false;
         }
         ninja.joinCrew(player.getUUID());
+        ninja.setRespect(AllyMind.respectFromPower(player, ninja));
         ninja.setHealth(Math.max(ninja.getHealth(), ninja.getMaxHealth() * 0.5f));
         data.crew().add(ninja.getUUID());
         player.sendSystemMessage(Component.translatable("message.noirm.crew.joined", ninja.getDisplayName())
@@ -110,6 +130,11 @@ public final class Crew {
             return;
         }
         Player player = level.getPlayerByUUID(leader);
+        // The rest of the crew feels it.
+        for (SparringNinja mate : level.getEntitiesOfClass(SparringNinja.class, ninja.getBoundingBox().inflate(48),
+                m -> m != ninja && leader.equals(m.leaderId()))) {
+            AllyMind.respect(mate, -5f, null);
+        }
         if (player != null) {
             ShinobiCapability.get(player).ifPresent(d -> d.crew().remove(ninja.getUUID()));
             player.sendSystemMessage(Component.translatable("message.noirm.crew.fallen", ninja.getDisplayName())

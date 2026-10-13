@@ -140,6 +140,35 @@ public final class CrewGameTests {
         });
     }
 
+    @GameTest(template = "empty", batch = "noirm_crew_mind")
+    public static void crewMatesHaveAMind(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        SparringNinja mate = ninja(helper, 1.5f, 1.5f, TestClans.FIRE);
+        mate.joinCrew(player.getUUID());
+        ShinobiCapability.get(player).ifPresent(d -> d.crew().add(mate.getUUID()));
+        // Loadout: up to four, only what they know.
+        var fireball = Noirm.id("katon/great_fireball");
+        helper.assertTrue(mate.toggleLoadout(fireball), "equip a jutsu they know");
+        helper.assertFalse(mate.toggleLoadout(Noirm.id("suiton/water_dragon")), "not one they don't know");
+        helper.assertTrue(mate.castableJutsu().size() == 1 && mate.castableJutsu().contains(fireball), "they cast what's equipped");
+        // Mastery makes their jutsu stronger.
+        var def = com.noirm.jutsu.JutsuData.get(fireball);
+        float before = com.noirm.jutsu.JutsuCaster.power(mate, fireball, def);
+        mate.addJutsuXp(fireball, 1000);
+        helper.assertTrue(mate.jutsuMastery(fireball) > 0 && com.noirm.jutsu.JutsuCaster.power(mate, fireball, def) > before, "mastery adds power");
+        // Respect: a strong leader is respected; enough bad moments and they leave.
+        helper.assertTrue(com.noirm.ally.AllyMind.respectFromPower(player, mate) > 0, "respect has a baseline");
+        mate.setRespect(8);
+        com.noirm.ally.AllyMind.respect(mate, -10f, null);
+        helper.assertTrue(mate.leaderId() == null, "with no respect left, they leave the crew");
+        // Retreat when badly hurt (only crew mates).
+        mate.joinCrew(player.getUUID());
+        mate.setInvulnerable(false);
+        mate.setHealth(1f);
+        helper.assertTrue(com.noirm.ally.AllyMind.shouldRetreat(mate), "badly hurt, they back off");
+        clearAround(helper);
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {

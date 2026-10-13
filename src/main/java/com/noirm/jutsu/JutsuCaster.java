@@ -245,6 +245,7 @@ public final class JutsuCaster {
         ready.put(id, now + cooldown(caster, id, def));
         if (caster instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
+            ninja.addJutsuXp(id, 1);
         }
         return true;
     }
@@ -345,6 +346,9 @@ public final class JutsuCaster {
         }
         if (!(caster instanceof Player) && caster instanceof com.noirm.combat.CombatStats stats) {
             power *= chakraPower(stats.combatReserves());
+            if (caster instanceof com.noirm.entity.SparringNinja ninja) {
+                power *= 1f + MASTERY_POWER * ninja.jutsuMastery(id);
+            }
         }
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);

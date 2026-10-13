@@ -169,8 +169,12 @@ public class AllyMenu extends AbstractContainerMenu {
 
         @Override
         public void setItem(int index, ItemStack stack) {
+            boolean gift = !stack.isEmpty() && ally.getItemBySlot(SLOTS[index]).isEmpty();
             ally.setItemSlot(SLOTS[index], stack);
             ally.setGuaranteedDrop(SLOTS[index]);
+            if (gift && !ally.level().isClientSide()) {
+                AllyMind.respect(ally, 1f, null); // being equipped by your leader feels good
+            }
         }
 
         @Override
