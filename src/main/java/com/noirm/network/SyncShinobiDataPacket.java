@@ -14,14 +14,15 @@ import java.util.function.Supplier;
  */
 public record SyncShinobiDataPacket(float chakra, float maxChakra, float stamina, float maxStamina,
                                     float taijutsu, float taijutsuProgress, float speed, float speedProgress,
-                                    float vitality, float vitalityProgress, float reserves, float reservesProgress) {
+                                    float vitality, float vitalityProgress, float reserves, float reservesProgress, String style) {
 
     public static SyncShinobiDataPacket of(ShinobiData data) {
         return new SyncShinobiDataPacket(data.getChakra(), data.getMaxChakra(), data.getStamina(), data.getMaxStamina(),
                 data.getTaijutsu(), TrainingSystem.progress(data, TrainingSystem.Stat.TAIJUTSU),
                 data.getSpeed(), TrainingSystem.progress(data, TrainingSystem.Stat.SPEED),
                 data.getVitality(), TrainingSystem.progress(data, TrainingSystem.Stat.VITALITY),
-                data.getReserves(), TrainingSystem.progress(data, TrainingSystem.Stat.RESERVES));
+                data.getReserves(), TrainingSystem.progress(data, TrainingSystem.Stat.RESERVES),
+                com.noirm.combat.StyleSystem.styleOf(data).getPath());
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -37,12 +38,13 @@ public record SyncShinobiDataPacket(float chakra, float maxChakra, float stamina
         buf.writeFloat(vitalityProgress);
         buf.writeFloat(reserves);
         buf.writeFloat(reservesProgress);
+        buf.writeUtf(style, 64);
     }
 
     public static SyncShinobiDataPacket decode(FriendlyByteBuf buf) {
         return new SyncShinobiDataPacket(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(),
                 buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(),
-                buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
+                buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readUtf(64));
     }
 
     public void handle(Supplier<NetworkEvent.Context> context) {

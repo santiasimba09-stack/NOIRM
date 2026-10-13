@@ -22,9 +22,12 @@ def pose(**bones):
     return {name: (value if isinstance(value[0], (tuple, list)) else (value, Z)) for name, value in bones.items()}
 
 
-def build(name, length, keys):
+UPPER = ["torso", "head", "right_arm", "left_arm"]
+
+
+def build(name, length, keys, bones_used=None, loop=False):
     bones = {}
-    for bone in BONES:
+    for bone in bones_used or BONES:
         rotation = {}
         position = {}
         for t, frame in keys:
@@ -33,13 +36,59 @@ def build(name, length, keys):
             rotation[stamp] = {"vector": list(rot), "easing": "linear"}
             position[stamp] = {"vector": list(pos), "easing": "linear"}
         bones[bone] = {"rotation": rotation, "position": position}
-    return {"format_version": "1.8.0", "animations": {name: {"animation_length": length, "bones": bones}}}
+    anim = {"animation_length": length, "bones": bones}
+    if loop:
+        anim["loop"] = True
+    return {"format_version": "1.8.0", "animations": {name: anim}}
 
 
 REST = pose()
 GUARD = pose(right_arm=(-70, -20, 0), left_arm=(-70, 20, 0))
 
+# Stances: looping, upper body only (the legs keep walking normally). Each style stands its own way.
+STANCES = {
+    # Academy: a plain, balanced guard.
+    "stance_basic": (2.0, [
+        (0.0, pose(right_arm=(-50, -15, 5), left_arm=(-60, 20, -5), torso=(0, 15, 0))),
+        (0.5, pose(right_arm=(-54, -15, 5), left_arm=(-64, 20, -5), torso=(2, 15, 0))),
+        (1.0, pose(right_arm=(-50, -15, 5), left_arm=(-60, 20, -5), torso=(0, 15, 0))),
+    ]),
+    # Brawler: Muay Thai high guard, fists by the face, hunched, bouncing on the beat.
+    "stance_brawler": (0.8, [
+        (0.0, pose(right_arm=((-115, -30, 10), (0, 0, -1)), left_arm=((-120, 35, -10), (0, 0, -1)), torso=(12, 10, 0), head=(10, 0, 0))),
+        (0.5, pose(right_arm=((-110, -30, 10), (0, -1, -1)), left_arm=((-115, 35, -10), (0, -1, -1)), torso=(16, 10, 0), head=(14, 0, 0))),
+        (1.0, pose(right_arm=((-115, -30, 10), (0, 0, -1)), left_arm=((-120, 35, -10), (0, 0, -1)), torso=(12, 10, 0), head=(10, 0, 0))),
+    ]),
+    # Strong Fist: Might Guy and Lee: one hand behind the back, the other open and forward, upright.
+    "stance_strong_fist": (1.6, [
+        (0.0, pose(right_arm=(-75, 10, 0), left_arm=((35, 0, -25), (1, 0, 2)), torso=(-4, 25, 0))),
+        (0.5, pose(right_arm=(-80, 10, 0), left_arm=((35, 0, -25), (1, 0, 2)), torso=(-6, 25, 0))),
+        (1.0, pose(right_arm=(-75, 10, 0), left_arm=((35, 0, -25), (1, 0, 2)), torso=(-4, 25, 0))),
+    ]),
+    # Gentle Fist: the Hyūga stance: side-on, lead palm out low, rear palm high, very still.
+    "stance_gentle_fist": (3.0, [
+        (0.0, pose(right_arm=(-70, 0, -20), left_arm=(-110, 0, 30), torso=(5, 55, 0), head=(0, -40, 0))),
+        (0.5, pose(right_arm=(-72, 0, -20), left_arm=(-112, 0, 30), torso=(6, 55, 0), head=(0, -40, 0))),
+        (1.0, pose(right_arm=(-70, 0, -20), left_arm=(-110, 0, 30), torso=(5, 55, 0), head=(0, -40, 0))),
+    ]),
+}
+
 ANIMS = {
+    # Strong Fist: Lee's lightning-fast single-arm straight, the other hand behind the back.
+    "strong_fist_jab": (0.35, [
+        (0.0, pose(right_arm=(-75, 10, 0), left_arm=(35, 0, -25), torso=(-4, 25, 0))),
+        (0.3, pose(right_arm=((-92, 0, 0), (0, 0, -9)), left_arm=(35, 0, -25), torso=(6, -20, 0), body=((0, 0, 0), (0, 0, -4)))),
+        (0.6, pose(right_arm=((-90, 0, 0), (0, 0, -6)), left_arm=(35, 0, -25), torso=(4, -15, 0), body=((0, 0, 0), (0, 0, -2)))),
+        (1.0, pose(right_arm=(-75, 10, 0), left_arm=(35, 0, -25), torso=(-4, 25, 0))),
+    ]),
+    "strong_fist_straight": (0.45, [
+        (0.0, pose(right_arm=(-75, 10, 0), left_arm=(35, 0, -25), torso=(-4, 25, 0))),
+        (0.25, pose(right_arm=((-60, 0, 30), (0, 0, 3)), left_arm=(30, 0, -25), torso=(0, 50, 0), right_leg=(-15, 0, 0))),
+        (0.45, pose(right_arm=((-95, 0, -5), (0, 0, -10)), left_arm=(40, 0, -25), torso=(10, -40, 0), right_leg=(-35, 0, 0),
+                    left_leg=(25, 0, 0), body=((0, 0, 0), (0, -1, -5)))),
+        (0.75, pose(right_arm=(-85, 0, 0), left_arm=(35, 0, -25), torso=(5, -25, 0))),
+        (1.0, pose(right_arm=(-75, 10, 0), left_arm=(35, 0, -25), torso=(-4, 25, 0))),
+    ]),
     # Brawler: short, close strikes.
     "elbow_strike": (0.55, [
         (0.0, REST),
@@ -139,4 +188,8 @@ if __name__ == "__main__":
     for name, (length, keys) in ANIMS.items():
         with open(os.path.join(OUT, name + ".json"), "w") as f:
             json.dump(build(name, length, keys), f, indent=1)
+        print("wrote", name)
+    for name, (length, keys) in STANCES.items():
+        with open(os.path.join(OUT, name + ".json"), "w") as f:
+            json.dump(build(name, length, keys, UPPER, loop=True), f, indent=1)
         print("wrote", name)

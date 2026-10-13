@@ -45,6 +45,7 @@ final class CombatEffects {
         if (!guarded) {
             sound(target, hit.isHeavy() ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG, 1f, 0.9f);
             com.noirm.vfx.Vfx.hit(target.level(), chest, com.noirm.vfx.Vfx.HIT, hit.isHeavy());
+            styleImpact(attacker, target, chest, hit.isHeavy());
             if (hit.isHeavy()) {
                 particles(target, ParticleTypes.SWEEP_ATTACK, 1, 0);
             }
@@ -58,6 +59,29 @@ final class CombatEffects {
         }
         if (target instanceof ServerPlayer player) {
             NoirmNetwork.sendToPlayer(player, Feedback.simple(Feedback.Kind.HIT_TAKEN, shake));
+        }
+    }
+
+    /** Each style lands differently: Brawler thuds, Strong Fist whips, the Gentle Fist barely touches. */
+    private static void styleImpact(LivingEntity attacker, LivingEntity target, net.minecraft.world.phys.Vec3 chest, boolean heavy) {
+        net.minecraft.world.level.Level level = target.level();
+        switch (CombatSystem.styleFor(attacker).getPath()) {
+            case "brawler" -> {
+                sound(target, SoundEvents.PLAYER_BIG_FALL, 0.8f, heavy ? 0.6f : 0.85f);
+                com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(0xB8A890, 0.6f, 14), chest, heavy ? 6 : 3, 0.25, 0.04);
+            }
+            case "strong_fist" -> {
+                sound(target, SoundEvents.PLAYER_ATTACK_SWEEP, 0.7f, 1.7f);
+                net.minecraft.world.phys.Vec3 dir = target.position().subtract(attacker.position()).normalize();
+                for (int i = 1; i <= 4; i++) {
+                    com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.spark(0xFFFFFF, 0.12f, 5), chest.subtract(dir.scale(i * 0.45)), dir.scale(0.4));
+                }
+            }
+            case "gentle_fist" -> {
+                sound(target, SoundEvents.AMETHYST_BLOCK_HIT, 1f, 1.5f);
+                com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xE8FAFF, 0x6FB8FF, 0.25f, 0.05f, 7), chest, 4, 0.1, 0.06);
+            }
+            default -> { }
         }
     }
 

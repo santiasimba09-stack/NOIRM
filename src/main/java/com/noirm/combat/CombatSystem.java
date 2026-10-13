@@ -355,13 +355,8 @@ public final class CombatSystem {
     public static ResourceLocation styleFor(LivingEntity entity) {
         if (entity instanceof Player player) {
             var data = ShinobiCapability.get(player).orElse(null);
-            String chosen = data == null ? "" : data.getCombatStyle();
-            ResourceLocation id = chosen.isEmpty() ? null : ResourceLocation.tryParse(chosen);
-            if (id != null && CombatData.style(id) != null) {
-                return id;
-            }
-            if (chosen.isEmpty() && data != null && data.identity().hasByakugan() && CombatData.style(StyleSystem.GENTLE_FIST) != null) {
-                return StyleSystem.GENTLE_FIST; // the Hyūga grow up with the Gentle Fist
+            if (data != null) {
+                return StyleSystem.styleOf(data);
             }
         }
         if (entity instanceof CombatStats stats && stats.combatStyle() != null) {

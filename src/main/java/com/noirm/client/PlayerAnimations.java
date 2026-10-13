@@ -30,6 +30,9 @@ import java.util.Set;
  */
 public final class PlayerAnimations {
     private static final ResourceLocation LAYER = Noirm.id("combat");
+    /** Under the attack layer: the style's stance, held while in combat mode. */
+    private static final ResourceLocation STANCE_LAYER = Noirm.id("stance");
+    private static String currentStance = "";
     private static final Set<ResourceLocation> WARNED_MISSING = new HashSet<>();
 
     private PlayerAnimations() {}
@@ -62,6 +65,48 @@ public final class PlayerAnimations {
         layer.addModifierBefore(new SpeedModifier(speed));
     }
 
+    /**
+     * Every client tick: in combat mode, the local player holds their style's stance (a looping
+     * upper-body pose; attacks play over it); out of combat mode, no stance.
+     */
+    static void tickStance(AbstractClientPlayer player, boolean combatMode, String style) {
+        if (!(PlayerAnimationAccess.getPlayerAssociatedData(player).get(STANCE_LAYER) instanceof ModifierLayer<?> raw)) {
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        ModifierLayer<IAnimation> layer = (ModifierLayer<IAnimation>) raw;
+        String wanted = combatMode && style != null && !style.isEmpty() ? "stance_" + style : "";
+        if (wanted.equals(currentStance) && (wanted.isEmpty() || layer.getAnimation() != null)) {
+            return;
+        }
+        currentStance = wanted;
+        if (wanted.isEmpty()) {
+            layer.setAnimation(null);
+            return;
+        }
+        KeyframeAnimation animation = PlayerAnimationRegistry.getAnimation(Noirm.id(wanted));
+        if (animation == null) {
+            animation = PlayerAnimationRegistry.getAnimation(Noirm.id("stance_basic"));
+        }
+        layer.setAnimation(animation == null ? null : new KeyframeAnimationPlayer(animation)
+                .setFirstPersonMode(FirstPersonMode.NONE));
+    }
+
+    @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
+    public static final class StanceTicker {
+        private StanceTicker() {}
+
+        @SubscribeEvent
+        public static void clientTick(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
+            var player = net.minecraft.client.Minecraft.getInstance().player;
+            if (event.phase != net.minecraftforge.event.TickEvent.Phase.END || player == null) {
+                return;
+            }
+            var data = ClientShinobiData.get();
+            tickStance(player, ClientCombat.isCombatMode(), data == null ? "" : data.style());
+        }
+    }
+
     /** Gives every player an animation layer for NOIRM to play into. */
     @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class Setup {
@@ -69,8 +114,10 @@ public final class PlayerAnimations {
 
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
-            event.enqueueWork(() -> PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
-                    LAYER, 1000, player -> new ModifierLayer<>()));
+            event.enqueueWork(() -> {
+                PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(LAYER, 1000, player -> new ModifierLayer<>());
+                PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(STANCE_LAYER, 900, player -> new ModifierLayer<>());
+            });
         }
     }
 }

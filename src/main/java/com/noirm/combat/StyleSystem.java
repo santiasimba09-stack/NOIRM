@@ -29,6 +29,19 @@ public final class StyleSystem {
         return "style." + style.getNamespace() + "." + style.getPath();
     }
 
+    /** A player's style: their choice if it still exists, else the Gentle Fist for the Hyūga, else the basic one. */
+    public static ResourceLocation styleOf(ShinobiData data) {
+        String chosen = data.getCombatStyle();
+        ResourceLocation id = chosen.isEmpty() ? null : ResourceLocation.tryParse(chosen);
+        if (id != null && CombatData.style(id) != null) {
+            return id;
+        }
+        if (chosen.isEmpty() && data.identity().hasByakugan() && CombatData.style(GENTLE_FIST) != null) {
+            return GENTLE_FIST; // the Hyūga grow up with the Gentle Fist
+        }
+        return CombatData.DEFAULT_STYLE;
+    }
+
     /** The styles {@code data} qualifies for, the basic one first. */
     public static List<ResourceLocation> available(ShinobiData data) {
         List<ResourceLocation> list = new ArrayList<>();
@@ -53,6 +66,7 @@ public final class StyleSystem {
             int index = styles.indexOf(current);
             ResourceLocation next = styles.get((index + 1) % styles.size());
             data.setCombatStyle(next.toString());
+            data.markDirty();
             player.displayClientMessage(Component.translatable("message.noirm.style.now",
                     Component.translatable(translationKey(next)).withStyle(ChatFormatting.GOLD)), true);
             player.level().playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS, 0.8f, 1.2f);
