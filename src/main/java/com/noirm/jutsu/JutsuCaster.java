@@ -350,7 +350,12 @@ public final class JutsuCaster {
                 }
                 int cloak = data.biju().cloakStage();
                 power *= cloak == 2 ? 1.6f : cloak == 1 ? 1.2f : 1f;
+                if (id.equals(com.noirm.biju.BijuSystem.BEAST_BALL)) {
+                    power *= beastBallScale(data.biju().tails());
+                }
             }
+        } else if (id.equals(com.noirm.biju.BijuSystem.BEAST_BALL) && caster instanceof com.noirm.entity.SparringNinja ninja) {
+            power *= beastBallScale(ninja.tails());
         }
         return power;
     }
@@ -382,9 +387,17 @@ public final class JutsuCaster {
     /** Extra chakra poured in while charging, as a fraction of the cost, spread over the full charge. */
     public static final float CHARGE_EXTRA_COST = 0.75f;
 
-    /** The chakra behind a jutsu: 1× at 10 reserves, +2% per point (1.4× at 30, 2× at 60). */
+    /**
+     * The Tailed Beast Bomb is the beast's own chakra, not yours: a jinchūriki's is multiplied by
+     * the beast's strength (a beast casting it already has that strength).
+     */
+    public static float beastBallScale(int tails) {
+        return tails <= 0 ? 1f : com.noirm.entity.TailedBeast.statFor(tails) / ShinobiData.DEFAULT_STAT;
+    }
+
+    /** The chakra behind a jutsu: proportional to reserves (1× at 10, 3× at 30, 10× at 100). */
     public static float chakraPower(float reserves) {
-        return Math.max(0.6f, 1f + (reserves - ShinobiData.DEFAULT_STAT) * 0.02f);
+        return Math.max(0.6f, com.noirm.combat.Perception.statPower(reserves));
     }
 
     public static float cost(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {

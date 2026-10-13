@@ -43,7 +43,7 @@ public final class Perception {
      * tailed beast's cloak.
      */
     public static float damageMultiplier(LivingEntity entity) {
-        float base = Mth.clamp(0.6f + 0.04f * taijutsu(entity), 0.5f, 5f);
+        float base = statPower(taijutsu(entity));
         return base * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
                 * com.noirm.jutsu.ModeSystem.damageMultiplier(entity);
     }
@@ -58,6 +58,31 @@ public final class Perception {
         return Sharingan.perceptionMultiplier(entity) * keenEyes
                 * com.noirm.jutsu.ModeSystem.perceptionMultiplier(entity)
                 * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity);
+    }
+
+    /**
+     * The power scale everything shares: proportional to the stat, 1 at the starting 10. A
+     * taijutsu-100 fighter hits 10× harder than a beginner; a legend at 1000, 100×.
+     */
+    public static float statPower(float stat) {
+        return Math.max(0.5f, stat / ShinobiData.DEFAULT_STAT);
+    }
+
+    /**
+     * How much of every hit a body shrugs off (damage is divided by this): the square root of
+     * the power of its vitality (players) or overall strength (ninjas, beasts). With the health
+     * vitality gives, toughness keeps pace with strength, so equals still fight equal fights.
+     */
+    public static float durability(LivingEntity entity) {
+        float stat;
+        if (entity instanceof Player player) {
+            stat = ShinobiCapability.get(player).map(ShinobiData::getVitality).orElse(ShinobiData.DEFAULT_STAT);
+        } else if (entity instanceof CombatStats stats) {
+            stat = (stats.combatSpeed() + stats.combatTaijutsu()) / 2f;
+        } else {
+            return 1f;
+        }
+        return (float) Math.sqrt(Math.max(1f, stat / ShinobiData.DEFAULT_STAT));
     }
 
     private static float speed(LivingEntity entity) {

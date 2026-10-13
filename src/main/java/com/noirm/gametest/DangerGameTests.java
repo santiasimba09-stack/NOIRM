@@ -26,6 +26,21 @@ public final class DangerGameTests {
 
     private DangerGameTests() {}
 
+    /** No cap, and legends are in a different league: power and toughness scale with stats. */
+    @GameTest(template = "empty")
+    public static void noCapAndLegendsAreFarStronger(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        data.setTaijutsu(500);
+        helper.assertTrue(data.getTaijutsu() == 500, "stats go past 100");
+        helper.assertTrue(com.noirm.combat.Perception.damageMultiplier(player) >= 49f, "taijutsu 500 hits ~50× harder");
+        data.setVitality(1000);
+        helper.assertTrue(com.noirm.combat.Perception.durability(player) >= 9.9f, "and vitality 1000 shrugs off 90% of each hit");
+        helper.assertTrue(com.noirm.entity.TailedBeast.statFor(9) > 400, "the Nine-Tails is a force of nature");
+        helper.assertTrue(JutsuCaster.beastBallScale(9) > 40, "and so is its Tailed Beast Bomb");
+        helper.succeed();
+    }
+
     @GameTest(template = "empty")
     public static void chakraAndMasteryMakeJutsuStronger(GameTestHelper helper) {
         Player player = helper.makeMockPlayer();
@@ -34,7 +49,7 @@ public final class DangerGameTests {
         float base = JutsuCaster.power(player, FIREBALL, JutsuData.get(FIREBALL));
         data.setReserves(30);
         float withChakra = JutsuCaster.power(player, FIREBALL, JutsuData.get(FIREBALL));
-        helper.assertTrue(Math.abs(withChakra / base - 1.4f) < 0.01f, "reserves 30 = 1.4× power, got " + withChakra / base);
+        helper.assertTrue(Math.abs(withChakra / base - 3f) < 0.01f, "reserves 30 = 3× power, got " + withChakra / base);
         data.jutsu().addXp(FIREBALL, 30); // mastery 2
         float mastered = JutsuCaster.power(player, FIREBALL, JutsuData.get(FIREBALL));
         helper.assertTrue(Math.abs(mastered / withChakra - 1.3f) < 0.01f, "mastery 2 = +30%, got " + mastered / withChakra);

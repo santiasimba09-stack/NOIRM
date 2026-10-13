@@ -74,10 +74,14 @@ public final class Destruction {
     // ---------------------------------------------------------------- what jutsu can do
 
     /** A bowl-shaped crater of {@code radius}, ragged at the edges. */
+    /** Bigger blasts still hurt further out, but the ground they dig is capped here. */
+    public static final float MAX_CRATER_RADIUS = 18f;
+
     public static int crater(ServerLevel level, Vec3 center, float radius, float power) {
         if (!enabled(level) || radius < 0.8f) {
             return 0;
         }
+        radius = Math.min(radius, MAX_CRATER_RADIUS); // the world must survive a Tailed Beast Bomb (barely)
         int r = (int) Math.ceil(radius);
         BlockPos origin = BlockPos.containing(center);
         float hardness = maxHardness(power);

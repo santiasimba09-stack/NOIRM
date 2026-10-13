@@ -82,9 +82,14 @@ public final class TrainingSystem {
 
     private TrainingSystem() {}
 
-    /** XP needed to go from {@code stat} to the next point: 100 at 10, 260 at 30, 500 at 60. */
+    /**
+     * XP needed to go from {@code stat} to the next point: 100 at 10, 260 at 30, 945 at 100,
+     * 5545 at 300. No cap: past 50 it just keeps getting steeper.
+     */
     public static float xpToNext(float stat) {
-        return 20f + 8f * (float) Math.floor(stat);
+        float s = (float) Math.floor(stat);
+        float past = Math.max(0f, s - 50f);
+        return 20f + 8f * s + 0.05f * past * past;
     }
 
     public static float stat(ShinobiData data, Stat stat) {

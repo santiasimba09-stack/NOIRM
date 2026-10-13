@@ -91,8 +91,12 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
     }
 
     /** Speed and taijutsu: 19 with one tail, 59 with nine. */
+    /**
+     * A beast's strength: 30 with one tail, ~470 with nine. Next to a fresh ninja's 10 that's a
+     * force of nature (power and toughness scale with it, see {@code Perception.statPower}).
+     */
     public static float statFor(int tails) {
-        return 14f + 5f * tails;
+        return 30f * (float) Math.pow(Math.max(1, tails), 1.25);
     }
 
     /** Model and hitbox scale: 1× with one tail, 2.6× with nine. */

@@ -30,7 +30,11 @@ public final class ShinobiData {
     public static final int STAMINA_REGEN_DELAY_TICKS = 20;
     /** Starting value of the combat stats. Clans and (later) training raise them. */
     public static final float DEFAULT_STAT = 10f;
-    public static final float MAX_STAT = 100f;
+    /**
+     * Not a design cap: stats grow without limit (each point costs more XP). This only keeps
+     * numbers sane; legends sit in the hundreds or thousands.
+     */
+    public static final float MAX_STAT = 10000f;
 
     private float maxChakra = DEFAULT_MAX_CHAKRA;
     private float chakra = DEFAULT_MAX_CHAKRA;

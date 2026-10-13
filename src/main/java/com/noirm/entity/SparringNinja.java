@@ -481,6 +481,15 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public void setCombatStats(float speed, float taijutsu) {
         this.speed = Mth.clamp(speed, 1f, ShinobiData.MAX_STAT);
         this.taijutsu = Mth.clamp(taijutsu, 1f, ShinobiData.MAX_STAT);
+        // Stronger ninjas have more health too (on top of their durability).
+        var health = getAttribute(Attributes.MAX_HEALTH);
+        if (health != null) {
+            boolean full = getHealth() >= getMaxHealth();
+            health.setBaseValue(Mth.clamp(40 + ((this.speed + this.taijutsu) / 2f - ShinobiData.DEFAULT_STAT), 20, 1024));
+            if (full || getHealth() > getMaxHealth()) {
+                setHealth(getMaxHealth());
+            }
+        }
     }
 
     @Override
