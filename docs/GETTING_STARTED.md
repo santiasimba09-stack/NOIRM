@@ -128,6 +128,31 @@ walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **
 **Stats:** `/noirm stat vitality 30` (more hearts), `/noirm stat reserves 30` (double chakra).
 **Eyes vs mobs:** `/noirm sharingan 3`, **G**, and let a skeleton shoot at you.
 
+## How to test allies, beasts and gear (round 4)
+
+**Allies:** `/noirm ninja uchiha` spawns an Uchiha (or use a clan spawn egg from the Spawn Eggs
+tab). Beat them down until they yield, then right-click them to invite them into your crew.
+
+| What | How |
+|---|---|
+| Ally screen | Right-click a crew mate: change their armor and what they hold, their order (follow, wait, train, meditate), style and look; teach jutsu you know and pick their 4 equipped jutsu |
+| Quick wait / follow | Crouch + right-click a crew mate |
+| Make them grow | Fight together, or order **Train** next to a training dummy, or **Meditate** (chakra) |
+| Respect | Shown in the ally screen. It goes up when you win fights and give them gear, down when you hit them or let crew mates die. Too low and they leave |
+
+**Tailed beast bond:** become a jinchūriki (`/noirm biju seal 9` or seal a beast; in creative a
+Sealing Scroll works at any health). Then:
+
+| What | How |
+|---|---|
+| Draw tails | Press **B** again and again: one more tail each press, up to what you've unlocked |
+| End the cloak | Crouch + **B** |
+| Answer the beast / ask for chakra | Crouch + **B** with the cloak off |
+| See the bond and requests | `/noirm beast` (cheats: `/noirm beast bond 80`, `/noirm beast tails 9`) |
+
+**Gear:** the Combat creative tab has forehead protectors, Senju battle armor, Uchiha, Hyūga and
+Uzumaki clothes, flak vests and ANBU gear. Each piece gives armor points and has a recipe.
+
 ## How to find ninja villages
 
 Villages are only built in **newly generated land**: start a new world, or explore far from where

@@ -2,31 +2,44 @@
 
 Newest first. One entry per working session or PR.
 
-## 2026-10-13 — NPC animation and bendy limbs (branch `round4-animation`)
+## 2026-10-13 — Playtest feedback round 4, v0.4.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
-- **NPCs play the same animations as the player:** a client keyframe evaluator reads
-  `assets/noirm/player_animation/*.json`; the server syncs each NPC move/dodge (animation, length,
-  counter) so the client plays it at the move's timing. Style stances while fighting, rolls on
-  dodges, guard and hit flinch, all cross-faded (2–4 ticks) instead of snapping.
-- **More moving parts:** a new NPC model (`BendyNinjaModel`) with elbows, knees and a bending
-  waist, on the normal player skin. Animations can have `"bend"` keyframes; `gen_anims.py` adds
-  them to all generated moves and stances. NPCs walk with soft knee and elbow bends.
-- Players are unchanged (PlayerAnimator ignores `bend`). Research notes on Better Combat and
-  Epic Fight in `docs/COMBAT_DESIGN.md`. 4 new game tests (101 total).
-
-## 2026-10-13 — Round 4: ninja villages (branch `round4-worldgen`)
-
-- **World generation:** two new structures, built from code (`com.noirm.world.village`): the rare
-  **hidden village** (wall and great gate, red Kage tower with balcony and symbol, Kage Rock with
-  carved faces, round houses with rooftop water tanks, food stalls, torii, training ground) and the
-  common **outpost** (palisade, watchtower, houses, training posts). Leaf / Sand / Snow looks by
-  biome. Research and design in `docs/WORLDGEN.md`.
-- **Residents:** village ninjas are `SparringNinja`s with a saved resident flag. They don't
-  challenge players in combat mode, defend each other when one is attacked, and stay home. Each
-  hidden village has a **Kage** (stats 120–200, named Hokage / Kazekage / Village Head).
-- **Village Merchant** (new entity): emerald trades for kunai, ramen (new food item), training
-  dummies, sealing scrolls; buys wheat, iron, coal, paper, string.
-- 5 new game tests (102 total).
+- **Every jutsu is more dramatic:** vivid four-tone palettes, a cast flourish on every jutsu,
+  double shockwave rings, camera-shaking explosions, spiral orbs, cones for breath jutsu, glinting
+  auras. Genjutsu, binds, buffs, Body Flicker, Substitution, walls and Rotation got new effects.
+- **Deep allies:** crew mates level their stats (from fights, training at a dummy, meditating),
+  master the jutsu they use and equip up to 4 (picked in the ally screen). **Respect** (0–100)
+  starts from how strong you are next to them and moves with what you do (winning fights, gifts of gear,
+  hitting them, letting crew mates die); low respect means they disobey or leave. Each has a
+  **trait** (brave, cautious, loyal, proud), a morale boost, retreats when hurt, and healers
+  support. Right-click a crew mate for the ally screen: their gear and hands, orders
+  (follow / wait / train / meditate), style, look, jutsu to teach and equip.
+- **Tailed beasts, part 2:** in creative you can seal a beast at any health. Tail progression
+  1 → 9: each press of the cloak key draws one more tail, each tail is stronger and harder to
+  hold; tails unlock with use. A **bond** with your beast (−100…100): it makes requests (defeat a
+  strong enemy, rest, let it out, offer chakra), may take over when the bond is low, gives you
+  chakra when you're low, and you can ask for chakra (crouch + cloak key). Version 1 orange,
+  version 2 crimson (burns), full-bond gold. `/noirm beast`, `/noirm beast bond <n>`,
+  `/noirm beast tails <n>`.
+- **NPCs fight with the player's animations:** a keyframe player on the client reads the same
+  animation files, synced per move and dodge, with stances, rolls, guard and flinches,
+  cross-faded. A new jointed NPC model with **elbows, knees and a bending waist**.
+- **Real ninja gear:** 16 wearable pieces with armor points, recipes and their own art
+  (forehead protectors, Senju red battle armor, Uchiha tunic, Hyūga robes, Uzumaki coat, flak
+  vest, ANBU mask and armor…). Ninjas wear their clan's gear (5% drop).
+- **Clean random looks:** each ninja's skin is built from 55 generated parts (hair, eyes, brows,
+  marks, accessories…) with clan colors, so thousands of different faces instead of 23 skins.
+- **Ninja villages:** a rare **hidden village** (wall and great gate, red Kage tower with the
+  village symbol, Kage Rock, round houses with water tanks, food stalls, torii, training
+  ground) with a **Kage** (the strongest ninja around), guards and wandering ninjas, and common
+  **outposts**. Leaf, Sand and Snow looks by biome. Residents leave you alone unless you attack
+  the village; **Village Merchants** trade for emeralds (kunai, ramen, scrolls…). See
+  `docs/WORLDGEN.md`.
+- **Spawn ninjas by clan:** a spawn egg per canon clan (never a surprise jinchūriki) and
+  `/noirm ninja <clan> [tails] [strength]`.
+- **Cleanup:** dead code removed, the game tests share their helpers (`TestKit`). Fixed: village
+  merchants drew with a missing texture.
+- 114 game tests, all green; checked in the real client (`docs/screenshots/r4-*.png`).
 
 ## 2026-10-13 — Playtest feedback round 3, v0.3.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 

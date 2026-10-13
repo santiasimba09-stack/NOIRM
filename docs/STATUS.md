@@ -1,48 +1,37 @@
 # Project status
 
-_Last updated: 2026-10-13 (round 4, NPC animation) · branch `round4-animation`_
-_Last updated: 2026-10-13 (round 4, villages) · branch `round4-worldgen`_
+_Last updated: 2026-10-13 (round 4, v0.4.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**The owner's third feedback round is done (v0.3.0). 95/95 game tests green; checked in the real
-client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
+**The owner's fourth feedback round is done (v0.4.0). 114/114 game tests green; checked in the
+real client** (screenshots `docs/screenshots/r4-*.png`). Details per item in `CHANGELOG.md`.
 
 | Area | State |
 |---|---|
-| **Fix:** a big Great Fireball burst on its own caster (its touch check didn't skip the caster) | ✅ tested |
-| **Lightning**: real crackling bolts (client renderer, `BoltRenderer`) on every raiton jutsu | ✅ seen in client |
-| **8 new jutsu** + behaviors strike (Kirin), wave, nova | ✅ tested |
-| **Lightning Armor** ×2 speed, ×1.8 damage, 55% less damage taken, ×2.2 perception; modes +25%/mastery | ✅ tested |
-| **Styles feel different**: per-style stances, Strong Fist's own animations, per-style impacts | ✅ seen in client |
-| **Crew (allies)**: beat ninjas low → they yield → invite; follow, fight, wait; no friendly fire | ✅ tested |
-| **Killable tailed beasts** (seal or finish once subdued) | ✅ tested |
-| **Deeper Shadow Clones**: real health, your jutsu, Sharingan, mode, cloak | ✅ tested |
-| **Clan outfits**: 23 generated skins (`tools/skingen`) | ✅ |
-| **NPCs animate like the player** (same JSON, synced per move/dodge, stances, cross-fades) | ✅ tested (server side); visuals not yet seen in client |
-| **Bendy NPC model**: elbows, knees, waist; `"bend"` keyframes; natural walk bends | ✅ UVs checked (`check_uv.py`); visuals not yet seen in client |
-| **Speed movement**: run ×√(speed/10), higher jumps, sprint-jump leap, step-ups | ✅ tested |
-| **No stat cap**: power ∝ stat, durability √, beasts 30→470, Tailed Beast Bomb at beast scale | ✅ tested |
-| **Ninja villages (round 4)**: rare hidden village (wall, gate, Kage tower, Kage Rock, houses with water tanks, stalls, training ground) and common outposts; Leaf/Sand/Snow looks; residents, Kage, merchants (`docs/WORLDGEN.md`) | ✅ tested (game tests + a real server world); not yet seen in the client |
+| **Dramatic jutsu VFX** (vivid palettes, cast flourish, shockwaves, camera shake, orbs, cones) | ✅ seen in client |
+| **Deep allies**: stat growth, jutsu mastery, 4-jutsu loadout, respect, traits, morale, orders (train/meditate), ally screen | ✅ tested |
+| **Tailed beasts part 2**: creative sealing, tails 1→9 one press at a time, bond with requests, takeovers, chakra both ways | ✅ tested |
+| **NPCs use the player's animations** on a jointed model (elbows, knees, waist) | ✅ tested; seen in client (bends subtle) |
+| **Wearable clan gear** (16 pieces, armor points) and **random looks** from 55 parts | ✅ seen in client |
+| **Ninja villages**: hidden village with Kage tower and Kage, outposts, residents, merchants | ✅ seen in client |
+| **Spawn by clan**: clan spawn eggs, `/noirm ninja <clan> [tails] [strength]` | ✅ tested |
+| **Cleanup**: dead code removed, shared test helpers (`TestKit`) | ✅ |
 
 ## In progress
 
-Round 4 animation: **needs a look in the real client** (smoke test): ninja stance in a fight,
-moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams at the joints.
-Round 4 villages are done on `round4-worldgen`. They still need a look in the real client (renderer
-for `village_merchant`, how villages look).
+Nothing. Waiting on the owner's playtest of v0.4.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback**: style feel (move JSON in `data/noirm/combat/moves/`), clinch
-   timing, destruction amount, jutsu scale.
-2. **More canon jutsu** on the sample's pattern (one behavior + JSON each); Phoenix Sage Fire's
-   hidden shuriken was skipped.
+1. **Owner playtest + feedback** on round 4: ally respect and growth speed, beast bond pacing,
+   village rarity (capitals are about 1,500–2,000 blocks apart), gear balance.
+2. **Villages, part 2:** residents from the village's clan, an academy, a mission board, masters
+   living in villages; the Kage as a teacher or boss.
 3. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
 4. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
-5. **Villages, part 2:** residents from the village's clan, an academy, a mission board, masters
-   living in villages; the Kage as a boss/teacher.
-6. Later: beasts' homes, squads, missions, Mangekyō.
+5. **More canon jutsu** on the existing behaviors (one JSON each).
+6. Later: beasts' homes, squads on missions, Mangekyō.
 
 ## Code map
 
@@ -56,21 +45,23 @@ for `village_merchant`, how villages look).
 | `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `CanonTechniques` (dome, heal, Rasengan, shadow bind, shadow clone), `GreatTechniques` (strike, wave, nova), `ModeSystem` (toggle modes like Lightning Armor), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
 | `com.noirm.dojutsu` | `Sharingan`, `Byakugan` (incl. Gentle Fist, chakra points), `ThreatSense` (eyes vs vanilla mobs/projectiles), `EyeData` |
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
-| `com.noirm.biju` | `BijuSystem` (cloak, sealing, born jinchūriki, beast names), `BijuData`, `SealingScrollItem` |
+| `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 6), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 7), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
 | `com.noirm.client.anim` | NPC animation: `KeyframeAnimation` (reads `player_animation/*.json`, plain Java so tests use it), `SkeletonPose`, `NpcAnimations` (client reload listener), `NpcAnimator` (layers + cross-fades); the model is `client/BendyNinjaModel` |
-| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules) |
+| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `Trait`, `Order`, `AllyMenu` + `AllyPackets` (the ally screen) |
+| `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
 | `com.noirm.world.village` | `NinjaVillageStructure` (where villages go), `VillagePiece` (saved per chunk), `VillageBuilder` (every building, in code), `VillageCanvas` (rotated, chunk-clipped drawing), `VillagePalette` (Leaf/Sand/Snow), `VillageKind` (capital/outpost), `VillageResidents` (spawning, alarm) |
 | `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag), `VillageMerchant` (emerald trades), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `TestClans` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `TestClans`, `TestKit` (shared helpers) |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt`, `worldgen/structure` + `structure_set` (villages), `tags/worldgen/biome/has_structure/` |
-| `tools/skingen/` | `gen_skins.py`: the clan outfit skins |
+| `tools/skingen/` | `gen_parts.py` + `looks.py`: the skin parts and look tables behind random ninja looks |
+| `tools/gear/` | `gen_gear.py`: the gear textures and icons |
 | `tools/animgen/` | `gen_anims.py`: generates our own animations from simple poses (with `bend`s); `check_uv.py`: checks the bendy model's skin UVs |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
@@ -97,7 +88,11 @@ for `village_merchant`, how villages look).
   takes over, nature-surge clans, will). Guy's students → gates (M4).
 - **Biju (owner):** all three routes to becoming a jinchūriki: born one (3%), defeating and
   sealing a beast, or someone sealing one into you. Beasts can be sealed into yourself, other
-  players or ninjas. Beasts are subdued, never killed by fighting. Placeholder art (scaled zoglin).
+  players or ninjas. Beasts are subdued first, then sealed or finished. Placeholder art (scaled zoglin).
+- **Beast bond (round 4):** tails are drawn one at a time; how many you can hold safely depends
+  on the bond (−100…100). Version 1 orange, version 2 crimson, full bond gold.
+- **Allies (round 4):** respect starts from relative power and moves with your actions; below 5
+  they leave. Crew mates never hurt their side, and their jutsu don't hurt you.
 - **Byakugan (owner):** continue with it for the Hyūga (born with it, no awakening needed).
 - **Training (owner):** first part = the dummy plus speed and taijutsu growth. Solo drills cap at 30;
   past that only real opponents teach (stronger = more).
@@ -119,6 +114,7 @@ for `village_merchant`, how villages look).
 
 ## Open questions for the owner
 
+- Ally respect: too quick or too slow to change? Should allies ever betray you?
 - Do the NPCs' bent limbs look right? Should the player bend too (needs bendy-lib, an extra mod)?
 - How do the animations feel now that they show? Which moves need new or different ones?
 - Jutsu balance: costs, cooldowns, how fast mastery chains unlock; which natures need more jutsu?
