@@ -47,6 +47,8 @@ public final class ElementalBehaviors {
         }
         ParticleOptions look = look(ctx);
         com.noirm.vfx.Vfx.gather(ctx.level(), target.position().add(0, target.getBbHeight() / 2, 0), com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), 2f, 24);
+        com.noirm.vfx.Vfx.spiral(ctx.level(), target.position(), com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)),
+                target.getBbWidth() * 0.8f + 0.2f, target.getBbHeight() + 0.3f, 2.5f);
         JutsuEffects.hit(caster, target, p.damage() * ctx.power(), 0, p.posture() * ctx.power(), p.fireSeconds(), Vec3.ZERO);
         int hold = Math.round(p.stun() * Math.min(1.5f, ctx.power()));
         CombatSystem.stun(target, hold);
@@ -185,6 +187,9 @@ public final class ElementalBehaviors {
         JutsuDefinition.Params p = ctx.params();
         LivingEntity caster = ctx.caster();
         JutsuEffects.applyEffects(caster, p.effect(), p.duration());
+        com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx));
+        com.noirm.vfx.Vfx.spiral(ctx.level(), caster.position(), palette, 0.8f, caster.getBbHeight() + 0.6f, 2f);
+        com.noirm.vfx.Vfx.shockwave(ctx.level(), caster.position(), palette, 2.5f);
         JutsuAreas.add(new JutsuAreas.Area(ctx.level(), caster.position(), caster, caster, JutsuAreas.Mode.AURA, 0.6f,
                 ctx.level().getGameTime() + p.duration(), 0, 0, "", 0, 0, look(ctx)));
         JutsuBehaviors.sound(caster, JutsuBehaviors.castSound(JutsuBehaviors.nature(ctx)), 0.8f, 1.6f);

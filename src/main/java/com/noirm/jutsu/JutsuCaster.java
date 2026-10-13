@@ -266,6 +266,9 @@ public final class JutsuCaster {
         JutsuContext context = new JutsuContext(caster, id, def, power(caster, id, def), charge);
         FriendlyZones.mark(caster);
         if (start) {
+            if (!"mode".equals(def.behavior()) || !ModeSystem.isActive(caster, id)) {
+                com.noirm.vfx.Vfx.castFlourish(caster.level(), caster, com.noirm.vfx.Vfx.palette(def.nature().orElse(null)), def.rank());
+            }
             behavior.cast(context);
             Sharingan.onJutsuCast(caster, id);
         } else {

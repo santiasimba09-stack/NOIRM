@@ -135,10 +135,11 @@ public final class JutsuBehaviors {
         ParticleOptions particle = JutsuProjectile.particle(nature(ctx));
         Vec3 eye = caster.getEyePosition().add(0, -0.3, 0);
         com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(nature(ctx));
+        com.noirm.vfx.Vfx.cone(ctx.level(), eye, look, p.range(), palette, 2.2f);
+        com.noirm.vfx.Vfx.quake(ctx.level(), caster.position(), 0.35f, p.range() + 4);
         for (double d = 1; d <= p.range(); d += 0.75) {
             Vec3 at = eye.add(look.scale(d));
-            JutsuEffects.particlesAt(ctx.level(), at, particle, 6, d * 0.15, 0.05);
-            com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.smoke(palette.mid(), (float) (0.3 + d * 0.12), 14), at, 2, d * 0.12, 0.02);
+            JutsuEffects.particlesAt(ctx.level(), at, particle, 3, d * 0.15, 0.05);
             // The blast tears up what's in its way: leaves, glass, plants (and fire scorches).
             if (nature(ctx) == Nature.FIRE || nature(ctx) == Nature.SCORCH) {
                 com.noirm.world.Destruction.scorch(ctx.level(), at, (float) (0.8 + d * 0.15));
@@ -173,6 +174,10 @@ public final class JutsuBehaviors {
             }
         }
         JutsuEffects.particlesAt(level, Vec3.atCenterOf(center).add(0, 1, 0), JutsuProjectile.particle(Nature.EARTH), 30 + placed * 4, 1.5, 0.1);
+        com.noirm.vfx.Vfx.Palette earth = com.noirm.vfx.Vfx.palette(Nature.EARTH);
+        com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(earth.edge(), 1.0f, 40), Vec3.atCenterOf(center).add(0, 0.5, 0), 10, 1.2, 0.04);
+        com.noirm.vfx.Vfx.radial(level, com.noirm.vfx.Vfx.shard(earth.mid(), 0.25f, 30), Vec3.atCenterOf(center).add(0, 1, 0), 14, 0.5);
+        com.noirm.vfx.Vfx.quake(level, caster.position(), 0.4f, 12);
         sound(caster, SoundEvents.GRAVEL_BREAK, 1.2f, 0.5f);
     }
 
@@ -233,6 +238,7 @@ public final class JutsuBehaviors {
     private static void substitution(JutsuContext ctx) {
         Substitution.arm(ctx.caster(), ctx.params().duration());
         JutsuEffects.particles(ctx.caster(), ParticleTypes.POOF, 6, 0.3, 0.01);
+        com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.smoke(0xE8E8E8, 0.7f, 22), ctx.caster().position().add(0, 1, 0), 6, 0.35, 0.03);
         sound(ctx.caster(), SoundEvents.ARMOR_EQUIP_LEATHER, 1f, 1.6f);
     }
 
@@ -251,6 +257,7 @@ public final class JutsuBehaviors {
             end = next;
         }
         JutsuEffects.particlesAt(level, start.add(0, 1, 0), ParticleTypes.POOF, 15, 0.3, 0.02);
+        com.noirm.vfx.Vfx.streak(level, start, end, com.noirm.vfx.Vfx.palette(nature(ctx)));
         caster.teleportTo(end.x, end.y, end.z);
         JutsuEffects.particlesAt(level, end.add(0, 1, 0), ParticleTypes.POOF, 10, 0.3, 0.02);
         sound(caster, SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.8f);
@@ -289,6 +296,11 @@ public final class JutsuBehaviors {
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, p.stun(), 0, false, false));
         }
         JutsuEffects.particles(target, red, 40, 0.5, 0.05);
+        // The illusion takes hold: crimson and black spirals closing in on the mind.
+        com.noirm.vfx.Vfx.Palette illusion = nature(ctx) == Nature.YIN ? com.noirm.vfx.Vfx.palette(Nature.YIN)
+                : new com.noirm.vfx.Vfx.Palette(0xFFE0E0, 0xE00010, 0x080000, 0x200000);
+        com.noirm.vfx.Vfx.spiral(ctx.level(), target.position(), illusion, target.getBbWidth() + 0.4f, target.getBbHeight() + 0.4f, 3f);
+        com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.ring(illusion.mid(), 2.2f, 14), target.position().add(0, target.getBbHeight() * 0.8, 0), 1, 0, 0);
         sound(target, SoundEvents.ILLUSIONER_CAST_SPELL, 1f, 0.8f);
         message(caster, Component.translatable("message.noirm.genjutsu.caught", target.getDisplayName()));
     }
@@ -309,8 +321,9 @@ public final class JutsuBehaviors {
             Vec3 look = ctx.look();
             Vec3 eye = caster.getEyePosition().add(0, -0.25, 0);
             ParticleOptions particle = JutsuProjectile.particle(nature(ctx));
-            for (double d = 0.8; d <= p.range(); d += 0.6) {
-                JutsuEffects.particlesAt(ctx.level(), eye.add(look.scale(d)), particle, 3, d * 0.12, 0.02);
+            com.noirm.vfx.Vfx.cone(ctx.level(), eye, look, p.range(), com.noirm.vfx.Vfx.palette(nature(ctx)), 0.7f);
+            for (double d = 0.8; d <= p.range(); d += 1.2) {
+                JutsuEffects.particlesAt(ctx.level(), eye.add(look.scale(d)), particle, 2, d * 0.12, 0.02);
             }
             if (tick % 10 == 0 && (nature(ctx) == Nature.FIRE || nature(ctx) == Nature.LAVA)) {
                 com.noirm.world.Destruction.scorch(ctx.level(), eye.add(look.scale(p.range() * 0.8)), 1.5f);

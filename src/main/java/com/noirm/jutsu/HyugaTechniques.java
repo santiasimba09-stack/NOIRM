@@ -75,6 +75,19 @@ public final class HyugaTechniques {
         if (!(caster.level() instanceof ServerLevel level)) {
             return;
         }
+        // The dome: bright chakra rings whirling around at several heights.
+        com.noirm.vfx.Vfx.Palette chakra = new com.noirm.vfx.Vfx.Palette(0xFFFFFF, 0x7FD8FF, 0x0A2A6A, 0xE0F8FF);
+        double turn = level.getGameTime() * 0.8;
+        for (int i = 0; i < 16; i++) {
+            double a = turn + i * Math.PI / 8;
+            double h = (i % 4) * 0.55;
+            double r = spin.radius * Math.sqrt(Math.max(0.15, 1 - Math.pow(h / 2.2, 2)));
+            com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.glow(i % 2 == 0 ? chakra.mid() : chakra.accent(), chakra.edge(), 0.4f, 0.1f, 6),
+                    caster.position().add(Math.cos(a) * r, 0.2 + h, Math.sin(a) * r), new net.minecraft.world.phys.Vec3(-Math.sin(a) * 0.3, 0, Math.cos(a) * 0.3));
+        }
+        if (first) {
+            com.noirm.vfx.Vfx.shockwave(level, caster.position(), chakra, spin.radius * 1.4f);
+        }
         AABB area = caster.getBoundingBox().inflate(spin.radius);
         for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, area,
                 e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator() && e.distanceTo(caster) <= spin.radius)) {

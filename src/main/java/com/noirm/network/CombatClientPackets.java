@@ -55,7 +55,7 @@ public final class CombatClientPackets {
 
     /** Something happened to the local player that the screen should feel: shake, flash, etc. */
     public record Feedback(Kind kind, float strength, int targetId, float targetPosture, float targetMaxPosture) {
-        public enum Kind { HIT_DEALT, HIT_TAKEN, GUARD, PARRY, POSTURE_BREAK, PERFECT_DODGE, FOCUS, NO_STAMINA }
+        public enum Kind { HIT_DEALT, HIT_TAKEN, GUARD, PARRY, POSTURE_BREAK, PERFECT_DODGE, FOCUS, NO_STAMINA, SHAKE }
 
         public static Feedback simple(Kind kind, float strength) {
             return new Feedback(kind, strength, -1, 0, 0);

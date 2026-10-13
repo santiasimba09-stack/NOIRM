@@ -133,6 +133,7 @@ public final class ClientCombat {
             case GUARD, PARRY, POSTURE_BREAK, PERFECT_DODGE -> shake = Math.max(shake, packet.strength());
             case FOCUS -> focusTicks = FOCUS_PULSE_TICKS;
             case NO_STAMINA -> staminaFlashTicks = 12;
+            case SHAKE -> shake = Math.max(shake, packet.strength());
         }
     }
 }
