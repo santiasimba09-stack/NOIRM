@@ -32,7 +32,13 @@ class NinjaFightGoal extends Goal {
             List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
             List.of(AttackInput.LIGHT, AttackInput.HEAVY),
             List.of(AttackInput.HEAVY),
-            List.of(AttackInput.LAUNCHER, AttackInput.LIGHT));
+            List.of(AttackInput.LAUNCHER, AttackInput.LIGHT),
+            List.of(AttackInput.LIGHT, AttackInput.BACK_HEAVY),
+            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LAUNCHER, AttackInput.LIGHT, AttackInput.LIGHT));
+    /** Against a raised guard: grab (grabs beat guard), knee twice, then headbutt or throw. */
+    private static final List<List<AttackInput>> GRAPPLES = List.of(
+            List.of(AttackInput.GRAB, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
+            List.of(AttackInput.GRAB, AttackInput.LIGHT, AttackInput.BACK_HEAVY));
 
     private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
     private static final java.util.Set<String> RANGED_BEHAVIORS = java.util.Set.of("projectile", "genjutsu", "dash_strike",
@@ -83,6 +89,10 @@ class NinjaFightGoal extends Goal {
 
         if (self.phase() == CombatPhase.STAGGER) {
             combo.clear();
+            // Held in a clinch: struggle free now and then.
+            if (self.clinchedBy() != null && ninja.getRandom().nextFloat() < 0.04f) {
+                CombatSystem.requestDodge(ninja, -1f, 0f);
+            }
             return;
         }
         if (guardTicks > 0 && --guardTicks == 0) {
@@ -108,11 +118,20 @@ class NinjaFightGoal extends Goal {
                 && JutsuCaster.npcCast(ninja, Byakugan.SIXTY_FOUR_PALMS, 1f)) {
             attackCooldown = 40;
         }
+        CombatState opponent = CombatStates.getIfPresent(target);
+        if (combo.isEmpty() && attackCooldown <= 0 && distance <= 2.2 && !self.isGuarding()
+                && opponent != null && opponent.isGuarding() && ninja.getRandom().nextFloat() < 0.5f) {
+            combo.addAll(GRAPPLES.get(ninja.getRandom().nextInt(GRAPPLES.size())));
+        }
+        if (combo.isEmpty() && attackCooldown <= 0 && distance > ATTACK_RANGE + 0.5 && distance < 5 && !self.isGuarding()
+                && ninja.getRandom().nextFloat() < 0.03f) {
+            combo.add(AttackInput.FORWARD_HEAVY); // a dash attack to close the gap
+        }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()) {
             combo.addAll(COMBOS.get(ninja.getRandom().nextInt(COMBOS.size())));
         }
         if (!combo.isEmpty() && CombatSystem.canAttackNow(ninja)) {
-            if (distance > ATTACK_RANGE + 1) {
+            if (distance > (combo.peek() == AttackInput.FORWARD_HEAVY ? 5.5 : ATTACK_RANGE + 1)) {
                 combo.clear(); // target escaped: stop swinging at air
             } else if (CombatSystem.requestAttack(ninja, combo.peek())) {
                 combo.poll();

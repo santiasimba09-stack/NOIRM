@@ -49,6 +49,12 @@ public final class CombatGameTests {
         for (AttackInput input : AttackInput.values()) {
             helper.assertTrue(CombatData.move(basic.opener(input)) != null, "Missing opener for " + input);
         }
+        // Every style's openers and every move's routes must point at real moves.
+        CombatData.styles().forEach((id, style) -> style.openers().forEach((input, move) ->
+                helper.assertTrue(CombatData.move(move) != null, id + " opens " + input + " with missing move " + move)));
+        for (String style : new String[]{"brawler", "strong_fist", "gentle_fist"}) {
+            helper.assertTrue(CombatData.style(Noirm.id(style)) != null, "Missing style " + style);
+        }
         for (String path : new String[]{"jab", "hook", "spin_kick", "flip_kick", "heavy_kick", "uppercut"}) {
             CombatMove move = CombatData.move(Noirm.id("basic/" + path));
             helper.assertTrue(move != null, "Missing move basic/" + path);
@@ -210,7 +216,9 @@ public final class CombatGameTests {
     public static void ninjaFightsItsTarget(GameTestHelper helper) {
         floor(helper);
         SparringNinja attacker = helper.spawn(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 0.5f);
+        attacker.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         SparringNinja target = helper.spawn(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 2.0f);
+        target.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         attacker.setTarget(target);
         helper.succeedWhen(() -> helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the ninja should land a hit on its target"));
     }
@@ -221,6 +229,7 @@ public final class CombatGameTests {
     private static SparringNinja ninja(GameTestHelper helper, float x, float z) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
         return ninja;
     }

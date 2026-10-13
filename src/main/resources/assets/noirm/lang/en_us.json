@@ -278,5 +278,14 @@
   "stat.noirm.vitality": "Vitality",
   "stat.noirm.reserves": "Reserves",
   "message.noirm.jutsu.unlocked_stat": "Your training paid off: you learned %s!",
-  "message.noirm.shadow.caught": "Shadow Imitation complete: %s moves as you move"
+  "message.noirm.shadow.caught": "Shadow Imitation complete: %s moves as you move",
+  "key.noirm.grab": "Grab (clinch)",
+  "key.noirm.style": "Switch fighting style",
+  "style.noirm.basic": "Academy Taijutsu",
+  "style.noirm.brawler": "Brawler",
+  "style.noirm.strong_fist": "Strong Fist (Gōken)",
+  "style.noirm.gentle_fist": "Gentle Fist (Jūken)",
+  "style.noirm.beast": "Beast",
+  "message.noirm.style.now": "Fighting style: %s",
+  "message.noirm.style.unlocked": "Your taijutsu is strong enough for a new style: %s. Press H to switch."
 }

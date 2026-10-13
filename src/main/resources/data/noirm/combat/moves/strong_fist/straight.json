@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:turning_hook",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 12,
+    "range": 2.7,
+    "arc": 90,
+    "knockback": 0.3,
+    "lunge": 0.3,
+    "hitstun": 8,
+    "hitstop": 3,
+    "shake": 0.35
+  },
+  "next": {
+    "light": "noirm:strong_fist/leaf_whirlwind",
+    "heavy": "noirm:strong_fist/leaf_rising_wind",
+    "launcher": "noirm:strong_fist/leaf_rising_wind"
+  }
+}

@@ -31,6 +31,10 @@ public final class CombatData {
         return styles.get(id);
     }
 
+    public static Map<ResourceLocation, CombatStyle> styles() {
+        return styles;
+    }
+
     public static int moveCount() {
         return moves.size();
     }

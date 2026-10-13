@@ -1,5 +1,9 @@
 {
-  "light": "noirm:beast/claw",
-  "heavy": "noirm:beast/slam",
-  "launcher": "noirm:beast/slam"
+  "openers": {
+    "light": "noirm:beast/claw",
+    "heavy": "noirm:beast/slam",
+    "launcher": "noirm:beast/slam"
+  },
+  "npc_weight": 0,
+  "playable": false
 }

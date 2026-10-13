@@ -157,6 +157,7 @@ public final class ByakuganGameTests {
             }
         }
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(clan);
         return ninja;
     }

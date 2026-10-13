@@ -44,8 +44,12 @@ public final class CombatInput {
         while (CombatKeys.COMBAT_MODE.consumeClick()) {
             setCombatMode(player, !ClientCombat.isCombatMode());
         }
+        while (CombatKeys.STYLE.consumeClick()) {
+            NoirmNetwork.sendToServer(new CombatInputPackets.CycleStyle());
+        }
         if (!ClientCombat.isCombatMode()) {
             while (CombatKeys.DODGE.consumeClick()) { }
+            while (CombatKeys.GRAB.consumeClick()) { }
             while (CombatKeys.LOCK_ON.consumeClick()) { }
             sendGuard(false);
         } else {
@@ -54,6 +58,9 @@ public final class CombatInput {
             }
             while (CombatKeys.LOCK_ON.consumeClick()) {
                 LockOn.toggle(minecraft);
+            }
+            while (CombatKeys.GRAB.consumeClick()) {
+                NoirmNetwork.sendToServer(new CombatInputPackets.Attack(AttackInput.GRAB));
             }
             sendGuard(CombatKeys.GUARD.isDown() && minecraft.screen == null);
             LockOn.tick(minecraft);
@@ -71,14 +78,29 @@ public final class CombatInput {
         if (event.isAttack()) {
             event.setCanceled(true);
             event.setSwingHand(false);
-            NoirmNetwork.sendToServer(new CombatInputPackets.Attack(AttackInput.LIGHT));
+            NoirmNetwork.sendToServer(new CombatInputPackets.Attack(directional(player, AttackInput.LIGHT)));
         } else if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND && isCombatHand(player.getMainHandItem())) {
             event.setCanceled(true);
             event.setSwingHand(false);
             if (!useWasDown) { // holding right click repeats; only a fresh press attacks
-                NoirmNetwork.sendToServer(new CombatInputPackets.Attack(player.isShiftKeyDown() ? AttackInput.LAUNCHER : AttackInput.HEAVY));
+                NoirmNetwork.sendToServer(new CombatInputPackets.Attack(player.isShiftKeyDown() ? AttackInput.LAUNCHER : directional(player, AttackInput.HEAVY)));
             }
         }
+    }
+
+    /**
+     * Sprinting turns an attack into a dash attack; holding back (and not forward) into a back
+     * attack. Plain walking forward doesn't count, since you hold W through most of a fight.
+     */
+    private static AttackInput directional(LocalPlayer player, AttackInput input) {
+        boolean heavy = input == AttackInput.HEAVY;
+        if (player.isSprinting()) {
+            return heavy ? AttackInput.FORWARD_HEAVY : AttackInput.FORWARD_LIGHT;
+        }
+        if (player.input.forwardImpulse < 0) {
+            return heavy ? AttackInput.BACK_HEAVY : AttackInput.BACK_LIGHT;
+        }
+        return input;
     }
 
     /** No mining in combat mode. */

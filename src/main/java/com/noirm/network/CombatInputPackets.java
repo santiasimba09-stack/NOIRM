@@ -47,6 +47,20 @@ public final class CombatInputPackets {
         }
     }
 
+    /** Switch to the next fighting style the player can use. */
+    public record CycleStyle() {
+        public void encode(FriendlyByteBuf buf) {
+        }
+
+        public static CycleStyle decode(FriendlyByteBuf buf) {
+            return new CycleStyle();
+        }
+
+        public void handle(Supplier<NetworkEvent.Context> context) {
+            withPlayer(context, com.noirm.combat.StyleSystem::cycle, false);
+        }
+    }
+
     /** {@code forward}/{@code strafe} are the movement keys held (-1..1), strafe positive = left. */
     public record Dodge(float forward, float strafe) {
         public void encode(FriendlyByteBuf buf) {

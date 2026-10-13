@@ -51,6 +51,7 @@ public final class BijuGameTests {
         floor(helper);
         TailedBeast beast = helper.spawnWithNoFreeWill(NoirmEntities.TAILED_BEAST.get(), 1.5f, 1f, 1.5f);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 0.5f, 1f, 0.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
         beast.setTails(2);
         for (int i = 0; i < 20 && !beast.isSubdued(); i++) {
@@ -88,6 +89,7 @@ public final class BijuGameTests {
         Player player = helper.makeMockPlayer();
         ShinobiData data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 1.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
 
         ItemStack forNinja = new ItemStack(NoirmItems.SEALING_SCROLL.get());
@@ -138,6 +140,7 @@ public final class BijuGameTests {
     public static void aFallenJinchurikisBeastBreaksFree(GameTestHelper helper) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 1.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
         ninja.sealBeast(5);
         ninja.kill();
@@ -156,6 +159,7 @@ public final class BijuGameTests {
         floor(helper);
         TailedBeast beast = helper.spawn(NoirmEntities.TAILED_BEAST.get(), 1.5f, 1f, 0.5f);
         SparringNinja target = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 3.5f);
+        target.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         target.joinClan(TestClans.PLAIN);
         beast.setTarget(target);
         float start = target.getHealth();

@@ -1,5 +1,8 @@
 {
-  "light": "noirm:basic/jab",
-  "heavy": "noirm:basic/heavy_kick",
-  "launcher": "noirm:basic/uppercut"
+  "openers": {
+    "light": "noirm:basic/jab",
+    "heavy": "noirm:basic/heavy_kick",
+    "launcher": "noirm:basic/uppercut"
+  },
+  "npc_weight": 2
 }

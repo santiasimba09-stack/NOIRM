@@ -261,6 +261,9 @@ public final class TrainingSystem {
         if (value >= DRILL_CAP && value - 1 < DRILL_CAP) {
             player.sendSystemMessage(Component.translatable("message.noirm.training.drill_cap").withStyle(ChatFormatting.GRAY));
         }
+        if (stat == Stat.TAIJUTSU) {
+            com.noirm.combat.StyleSystem.onTaijutsuUp(player, value);
+        }
     }
 
     /** Keeps the movement-speed modifier in line with the speed stat. */

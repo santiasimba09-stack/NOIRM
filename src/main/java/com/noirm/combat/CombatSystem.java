@@ -58,6 +58,23 @@ public final class CombatSystem {
     public static final float UNGUARDED_POSTURE_RATIO = 0.5f;
     public static final int POSTURE_REGEN_DELAY = 40;
 
+    /** How long a clinch lasts at most. */
+    public static final int CLINCH_TICKS = 50;
+    /** Breaking out of a clinch costs this much more stamina than a dodge. */
+    public static final float CLINCH_ESCAPE_COST = 1.5f;
+    /** A grab whiffs on anyone this wide (tailed beasts). */
+    public static final float MAX_GRAB_WIDTH = 1.5f;
+    /** Getting grabbed mid-swing: the swing wins and the grabber reels. */
+    public static final int GRAB_BROKEN_STUN = 12;
+    public static final int KNOCKDOWN_TICKS = 32;
+    /** Hits that push at least this hard slam the target into a wall behind them. */
+    public static final float WALL_SPLAT_KNOCKBACK = 0.8f;
+    public static final float WALL_SPLAT_DAMAGE = 0.4f;
+    public static final int WALL_SPLAT_STUN = 24;
+    /** Airborne hits keep the target floating, up to this many; each one hurts 10% less. */
+    public static final int MAX_JUGGLE = 5;
+    public static final double JUGGLE_FLOAT = 0.28;
+
     public static final double FOCUS_RADIUS = 10;
     public static final int FOCUS_TICKS = 20;
     /** Enemies caught in a focus moment act at this fraction of normal speed. */
@@ -110,6 +127,9 @@ public final class CombatSystem {
      */
     public static boolean requestDodge(LivingEntity entity, float forward, float strafe) {
         CombatState state = CombatStates.get(entity);
+        if (state.clinchedBy != null) {
+            return escapeClinch(entity, state);
+        }
         if (canDodge(state)) {
             return doDodge(entity, state, forward, strafe);
         }
@@ -182,6 +202,12 @@ public final class CombatSystem {
         }
         if (state.wantsGuard && !state.guarding && canGuard(state)) {
             startGuard(entity, state);
+        }
+        if (state.clinchTarget != null) {
+            tickClinch(entity, state);
+        }
+        if (state.juggleHits > 0 && entity.onGround()) {
+            state.juggleHits = 0;
         }
         if (state.hitstop > 0) {
             state.hitstop--;
@@ -300,18 +326,40 @@ public final class CombatSystem {
 
     /** Which move {@code input} starts, continuing {@code from}'s combo route if it has one. */
     public static ResourceLocation resolveMove(LivingEntity entity, ResourceLocation from, AttackInput input) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        if (state != null && state.clinchTarget != null) {
+            // In a clinch, the grab's routes decide everything: knees, headbutt, throw.
+            CombatMove grab = CombatData.move(state.clinchMove);
+            return grab == null ? null : route(grab, input);
+        }
         if (from != null) {
             CombatMove previous = CombatData.move(from);
-            if (previous != null && previous.next().containsKey(input)) {
-                return previous.next().get(input);
+            ResourceLocation next = previous == null ? null : route(previous, input);
+            if (next != null) {
+                return next;
             }
         }
         CombatStyle style = CombatData.style(styleFor(entity));
         return style == null ? null : style.opener(input);
     }
 
-    /** The fighting style an entity uses. Masters will change this later. */
-    static ResourceLocation styleFor(LivingEntity entity) {
+    private static ResourceLocation route(CombatMove move, AttackInput input) {
+        ResourceLocation next = move.next().get(input);
+        if (next == null && input.fallback() != null) {
+            next = move.next().get(input.fallback());
+        }
+        return next;
+    }
+
+    /** The fighting style an entity uses: a player's choice, or an NPC's own. */
+    public static ResourceLocation styleFor(LivingEntity entity) {
+        if (entity instanceof Player player) {
+            String chosen = ShinobiCapability.get(player).map(d -> d.getCombatStyle()).orElse("");
+            ResourceLocation id = chosen.isEmpty() ? null : ResourceLocation.tryParse(chosen);
+            if (id != null && CombatData.style(id) != null) {
+                return id;
+            }
+        }
         if (entity instanceof CombatStats stats && stats.combatStyle() != null) {
             return stats.combatStyle();
         }
@@ -504,17 +552,30 @@ public final class CombatSystem {
             return;
         }
         CombatMove.Hit hit = move.hit();
-        boolean guarded = outcome == Outcome.GUARDED;
+        if (hit.clinch() == CombatMove.Hit.Clinch.GRAB) {
+            grab(attacker, attackerState, target, targetState);
+            return; // grabs ignore guard: that's what they're for
+        }
+        // A fighter held in your clinch can't guard.
+        boolean guarded = outcome == Outcome.GUARDED && targetState.clinchedBy != attacker;
         // Gentle Fist (Byakugan open): more posture damage, and a guard keeps out less.
         boolean gentleFist = Byakugan.isActive(attacker);
         float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
         float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponBonus(attacker);
+        boolean airborne = !target.onGround() && !guarded;
+        if (airborne) {
+            damage *= Math.max(0.5f, 1f - 0.1f * targetState.juggleHits);
+        }
         if (guarded) {
             absorbGuardedHit(target, targetState, posture, damage);
-            damage *= gentleFist ? Byakugan.GENTLE_FIST_GUARD : GUARD_DAMAGE_MULTIPLIER;
+            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : GUARD_DAMAGE_MULTIPLIER, hit.pierce());
+            damage *= kept;
         } else {
             addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
-            stagger(target, targetState, hit.hitstun());
+            stagger(target, targetState, hit.knockdown() ? Math.max(hit.hitstun(), KNOCKDOWN_TICKS) : hit.hitstun());
+        }
+        if (hit.clinch() == CombatMove.Hit.Clinch.RELEASE && attackerState.clinchTarget == target) {
+            releaseClinch(attacker, attackerState);
         }
 
         boolean hurt;
@@ -531,12 +592,28 @@ public final class CombatSystem {
 
         float yaw = attacker.getYHeadRot() * Mth.DEG_TO_RAD;
         float knockback = hit.knockback() * (guarded ? 0.4f : 1f);
-        if (knockback > 0) {
+        boolean splatted = !guarded && knockback >= WALL_SPLAT_KNOCKBACK && wallSplat(attacker, target, targetState, damage, knockback);
+        if (knockback > 0 && !splatted) {
             target.knockback(knockback, Mth.sin(yaw), -Mth.cos(yaw));
         }
-        if (!guarded && hit.lift() > 0) {
+        if (!guarded && !splatted && hit.lift() > 0) {
             Vec3 motion = target.getDeltaMovement();
             target.setDeltaMovement(motion.x, Math.max(motion.y, hit.lift()), motion.z);
+        } else if (airborne && !splatted && targetState.juggleHits < MAX_JUGGLE) {
+            // Juggle: hits in the air keep them up, a little less each time.
+            Vec3 motion = target.getDeltaMovement();
+            target.setDeltaMovement(motion.x * 0.5, Math.max(motion.y, JUGGLE_FLOAT), motion.z * 0.5);
+        }
+        if (airborne) {
+            targetState.juggleHits++;
+        }
+        if (!guarded && hit.knockdown() && !splatted) {
+            Vec3 motion = target.getDeltaMovement();
+            target.setDeltaMovement(motion.x, Math.max(motion.y, 0.3), motion.z);
+            CombatEffects.knockdown(target);
+        }
+        if (hit.chakra() > 0) {
+            drainChakra(target, targetState, hit.chakra() * (guarded ? 0.5f : 1f));
         }
         target.hurtMarked = true;
 
@@ -544,7 +621,7 @@ public final class CombatSystem {
         if (gentleFist) {
             Byakugan.gentleFist(attacker, target, hit.isHeavy());
         }
-        int hitstop = guarded ? hit.hitstop() / 2 : hit.hitstop();
+        int hitstop = guarded ? hit.hitstop() / 2 : splatted ? hit.hitstop() + 4 : hit.hitstop();
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);
         targetState.hitstop = Math.max(targetState.hitstop, hitstop);
         CombatEffects.hitLanded(attacker, target, move, guarded, targetState);
@@ -619,7 +696,148 @@ public final class CombatSystem {
         }
         clearBuffer(state);
         state.comboFrom = null;
+        if (state.clinchTarget != null) {
+            releaseClinch(entity, state); // hit while grappling: you let go
+        }
         enterPhase(entity, state, CombatPhase.STAGGER, ticks);
+    }
+
+    // ---------------------------------------------------------------- clinch
+
+    /**
+     * A grab connected. Grabs beat guard; strikes beat grabs (grab someone mid-swing and you eat
+     * it); too-big targets can't be held.
+     */
+    private static void grab(LivingEntity attacker, CombatState attackerState, LivingEntity target, CombatState targetState) {
+        if (targetState.phase == CombatPhase.ACTIVE || target.getBbWidth() > MAX_GRAB_WIDTH || targetState.clinchTarget != null) {
+            stagger(attacker, attackerState, GRAB_BROKEN_STUN);
+            CombatEffects.grabBroken(attacker);
+            return;
+        }
+        if (targetState.clinchedBy != null && targetState.clinchedBy != attacker) {
+            return;
+        }
+        targetState.wantsGuard = false;
+        stopGuard(target, targetState);
+        attackerState.clinchTarget = target;
+        attackerState.clinchMove = attackerState.moveId;
+        attackerState.clinchTicks = CLINCH_TICKS;
+        targetState.clinchedBy = attacker;
+        stagger(target, targetState, CLINCH_TICKS);
+        attackerState.markDirty();
+        CombatEffects.grabbed(attacker, target);
+    }
+
+    private static void tickClinch(LivingEntity holder, CombatState state) {
+        LivingEntity target = state.clinchTarget;
+        if (--state.clinchTicks <= 0 || !target.isAlive() || !holder.isAlive() || target.level() != holder.level()
+                || holder.distanceTo(target) > 4 || state.phase == CombatPhase.STAGGER || state.phase == CombatPhase.DODGE) {
+            releaseClinch(holder, state);
+            return;
+        }
+        // Keep them pulled in close, in front, and unable to act.
+        Vec3 front = holder.position().add(Vec3.directionFromRotation(0, holder.getYRot()).scale(0.9));
+        Vec3 pull = front.subtract(target.position());
+        target.setDeltaMovement(pull.x * 0.5, target.getDeltaMovement().y, pull.z * 0.5);
+        target.hurtMarked = true;
+        CombatState targetState = CombatStates.get(target);
+        if (targetState.phase != CombatPhase.STAGGER || targetState.phaseLength - targetState.phaseTime < 3) {
+            enterPhase(target, targetState, CombatPhase.STAGGER, 3);
+        }
+    }
+
+    /** Lets go of whoever {@code holder} has in a clinch. */
+    public static void releaseClinch(LivingEntity holder, CombatState state) {
+        LivingEntity target = state.clinchTarget;
+        state.clinchTarget = null;
+        state.clinchMove = null;
+        state.clinchTicks = 0;
+        state.markDirty();
+        if (target != null) {
+            CombatState targetState = CombatStates.get(target);
+            if (targetState.clinchedBy == holder) {
+                targetState.clinchedBy = null;
+                if (targetState.phase == CombatPhase.STAGGER && targetState.phaseLength - targetState.phaseTime > 6) {
+                    targetState.phaseLength = targetState.phaseTime + 6; // a moment to recover, not the whole clinch
+                }
+            }
+        }
+    }
+
+    /** The held fighter breaks free with a dodge: costly, but it shoves both apart. */
+    private static boolean escapeClinch(LivingEntity entity, CombatState state) {
+        LivingEntity holder = state.clinchedBy;
+        if (entity instanceof Player player && !player.getAbilities().instabuild) {
+            boolean paid = ShinobiCapability.get(player)
+                    .map(d -> d.tryConsumeStamina(DODGE_STAMINA_COST * CLINCH_ESCAPE_COST)).orElse(true);
+            if (!paid) {
+                CombatEffects.outOfStamina(entity);
+                return false;
+            }
+        }
+        CombatState holderState = CombatStates.get(holder);
+        releaseClinch(holder, holderState);
+        state.clinchedBy = null;
+        enterPhase(entity, state, CombatPhase.IDLE, 0);
+        Vec3 away = entity.position().subtract(holder.position());
+        Vec3 flat = new Vec3(away.x, 0, away.z).lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : new Vec3(away.x, 0, away.z).normalize();
+        entity.setDeltaMovement(flat.x * 0.7, 0.15, flat.z * 0.7);
+        entity.hurtMarked = true;
+        holder.setDeltaMovement(-flat.x * 0.4, 0.05, -flat.z * 0.4);
+        holder.hurtMarked = true;
+        stagger(holder, holderState, 8);
+        CombatEffects.clinchEscape(entity);
+        return true;
+    }
+
+    // ---------------------------------------------------------------- impacts
+
+    /**
+     * A strong hit with a wall right behind the target: they slam into it instead of flying. More
+     * damage, a long stun, and the wall cracks (or breaks, for strong enough fighters).
+     */
+    private static boolean wallSplat(LivingEntity attacker, LivingEntity target, CombatState targetState, float damage, float knockback) {
+        Vec3 dir = Vec3.directionFromRotation(0, attacker.getYHeadRot());
+        double reach = 0.6 + knockback * 1.6;
+        net.minecraft.core.BlockPos wall = null;
+        for (double d = 0.4; d <= reach; d += 0.3) {
+            Vec3 at = target.position().add(dir.x * (d + target.getBbWidth() / 2), 0.9, dir.z * (d + target.getBbWidth() / 2));
+            net.minecraft.core.BlockPos pos = net.minecraft.core.BlockPos.containing(at);
+            if (target.level().getBlockState(pos).blocksMotion()) {
+                wall = pos;
+                break;
+            }
+        }
+        if (wall == null) {
+            return false;
+        }
+        target.setDeltaMovement(Vec3.ZERO);
+        applyingHit = true;
+        try {
+            target.invulnerableTime = 0;
+            target.hurt(damageSource(attacker), damage * WALL_SPLAT_DAMAGE);
+        } finally {
+            applyingHit = false;
+        }
+        stagger(target, targetState, WALL_SPLAT_STUN);
+        if (target.level() instanceof net.minecraft.server.level.ServerLevel level) {
+            float taijutsu = attacker instanceof Player player
+                    ? ShinobiCapability.get(player).map(d -> d.getTaijutsu()).orElse(10f)
+                    : attacker instanceof CombatStats stats ? stats.combatTaijutsu() : 10f;
+            com.noirm.world.Destruction.smashWall(level, wall, damage / 6f * (taijutsu / 10f));
+        }
+        CombatEffects.wallSplat(target, Vec3.atCenterOf(wall));
+        return true;
+    }
+
+    /** Gentle Fist: chakra knocked out of the target's network. NPCs lose posture instead. */
+    private static void drainChakra(LivingEntity target, CombatState state, float amount) {
+        if (target instanceof Player player) {
+            ShinobiCapability.get(player).ifPresent(d -> d.setChakra(Math.max(0f, d.getChakra() - amount)));
+        } else {
+            addPosture(target, state, amount * 0.5f);
+        }
+        CombatEffects.chakraStruck(target);
     }
 
     private static void notifyListener(LivingEntity entity, CombatState state) {

@@ -41,6 +41,8 @@ public final class ShinobiData {
     private float speed = DEFAULT_STAT;
     /** Hand-to-hand skill: feeds perception and unarmed damage. */
     private float taijutsu = DEFAULT_STAT;
+    /** The fighting style in use ({@code data/noirm/combat/styles/}); empty = the basic one. */
+    private String combatStyle = "";
     /** Toughness: raises max health. */
     private float vitality = DEFAULT_STAT;
     /** Chakra reserves: raise max chakra and its regen. */
@@ -113,6 +115,14 @@ public final class ShinobiData {
 
     public float getTaijutsu() {
         return taijutsu;
+    }
+
+    public String getCombatStyle() {
+        return combatStyle;
+    }
+
+    public void setCombatStyle(String style) {
+        combatStyle = style == null ? "" : style;
     }
 
     public float getVitality() {
@@ -257,6 +267,7 @@ public final class ShinobiData {
         tag.putFloat("Taijutsu", taijutsu);
         tag.putFloat("Vitality", vitality);
         tag.putFloat("Reserves", reserves);
+        tag.putString("Style", combatStyle);
         tag.put("Identity", identity.save());
         tag.put("Jutsu", jutsu.save());
         tag.put("Eyes", eyes.save());
@@ -275,6 +286,7 @@ public final class ShinobiData {
         taijutsu = Mth.clamp(tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : DEFAULT_STAT, 1f, MAX_STAT);
         vitality = Mth.clamp(tag.contains("Vitality") ? tag.getFloat("Vitality") : DEFAULT_STAT, 1f, MAX_STAT);
         reserves = Mth.clamp(tag.contains("Reserves") ? tag.getFloat("Reserves") : DEFAULT_STAT, 1f, MAX_STAT);
+        combatStyle = tag.getString("Style");
         identity.load(tag.getCompound("Identity"));
         jutsu.load(tag.getCompound("Jutsu"));
         eyes.load(tag.getCompound("Eyes"));

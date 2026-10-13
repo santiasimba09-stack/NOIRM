@@ -358,6 +358,7 @@ public final class PowersGameTests {
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(clan);
         return ninja;
     }

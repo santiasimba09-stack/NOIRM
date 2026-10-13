@@ -107,6 +107,49 @@ final class CombatEffects {
         }
     }
 
+    static void grabbed(LivingEntity holder, LivingEntity target) {
+        sound(target, SoundEvents.ARMOR_EQUIP_LEATHER, 1.2f, 0.6f);
+        sound(target, SoundEvents.PLAYER_ATTACK_WEAK, 1f, 0.7f);
+        particles(target, ParticleTypes.CRIT, 6, 0.3);
+        feedback(target, Feedback.Kind.HIT_TAKEN, 0.3f);
+        feedback(holder, Feedback.Kind.HIT_DEALT, 0.2f);
+    }
+
+    static void grabBroken(LivingEntity grabber) {
+        sound(grabber, SoundEvents.PLAYER_ATTACK_NODAMAGE, 1f, 0.6f);
+    }
+
+    static void clinchEscape(LivingEntity entity) {
+        sound(entity, SoundEvents.PLAYER_ATTACK_NODAMAGE, 1f, 1.2f);
+        if (entity.level() instanceof ServerLevel level) {
+            level.sendParticles(ParticleTypes.CLOUD, entity.getX(), entity.getY() + 0.1, entity.getZ(), 8, 0.3, 0.05, 0.3, 0.03);
+        }
+    }
+
+    static void knockdown(LivingEntity target) {
+        sound(target, SoundEvents.PLAYER_BIG_FALL, 1f, 0.8f);
+        if (target.level() instanceof ServerLevel level) {
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(0xB8A890, 0.7f, 20), target.position().add(0, 0.2, 0), 8, 0.4, 0.04);
+        }
+    }
+
+    static void wallSplat(LivingEntity target, net.minecraft.world.phys.Vec3 wall) {
+        sound(target, SoundEvents.GENERIC_EXPLODE, 0.6f, 1.6f);
+        sound(target, SoundEvents.PLAYER_BIG_FALL, 1.2f, 0.6f);
+        if (target.level() instanceof ServerLevel level) {
+            com.noirm.vfx.Vfx.hit(level, wall, com.noirm.vfx.Vfx.HIT, true);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(0xA09080, 0.9f, 25), wall, 10, 0.5, 0.05);
+        }
+        feedback(target, Feedback.Kind.HIT_TAKEN, 1f);
+    }
+
+    static void chakraStruck(LivingEntity target) {
+        if (target.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 chest = target.position().add(0, target.getBbHeight() * 0.6, 0);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xCFF4FF, 0x4FA8FF, 0.35f, 0.05f, 8), chest, 6, 0.2, 0.08);
+        }
+    }
+
     private static void feedback(LivingEntity entity, Feedback.Kind kind, float strength) {
         if (entity instanceof ServerPlayer player) {
             NoirmNetwork.sendToPlayer(player, Feedback.simple(kind, strength));

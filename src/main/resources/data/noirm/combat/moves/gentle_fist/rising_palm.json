@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:rising_uppercut",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 12,
+    "cancel_after": 5
+  },
+  "hit": {
+    "range": 2.6,
+    "arc": 80,
+    "pierce": 0.6,
+    "damage": 4,
+    "posture": 18,
+    "knockback": 0.1,
+    "lift": 0.9,
+    "hitstun": 20,
+    "hitstop": 4,
+    "shake": 0.5,
+    "chakra": 8
+  },
+  "next": {
+    "light": "noirm:gentle_fist/palm_2"
+  }
+}

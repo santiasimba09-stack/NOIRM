@@ -1,0 +1,11 @@
+{
+  "openers": {
+    "light": "noirm:gentle_fist/palm",
+    "heavy": "noirm:gentle_fist/double_palm",
+    "launcher": "noirm:gentle_fist/rising_palm",
+    "forward_light": "noirm:gentle_fist/lunging_palm",
+    "forward_heavy": "noirm:gentle_fist/lunging_palm"
+  },
+  "byakugan": true,
+  "npc_weight": 0
+}

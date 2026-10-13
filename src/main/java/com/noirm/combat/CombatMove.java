@@ -55,9 +55,14 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
      * @param hitstun   ticks the target is stunned (interrupts their attack)
      * @param hitstop   ticks both fighters freeze on impact (the "weight" of a hit)
      * @param shake     camera shake strength, 0–1
+     * @param knockdown the target is floored: a long stun
+     * @param chakra    chakra knocked out of the target (Gentle Fist strikes the chakra network)
+     * @param pierce    fraction of the damage a guard can't stop (0 = normal guard)
+     * @param clinch    {@code grab} starts a clinch, {@code hold} keeps it, {@code release} ends it
      */
     public record Hit(float damage, float posture, float range, float arc, float knockback, float lift,
-                      float lunge, int hitstun, int hitstop, float shake) {
+                      float lunge, int hitstun, int hitstop, float shake, boolean knockdown, float chakra,
+                      float pierce, Clinch clinch) {
         public static final Codec<Hit> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.floatRange(0, 1000).fieldOf("damage").forGetter(Hit::damage),
                 Codec.floatRange(0, 1000).optionalFieldOf("posture", 0f).forGetter(Hit::posture),
@@ -68,8 +73,29 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
                 Codec.floatRange(0, 3).optionalFieldOf("lunge", 0f).forGetter(Hit::lunge),
                 Codec.intRange(0, 100).optionalFieldOf("hitstun", 6).forGetter(Hit::hitstun),
                 Codec.intRange(0, 20).optionalFieldOf("hitstop", 2).forGetter(Hit::hitstop),
-                Codec.floatRange(0, 1).optionalFieldOf("shake", 0.3f).forGetter(Hit::shake)
+                Codec.floatRange(0, 1).optionalFieldOf("shake", 0.3f).forGetter(Hit::shake),
+                Codec.BOOL.optionalFieldOf("knockdown", false).forGetter(Hit::knockdown),
+                Codec.floatRange(0, 1000).optionalFieldOf("chakra", 0f).forGetter(Hit::chakra),
+                Codec.floatRange(0, 1).optionalFieldOf("pierce", 0f).forGetter(Hit::pierce),
+                Clinch.CODEC.optionalFieldOf("clinch", Clinch.NONE).forGetter(Hit::clinch)
         ).apply(i, Hit::new));
+
+        /** How a move takes part in a clinch (grappling at close range). */
+        public enum Clinch implements net.minecraft.util.StringRepresentable {
+            NONE("none"), GRAB("grab"), HOLD("hold"), RELEASE("release");
+
+            public static final Codec<Clinch> CODEC = net.minecraft.util.StringRepresentable.fromEnum(Clinch::values);
+            private final String name;
+
+            Clinch(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public String getSerializedName() {
+                return name;
+            }
+        }
 
         /** Heavy hits get weightier sounds and particles. */
         public boolean isHeavy() {

@@ -69,7 +69,9 @@ public final class TrainingGameTests {
         floor(helper);
         Player player = helper.makeMockPlayer();
         SparringNinja equal = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 0.5f, 1f, 0.5f);
+        equal.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         SparringNinja strong = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 2.5f, 1f, 0.5f);
+        strong.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         equal.joinClan(TestClans.PLAIN);
         strong.joinClan(TestClans.PLAIN);
         strong.setCombatStats(20, 20);
@@ -90,6 +92,7 @@ public final class TrainingGameTests {
         floor(helper);
         Player player = helper.makeMockPlayer();
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 1.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
         TrainingSystem.onPerfectDodge(player);
         assertNear(helper, TrainingSystem.PERFECT_DODGE_XP, data(player).training().xp(Stat.SPEED), "a perfect dodge trains speed");
@@ -104,6 +107,7 @@ public final class TrainingGameTests {
         floor(helper);
         TrainingDummy dummy = helper.spawn(NoirmEntities.TRAINING_DUMMY.get(), 1.5f, 1f, 1.5f);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 0.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         ninja.joinClan(TestClans.PLAIN);
         helper.runAfterDelay(5, () -> {
             Vec3 start = dummy.position();
@@ -125,6 +129,7 @@ public final class TrainingGameTests {
     public static void ninjaComboLandsOnTheDummy(GameTestHelper helper) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 0.5f);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         TrainingDummy dummy = helper.spawn(NoirmEntities.TRAINING_DUMMY.get(), 1.5f, 1f, 2.0f);
         ninja.joinClan(TestClans.PLAIN);
         face(ninja, dummy);

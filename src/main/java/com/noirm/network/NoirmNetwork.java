@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "4";
+    private static final String PROTOCOL_VERSION = "5";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -36,6 +36,9 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(CombatInputPackets.Attack.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CombatInputPackets.Attack::encode).decoder(CombatInputPackets.Attack::decode)
                 .consumerMainThread(CombatInputPackets.Attack::handle).add();
+        CHANNEL.messageBuilder(CombatInputPackets.CycleStyle.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CombatInputPackets.CycleStyle::encode).decoder(CombatInputPackets.CycleStyle::decode)
+                .consumerMainThread(CombatInputPackets.CycleStyle::handle).add();
         CHANNEL.messageBuilder(CombatInputPackets.Dodge.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CombatInputPackets.Dodge::encode).decoder(CombatInputPackets.Dodge::decode)
                 .consumerMainThread(CombatInputPackets.Dodge::handle).add();

@@ -278,5 +278,14 @@
   "stat.noirm.vitality": "Vitalidad",
   "stat.noirm.reserves": "Reservas",
   "message.noirm.jutsu.unlocked_stat": "Tu entrenamiento dio frutos: ¡aprendiste %s!",
-  "message.noirm.shadow.caught": "Posesión de sombra completa: %s se mueve como tú"
+  "message.noirm.shadow.caught": "Posesión de sombra completa: %s se mueve como tú",
+  "key.noirm.grab": "Agarrar (clinch)",
+  "key.noirm.style": "Cambiar estilo de pelea",
+  "style.noirm.basic": "Taijutsu de la Academia",
+  "style.noirm.brawler": "Peleador",
+  "style.noirm.strong_fist": "Puño Fuerte (Gōken)",
+  "style.noirm.gentle_fist": "Puño Suave (Jūken)",
+  "style.noirm.beast": "Bestia",
+  "message.noirm.style.now": "Estilo de pelea: %s",
+  "message.noirm.style.unlocked": "Tu taijutsu ya alcanza para un nuevo estilo: %s. Pulsa H para cambiar."
 }

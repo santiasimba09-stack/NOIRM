@@ -73,6 +73,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Whether the jinchūriki roll has happened (or Tails came from NBT). */
     private boolean tailsDecided;
     private boolean beastReleased;
+    /** Fighting style; chosen when first needed (or from the {@code Style} NBT tag). */
+    private ResourceLocation style;
     private float speed = ShinobiData.DEFAULT_STAT;
     private float taijutsu = ShinobiData.DEFAULT_STAT;
 
@@ -288,6 +290,18 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return taijutsu;
     }
 
+    @Override
+    public ResourceLocation combatStyle() {
+        if (style == null && !level().isClientSide()) {
+            style = com.noirm.combat.StyleSystem.pickForNpc(getRandom(), taijutsu, byakuganActive());
+        }
+        return style;
+    }
+
+    public void setCombatStyle(ResourceLocation style) {
+        this.style = style;
+    }
+
     public void setCombatStats(float speed, float taijutsu) {
         this.speed = Mth.clamp(speed, 1f, ShinobiData.MAX_STAT);
         this.taijutsu = Mth.clamp(taijutsu, 1f, ShinobiData.MAX_STAT);
@@ -301,6 +315,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         tag.putString("Clan", clanId);
         tag.putByte("Sharingan", entityData.get(SHARINGAN));
         tag.putInt("Tails", tails());
+        if (style != null) {
+            tag.putString("Style", style.toString());
+        }
     }
 
     @Override
@@ -312,6 +329,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             sealBeast(tag.getInt("Tails"));
         }
         String savedClan = tag.getString("Clan");
+        ResourceLocation savedStyle = ResourceLocation.tryParse(tag.getString("Style"));
         if (!savedClan.isEmpty() && level().getServer() != null) {
             WorldClans.get(level().getServer()).find(savedClan).ifPresent(clan -> {
                 joinClan(clan);
@@ -319,6 +337,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                     entityData.set(SHARINGAN, tag.getByte("Sharingan"));
                 }
             });
+        }
+        if (!tag.getString("Style").isEmpty() && savedStyle != null) {
+            style = savedStyle;
         }
     }
 

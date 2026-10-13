@@ -41,6 +41,14 @@ public final class CombatState {
     float maxPosture = DEFAULT_MAX_POSTURE;
     int postureRegenDelay;
 
+    // Clinch (grappling): who this fighter holds, or who holds them
+    net.minecraft.world.entity.LivingEntity clinchTarget;
+    ResourceLocation clinchMove;
+    int clinchTicks;
+    net.minecraft.world.entity.LivingEntity clinchedBy;
+    /** Hits taken in the air since last landing (juggles float less and hurt less each hit). */
+    int juggleHits;
+
     // Time
     int hitstop;
     /** 1 = normal speed. Below 1 while caught in someone's focus moment. */
@@ -70,6 +78,16 @@ public final class CombatState {
     /** The attack in progress (or just finished), or null. */
     public CombatMove currentMove() {
         return move;
+    }
+
+    /** Who this fighter has in a clinch, or null. */
+    public net.minecraft.world.entity.LivingEntity clinchTarget() {
+        return clinchTarget;
+    }
+
+    /** Who holds this fighter in a clinch, or null. */
+    public net.minecraft.world.entity.LivingEntity clinchedBy() {
+        return clinchedBy;
     }
 
     public boolean isGuarding() {

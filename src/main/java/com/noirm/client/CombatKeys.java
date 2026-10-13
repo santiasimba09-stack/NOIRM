@@ -22,6 +22,8 @@ public final class CombatKeys {
     public static final KeyMapping DODGE = key("dodge", GLFW.GLFW_KEY_LEFT_ALT);
     public static final KeyMapping GUARD = key("guard", GLFW.GLFW_KEY_V);
     public static final KeyMapping LOCK_ON = key("lock_on", GLFW.GLFW_KEY_Z);
+    public static final KeyMapping GRAB = key("grab", GLFW.GLFW_KEY_C);
+    public static final KeyMapping STYLE = key("style", GLFW.GLFW_KEY_H);
 
     private CombatKeys() {}
 
@@ -35,5 +37,7 @@ public final class CombatKeys {
         event.register(DODGE);
         event.register(GUARD);
         event.register(LOCK_ON);
+        event.register(GRAB);
+        event.register(STYLE);
     }
 }
