@@ -50,9 +50,10 @@ import org.joml.Vector3f;
  * else: claw combos and a ground slam with readable wind-ups, plus the charged Tailed Beast Ball
  * from range. More tails = bigger, tougher and stronger.
  *
- * <p>It can't be killed by fighting: beaten down to {@link #SUBDUE_FRACTION} of its health it is
- * <b>subdued</b> and lies still for {@link #SUBDUE_TICKS} ticks. That's the moment to use a
- * Sealing Scroll on it. If no one seals it, it gets back up, angry.
+ * <p>Beaten down to {@link #SUBDUE_FRACTION} of its health it is <b>subdued</b> and lies still for
+ * {@link #SUBDUE_TICKS} ticks. That's the moment to choose: use a Sealing Scroll on it, or keep
+ * hitting and kill it (its chakra scatters, to reform some day). If you do neither, it gets back
+ * up, angry.
  *
  * <p>Placeholder art: the vanilla hoglin model scaled up (see {@code TailedBeastRenderer}).
  */
@@ -174,10 +175,14 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return super.hurt(source, amount); // /kill and the void
         }
-        if (isSubdued() || level().isClientSide()) {
+        if (level().isClientSide()) {
             return false;
         }
-        // Fighting never kills it: it can only be beaten down.
+        if (isSubdued()) {
+            // Down and defenceless: finishing blows land in full.
+            return super.hurt(source, amount);
+        }
+        // Standing, it can't be killed outright: first it has to be beaten down.
         boolean hurt = super.hurt(source, Math.min(amount, getHealth() - 1f));
         if (hurt && getHealth() <= getMaxHealth() * SUBDUE_FRACTION) {
             subdue();
@@ -196,6 +201,20 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         getNavigation().stop();
         playSound(SoundEvents.RAVAGER_STUNNED, 2f, 0.6f);
         announce(Component.translatable("message.noirm.beast.subdued", getName()).withStyle(ChatFormatting.GOLD));
+    }
+
+    /** Killed: its chakra bursts out and scatters (canon: a beast reforms in time). */
+    @Override
+    public void die(DamageSource source) {
+        super.die(source);
+        if (level() instanceof ServerLevel level) {
+            com.noirm.vfx.Vfx.Palette palette = new com.noirm.vfx.Vfx.Palette(0xFF8040, 0xC02020, 0x300808);
+            com.noirm.vfx.Vfx.explosion(level, position().add(0, getBbHeight() * 0.5, 0), palette, getBbWidth() * 2.5f);
+            com.noirm.vfx.Vfx.shockwave(level, position().add(0, 0.3, 0), palette, getBbWidth() * 4f);
+            level.playSound(null, getX(), getY(), getZ(), SoundEvents.WITHER_DEATH, net.minecraft.sounds.SoundSource.HOSTILE, 2f, 0.7f);
+            net.minecraft.world.entity.ExperienceOrb.award(level, position(), 100 * Math.max(1, tails()));
+            announce(Component.translatable("message.noirm.beast.slain", getName()).withStyle(ChatFormatting.DARK_RED));
+        }
     }
 
     private void recover() {

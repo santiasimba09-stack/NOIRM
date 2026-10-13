@@ -153,7 +153,7 @@
   "jutsu.noirm.biju.tailed_beast_ball": "Tailed Beast Ball",
   "message.noirm.jutsu.needs_cloak": "Only with the beast's cloak on (B)",
   "message.noirm.biju.born": "Something stirs inside you: at your birth, %s was sealed within you. Press B to call on its chakra.",
-  "message.noirm.beast.subdued": "%s is subdued! Use a Sealing Scroll on it before it recovers.",
+  "message.noirm.beast.subdued": "%s is subdued! Seal it with a Sealing Scroll (use it on the beast), or finish it off.",
   "message.noirm.beast.recovered": "%s gets back up, furious!",
   "message.noirm.beast.breaks_free": "The jinchūriki falls, and %s breaks free!",
   "message.noirm.scroll.not_subdued": "%s is too strong to seal. Beat it down first.",
@@ -307,5 +307,6 @@
   "jutsu.noirm.futon.pressure_damage": "Wind Release: Pressure Damage",
   "screen.noirm.jutsu.behavior.strike": "Strike from the sky",
   "screen.noirm.jutsu.behavior.wave": "Rolling wave",
-  "screen.noirm.jutsu.behavior.nova": "Discharge all around"
+  "screen.noirm.jutsu.behavior.nova": "Discharge all around",
+  "message.noirm.beast.slain": "%s falls. Its chakra scatters to the winds... someday it will take shape again."
 }

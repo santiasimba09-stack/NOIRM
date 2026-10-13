@@ -153,7 +153,7 @@
   "jutsu.noirm.biju.tailed_beast_ball": "Bola de Bestia con Cola",
   "message.noirm.jutsu.needs_cloak": "Solo con el manto de la bestia (B)",
   "message.noirm.biju.born": "Algo se agita dentro de ti: al nacer, %s fue sellado en tu interior. Pulsa B para usar su chakra.",
-  "message.noirm.beast.subdued": "¡%s está sometido! Usa un pergamino de sellado antes de que se recupere.",
+  "message.noirm.beast.subdued": "¡%s está sometido! Séllalo con un Pergamino de Sellado (úsalo sobre la bestia), o acaba con él.",
   "message.noirm.beast.recovered": "¡%s se levanta, furioso!",
   "message.noirm.beast.breaks_free": "El jinchūriki cae, ¡y %s se libera!",
   "message.noirm.scroll.not_subdued": "%s es demasiado fuerte para sellarlo. Derrótalo primero.",
@@ -307,5 +307,6 @@
   "jutsu.noirm.futon.pressure_damage": "Elemento Viento: Daño por Presión",
   "screen.noirm.jutsu.behavior.strike": "Golpe desde el cielo",
   "screen.noirm.jutsu.behavior.wave": "Ola arrolladora",
-  "screen.noirm.jutsu.behavior.nova": "Descarga a tu alrededor"
+  "screen.noirm.jutsu.behavior.nova": "Descarga a tu alrededor",
+  "message.noirm.beast.slain": "%s cae. Su chakra se dispersa con el viento... algún día volverá a tomar forma."
 }

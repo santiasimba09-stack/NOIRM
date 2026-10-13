@@ -47,7 +47,7 @@ public final class BijuGameTests {
     }
 
     @GameTest(template = "empty", batch = BEAST_BATCH)
-    public static void beastsAreSubduedNotKilled(GameTestHelper helper) {
+    public static void beastsAreSubduedThenSealedOrKilled(GameTestHelper helper) {
         floor(helper);
         TailedBeast beast = helper.spawnWithNoFreeWill(NoirmEntities.TAILED_BEAST.get(), 1.5f, 1f, 1.5f);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 0.5f, 1f, 0.5f);
@@ -59,11 +59,12 @@ public final class BijuGameTests {
             beast.hurt(beast.damageSources().mobAttack(ninja), 80f);
         }
         helper.assertTrue(beast.isSubdued(), "beaten down, the beast should be subdued");
-        helper.assertTrue(beast.isAlive(), "fighting never kills a tailed beast");
-        float health = beast.getHealth();
-        beast.invulnerableTime = 0;
-        helper.assertFalse(beast.hurt(beast.damageSources().mobAttack(ninja), 50f), "a subdued beast takes no more damage");
-        helper.assertTrue(beast.getHealth() == health, "health unchanged while subdued");
+        helper.assertTrue(beast.isAlive(), "beating it down doesn't kill it");
+        for (int i = 0; i < 20 && beast.isAlive(); i++) {
+            beast.invulnerableTime = 0;
+            beast.hurt(beast.damageSources().mobAttack(ninja), 80f);
+        }
+        helper.assertFalse(beast.isAlive(), "but finishing blows on a subdued beast kill it");
         cleanUp(helper);
     }
 
