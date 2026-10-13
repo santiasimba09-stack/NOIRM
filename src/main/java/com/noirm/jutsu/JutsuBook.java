@@ -49,16 +49,6 @@ public final class JutsuBook {
         return true;
     }
 
-    public void forget(ResourceLocation id) {
-        mastery.remove(id);
-        copied.remove(id);
-        for (int i = 0; i < SLOTS; i++) {
-            if (id.equals(loadout[i])) {
-                loadout[i] = null;
-            }
-        }
-    }
-
     public boolean isCopied(ResourceLocation id) {
         return copied.contains(id);
     }

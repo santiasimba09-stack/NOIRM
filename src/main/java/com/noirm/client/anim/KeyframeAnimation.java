@@ -80,11 +80,6 @@ public final class KeyframeAnimation {
         }
     }
 
-    public boolean hasBone(Bone bone) {
-        Track[] bt = tracks[bone.ordinal()];
-        return bt[ROT] != null || bt[POS] != null || bt[BEND] != null;
-    }
-
     public boolean hasBend(Bone bone) {
         return tracks[bone.ordinal()][BEND] != null;
     }

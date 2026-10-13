@@ -14,9 +14,4 @@ public enum Order {
     public String key() {
         return "screen.noirm.ally.order." + name().toLowerCase(java.util.Locale.ROOT);
     }
-
-    public static Order byIndex(int index) {
-        Order[] values = values();
-        return index >= 0 && index < values.length ? values[index] : FOLLOW;
-    }
 }

@@ -191,9 +191,4 @@ public final class CrewGameTests {
             }
         }
     }
-
-    @SuppressWarnings("unused")
-    private static float yaw(LivingEntity from, LivingEntity to) {
-        return (float) (Mth.atan2(to.getZ() - from.getZ(), to.getX() - from.getX()) * Mth.RAD_TO_DEG) - 90f;
-    }
 }
