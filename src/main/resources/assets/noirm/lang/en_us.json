@@ -287,5 +287,14 @@
   "style.noirm.gentle_fist": "Gentle Fist (Jūken)",
   "style.noirm.beast": "Beast",
   "message.noirm.style.now": "Fighting style: %s",
-  "message.noirm.style.unlocked": "Your taijutsu is strong enough for a new style: %s. Press H to switch."
+  "message.noirm.style.unlocked": "Your taijutsu is strong enough for a new style: %s. Press H to switch.",
+  "entity.noirm.sparring_ninja.crew": "%s ⚑",
+  "message.noirm.crew.yields": "%s yields. Right-click them to invite them to your crew.",
+  "message.noirm.crew.asks": "%s bows: \"I've never been beaten like that. Let me travel with you.\" Right-click them to accept.",
+  "message.noirm.crew.joined": "%s joined your crew!",
+  "message.noirm.crew.full": "Your crew is full (%s). Train taijutsu to lead more.",
+  "message.noirm.crew.fallen": "%s has fallen.",
+  "message.noirm.crew.wait": "%s will wait here.",
+  "message.noirm.crew.follow": "%s follows you.",
+  "message.noirm.crew.status": "%s · %s/%s ♥ · sneak + right-click: wait/follow"
 }

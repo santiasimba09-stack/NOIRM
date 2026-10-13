@@ -22,6 +22,9 @@ public final class JutsuEffects {
             return;
         }
         Entity owner = source instanceof net.minecraft.world.entity.projectile.Projectile p && p.getOwner() != null ? p.getOwner() : source;
+        if (owner != target && isFriendly(owner, target)) {
+            return; // no friendly fire between you, your clones and your crew
+        }
         DamageSource damageSource = source.damageSources().indirectMagic(source, owner);
         if (damage > 0) {
             living.invulnerableTime = 0;
@@ -41,6 +44,20 @@ public final class JutsuEffects {
             living.knockback(knockback, -flat.x, -flat.z);
             living.hurtMarked = true;
         }
+    }
+
+    /**
+     * Are {@code a} and {@code b} on the same side: the same person, a shadow clone and its
+     * owner (or two clones of one owner), or crew mates? Friendly jutsu don't hurt each other.
+     */
+    public static boolean isFriendly(Entity a, Entity b) {
+        if (a == b) {
+            return true;
+        }
+        if (!(a instanceof LivingEntity la) || !(b instanceof LivingEntity lb)) {
+            return false;
+        }
+        return com.noirm.ally.Crew.sameSide(la, lb);
     }
 
     /**

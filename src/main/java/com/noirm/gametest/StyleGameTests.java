@@ -44,7 +44,7 @@ public final class StyleGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_npc_styles")
     public static void ninjasFightInStyles(GameTestHelper helper) {
         SparringNinja hyuga = ninja(helper, 0.5f, 0.5f, TestClans.BYAKUGAN);
         helper.assertTrue(StyleSystem.GENTLE_FIST.equals(hyuga.combatStyle()), "Hyūga fight with the Gentle Fist, got " + hyuga.combatStyle());

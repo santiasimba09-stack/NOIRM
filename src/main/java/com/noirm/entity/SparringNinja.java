@@ -26,6 +26,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -73,6 +74,14 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Whether the jinchūriki roll has happened (or Tails came from NBT). */
     private boolean tailsDecided;
     private boolean beastReleased;
+    /** The player whose crew this ninja is in, or null. */
+    private java.util.UUID leader;
+    /** Beaten: waiting for {@code yieldedTo} to invite them, until {@code yieldedUntil}. */
+    private java.util.UUID yieldedTo;
+    private long yieldedUntil;
+    /** A crew mate told to wait here. */
+    private boolean waiting;
+    private static final EntityDataAccessor<Boolean> IN_CREW = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     /** Fighting style; chosen when first needed (or from the {@code Style} NBT tag). */
     private ResourceLocation style;
     private float speed = ShinobiData.DEFAULT_STAT;
@@ -100,6 +109,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(BYAKUGAN, false);
         entityData.define(TAILS, (byte) 0);
         entityData.define(CLOAK, false);
+        entityData.define(IN_CREW, false);
     }
 
     @Override
@@ -116,7 +126,148 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (!level().isClientSide() && tails() > 0) {
             tickJinchuriki();
         }
+        if (!level().isClientSide()) {
+            tickCrew();
+        }
         super.aiStep();
+    }
+
+    // ---------------------------------------------------------------- crew (allies)
+
+    public java.util.UUID leaderId() {
+        return leader;
+    }
+
+    public boolean inCrew() {
+        return entityData.get(IN_CREW);
+    }
+
+    public boolean isYielded() {
+        return yieldedTo != null && level().getGameTime() < yieldedUntil;
+    }
+
+    public void setYielded(java.util.UUID to, long until) {
+        yieldedTo = to;
+        yieldedUntil = until;
+        setPose(net.minecraft.world.entity.Pose.CROUCHING); // down on one knee
+    }
+
+    public void joinCrew(java.util.UUID player) {
+        leader = player;
+        yieldedTo = null;
+        waiting = false;
+        entityData.set(IN_CREW, true);
+        setTarget(null);
+        setPose(net.minecraft.world.entity.Pose.STANDING);
+        setPersistenceRequired();
+    }
+
+    public boolean isWaiting() {
+        return waiting;
+    }
+
+    private net.minecraft.world.entity.player.Player leaderPlayer() {
+        return leader == null ? null : level().getPlayerByUUID(leader);
+    }
+
+    private void tickCrew() {
+        if (yieldedTo != null && !isYielded()) {
+            yieldedTo = null; // nobody answered: back on their feet
+            setPose(net.minecraft.world.entity.Pose.STANDING);
+        }
+        if (isYielded()) {
+            setTarget(null);
+            getNavigation().stop();
+            return;
+        }
+        var player = leaderPlayer();
+        if (player == null || !player.isAlive()) {
+            return;
+        }
+        LivingEntity target = getTarget();
+        if (target != null && com.noirm.ally.Crew.sameSide(this, target)) {
+            setTarget(null);
+            target = null;
+        }
+        // Fight what the leader fights, and whoever attacks them.
+        if (target == null || !target.isAlive()) {
+            LivingEntity pick = player.getLastHurtMob();
+            if (pick == null || !pick.isAlive() || com.noirm.ally.Crew.sameSide(this, pick) || player.tickCount - player.getLastHurtMobTimestamp() > 200) {
+                pick = player.getLastHurtByMob();
+            }
+            if (pick != null && pick.isAlive() && !com.noirm.ally.Crew.sameSide(this, pick) && pick.distanceTo(this) < 24) {
+                setTarget(pick);
+            }
+        }
+        if (getTarget() == null) {
+            double distance = distanceTo(player);
+            if (!waiting && distance > com.noirm.ally.Crew.TELEPORT_DISTANCE && player.onGround()) {
+                teleportTo(player.getX(), player.getY(), player.getZ());
+                getNavigation().stop();
+            } else if (!waiting && distance > 5) {
+                getNavigation().moveTo(player, distance > 12 ? 1.25 : 1.0);
+            }
+            if (tickCount % 20 == 0 && getHealth() < getMaxHealth()) {
+                heal(com.noirm.ally.Crew.REGEN_PER_SECOND);
+            }
+        }
+    }
+
+    @Override
+    public boolean isAlliedTo(net.minecraft.world.entity.Entity other) {
+        if (other instanceof LivingEntity living && leader != null && com.noirm.ally.Crew.sameSide(this, living)) {
+            return true;
+        }
+        return super.isAlliedTo(other);
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (!level().isClientSide() && source.getEntity() instanceof LivingEntity attacker && leader != null
+                && com.noirm.ally.Crew.sameSide(this, attacker)) {
+            return false; // a stray hit from your own side
+        }
+        boolean hurt = super.hurt(source, amount);
+        if (hurt && !level().isClientSide() && isAlive() && canYield() && source.getEntity() instanceof Player player
+                && getHealth() < getMaxHealth() * com.noirm.ally.Crew.YIELD_HEALTH && !isYielded()) {
+            com.noirm.ally.Crew.yieldTo(this, player);
+        } else if (hurt && isYielded() && source.getEntity() != null) {
+            yieldedTo = null; // attacked while yielding: they fight on
+            setPose(net.minecraft.world.entity.Pose.STANDING);
+        }
+        return hurt;
+    }
+
+    /** Whether this ninja can be beaten into joining (not clones, not cloaked jinchūriki, not crew). */
+    protected boolean canYield() {
+        return leader == null && !isCloaked();
+    }
+
+    @Override
+    protected net.minecraft.world.InteractionResult mobInteract(Player player, net.minecraft.world.InteractionHand hand) {
+        if (hand != net.minecraft.world.InteractionHand.MAIN_HAND) {
+            return super.mobInteract(player, hand);
+        }
+        if (level().isClientSide()) {
+            return isYielded() || player.getUUID().equals(leader) ? net.minecraft.world.InteractionResult.SUCCESS : super.mobInteract(player, hand);
+        }
+        if (isYielded() && player.getUUID().equals(yieldedTo)) {
+            com.noirm.ally.Crew.recruit(player, this);
+            return net.minecraft.world.InteractionResult.CONSUME;
+        }
+        if (player.getUUID().equals(leader)) {
+            if (player.isShiftKeyDown()) {
+                waiting = !waiting;
+                getNavigation().stop();
+                player.displayClientMessage(Component.translatable(waiting ? "message.noirm.crew.wait" : "message.noirm.crew.follow",
+                        getDisplayName()), true);
+            } else {
+                player.displayClientMessage(Component.translatable("message.noirm.crew.status", getDisplayName(),
+                        Math.round(getHealth()), Math.round(getMaxHealth())), true);
+            }
+            return net.minecraft.world.InteractionResult.CONSUME;
+        }
+        return super.mobInteract(player, hand);
     }
 
     /** Takes on a clan's natures, jutsu and (for the Uchiha) an active Sharingan. */
@@ -200,6 +351,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public void die(DamageSource source) {
         super.die(source);
+        if (!level().isClientSide()) {
+            com.noirm.ally.Crew.onDeath(this);
+        }
         if (beastReleased || level().isClientSide() || tails() == 0 || !(level() instanceof net.minecraft.server.level.ServerLevel level)) {
             return;
         }
@@ -238,6 +392,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public Component getName() {
         String clan = entityData.get(CLAN_NAME);
+        if (inCrew() && !hasCustomName()) {
+            Component base = clan.isEmpty() ? super.getName() : Component.translatable("entity.noirm.sparring_ninja.of_clan", super.getName(), clan);
+            return Component.translatable("entity.noirm.sparring_ninja.crew", base);
+        }
         return hasCustomName() || clan.isEmpty() ? super.getName()
                 : Component.translatable("entity.noirm.sparring_ninja.of_clan", super.getName(), clan);
     }
@@ -253,7 +411,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         // A challenge: anyone who enters combat mode nearby gets a fight.
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, player -> {
             CombatState state = CombatStates.getIfPresent(player);
-            return state != null && state.isCombatMode();
+            return leader == null && !isYielded() && state != null && state.isCombatMode();
         }));
     }
 
@@ -318,6 +476,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (style != null) {
             tag.putString("Style", style.toString());
         }
+        if (leader != null) {
+            tag.putUUID("Leader", leader);
+            tag.putBoolean("Waiting", waiting);
+        }
     }
 
     @Override
@@ -327,6 +489,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : ShinobiData.DEFAULT_STAT);
         if (tag.contains("Tails")) {
             sealBeast(tag.getInt("Tails"));
+        }
+        if (tag.hasUUID("Leader")) {
+            joinCrew(tag.getUUID("Leader"));
+            waiting = tag.getBoolean("Waiting");
         }
         String savedClan = tag.getString("Clan");
         ResourceLocation savedStyle = ResourceLocation.tryParse(tag.getString("Style"));

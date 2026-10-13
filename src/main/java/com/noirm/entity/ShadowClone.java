@@ -119,7 +119,12 @@ public class ShadowClone extends SparringNinja {
     }
 
     private boolean isFriend(LivingEntity entity) {
-        return entity == owner || entity instanceof ShadowClone clone && owner != null && clone.isOwnedBy(owner);
+        return com.noirm.ally.Crew.sameSide(this, entity);
+    }
+
+    @Override
+    protected boolean canYield() {
+        return false;
     }
 
     /** Any real hit dispels it. */

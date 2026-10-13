@@ -148,6 +148,16 @@ public class JutsuProjectile extends Projectile {
         setPos(getX() + motion.x, getY() + motion.y, getZ() + motion.z);
     }
 
+    /** Never the caster, nor anyone on the caster's side (their clones, their crew). */
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        Entity owner = getOwner();
+        if (owner != null && (entity == owner || com.noirm.jutsu.JutsuEffects.isFriendly(owner, entity))) {
+            return false;
+        }
+        return super.canHitEntity(entity);
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity target = result.getEntity();
@@ -175,7 +185,7 @@ public class JutsuProjectile extends Projectile {
             if (blastRadius > 0) {
                 AABB area = getBoundingBox().inflate(blastRadius);
                 for (LivingEntity victim : serverLevel.getEntitiesOfClass(LivingEntity.class, area,
-                        e -> e != getOwner() && e.isAlive() && e.distanceTo(this) <= blastRadius + e.getBbWidth())) {
+                        e -> e != getOwner() && !(getOwner() != null && JutsuEffects.isFriendly(getOwner(), e)) && e.isAlive() && e.distanceTo(this) <= blastRadius + e.getBbWidth())) {
                     Vec3 push = victim.position().subtract(position()).normalize();
                     float falloff = 1f - (float) Math.min(1, victim.distanceTo(this) / (blastRadius + 1));
                     JutsuEffects.hit(this, victim, damage * (0.5f + 0.5f * falloff), knockback, posture, fireSeconds, push);

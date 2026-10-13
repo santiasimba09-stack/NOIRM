@@ -534,7 +534,7 @@ public final class CombatSystem {
         CombatMove.Hit hit = state.move.hit();
         AABB area = attacker.getBoundingBox().inflate(hit.range() + 1);
         for (LivingEntity target : attacker.level().getEntitiesOfClass(LivingEntity.class, area,
-                t -> t != attacker && t.isAlive() && !t.isSpectator() && !attacker.isAlliedTo(t)
+                t -> t != attacker && t.isAlive() && !t.isSpectator() && !attacker.isAlliedTo(t) && !com.noirm.ally.Crew.sameSide(attacker, t)
                         && !state.hitThisSwing.contains(t.getId()) && inSwing(attacker, t, hit.range(), hit.arc()))) {
             state.hitThisSwing.add(target.getId());
             applyHit(attacker, state, target, state.move);

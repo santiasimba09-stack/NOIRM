@@ -287,5 +287,14 @@
   "style.noirm.gentle_fist": "Puño Suave (Jūken)",
   "style.noirm.beast": "Bestia",
   "message.noirm.style.now": "Estilo de pelea: %s",
-  "message.noirm.style.unlocked": "Tu taijutsu ya alcanza para un nuevo estilo: %s. Pulsa H para cambiar."
+  "message.noirm.style.unlocked": "Tu taijutsu ya alcanza para un nuevo estilo: %s. Pulsa H para cambiar.",
+  "entity.noirm.sparring_ninja.crew": "%s ⚑",
+  "message.noirm.crew.yields": "%s se rinde. Haz clic derecho para invitarle a tu equipo.",
+  "message.noirm.crew.asks": "%s hace una reverencia: \"Nunca me habían vencido así. Déjame viajar contigo.\" Clic derecho para aceptar.",
+  "message.noirm.crew.joined": "¡%s se unió a tu equipo!",
+  "message.noirm.crew.full": "Tu equipo está lleno (%s). Entrena taijutsu para liderar a más.",
+  "message.noirm.crew.fallen": "%s ha caído.",
+  "message.noirm.crew.wait": "%s esperará aquí.",
+  "message.noirm.crew.follow": "%s te sigue.",
+  "message.noirm.crew.status": "%s · %s/%s ♥ · agáchate + clic derecho: esperar/seguir"
 }

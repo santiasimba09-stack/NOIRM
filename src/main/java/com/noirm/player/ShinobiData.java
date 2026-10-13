@@ -58,6 +58,8 @@ public final class ShinobiData {
     private final AwakeningData awakening = new AwakeningData();
     private final BijuData biju = new BijuData();
     private final TrainingData training = new TrainingData();
+    /** Your crew mates (ninjas who joined you), by UUID. */
+    private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
 
     public ClanIdentity identity() {
         return identity;
@@ -77,6 +79,10 @@ public final class ShinobiData {
 
     public BijuData biju() {
         return biju;
+    }
+
+    public java.util.List<java.util.UUID> crew() {
+        return crew;
     }
 
     public TrainingData training() {
@@ -268,6 +274,9 @@ public final class ShinobiData {
         tag.putFloat("Vitality", vitality);
         tag.putFloat("Reserves", reserves);
         tag.putString("Style", combatStyle);
+        net.minecraft.nbt.ListTag crewTag = new net.minecraft.nbt.ListTag();
+        crew.forEach(id -> crewTag.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
+        tag.put("Crew", crewTag);
         tag.put("Identity", identity.save());
         tag.put("Jutsu", jutsu.save());
         tag.put("Eyes", eyes.save());
@@ -287,6 +296,8 @@ public final class ShinobiData {
         vitality = Mth.clamp(tag.contains("Vitality") ? tag.getFloat("Vitality") : DEFAULT_STAT, 1f, MAX_STAT);
         reserves = Mth.clamp(tag.contains("Reserves") ? tag.getFloat("Reserves") : DEFAULT_STAT, 1f, MAX_STAT);
         combatStyle = tag.getString("Style");
+        crew.clear();
+        tag.getList("Crew", net.minecraft.nbt.Tag.TAG_INT_ARRAY).forEach(t -> crew.add(net.minecraft.nbt.NbtUtils.loadUUID(t)));
         identity.load(tag.getCompound("Identity"));
         jutsu.load(tag.getCompound("Jutsu"));
         eyes.load(tag.getCompound("Eyes"));
