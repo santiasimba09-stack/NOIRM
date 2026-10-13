@@ -104,7 +104,9 @@ public final class DangerGameTests {
         helper.assertTrue(ModeSystem.isActive(player, ARMOR), "the armor is on");
         float after = com.noirm.combat.Perception.perception(player);
         helper.assertTrue(after > before * 1.5f, "it sharpens perception (" + before + " -> " + after + ")");
-        helper.assertTrue(ModeSystem.actionSpeed(player) > 1.2f, "and speeds up your moves");
+        helper.assertTrue(ModeSystem.actionSpeed(player) > 1.5f, "and speeds up your moves");
+        helper.assertTrue(com.noirm.combat.Perception.damageMultiplier(player) >= 1.79f, "hits much harder");
+        helper.assertTrue(ModeSystem.defenseMultiplier(player) <= 0.46f, "and takes less than half the damage");
         helper.assertTrue(JutsuCaster.onKey(player, 0, true) == JutsuCaster.Result.OK, "the same key switches it off");
         helper.assertFalse(ModeSystem.isActive(player, ARMOR), "the armor is off");
         helper.succeed();
