@@ -6,6 +6,7 @@ import com.noirm.network.CombatClientPackets.PlayAnimation;
 import com.noirm.network.NoirmNetwork;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -26,6 +27,10 @@ final class CombatEffects {
             move.animation().ifPresent(animation ->
                     NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), animation, totalTicks)));
         } else {
+            if (entity instanceof CombatAnimated animated) {
+                // NPCs play the very same animation (synced as entity data, see SparringNinja).
+                move.animation().ifPresent(animation -> animated.playCombatAnimation(animation, totalTicks));
+            }
             // Telegraph so the player can read what's coming: a cloth rustle, and a glint on heavies.
             boolean heavy = move.hit().isHeavy();
             sound(entity, SoundEvents.ARMOR_EQUIP_LEATHER, 0.9f, heavy ? 0.7f : 1.4f);
@@ -108,9 +113,11 @@ final class CombatEffects {
         if (entity.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.CLOUD, entity.getX(), entity.getY() + 0.1, entity.getZ(), 6, 0.3, 0.05, 0.3, 0.02);
         }
+        ResourceLocation roll = Noirm.id(forward ? "forward_roll" : "backward_roll");
         if (entity instanceof Player) {
-            NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(),
-                    Noirm.id(forward ? "forward_roll" : "backward_roll"), ticks));
+            NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), roll, ticks));
+        } else if (entity instanceof CombatAnimated animated) {
+            animated.playCombatAnimation(roll, ticks);
         }
     }
 

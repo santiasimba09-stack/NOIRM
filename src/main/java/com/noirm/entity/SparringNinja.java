@@ -50,7 +50,7 @@ import java.util.List;
  * jutsu; Uchiha ninjas fight with an active Sharingan. Speed, taijutsu and clan can be set with
  * {@code /summon noirm:sparring_ninja ~ ~ ~ {Speed:15,Taijutsu:15,Clan:"uchiha"}}.
  */
-public class SparringNinja extends PathfinderMob implements CombatStats, CombatListener, JutsuUser {
+public class SparringNinja extends PathfinderMob implements CombatStats, CombatListener, JutsuUser, com.noirm.combat.CombatAnimated {
     /** What the model should show. Synced to clients. */
     public enum Pose { IDLE, WINDUP_LIGHT, WINDUP_HEAVY, ACTIVE, GUARD, STAGGER }
 
@@ -60,6 +60,13 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private static final EntityDataAccessor<Boolean> BYAKUGAN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Byte> TAILS = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> CLOAK = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
+    /** The keyframe animation the client should play (same files as players), its length, and a counter that restarts it. */
+    private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> ANIMATION_TICKS = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ANIMATION_SEQ = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.INT);
+    /** Fighting style id (for the stance loop) and whether they're in a fight right now. */
+    private static final EntityDataAccessor<String> STYLE = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> FIGHTING = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     /** A jinchūriki ninja calls on its beast below this fraction of its health. */
     public static final float CLOAK_HEALTH = 0.35f;
 
@@ -121,6 +128,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(CLOAK, false);
         entityData.define(IN_CREW, false);
         entityData.define(SKIN, "");
+        entityData.define(ANIMATION, "");
+        entityData.define(ANIMATION_TICKS, 0);
+        entityData.define(ANIMATION_SEQ, 0);
+        entityData.define(STYLE, "");
+        entityData.define(FIGHTING, false);
     }
 
     @Override
@@ -139,6 +151,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         if (!level().isClientSide()) {
             tickCrew();
+            syncAnimationState();
         }
         super.aiStep();
     }
@@ -557,6 +570,49 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             CombatState state = CombatStates.getIfPresent(player);
             return leader == null && !isYielded() && state != null && state.isCombatMode();
         }));
+    }
+
+    // ---------------------------------------------------------------- animation (synced to the client model)
+
+    @Override
+    public void playCombatAnimation(ResourceLocation animation, int durationTicks) {
+        entityData.set(ANIMATION, animation.toString());
+        entityData.set(ANIMATION_TICKS, Math.max(1, durationTicks));
+        entityData.set(ANIMATION_SEQ, entityData.get(ANIMATION_SEQ) + 1);
+        entityData.set(FIGHTING, true);
+    }
+
+    /** The last combat animation started (empty if none yet). */
+    public String animationId() {
+        return entityData.get(ANIMATION);
+    }
+
+    public int animationTicks() {
+        return entityData.get(ANIMATION_TICKS);
+    }
+
+    /** Goes up by one each time an animation starts, so the same move twice restarts it. */
+    public int animationSeq() {
+        return entityData.get(ANIMATION_SEQ);
+    }
+
+    /** The style as the client sees it (for the stance), e.g. {@code noirm:brawler}. */
+    public String syncedStyle() {
+        return entityData.get(STYLE);
+    }
+
+    /** In a fight: has a live target, or is mid-move. The client holds the style's stance then. */
+    public boolean isFighting() {
+        return entityData.get(FIGHTING);
+    }
+
+    private void syncAnimationState() {
+        ResourceLocation current = combatStyle();
+        entityData.set(STYLE, current == null ? "" : current.toString());
+        LivingEntity target = getTarget();
+        CombatState state = CombatStates.getIfPresent(this);
+        boolean busy = state != null && state.phase() != com.noirm.combat.CombatPhase.IDLE;
+        entityData.set(FIGHTING, (target != null && target.isAlive()) || busy || (state != null && state.isGuarding()));
     }
 
     public Pose ninjaPose() {
