@@ -72,6 +72,21 @@ public final class ModeSystem {
         caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.8f, 1.6f);
     }
 
+    /** {@code to} takes on {@code from}'s active mode, if any (a shadow clone copies its owner's). */
+    public static void copyTo(LivingEntity from, LivingEntity to) {
+        Active active = ACTIVE.get(from);
+        if (active == null) {
+            return;
+        }
+        ACTIVE.put(to, active);
+        AttributeInstance speed = to.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null && active.mode().speed() != 0) {
+            speed.removeModifier(SPEED_ID);
+            speed.addTransientModifier(new AttributeModifier(SPEED_ID, "noirm_mode", Math.max(-0.9, active.mode().speed() * active.strength()),
+                    AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
+    }
+
     public static void end(LivingEntity entity) {
         if (ACTIVE.remove(entity) == null) {
             return;

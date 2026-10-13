@@ -70,8 +70,38 @@ public class ShadowClone extends SparringNinja {
             setOutfit(ninja.outfit()); // looks exactly like them
         }
         setCombatStyle(com.noirm.combat.CombatSystem.styleFor(owner)); // fights the way you do
-        sealBeast(0);
+        copyPowers(owner);
+        // A real body: a share of your health, at your toughness. It takes a beating before it pops.
+        var health = getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH);
+        if (health != null) {
+            health.setBaseValue(Math.max(MIN_HEALTH, owner.getMaxHealth() * HEALTH_SHARE));
+        }
+        setHealth(getMaxHealth());
     }
+
+    /** Your jutsu, your eyes, your active mode, your beast's cloak. */
+    private void copyPowers(LivingEntity owner) {
+        knownJutsu().clear();
+        int tails = 0;
+        if (owner instanceof Player player) {
+            ShinobiCapability.get(player).ifPresent(data -> knownJutsu().addAll(data.jutsu().known()));
+            tails = ShinobiCapability.get(player).map(d -> d.biju().tails()).orElse(0);
+        } else if (owner instanceof SparringNinja ninja) {
+            knownJutsu().addAll(ninja.knownJutsu());
+            tails = ninja.tails();
+        }
+        knownJutsu().remove(SHADOW_CLONE_JUTSU); // clones don't make clones
+        setSharinganStage(com.noirm.dojutsu.Sharingan.activeStage(owner));
+        com.noirm.jutsu.ModeSystem.copyTo(owner, this);
+        boolean cloaked = com.noirm.biju.BijuSystem.cloakStage(owner) > 0;
+        sealBeast(cloaked ? tails : 0);
+        setCloaked(cloaked);
+    }
+
+    /** A clone's health: this share of its owner's, at least {@link #MIN_HEALTH}. */
+    public static final float HEALTH_SHARE = 0.4f;
+    public static final float MIN_HEALTH = 12f;
+    private static final net.minecraft.resources.ResourceLocation SHADOW_CLONE_JUTSU = com.noirm.Noirm.id("universal/shadow_clone");
 
     public void setLife(int ticks) {
         life = ticks > 0 ? ticks : 600;
@@ -130,14 +160,26 @@ public class ShadowClone extends SparringNinja {
         return false;
     }
 
-    /** Any real hit dispels it. */
+    /** It takes hits like a real body; the blow that would kill it dispels it instead. */
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (level().isClientSide() || isInvulnerableTo(source) || amount <= 0) {
             return false;
         }
-        dispel();
-        return true;
+        if (source.getEntity() instanceof LivingEntity attacker && com.noirm.ally.Crew.sameSide(this, attacker)) {
+            return false;
+        }
+        float before = getHealth();
+        boolean hurt = super.hurt(source, amount);
+        if (hurt && (getHealth() <= 1f || !isAlive() || getHealth() >= before && amount >= before)) {
+            dispel();
+        }
+        return hurt;
+    }
+
+    @Override
+    public void die(DamageSource source) {
+        dispel(); // no body, no drops: just smoke
     }
 
     public void dispel() {

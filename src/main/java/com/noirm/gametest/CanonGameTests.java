@@ -93,7 +93,7 @@ public final class CanonGameTests {
     }
 
     @GameTest(template = "empty", batch = "noirm_clones", timeoutTicks = 40)
-    public static void shadowClonesFightAndVanishWhenHit(GameTestHelper helper) {
+    public static void shadowClonesTakeHitsThenVanish(GameTestHelper helper) {
         floor(helper);
         SparringNinja caster = ninja(helper, 1.5f, 1.5f, TestClans.PLAIN);
         run(caster, "universal/shadow_clone", 1f);
@@ -101,9 +101,32 @@ public final class CanonGameTests {
         helper.assertTrue(clones.size() == 2, "two clones appear, found " + clones.size());
         ShadowClone clone = clones.get(0);
         helper.assertTrue(clone.isOwnedBy(caster), "they belong to the caster");
-        clone.hurt(clone.damageSources().generic(), 1f);
-        helper.assertTrue(clone.isRemoved(), "one hit dispels a clone");
+        helper.assertTrue(clone.getMaxHealth() >= ShadowClone.MIN_HEALTH, "a clone has a real body");
+        clone.hurt(clone.damageSources().generic(), 3f);
+        helper.assertFalse(clone.isRemoved(), "it takes a hit like the real thing");
+        clone.invulnerableTime = 0;
+        clone.hurt(clone.damageSources().generic(), 500f);
+        helper.assertTrue(clone.isRemoved(), "and a finishing blow dispels it");
         clones.forEach(ShadowClone::dispel);
+        clearAround(helper);
+    }
+
+    @GameTest(template = "empty", batch = "noirm_clone_powers", timeoutTicks = 40)
+    public static void clonesCarryTheirOwnersPowers(GameTestHelper helper) {
+        floor(helper);
+        SparringNinja caster = ninja(helper, 1.5f, 1.5f, TestClans.FIRE);
+        caster.setSharinganStage(2);
+        helper.assertTrue(JutsuCaster.npcCast(caster, Noirm.id("raiton/lightning_armor"), 1f), "the owner puts on Lightning Armor");
+        run(caster, "universal/shadow_clone", 1f);
+        List<ShadowClone> clones = clones(helper, caster);
+        helper.assertFalse(clones.isEmpty(), "clones appear");
+        ShadowClone clone = clones.get(0);
+        helper.assertTrue(clone.activeSharinganStage() == 2, "with the owner's Sharingan");
+        helper.assertTrue(com.noirm.jutsu.ModeSystem.isActive(clone, Noirm.id("raiton/lightning_armor")), "and their Lightning Armor");
+        helper.assertTrue(clone.knownJutsu().contains(Noirm.id("katon/great_fireball")), "and their jutsu");
+        helper.assertFalse(clone.knownJutsu().contains(Noirm.id("universal/shadow_clone")), "but clones don't make clones");
+        clones.forEach(ShadowClone::dispel);
+        com.noirm.jutsu.ModeSystem.end(caster);
         clearAround(helper);
     }
 

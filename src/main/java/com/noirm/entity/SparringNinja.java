@@ -346,6 +346,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
     }
 
+    /** Forces the beast's cloak on or off (a shadow clone of a cloaked jinchūriki). */
+    public void setCloaked(boolean cloaked) {
+        entityData.set(CLOAK, cloaked);
+    }
+
     public boolean isCloaked() {
         return entityData.get(CLOAK);
     }
