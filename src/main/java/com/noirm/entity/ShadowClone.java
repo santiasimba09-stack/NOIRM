@@ -66,6 +66,9 @@ public class ShadowClone extends SparringNinja {
                 WorldClans.get(owner.getServer()).find(ninja.clanId()).ifPresent(this::joinClan);
             }
         }
+        if (owner instanceof SparringNinja ninja) {
+            setOutfit(ninja.outfit()); // looks exactly like them
+        }
         setCombatStyle(com.noirm.combat.CombatSystem.styleFor(owner)); // fights the way you do
         sealBeast(0);
     }

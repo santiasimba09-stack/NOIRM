@@ -25,8 +25,11 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
 
     @Override
     public ResourceLocation getTextureLocation(SparringNinja ninja) {
-        return TEXTURE;
+        String outfit = ninja.outfit();
+        return outfit.isEmpty() ? TEXTURE : OUTFITS.computeIfAbsent(outfit, o -> Noirm.id("textures/entity/ninja/" + o + ".png"));
     }
+
+    private static final java.util.Map<String, ResourceLocation> OUTFITS = new java.util.HashMap<>();
 
     static final class NinjaModel extends PlayerModel<SparringNinja> {
         NinjaModel(ModelPart root) {

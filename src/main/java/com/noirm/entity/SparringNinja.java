@@ -81,6 +81,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private long yieldedUntil;
     /** A crew mate told to wait here. */
     private boolean waiting;
+    /** Outfit: {@code "<folder>/<n>"} under {@code textures/entity/ninja/}, picked for the clan. */
+    private static final EntityDataAccessor<String> SKIN = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
+    /** How many outfits each folder has (mirrors {@code textures/entity/ninja/catalog.json}). */
+    public static final java.util.Map<String, Integer> OUTFITS = java.util.Map.of("uchiha", 5, "senju", 4, "hyuga", 4, "uzumaki", 4, "generic", 6);
     private static final EntityDataAccessor<Boolean> IN_CREW = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     /** Fighting style; chosen when first needed (or from the {@code Style} NBT tag). */
     private ResourceLocation style;
@@ -110,6 +114,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(TAILS, (byte) 0);
         entityData.define(CLOAK, false);
         entityData.define(IN_CREW, false);
+        entityData.define(SKIN, "");
     }
 
     @Override
@@ -136,6 +141,15 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     public java.util.UUID leaderId() {
         return leader;
+    }
+
+    /** The outfit texture path (under {@code textures/entity/ninja/}), or "" before a clan is known. */
+    public String outfit() {
+        return entityData.get(SKIN);
+    }
+
+    protected void setOutfit(String outfit) {
+        entityData.set(SKIN, outfit);
     }
 
     public boolean inCrew() {
@@ -274,6 +288,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public void joinClan(Clan clan) {
         clanId = clan.id();
         entityData.set(CLAN_NAME, clan.name());
+        String folder = OUTFITS.containsKey(clan.id()) ? clan.id() : "generic";
+        if (!entityData.get(SKIN).startsWith(folder + "/")) {
+            entityData.set(SKIN, folder + "/" + getRandom().nextInt(OUTFITS.get(folder)));
+        }
         natures.clear();
         natures.putAll(clan.natures());
         jutsu.clear();
@@ -476,6 +494,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (style != null) {
             tag.putString("Style", style.toString());
         }
+        tag.putString("Skin", outfit());
         if (leader != null) {
             tag.putUUID("Leader", leader);
             tag.putBoolean("Waiting", waiting);
@@ -489,6 +508,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : ShinobiData.DEFAULT_STAT);
         if (tag.contains("Tails")) {
             sealBeast(tag.getInt("Tails"));
+        }
+        if (!tag.getString("Skin").isEmpty()) {
+            entityData.set(SKIN, tag.getString("Skin"));
         }
         if (tag.hasUUID("Leader")) {
             joinCrew(tag.getUUID("Leader"));
