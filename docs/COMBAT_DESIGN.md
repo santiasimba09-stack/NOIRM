@@ -106,3 +106,14 @@ with a chance of 25% × its perception slow factor.
 - **Knockdown** (`"knockdown": true`): at least a 32-tick stun and a small bounce.
 - **Juggles:** unguarded hits on an airborne target keep them floating (up to 5), each 10% weaker
   (min 50%).
+
+## Round 3 (2026-10-13)
+
+- **Stances:** each style loops its own upper-body stance in combat mode (`stance_<style>`, a
+  PlayerAnimator layer under the attacks). Impacts differ per style (`CombatEffects.styleImpact`).
+- **Power scale:** no stat cap. `Perception.statPower(stat) = stat/10` drives taijutsu damage and
+  jutsu power; `Perception.durability` divides damage taken by √(vitality/10) (NPCs: their
+  strength). XP per point steepens past 50.
+- **Movement** (`player.Movement`): run ×√(speed/10) (cap ×5), jump +0.11 per doubling of speed,
+  sprint-jump leap, step-ups at 25 and 60, softer landings.
+- **Crew:** no friendly fire between a player, their shadow clones and their crew (`ally.Crew`).

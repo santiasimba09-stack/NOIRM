@@ -1,23 +1,25 @@
 # Project status
 
-_Last updated: 2026-10-13 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
+_Last updated: 2026-10-13 (round 3) · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 
 ## Where we are
 
-**The owner's second feedback round is done (v0.2.0). 87/87 game tests green, checked in the
-real client** (screenshots: `docs/screenshots/r2-*.png`). Research notes: `docs/RESEARCH.md`.
+**The owner's third feedback round is done (v0.3.0). 95/95 game tests green; checked in the real
+client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
 
 | Area | State |
 |---|---|
-| **Fighting styles**: Brawler, Strong Fist (taijutsu 18), Gentle Fist (Byakugan); H switches | ✅ tested |
-| **Directional attacks** (sprint = dash, back = back attack), **grab + clinch** (knee, headbutt, throw, dodge to escape) | ✅ tested |
-| **Wall splats, knockdowns, juggles**; 11 new generated animations (`tools/animgen`) | ✅ tested |
-| **Danger**: jutsu power from reserves, mastery and charge; **terrain destruction that heals** | ✅ tested; seen in client |
-| **Canon scale**: huge Great Fireball, homing Phoenix Sage Fire / Water Dragon, Lightning Armor as a real mode | ✅ |
-| **Canon jutsu** (10, see RESEARCH.md): + Rasengan, Shadow Clone, Shadow Imitation, Water Formation Wall | ✅ tested; clones seen in client |
-| **Yin, Yang, Yin–Yang** natures with jutsu (Mystical Palm, Partial Multi-Size, Truth-Seeking Ball…) | ✅ tested |
-| **Particles**: custom additive glow/spark/smoke/ring/shard, layered presets per nature | ✅ seen in client |
-| **Byakugan rework**: no prediction; no blind spot, chakra points, 360° radar | ✅ tested; seen in client |
+| **Fix:** a big Great Fireball burst on its own caster (its touch check didn't skip the caster) | ✅ tested |
+| **Lightning**: real crackling bolts (client renderer, `BoltRenderer`) on every raiton jutsu | ✅ seen in client |
+| **8 new jutsu** + behaviors strike (Kirin), wave, nova | ✅ tested |
+| **Lightning Armor** ×2 speed, ×1.8 damage, 55% less damage taken, ×2.2 perception; modes +25%/mastery | ✅ tested |
+| **Styles feel different**: per-style stances, Strong Fist's own animations, per-style impacts | ✅ seen in client |
+| **Crew (allies)**: beat ninjas low → they yield → invite; follow, fight, wait; no friendly fire | ✅ tested |
+| **Killable tailed beasts** (seal or finish once subdued) | ✅ tested |
+| **Deeper Shadow Clones**: real health, your jutsu, Sharingan, mode, cloak | ✅ tested |
+| **Clan outfits**: 23 generated skins (`tools/skingen`) | ✅ |
+| **Speed movement**: run ×√(speed/10), higher jumps, sprint-jump leap, step-ups | ✅ tested |
+| **No stat cap**: power ∝ stat, durability √, beasts 30→470, Tailed Beast Bomb at beast scale | ✅ tested |
 
 ## In progress
 
@@ -42,20 +44,22 @@ Nothing. Waiting for the owner's next playtest.
 | `com.noirm.player` | `ShinobiData` (the hub of all player data: resources, stats and the powers sub-objects), capability, `ShinobiEvents` (resources), `PowerEvents` (powers: first-join clan, ticking, sync, Resolve and awakening hooks), `PowerVisuals` |
 | `com.noirm.combat` | `CombatSystem` (rules + constants, clinch, wall splat, juggles), `StyleSystem` (choosing styles), `CombatState`, `Perception` (incl. eye/state multipliers), `CombatData`, `CombatEffects`, `CombatEvents` |
 | `com.noirm.clan` | `Clan`, `Nature` (basic + combined), `NatureSystem` (tree: owned/available/locked, unlock, mastery unlocks), `ClanTrait`, `AwakeningPath`, `ClanGenerator`, `WorldClans` (per-world registry), `ClanData` (canon), `ClanIdentity` (on the player), `ClanSystem` (joining) |
-| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `CanonTechniques` (dome, heal, Rasengan, shadow bind, shadow clone), `ModeSystem` (toggle modes like Lightning Armor), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
+| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `CanonTechniques` (dome, heal, Rasengan, shadow bind, shadow clone), `GreatTechniques` (strike, wave, nova), `ModeSystem` (toggle modes like Lightning Armor), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
 | `com.noirm.dojutsu` | `Sharingan`, `Byakugan` (incl. Gentle Fist, chakra points), `ThreatSense` (eyes vs vanilla mobs/projectiles), `EyeData` |
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak, sealing, born jinchūriki, beast names), `BijuData`, `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 5), `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
-| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 6), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
 | `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `TestClans` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `TestClans` |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
+| `tools/skingen/` | `gen_skins.py`: the clan outfit skins |
 | `tools/animgen/` | `gen_anims.py`: generates our own player animations from simple poses |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 

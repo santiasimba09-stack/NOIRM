@@ -2,6 +2,22 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-13 — Playtest feedback round 3, v0.3.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Fixed:** the Great Fireball burst on its caster. Jutsu never hit their caster, clones or crew.
+- **Lightning:** client-drawn crackling bolts on every raiton jutsu; 8 new jutsu (Kirin, Chidori
+  Current, Chidori Senbon, Great Fire Annihilation, Fire Dragon, Great Waterfall, Earth Dragon,
+  Pressure Damage) with new behaviors strike, wave and nova.
+- **Lightning Armor** is far stronger; every mode grows 25% per mastery level.
+- **Styles feel different:** stances, Strong Fist's own animations, per-style impact sounds/effects.
+- **Crew:** beaten ninjas yield and can be invited; they follow, fight and never hit you.
+- **Tailed beasts** can be killed once subdued (or sealed).
+- **Shadow Clones** have real health and carry your jutsu, eyes, mode and cloak.
+- **Outfits:** 23 original clan skins for ninjas.
+- **Movement:** speed makes you run faster, jump higher, leap and step up blocks.
+- **No cap:** stats grow without limit; power is proportional to stats, toughness to √vitality;
+  the Nine-Tails and its Tailed Beast Bomb are on a different scale.
+
 ## 2026-10-13 — Playtest feedback round 2, v0.2.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Fights feel like fights:** three new styles (Brawler, Strong Fist, Gentle Fist) switched with

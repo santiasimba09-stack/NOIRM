@@ -62,6 +62,10 @@ Strong hits slam people into walls behind them (and crack the wall); hits in the
 launched enemy floating (a juggle). Destruction heals itself after a while: turn it off with
 `/gamerule noirmTerrainDamage false`, or change how long it takes with `noirmTerrainRegen`.
 
+**Crew:** beat a ninja below a quarter of their health and they yield (kneel). Right-click them to
+invite them. Sneak + right-click a crew mate: wait here / follow me.
+**Tailed beasts:** once subdued, use a Sealing Scroll on them, or keep hitting to kill them.
+
 Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
 (perception). Or summon a strong one:
 `/summon noirm:sparring_ninja ~ ~ ~3 {Speed:25,Taijutsu:25}`.
