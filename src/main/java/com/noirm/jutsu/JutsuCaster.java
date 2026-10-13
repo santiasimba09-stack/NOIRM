@@ -174,7 +174,7 @@ public final class JutsuCaster {
                     for (int i = 0; i < 1 + Math.round(progress * 2); i++) {
                         net.minecraft.world.phys.Vec3 ground = hand.add((entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress),
                                 -1.2 - entity.getRandom().nextDouble(), (entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress));
-                        com.noirm.vfx.Vfx.bolt(entity.level(), hand, ground, com.noirm.vfx.Vfx.LIGHTNING, 0.03f + 0.03f * progress, 3, 1);
+                        com.noirm.vfx.Vfx.bolt(entity.level(), hand, ground, com.noirm.vfx.Vfx.LIGHTNING, 0.07f + 0.06f * progress, 4, 2);
                     }
                 }
             }

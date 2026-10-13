@@ -206,7 +206,7 @@ public final class Vfx {
             Vec3 a = entity.position().add((random.nextDouble() - 0.5) * entity.getBbWidth() * 1.6, random.nextDouble() * entity.getBbHeight(),
                     (random.nextDouble() - 0.5) * entity.getBbWidth() * 1.6);
             Vec3 b = a.add((random.nextDouble() - 0.5) * 1.4, (random.nextDouble() - 0.5) * 1.2, (random.nextDouble() - 0.5) * 1.4);
-            bolt(level, a, b, color, 0.035f, 3, 0);
+            bolt(level, a, b, color, 0.07f, 3, 1);
         }
     }
 
@@ -217,7 +217,7 @@ public final class Vfx {
             double angle = random.nextDouble() * Math.PI * 2;
             double dist = radius * (0.5 + 0.5 * random.nextDouble());
             Vec3 end = at.add(Math.cos(angle) * dist, -random.nextDouble() * radius * 0.6, Math.sin(angle) * dist);
-            bolt(level, at, end, color, 0.07f, 6, 2);
+            bolt(level, at, end, color, 0.12f, 6, 2);
         }
     }
 }

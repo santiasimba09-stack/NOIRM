@@ -46,7 +46,8 @@ public final class BoltRenderer {
         final long born;
         long seed;
         List<List<Vec3>> paths = List.of();
-        long shapedAt = Long.MIN_VALUE;
+        /** When the shape was last rolled; far in the past so the first frame shapes it. */
+        long shapedAt = -1000;
 
         Bolt(VfxPackets.Bolt packet, long now) {
             from = new Vec3(packet.x1(), packet.y1(), packet.z1());
@@ -94,7 +95,7 @@ public final class BoltRenderer {
                 it.remove();
                 continue;
             }
-            if (now - bolt.shapedAt >= 2) { // crackle: a new shape every other tick
+            if (bolt.paths.isEmpty() || now - bolt.shapedAt >= 2) { // crackle: a new shape every other tick
                 bolt.shapedAt = now;
                 bolt.seed = bolt.seed * 6364136223846793005L + 1442695040888963407L;
                 bolt.paths = shape(bolt, RandomSource.create(bolt.seed));
@@ -103,9 +104,10 @@ public final class BoltRenderer {
             for (int i = 0; i < bolt.paths.size(); i++) {
                 float strength = i == 0 ? 1f : 0.45f; // forks are dimmer than the main bolt
                 float w = bolt.width * (i == 0 ? 1f : 0.6f);
-                ribbon(out, matrix, cam, bolt.paths.get(i), w * 3.5f, bolt.r, bolt.g, bolt.b, 0.35f * fade * strength);
+                ribbon(out, matrix, cam, bolt.paths.get(i), w * 4f, bolt.r, bolt.g, bolt.b, 0.5f * fade * strength);
+                ribbon(out, matrix, cam, bolt.paths.get(i), w * 2f, bolt.r, bolt.g, bolt.b, 0.6f * fade * strength);
                 ribbon(out, matrix, cam, bolt.paths.get(i), w, Math.min(1, bolt.r + 0.6f), Math.min(1, bolt.g + 0.6f), Math.min(1, bolt.b + 0.6f),
-                        0.95f * fade * strength);
+                        1f * fade * strength);
             }
         }
         buffers.endBatch(RenderType.lightning());
@@ -162,6 +164,11 @@ public final class BoltRenderer {
             out.vertex(matrix, (float) (p0.x + side.x), (float) (p0.y + side.y), (float) (p0.z + side.z)).color(r, g, b, a).endVertex();
             out.vertex(matrix, (float) (p1.x + side.x), (float) (p1.y + side.y), (float) (p1.z + side.z)).color(r, g, b, a).endVertex();
             out.vertex(matrix, (float) (p1.x - side.x), (float) (p1.y - side.y), (float) (p1.z - side.z)).color(r, g, b, a).endVertex();
+            // The same quad wound the other way: the render type culls back faces.
+            out.vertex(matrix, (float) (p1.x - side.x), (float) (p1.y - side.y), (float) (p1.z - side.z)).color(r, g, b, a).endVertex();
+            out.vertex(matrix, (float) (p1.x + side.x), (float) (p1.y + side.y), (float) (p1.z + side.z)).color(r, g, b, a).endVertex();
+            out.vertex(matrix, (float) (p0.x + side.x), (float) (p0.y + side.y), (float) (p0.z + side.z)).color(r, g, b, a).endVertex();
+            out.vertex(matrix, (float) (p0.x - side.x), (float) (p0.y - side.y), (float) (p0.z - side.z)).color(r, g, b, a).endVertex();
         }
     }
 }
