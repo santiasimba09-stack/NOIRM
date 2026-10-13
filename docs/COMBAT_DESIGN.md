@@ -117,3 +117,47 @@ with a chance of 25% × its perception slow factor.
 - **Movement** (`player.Movement`): run ×√(speed/10) (cap ×5), jump +0.11 per doubling of speed,
   sprint-jump leap, step-ups at 25 and 60, softer landings.
 - **Crew:** no friendly fire between a player, their shadow clones and their crew (`ally.Crew`).
+
+## NPC animation and bendy limbs (round 4, 2026-10-13)
+
+**Owner:** "NPCs are not following the same animations as I do. Make the character have more
+moving parts, like Better Combat and Epic Fight."
+
+**How those mods do it (research notes):**
+- **Better Combat** plays its attacks and idle poses through **PlayerAnimator** (KosmX), the same
+  library we use for the player. PlayerAnimator moves the six vanilla parts plus a whole-body
+  transform; when **bendy-lib** (also KosmX) is installed it can also *bend* each limb and the
+  torso in the middle (a `bend` angle and a bend direction per part), deforming the mesh so the
+  elbow and knee fold. That is where Better Combat's "softer" look comes from. bendy-lib is on
+  `maven.kosmx.dev` as `io.github.kosmx.bendy-lib:bendy-lib-forge` (versions up to 5.1).
+- **Epic Fight** replaces the player and mob models with its own **armature**: a joint
+  hierarchy (root, torso, chest, head, shoulder → elbow → hand, hip → knee → foot, tool joints)
+  and a skinned mesh whose vertices are weighted to joints, animated by its own clips. It reaches
+  mobs through "patches" that give each mob type an armature, so NPCs and players share the same
+  animations. Third-party mods (Fightura, EpicYSM) map other models onto those joints, which
+  shows the joint list is what matters, not the exact mesh.
+
+**What we built (no new dependency):**
+- **Same animations for NPCs.** `client/anim/KeyframeAnimation` reads the very JSON files
+  PlayerAnimator plays on players (`assets/noirm/player_animation/`) with the same unit and sign
+  conversions as PlayerAnimator's GeckoLib reader, and samples them with linear interpolation
+  (or the keyframe's easing), looping stances. When an NPC starts a move or dodges, the server
+  sets synced entity data on `SparringNinja` (animation id, length, a counter), through
+  `CombatAnimated`; the client plays it stretched to the move's real timing, like the player's.
+- **Layers and cross-fades** (`client/anim/NpcAnimator`): vanilla walk + natural bends → the
+  style's stance (while fighting) → the move/roll → guard → old wind-up poses (only for moves
+  without an animation, e.g. a beast's) → hit flinch while staggered. Each fades over 2–4 ticks;
+  a new move cross-fades from the old one; a 360° spin fades out the short way.
+- **More moving parts** (`client/BendyNinjaModel`): arms and legs are two segments each (elbow,
+  knee) and the torso two halves (waist; head and arms ride the bend). It reads the normal 64×64
+  player skin, cut in half along each limb, both layers (`tools/animgen/check_uv.py` checks every
+  UV rectangle). Rigid segments with skin-textured caps, not a deformed mesh: a sharply bent
+  joint looks blocky at the crease, which suits the vanilla style.
+- **`"bend"` keyframes** (NOIRM extension, degrees; positive flexes the joint: elbow curls the
+  forearm forward, knee folds the shin back, torso hunches forward). `gen_anims.py` writes them
+  for all its animations and stances; the Boundless files have none (bend 0 = the base pose's
+  soft bend). PlayerAnimator ignores the key, so **players don't bend**.
+- **Players + bendy-lib: follow-up, not done.** Adding bendy-lib would also need our bends in a
+  format PlayerAnimator's GeckoLib reader understands (it only reads `rotation` and `position`),
+  i.e. converting the files to Emotecraft JSON or a small custom loader, and it adds a mod
+  players must install. Revisit if the owner wants the player to bend too.
