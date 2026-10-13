@@ -87,10 +87,13 @@ public final class PowerHud {
             int cloakTicks = Math.max(0, powers.cloakTicks() - sinceSync);
             int cooldown = Math.max(0, powers.cloakCooldown() - sinceSync);
             Component text = powers.cloakStage() == 2 ? Component.translatable("hud.noirm.cloak.beast", (cloakTicks + 19) / 20)
-                    : powers.cloakStage() == 1 ? Component.translatable("hud.noirm.cloak.on", powers.tails(), (cloakTicks + 19) / 20)
+                    : powers.cloakStage() == 1 ? Component.translatable("hud.noirm.cloak.tails", powers.cloakTails(), powers.unlockedTails(), (cloakTicks + 19) / 20)
                     : cooldown > 0 ? Component.translatable("hud.noirm.cloak.cooldown", (cooldown + 19) / 20)
                     : Component.translatable("hud.noirm.cloak.ready", powers.tails());
             graphics.drawString(font, text, X, y, powers.cloakStage() > 0 ? 0xFFFF7A20 : 0xFFB08060, true);
+            y += LINE;
+            int bondColor = powers.bond() >= 50 ? 0xFFFFC040 : powers.bond() >= 0 ? 0xFFD0A070 : 0xFFD05040;
+            graphics.drawString(font, Component.translatable("hud.noirm.cloak.bond", powers.bond(), powers.unlockedTails()), X, y, bondColor, true);
         }
         if (combat) {
             drawSlots(graphics, font, powers, width, height);

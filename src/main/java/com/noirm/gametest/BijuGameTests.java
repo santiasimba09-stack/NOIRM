@@ -181,6 +181,64 @@ public final class BijuGameTests {
         helper.succeed();
     }
 
+    /** Tails come one at a time, up to what you've unlocked; each one hits harder. */
+    @GameTest(template = "empty", batch = "noirm_beast_bond")
+    public static void tailsAreDrawnOneAtATime(GameTestHelper helper) {
+        var player = helper.makeMockPlayer();
+        var data = com.noirm.player.ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        com.noirm.biju.BijuSystem.seal(player, data, 9);
+        data.biju().setUnlockedTails(3);
+        float base = com.noirm.biju.BijuSystem.damageMultiplier(player);
+        com.noirm.biju.BijuSystem.toggleCloak(player);
+        helper.assertTrue(data.biju().cloakTails() == 1, "the first press draws one tail");
+        float oneTail = com.noirm.biju.BijuSystem.damageMultiplier(player);
+        com.noirm.biju.BijuSystem.toggleCloak(player);
+        com.noirm.biju.BijuSystem.toggleCloak(player);
+        helper.assertTrue(data.biju().cloakTails() == 3, "then one more per press, got " + data.biju().cloakTails());
+        helper.assertTrue(com.noirm.biju.BijuSystem.damageMultiplier(player) > oneTail && oneTail > base, "each tail hits harder");
+        com.noirm.biju.BijuSystem.toggleCloak(player);
+        helper.assertTrue(data.biju().cloakStage() == 0, "past what you've unlocked, the key lets it go");
+        helper.assertTrue(com.noirm.biju.BeastBond.bondForTail(9) > com.noirm.biju.BeastBond.bondForTail(4), "the last tails need partnership");
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_beast_bond_2")
+    public static void theBeastLendsChakraToFriends(GameTestHelper helper) {
+        var player = helper.makeMockPlayer();
+        var data = com.noirm.player.ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        com.noirm.biju.BijuSystem.seal(player, data, 9);
+        helper.assertTrue(data.biju().bond() < 0, "the Nine-Tails starts out hating you");
+        data.setChakra(0);
+        helper.assertFalse(com.noirm.biju.BeastBond.askForChakra(player, data), "and won't lend you chakra");
+        data.biju().setBond(60);
+        helper.assertTrue(com.noirm.biju.BeastBond.askForChakra(player, data), "a friend will");
+        helper.assertTrue(data.getChakra() >= data.getMaxChakra() * 0.99f, "all of it");
+        // A request: defeat one enemy, then it's pleased.
+        long now = player.level().getGameTime();
+        data.biju().setRequest(new com.noirm.biju.BeastBond.Request(com.noirm.biju.BeastBond.Kind.DEFEAT, 1, 0, now + 1000, ""));
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, 1.5f, 1f, 1.5f);
+        com.noirm.biju.BeastBond.onKill(player, zombie);
+        int before = data.biju().bond();
+        com.noirm.biju.BeastBond.tickSecond(player, data);
+        helper.assertTrue(data.biju().request() == null && data.biju().bond() > before, "a fulfilled request grows the bond");
+        zombie.discard();
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_beast_creative")
+    public static void creativeSealsAnyBeast(GameTestHelper helper) {
+        floor(helper);
+        var beast = helper.spawnWithNoFreeWill(NoirmEntities.TAILED_BEAST.get(), 1.5f, 1f, 1.5f);
+        var player = helper.makeMockPlayer();
+        player.getAbilities().instabuild = true;
+        var scroll = new net.minecraft.world.item.ItemStack(com.noirm.registry.NoirmItems.SEALING_SCROLL.get());
+        helper.assertTrue(com.noirm.biju.SealingScrollItem.capture(player, scroll, beast), "in creative, a beast can be sealed at full health");
+        player.discard();
+        helper.succeed();
+    }
+
     private static void floor(GameTestHelper helper) {
         for (int x = 0; x < 3; x++) {
             for (int z = 0; z < 3; z++) {

@@ -101,12 +101,23 @@ public final class NoirmNetwork {
     }
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {
-        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        if (isConnected(player)) {
+            CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        }
     }
 
     /** Sends to everyone who can see {@code entity}, and to the entity itself if it's a player. */
     public static void sendToTrackingAndSelf(Entity entity, Object packet) {
+        if (entity instanceof ServerPlayer player && !isConnected(player)) {
+            CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
+            return;
+        }
         CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), packet);
+    }
+
+    /** Fake players (game tests, other mods' machines) have no network connection to send to. */
+    private static boolean isConnected(ServerPlayer player) {
+        return player.connection != null && player.connection.connection.channel() != null;
     }
 
     public static void sendToServer(Object packet) {

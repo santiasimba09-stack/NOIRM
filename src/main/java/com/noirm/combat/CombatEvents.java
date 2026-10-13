@@ -61,6 +61,7 @@ public final class CombatEvents {
     public static void livingHurt(LivingHurtEvent event) {
         if (!event.getEntity().level().isClientSide()) {
             float amount = event.getAmount() * com.noirm.jutsu.ModeSystem.defenseMultiplier(event.getEntity())
+                    * com.noirm.biju.BijuSystem.defenseMultiplier(event.getEntity())
                     / Perception.durability(event.getEntity());
             event.setAmount(CombatSystem.onIncomingDamage(event.getEntity(), event.getSource(), amount));
         }

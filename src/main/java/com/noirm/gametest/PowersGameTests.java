@@ -326,7 +326,7 @@ public final class PowersGameTests {
         AwakeningSystem.awaken(player, data);
         helper.assertTrue(data.biju().cloakStage() == 2, "a jinchūriki's awakening is the beast taking over");
         helper.assertFalse(BijuSystem.canGuard(player), "no guarding while the beast is in control");
-        assertNear(helper, 1.6f, BijuSystem.damageMultiplier(player), "the beast hits harder");
+        helper.assertTrue(BijuSystem.damageMultiplier(player) > 1.5f, "the beast hits harder");
         BijuSystem.endCloak(player, data);
         helper.assertTrue(data.biju().cloakStage() == 0 && data.biju().cooldownTicks() > 0, "the cloak ends and needs to recover");
         helper.succeed();

@@ -81,6 +81,9 @@ public final class PowerEvents {
             ThreatSense.tick(player);
             AwakeningSystem.tick(player, data);
             BijuSystem.tick(player, data);
+            if (player.tickCount % 20 == 0) {
+                com.noirm.biju.BeastBond.tickSecond(player, data);
+            }
             CombatStates.get(player).setMaxPosture(com.noirm.combat.CombatState.DEFAULT_MAX_POSTURE
                     + (data.identity().has(ClanTrait.IRON_BODY) ? 30 : 0));
             if (JutsuCaster.casting(player) != null && player.tickCount % 5 == 0) {

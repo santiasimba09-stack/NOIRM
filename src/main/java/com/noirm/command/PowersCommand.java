@@ -61,6 +61,41 @@ public final class PowersCommand {
 
     private PowersCommand() {}
 
+    /** {@code /noirm beast}: your beast, your bond, the tails it lets you draw, what it wants. */
+    private static int beastStatus(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var player = source.getPlayerOrException();
+        var data = com.noirm.player.ShinobiCapability.get(player).orElse(null);
+        if (data == null || !data.biju().isJinchuriki()) {
+            source.sendFailure(Component.translatable("message.noirm.biju.none"));
+            return 0;
+        }
+        var biju = data.biju();
+        source.sendSuccess(() -> Component.translatable("commands.noirm.beast.status", com.noirm.biju.BijuSystem.beastName(biju.tails()),
+                biju.bond(), biju.unlockedTails(), biju.tails(), com.noirm.biju.BeastBond.safeTails(biju.bond())), false);
+        var request = biju.request();
+        if (request != null) {
+            long left = Math.max(0, request.deadline() - player.level().getGameTime()) / 20;
+            source.sendSuccess(() -> Component.translatable("commands.noirm.beast.request",
+                    Component.translatable("commands.noirm.beast.kind." + request.kind().name().toLowerCase(java.util.Locale.ROOT)),
+                    request.progress(), request.goal(), left), false);
+        }
+        return 1;
+    }
+
+    private static int setBeast(CommandSourceStack source, int bond, int tails) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var player = source.getPlayerOrException();
+        com.noirm.player.ShinobiCapability.get(player).ifPresent(data -> {
+            if (bond != Integer.MIN_VALUE) {
+                data.biju().setBond(bond);
+            }
+            if (tails > 0) {
+                data.biju().setUnlockedTails(tails);
+            }
+            data.markPowersDirty();
+        });
+        return beastStatus(source);
+    }
+
     /** {@code /noirm ninja <clan> [tails] [strength]}: a ninja of exactly that clan, in front of you. */
     private static int spawnNinja(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx, String clanId, int tails, int strength)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
@@ -145,6 +180,13 @@ public final class PowersCommand {
                                 .executes(ctx -> setResolve(ctx.getSource(), FloatArgumentType.getFloat(ctx, "value")))))
                 .then(Commands.literal("awaken").requires(s -> s.hasPermission(CHEATS))
                         .executes(ctx -> awaken(ctx.getSource())))
+                .then(Commands.literal("beast").executes(ctx -> beastStatus(ctx.getSource()))
+                        .then(Commands.literal("bond").requires(s -> s.hasPermission(CHEATS))
+                                .then(Commands.argument("value", IntegerArgumentType.integer(-100, 100))
+                                        .executes(ctx -> setBeast(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "value"), -1))))
+                        .then(Commands.literal("tails").requires(s -> s.hasPermission(CHEATS))
+                                .then(Commands.argument("count", IntegerArgumentType.integer(1, BijuData.MAX_TAILS))
+                                        .executes(ctx -> setBeast(ctx.getSource(), Integer.MIN_VALUE, IntegerArgumentType.getInteger(ctx, "count"))))))
                 .then(Commands.literal("biju").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.literal("seal").then(Commands.argument("tails", IntegerArgumentType.integer(1, BijuData.MAX_TAILS))
                                 .executes(ctx -> seal(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "tails")))))

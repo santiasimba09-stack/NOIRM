@@ -102,7 +102,7 @@ public class SealingScrollItem extends Item {
 
     /** Captures a subdued beast into an empty scroll. Returns false if the beast still fights. */
     public static boolean capture(Player player, ItemStack scroll, TailedBeast beast) {
-        if (!beast.isSubdued()) {
+        if (!beast.isSubdued() && !player.getAbilities().instabuild) { // creative: seal it whenever you like
             player.displayClientMessage(Component.translatable("message.noirm.scroll.not_subdued", beast.getName()), true);
             return false;
         }

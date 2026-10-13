@@ -81,22 +81,84 @@ public final class BijuSystem {
         return tails;
     }
 
-    public static void toggleCloak(ServerPlayer player) {
+    /**
+     * The cloak key. Off: draw the first tail. On: draw one more tail, up to what you've unlocked
+     * (then the key lets the cloak go). Sneaking: let the cloak go, or (cloak off) offer the
+     * beast what it asked for / ask it for chakra.
+     */
+    public static void toggleCloak(Player player) {
         ShinobiCapability.get(player).ifPresent(data -> {
             BijuData biju = data.biju();
             if (!biju.isJinchuriki()) {
                 player.displayClientMessage(Component.translatable("message.noirm.biju.none"), true);
             } else if (biju.cloakStage() == 2) {
                 player.displayClientMessage(Component.translatable("message.noirm.biju.no_control"), true);
+            } else if (player.isShiftKeyDown()) {
+                if (biju.cloakStage() == 1) {
+                    endCloak(player, data);
+                } else {
+                    BeastBond.sneakAction(player, data);
+                }
             } else if (biju.cloakStage() == 1) {
-                endCloak(player, data);
+                int max = Math.min(biju.unlockedTails(), biju.tails());
+                if (biju.cloakTails() < max) {
+                    drawTail(player, data, biju.cloakTails() + 1);
+                } else {
+                    endCloak(player, data);
+                }
             } else if (biju.cooldownTicks() > 0) {
                 player.displayClientMessage(Component.translatable("message.noirm.biju.cooldown", (biju.cooldownTicks() + 19) / 20), true);
             } else {
                 startCloak(player, data, 1, CLOAK_BASE_TICKS + CLOAK_TICKS_PER_TAIL * biju.tails());
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 0.6f, 1.4f);
+                drawTail(player, data, 1);
             }
         });
+    }
+
+    /** Draws the cloak up to {@code tails} tails: stronger, louder, and darker past three. */
+    public static void drawTail(Player player, ShinobiData data, int tails) {
+        BijuData biju = data.biju();
+        biju.setCloakTails(tails);
+        applySpeed(player, biju);
+        float pitch = 1.5f - 0.1f * tails;
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 0.5f + 0.1f * tails, pitch);
+        if (player.level() instanceof ServerLevel level) {
+            com.noirm.vfx.Vfx.Palette palette = cloakPalette(biju);
+            com.noirm.vfx.Vfx.shockwave(level, player.position().add(0, 0.2, 0), palette, 1.5f + 0.5f * tails);
+            com.noirm.vfx.Vfx.flash(level, player.position().add(0, 1, 0), palette, 1f + 0.3f * tails);
+        }
+        String key = BeastBond.fullMode(biju) ? "message.noirm.biju.full_mode" : tails >= 4 ? "message.noirm.biju.tails_v2" : "message.noirm.biju.tails";
+        player.displayClientMessage(Component.translatable(key, tails), true);
+        data.markPowersDirty();
+        if (player instanceof ServerPlayer serverPlayer) {
+            PowerVisuals.broadcast(serverPlayer);
+        }
+    }
+
+    /**
+     * The cloak's colours: version 1 (1–3 tails) a bubbling orange-red; version 2 (4+) dark
+     * crimson and black; the beast in control blood red; full Tailed Beast Mode gold.
+     */
+    public static com.noirm.vfx.Vfx.Palette cloakPalette(BijuData biju) {
+        if (biju.cloakStage() == 2) {
+            return new com.noirm.vfx.Vfx.Palette(0xFF5050, 0xA00000, 0x140000);
+        }
+        if (BeastBond.fullMode(biju)) {
+            return new com.noirm.vfx.Vfx.Palette(0xFFFFE0, 0xFFC020, 0xB05000);
+        }
+        if (biju.cloakTails() >= 4) {
+            return new com.noirm.vfx.Vfx.Palette(0xFF6040, 0x8A0010, 0x0A0005);
+        }
+        return new com.noirm.vfx.Vfx.Palette(0xFFF0B0, 0xFF5A10, 0x7A1A00);
+    }
+
+    private static void applySpeed(Player player, BijuData biju) {
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) {
+            speed.removeModifier(SPEED_ID);
+            double amount = biju.cloakStage() == 2 ? 0.5 : 0.12 + 0.08 * biju.cloakTails() + (BeastBond.fullMode(biju) ? 0.3 : 0);
+            speed.addTransientModifier(new AttributeModifier(SPEED_ID, "noirm_cloak", amount, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
     }
 
     /** The awakening for jinchūriki: the beast's cloak, out of your control, for {@code ticks}. */
@@ -108,11 +170,10 @@ public final class BijuSystem {
 
     private static void startCloak(Player player, ShinobiData data, int stage, int ticks) {
         data.biju().setCloak(stage, ticks);
-        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null) {
-            speed.removeModifier(SPEED_ID);
-            speed.addTransientModifier(new AttributeModifier(SPEED_ID, "noirm_cloak", stage == 2 ? 0.4 : 0.2, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (stage == 2) {
+            data.biju().setCloakTails(Math.max(data.biju().cloakTails(), Math.min(data.biju().tails(), 4)));
         }
+        applySpeed(player, data.biju());
         data.markPowersDirty();
         if (player instanceof ServerPlayer serverPlayer) {
             PowerVisuals.broadcast(serverPlayer);
@@ -147,17 +208,20 @@ public final class BijuSystem {
             }
             return;
         }
-        biju.setCloak(biju.cloakStage(), biju.cloakTicks() - 1);
+        if (!BeastBond.fullMode(biju)) {
+            biju.setCloak(biju.cloakStage(), biju.cloakTicks() - 1); // full Tailed Beast Mode lasts as long as you like
+        }
         if (player.level() instanceof ServerLevel level && player.tickCount % 2 == 0) {
-            com.noirm.vfx.Vfx.Palette palette = biju.cloakStage() == 2
-                    ? new com.noirm.vfx.Vfx.Palette(0xFF8080, 0xB01010, 0x200000)
-                    : new com.noirm.vfx.Vfx.Palette(0xFFF0C0, 0xFF7A1A, 0x6A2A00);
-            com.noirm.vfx.Vfx.aura(level, player.position(), player.getBbWidth(), player.getBbHeight(), palette, 6);
-            if (biju.cloakStage() == 2) {
+            com.noirm.vfx.Vfx.Palette palette = cloakPalette(biju);
+            com.noirm.vfx.Vfx.aura(level, player.position(), player.getBbWidth(), player.getBbHeight(), palette, 4 + biju.cloakTails() * 2);
+            drawChakraTails(level, player, biju, palette);
+            if (biju.cloakStage() == 2 || biju.cloakTails() >= 4) {
                 level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.2, player.getZ(), 2, 0.3, 0.1, 0.3, 0.01);
             }
         }
-        if (biju.cloakStage() == 2 && player.tickCount % 40 == 0 && player.getHealth() > 2f) {
+        // The beast's chakra burns: in its control, and in version 2 (4+ tails) unless you're partners.
+        boolean burns = biju.cloakStage() == 2 || biju.cloakTails() >= 4 && !BeastBond.fullMode(biju);
+        if (burns && player.tickCount % 40 == 0 && player.getHealth() > 2f) {
             player.hurt(player.damageSources().magic(), RAGE_BURN);
         }
         if (biju.cloakTicks() <= 0) {
@@ -177,15 +241,65 @@ public final class BijuSystem {
         return cloakStage(entity) > 0 || entity instanceof TailedBeast beast && !beast.isSubdued();
     }
 
-    /** Cloak: ×1.3 damage; the beast in control: ×1.6. */
+    /** Tails of chakra drawn (players), or 1 for a cloaked ninja. */
+    private static int drawnTails(LivingEntity entity) {
+        if (entity instanceof Player player) {
+            return ShinobiCapability.get(player).map(d -> d.biju().cloakTails()).orElse(0);
+        }
+        return cloakStage(entity) > 0 ? 1 : 0;
+    }
+
+    private static boolean fullMode(LivingEntity entity) {
+        return entity instanceof Player player && ShinobiCapability.get(player).map(d -> BeastBond.fullMode(d.biju())).orElse(false);
+    }
+
+    /** +12% damage per tail drawn; the beast in control hits harder still; full mode ×1.6 on top. */
     public static float damageMultiplier(LivingEntity entity) {
         int stage = cloakStage(entity);
-        return stage == 2 ? 1.6f : stage == 1 ? 1.3f : 1f;
+        if (stage == 0) {
+            return 1f;
+        }
+        float base = (stage == 2 ? 1.5f : 1f) + 0.12f * drawnTails(entity);
+        return fullMode(entity) ? base * 1.6f : base;
     }
 
     public static float perceptionMultiplier(LivingEntity entity) {
         int stage = cloakStage(entity);
-        return stage == 2 ? 1.3f : stage == 1 ? 1.15f : 1f;
+        if (stage == 0) {
+            return 1f;
+        }
+        return (stage == 2 ? 1.2f : 1f) + 0.06f * drawnTails(entity) + (fullMode(entity) ? 0.5f : 0f);
+    }
+
+    /** Damage taken: the cloak's chakra shields you, 5% per tail (down to 40%). */
+    public static float defenseMultiplier(LivingEntity entity) {
+        int tails = drawnTails(entity);
+        if (cloakStage(entity) == 0 || tails == 0) {
+            return 1f;
+        }
+        return Math.max(0.4f, 1f - 0.05f * tails - (fullMode(entity) ? 0.2f : 0f));
+    }
+
+    /** Chakra tails streaming out behind the jinchūriki, one per tail drawn. */
+    private static void drawChakraTails(ServerLevel level, Player player, BijuData biju, com.noirm.vfx.Vfx.Palette palette) {
+        int tails = biju.cloakTails();
+        if (tails <= 0) {
+            return;
+        }
+        net.minecraft.world.phys.Vec3 back = net.minecraft.world.phys.Vec3.directionFromRotation(0, player.yBodyRot).scale(-1);
+        net.minecraft.world.phys.Vec3 side = new net.minecraft.world.phys.Vec3(-back.z, 0, back.x);
+        net.minecraft.world.phys.Vec3 base = player.position().add(0, 0.9, 0).add(back.scale(0.3));
+        float time = player.tickCount * 0.15f;
+        for (int t = 0; t < tails; t++) {
+            double spread = tails == 1 ? 0 : (t / (double) (tails - 1) - 0.5) * 1.6;
+            for (int i = 1; i <= 6; i++) {
+                double along = i * 0.28;
+                double sway = Math.sin(time + t * 1.3 + i * 0.6) * 0.15 * i;
+                net.minecraft.world.phys.Vec3 at = base.add(back.scale(along)).add(side.scale(spread * along + sway)).add(0, along * 0.35, 0);
+                com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.glow(palette.core(), palette.mid(), 0.32f - i * 0.03f, 0.05f, 4), at,
+                        net.minecraft.world.phys.Vec3.ZERO);
+            }
+        }
     }
 
     /** While the beast is in control, you can't guard. */
