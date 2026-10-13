@@ -87,3 +87,22 @@ moment slows everyone within 10 blocks to 30% speed for 1 s.
 (`/summon noirm:sparring_ninja ~ ~ ~ {Speed:15,Taijutsu:15}` for a stronger one). It picks from
 5 combo patterns, then backs off for 1–2 s; against an opponent's wind-up it guards or dodges
 with a chance of 25% × its perception slow factor.
+
+## Styles, grappling and impacts (round 2, 2026-10-13)
+
+- **Styles** (`data/noirm/combat/styles/*.json`): each maps inputs to opening moves (`openers`),
+  with optional `taijutsu` and `byakugan` requirements and an `npc_weight`. Academy (basic),
+  Brawler (elbows, knees, headbutts), Strong Fist (taijutsu 18: Leaf Whirlwind, Leaf Rising Wind,
+  Dynamic Entry), Gentle Fist (Byakugan: palms with `pierce` 0.6 and `chakra` drain). H cycles.
+- **Inputs:** light, heavy, launcher, plus `forward_*` (sprinting) and `back_*` (holding S), which
+  fall back to the plain input when a style or route has nothing for them; and `grab` (C).
+- **Clinch:** a move with `"clinch": "grab"` grabs. Grabs ignore guard; grabbing someone in their
+  active frames fails and staggers you (strikes beat grabs). While holding, the grab move's `next`
+  routes decide (knee = `hold`, headbutt and throw = `release`). The held fighter escapes with a
+  dodge (1.5× stamina). Getting hit makes you let go. Max 50 ticks.
+- **Wall splat:** any unguarded hit with knockback ≥ 0.8 and a solid block behind the target:
+  +40% damage, 24-tick stun, extra hit-stop, and the wall cracks (`Destruction.smashWall`,
+  scaled by damage and taijutsu).
+- **Knockdown** (`"knockdown": true`): at least a 32-tick stun and a small bounce.
+- **Juggles:** unguarded hits on an airborne target keep them floating (up to 5), each 10% weaker
+  (min 50%).

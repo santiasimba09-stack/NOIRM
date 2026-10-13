@@ -2,6 +2,25 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-13 — Playtest feedback round 2, v0.2.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Fights feel like fights:** three new styles (Brawler, Strong Fist, Gentle Fist) switched with
+  H; sprint and back attacks; a grab (C) and clinch with knees, headbutt and throw (grabs beat
+  guard, strikes beat grabs, dodge to escape); wall splats, knockdowns and juggles. Ninjas use
+  them too. 11 new animations from our own generator (`tools/animgen`).
+- **Attacks are dangerous:** jutsu power grows with reserves, mastery and charge; terrain
+  destruction (craters, scorch marks, ice, spikes, smashed walls) that heals itself (gamerules
+  `noirmTerrainDamage`, `noirmTerrainRegen`).
+- **Canon scale and canon jutsu:** researched names and behavior (`docs/RESEARCH.md`); a huge
+  Great Fireball, homing Phoenix Sage Fire and Water Dragon, Lightning Armor as a real mode;
+  new Rasengan (Reserves 20), Shadow Clone (Reserves 15), Shadow Imitation, Water Formation Wall.
+- **Yin, Yang and Yin–Yang** natures (Uchiha lean Yin, Senju Yang) with Mystical Palm,
+  Partial Multi-Size, Demonic Illusion, Truth-Seeking Ball, Creation Rebirth.
+- **Particles:** custom additive particles and layered presets per nature, on every jutsu and hit.
+- **Byakugan ≠ Sharingan:** no prediction or perception boost; instead no blind spot, chakra
+  points on bodies and a 360° chakra radar. Hyūga default to the Gentle Fist.
+- 87 game tests; network protocol 5.
+
 ## 2026-10-12 — Playtest feedback round 1 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Fixed: combat animations never showed** (a PlayerAnimator layer with a modifier in front of

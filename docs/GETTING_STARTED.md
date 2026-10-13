@@ -44,6 +44,10 @@ gradlew.bat runClient      # Windows
 | **Left click** | Light attack (press again quickly to combo) |
 | **Right click** (empty hand or sword) | Heavy attack |
 | **Shift + right click** | Launcher (uppercut) |
+| **Sprint + click** | Dash attack (flying knee, Dynamic Entry…) |
+| **Hold S + click** | Back attack (spinning back elbow, Leaf Whirlwind…) |
+| **C** | Grab. Grabs beat guard; then click = knee, right click = headbutt, S + click = throw. Held? **Alt** breaks free |
+| **H** | Switch fighting style: Academy, Brawler, Strong Fist (taijutsu 18), Gentle Fist (Byakugan) |
 | **Alt** (+ WASD) | Dodge, costs stamina. Dodging right as a hit lands = **perfect dodge** |
 | **Hold V** | Guard. Raising it right before a hit lands = **parry** |
 | **Z** | Lock on to the enemy you're looking at |
@@ -53,6 +57,10 @@ gradlew.bat runClient      # Windows
 | **B** | Tailed-beast cloak (if you're a jinchūriki) |
 | **G** | Open your eyes: Sharingan or Byakugan (if you have one) |
 | **J** | Jutsu screen: your jutsu by nature, the loadout, and the **Nature Tree** tab |
+
+Strong hits slam people into walls behind them (and crack the wall); hits in the air keep a
+launched enemy floating (a juggle). Destruction heals itself after a while: turn it off with
+`/gamerule noirmTerrainDamage false`, or change how long it takes with `noirmTerrainRegen`.
 
 Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
 (perception). Or summon a strong one:

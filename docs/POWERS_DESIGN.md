@@ -189,3 +189,16 @@ with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninj
   Awakening: `AwakeningSystem`. Cloak and jinchūriki chances: `BijuSystem`.
 - Training: constants in `TrainingSystem`. Beasts: `TailedBeast`, `BeastFightGoal`,
   `data/noirm/combat/moves/beast/`, `data/noirm/jutsu/biju/`.
+
+## Round 2 changes (2026-10-13)
+
+- **Byakugan vs Sharingan (owner):** the Byakugan no longer predicts or raises perception. It has
+  no blind spot (threats from behind, outside 70° of your view, are shown; guard works in any
+  direction), shows chakra points on bodies within 16 blocks and a 360° radar of chakra
+  signatures. Its fighting style is the Gentle Fist. Prediction and copying stay Sharingan-only.
+- **Yin, Yang, Yin–Yang:** non-elemental natures. Uchiha lean Yin, Senju Yang; Yin–Yang unlocks
+  through the nature tree like any combination. Bloodline generation only uses elemental mixes.
+- **Jutsu power** = affinity × water bonus × reserves (+2%/point above 10) × mastery (+15%/level)
+  × states; charging costs up to 75% more chakra. Stat unlocks: `"unlock": {"stat": "reserves", "value": 20}`.
+- **Canon techniques** (`CanonTechniques`): dome, heal, rasengan, shadow_bind, shadow_clone.
+  Modes (`ModeSystem`): toggle jutsu with a chakra drain and multipliers.

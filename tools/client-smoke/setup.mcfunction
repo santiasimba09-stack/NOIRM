@@ -9,6 +9,10 @@ fill ~-11 200 ~-11 ~11 201 ~15 minecraft:air
 fill ~-11 199 ~-11 ~11 199 ~15 minecraft:smooth_stone
 noirm clan set uchiha
 noirm sharingan 3
+noirm jutsu learn all
+noirm jutsu equip 1 noirm:katon/great_fireball
+noirm jutsu equip 2 noirm:universal/shadow_clone
+noirm jutsu equip 3 noirm:universal/rasengan
 summon noirm:training_dummy ~ 200 ~2.5 {Rotation:[180f,0f]}
 fill ~-3 200 ~5 ~3 202 ~5 minecraft:stone_bricks
 summon noirm:sparring_ninja ~ 200 ~7 {Rotation:[180f,0f],Clan:"uchiha",NoAI:1b}

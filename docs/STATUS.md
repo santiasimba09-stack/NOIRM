@@ -1,24 +1,23 @@
 # Project status
 
-_Last updated: 2026-10-12 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
+_Last updated: 2026-10-13 · branch `claude/keen-cray-uc2d11` · PR #1 (draft)_
 
 ## Where we are
 
-**The owner's first playtest feedback round is done. 71/71 game tests green, checked in the real
-client** (screenshots: `docs/screenshots/m4-*.png`). Design: `docs/POWERS_DESIGN.md`
-(sections 3, 4, 8, 11).
+**The owner's second feedback round is done (v0.2.0). 87/87 game tests green, checked in the
+real client** (screenshots: `docs/screenshots/r2-*.png`). Research notes: `docs/RESEARCH.md`.
 
 | Area | State |
 |---|---|
-| M0–M3.5: combat, clans, jutsu, Sharingan, awakening, cloak, training, Byakugan, beasts | ✅ |
-| **Combat animations** were never actually visible (PlayerAnimator layer reported inactive) | ✅ fixed, seen in client |
-| **Eyes vs everything**: precognition for vanilla mobs and projectiles, perception slows projectiles | ✅ tested; warning seen in client |
-| **Living Sharingan**: heartbeat warning, threat markers, afterimages, activation flash | ✅ seen in client |
-| **Vitality** (max health) and **Reserves** (max chakra, regen) stats | ✅ tested |
-| **Nature tree**: 9 combined natures, unlocked by mastery; 8% bloodline clans | ✅ tested; unlock seen in client |
-| **39 jutsu** (3+ per basic nature with mastery chains, 2 per combination), 6 new behaviors | ✅ every jutsu cast in a test |
-| **New jutsu screen**: cards by nature + the nature tree | ✅ seen in client |
-| `/noirm byakugan`, `/noirm jutsu mastery`, `/noirm stat vitality|reserves` | ✅ |
+| **Fighting styles**: Brawler, Strong Fist (taijutsu 18), Gentle Fist (Byakugan); H switches | ✅ tested |
+| **Directional attacks** (sprint = dash, back = back attack), **grab + clinch** (knee, headbutt, throw, dodge to escape) | ✅ tested |
+| **Wall splats, knockdowns, juggles**; 11 new generated animations (`tools/animgen`) | ✅ tested |
+| **Danger**: jutsu power from reserves, mastery and charge; **terrain destruction that heals** | ✅ tested; seen in client |
+| **Canon scale**: huge Great Fireball, homing Phoenix Sage Fire / Water Dragon, Lightning Armor as a real mode | ✅ |
+| **Canon jutsu** (10, see RESEARCH.md): + Rasengan, Shadow Clone, Shadow Imitation, Water Formation Wall | ✅ tested; clones seen in client |
+| **Yin, Yang, Yin–Yang** natures with jutsu (Mystical Palm, Partial Multi-Size, Truth-Seeking Ball…) | ✅ tested |
+| **Particles**: custom additive glow/spark/smoke/ring/shard, layered presets per nature | ✅ seen in client |
+| **Byakugan rework**: no prediction; no blind spot, chakra points, 360° radar | ✅ tested; seen in client |
 
 ## In progress
 
@@ -26,14 +25,13 @@ Nothing. Waiting for the owner's next playtest.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback** on animations, the new jutsu and screen, the eyes' warnings, and
-   the two new stats. Tune: `data/noirm/jutsu/**`, `TrainingSystem`, `ThreatSense`, `EyeEffects`.
-2. **Jutsu effects** (owner wants more work here): richer particles per nature, cast
-   animations for jutsu (PlayerAnimator), screen shake and sounds on big jutsu.
-3. **Training, part 2:** training post (speed drills), very hard basic-nature training (the tree
-   says "coming soon"), chakra control.
-4. **Might Guy (M4):** the first master; the Eight Gates.
-5. Later: where beasts live, villages, squads, missions, Mangekyō, Yin/Yang natures.
+1. **Owner playtest + feedback**: style feel (move JSON in `data/noirm/combat/moves/`), clinch
+   timing, destruction amount, jutsu scale.
+2. **More canon jutsu** on the sample's pattern (one behavior + JSON each); Phoenix Sage Fire's
+   hidden shuriken was skipped.
+3. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
+4. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
+5. Later: villages, beasts' homes, squads, missions, Mangekyō.
 
 ## Code map
 
@@ -42,20 +40,23 @@ Nothing. Waiting for the owner's next playtest.
 | `com.noirm` | `Noirm`: entry point; `id()` / `vanillaId()` helpers |
 | `com.noirm.training` | `TrainingSystem` (4 stats: XP sources, curve, drill cap, speed → movement, vitality → health, reserves → chakra), `TrainingData`, `TrainingDummyItem` |
 | `com.noirm.player` | `ShinobiData` (the hub of all player data: resources, stats and the powers sub-objects), capability, `ShinobiEvents` (resources), `PowerEvents` (powers: first-join clan, ticking, sync, Resolve and awakening hooks), `PowerVisuals` |
-| `com.noirm.combat` | `CombatSystem` (rules + constants), `CombatState`, `Perception` (incl. eye/state multipliers), `CombatData`, `CombatEffects`, `CombatEvents` |
+| `com.noirm.combat` | `CombatSystem` (rules + constants, clinch, wall splat, juggles), `StyleSystem` (choosing styles), `CombatState`, `Perception` (incl. eye/state multipliers), `CombatData`, `CombatEffects`, `CombatEvents` |
 | `com.noirm.clan` | `Clan`, `Nature` (basic + combined), `NatureSystem` (tree: owned/available/locked, unlock, mastery unlocks), `ClanTrait`, `AwakeningPath`, `ClanGenerator`, `WorldClans` (per-world registry), `ClanData` (canon), `ClanIdentity` (on the player), `ClanSystem` (joining) |
-| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
+| `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `CanonTechniques` (dome, heal, Rasengan, shadow bind, shadow clone), `ModeSystem` (toggle modes like Lightning Armor), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
 | `com.noirm.dojutsu` | `Sharingan`, `Byakugan` (incl. Gentle Fist, chakra points), `ThreatSense` (eyes vs vanilla mobs/projectiles), `EyeData` |
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak, sealing, born jinchūriki, beast names), `BijuData`, `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 4), `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
-| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ByakuganVision` (x-ray silhouettes), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki), `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 5), `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
+| `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `TestClans` |
-| `data/noirm/` | `combat/` (moves, styles: basic, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `TestClans` |
+| `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
+| `tools/animgen/` | `gen_anims.py`: generates our own player animations from simple poses |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
 ## Decisions made
