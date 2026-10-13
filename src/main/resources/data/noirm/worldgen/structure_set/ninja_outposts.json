@@ -1,0 +1,11 @@
+{
+  "structures": [
+    { "structure": "noirm:ninja_outpost", "weight": 1 }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 24,
+    "separation": 10,
+    "salt": 551390827
+  }
+}

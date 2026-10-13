@@ -154,17 +154,6 @@ public final class NinjaLook {
         return folder.substring(0, 1).toUpperCase(Locale.ROOT) + folder.substring(1) + " #" + hex;
     }
 
-    /** A few fixed looks per clan folder (kept for anything that wants a list). */
-    public static List<String> presets(int perFolder) {
-        List<String> all = new ArrayList<>();
-        for (String folder : FOLDERS) {
-            for (int i = 0; i < perFolder; i++) {
-                all.add(key(folder, ((i + 1L) * GOLDEN) & LOW48));
-            }
-        }
-        return all;
-    }
-
     // ---------------------------------------------------------------- decoding
 
     public static Features decode(String key) {

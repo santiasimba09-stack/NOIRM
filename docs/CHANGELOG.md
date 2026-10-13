@@ -14,6 +14,20 @@ Newest first. One entry per working session or PR.
 - Players are unchanged (PlayerAnimator ignores `bend`). Research notes on Better Combat and
   Epic Fight in `docs/COMBAT_DESIGN.md`. 4 new game tests (101 total).
 
+## 2026-10-13 — Round 4: ninja villages (branch `round4-worldgen`)
+
+- **World generation:** two new structures, built from code (`com.noirm.world.village`): the rare
+  **hidden village** (wall and great gate, red Kage tower with balcony and symbol, Kage Rock with
+  carved faces, round houses with rooftop water tanks, food stalls, torii, training ground) and the
+  common **outpost** (palisade, watchtower, houses, training posts). Leaf / Sand / Snow looks by
+  biome. Research and design in `docs/WORLDGEN.md`.
+- **Residents:** village ninjas are `SparringNinja`s with a saved resident flag. They don't
+  challenge players in combat mode, defend each other when one is attacked, and stay home. Each
+  hidden village has a **Kage** (stats 120–200, named Hokage / Kazekage / Village Head).
+- **Village Merchant** (new entity): emerald trades for kunai, ramen (new food item), training
+  dummies, sealing scrolls; buys wheat, iron, coal, paper, string.
+- 5 new game tests (102 total).
+
 ## 2026-10-13 — Playtest feedback round 3, v0.3.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Fixed:** the Great Fireball burst on its caster. Jutsu never hit their caster, clones or crew.

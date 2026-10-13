@@ -111,6 +111,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** The jutsu a crew mate has equipped (up to 4); empty = they pick from what they know. */
     private final List<ResourceLocation> loadout = new ArrayList<>();
     public static final int LOADOUT_SLOTS = 4;
+    /**
+     * Lives in a village (placed by world generation). Residents never challenge players just for
+     * entering combat mode; they fight back when attacked, or when their village is attacked.
+     */
+    private boolean resident;
 
     public SparringNinja(EntityType<? extends SparringNinja> type, Level level) {
         super(type, level);
@@ -175,11 +180,6 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return entityData.get(SKIN);
     }
 
-    /** A few fixed looks per clan (the ally screen now steps through looks with {@link NinjaLook#cycle}). */
-    public static List<String> allOutfits() {
-        return NinjaLook.presets(10);
-    }
-
     public void changeOutfit(String outfit) {
         setOutfit(NinjaLook.normalize(outfit));
     }
@@ -221,6 +221,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     public void joinCrew(java.util.UUID player) {
         leader = player;
+        if (resident) {
+            resident = false; // they leave the village to follow you
+            clearRestriction();
+        }
         yieldedTo = null;
         order = com.noirm.ally.Order.FOLLOW;
         // From now on they train their own toughness and chakra.
@@ -438,6 +442,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (other instanceof LivingEntity living && leader != null && com.noirm.ally.Crew.sameSide(this, living)) {
             return true;
         }
+        if (resident && com.noirm.world.village.VillageResidents.isResident(other)) {
+            return true; // neighbours don't feud over a stray hit
+        }
         return super.isAlliedTo(other);
     }
 
@@ -453,6 +460,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         boolean hurt = super.hurt(source, amount);
         if (hurt && !level().isClientSide()) {
             com.noirm.ally.AllyTraining.onDamageTaken(this, source.getEntity(), amount);
+            if (resident) {
+                com.noirm.world.village.VillageResidents.raiseAlarm(this, source.getEntity());
+            }
         }
         if (hurt && !level().isClientSide() && isAlive() && canYield() && source.getEntity() instanceof Player player
                 && getHealth() < getMaxHealth() * com.noirm.ally.Crew.YIELD_HEALTH && !isYielded()) {
@@ -638,15 +648,39 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new NinjaFightGoal(this));
+        // Residents walk back home after a fight (does nothing for ninjas without a home).
+        goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal(this, 1.0));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         // A challenge: anyone who enters combat mode nearby gets a fight.
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, player -> {
-            CombatState state = CombatStates.getIfPresent(player);
-            return leader == null && !isYielded() && state != null && state.isCombatMode();
-        }));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::wouldChallenge));
+    }
+
+    /**
+     * Whether this ninja picks a fight with {@code target} on its own: free ninjas challenge anyone
+     * in combat mode nearby. Crew mates, beaten ninjas and village residents don't.
+     */
+    public boolean wouldChallenge(LivingEntity target) {
+        CombatState state = CombatStates.getIfPresent(target);
+        return leader == null && !resident && !isYielded() && state != null && state.isCombatMode();
+    }
+
+    // ---------------------------------------------------------------- village residents
+
+    public boolean isResident() {
+        return resident;
+    }
+
+    /**
+     * Makes this ninja live in a village: it stays within {@code radius} blocks of {@code home},
+     * never despawns, and only fights when it or its village is attacked.
+     */
+    public void makeResident(net.minecraft.core.BlockPos home, int radius) {
+        resident = true;
+        restrictTo(home, radius);
+        setPersistenceRequired();
     }
 
     // ---------------------------------------------------------------- animation (synced to the client model)
@@ -768,6 +802,13 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         tag.putString("Skin", outfit());
         tag.putBoolean("GearRolled", gearRolled);
+        if (resident) {
+            tag.putBoolean("Resident", true);
+            if (hasRestriction()) {
+                tag.putLong("Home", getRestrictCenter().asLong());
+                tag.putInt("HomeRadius", (int) getRestrictRadius());
+            }
+        }
         if (leader != null) {
             tag.putUUID("Leader", leader);
             tag.putString("Order", order.name());
@@ -805,6 +846,12 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         // Ninjas saved before clan gear existed get theirs once, when they rejoin their clan below.
         gearRolled = tag.getBoolean("GearRolled");
+        if (tag.getBoolean("Resident")) {
+            resident = true;
+            if (tag.contains("Home")) {
+                restrictTo(net.minecraft.core.BlockPos.of(tag.getLong("Home")), Math.max(2, tag.getInt("HomeRadius")));
+            }
+        }
         if (tag.hasUUID("Leader")) {
             joinCrew(tag.getUUID("Leader"));
             if (tag.contains("Order")) {

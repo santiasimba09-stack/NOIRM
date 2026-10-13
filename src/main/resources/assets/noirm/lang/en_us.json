@@ -398,5 +398,13 @@
   "message.noirm.ally.leaves": "%s has lost all respect for you and leaves the crew.",
   "message.noirm.ally.refuses": "%s ignores your order.",
   "message.noirm.ally.hurt_by_you": "%s didn't like that.",
-  "message.noirm.ally.grateful": "%s is grateful for the lesson."
+  "message.noirm.ally.grateful": "%s is grateful for the lesson.",
+  "entity.noirm.village_merchant": "Village Merchant",
+  "item.noirm.village_merchant_spawn_egg": "Village Merchant Spawn Egg",
+  "item.noirm.ramen": "Ramen",
+  "item.noirm.kunai": "Kunai",
+  "item.noirm.flak_vest": "Flak Vest",
+  "entity.noirm.kage.hokage": "Hokage",
+  "entity.noirm.kage.kazekage": "Kazekage",
+  "entity.noirm.kage.village_head": "Village Head"
 }

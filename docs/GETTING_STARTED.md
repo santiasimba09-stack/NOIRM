@@ -128,6 +128,15 @@ walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **
 **Stats:** `/noirm stat vitality 30` (more hearts), `/noirm stat reserves 30` (double chakra).
 **Eyes vs mobs:** `/noirm sharingan 3`, **G**, and let a skeleton shoot at you.
 
+## How to find ninja villages
+
+Villages are only built in **newly generated land**: start a new world, or explore far from where
+you've already been. Then run `/locate structure noirm:ninja_outpost` (small outposts, common) or
+`/locate structure noirm:hidden_village` (the big hidden village with the Kage tower, rare), and
+`/tp` to the coordinates it prints. Village ninjas leave you alone in combat mode unless you
+attack the village. Right-click a **Village Merchant** to trade emeralds. To see one right away,
+`/place structure noirm:ninja_outpost` builds one where you stand, if the ground is flat enough.
+
 ## Useful commands
 
 | Command | What it does |

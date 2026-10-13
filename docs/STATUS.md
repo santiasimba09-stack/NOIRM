@@ -1,6 +1,7 @@
 # Project status
 
 _Last updated: 2026-10-13 (round 4, NPC animation) · branch `round4-animation`_
+_Last updated: 2026-10-13 (round 4, villages) · branch `round4-worldgen`_
 
 ## Where we are
 
@@ -22,11 +23,14 @@ client** (screenshots `docs/screenshots/r3-*.png`, `skins-catalog.png`).
 | **Bendy NPC model**: elbows, knees, waist; `"bend"` keyframes; natural walk bends | ✅ UVs checked (`check_uv.py`); visuals not yet seen in client |
 | **Speed movement**: run ×√(speed/10), higher jumps, sprint-jump leap, step-ups | ✅ tested |
 | **No stat cap**: power ∝ stat, durability √, beasts 30→470, Tailed Beast Bomb at beast scale | ✅ tested |
+| **Ninja villages (round 4)**: rare hidden village (wall, gate, Kage tower, Kage Rock, houses with water tanks, stalls, training ground) and common outposts; Leaf/Sand/Snow looks; residents, Kage, merchants (`docs/WORLDGEN.md`) | ✅ tested (game tests + a real server world); not yet seen in the client |
 
 ## In progress
 
 Round 4 animation: **needs a look in the real client** (smoke test): ninja stance in a fight,
 moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams at the joints.
+Round 4 villages are done on `round4-worldgen`. They still need a look in the real client (renderer
+for `village_merchant`, how villages look).
 
 ## Next steps (in order)
 
@@ -36,7 +40,9 @@ moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams
    hidden shuriken was skipped.
 3. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
 4. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
-5. Later: villages, beasts' homes, squads, missions, Mangekyō.
+5. **Villages, part 2:** residents from the village's clan, an academy, a mission board, masters
+   living in villages; the Kage as a boss/teacher.
+6. Later: beasts' homes, squads, missions, Mangekyō.
 
 ## Code map
 
@@ -58,11 +64,12 @@ moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams
 | `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
-| `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` |
+| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go), `VillagePiece` (saved per chunk), `VillageBuilder` (every building, in code), `VillageCanvas` (rotated, chunk-clipped drawing), `VillagePalette` (Leaf/Sand/Snow), `VillageKind` (capital/outpost), `VillageResidents` (spawning, alarm) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag), `VillageMerchant` (emerald trades), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `TestClans` |
-| `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt` |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `TestClans` |
+| `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt`, `worldgen/structure` + `structure_set` (villages), `tags/worldgen/biome/has_structure/` |
 | `tools/skingen/` | `gen_skins.py`: the clan outfit skins |
 | `tools/animgen/` | `gen_anims.py`: generates our own animations from simple poses (with `bend`s); `check_uv.py`: checks the bendy model's skin UVs |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
@@ -106,6 +113,9 @@ moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams
   waist); players stay on PlayerAnimator without bends (bendy-lib = possible follow-up). See
   `docs/COMBAT_DESIGN.md`, "NPC animation and bendy limbs".
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
+- **Villages (round 4):** built procedurally in Java (no NBT files), one piece per village,
+  `top_layer_modification` step so trees are cleared. Residents never start fights; attacking one
+  alarms the village. Capital: spacing 64 / separation 32 chunks; outpost 24 / 10.
 
 ## Open questions for the owner
 
@@ -115,3 +125,5 @@ moves matching the player's, rolls, guard, flinch, bent elbows/knees, skin seams
 - How hard should training a basic nature you weren't born with be (time, a master, an item)?
 - Should Yin, Yang and Yin-Yang join the tree (genjutsu and medical / body jutsu)?
 - Where should tailed beasts live in the world?
+- Villages: should each village belong to a clan (Uchiha district…)? Should the Kage teach or
+  give missions? Is the capital too rare (about one per 1,000 blocks at best)?

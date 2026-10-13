@@ -398,5 +398,13 @@
   "message.noirm.ally.leaves": "%s te perdió todo el respeto y deja el equipo.",
   "message.noirm.ally.refuses": "%s ignora tu orden.",
   "message.noirm.ally.hurt_by_you": "A %s no le gustó eso.",
-  "message.noirm.ally.grateful": "%s agradece la lección."
+  "message.noirm.ally.grateful": "%s agradece la lección.",
+  "entity.noirm.village_merchant": "Mercader de la aldea",
+  "item.noirm.village_merchant_spawn_egg": "Huevo generador de mercader de la aldea",
+  "item.noirm.ramen": "Ramen",
+  "item.noirm.kunai": "Kunai",
+  "item.noirm.flak_vest": "Chaleco táctico",
+  "entity.noirm.kage.hokage": "Hokage",
+  "entity.noirm.kage.kazekage": "Kazekage",
+  "entity.noirm.kage.village_head": "Líder de la aldea"
 }
