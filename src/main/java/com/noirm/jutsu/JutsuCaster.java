@@ -170,6 +170,12 @@ public final class JutsuCaster {
                     entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                             net.minecraft.sounds.SoundEvents.PARROT_AMBIENT, net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 1.8f + progress * 0.3f);
                     com.noirm.vfx.Vfx.radial(entity.level(), com.noirm.vfx.Vfx.spark(0x9AD8FF, 0.15f, 5), hand, 3, 0.3);
+                    // Arcs leap from the hand to the ground, longer as it fills.
+                    for (int i = 0; i < 1 + Math.round(progress * 2); i++) {
+                        net.minecraft.world.phys.Vec3 ground = hand.add((entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress),
+                                -1.2 - entity.getRandom().nextDouble(), (entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress));
+                        com.noirm.vfx.Vfx.bolt(entity.level(), hand, ground, com.noirm.vfx.Vfx.LIGHTNING, 0.03f + 0.03f * progress, 3, 1);
+                    }
                 }
             }
             return;

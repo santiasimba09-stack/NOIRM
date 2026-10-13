@@ -42,7 +42,7 @@ class NinjaFightGoal extends Goal {
 
     private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
     private static final java.util.Set<String> RANGED_BEHAVIORS = java.util.Set.of("projectile", "genjutsu", "dash_strike",
-            "beam", "bind", "pillar", "rain", "cloud");
+            "beam", "bind", "pillar", "rain", "cloud", "strike", "wave");
 
     private final SparringNinja ninja;
     private final Deque<AttackInput> combo = new ArrayDeque<>();

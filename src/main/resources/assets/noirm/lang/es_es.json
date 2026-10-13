@@ -296,5 +296,16 @@
   "message.noirm.crew.fallen": "%s ha caído.",
   "message.noirm.crew.wait": "%s esperará aquí.",
   "message.noirm.crew.follow": "%s te sigue.",
-  "message.noirm.crew.status": "%s · %s/%s ♥ · agáchate + clic derecho: esperar/seguir"
+  "message.noirm.crew.status": "%s · %s/%s ♥ · agáchate + clic derecho: esperar/seguir",
+  "jutsu.noirm.raiton.kirin": "Kirin",
+  "jutsu.noirm.raiton.chidori_current": "Corriente de Chidori",
+  "jutsu.noirm.raiton.chidori_senbon": "Senbon de Chidori",
+  "jutsu.noirm.katon.great_fire_annihilation": "Elemento Fuego: Gran Aniquilación de Fuego",
+  "jutsu.noirm.katon.fire_dragon": "Elemento Fuego: Dragón de Fuego",
+  "jutsu.noirm.suiton.great_waterfall": "Elemento Agua: Gran Cascada",
+  "jutsu.noirm.doton.earth_dragon": "Elemento Tierra: Dragón de Tierra",
+  "jutsu.noirm.futon.pressure_damage": "Elemento Viento: Daño por Presión",
+  "screen.noirm.jutsu.behavior.strike": "Golpe desde el cielo",
+  "screen.noirm.jutsu.behavior.wave": "Ola arrolladora",
+  "screen.noirm.jutsu.behavior.nova": "Descarga a tu alrededor"
 }

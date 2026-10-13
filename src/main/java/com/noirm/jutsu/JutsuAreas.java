@@ -88,6 +88,7 @@ public final class JutsuAreas {
             for (double y = 0; y < 8; y += 0.5) {
                 level.sendParticles(area.particle(), strike.x, strike.y + y, strike.z, 2, 0.1, 0.1, 0.1, 0);
             }
+            com.noirm.vfx.Vfx.bolt(level, strike.add(0, 14, 0), strike, com.noirm.vfx.Vfx.LIGHTNING, 0.12f, 6, 3);
             level.sendParticles(ParticleTypes.FLASH, strike.x, strike.y + 0.3, strike.z, 1, 0, 0, 0, 0);
             level.playSound(null, strike.x, strike.y, strike.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.5f, 1.6f);
             hitAround(area, strike, 1.6);

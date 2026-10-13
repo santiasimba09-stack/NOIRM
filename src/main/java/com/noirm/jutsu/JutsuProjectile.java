@@ -129,6 +129,9 @@ public class JutsuProjectile extends Projectile {
                     return;
                 }
             }
+            if ((nature() == Nature.LIGHTNING || nature() == Nature.STORM) && tickCount % 2 == 0) {
+                com.noirm.vfx.Vfx.arcs(level(), this, 1, com.noirm.vfx.Vfx.LIGHTNING);
+            }
             if (++life > MAX_LIFE || (nature() == Nature.FIRE && isInWater())) {
                 burst();
                 return;
@@ -192,6 +195,9 @@ public class JutsuProjectile extends Projectile {
                     JutsuEffects.applyEffects(victim, effect, effectTicks);
                 }
                 com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
+                if (nature() == Nature.LIGHTNING || nature() == Nature.STORM) {
+                    com.noirm.vfx.Vfx.discharge(serverLevel, position(), blastRadius * 1.3f, 6, com.noirm.vfx.Vfx.LIGHTNING);
+                }
                 float destruction = Math.max(0.5f, damage / 8f);
                 if (isBeastChakra()) {
                     com.noirm.world.Destruction.crater(serverLevel, position(), blastRadius * 0.7f, destruction * 1.5f);

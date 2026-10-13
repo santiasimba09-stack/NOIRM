@@ -296,5 +296,16 @@
   "message.noirm.crew.fallen": "%s has fallen.",
   "message.noirm.crew.wait": "%s will wait here.",
   "message.noirm.crew.follow": "%s follows you.",
-  "message.noirm.crew.status": "%s · %s/%s ♥ · sneak + right-click: wait/follow"
+  "message.noirm.crew.status": "%s · %s/%s ♥ · sneak + right-click: wait/follow",
+  "jutsu.noirm.raiton.kirin": "Kirin",
+  "jutsu.noirm.raiton.chidori_current": "Chidori Current",
+  "jutsu.noirm.raiton.chidori_senbon": "Chidori Senbon",
+  "jutsu.noirm.katon.great_fire_annihilation": "Fire Release: Great Fire Annihilation",
+  "jutsu.noirm.katon.fire_dragon": "Fire Release: Fire Dragon Flame Bullet",
+  "jutsu.noirm.suiton.great_waterfall": "Water Release: Great Waterfall Technique",
+  "jutsu.noirm.doton.earth_dragon": "Earth Release: Earth Dragon Bullet",
+  "jutsu.noirm.futon.pressure_damage": "Wind Release: Pressure Damage",
+  "screen.noirm.jutsu.behavior.strike": "Strike from the sky",
+  "screen.noirm.jutsu.behavior.wave": "Rolling wave",
+  "screen.noirm.jutsu.behavior.nova": "Discharge all around"
 }

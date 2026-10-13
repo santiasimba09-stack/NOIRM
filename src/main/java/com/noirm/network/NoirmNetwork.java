@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "5";
+    private static final String PROTOCOL_VERSION = "6";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -84,6 +84,14 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(PowerPackets.Precognition.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerPackets.Precognition::encode).decoder(PowerPackets.Precognition::decode)
                 .consumerMainThread(PowerPackets.Precognition::handle).add();
+        CHANNEL.messageBuilder(VfxPackets.Bolt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(VfxPackets.Bolt::encode).decoder(VfxPackets.Bolt::decode)
+                .consumerMainThread(VfxPackets.Bolt::handle).add();
+    }
+
+    /** Sends to every player within {@code radius} blocks of {@code at}. */
+    public static void sendNear(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 at, double radius, Object packet) {
+        CHANNEL.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(at.x, at.y, at.z, radius, level.dimension())), packet);
     }
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

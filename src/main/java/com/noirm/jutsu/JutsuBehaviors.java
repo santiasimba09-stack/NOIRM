@@ -58,7 +58,10 @@ public final class JutsuBehaviors {
             Map.entry("heal", CanonTechniques.HEAL),
             Map.entry("rasengan", CanonTechniques::rasengan),
             Map.entry("shadow_bind", CanonTechniques.SHADOW_BIND),
-            Map.entry("shadow_clone", CanonTechniques::shadowClone));
+            Map.entry("shadow_clone", CanonTechniques::shadowClone),
+            Map.entry("strike", GreatTechniques::strike),
+            Map.entry("wave", GreatTechniques::wave),
+            Map.entry("nova", GreatTechniques::nova));
 
     private JutsuBehaviors() {}
 
@@ -206,6 +209,7 @@ public final class JutsuBehaviors {
         }
         caster.teleportTo(end.x, end.y, end.z);
         com.noirm.vfx.Vfx.line(level, start.add(0, 1, 0), end.add(0, 1, 0), com.noirm.vfx.Vfx.palette(Nature.LIGHTNING), 0.18f);
+        com.noirm.vfx.Vfx.bolt(level, start.add(0, 1, 0), end.add(0, 1, 0), com.noirm.vfx.Vfx.LIGHTNING, 0.09f, 8, 3);
         for (double d = 0; d <= start.distanceTo(end); d += 1) {
             com.noirm.world.Destruction.shatterFragile(level, BlockPos.containing(start.add(direction.scale(d))), 1);
         }
@@ -219,6 +223,7 @@ public final class JutsuBehaviors {
                     p.posture() * ctx.power(), p.fireSeconds(), direction);
             CombatSystem.stun(victim, p.stun());
             JutsuEffects.particles(victim, ParticleTypes.ELECTRIC_SPARK, 40, 0.5, 0.3);
+            com.noirm.vfx.Vfx.discharge(level, victim.position().add(0, victim.getBbHeight() * 0.6, 0), 3.5f, 6, com.noirm.vfx.Vfx.LIGHTNING);
         }
         sound(caster, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.7f, 1.6f);
     }

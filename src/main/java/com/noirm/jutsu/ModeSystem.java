@@ -110,6 +110,7 @@ public final class ModeSystem {
         if (entity.tickCount % 2 == 0) {
             Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), Vfx.palette(nature), 5);
             if (nature == Nature.LIGHTNING) {
+                Vfx.arcs(entity.level(), entity, 2, Vfx.LIGHTNING);
                 Vfx.radial(entity.level(), Vfx.spark(0x9AD8FF, 0.18f, 5), entity.position().add(0, entity.getBbHeight() * 0.5, 0), 3, 0.35);
             }
         }

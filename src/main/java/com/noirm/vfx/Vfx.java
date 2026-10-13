@@ -185,4 +185,39 @@ public final class Vfx {
             }
         }
     }
+
+    // ------------------------------------------------------------------ lightning
+
+    /** A crackling lightning bolt from {@code from} to {@code to} (drawn by the client). */
+    public static void bolt(Level level, Vec3 from, Vec3 to, int color, float width, int life, int branches) {
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            com.noirm.network.NoirmNetwork.sendNear(server, from, 96, new com.noirm.network.VfxPackets.Bolt(
+                    from.x, from.y, from.z, to.x, to.y, to.z, color, width, life, branches));
+        }
+    }
+
+    /** Lightning blue. */
+    public static final int LIGHTNING = 0x5FB4FF;
+
+    /** Small arcs crawling over a body (Lightning Armor, Chidori Current). */
+    public static void arcs(Level level, net.minecraft.world.entity.Entity entity, int count, int color) {
+        net.minecraft.util.RandomSource random = level.getRandom();
+        for (int i = 0; i < count; i++) {
+            Vec3 a = entity.position().add((random.nextDouble() - 0.5) * entity.getBbWidth() * 1.6, random.nextDouble() * entity.getBbHeight(),
+                    (random.nextDouble() - 0.5) * entity.getBbWidth() * 1.6);
+            Vec3 b = a.add((random.nextDouble() - 0.5) * 1.4, (random.nextDouble() - 0.5) * 1.2, (random.nextDouble() - 0.5) * 1.4);
+            bolt(level, a, b, color, 0.035f, 3, 0);
+        }
+    }
+
+    /** Bolts lashing outward from a point to the ground around it (impacts, discharges). */
+    public static void discharge(Level level, Vec3 at, float radius, int count, int color) {
+        net.minecraft.util.RandomSource random = level.getRandom();
+        for (int i = 0; i < count; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = radius * (0.5 + 0.5 * random.nextDouble());
+            Vec3 end = at.add(Math.cos(angle) * dist, -random.nextDouble() * radius * 0.6, Math.sin(angle) * dist);
+            bolt(level, at, end, color, 0.07f, 6, 2);
+        }
+    }
 }
