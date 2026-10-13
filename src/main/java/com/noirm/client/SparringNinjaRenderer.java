@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
  * knees and a waist) that plays the very same keyframe animations as the player
  * ({@link NpcAnimator}): the style's stance in a fight, each move's animation at the server's
  * timing, rolls on dodges, a guard and a hit flinch, all cross-faded.
+ * Its skin is built from its look ({@link NinjaSkins}), with any worn gear on top.
  */
 public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, PlayerModel<SparringNinja>> {
     /** One of vanilla's default player skins. */
@@ -35,11 +36,9 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
 
     @Override
     public ResourceLocation getTextureLocation(SparringNinja ninja) {
-        String outfit = ninja.outfit();
-        return outfit.isEmpty() ? TEXTURE : OUTFITS.computeIfAbsent(outfit, o -> Noirm.id("textures/entity/ninja/" + o + ".png"));
+        String look = ninja.outfit();
+        return look.isEmpty() ? TEXTURE : NinjaSkins.texture(look); // built from their look key
     }
-
-    private static final java.util.Map<String, ResourceLocation> OUTFITS = new java.util.HashMap<>();
 
     /**
      * The animation's {@code body} bone moves the whole character, exactly like PlayerAnimator does
