@@ -18,6 +18,9 @@ import java.util.Map;
  * small cache ({@link #of}) and the {@link VillageBuilder} only draws the lots that reach into the
  * chunk being built. Each lot carries its own seed, so a building comes out the same whichever
  * chunk draws which part of it.
+ *
+ * <p>The streets and the river are also kept as rasters (one entry per block), so curved streets
+ * cost nothing to look up: {@link #paving}, {@link #isRoad} and {@link #isWater}.
  */
 public final class VillagePlan {
     /** Height of one storey (floor block + three blocks of room). */
@@ -87,7 +90,11 @@ public final class VillagePlan {
     /** How a stretch of street is paved. */
     public enum Paving { AVENUE, STREET, PATH, PLAZA }
 
-    /** A rectangle of street (inclusive), or a disk/ring when {@code ring} is set. */
+    /**
+     * A simple street shape (inclusive rectangle, or a disk/ring when {@code ring} is set). The
+     * plaza, the ring road and a town's straight streets are kept as these; the whole street
+     * network, curved streets included, is in the street raster ({@link #paving}).
+     */
     public record Road(Paving paving, int x1, int z1, int x2, int z2, boolean ring, int inner) {
         public static Road rect(Paving paving, int x1, int z1, int x2, int z2) {
             return new Road(paving, Math.min(x1, x2), Math.min(z1, z2), Math.max(x1, x2), Math.max(z1, z2), false, 0);
@@ -112,13 +119,60 @@ public final class VillagePlan {
         }
     }
 
-    /** Small things along the streets. */
-    public enum PropType { LANTERN, POLE, BENCH, TREE, BIG_TREE, WELL, BARRELS, SIGN_BOARD, FLOWERS }
+    /**
+     * One street of the network: its centreline (one point per block, local x and z), how wide it is,
+     * how it's paved, and whether it's a festival street (lantern lines across it, arched street
+     * gates at its ends).
+     */
+    public record Street(Paving paving, int width, boolean festival, List<int[]> line) {}
 
+    /**
+     * The districts of a capital, each with its own mix of buildings and colours: the market along
+     * the gate avenue, the shinobi quarter round the Kage residence, the clan district, the temple
+     * hill under the rock, the lantern street of restaurants and the hot spring, the homes, and the
+     * outer ring of gardens, fields and training glades.
+     */
+    public enum Ward { MARKET, SHINOBI, CLAN, TEMPLE, LANTERN, RESIDENTIAL, OUTER }
+
+    /** Small things along the streets. */
+    public enum PropType {
+        LANTERN, POLE, BENCH, TREE, BIG_TREE, WELL, BARRELS, SIGN_BOARD, FLOWERS,
+        /** An avenue street lamp: a redstone lamp under an inverted daylight detector (it lights up at dusk by itself). */
+        LAMP_POST,
+        /** A notice board with papers pinned on it, facing {@code facing}. */
+        NOTICE_BOARD,
+        /** Paper lanterns strung across a festival street at (x, z): along {@code facing}'s axis, {@code style} blocks each way. */
+        LANTERN_LINE,
+        /** An arched gate over a festival street at (x, z): the street runs along {@code facing}; posts {@code style} blocks each side. */
+        STREET_GATE
+    }
+
+    /**
+     * A prop at (x, z). For a {@link PropType#POLE}, {@code facing} is the way the street runs and
+     * {@code style} holds flags: 1 = a transformer, 2 = a lamp arm, 4 = the street is on the
+     * counter-clockwise side of {@code facing} (else clockwise).
+     */
     public record Prop(PropType type, int x, int z, Direction facing, int style) {}
 
-    /** A telephone/power line between two pole tops (always straight along x or z). */
-    public record Wire(int x1, int z1, int x2, int z2, int y) {}
+    /**
+     * A wire from (x1, y, z1) to (x2, y2, z2): telephone and power lines between poles (they sag a
+     * block in the middle third when level) and service drops from a pole down to a house wall.
+     */
+    public record Wire(int x1, int z1, int x2, int z2, int y, int y2) {
+        public Wire(int x1, int z1, int x2, int z2, int y) {
+            this(x1, z1, x2, z2, y, y);
+        }
+    }
+
+    /**
+     * Where a street crosses the river: a bridge centred on (x, z), running along {@code axis},
+     * {@code length} blocks long and {@code width} wide. Arched bridges (red, rising 2 blocks) carry
+     * streets; flat stone ones carry the avenues.
+     */
+    public record Bridge(int x, int z, Direction.Axis axis, int length, int width, boolean arched) {}
+
+    /** Steps down to the river from the bank at (x, z), going down towards {@code facing}. */
+    public record Landing(int x, int z, Direction facing) {}
 
     /** Who lives here. */
     public enum Role { KAGE, GUARD, PATROL, RUNNER, TRAINEE, CLAN_NINJA, NINJA, MERCHANT, CIVILIAN, CHILD, TEACHER, DUMMY, CHIEF,
@@ -140,11 +194,20 @@ public final class VillagePlan {
     public final VillageKind kind;
     public final VillagePalette palette;
     public final long seed;
+    /** The simple street shapes (plaza, ring road, a town's straight streets); {@link #paving} has the whole network. */
     public final List<Road> roads = new ArrayList<>();
+    /** The street network as centrelines: avenues, arcs, alleys, the festival street, the river walks. */
+    public final List<Street> streets = new ArrayList<>();
     public final List<Lot> lots = new ArrayList<>();
     public final List<Prop> props = new ArrayList<>();
     public final List<Wire> wires = new ArrayList<>();
     public final List<Spawn> spawns = new ArrayList<>();
+    /** The river's centreline (one point per block, local {x, z}); empty if the village has none. */
+    public final List<int[]> river = new ArrayList<>();
+    /** Bridges where streets cross the river. */
+    public final List<Bridge> bridges = new ArrayList<>();
+    /** Steps down to the river from its banks. */
+    public final List<Landing> landings = new ArrayList<>();
     /** The canon clan living in the clan compound (capital only), or "" for none. */
     public String compoundClan = "";
     /** Where the capital's landmarks are (local coordinates), set by the planner. */
@@ -159,15 +222,75 @@ public final class VillagePlan {
      */
     public final List<int[]> gates = new ArrayList<>();
 
+    // ------------------------------------------------------------ street, water and ward rasters
+
+    /** The rasters cover -half..half on both axes (half = the village's radius). */
+    private final int half;
+    private final int size;
+    /** The paving of every block of street: 0 = none, else {@link Paving#ordinal()} + 1. */
+    final byte[] streetGrid;
+    /** One bit per block: river or canal water. */
+    final long[] waterBits;
+    /** Ward centres {x, z, ward ordinal}: a place belongs to the ward of the nearest centre. */
+    final List<int[]> wardCentres = new ArrayList<>();
+
     /** Whether (x, z) is river or canal water (the wall leaves a barred water gate there). */
     public boolean isWater(int x, int z) {
-        return false;
+        int i = cell(x, z);
+        return i >= 0 && (waterBits[i >> 6] & (1L << (i & 63))) != 0;
+    }
+
+    /** Whether the village has a river. */
+    public boolean hasRiver() {
+        return !river.isEmpty();
+    }
+
+    /** How the street at (x, z) is paved, or null if no street is there. */
+    public Paving paving(int x, int z) {
+        int i = cell(x, z);
+        if (i < 0 || streetGrid[i] == 0) {
+            return null;
+        }
+        return Paving.values()[streetGrid[i] - 1];
+    }
+
+    /** Whether (x, z) is street (any paving; streets over the river count). */
+    public boolean isRoad(int x, int z) {
+        int i = cell(x, z);
+        return i >= 0 && streetGrid[i] != 0;
+    }
+
+    /** The ward (district) that (x, z) belongs to; RESIDENTIAL in a plan without wards (towns, outposts). */
+    public Ward ward(int x, int z) {
+        Ward best = Ward.RESIDENTIAL;
+        long bestDistance = Long.MAX_VALUE;
+        for (int[] centre : wardCentres) {
+            long dx = x - centre[0], dz = z - centre[1];
+            long d = dx * dx + dz * dz;
+            if (d < bestDistance) {
+                bestDistance = d;
+                best = Ward.values()[centre[2]];
+            }
+        }
+        return best;
+    }
+
+    /** The raster index of (x, z), or -1 outside the rasters. */
+    int cell(int x, int z) {
+        if (x < -half || x > half || z < -half || z > half) {
+            return -1;
+        }
+        return (x + half) * size + (z + half);
     }
 
     VillagePlan(VillageKind kind, VillagePalette palette, long seed) {
         this.kind = kind;
         this.palette = palette;
         this.seed = seed;
+        this.half = kind.radius;
+        this.size = half * 2 + 1;
+        this.streetGrid = new byte[size * size];
+        this.waterBits = new long[(size * size + 63) >> 6];
     }
 
     /** The first lot of a type, or null. */

@@ -167,15 +167,17 @@ public final class VillageGameTests {
         VillagePlan again = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.LEAF, 1234L);
         helper.assertTrue(plan.lots.equals(again.lots) && plan.spawns.size() == again.spawns.size(), "the same seed gives the same village");
         helper.assertTrue(!plan.lots.equals(VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.LEAF, 99L).lots), "another seed, another village");
-        helper.assertTrue(plan.lots.size() >= 110, "a big village: " + plan.lots.size() + " lots");
+        helper.assertTrue(plan.lots.size() >= 400, "a big village: " + plan.lots.size() + " lots");
         for (VillagePlan.LotType landmark : new VillagePlan.LotType[] {VillagePlan.LotType.KAGE_TOWER, VillagePlan.LotType.ACADEMY,
                 VillagePlan.LotType.HOSPITAL, VillagePlan.LotType.CLAN_COMPOUND, VillagePlan.LotType.SHRINE, VillagePlan.LotType.ONSEN,
-                VillagePlan.LotType.RAMEN_SHOP, VillagePlan.LotType.GUARD_POST}) {
+                VillagePlan.LotType.RAMEN_SHOP, VillagePlan.LotType.GUARD_POST, VillagePlan.LotType.JONIN_STATION, VillagePlan.LotType.CEMETERY,
+                VillagePlan.LotType.GIANT_TREE, VillagePlan.LotType.SPIRE, VillagePlan.LotType.YARD}) {
             helper.assertTrue(plan.first(landmark) != null, "it has a " + landmark);
         }
         helper.assertTrue(plan.count(VillagePlan.LotType.TRAINING_GROUND) >= 2, "training grounds");
         helper.assertTrue(plan.count(VillagePlan.LotType.APARTMENT) + plan.count(VillagePlan.LotType.ROUND_TOWER) >= 4, "tall buildings");
-        helper.assertTrue(plan.count(VillagePlan.LotType.SHOP) + plan.count(VillagePlan.LotType.RESTAURANT) >= 8, "a market");
+        helper.assertTrue(plan.count(VillagePlan.LotType.SHOP) + plan.count(VillagePlan.LotType.RESTAURANT) >= 30, "a market");
+        helper.assertTrue(plan.hasRiver() && plan.gates.size() == 3, "a river, and three gates");
         int wall = VillageKind.CAPITAL.wall;
         for (int i = 0; i < plan.lots.size(); i++) {
             VillagePlan.Lot a = plan.lots.get(i);
@@ -186,9 +188,12 @@ public final class VillageGameTests {
                 helper.assertFalse(a.overlaps(plan.lots.get(j).x1(), plan.lots.get(j).z1(), plan.lots.get(j).x2(), plan.lots.get(j).z2(), 0),
                         a + " overlaps " + plan.lots.get(j));
             }
-            for (VillagePlan.Road road : plan.roads) {
-                boolean tower = a.type() == VillagePlan.LotType.KAGE_TOWER; // stands in the middle of its plaza
-                helper.assertFalse(!tower && road.contains(a.cx(), a.cz()), a + " sits on a street");
+            boolean tower = a.type() == VillagePlan.LotType.KAGE_TOWER; // stands in the middle of its plaza
+            for (int x = a.x1(); x <= a.x2(); x++) {
+                for (int z = a.z1(); z <= a.z2(); z++) {
+                    helper.assertFalse(!tower && plan.isRoad(x, z), a + " sits on a street");
+                    helper.assertFalse(plan.isWater(x, z), a + " sits in the river");
+                }
             }
         }
         java.util.Map<VillagePlan.Role, Long> people = plan.spawns.stream()
@@ -216,9 +221,13 @@ public final class VillageGameTests {
         VillagePlan plan = VillagePlan.uncached(VillageKind.TOWN, VillagePalette.SNOW, 55L);
         helper.assertTrue(plan.first(VillagePlan.LotType.CHIEF_HOUSE) != null && plan.first(VillagePlan.LotType.INN) != null
                 && plan.first(VillagePlan.LotType.SHRINE) != null, "a chief's house, an inn and a shrine");
-        helper.assertTrue(plan.lots.size() >= 20, "a real town: " + plan.lots.size() + " lots");
+        helper.assertTrue(plan.lots.size() >= 40, "a real town: " + plan.lots.size() + " lots");
         helper.assertTrue(plan.first(VillagePlan.LotType.KAGE_TOWER) == null, "but no Kage");
         helper.assertTrue(plan.spawns.stream().anyMatch(s -> s.role() == VillagePlan.Role.CHIEF), "with a village chief");
+        helper.assertTrue(plan.paving(0, 40) == VillagePlan.Paving.STREET && plan.paving(40, 0) == VillagePlan.Paving.STREET,
+                "a main street and a cross street");
+        helper.assertTrue(plan.props.stream().anyMatch(p -> p.type() == VillagePlan.PropType.LANTERN_LINE), "lanterns strung over the main street");
+        helper.assertFalse(plan.hasRiver(), "no river");
         helper.succeed();
     }
 
