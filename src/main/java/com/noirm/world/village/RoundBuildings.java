@@ -154,6 +154,84 @@ final class RoundBuildings {
         }
     }
 
+    // ================================================================ rock spires (the Cloud village)
+
+    /**
+     * A tall pillar of rock, rough and banded, narrowing a little towards the top, with a ladder up
+     * its back. On top (by style): grass and a wind-bent tree, a round "dish" platform with a railing
+     * and lanterns, or a little white house with a blue dome.
+     */
+    static void rockSpire(LotFrame f) {
+        int cu = (f.w - 1) / 2, cv = (f.d - 1) / 2;
+        int r0 = Math.max(3, Math.min(f.w, f.d) / 2 - 1);
+        int height = 26 + (int) (Materials.hash(f.x(cu, cv), 0, f.z(cu, cv), f.lot.seed()) % 22);
+        Materials.Mix rock = Materials.Mix.of(Blocks.STONE, 50, Blocks.ANDESITE, 25, Blocks.DIORITE, 10, Blocks.TUFF, 15);
+        int top = height;
+        for (int y = -1; y < height; y++) {
+            double r = r0 - (y / (double) height) * (r0 * 0.35);
+            for (int du = -r0 - 1; du <= r0 + 1; du++) {
+                for (int dv = -r0 - 1; dv <= r0 + 1; dv++) {
+                    int u = cu + du, v = cv + dv;
+                    double wobble = Materials.hash(f.x(u, v), y / 4, f.z(u, v), f.lot.seed()) % 100 / 100.0 * 1.2;
+                    if (Shapes.dist(du, dv) <= r + wobble - 0.4) {
+                        f.set(u, y, v, rock.at(f.x(u, v), y, f.z(u, v), f.lot.seed()));
+                    }
+                }
+            }
+        }
+        // A ladder up the back, against a rib of rock, from the ground to a ledge on top.
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.NORTH);
+        int back = cv - r0 - 1;
+        for (int y = 0; y <= top + 1; y++) {
+            if (y <= top) {
+                f.set(cu, y, back + 1, rock.at(f.x(cu, back + 1), y, f.z(cu, back + 1), f.lot.seed()));
+            }
+            f.set(cu, y, back, ladder);
+        }
+        int rt = Math.max(2, (int) Math.round(r0 * 0.65));
+        f.fill(cu, top, back + 1, cu, top, cv - rt, Blocks.STONE);
+        switch (f.lot.style() % 3) {
+            case 0 -> {
+                Shapes.disk(f, cu, cv, rt, top, Blocks.GRASS_BLOCK.defaultBlockState());
+                Block[] tree = f.p.tree(2);
+                f.fill(cu, top + 1, cv, cu, top + 4, cv, tree[0]);
+                Shapes.disk(f, cu + 1, cv, 2, top + 5, Buildings.leaves(tree[1]));
+                Shapes.disk(f, cu + 1, cv, 1, top + 6, Buildings.leaves(tree[1]));
+            }
+            case 1 -> {
+                // The dish: a wide round platform overhanging the rock, railed, with lanterns.
+                int rd = rt + 4;
+                Shapes.disk(f, cu, cv, rd, top, Blocks.SMOOTH_STONE.defaultBlockState());
+                Shapes.disk(f, cu, cv, rd - 1, top - 1, Buildings.slab(Blocks.SMOOTH_STONE_SLAB, SlabType.TOP));
+                Shapes.drum(f, cu, cv, rd, top + 1, top + 1, f.p.fence);
+                for (Direction side : Direction.Plane.HORIZONTAL) {
+                    f.set(cu + side.getStepX() * (rd - 1), top + 1, cv + side.getStepZ() * (rd - 1), Blocks.LANTERN);
+                }
+                f.set(cu, top + 1, cv, Blocks.BELL.defaultBlockState().setValue(BellBlock.ATTACHMENT, BellAttachType.FLOOR));
+            }
+            default -> {
+                // A little white house with a blue dome.
+                Materials.Colourway cw = f.p.colourway(f.lot.colour());
+                int rh = Math.max(2, rt);
+                Shapes.disk(f, cu, cv, rh + 1, top, Blocks.SMOOTH_STONE.defaultBlockState());
+                Shapes.drum(f, cu, cv, rh, top + 1, top + 3, cw.wall());
+                for (int du = -rh + 1; du <= rh - 1; du++) {
+                    for (int dv = -rh + 1; dv <= rh - 1; dv++) {
+                        if (Shapes.dist(du, dv) <= rh - 0.5) {
+                            f.fill(cu + du, top + 1, cv + dv, cu + du, top + 3, cv + dv, Blocks.AIR);
+                        }
+                    }
+                }
+                f.set(cu, top + 1, cv + rh, Blocks.AIR);
+                f.set(cu, top + 2, cv + rh, Blocks.AIR);
+                f.set(cu + rh, top + 2, cv, Blocks.GLASS_PANE);
+                f.set(cu - rh, top + 2, cv, Blocks.GLASS_PANE);
+                Buildings.dome(f, cu, top + 3, cv, rh + 1, cw.roofFlat());
+                f.set(cu, top + 3, cv, Buildings.HANGING_LANTERN);
+            }
+        }
+    }
+
     // ================================================================ the jōnin station
 
     /**

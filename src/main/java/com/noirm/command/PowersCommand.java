@@ -162,7 +162,7 @@ public final class PowersCommand {
                                 .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(new String[] {"capital", "town", "outpost"}, builder))
                                 .executes(ctx -> buildVillage(ctx.getSource(), StringArgumentType.getString(ctx, "size"), ""))
                                 .then(Commands.argument("look", StringArgumentType.word())
-                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(new String[] {"leaf", "sand", "snow"}, builder))
+                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(new String[] {"leaf", "sand", "snow", "mist", "cloud", "stone"}, builder))
                                         .executes(ctx -> buildVillage(ctx.getSource(), StringArgumentType.getString(ctx, "size"),
                                                 StringArgumentType.getString(ctx, "look"))))))
                 .then(Commands.literal("ninja").requires(s -> s.hasPermission(CHEATS))

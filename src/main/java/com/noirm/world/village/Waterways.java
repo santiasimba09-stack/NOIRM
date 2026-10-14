@@ -89,10 +89,8 @@ final class Waterways {
             if (bridge.arched()) {
                 continue;
             }
-            boolean alongX = bridge.axis() == Direction.Axis.X;
-            int along = alongX ? x - bridge.x() : z - bridge.z();
-            int across = alongX ? z - bridge.z() : x - bridge.x();
-            if (Math.abs(along) <= bridge.length() / 2 && Math.abs(across) <= bridge.width() / 2 + 1) {
+            // (Round the crossing rather than along one axis, so a street crossing at a slant gets a whole deck.)
+            if (Math.hypot(x - bridge.x(), z - bridge.z()) <= bridge.length() / 2.0 + 1) {
                 return true;
             }
         }

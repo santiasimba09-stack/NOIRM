@@ -76,6 +76,10 @@ public final class VillageBuilder {
                              BlockPos origin, Rotation rotation, long seed, int clearHeight) {
         VillagePlan plan = VillagePlan.of(kind, palette, seed);
         VillageBuilder builder = new VillageBuilder(new VillageCanvas(level, clip, origin, rotation), plan);
+        boolean generating = level instanceof net.minecraft.server.level.WorldGenRegion;
+        if (generating) {
+            builder.evictSquatters(level, clip);
+        }
         builder.ground(kind.radius, Math.max(kind.height, clearHeight));
         builder.roads();
         Waterways.draw(builder.c, plan);
@@ -83,6 +87,56 @@ public final class VillageBuilder {
         builder.lots();
         builder.props();
         builder.spawns();
+        if (generating) {
+            builder.clearStrayLeaves(level, clip, origin);
+        }
+    }
+
+    /** Mobs that other structures (a vanilla village, a pillager outpost, a witch hut) leave behind, which don't belong in a ninja village. */
+    private static final java.util.Set<String> SQUATTERS = java.util.Set.of("minecraft:villager", "minecraft:iron_golem",
+            "minecraft:zombie_villager", "minecraft:wandering_trader", "minecraft:pillager", "minecraft:vindicator", "minecraft:evoker",
+            "minecraft:illusioner", "minecraft:ravager", "minecraft:witch", "minecraft:cat");
+
+    /**
+     * During world generation, other structures placed before the village (a vanilla village
+     * overlapping the site, say) may have put their mobs in this chunk: their buildings are cleared
+     * with the ground, so their villagers, golems and cats go too. (Our own residents are added later.)
+     */
+    private void evictSquatters(WorldGenLevel level, BoundingBox clip) {
+        if (level.getChunk(clip.minX() >> 4, clip.minZ() >> 4) instanceof net.minecraft.world.level.chunk.ProtoChunk proto) {
+            int[] local = c.local(clip.minX() + 8, clip.minZ() + 8);
+            if (inDisk(local[0], local[1], plan.kind.radius + 8)) {
+                proto.getEntities().removeIf(tag -> SQUATTERS.contains(tag.getString("id")));
+            }
+        }
+    }
+
+    /**
+     * Trees that grew in the chunks round this one before it was built can lean their leaves into
+     * village chunks finished earlier: clears natural (non-persistent) leaves in a 6-block band
+     * round this chunk, inside the village. (Our own leaves are persistent.)
+     */
+    private void clearStrayLeaves(WorldGenLevel level, BoundingBox clip, BlockPos origin) {
+        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+        BlockState air = Blocks.AIR.defaultBlockState();
+        for (int x = clip.minX() - 6; x <= clip.maxX() + 6; x++) {
+            for (int z = clip.minZ() - 6; z <= clip.maxZ() + 6; z++) {
+                if (x >= clip.minX() && x <= clip.maxX() && z >= clip.minZ() && z <= clip.maxZ()) {
+                    continue;
+                }
+                int[] local = c.local(x, z);
+                if (!inDisk(local[0], local[1], plan.kind.radius)) {
+                    continue;
+                }
+                for (int y = origin.getY(); y <= origin.getY() + 40; y++) {
+                    BlockState state = level.getBlockState(at.set(x, y, z));
+                    if (state.getBlock() instanceof net.minecraft.world.level.block.LeavesBlock
+                            && !state.getValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT)) {
+                        level.setBlock(at, air, Block.UPDATE_CLIENTS);
+                    }
+                }
+            }
+        }
     }
 
     public static void build(WorldGenLevel level, BoundingBox clip, VillageKind kind, VillagePalette palette,
@@ -255,9 +309,50 @@ public final class VillageBuilder {
         for (Wire wire : plan.wires) {
             wire(wire);
         }
+        for (VillagePlan.SkyBridge bridge : plan.skyBridges) {
+            skyBridge(bridge);
+        }
     }
 
     // ---- street furniture
+
+    /**
+     * A rope bridge between two towers: a plank deck one block wide with a rope (chain) rail on each
+     * side, sagging a block in the middle third, from a gap in one roof's parapet to a doorway in the
+     * other tower's wall (or a gap in its parapet). The deck only fills air.
+     */
+    private void skyBridge(VillagePlan.SkyBridge bridge) {
+        if (Math.max(bridge.x1(), bridge.x2()) < lx1 - 1 || Math.min(bridge.x1(), bridge.x2()) > lx2 + 1
+                || Math.max(bridge.z1(), bridge.z2()) < lz1 - 1 || Math.min(bridge.z1(), bridge.z2()) > lz2 + 1) {
+            return;
+        }
+        int dx = bridge.x2() - bridge.x1(), dz = bridge.z2() - bridge.z1();
+        int n = Math.max(Math.abs(dx), Math.abs(dz));
+        boolean alongX = Math.abs(dx) >= Math.abs(dz);
+        BlockState deck = slab(p.slab, SlabType.TOP);
+        BlockState rope = Blocks.CHAIN.defaultBlockState().setValue(ChainBlock.AXIS, alongX ? Direction.Axis.X : Direction.Axis.Z);
+        for (int k = 0; k <= n; k++) {
+            double t = n == 0 ? 0 : k / (double) n;
+            int x = (int) Math.round(bridge.x1() + dx * t), z = (int) Math.round(bridge.z1() + dz * t);
+            int y = bridge.y() - (n > 9 && t > 1 / 3.0 && t < 2 / 3.0 ? 1 : 0);
+            setIfAir(x, y, z, deck);
+            int sx = alongX ? 0 : 1, sz = alongX ? 1 : 0;
+            setIfAir(x + sx, y + 1, z + sz, rope);
+            setIfAir(x - sx, y + 1, z - sz, rope);
+        }
+        // The way on and off: a gap in the lower roof's parapet, a doorway (or a gap) in the other.
+        setInChunk(bridge.x1(), bridge.y() + 1, bridge.z1(), AIR);
+        setInChunk(bridge.x2(), bridge.y() + 1, bridge.z2(), AIR);
+        if (bridge.door()) {
+            setInChunk(bridge.x2(), bridge.y() + 2, bridge.z2(), AIR);
+        }
+    }
+
+    private void setInChunk(int x, int y, int z, BlockState state) {
+        if (x >= lx1 && x <= lx2 && z >= lz1 && z <= lz2) {
+            c.set(x, y, z, state);
+        }
+    }
 
     /** Places a block only where there's air (props never cut into buildings), and only inside this chunk. */
     private void setIfAir(int x, int y, int z, BlockState state) {
@@ -365,8 +460,10 @@ public final class VillageBuilder {
         }
         for (int s = -1; s <= 1; s += 2) {
             int ex = x + a.getStepX() * (reach + 1) * s, ez = z + a.getStepZ() * (reach + 1) * s;
-            if (ex < lx1 - 1 || ex > lx2 + 1 || ez < lz1 - 1 || ez > lz2 + 1 || !c.get(ex, 5, ez).isAir()) {
-                continue; // tied to a house front (or out of reach of this chunk)
+            int px = ex, pz = ez;
+            if (plan.lotsIn(ex, ez, ex, ez).stream().anyMatch(l -> l.type() != VillagePlan.LotType.YARD
+                    && px >= l.x1() && px <= l.x2() && pz >= l.z1() && pz <= l.z2())) {
+                continue; // tied to a house front (decided from the plan, so every chunk agrees)
             }
             int bx = x + a.getStepX() * reach * s, bz = z + a.getStepZ() * reach * s;
             for (int y = 0; y < 5; y++) {

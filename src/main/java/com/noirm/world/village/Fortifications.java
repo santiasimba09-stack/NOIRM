@@ -48,10 +48,13 @@ final class Fortifications {
                 if (plan.palette.hasKageRock()) {
                     f.kageRock();
                 }
-                if (plan.palette == VillagePalette.SAND) {
-                    f.cliffWall(plan.kind.wall);
-                } else {
-                    f.greatWall(plan.kind.wall);
+                switch (plan.palette) {
+                    case SAND -> f.cliffWall(plan.kind.wall, new Block[] {Blocks.SANDSTONE, Blocks.SMOOTH_SANDSTONE, Blocks.TERRACOTTA,
+                            Blocks.CUT_SANDSTONE, Blocks.ORANGE_TERRACOTTA}, 24, 12);
+                    case STONE -> f.cliffWall(plan.kind.wall, new Block[] {Blocks.STONE, Blocks.ANDESITE, Blocks.TUFF, Blocks.STONE,
+                            Blocks.PACKED_MUD, Blocks.GRAVEL}, 26, 16);
+                    case CLOUD -> f.spireRing(plan.kind.wall);
+                    default -> f.greatWall(plan.kind.wall);
                 }
             }
             case TOWN -> f.townFence(plan.kind.wall);
@@ -66,11 +69,15 @@ final class Fortifications {
     }
 
     /**
-     * The hidden village's wall: three blocks thick, {@link #WALL_HEIGHT} high, battlements and a
-     * walk along the top, ladders up from inside, lookout pavilions, two side gates (tunnels under
-     * the wall) and the great gate in the south.
+     * The hidden village's wall: three blocks thick, {@link #WALL_HEIGHT} high, a walk along the top,
+     * ladders up from inside, lookout pavilions, two side gates and the great gate in the south.
+     * The Leaf village's is the one from the series: reddish-brown, no battlements but a tiled
+     * coping, round bastions, red gates standing over the wall walk, and side gates with painted
+     * doors. The others have battlements.
      */
     private void greatWall(int w) {
+        boolean leaf = p == VillagePalette.LEAF;
+        Block band = leaf ? Blocks.BROWN_TERRACOTTA : p.towerRoof;
         for (int x = lx1; x <= lx2; x++) {
             for (int z = lz1; z <= lz2; z++) {
                 if (!inDisk(x, z, w) || inDisk(x, z, w - 3) || inRock(x, z)) {
@@ -81,19 +88,41 @@ final class Fortifications {
                 }
                 boolean sideGate = Math.abs(z - plan.crossZ) <= 3 && Math.abs(x) > w / 2;
                 c.fill(x, sideGate ? 9 : 0, z, x, WALL_HEIGHT - 1, z, p.wall);
+                if (plan.isWater(x, z)) {
+                    // A barred water gate: the river flows through, nobody swims in under the wall.
+                    for (int y = Waterways.SURFACE - 3; y <= -1; y++) {
+                        c.set(x, y, z, Blocks.IRON_BARS.defaultBlockState()
+                                .setValue(net.minecraft.world.level.block.IronBarsBlock.WATERLOGGED, y <= Waterways.SURFACE));
+                    }
+                }
                 if (sideGate) {
                     c.fill(x, 0, z, x, 8, z, Blocks.AIR);
                 }
                 boolean outer = !inDisk(x, z, w - 1);
-                if (outer && ((x + z) & 1) == 0) {
+                if (outer && leaf) {
+                    c.set(x, WALL_HEIGHT, z, slab(p.roofSlabs().get(0), SlabType.BOTTOM)); // the tiled coping
+                } else if (outer && ((x + z) & 1) == 0) {
                     c.set(x, WALL_HEIGHT, z, p.wall); // battlements
                 }
                 if (outer) {
-                    c.set(x, WALL_HEIGHT - 4, z, p.towerRoof); // a coloured band round the outside
+                    c.set(x, WALL_HEIGHT - 4, z, band); // a coloured band round the outside
+                    if (leaf) {
+                        c.set(x, 2, z, band);
+                    }
                 }
             }
         }
         greatGate(w);
+        if (leaf) {
+            for (int deg = -165; deg <= 165; deg += 30) {
+                bastion(w, deg);
+            }
+            for (int deg = -150; deg <= 150; deg += 30) {
+                wallTorii(w, deg);
+            }
+            sideGate(w, 1);
+            sideGate(w, -1);
+        }
         // Ladders up the inside, and lookout pavilions on top.
         for (int k = 0; k < 8; k++) {
             double a = Math.toRadians(25 + k * 45);
@@ -119,6 +148,108 @@ final class Fortifications {
                 continue;
             }
             pavilion(x, WALL_HEIGHT, z);
+        }
+    }
+
+    /** Where on the wall's centre line the bearing {@code deg} (degrees from south, + = east) meets it. */
+    private int[] onWall(int w, double deg, double r) {
+        double a = Math.toRadians(deg);
+        return new int[] {(int) Math.round(Math.sin(a) * r), (int) Math.round(Math.cos(a) * r)};
+    }
+
+    /** Whether a feature at (x, z) would sit in a gateway or on the Kage Rock. */
+    private boolean blocked(int w, int x, int z, int clear) {
+        return inRock(x, z) || inRock(x, z - 6) || z > 0 && Math.abs(x) < 16 + clear
+                || Math.abs(z - plan.crossZ) < 8 + clear && Math.abs(x) > w / 2;
+    }
+
+    /** A round bastion bulging out of the wall: as high as the wall and a little more, with a tiled coping and a lantern. */
+    private void bastion(int w, int deg) {
+        int[] at = onWall(w, deg, w - 1);
+        int r = 6;
+        if (blocked(w, at[0], at[1], r) || !c.touches(at[0] - r, at[1] - r, at[0] + r, at[1] + r)) {
+            return;
+        }
+        for (int x = at[0] - r; x <= at[0] + r; x++) {
+            for (int z = at[1] - r; z <= at[1] + r; z++) {
+                double d = Math.hypot(x - at[0], z - at[1]);
+                if (d > r + 0.5 || inDisk(x, z, w - 3)) {
+                    continue;
+                }
+                c.fill(x, 0, z, x, WALL_HEIGHT, z, p.wall);
+                c.set(x, 2, z, Blocks.BROWN_TERRACOTTA);
+                c.set(x, WALL_HEIGHT - 4, z, Blocks.BROWN_TERRACOTTA);
+                if (d > r - 0.5) {
+                    c.set(x, WALL_HEIGHT + 1, z, slab(p.roofSlabs().get(0), SlabType.BOTTOM));
+                }
+            }
+        }
+        c.set(at[0], WALL_HEIGHT + 1, at[1], Blocks.LANTERN);
+    }
+
+    /** A red gate standing over the wall walk: a post on each side of the walk, two beams, a dark tiled top. */
+    private void wallTorii(int w, int deg) {
+        int[] in = onWall(w, deg, w - 2.5), out = onWall(w, deg, w - 0.5);
+        int[] mid = onWall(w, deg, w - 1.5);
+        if (blocked(w, mid[0], mid[1], 2) || !c.touches(mid[0] - 3, mid[1] - 3, mid[0] + 3, mid[1] + 3)) {
+            return;
+        }
+        int y = WALL_HEIGHT;
+        for (int[] post : new int[][] {in, out}) {
+            c.fill(post[0], y, post[1], post[0], y + 3, post[1], Blocks.RED_TERRACOTTA);
+        }
+        int n = Math.max(Math.abs(out[0] - in[0]), Math.abs(out[1] - in[1]));
+        for (int k = -1; k <= n + 1; k++) {
+            double t = (double) k / n;
+            int x = (int) Math.round(in[0] + (out[0] - in[0]) * t), z = (int) Math.round(in[1] + (out[1] - in[1]) * t);
+            if (k >= 0 && k <= n) {
+                c.set(x, y + 3, z, Blocks.RED_TERRACOTTA);
+            }
+            c.set(x, y + 4, z, Blocks.BLACKSTONE_SLAB);
+        }
+    }
+
+    /**
+     * A side gate (east or west): a tall gateway through the wall with red posts and a roof outside,
+     * the village symbol over the opening, and two doors folded back inside, painted "a" and "un".
+     */
+    private void sideGate(int w, int side) {
+        int z0 = plan.crossZ;
+        int x0 = side * (int) Math.round(Math.sqrt(Math.max(0, (double) w * w - (double) z0 * z0)));
+        if (!c.touches(x0 - 8, z0 - 8, x0 + 8, z0 + 8)) {
+            return;
+        }
+        int out = x0 + side;
+        for (int dz : new int[] {-4, 4}) {
+            c.fill(out, 0, z0 + dz, out, 12, z0 + dz, Blocks.RED_TERRACOTTA);
+        }
+        c.fill(out, 10, z0 - 5, out, 11, z0 + 5, Blocks.RED_TERRACOTTA);
+        c.fill(out, 12, z0 - 6, out + side, 12, z0 + 6, slab(p.roofSlabs().get(0), SlabType.BOTTOM));
+        c.fill(out - side, 12, z0 - 6, out - side, 12, z0 + 6, slab(p.roofSlabs().get(0), SlabType.BOTTOM));
+        for (int gz = 0; gz < 5; gz++) {
+            for (int gy = 0; gy < 5; gy++) {
+                boolean painted = p.glyph.painted(side > 0 ? 4 - gz : gz, gy);
+                c.set(out + side, 9 - gy + 0, z0 - 2 + gz, (painted ? p.paint : p.plaque).defaultBlockState());
+            }
+        }
+        // The doors, folded back against the sides of the gateway.
+        String[][] signs = {{". # # # .", "# # # # #", ". # . # .", "# . # . #", ". # # . #"},
+                {". . # . .", ". # . . .", ". # # . .", "# . . # .", "# . . . #"}};
+        for (int s = 0; s < 2; s++) {
+            int dz = s == 0 ? -3 : 3;
+            c.fill(x0 - side * 6, 0, z0 + dz, x0, 8, z0 + dz, p.gateDoor());
+            for (int r = 0; r < 5; r++) {
+                String row = signs[s][r].replace(" ", "");
+                for (int col = 0; col < 5; col++) {
+                    if (row.charAt(col) == '#') {
+                        c.set(x0 - side * (1 + col), 7 - r, z0 + dz, p.paint);
+                    }
+                }
+            }
+        }
+        for (int dz : new int[] {-5, 5}) {
+            c.set(out + side, 2, z0 + dz, Blocks.LANTERN);
+            c.fill(out + side, 0, z0 + dz, out + side, 1, z0 + dz, p.fence);
         }
     }
 
@@ -167,7 +298,15 @@ final class Fortifications {
             }
         }
         c.fill(-3, 17, w + 1, 3, 17, w + 1, Blocks.CHAIN.defaultBlockState().setValue(ChainBlock.AXIS, Direction.Axis.X));
-        // The doors, folded back inside the gate.
+        if (p != VillagePalette.LEAF) {
+            for (int side = -1; side <= 1; side += 2) {
+                c.fill(side * 6, 0, w - 9, side * 6, 12, w - 3, p.gateDoor());
+                c.set(side * 10, 2, w + 2, Blocks.LANTERN);
+                c.fill(side * 10, 0, w + 2, side * 10, 1, w + 2, p.fence);
+            }
+            return;
+        }
+        // The doors, folded back inside the gate, painted "a" and "un" (the Leaf's gate).
         String[] a = {". # # # .", "# # # # #", ". # . # .", "# . # . #", ". # # . #"};
         String[] un = {". . # . .", ". # . . .", ". # # . .", "# . . # .", "# . . . #"};
         for (int side = -1; side <= 1; side += 2) {
@@ -187,9 +326,11 @@ final class Fortifications {
         }
     }
 
-    /** The Sand village's wall: a ring of layered desert cliffs, with the only way in a narrow canyon in the south. */
-    private void cliffWall(int w) {
-        Block[] layers = {Blocks.SANDSTONE, Blocks.SMOOTH_SANDSTONE, Blocks.TERRACOTTA, Blocks.CUT_SANDSTONE, Blocks.ORANGE_TERRACOTTA};
+    /**
+     * A ring of layered cliffs (the Sand village's desert cliffs, the Stone village's grey rock),
+     * {@code base} to {@code base + rise} high, with the only way in a narrow canyon in the south.
+     */
+    private void cliffWall(int w, Block[] layers, int base, int rise) {
         for (int x = lx1; x <= lx2; x++) {
             for (int z = lz1; z <= lz2; z++) {
                 if (!inDisk(x, z, w) || inDisk(x, z, w - 7)) {
@@ -199,10 +340,42 @@ final class Fortifications {
                     continue; // the canyon
                 }
                 double n = noise(x, z, 8, plan.seed);
-                int top = 24 + (int) (n * 12) - (z > 0 && Math.abs(x) < 9 ? 6 : 0);
+                int top = base + (int) (n * rise) - (z > 0 && Math.abs(x) < 9 ? 6 : 0);
                 for (int y = 0; y < top; y++) {
                     int band = Math.floorMod(y + (int) (n * 4), layers.length * 2) / 2;
                     c.set(x, y, z, layers[band]);
+                }
+            }
+        }
+    }
+
+    /**
+     * The Cloud village's ring of rock: a ridge of grey cliffs 12–20 high, out of which tall spires of
+     * rock rise every so often (up to 60 high), wrapped in a band of white "cloud" at their middles.
+     * The only way in is a canyon in the south.
+     */
+    private void spireRing(int w) {
+        Block[] layers = {Blocks.STONE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.STONE, Blocks.TUFF};
+        for (int x = lx1; x <= lx2; x++) {
+            for (int z = lz1; z <= lz2; z++) {
+                if (!inDisk(x, z, w) || inDisk(x, z, w - 9) || z > 0 && Math.abs(x) <= 4) {
+                    continue;
+                }
+                double ridge = noise(x, z, 9, plan.seed);
+                double spire = noise(x, z, 5, plan.seed + 11);
+                int top = 12 + (int) (ridge * 8);
+                if (spire > 0.72) {
+                    top += (int) ((spire - 0.72) / 0.28 * 44); // a spire
+                }
+                if (z > 0 && Math.abs(x) < 9) {
+                    top = Math.min(top, 10);
+                }
+                for (int y = 0; y < top; y++) {
+                    int band = Math.floorMod(y / 3 + (int) (ridge * 3), layers.length);
+                    c.set(x, y, z, layers[band]);
+                }
+                if (top > 30 && Math.floorMod(hash(x, z, plan.seed), 3) == 0) {
+                    c.set(x, 26 + (int) (ridge * 3), z, Blocks.WHITE_WOOL); // a wisp of cloud
                 }
             }
         }
@@ -244,12 +417,71 @@ final class Fortifications {
         for (int i = 0; i < centres.length; i++) {
             carveFace(centres[i], face, i);
         }
+        if (p == VillagePalette.LEAF) {
+            for (int side = -1; side <= 1; side += 2) {
+                rockStairs(side * STAIRS_X, face);
+                shelterTunnel(side * 34, face);
+            }
+        }
+    }
+
+    /** Where the zig-zag stairs climb the Kage Rock (either side of the faces). */
+    private static final int STAIRS_X = 92;
+
+    /**
+     * Zig-zag stairs up the cliff face of the Kage Rock: flights of ten steps of stone-brick stairs
+     * on a buttress built against the cliff, turning at landings, with a rail on the outside, up to
+     * the forest on top.
+     */
+    private void rockStairs(int x0, int face) {
+        if (!c.touches(x0 - 8, face - 2, x0 + 8, face + 4)) {
+            return;
+        }
+        int top = rockHeight(x0, face - 2);
+        int y = 0, x = x0 - 5, dir = 1;
+        while (y < top - 1) {
+            for (int k = 0; k < 10 && y < top - 1; k++) {
+                c.fill(x, 0, face + 1, x, y - 1, face + 2, p.rock);
+                c.set(x, y, face + 1, Blocks.STONE_BRICK_STAIRS.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.StairBlock.FACING, dir > 0 ? Direction.EAST : Direction.WEST));
+                c.set(x, y, face + 2, Blocks.STONE_BRICK_STAIRS.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.StairBlock.FACING, dir > 0 ? Direction.EAST : Direction.WEST));
+                c.set(x, y + 1, face + 3, Blocks.STONE_BRICK_WALL);
+                c.fill(x, y + 1, face + 1, x, y + 3, face + 2, Blocks.AIR);
+                x += dir;
+                y++;
+            }
+            // A landing, then back the other way.
+            c.fill(x, 0, face + 1, x + dir, y - 1, face + 2, p.rock);
+            c.fill(x, y + 0, face + 1, x + dir, y + 2, face + 2, Blocks.AIR);
+            c.set(x + dir, y, face + 3, Blocks.LANTERN);
+            dir = -dir;
+            x += dir;
+        }
+        c.fill(x0 - 6, top - 1, face - 3, x0 + 6, top - 1, face, Blocks.GRASS_BLOCK); // out onto the top
+    }
+
+    /** A shelter tunnel into the foot of the Kage Rock: a framed doorway and a passage lit by lanterns. */
+    private void shelterTunnel(int x0, int face) {
+        if (!c.touches(x0 - 3, face - 14, x0 + 3, face + 2)) {
+            return;
+        }
+        c.fill(x0 - 1, 0, face - 12, x0 + 1, 3, face + 1, Blocks.AIR);
+        c.fill(x0 - 2, -1, face - 12, x0 + 2, -1, face + 1, Blocks.POLISHED_ANDESITE);
+        for (int dx : new int[] {-2, 2}) {
+            c.fill(x0 + dx, 0, face + 1, x0 + dx, 4, face + 1, Blocks.POLISHED_BLACKSTONE);
+        }
+        c.fill(x0 - 2, 4, face + 1, x0 + 2, 4, face + 1, Blocks.POLISHED_BLACKSTONE);
+        for (int z = face - 2; z >= face - 11; z -= 4) {
+            c.set(x0, 3, z, HANGING_LANTERN);
+        }
+        c.fill(x0 - 1, 0, face - 12, x0 + 1, 2, face - 12, Blocks.IRON_BARS);
     }
 
     /** How far the cliff steps back from its line at x: nothing at the carved faces, up to 4 blocks between them. */
     private int recess(int x) {
-        for (int centre : new int[] {-51, -17, 17, 51}) {
-            if (Math.abs(x - centre) <= 10) {
+        for (int centre : new int[] {-51, -17, 17, 51, -STAIRS_X, STAIRS_X}) {
+            if (Math.abs(x - centre) <= (Math.abs(centre) == STAIRS_X ? 12 : 10)) {
                 return 0;
             }
         }

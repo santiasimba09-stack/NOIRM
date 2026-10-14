@@ -78,6 +78,48 @@ public final class VillageLayoutGameTests {
         helper.succeed();
     }
 
+    /** The Mist village: drums on islands between two ring canals. */
+    @GameTest(template = "empty", batch = "noirm_layout_plan")
+    public static void mistCapitalIsOnIslands(GameTestHelper helper) {
+        VillagePlan plan = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.MIST, 52L);
+        checkCapital(helper, plan, false);
+        long drums = plan.lots.stream().filter(l -> l.type() == LotType.ROUND_HOUSE).count();
+        long houses = plan.lots.stream().filter(l -> l.type() == LotType.HOUSE).count();
+        helper.assertTrue(drums * 3 >= houses, "mostly round houses: " + drums + " drums, " + houses + " houses");
+        helper.succeed();
+    }
+
+    /** The Cloud village: rock spires among the houses, ringed by more of them. */
+    @GameTest(template = "empty", batch = "noirm_layout_plan")
+    public static void cloudCapitalHasRockSpires(GameTestHelper helper) {
+        VillagePlan plan = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.CLOUD, 53L);
+        checkCapital(helper, plan, false);
+        List<Lot> spires = plan.lots.stream().filter(l -> l.type() == LotType.ROCK_SPIRE).toList();
+        helper.assertTrue(spires.size() >= 8, "rock spires: " + spires.size());
+        for (Lot a : spires) {
+            helper.assertTrue(Math.hypot(a.cx(), a.cz()) > 34 + 30, "no spire on the plaza: " + a);
+            for (Lot b : spires) {
+                helper.assertTrue(a == b || Math.hypot(a.cx() - b.cx(), a.cz() - b.cz()) >= 45, "spires stand apart");
+            }
+        }
+        helper.succeed();
+    }
+
+    /** The Stone village: towers joined by rope bridges at roof height. */
+    @GameTest(template = "empty", batch = "noirm_layout_plan")
+    public static void stoneCapitalHasTowersAndBridges(GameTestHelper helper) {
+        VillagePlan plan = VillagePlan.uncached(VillageKind.CAPITAL, VillagePalette.STONE, 54L);
+        checkCapital(helper, plan, false);
+        long towers = plan.lots.stream().filter(l -> l.type() == LotType.ROUND_TOWER || l.type() == LotType.APARTMENT).count();
+        helper.assertTrue(towers >= 10, "towers: " + towers);
+        helper.assertTrue(plan.skyBridges.size() >= 5, "rope bridges: " + plan.skyBridges.size());
+        for (VillagePlan.SkyBridge bridge : plan.skyBridges) {
+            double length = Math.hypot(bridge.x2() - bridge.x1(), bridge.z2() - bridge.z1());
+            helper.assertTrue(length >= 1 && length <= 36 && bridge.y() >= 15, "a bridge between tower tops, wall to wall: " + bridge);
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = "noirm_layout_plan")
     public static void townIsAPostTown(GameTestHelper helper) {
         VillagePlan plan = VillagePlan.uncached(VillageKind.TOWN, VillagePalette.LEAF, 8L);
@@ -103,7 +145,7 @@ public final class VillageLayoutGameTests {
     private static void checkCapital(GameTestHelper helper, VillagePlan plan, boolean fan) {
         String name = plan.palette + "/" + plan.seed;
         int wall = plan.kind.wall;
-        int limit = wall - (fan ? 8 : 14);
+        int limit = wall - (plan.palette.hasCliffs() ? 14 : 8);
         checkLots(helper, plan, limit);
         helper.assertTrue(plan.lots.size() >= 400, name + ": a big, dense village: " + plan.lots.size() + " lots");
         long buildings = plan.lots.stream().filter(l -> switch (l.type()) {
@@ -220,8 +262,25 @@ public final class VillageLayoutGameTests {
                 int x = plan.towerX + (int) Math.round(Math.sin(a) * 60), z = plan.towerZ + (int) Math.round(Math.cos(a) * 60);
                 helper.assertTrue(plan.paving(x, z) == Paving.AVENUE, name + ": an avenue at " + bearing + "°");
             }
+        } else if (plan.palette == VillagePalette.MIST) {
+            // Islands: two ring canals, crossed by bridges.
+            for (int r : new int[] {152, 230}) {
+                int wet = 0;
+                for (int deg = 0; deg < 360; deg += 5) {
+                    double a = Math.toRadians(deg);
+                    for (int dr = -3; dr <= 3; dr++) {
+                        if (plan.isWater((int) Math.round(Math.sin(a) * (r + dr)), (int) Math.round(Math.cos(a) * (r + dr)))) {
+                            wet++;
+                            break;
+                        }
+                    }
+                }
+                helper.assertTrue(wet >= 70, name + ": a ring canal at about " + r + " (" + wet + " of 72 bearings wet)");
+            }
+            helper.assertTrue(plan.bridges.size() >= 8 && plan.bridges.stream().anyMatch(VillagePlan.Bridge::arched), name + ": bridges over the canals");
+            helper.assertTrue(plan.gates.get(0)[0] == 0, name + ": the main gate");
         } else {
-            helper.assertFalse(plan.hasRiver(), name + ": no river in the desert");
+            helper.assertFalse(plan.hasRiver(), name + ": no river in the " + plan.palette);
         }
 
         // Street furniture.

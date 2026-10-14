@@ -82,13 +82,13 @@ public class VillageMerchant extends AbstractVillager {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
         goalSelector.addGoal(1, new PanicGoal(this, 0.6));
-        // Monsters in the village: run (the ninjas deal with them).
-        goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.AvoidEntityGoal<>(this, net.minecraft.world.entity.monster.Monster.class,
-                12f, 0.55, 0.7));
+        // Monsters in the village: run home (the ninjas deal with them).
+        goalSelector.addGoal(1, new VillagerShelterGoal(this));
         goalSelector.addGoal(2, new LookAtTradingPlayerGoal(this));
         goalSelector.addGoal(3, new OpenDoorGoal(this, true));
         goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.55));
         goalSelector.addGoal(5, new VillagerChatGoal(this));
+        goalSelector.addGoal(5, new VillagerSitGoal(this));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.35));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8f));
         goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -243,6 +243,15 @@ public class VillageMerchant extends AbstractVillager {
     }
 
     private static final String BUBBLE_TAG = "noirm_bubble";
+
+    /** A speech bubble never outlives its speaker (killed, despawned, through a portal). */
+    @Override
+    public void remove(RemovalReason reason) {
+        if (!level().isClientSide()) {
+            clearBubbles();
+        }
+        super.remove(reason);
+    }
 
     private void clearBubbles() {
         for (var passenger : java.util.List.copyOf(getPassengers())) {

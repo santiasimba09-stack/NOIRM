@@ -92,6 +92,110 @@ public final class VillageLifeGameTests {
         });
     }
 
+    // ------------------------------------------------------------ seats, looks
+
+    /** A villager sits on a stair (riding an invisible seat), and the seat goes when they get up. */
+    @GameTest(template = "empty", batch = "noirm_village_seat", timeoutTicks = 60)
+    public static void villagersSitDown(GameTestHelper helper) {
+        BlockPos stair = new BlockPos(1, 1, 1);
+        helper.setBlock(stair, Blocks.OAK_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH));
+        VillageMerchant villager = helper.spawn(NoirmEntities.VILLAGE_MERCHANT.get(), 1.5f, 1f, 2.5f);
+        BlockPos home = helper.absolutePos(stair);
+        villager.setup(VillageMerchant.Role.CIVILIAN, 0, home, home, 3);
+        var seat = com.noirm.entity.VillagerSitGoal.sit(villager, helper.absolutePos(stair));
+        helper.assertTrue(seat != null && villager.getVehicle() == seat, "the villager sits on the stair");
+        helper.assertTrue(Math.abs(villager.getYRot() - Direction.SOUTH.toYRot()) < 1, "facing out from its back");
+        helper.assertTrue(villager.getY() < helper.absolutePos(stair).getY() + 0.1, "low, on the seat");
+        villager.stopRiding();
+        helper.runAfterDelay(3, () -> {
+            helper.assertTrue(!seat.isAlive(), "the empty seat goes away");
+            villager.discard();
+            helper.succeed();
+        });
+    }
+
+    /** Each biome gets its village look: swamps the Mist, badlands the Stone, meadows the Cloud… */
+    @GameTest(template = "empty", batch = "noirm_village_plan")
+    public static void biomesPickTheLook(GameTestHelper helper) {
+        var biomes = helper.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
+        java.util.Map<net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome>, VillagePalette> expected = java.util.Map.of(
+                net.minecraft.world.level.biome.Biomes.SWAMP, VillagePalette.MIST,
+                net.minecraft.world.level.biome.Biomes.DARK_FOREST, VillagePalette.MIST,
+                net.minecraft.world.level.biome.Biomes.BADLANDS, VillagePalette.STONE,
+                net.minecraft.world.level.biome.Biomes.MEADOW, VillagePalette.CLOUD,
+                net.minecraft.world.level.biome.Biomes.WINDSWEPT_HILLS, VillagePalette.CLOUD,
+                net.minecraft.world.level.biome.Biomes.DESERT, VillagePalette.SAND,
+                net.minecraft.world.level.biome.Biomes.SNOWY_PLAINS, VillagePalette.SNOW,
+                net.minecraft.world.level.biome.Biomes.PLAINS, VillagePalette.LEAF);
+        expected.forEach((key, look) -> helper.assertTrue(VillagePalette.forBiome(biomes.getHolderOrThrow(key)) == look,
+                key.location() + " → " + look + ", got " + VillagePalette.forBiome(biomes.getHolderOrThrow(key))));
+        helper.succeed();
+    }
+
+    /** The new villages' signature buildings: the Cloud village's rock spire and domes, the Stone village's tower, the Mist village's drum. */
+    @GameTest(template = "empty", batch = "noirm_village_looks", timeoutTicks = 100)
+    public static void villageLooksAreBuilt(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos origin = helper.absolutePos(new BlockPos(1, 2, 1));
+        for (int style = 0; style < 3; style++) {
+            int s = style;
+            build(helper, level, origin, VillagePalette.CLOUD, new VillagePlan.Lot(LotType.ROCK_SPIRE, 0, 0, 12, 12, Direction.SOUTH, 0, style, 31L + style, 0),
+                    60, () -> {
+                        helper.assertTrue(count(level, origin, 3, 20, 3, 9, 20, 9, st -> !st.isAir()) >= 20, "rock spire " + s + " rises");
+                        helper.assertTrue(count(level, origin, 0, 0, -2, 12, 40, 12, st -> st.is(Blocks.LADDER)) >= 25, "with a ladder up it");
+                    });
+        }
+        build(helper, level, origin, VillagePalette.CLOUD, new VillagePlan.Lot(LotType.ROUND_HOUSE, 0, 0, 9, 10, Direction.SOUTH, 1, 0, 41L, 0), 16,
+                () -> helper.assertTrue(count(level, origin, 0, 4, 0, 9, 9, 10, st -> st.is(VillagePalette.CLOUD.colourway(0).roofFlat())) >= 12,
+                        "a Cloud round house wears a dome"));
+        build(helper, level, origin, VillagePalette.STONE, new VillagePlan.Lot(LotType.ROUND_TOWER, 0, 0, 10, 11, Direction.SOUTH, 5, 0, 42L, 0), 30, () -> {
+            int low = count(level, origin, -1, 1, -1, 11, 1, 12, st -> !st.isAir());
+            int high = count(level, origin, -1, 17, -1, 11, 17, 12, st -> !st.isAir());
+            helper.assertTrue(high < low, "the Stone tower narrows as it rises: " + low + " → " + high);
+        });
+        build(helper, level, origin, VillagePalette.MIST, new VillagePlan.Lot(LotType.ROUND_HOUSE, 0, 0, 9, 10, Direction.SOUTH, 2, 0, 43L, 0), 16,
+                () -> helper.assertTrue(count(level, origin, 0, 6, 0, 9, 12, 10, st -> st.is(Blocks.MOSS_CARPET) || st.is(Blocks.MOSS_BLOCK)) >= 6,
+                        "a Mist drum is moss-topped"));
+        // Each Kage tower's crown.
+        for (VillagePalette look : new VillagePalette[] {VillagePalette.MIST, VillagePalette.CLOUD, VillagePalette.STONE}) {
+            BoundingBox area = new BoundingBox(origin.getX() - 16, origin.getY() - 2, origin.getZ() - 16, origin.getX() + 16, origin.getY() + 64,
+                    origin.getZ() + 16);
+            BlockState[] saved = save(level, area);
+            try {
+                for (BlockPos pos : BlockPos.betweenClosed(area.minX(), origin.getY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ())) {
+                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                }
+                VillageBuilder.buildKageTower(level, area, look, origin, false);
+                int crown = count(level, origin, -9, VillageBuilder.TOWER_HEIGHT + 7, -9, 9, VillageBuilder.TOWER_HEIGHT + 22, 9, st -> !st.isAir());
+                helper.assertTrue(crown >= 40, look + "'s Kage tower has its crown: " + crown);
+            } finally {
+                restore(level, area, saved);
+            }
+        }
+        helper.succeed();
+    }
+
+    private static BlockState[] save(ServerLevel level, BoundingBox area) {
+        BlockState[] saved = new BlockState[area.getXSpan() * area.getYSpan() * area.getZSpan()];
+        int i = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ())) {
+            saved[i++] = level.getBlockState(pos);
+        }
+        return saved;
+    }
+
+    private static void restore(ServerLevel level, BoundingBox area, BlockState[] saved) {
+        int i = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(area.minX(), area.minY(), area.minZ(), area.maxX(), area.maxY(), area.maxZ())) {
+            BlockState old = saved[i++];
+            if (level.getBlockState(pos) != old) {
+                level.setBlock(pos, old, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            }
+        }
+        level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, AABB.of(area).inflate(2),
+                e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+    }
+
     // ------------------------------------------------------------ the new buildings
 
     /**
@@ -151,8 +255,13 @@ public final class VillageLifeGameTests {
         helper.succeed();
     }
 
-    /** Builds one lot at {@code origin}, runs the checks, and puts everything back. */
     private static void build(GameTestHelper helper, ServerLevel level, BlockPos origin, VillagePlan.Lot lot, int below, int above, Runnable checks) {
+        build(helper, level, origin, VillagePalette.LEAF, lot, above, checks);
+    }
+
+    /** Builds one lot at {@code origin} in a village look, runs the checks, and puts everything back. */
+    private static void build(GameTestHelper helper, ServerLevel level, BlockPos origin, VillagePalette palette, VillagePlan.Lot lot, int above,
+                              Runnable checks) {
         BoundingBox area = new BoundingBox(origin.getX() + lot.x1() - 4, origin.getY() - 5, origin.getZ() + lot.z1() - 4,
                 origin.getX() + lot.x2() + 4, origin.getY() + above, origin.getZ() + lot.z2() + 4);
         BlockState[] saved = new BlockState[area.getXSpan() * area.getYSpan() * area.getZSpan()];
@@ -166,7 +275,7 @@ public final class VillageLifeGameTests {
                     : pos.getY() == origin.getY() - 1 ? Blocks.GRASS_BLOCK.defaultBlockState() : Blocks.STONE.defaultBlockState();
             level.setBlock(pos, site, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
-        VillageBuilder.buildLot(level, area, VillagePalette.LEAF, origin, lot);
+        VillageBuilder.buildLot(level, area, palette, origin, lot);
         try {
             checks.run();
         } finally {

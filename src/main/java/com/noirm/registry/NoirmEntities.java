@@ -60,6 +60,14 @@ public final class NoirmEntities {
                     .clientTrackingRange(10)
                     .build(Noirm.id("village_merchant").toString()));
 
+    /** An invisible seat a villager sits on (a bench, a stool, a step). */
+    public static final RegistryObject<EntityType<com.noirm.entity.SeatEntity>> SEAT = ENTITY_TYPES.register("seat",
+            () -> EntityType.Builder.<com.noirm.entity.SeatEntity>of(com.noirm.entity.SeatEntity::new, MobCategory.MISC)
+                    .sized(0.2f, 0.2f)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .build(Noirm.id("seat").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {

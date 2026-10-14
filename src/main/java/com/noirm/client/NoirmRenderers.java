@@ -25,5 +25,7 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(NoirmEntities.VILLAGE_MERCHANT.get(), VillageMerchantRenderer::new);
         // Jutsu projectiles are drawn entirely with particles (see JutsuProjectile#trail).
         event.registerEntityRenderer(NoirmEntities.JUTSU_PROJECTILE.get(), NoopRenderer::new);
+        // Seats are invisible: villagers sitting are all you see.
+        event.registerEntityRenderer(NoirmEntities.SEAT.get(), NoopRenderer::new);
     }
 }

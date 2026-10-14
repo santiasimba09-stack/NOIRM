@@ -66,6 +66,7 @@ final class Buildings {
             case CEMETERY -> Yards.cemetery(f);
             case SPIRE -> RoundBuildings.spire(f);
             case JONIN_STATION -> RoundBuildings.joninStation(f);
+            case ROCK_SPIRE -> RoundBuildings.rockSpire(f);
             default -> Landmarks.draw(f);
         }
     }
@@ -190,8 +191,11 @@ final class Buildings {
             bed(f, cu - 1, cv + 1, STOREY);
         }
         // The roof.
-        if (f.p == VillagePalette.SAND) {
+        if (f.p == VillagePalette.SAND || f.p == VillagePalette.CLOUD) {
             dome(f, cu, h - 1, cv, r, roof);
+            if (f.p == VillagePalette.CLOUD) {
+                Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), false);
+            }
         } else if (f.p == VillagePalette.SNOW) {
             cone(f, cu, h - 1, cv, r + 1, roof);
         } else {
@@ -199,7 +203,9 @@ final class Buildings {
             Shapes.disk(f, cu, cv, r, h - 1, roof.defaultBlockState());
             Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
             Shapes.disk(f, cu, cv, r - 1, h, roof.defaultBlockState());
-            if (f.lot.style() % 2 == 0) {
+            if (f.p == VillagePalette.MIST) {
+                mossTop(f, cu, h + 1, cv, r - 1);
+            } else if (f.lot.style() % 2 == 0) {
                 waterTank(f, cu, h + 1, cv);
             } else {
                 f.set(cu + 1, h + 1, cv, f.pick(FLOWERS));
@@ -277,8 +283,26 @@ final class Buildings {
         f.set(u1 + 1, top + 4, v2 - 1, Blocks.LIGHTNING_ROD);
     }
 
+    /** Moss carpet, azalea bushes and a fern or two over a round roof of radius {@code r} (the Mist village's green tops). */
+    static void mossTop(LotFrame f, int cu, int y, int cv, int r) {
+        for (int du = -r; du <= r; du++) {
+            for (int dv = -r; dv <= r; dv++) {
+                if (Shapes.dist(du, dv) > r + 0.5) {
+                    continue;
+                }
+                long h = Materials.hash(f.x(cu + du, cv + dv), y, f.z(cu + du, cv + dv), f.lot.seed()) % 10;
+                f.set(cu + du, y, cv + dv, h < 6 ? Blocks.MOSS_CARPET : h == 6 ? Blocks.AZALEA : h == 7 ? Blocks.FLOWERING_AZALEA
+                        : h == 8 ? Blocks.FERN : Blocks.AIR);
+            }
+        }
+    }
+
     /** A tall round tower of flats (the Hidden Leaf skyline is full of them). */
     static void roundTower(LotFrame f) {
+        if (f.p == VillagePalette.STONE) {
+            taperedTower(f);
+            return;
+        }
         int r = Math.max(4, Math.min(f.w, f.d - 1) / 2 - 1);
         int cu = (f.w - 1) / 2;
         int cv = (f.d - 2) / 2;
@@ -321,12 +345,80 @@ final class Buildings {
             f.set(cu + 1, y, cv - r + 2, k % 2 == 0 ? Blocks.BARREL : Blocks.BOOKSHELF);
         }
         f.set(cu, h - 1, cv - r + 1, slab(f.p.slab, SlabType.BOTTOM));
-        if (f.p != VillagePalette.SAND) {
+        if (f.p == VillagePalette.CLOUD) {
+            dome(f, cu, h - 1, cv, r, cw.roofFlat());
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+        } else if (f.p == VillagePalette.MIST) {
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+            mossTop(f, cu, h, cv, r - 1);
+        } else if (f.p != VillagePalette.SAND) {
             Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
             waterTank(f, cu, h, cv);
         } else {
             dome(f, cu, h - 1, cv, r - 1, band);
         }
+    }
+
+    /**
+     * The Stone village's tower: a round tower that narrows as it rises (a block every two storeys),
+     * stone at the foot and the colourway's plaster above, a band and a ledge at every step, windows
+     * all round, a ladder inside, and a flat roof with a parapet (where the rope bridges land).
+     */
+    static void taperedTower(LotFrame f) {
+        Materials.Colourway cw = cw(f);
+        int r0 = Math.max(4, Math.min(f.w, f.d - 1) / 2 - 1);
+        int cu = (f.w - 1) / 2, cv = (f.d - 2) / 2;
+        int floors = Math.max(4, f.lot.floors());
+        int h = floors * STOREY;
+        Shapes.disk(f, cu, cv, r0, -1, f.p.planks.defaultBlockState());
+        for (int k = 0; k < floors; k++) {
+            int r = Math.max(3, r0 - k / 2);
+            int y0 = k * STOREY;
+            Shapes.drum(f, cu, cv, r, y0, y0 + STOREY - 1, k == 0 ? Blocks.STONE_BRICKS : cw.wall());
+            for (int du = -r + 1; du <= r - 1; du++) {
+                for (int dv = -r + 1; dv <= r - 1; dv++) {
+                    if (Shapes.dist(du, dv) <= r - 0.5) {
+                        f.fill(cu + du, y0, cv + dv, cu + du, y0 + STOREY - 2, cv + dv, Blocks.AIR);
+                        f.set(cu + du, y0 + STOREY - 1, cv + dv, f.p.planks);
+                    }
+                }
+            }
+            Shapes.drum(f, cu, cv, r, y0 + STOREY - 1, y0 + STOREY - 1, cw.accent());
+            int next = Math.max(3, r0 - (k + 1) / 2);
+            if (next < r && k + 1 < floors) {
+                // The step in: a ledge of slabs where the wall moves in.
+                for (int du = -r; du <= r; du++) {
+                    for (int dv = -r; dv <= r; dv++) {
+                        double d = Shapes.dist(du, dv);
+                        if (d <= r + 0.5 && d > next + 0.5) {
+                            f.set(cu + du, y0 + STOREY, cv + dv, slab(cw.roofSlab(), SlabType.BOTTOM));
+                        }
+                    }
+                }
+            }
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                if (side == Direction.SOUTH && k == 0) {
+                    continue;
+                }
+                f.set(cu + side.getStepX() * r, y0 + 1, cv + side.getStepZ() * r, window(f, cu, y0 + 1, cv + side.ordinal()));
+            }
+            f.set(cu, y0 + 2, cv, HANGING_LANTERN);
+            if (k % 2 == 0) {
+                bed(f, cu - 1, cv + 1, y0);
+            } else {
+                f.set(cu + 1, y0, cv + 1, Blocks.BARREL);
+            }
+        }
+        frontDoor(f, cu, cv + r0, f.d - 1);
+        ladder(f, cu, cv - Math.max(3, r0 - (floors - 1) / 2) + 1, 0, h, floors);
+        // The roof: a deck with a parapet, and a lookout's flagpole.
+        int rt = Math.max(3, r0 - (floors - 1) / 2);
+        Shapes.disk(f, cu, cv, rt, h - 1, cw.roofFlat().defaultBlockState());
+        Shapes.drum(f, cu, cv, rt, h, h, f.p.wall);
+        f.set(cu, h - 1, cv - rt + 1, Blocks.AIR);
+        f.fill(cu + 1, h, cv, cu + 1, h + 3, cv, Blocks.IRON_BARS);
+        f.set(cu + 1, h + 4, cv, f.p == VillagePalette.STONE ? Blocks.BROWN_WALL_BANNER.defaultBlockState()
+                .setValue(WallBannerBlock.FACING, Direction.SOUTH) : Blocks.LIGHTNING_ROD.defaultBlockState());
     }
 
     /** A wide traditional house: a raised veranda, paper screens, a big tiled roof (clan homes, the chief's house). */
@@ -639,8 +731,9 @@ final class Buildings {
         for (int i = 0; i < 6; i++) {
             int u = f.rnd.nextInt(f.w);
             int v = f.rnd.nextInt(f.d);
+            Block flower = f.rnd.nextBoolean() ? Blocks.CORNFLOWER : Blocks.ALLIUM; // (drawn first: a look into the next chunk mustn't change the rolls)
             if (Math.abs(u - mu) > 1 && Math.abs(v - mv) > 1 && f.get(u, 0, v).isAir()) {
-                f.set(u, 0, v, f.rnd.nextBoolean() ? Blocks.CORNFLOWER : Blocks.ALLIUM);
+                f.set(u, 0, v, flower);
             }
         }
     }
@@ -868,8 +961,10 @@ final class Buildings {
                     setIfAir(f, u + s, y, v2 + 1, shutterBlock.defaultBlockState().setValue(TrapDoorBlock.FACING, Direction.SOUTH)
                             .setValue(TrapDoorBlock.OPEN, true));
                 }
-                if (Materials.hash(f.x(u, v2), y, f.z(u, v2), f.lot.seed()) % 4 == 0) {
-                    setIfAir(f, u, y, v2 + 1, f.pick(FLOWERS));
+                long h = Materials.hash(f.x(u, v2), y, f.z(u, v2), f.lot.seed());
+                if (h % 4 == 0) {
+                    // (By hash, not the lot's random: whether this runs can depend on a neighbouring chunk.)
+                    setIfAir(f, u, y, v2 + 1, FLOWERS.get((int) (h / 4 % FLOWERS.size())));
                 }
             }
         }
@@ -900,6 +995,12 @@ final class Buildings {
         int kind = (int) ((f.lot.seed() >>> 7) & 3);
         if (f.p == VillagePalette.SAND && kind == 0) {
             kind = 1;
+        }
+        if (f.p == VillagePalette.CLOUD && kind != 1) {
+            // The Cloud village's roofs carry little domes.
+            int r = Math.max(1, Math.min(u2 - u1, v2 - v1) / 2 - 2);
+            dome(f, (u1 + u2) / 2, top - 1, (v1 + v2) / 2, r, cw(f).roofFlat());
+            return;
         }
         switch (kind) {
             case 0 -> tankCluster(f, u2 - 2, top, v1 + 2, u2 - u1 >= 8 ? 2 : 1);

@@ -672,8 +672,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
      * but a creeper (they'd blow the houses up), and never this mod's own creatures.
      */
     public boolean wouldDefendAgainst(LivingEntity monster) {
-        if (!resident || isYielded() || monster instanceof net.minecraft.world.entity.monster.Creeper) {
-            return false;
+        if (!resident || isYielded() || monster instanceof net.minecraft.world.entity.monster.Creeper
+                || monster instanceof net.minecraft.world.entity.NeutralMob || !isWithinRestriction(monster.blockPosition())) {
+            return false; // (not creepers, not endermen and the like, and only inside the patch they look after)
         }
         var key = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(monster.getType());
         return key != null && "minecraft".equals(key.getNamespace());

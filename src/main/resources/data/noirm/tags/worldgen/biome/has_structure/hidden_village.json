@@ -12,6 +12,15 @@
     "minecraft:desert",
     "minecraft:taiga",
     "minecraft:snowy_plains",
-    "minecraft:snowy_taiga"
+    "minecraft:snowy_taiga",
+    "minecraft:swamp",
+    "minecraft:mangrove_swamp",
+    "minecraft:dark_forest",
+    "minecraft:windswept_hills",
+    "minecraft:windswept_forest",
+    "minecraft:windswept_gravelly_hills",
+    "minecraft:badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:eroded_badlands"
   ]
 }

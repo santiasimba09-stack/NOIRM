@@ -129,7 +129,7 @@ public final class VillageBuildQueue {
             var chunks = level.getChunkSource();
             for (int i = built; i < Math.min(this.chunks.size(), built + LOOKAHEAD); i++) {
                 ChunkPos ahead = this.chunks.get(i);
-                chunks.addRegionTicket(TICKET, ahead, 1, ahead);
+                chunks.addRegionTicket(TICKET, ahead, 2, ahead); // (lots near the chunk's edge look a little way into the next)
             }
             ChunkPos pos = this.chunks.get(built);
             if (wait && !neighbourhoodLoaded(pos) && ++waited < MAX_WAIT) {
@@ -146,8 +146,8 @@ public final class VillageBuildQueue {
         private boolean neighbourhoodLoaded(ChunkPos pos) {
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    if (!level.getChunkSource().hasChunk(pos.x + dx, pos.z + dz)) {
-                        return false;
+                    if (level.getChunkSource().getChunkNow(pos.x + dx, pos.z + dz) == null) {
+                        return false; // (hasChunk only says a chunk is wanted, not that it's ready)
                     }
                 }
             }
@@ -163,7 +163,7 @@ public final class VillageBuildQueue {
             boolean[] loaded = new boolean[9];
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    loaded[(dx + 1) * 3 + dz + 1] = level.getChunkSource().hasChunk(pos.x + dx, pos.z + dz);
+                    loaded[(dx + 1) * 3 + dz + 1] = level.getChunkSource().getChunkNow(pos.x + dx, pos.z + dz) != null;
                 }
             }
             int x0 = pos.getMinBlockX(), z0 = pos.getMinBlockZ();

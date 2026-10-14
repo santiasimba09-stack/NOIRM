@@ -40,7 +40,9 @@ public final class VillagePlan {
         /** The jōnin standby station: a round plank-clad lounge beside the Academy. */
         JONIN_STATION,
         /** The cemetery on the village edge: rows of graves and a flame memorial. */
-        CEMETERY
+        CEMETERY,
+        /** A tall spire of rock (the Cloud village): bare, a dish platform on top, or a house up there ({@code style} picks). */
+        ROCK_SPIRE
     }
 
     /**
@@ -174,6 +176,13 @@ public final class VillagePlan {
     /** Steps down to the river from the bank at (x, z), going down towards {@code facing}. */
     public record Landing(int x, int z, Direction facing) {}
 
+    /**
+     * A rope bridge (the Stone village) from the roof of one tower, at (x1, z1) on its parapet, to
+     * (x2, z2) on the wall of another, its deck at height {@code y}; {@code door} when it meets the
+     * second tower's wall below its roof (a doorway is cut there), else a gap in its parapet.
+     */
+    public record SkyBridge(int x1, int z1, int x2, int z2, int y, boolean door) {}
+
     /** Who lives here. */
     public enum Role { KAGE, GUARD, PATROL, RUNNER, TRAINEE, CLAN_NINJA, NINJA, MERCHANT, CIVILIAN, CHILD, TEACHER, DUMMY, CHIEF,
         /** Village animals: a cat on a porch, chickens in a yard, koi in a pond. */
@@ -208,6 +217,8 @@ public final class VillagePlan {
     public final List<Bridge> bridges = new ArrayList<>();
     /** Steps down to the river from its banks. */
     public final List<Landing> landings = new ArrayList<>();
+    /** Rope bridges between towers. */
+    public final List<SkyBridge> skyBridges = new ArrayList<>();
     /** The canon clan living in the clan compound (capital only), or "" for none. */
     public String compoundClan = "";
     /** Where the capital's landmarks are (local coordinates), set by the planner. */
@@ -315,6 +326,11 @@ public final class VillagePlan {
 
     private record PlanKey(VillageKind kind, VillagePalette palette, long seed) {}
 
+    /** Forgets the cached plans (the server stopped). */
+    public static void clearCache() {
+        CACHE.clear();
+    }
+
     /** A freshly made plan, bypassing the cache (for tests). */
     public static VillagePlan uncached(VillageKind kind, VillagePalette palette, long seed) {
         return VillagePlanner.plan(kind, palette, seed);
@@ -349,7 +365,12 @@ public final class VillagePlan {
 
         /** The value for {@code key}, made with {@code make} the first time (by one thread only). */
         public V get(K key, java.util.function.Function<? super K, ? extends V> make) {
-            Slot<V> slot = slots.computeIfAbsent(key, k -> new Slot<>());
+            // (Stamped as it's made, so another thread's eviction never picks a brand-new slot.)
+            Slot<V> slot = slots.computeIfAbsent(key, k -> {
+                Slot<V> made = new Slot<>();
+                made.used = clock.incrementAndGet();
+                return made;
+            });
             slot.used = clock.incrementAndGet();
             if (slots.size() > max) {
                 evict();
@@ -359,6 +380,11 @@ public final class VillagePlan {
 
         public int size() {
             return slots.size();
+        }
+
+        /** Forgets everything (when the server stops, so a later world starts fresh). */
+        public void clear() {
+            slots.clear();
         }
 
         private synchronized void evict() {

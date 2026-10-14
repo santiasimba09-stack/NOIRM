@@ -158,8 +158,17 @@ final class Landmarks {
                 }
             }
         }
-        if (p == VillagePalette.SAND) {
+        if (p == VillagePalette.SAND || p == VillagePalette.MIST) {
             Buildings.dome(f, cu, h + 6, cv, office + 1, p.towerRoof);
+        } else if (p == VillagePalette.CLOUD) {
+            onion(f, cu, h + 7, cv, office, p.towerRoof);
+        } else if (p == VillagePalette.STONE) {
+            // A stepped stone crown.
+            for (int k = 0; k <= office; k += 2) {
+                Shapes.disk(f, cu, cv, office + 1 - k, h + 7 + k / 2, Blocks.STONE_BRICKS.defaultBlockState());
+                Shapes.drum(f, cu, cv, office + 1 - k, h + 7 + k / 2, h + 7 + k / 2, p.towerRoof);
+            }
+            f.set(cu, h + 8 + office / 2, cv, Blocks.LIGHTNING_ROD);
         } else {
             for (int k = 0; k <= office + 1; k++) {
                 for (int du = -office - 2; du <= office + 2; du++) {
@@ -186,6 +195,27 @@ final class Landmarks {
             double a = k * Math.PI / 4;
             f.set(cu + (int) Math.round(Math.sin(a) * (r + 2)), h + 1, cv + (int) Math.round(Math.cos(a) * (r + 2)), Blocks.LANTERN);
         }
+    }
+
+    /**
+     * An onion dome on a drum of radius {@code r} at height {@code y}: it swells out past the wall,
+     * then draws in to a point, with a spike on top (the Cloud village's Kage tower).
+     */
+    static void onion(LotFrame f, int cu, int y, int cv, int r, Block block) {
+        double[] profile = {1.0, 1.15, 1.25, 1.25, 1.15, 1.0, 0.8, 0.6, 0.42, 0.28, 0.16, 0.06};
+        for (int k = 0; k < profile.length; k++) {
+            double rr = (r + 1) * profile[k];
+            for (int du = -r - 3; du <= r + 3; du++) {
+                for (int dv = -r - 3; dv <= r + 3; dv++) {
+                    double d = Shapes.dist(du, dv);
+                    if (d <= rr + 0.3 && (d > rr - 1.4 || k == profile.length - 1)) {
+                        f.set(cu + du, y + k, cv + dv, block);
+                    }
+                }
+            }
+        }
+        f.fill(cu, y + profile.length, cv, cu, y + profile.length + 2, cv, Blocks.IRON_BARS);
+        f.set(cu, y + profile.length + 3, cv, Blocks.LIGHTNING_ROD);
     }
 
     /** Tiles for the Kage residence's eaves: red brick in the Leaf, sandstone in the Sand, slate in the Snow. */
@@ -362,10 +392,10 @@ final class Landmarks {
                 f.set(u, 1, v2, Blocks.GLASS_PANE);
             }
         }
-        // A red cross on the front, high up.
+        // A round red-cross medallion on the front, high up, over a canopy at the door.
         int cy = floors * STOREY - 5;
-        f.fill(mid - 1, cy - 3, v2 + 1, mid + 2, cy + 3, v2 + 1, Blocks.RED_CONCRETE);
-        f.fill(mid - 3, cy - 1, v2 + 1, mid + 4, cy + 1, v2 + 1, Blocks.RED_CONCRETE);
+        Shapes.medallion(f, mid, cy, v2 + 1, VillagePalette.Glyph.HEAL, Blocks.RED_CONCRETE, Blocks.WHITE_CONCRETE, Blocks.RED_CONCRETE, 9);
+        f.fill(mid - 3, 3, v2 + 1, mid + 4, 3, v2 + 3, slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, SlabType.BOTTOM));
         // Reception downstairs, wards upstairs.
         f.fill(mid - 3, 0, v2 - 4, mid + 4, 0, v2 - 4, slab(Blocks.QUARTZ_SLAB, SlabType.TOP));
         f.set(mid - 4, 0, v1 + 1, Blocks.BREWING_STAND);
@@ -383,10 +413,28 @@ final class Landmarks {
             f.set(mid, y, (v1 + v2) / 2, Blocks.BREWING_STAND);
         }
         Buildings.ladder(f, mid - 1, v1 + 1, 0, floors * STOREY - 1, floors);
-        Buildings.flatRoof(f, u1, v1, u2, v2, floors * STOREY - 1);
+        // A teal roof with a lip, a dome in the middle and a little turret at each front corner.
+        int top = floors * STOREY;
+        f.fill(u1, top - 1, v1, u2, top - 1, v2, Blocks.WAXED_OXIDIZED_CUT_COPPER);
+        for (int u = u1; u <= u2; u++) {
+            f.set(u, top, v1, slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, SlabType.BOTTOM));
+            f.set(u, top, v2, slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, SlabType.BOTTOM));
+        }
+        for (int v = v1; v <= v2; v++) {
+            f.set(u1, top, v, slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, SlabType.BOTTOM));
+            f.set(u2, top, v, slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, SlabType.BOTTOM));
+        }
+        int dr = Math.max(3, Math.min(u2 - u1, v2 - v1) / 4);
+        Shapes.drum(f, mid, (v1 + v2) / 2, dr, top, top + 1, wall);
+        Buildings.dome(f, mid, top + 2, (v1 + v2) / 2, dr, Blocks.WAXED_OXIDIZED_CUT_COPPER);
+        for (int u : new int[] {u1 + 1, u2 - 1}) {
+            Shapes.drum(f, u, v2 - 1, 1, top, top + 2, wall);
+            f.set(u, top + 3, v2 - 1, Blocks.WAXED_OXIDIZED_CUT_COPPER);
+            f.set(u, top + 4, v2 - 1, Blocks.LIGHTNING_ROD);
+        }
         if (f.p != VillagePalette.SAND) {
-            Buildings.waterTank(f, u1 + 3, floors * STOREY, v1 + 3);
-            Buildings.waterTank(f, u2 - 3, floors * STOREY, v1 + 3);
+            Buildings.waterTank(f, u1 + 3, top, v1 + 3);
+            Buildings.waterTank(f, u2 - 3, top, v1 + 3);
         }
         // A little garden with benches in front.
         for (int u = u1; u <= u2; u += 6) {

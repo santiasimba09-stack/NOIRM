@@ -55,6 +55,11 @@ public class NinjaVillageStructure extends Structure {
     /** Hidden villages worked out so far, by anchor (whether there's one, and where and how). */
     private static final VillagePlan.Cache<SiteKey, Optional<Site>> CAPITALS = new VillagePlan.Cache<>(64);
 
+    /** Forgets the hidden villages worked out so far (the server stopped; the next world has its own). */
+    public static void clearCache() {
+        CAPITALS.clear();
+    }
+
     private final VillageKind kind;
     private final Optional<ResourceKey<StructureSet>> avoid;
 

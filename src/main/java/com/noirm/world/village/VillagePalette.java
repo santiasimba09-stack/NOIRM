@@ -3,6 +3,7 @@ package com.noirm.world.village;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
@@ -17,10 +18,18 @@ import java.util.List;
  *       tower (the Hidden Leaf look).</li>
  *   <li>{@link #SAND}: deserts, badlands and savannas. Sandstone domes, terracotta, acacia.</li>
  *   <li>{@link #SNOW}: cold biomes. Spruce, white walls and blue roofs.</li>
+ *   <li>{@link #MIST}: swamps and dark forests. Moss-topped stone-brick drums, dark wood, canals
+ *       and mist (the Hidden Mist look).</li>
+ *   <li>{@link #CLOUD}: meadows and windswept hills. White walls, blue roofs and domes, an onion-domed
+ *       Kage tower, rock spires (the Hidden Cloud look).</li>
+ *   <li>{@link #STONE}: badlands and gravelly hills. Mud-brick and stone towers that taper, linked by
+ *       rope bridges, inside a ring of rock (the Hidden Stone look).</li>
  * </ul>
+ *
+ * <p>Saved by position in the list (a village piece's {@code Palette}), so new looks go at the end.
  */
 public enum VillagePalette {
-    LEAF(Blocks.GRASS_BLOCK, Blocks.DIRT, Blocks.DIRT_PATH, Blocks.STONE_BRICKS, Blocks.RED_TERRACOTTA, Blocks.ORANGE_TERRACOTTA,
+    LEAF(Blocks.GRASS_BLOCK, Blocks.DIRT, Blocks.DIRT_PATH, Blocks.TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.ORANGE_TERRACOTTA,
             List.of(Blocks.WHITE_TERRACOTTA, Blocks.BIRCH_PLANKS, Blocks.SMOOTH_SANDSTONE, Blocks.WHITE_CONCRETE),
             List.of(Blocks.ORANGE_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.RED_CONCRETE, Blocks.ORANGE_CONCRETE),
             Blocks.LIGHT_GRAY_CONCRETE, Blocks.OAK_LOG, Blocks.OAK_PLANKS, Blocks.OAK_SLAB, Blocks.OAK_FENCE, Blocks.OAK_DOOR,
@@ -37,7 +46,25 @@ public enum VillagePalette {
             List.of(Blocks.BLUE_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.SPRUCE_PLANKS),
             Blocks.LIGHT_GRAY_CONCRETE, Blocks.SPRUCE_LOG, Blocks.SPRUCE_PLANKS, Blocks.SPRUCE_SLAB, Blocks.SPRUCE_FENCE, Blocks.SPRUCE_DOOR,
             Blocks.SPRUCE_STAIRS, Blocks.STONE, Blocks.SMOOTH_STONE, Blocks.WHITE_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE,
-            Blocks.BLUE_WOOL, Blocks.WHITE_WOOL, Glyph.SNOWFLAKE, "entity.noirm.kage.village_head");
+            Blocks.BLUE_WOOL, Blocks.WHITE_WOOL, Glyph.SNOWFLAKE, "entity.noirm.kage.village_head"),
+    MIST(Blocks.GRASS_BLOCK, Blocks.STONE, Blocks.COBBLESTONE, Blocks.MOSSY_STONE_BRICKS, Blocks.CALCITE, Blocks.CYAN_TERRACOTTA,
+            List.of(Blocks.STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS, Blocks.CALCITE, Blocks.LIGHT_GRAY_TERRACOTTA),
+            List.of(Blocks.MOSS_BLOCK, Blocks.CYAN_TERRACOTTA, Blocks.DARK_PRISMARINE),
+            Blocks.LIGHT_GRAY_CONCRETE, Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_SLAB, Blocks.DARK_OAK_FENCE, Blocks.DARK_OAK_DOOR,
+            Blocks.DARK_OAK_STAIRS, Blocks.STONE, Blocks.SMOOTH_STONE, Blocks.WHITE_CONCRETE, Blocks.BLUE_CONCRETE,
+            Blocks.CYAN_WOOL, Blocks.WHITE_WOOL, Glyph.WATER, "entity.noirm.kage.mizukage"),
+    CLOUD(Blocks.GRASS_BLOCK, Blocks.STONE, Blocks.POLISHED_ANDESITE, Blocks.STONE, Blocks.SMOOTH_QUARTZ, Blocks.LIGHT_BLUE_CONCRETE,
+            List.of(Blocks.SMOOTH_QUARTZ, Blocks.WHITE_TERRACOTTA, Blocks.CALCITE, Blocks.POLISHED_DIORITE),
+            List.of(Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.CYAN_TERRACOTTA),
+            Blocks.WHITE_CONCRETE, Blocks.BIRCH_LOG, Blocks.BIRCH_PLANKS, Blocks.BIRCH_SLAB, Blocks.BIRCH_FENCE, Blocks.BIRCH_DOOR,
+            Blocks.BIRCH_STAIRS, Blocks.STONE, Blocks.SMOOTH_STONE, Blocks.YELLOW_CONCRETE, Blocks.BLACK_CONCRETE,
+            Blocks.LIGHT_BLUE_WOOL, Blocks.WHITE_WOOL, Glyph.LIGHTNING, "entity.noirm.kage.raikage"),
+    STONE(Blocks.COARSE_DIRT, Blocks.STONE, Blocks.PACKED_MUD, Blocks.STONE, Blocks.MUD_BRICKS, Blocks.BROWN_TERRACOTTA,
+            List.of(Blocks.MUD_BRICKS, Blocks.PACKED_MUD, Blocks.POLISHED_ANDESITE, Blocks.STONE_BRICKS),
+            List.of(Blocks.BROWN_TERRACOTTA, Blocks.TERRACOTTA, Blocks.GRAY_TERRACOTTA),
+            Blocks.LIGHT_GRAY_CONCRETE, Blocks.SPRUCE_LOG, Blocks.SPRUCE_PLANKS, Blocks.SPRUCE_SLAB, Blocks.SPRUCE_FENCE, Blocks.SPRUCE_DOOR,
+            Blocks.SPRUCE_STAIRS, Blocks.STONE, Blocks.SMOOTH_STONE, Blocks.WHITE_TERRACOTTA, Blocks.BROWN_CONCRETE,
+            Blocks.BROWN_WOOL, Blocks.ORANGE_WOOL, Glyph.EARTH, "entity.noirm.kage.tsuchikage");
 
     /** A 5×5 picture painted on the Kage tower (top row first; '#' = painted). */
     public enum Glyph {
@@ -123,8 +150,13 @@ public enum VillagePalette {
         Block wall = walls[i % walls.length];
         Block[] roof = roofs[(i / 4) % roofs.length];
         Block trim = trims[(i / 80) % trims.length];
-        Block accent = this == LEAF ? (wall == Blocks.SMOOTH_SANDSTONE ? Blocks.SPRUCE_PLANKS : Blocks.STRIPPED_SPRUCE_LOG)
-                : this == SAND ? Blocks.TERRACOTTA : Blocks.SPRUCE_PLANKS;
+        Block accent = switch (this) {
+            case LEAF -> wall == Blocks.SMOOTH_SANDSTONE ? Blocks.SPRUCE_PLANKS : Blocks.STRIPPED_SPRUCE_LOG;
+            case SAND -> Blocks.TERRACOTTA;
+            case MIST -> Blocks.DARK_OAK_PLANKS;
+            case CLOUD -> wall == Blocks.POLISHED_DIORITE ? Blocks.SMOOTH_STONE : Blocks.POLISHED_DIORITE;
+            default -> Blocks.SPRUCE_PLANKS;
+        };
         return new Materials.Colourway(wall, accent, roof[0], roof[1], roof[2], trim, roof[3]);
     }
 
@@ -134,6 +166,9 @@ public enum VillagePalette {
             case LEAF -> new Block[] {Blocks.SMOOTH_SANDSTONE, Blocks.WHITE_TERRACOTTA, Blocks.BIRCH_PLANKS, Blocks.CALCITE};
             case SAND -> new Block[] {Blocks.SMOOTH_SANDSTONE, Blocks.SANDSTONE, Blocks.PACKED_MUD, Blocks.CUT_SANDSTONE};
             case SNOW -> new Block[] {Blocks.SPRUCE_PLANKS, Blocks.WHITE_TERRACOTTA, Blocks.STONE_BRICKS, Blocks.STRIPPED_SPRUCE_LOG};
+            case MIST -> new Block[] {Blocks.STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS, Blocks.CALCITE, Blocks.LIGHT_GRAY_TERRACOTTA};
+            case CLOUD -> new Block[] {Blocks.SMOOTH_QUARTZ, Blocks.WHITE_TERRACOTTA, Blocks.CALCITE, Blocks.POLISHED_DIORITE};
+            case STONE -> new Block[] {Blocks.MUD_BRICKS, Blocks.PACKED_MUD, Blocks.POLISHED_ANDESITE, Blocks.STONE_BRICKS};
         };
     }
 
@@ -151,10 +186,22 @@ public enum VillagePalette {
         Block[] slate = {Blocks.GRAY_TERRACOTTA, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.BLUE_WALL_BANNER};
         Block[] wood = {Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_STAIRS, Blocks.DARK_OAK_SLAB, Blocks.RED_WALL_BANNER};
         Block[] blue = {Blocks.BLUE_TERRACOTTA, Blocks.SPRUCE_STAIRS, Blocks.SPRUCE_SLAB, Blocks.LIGHT_BLUE_WALL_BANNER};
+        Block[] moss = {Blocks.MOSS_BLOCK, Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.GREEN_WALL_BANNER};
+        Block[] tealSlate = {Blocks.CYAN_TERRACOTTA, Blocks.DARK_PRISMARINE_STAIRS, Blocks.DARK_PRISMARINE_SLAB, Blocks.CYAN_WALL_BANNER};
+        Block[] graySlate = {Blocks.GRAY_TERRACOTTA, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.LIGHT_GRAY_WALL_BANNER};
+        Block[] sky = {Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.PRISMARINE_BRICK_STAIRS, Blocks.PRISMARINE_BRICK_SLAB, Blocks.LIGHT_BLUE_WALL_BANNER};
+        Block[] navy = {Blocks.BLUE_TERRACOTTA, Blocks.DARK_PRISMARINE_STAIRS, Blocks.DARK_PRISMARINE_SLAB, Blocks.BLUE_WALL_BANNER};
+        Block[] quartz = {Blocks.SMOOTH_QUARTZ, Blocks.QUARTZ_STAIRS, Blocks.QUARTZ_SLAB, Blocks.WHITE_WALL_BANNER};
+        Block[] mud = {Blocks.BROWN_TERRACOTTA, Blocks.MUD_BRICK_STAIRS, Blocks.MUD_BRICK_SLAB, Blocks.BROWN_WALL_BANNER};
+        Block[] granite = {Blocks.TERRACOTTA, Blocks.GRANITE_STAIRS, Blocks.GRANITE_SLAB, Blocks.ORANGE_WALL_BANNER};
+        Block[] cobble = {Blocks.GRAY_TERRACOTTA, Blocks.COBBLESTONE_STAIRS, Blocks.COBBLESTONE_SLAB, Blocks.GRAY_WALL_BANNER};
         return switch (this) {
             case LEAF -> weighted(orange, 6, ochre, 6, terracotta, 4, teal, 2, green, 1, red, 1);
             case SAND -> weighted(sand, 9, clay, 7, rust, 4);
             case SNOW -> weighted(slate, 8, wood, 7, blue, 5);
+            case MIST -> weighted(moss, 9, tealSlate, 6, graySlate, 5);
+            case CLOUD -> weighted(sky, 8, navy, 7, quartz, 5);
+            case STONE -> weighted(mud, 9, granite, 6, cobble, 5);
         };
     }
 
@@ -174,6 +221,9 @@ public enum VillagePalette {
             case LEAF -> new Block[] {Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_BIRCH_LOG};
             case SAND -> new Block[] {Blocks.TERRACOTTA, Blocks.CUT_SANDSTONE, Blocks.STRIPPED_ACACIA_LOG};
             case SNOW -> new Block[] {Blocks.SPRUCE_LOG, Blocks.DARK_OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG};
+            case MIST -> new Block[] {Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.POLISHED_DEEPSLATE};
+            case CLOUD -> new Block[] {Blocks.STRIPPED_BIRCH_LOG, Blocks.BIRCH_LOG, Blocks.SMOOTH_STONE};
+            case STONE -> new Block[] {Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG, Blocks.POLISHED_ANDESITE};
         };
     }
 
@@ -212,12 +262,33 @@ public enum VillagePalette {
                 case STREET -> Materials.Mix.of(Blocks.STONE_BRICKS, 50, Blocks.COBBLESTONE, 25, Blocks.GRAVEL, 25);
                 case PATH -> Materials.Mix.of(Blocks.SNOW_BLOCK, 40, Blocks.COARSE_DIRT, 30, Blocks.GRAVEL, 30);
             };
+            case MIST -> switch (paving) {
+                case AVENUE, PLAZA -> Materials.Mix.of(Blocks.STONE_BRICKS, 50, Blocks.MOSSY_STONE_BRICKS, 25, Blocks.CRACKED_STONE_BRICKS, 15,
+                        Blocks.MOSSY_COBBLESTONE, 10);
+                case STREET -> Materials.Mix.of(Blocks.COBBLESTONE, 45, Blocks.MOSSY_COBBLESTONE, 35, Blocks.GRAVEL, 20);
+                case PATH -> Materials.Mix.of(Blocks.MOSS_BLOCK, 35, Blocks.GRASS_BLOCK, 35, Blocks.COARSE_DIRT, 30);
+            };
+            case CLOUD -> switch (paving) {
+                case AVENUE, PLAZA -> Materials.Mix.of(Blocks.SMOOTH_STONE, 50, Blocks.POLISHED_ANDESITE, 30, Blocks.STONE, 20);
+                case STREET -> Materials.Mix.of(Blocks.POLISHED_ANDESITE, 50, Blocks.ANDESITE, 30, Blocks.GRAVEL, 20);
+                case PATH -> Materials.Mix.of(Blocks.GRASS_BLOCK, 45, Blocks.GRAVEL, 30, Blocks.COARSE_DIRT, 25);
+            };
+            case STONE -> switch (paving) {
+                case AVENUE, PLAZA -> Materials.Mix.of(Blocks.STONE_BRICKS, 40, Blocks.POLISHED_ANDESITE, 30, Blocks.COBBLESTONE, 30);
+                case STREET -> Materials.Mix.of(Blocks.PACKED_MUD, 50, Blocks.GRAVEL, 25, Blocks.COARSE_DIRT, 25);
+                case PATH -> Materials.Mix.of(Blocks.COARSE_DIRT, 50, Blocks.GRAVEL, 50);
+            };
         };
     }
 
-    /** Whether the village sits under a Kage Rock (the Sand village is ringed by cliffs instead). */
+    /** Whether the village sits under a Kage Rock and is laid out as a fan from it (the Leaf and Snow villages). */
     public boolean hasKageRock() {
-        return this != SAND;
+        return this == LEAF || this == SNOW;
+    }
+
+    /** Whether the village is ringed by cliffs or rock spires rather than a built wall (Sand, Cloud, Stone). */
+    public boolean hasCliffs() {
+        return this == SAND || this == CLOUD || this == STONE;
     }
 
     /** Stairs for pitched roofs (tiles). */
@@ -226,6 +297,9 @@ public enum VillagePalette {
             case LEAF -> List.of(Blocks.BRICK_STAIRS, Blocks.MUD_BRICK_STAIRS, Blocks.RED_NETHER_BRICK_STAIRS, Blocks.DARK_OAK_STAIRS);
             case SAND -> List.of(Blocks.SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_STAIRS, Blocks.RED_SANDSTONE_STAIRS);
             case SNOW -> List.of(Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DARK_OAK_STAIRS, Blocks.SPRUCE_STAIRS);
+            case MIST -> List.of(Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.DARK_PRISMARINE_STAIRS, Blocks.DEEPSLATE_TILE_STAIRS);
+            case CLOUD -> List.of(Blocks.DARK_PRISMARINE_STAIRS, Blocks.PRISMARINE_BRICK_STAIRS, Blocks.QUARTZ_STAIRS);
+            case STONE -> List.of(Blocks.MUD_BRICK_STAIRS, Blocks.GRANITE_STAIRS, Blocks.COBBLESTONE_STAIRS);
         };
     }
 
@@ -235,6 +309,9 @@ public enum VillagePalette {
             case LEAF -> List.of(Blocks.BRICK_SLAB, Blocks.MUD_BRICK_SLAB, Blocks.RED_NETHER_BRICK_SLAB, Blocks.DARK_OAK_SLAB);
             case SAND -> List.of(Blocks.SANDSTONE_SLAB, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.RED_SANDSTONE_SLAB);
             case SNOW -> List.of(Blocks.DEEPSLATE_TILE_SLAB, Blocks.DARK_OAK_SLAB, Blocks.SPRUCE_SLAB);
+            case MIST -> List.of(Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.DARK_PRISMARINE_SLAB, Blocks.DEEPSLATE_TILE_SLAB);
+            case CLOUD -> List.of(Blocks.DARK_PRISMARINE_SLAB, Blocks.PRISMARINE_BRICK_SLAB, Blocks.QUARTZ_SLAB);
+            case STONE -> List.of(Blocks.MUD_BRICK_SLAB, Blocks.GRANITE_SLAB, Blocks.COBBLESTONE_SLAB);
         };
     }
 
@@ -244,6 +321,9 @@ public enum VillagePalette {
             case LEAF -> Blocks.STRIPPED_OAK_LOG;
             case SAND -> Blocks.TERRACOTTA;
             case SNOW -> Blocks.SPRUCE_LOG;
+            case MIST -> Blocks.DARK_OAK_LOG;
+            case CLOUD -> Blocks.STRIPPED_BIRCH_LOG;
+            case STONE -> Blocks.SPRUCE_LOG;
         };
     }
 
@@ -252,6 +332,9 @@ public enum VillagePalette {
         return switch (this) {
             case LEAF, SNOW -> Blocks.STONE_BRICK_WALL;
             case SAND -> Blocks.SANDSTONE_WALL;
+            case MIST -> Blocks.MOSSY_STONE_BRICK_WALL;
+            case CLOUD -> Blocks.DIORITE_WALL;
+            case STONE -> Blocks.COBBLESTONE_WALL;
         };
     }
 
@@ -261,6 +344,9 @@ public enum VillagePalette {
             case LEAF -> Blocks.GREEN_TERRACOTTA;
             case SAND -> Blocks.ACACIA_PLANKS;
             case SNOW -> Blocks.SPRUCE_PLANKS;
+            case MIST -> Blocks.DARK_OAK_PLANKS;
+            case CLOUD -> Blocks.BIRCH_PLANKS;
+            case STONE -> Blocks.SPRUCE_PLANKS;
         };
     }
 
@@ -283,6 +369,21 @@ public enum VillagePalette {
                 case STREET -> Blocks.STONE_BRICKS;
                 case PATH -> Blocks.COARSE_DIRT;
             };
+            case MIST -> switch (paving) {
+                case AVENUE, PLAZA -> Blocks.STONE_BRICKS;
+                case STREET -> Blocks.COBBLESTONE;
+                case PATH -> Blocks.MOSS_BLOCK;
+            };
+            case CLOUD -> switch (paving) {
+                case AVENUE, PLAZA -> Blocks.SMOOTH_STONE;
+                case STREET -> Blocks.POLISHED_ANDESITE;
+                case PATH -> Blocks.GRAVEL;
+            };
+            case STONE -> switch (paving) {
+                case AVENUE, PLAZA -> Blocks.STONE_BRICKS;
+                case STREET -> Blocks.PACKED_MUD;
+                case PATH -> Blocks.COARSE_DIRT;
+            };
         };
     }
 
@@ -296,12 +397,37 @@ public enum VillagePalette {
             };
             case SAND -> variant % 2 == 0 ? new Block[] {Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES} : new Block[] {Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES};
             case SNOW -> new Block[] {Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES};
+            // (Variant 0 is the blossom tree by shrines and ponds; 2 is the hedge.)
+            case MIST -> switch (variant % 4) {
+                case 0 -> new Block[] {Blocks.OAK_LOG, Blocks.FLOWERING_AZALEA_LEAVES};
+                case 3 -> new Block[] {Blocks.OAK_LOG, Blocks.AZALEA_LEAVES};
+                default -> new Block[] {Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES};
+            };
+            case CLOUD -> switch (variant % 4) {
+                case 0 -> new Block[] {Blocks.CHERRY_LOG, Blocks.CHERRY_LEAVES};
+                case 2 -> new Block[] {Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES};
+                default -> new Block[] {Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES};
+            };
+            case STONE -> switch (variant % 4) {
+                case 0 -> new Block[] {Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES};
+                case 2 -> new Block[] {Blocks.OAK_LOG, Blocks.OAK_LEAVES};
+                default -> new Block[] {Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES};
+            };
         };
     }
 
     /** Picks the palette for the biome at the village's centre. */
     public static VillagePalette forBiome(Holder<Biome> biome) {
-        if (biome.is(Tags.Biomes.IS_DESERT) || biome.is(BiomeTags.IS_BADLANDS) || biome.is(BiomeTags.IS_SAVANNA)) {
+        if (biome.is(Tags.Biomes.IS_SWAMP) || biome.is(Biomes.DARK_FOREST)) {
+            return MIST;
+        }
+        if (biome.is(BiomeTags.IS_BADLANDS) || biome.is(Biomes.WINDSWEPT_GRAVELLY_HILLS) || biome.is(Biomes.STONY_SHORE)) {
+            return STONE;
+        }
+        if (biome.is(Biomes.MEADOW) || biome.is(Biomes.WINDSWEPT_HILLS) || biome.is(Biomes.WINDSWEPT_FOREST)) {
+            return CLOUD;
+        }
+        if (biome.is(Tags.Biomes.IS_DESERT) || biome.is(BiomeTags.IS_SAVANNA)) {
             return SAND;
         }
         if (biome.is(Tags.Biomes.IS_SNOWY) || biome.is(Tags.Biomes.IS_COLD_OVERWORLD) || biome.is(BiomeTags.IS_TAIGA)) {

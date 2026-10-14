@@ -106,7 +106,8 @@ final class VillagePlanner {
         VillagePlan plan = new VillagePlan(kind, palette, seed);
         switch (kind) {
             // The Sand village's cliffs are thicker than the Leaf village's wall.
-            case CAPITAL -> new VillagePlanner(plan, kind.wall - (palette.hasKageRock() ? 8 : 14)).capital();
+            // Cliffs and rock rings are thicker than a built wall.
+            case CAPITAL -> new VillagePlanner(plan, kind.wall - (palette.hasCliffs() ? 14 : 8)).capital();
             case TOWN -> new VillagePlanner(plan, kind.wall - 4).town();
             default -> new VillagePlanner(plan, kind.wall - 1).outpost();
         }
@@ -147,6 +148,11 @@ final class VillagePlanner {
         // ---- the river, the ring road inside the wall, the avenues
         if (fan) {
             river();
+        } else if (palette == VillagePalette.MIST) {
+            // The Mist village stands on islands: two ring canals, crossed by causeways and footbridges.
+            // (Just inside each ring street's outer neighbour, so the bands between keep room for the big landmarks.)
+            canal(150 + rnd.nextInt(5));
+            canal(228 + rnd.nextInt(5));
         }
         lay(arc(0, 0, limit + 2.5, Paving.STREET, 4), 12, half - 1);
         // The avenues to the gates, then (in the Leaf village) the clan district by the river, then the
@@ -203,7 +209,8 @@ final class VillagePlanner {
         if (fan) {
             hospital(arcs[1], arcs[2], arcs[0]);
         } else {
-            hospital(arcs[0], arcs[1]);
+            // (The Mist village's canals leave no room between the rings: then it stands on the central island.)
+            hospital(arcs[0], arcs[1], PLAZA);
         }
         placeNear(LotType.RAMEN_SHOP, 9, 10, Direction.WEST, 1, 0, 14, new int[] {px + 10, pz + arcs[0] + 9}, new int[] {px - 10, pz + arcs[0] + 9});
         outerLandmarks(fan);
@@ -213,9 +220,15 @@ final class VillagePlanner {
         alleys(arcs);
         // ---- the plots
         spires(8 + rnd.nextInt(5));
+        if (palette == VillagePalette.CLOUD) {
+            rockSpires(12 + rnd.nextInt(5));
+        }
         packAll();
         backLots();
-        ensureTall(6);
+        ensureTall(palette == VillagePalette.STONE ? 16 : 6);
+        if (palette == VillagePalette.STONE) {
+            skyBridges();
+        }
         yards();
         // ---- street furniture
         lampPosts();
@@ -740,8 +753,11 @@ final class VillagePlanner {
                 }
                 int shift = Math.floorDiv(a - b, 2);
                 int reachOut = Math.max(a - shift, b + shift) + 2;
-                // Red arched footbridges carry the streets, flat stone ones the avenues and the ring road by the wall.
-                boolean arched = line.paving != Paving.AVENUE && VillageBuilder.inDisk(x, z, plan.kind.wall - 14);
+                // Red arched footbridges carry the streets, flat stone ones the avenues, the ring road by the wall
+                // and any street that crosses at a slant (an arch only fits a street square to it).
+                double minor = Math.min(Math.abs(line.tx(mid)), Math.abs(line.tz(mid))), major = Math.max(Math.abs(line.tx(mid)), Math.abs(line.tz(mid)));
+                boolean square = minor <= major * 0.36;
+                boolean arched = line.paving != Paving.AVENUE && square && VillageBuilder.inDisk(x, z, plan.kind.wall - 14);
                 plan.bridges.add(new Bridge(x + dx * shift, z + dz * shift, axis, reachOut * 2 + 1,
                         arched ? 3 : (int) Math.round(line.hw * 2), arched));
                 start = -1;
@@ -1145,6 +1161,12 @@ final class VillagePlanner {
                     : r < 0.83f ? LotType.RESTAURANT : r < 0.87f ? LotType.WAREHOUSE : r < 0.95f ? LotType.APARTMENT
                     : r < 0.98f ? LotType.ROUND_TOWER : LotType.GARDEN;
         };
+        // The Mist village is a village of drums; the Stone village's core rises in towers.
+        if (palette == VillagePalette.MIST && type == LotType.HOUSE && rnd.nextFloat() < 0.4f) {
+            type = LotType.ROUND_HOUSE;
+        } else if (palette == VillagePalette.STONE && type == LotType.HOUSE && ring < 2 && rnd.nextFloat() < 0.15f) {
+            type = LotType.ROUND_TOWER;
+        }
         boolean tallType = type == LotType.APARTMENT || type == LotType.ROUND_TOWER;
         if (tallType && (plan.kind != VillageKind.CAPITAL || tall >= tallCap || Math.hypot(x - px, z - pz) > TALL_RANGE)) {
             type = LotType.HOUSE;
@@ -1268,6 +1290,111 @@ final class VillagePlanner {
             placed.add(flats);
             tall++;
         }
+    }
+
+    /** A ring canal of radius {@code r} round the village centre (dug like the river: water, banks, walks, steps). */
+    private void canal(int r) {
+        List<double[]> pts = new ArrayList<>();
+        int steps = (int) Math.ceil(4 * Math.PI * r);
+        for (int k = 0; k <= steps; k++) {
+            double a = 2 * Math.PI * k / steps;
+            pts.add(new double[] {Math.sin(a) * r, Math.cos(a) * r});
+        }
+        dig(pts);
+    }
+
+    /**
+     * The Cloud village's rock spires: tall pillars of rock standing among the houses, well apart,
+     * none near the plaza (styles: bare with trees, a dish platform on top, a house up there).
+     */
+    private void rockSpires(int count) {
+        List<Lot> placed = new ArrayList<>();
+        for (int attempt = 0; attempt < 4000 && placed.size() < count; attempt++) {
+            double a = rnd.nextDouble() * Math.PI * 2, r = PLAZA + 40 + rnd.nextDouble() * (limit - PLAZA - 52);
+            int cx = (int) Math.round(px + Math.sin(a) * r), cz = (int) Math.round(pz + Math.cos(a) * r);
+            if (placed.stream().anyMatch(o -> Math.hypot(o.cx() - cx, o.cz() - cz) < 45)) {
+                continue;
+            }
+            int s = 9 + rnd.nextInt(7);
+            Lot lot = tryLandmark(LotType.ROCK_SPIRE, s, s, cardinal(px - cx, pz - cz), 0, rnd.nextInt(3), cx, cz);
+            if (lot != null) {
+                placed.add(lot);
+            }
+        }
+    }
+
+    /**
+     * The Stone village's rope bridges: each tower is joined to its nearest neighbours (up to two
+     * bridges each, 12–36 blocks long) at the height of the lower roof.
+     */
+    private void skyBridges() {
+        List<Lot> towers = plan.lots.stream().filter(l -> l.type() == LotType.APARTMENT || l.type() == LotType.ROUND_TOWER).toList();
+        int[] links = new int[towers.size()];
+        for (int i = 0; i < towers.size(); i++) {
+            Lot a = towers.get(i);
+            List<Integer> near = new ArrayList<>();
+            for (int j = i + 1; j < towers.size(); j++) {
+                double d = Math.hypot(towers.get(j).cx() - a.cx(), towers.get(j).cz() - a.cz());
+                if (d >= 12 && d <= 36) {
+                    near.add(j);
+                }
+            }
+            near.sort(Comparator.comparingDouble(j -> Math.hypot(towers.get(j).cx() - a.cx(), towers.get(j).cz() - a.cz())));
+            for (int j : near) {
+                if (links[i] >= 2) {
+                    break;
+                }
+                if (links[j] >= 2) {
+                    continue;
+                }
+                Lot b = towers.get(j);
+                Lot low = a.floors() <= b.floors() ? a : b, high = low == a ? b : a;
+                int y = low.floors() * STOREY - 1;
+                int[] from = towerCentre(low), to = towerCentre(high);
+                // Walk from the lower roof's middle to the taller tower's: the bridge runs from the last
+                // step on the lower one to the first step that meets the other.
+                int n = Math.max(Math.abs(to[0] - from[0]), Math.abs(to[1] - from[1]));
+                int[] start = null, end = null;
+                for (int k = 0; k <= n; k++) {
+                    int x = (int) Math.round(from[0] + (to[0] - from[0]) * (double) k / n);
+                    int z = (int) Math.round(from[1] + (to[1] - from[1]) * (double) k / n);
+                    if (insideTower(low, x, z, y)) {
+                        start = new int[] {x, z};
+                    } else if (insideTower(high, x, z, y)) {
+                        end = new int[] {x, z};
+                        break;
+                    }
+                }
+                if (start == null || end == null) {
+                    continue;
+                }
+                plan.skyBridges.add(new VillagePlan.SkyBridge(start[0], start[1], end[0], end[1], y, high.floors() > low.floors()));
+                links[i]++;
+                links[j]++;
+            }
+        }
+    }
+
+    /** The middle of a tower on its lot (where {@code Buildings} centres it). */
+    private static int[] towerCentre(Lot lot) {
+        return framePoint(lot, (frameW(lot) - 1) / 2, (frameD(lot) - 2) / 2);
+    }
+
+    /**
+     * Whether (x, z) is within the walls of a tower at height {@code y}: a Stone village tower
+     * narrows a block every two storeys; a block of flats is its lot less the gallery in front.
+     */
+    private static boolean insideTower(Lot lot, int x, int z, int y) {
+        int w = frameW(lot), d = frameD(lot);
+        if (lot.type() == LotType.ROUND_TOWER) {
+            int r0 = Math.max(4, Math.min(w, d - 1) / 2 - 1);
+            int storey = Math.min(lot.floors() - 1, (y + 1) / STOREY);
+            int r = Math.max(3, r0 - storey / 2);
+            int[] c = towerCentre(lot);
+            return Math.hypot(x - c[0], z - c[1]) <= r + 0.5;
+        }
+        int[] a = framePoint(lot, 1, 1), b = framePoint(lot, w - 2, d - 4);
+        return x >= Math.min(a[0], b[0]) && x <= Math.max(a[0], b[0]) && z >= Math.min(a[1], b[1]) && z <= Math.max(a[1], b[1]);
     }
 
     /** Slender spires that break the skyline, at street corners, well apart. */
@@ -1457,6 +1584,13 @@ final class VillagePlanner {
             case SNOW -> switch (district) {
                 case SHINOBI, TEMPLE -> new int[] {8, 9, 10, 11, 12, 15, 16};
                 case CLAN -> new int[] {0, 1, 2, 3, 4, 5, 6, 7};
+                default -> null;
+            };
+            // Mist: rows 0–8 moss, 9–14 teal slate, 15–19 grey slate. Cloud: 0–7 sky, 8–14 navy, 15–19 white.
+            // Stone: 0–8 mud brick, 9–14 granite, 15–19 cobble.
+            case MIST, CLOUD, STONE -> switch (district) {
+                case SHINOBI -> new int[] {9, 10, 11, 12, 13, 14, 0, 1};
+                case CLAN, TEMPLE -> new int[] {15, 16, 17, 18, 19, 0};
                 default -> null;
             };
         };
