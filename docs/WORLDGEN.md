@@ -119,10 +119,30 @@ files, so there's no artist dependency.
 - **The river:** five blocks wide between mossy stone banks, steps down to the water, red arched
   footbridges with lanterns where streets cross and flat stone bridges with parapets for avenues.
 
-**Looks by biome** (`VillagePalette`):
-- **Leaf**: plains and forests. White and birch walls, orange and red roofs, a red tower.
-- **Sand**: desert, badlands and savanna. Sandstone, terracotta, acacia, the Kazekage.
-- **Snow**: cold biomes. Spruce, white walls and blue roofs.
+**Six looks, by biome** (`VillagePalette`; saved by position, so new ones go at the end):
+- **Leaf** (plains, forests, cherry groves): cream and birch walls, orange and ochre roofs, the
+  red Kage residence under the Kage Rock, a fan layout and a river. The wall is the series' one:
+  reddish-brown with a tiled coping (no battlements), round bastions, red gates standing over the
+  wall walk, side gates with painted "a" and "un" doors; zig-zag stairs climb the Kage Rock and
+  shelter tunnels go into its foot.
+- **Sand** (desert, savanna): sandstone and terracotta, domes and vaults, eight spokes round a
+  central plaza, a ring of desert cliffs, the Kazekage.
+- **Snow** (snowy and cold biomes, taiga): spruce, white walls, slate and blue roofs; the fan
+  layout under a rock.
+- **Mist** (swamps, dark forests): stone-brick and pale drums topped with moss, azalea and ferns;
+  dark oak; two ring canals make three islands, crossed by causeways and footbridges; a mossy wall;
+  mist closes in when you walk in (`VillageFog`, told which look you're in by
+  `VillageAtmosphere`; villages built with `/noirm village` are found through `BuiltVillages`, a
+  list saved with the world); the Mizukage under a dome.
+- **Cloud** (meadows, windswept hills): white quartz and calcite, blue roofs, little domes on the
+  flat roofs, round houses under domes; tall **rock spires** stand among the houses (bare with a
+  wind-bent tree, a railed "dish" platform with a bell, or a little domed house on top; a ladder up
+  each); a ring of grey cliffs with spires rising out of it; a light haze; the Raikage's tower
+  under a blue onion dome.
+- **Stone** (badlands, gravelly hills, stony shores): mud brick and grey stone; round rock towers
+  6–8 storeys high that **taper** a block every two storeys, joined by **rope bridges** from roof to roof (a doorway is
+  cut where a bridge meets a taller tower); a ring of grey cliffs; the Tsuchikage under a stepped
+  stone crown.
 
 **The site**: we sample the land height over the round footprint (a 9×9 grid for the capital, 5×5
 for a town, 3×3 for an outpost). We skip spots that are steep (more than 30 / 18 / 9 blocks of
@@ -150,17 +170,35 @@ fills holes below with the foundation block.
   - **Neighbours chat** (`VillagerChatGoal`): two villagers who meet by day stop, face each other
     and take turns talking, a speech bubble (a small text display riding on them) over the
     speaker's head. A chat leaves a cooldown of 30–60 seconds.
-  - **Monsters in the village:** villagers run from them, and resident ninjas go after any vanilla
-    monster that comes in (not creepers, which would blow the houses up).
+  - **Monsters in the village:** villagers run home, and resident ninjas go after any vanilla
+    monster that comes into the patch they look after (not creepers, which would blow the houses
+    up, and not endermen and other neutral mobs).
+  - **Seats:** now and then, by day, a villager walks to a bench, a stool at a table or a step
+    nearby and sits for half a minute or so (`VillagerSitGoal`; they ride an invisible
+    `SeatEntity`).
 - **Animals:** a cat on some porches, chickens in the kitchen gardens, koi in the ponds.
 
 ## Limitations / ideas for later
 
-- Trees growing in a neighbouring chunk *after* the village chunk was built can still poke over
-  the edge.
 - Villages need fairly flat, dry land (the capital's site is measured on a 9×9 grid plus the cell
-  middles, ignoring the highest and lowest tenth), so capitals are rare.
-- Seats (villagers sitting on benches), shelter from the rain under eaves, the Kiri / Kumo / Iwa
-  looks, and fog over the village are researched but not built yet.
-- Leaf villages don't prefer Leaf clans yet (except the clan district).
+  middles, ignoring the highest and lowest tenth), so capitals are rare, and the Cloud and Stone
+  looks rarest of all (their biomes are hilly).
+- **Updating the mod changes villages that are half explored.** The plan is worked out from the
+  seed by the current code, so chunks of a hidden village generated after an update can come out
+  from a different plan (or a different look) than the chunks built before it.
+- Every village's clan district belongs to the Uchiha or the Hyūga, even in the Mist, Cloud and
+  Stone villages; residents aren't picked from the village's own clans yet.
+- Towns and outposts always have Leaf-style buildings in the new looks' colours (no Mist, Cloud
+  or Stone town designs yet).
+- Researched, not built: terraces (villages that follow the land in steps), roads and travellers
+  between settlements, construction sites, a village chronicle, a soundscape, satellite sites
+  outside the wall (a forest-of-death circle, a valley of the end), town types (harbour, castle,
+  temple and farm towns).
+- Next: missions board, masters living in villages (M4), the Kage as a teacher.
+
+**Living with other structures.** Vanilla villages keep 16 chunks clear of a hidden village's
+anchor (our copy of `minecraft:villages` adds an exclusion zone); the mobs other structures left in
+a village chunk (villagers, golems, illagers, witches, stray cats) are removed as it's built; and
+raiders don't spawn inside a ninja village (a pillager outpost cleared away by the village would
+otherwise keep spawning them). Patrols that march in still come.
 - Next: missions board, masters living in villages (M4), the Kage as a teacher.

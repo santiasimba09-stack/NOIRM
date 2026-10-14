@@ -1217,11 +1217,11 @@ final class VillagePlanner {
         };
     }
 
-    /** Storeys: a low 2–3-storey carpet, apartments and round towers up to 5. */
+    /** Storeys: a low 2–3-storey carpet, apartments and round towers up to 5 (the Stone village's rock towers up to 8). */
     private int floors(LotType type, int ring, District district) {
         float r = rnd.nextFloat();
         return switch (type) {
-            case APARTMENT, ROUND_TOWER -> 4 + rnd.nextInt(2);
+            case APARTMENT, ROUND_TOWER -> towerFloors(type);
             case HOUSE -> plan.kind == VillageKind.TOWN && ring == 0 ? 2
                     : ring == 0 ? (r < 0.2f ? 1 : r < 0.75f ? 2 : 3)
                     : ring == 1 ? (r < 0.35f ? 1 : r < 0.85f ? 2 : 3)
@@ -1262,6 +1262,11 @@ final class VillagePlanner {
      * If the plots gave the capital fewer than {@code min} blocks of flats, turns the roomiest houses
      * nearest the plaza into some (well apart): the skyline needs a few mid-rise accents.
      */
+    /** A tall building's storeys: 4–5, or 6–8 for the Stone village's tapering rock towers (so their rope bridges hang high). */
+    private int towerFloors(LotType type) {
+        return plan.palette == VillagePalette.STONE && type == LotType.ROUND_TOWER ? 6 + rnd.nextInt(3) : 4 + rnd.nextInt(2);
+    }
+
     private void ensureTall(int min) {
         List<Integer> candidates = new ArrayList<>();
         for (int i = 0; i < plan.lots.size(); i++) {
@@ -1285,7 +1290,7 @@ final class VillagePlanner {
                 continue;
             }
             LotType type = lot.type() == LotType.ROUND_HOUSE ? LotType.ROUND_TOWER : LotType.APARTMENT;
-            Lot flats = new Lot(type, lot.x1(), lot.z1(), lot.x2(), lot.z2(), lot.facing(), 4 + rnd.nextInt(2), lot.style(), lot.seed(), lot.colour());
+            Lot flats = new Lot(type, lot.x1(), lot.z1(), lot.x2(), lot.z2(), lot.facing(), towerFloors(type), lot.style(), lot.seed(), lot.colour());
             plan.lots.set(i, flats);
             placed.add(flats);
             tall++;

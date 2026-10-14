@@ -116,6 +116,11 @@ public final class VillageGameTests {
             expect(helper, level, origin.offset(r + 1, VillageBuilder.TOWER_FLOOR, 0), Blocks.BRICK_STAIRS, "a flared eave at each floor");
             // The fire symbol on a round medallion over the door.
             expect(helper, level, origin.offset(-5, h - 8, r + 1), Blocks.ORANGE_TERRACOTTA, "a round medallion");
+            for (int band = VillageBuilder.TOWER_FLOOR; band < h; band += VillageBuilder.TOWER_FLOOR) {
+                if (Math.abs(band - (h - 8)) <= 5) {
+                    expect(helper, level, origin.offset(0, band, r + 2), Blocks.AIR, "no eave across the medallion");
+                }
+            }
             int white = 0, red = 0;
             for (int dx = -3; dx <= 3; dx++) {
                 for (int dy = -3; dy <= 3; dy++) {

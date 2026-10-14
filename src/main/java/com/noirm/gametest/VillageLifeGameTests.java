@@ -4,7 +4,9 @@ import com.noirm.Noirm;
 import com.noirm.entity.SparringNinja;
 import com.noirm.entity.VillageMerchant;
 import com.noirm.registry.NoirmEntities;
+import com.noirm.world.village.BuiltVillages;
 import com.noirm.world.village.VillageBuilder;
+import com.noirm.world.village.VillageKind;
 import com.noirm.world.village.VillagePalette;
 import com.noirm.world.village.VillagePlan;
 import com.noirm.world.village.VillagePlan.LotType;
@@ -129,6 +131,20 @@ public final class VillageLifeGameTests {
                 net.minecraft.world.level.biome.Biomes.PLAINS, VillagePalette.LEAF);
         expected.forEach((key, look) -> helper.assertTrue(VillagePalette.forBiome(biomes.getHolderOrThrow(key)) == look,
                 key.location() + " → " + look + ", got " + VillagePalette.forBiome(biomes.getHolderOrThrow(key))));
+        helper.succeed();
+    }
+
+    /** A village built with /noirm village is remembered (and survives a save), so its mist and spawn rules work too. */
+    @GameTest(template = "empty", batch = "noirm_village_plan")
+    public static void builtVillagesAreRemembered(GameTestHelper helper) {
+        BuiltVillages villages = new BuiltVillages();
+        BlockPos centre = new BlockPos(5000, 70, -3000);
+        villages.add(centre, VillageKind.CAPITAL, VillagePalette.MIST);
+        BuiltVillages loaded = BuiltVillages.load(villages.save(new net.minecraft.nbt.CompoundTag()));
+        BuiltVillages.Entry inside = loaded.at(centre.offset(150, 10, -120));
+        helper.assertTrue(inside != null && inside.palette() == VillagePalette.MIST, "a street inside the Mist village is in it, got " + inside);
+        helper.assertTrue(loaded.at(centre.offset(VillageKind.CAPITAL.radius + 20, 0, 0)) == null, "past the edge is outside");
+        helper.assertTrue(loaded.at(centre.above(120)) == null, "high in the sky is outside");
         helper.succeed();
     }
 

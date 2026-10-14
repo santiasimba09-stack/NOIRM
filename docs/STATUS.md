@@ -1,32 +1,31 @@
 # Project status
 
-_Last updated: 2026-10-14 (villages v3, v0.6.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-14 (villages part 4, v0.7.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**Villages v3 is done (v0.6.0). 137/137 game tests green; checked in the real client**
-(screenshots `docs/screenshots/r6-*.jpg`). Villages v2 (v0.5.0) is in `CHANGELOG.md`.
+**Villages part 4 is done (v0.7.0). 144/144 game tests green; checked in the real client**
+(screenshots `docs/screenshots/r7-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
 
 | Area | State |
 |---|---|
-| **Hidden village ~545 blocks** built from per-chunk "ward" starts sharing one plan | ✅ tested (registry, placement maths); built in client with `/noirm village` |
-| **Layout:** fan of avenues from the Kage Rock, street arcs, alleys, river and bridges, districts, ~1,600 lots | ✅ tested |
-| **Looks:** colourways, façades with depth, ring eaves, spires, rooftop clutter, signage, lamps, yards everywhere, giant tree, cemetery, jōnin station, Kage residence wings | ✅ tested; seen in client |
-| **Life:** villagers chat (speech bubbles) and flee monsters; resident ninjas fight monsters; cats, chickens, koi | ✅ tested |
-| Towns (~145 blocks, post-town main street) and outposts | ✅ tested |
+| **Hidden village ~545 blocks**, built from per-chunk "ward" starts sharing one plan | ✅ tested; a world-generated one checked in client (whole across ~1,000 chunks) |
+| **Six looks:** Leaf (fan + river + canon wall), Sand, Snow, **Mist** (islands, canals, mist), **Cloud** (rock spires, domes), **Stone** (tapering towers, rope bridges) | ✅ tested; each built in client |
+| **Looks:** colourways, façades, ring eaves, spires, rooftop clutter, signage, lamps, yards, landmarks | ✅ |
+| **Life:** villagers chat, sit, run home from monsters; residents fight monsters in their patch; animals | ✅ tested |
+| Living with other structures: vanilla villages kept clear, squatter mobs removed, no raider spawns inside | ✅ |
+| Towns (~145 blocks) and outposts | ✅ tested |
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.6.0.
+Nothing. Waiting on the owner's playtest of v0.7.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback**: how the big villages feel to walk through, how often they
-   appear, how long world generation takes around one.
-2. **Villages, part 4 (researched, not built):** villagers sitting on benches (a seat entity),
-   sheltering under eaves in the rain, fog/haze over the village, Kiri / Kumo / Iwa looks.
-3. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher,
-   residents from the village's own clans.
+1. **Owner playtest + feedback** on all six looks; how often villages appear; world generation speed.
+2. **Villages, part 5 (researched, not built):** terraces on uneven land, the village's own clans
+   in the clan district (Mist/Cloud/Stone clans), town designs per look, roads between settlements.
+3. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher.
 4. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
 5. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
 
@@ -45,14 +44,14 @@ Nothing. Waiting on the owner's playtest of v0.6.0.
 | `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork` (protocol 7), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
-| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
 | `com.noirm.client.anim` | NPC animation: `KeyframeAnimation` (reads `player_animation/*.json`, plain Java so tests use it), `SkeletonPose`, `NpcAnimations` (client reload listener), `NpcAnimator` (layers + cross-fades); the model is `client/BendyNinjaModel` |
 | `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `Trait`, `Order`, `AllyMenu` + `AllyPackets` (the ally screen) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
-| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, banks, bridges), `Fortifications` (wall, gates, Kage Rock, cliffs, fences), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, canals, banks, bridges), `Fortifications` (walls and bastions, gates, Kage Rock with stairs and tunnels, cliff and spire rings, fences), `VillageAtmosphere` (tells the client which village it's in), `VillageSpawns` (no raiders inside), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station, rock spires), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `VillagerSitGoal` + `SeatEntity`, `VillagerShelterGoal`, `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
 | `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `VillageLayoutGameTests`, `VillageWorldgenGameTests`, `VillageLifeGameTests`, `TestClans`, `TestKit` (shared helpers) |

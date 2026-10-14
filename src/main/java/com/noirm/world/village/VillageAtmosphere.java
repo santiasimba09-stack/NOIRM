@@ -62,7 +62,9 @@ public final class VillageAtmosphere {
     public static int paletteAt(ServerLevel level, ServerPlayer player) {
         var start = level.structureManager().getStructureWithPieceAt(player.blockPosition(), VILLAGES);
         if (!start.isValid()) {
-            return -1;
+            // Not a world-generated village: maybe one built with /noirm village.
+            BuiltVillages.Entry built = BuiltVillages.of(level).at(player.blockPosition());
+            return built == null ? -1 : built.palette().ordinal();
         }
         for (var piece : start.getPieces()) {
             if (piece instanceof VillagePiece village) {

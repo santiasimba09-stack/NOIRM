@@ -140,8 +140,16 @@ final class Landmarks {
         for (int band = floor; band < h; band += floor) {
             Shapes.ringEave(f, cu, cv, r, band, eaveStairs, eaveSlab, band == floor);
         }
-        // The village symbol on a great round medallion over the door.
+        // The village symbol on a great round medallion over the door. The eaves break round it
+        // (their slab lip would otherwise run across the symbol).
         Shapes.medallion(f, cu, h - 8, cv + r + 1, p.glyph, p.towerRoof, p.plaque, p.paint, 11);
+        for (int band = floor; band < h; band += floor) {
+            if (Math.abs(band - (h - 8)) <= 5) {
+                for (int du = -5; du <= 5; du++) {
+                    f.set(cu + du, band, cv + r + 2, Blocks.AIR);
+                }
+            }
+        }
         if (f.w >= 58) {
             kageWings(f, cu, cv, r);
         }

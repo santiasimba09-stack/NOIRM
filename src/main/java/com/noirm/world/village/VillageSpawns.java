@@ -30,7 +30,7 @@ public final class VillageSpawns {
             return;
         }
         BlockPos pos = BlockPos.containing(event.getX(), event.getY(), event.getZ());
-        if (level.structureManager().getStructureWithPieceAt(pos, VillageAtmosphere.VILLAGES).isValid()) {
+        if (level.structureManager().getStructureWithPieceAt(pos, VillageAtmosphere.VILLAGES).isValid() || BuiltVillages.of(level).at(pos) != null) {
             event.setSpawnCancelled(true);
         }
     }

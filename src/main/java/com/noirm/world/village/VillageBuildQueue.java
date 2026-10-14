@@ -213,6 +213,7 @@ public final class VillageBuildQueue {
                              Consumer<Job> onDone) {
         Job job = new Job(level, centre, kind, palette, rotation, seed, onDone);
         JOBS.add(job);
+        BuiltVillages.of(level).add(centre, kind, palette);
         return job;
     }
 

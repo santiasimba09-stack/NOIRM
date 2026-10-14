@@ -113,6 +113,7 @@ public final class VillageLayoutGameTests {
         long towers = plan.lots.stream().filter(l -> l.type() == LotType.ROUND_TOWER || l.type() == LotType.APARTMENT).count();
         helper.assertTrue(towers >= 10, "towers: " + towers);
         helper.assertTrue(plan.skyBridges.size() >= 5, "rope bridges: " + plan.skyBridges.size());
+        helper.assertTrue(plan.lots.stream().anyMatch(l -> l.type() == LotType.ROUND_TOWER && l.floors() >= 6), "rock towers taller than the flats");
         for (VillagePlan.SkyBridge bridge : plan.skyBridges) {
             double length = Math.hypot(bridge.x2() - bridge.x1(), bridge.z2() - bridge.z1());
             helper.assertTrue(length >= 1 && length <= 36 && bridge.y() >= 15, "a bridge between tower tops, wall to wall: " + bridge);
@@ -180,7 +181,8 @@ public final class VillageLayoutGameTests {
                 case HOUSE, SHOP, RESTAURANT, ROUND_HOUSE, WAREHOUSE -> helper.assertTrue(lot.floors() >= 1 && lot.floors() <= 3, name + ": " + lot + " is low");
                 case APARTMENT, ROUND_TOWER -> {
                     tall++;
-                    helper.assertTrue(lot.floors() <= 5, name + ": " + lot + " has at most 5 storeys");
+                    int most = plan.palette == VillagePalette.STONE && lot.type() == LotType.ROUND_TOWER ? 8 : 5;
+                    helper.assertTrue(lot.floors() <= most, name + ": " + lot + " has at most " + most + " storeys");
                     helper.assertTrue(Math.hypot(lot.cx() - plan.towerX, lot.cz() - plan.towerZ) <= 130, name + ": " + lot + " stands near the plaza");
                 }
                 default -> {

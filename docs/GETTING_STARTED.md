@@ -156,7 +156,7 @@ Uzumaki clothes, flak vests and ANBU gear. Each piece gives armor points and has
 ## How to find ninja villages
 
 **See one right away:** stand on fairly open ground and type `/noirm village capital` (or `town`,
-`outpost`). Add `leaf`, `sand` or `snow` to choose the look. A capital is ~545 blocks across, so
+`outpost`). Add `leaf`, `sand`, `snow`, `mist`, `cloud` or `stone` to choose the look. A capital is ~545 blocks across, so
 give it room. It's built a few chunks at a time (about a minute) and the chat tells you when it's
 done. Fly up high to see it all.
 
@@ -176,7 +176,15 @@ apart), `noirm:ninja_town` or `noirm:ninja_outpost`, and `/tp` to the coordinate
   koi ponds, bamboo groves and the little roadside shrines.
 - Right-click shopkeepers to trade (each shop sells different things) and anyone else to chat.
 - Stay until night: villagers go home and the street lamps switch on by themselves.
-- If a zombie wanders in, the village ninjas deal with it (villagers run).
+- If a zombie wanders in, the village ninjas deal with it (villagers run home).
+- Watch for villagers sitting on benches and at tables.
+
+**The other hidden villages** (they appear in other biomes):
+- **Mist** (swamps, dark forests): islands between ring canals, moss-topped round houses, and mist
+  that closes in when you walk in.
+- **Cloud** (meadows, windswept hills): white houses with blue domes and rock spires you can climb
+  (a ladder up the back), a dish platform with a bell, little houses on top.
+- **Stone** (badlands): towers that narrow as they rise, joined by rope bridges at roof height.
 
 Village ninjas leave you alone in combat mode unless you attack someone in the village. Then
 every ninja nearby comes for you.

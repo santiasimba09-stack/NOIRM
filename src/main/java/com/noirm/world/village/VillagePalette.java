@@ -83,8 +83,8 @@ public enum VillagePalette {
         BATH("# . # . #", ". # . # .", "# . # . #", "# . . . #", ". # # # ."),
         /** Waves. */
         WATER("# # . . .", ". . # # .", "# # . . #", ". . # # .", "# # . . #"),
-        /** A zigzag bolt. */
-        LIGHTNING(". . . # #", ". . # # .", ". # # # .", ". # # . .", "# # . . .");
+        /** A zigzag bolt: down to the left, a jog back to the right, down to a point. */
+        LIGHTNING(". . # # #", ". # # . .", "# # # # .", ". . # # .", ". # . . .");
 
         private final String[] rows;
 
