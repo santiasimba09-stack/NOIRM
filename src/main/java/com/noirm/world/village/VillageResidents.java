@@ -89,7 +89,23 @@ public final class VillageResidents {
             }
             case MERCHANT, CIVILIAN, CHILD, CHIEF -> villager(level, pos, s, home, work);
             case DUMMY -> dummy(level, pos);
+            case CAT -> animal(level, net.minecraft.world.entity.EntityType.CAT, pos, s.radius());
+            case CHICKEN -> animal(level, net.minecraft.world.entity.EntityType.CHICKEN, pos, s.radius());
+            case KOI -> animal(level, net.minecraft.world.entity.EntityType.TROPICAL_FISH, pos, s.radius());
         }
+    }
+
+    /** A village animal that stays put (persistent, kept near where it was placed). */
+    private static void animal(ServerLevelAccessor level, net.minecraft.world.entity.EntityType<? extends Mob> type, BlockPos pos, int radius) {
+        Mob mob = type.create(level.getLevel());
+        if (mob == null) {
+            return;
+        }
+        mob.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.getRandom().nextFloat() * 360f, 0f);
+        if (mob instanceof net.minecraft.world.entity.PathfinderMob pathfinder) {
+            pathfinder.restrictTo(pos, Math.max(3, radius));
+        }
+        place(level, mob);
     }
 
     private static void resident(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius, float speed, float taijutsu,

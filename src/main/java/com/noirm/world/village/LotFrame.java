@@ -111,7 +111,7 @@ public final class LotFrame {
     public VillagePlan.Lot sub(VillagePlan.LotType type, int u1, int v1, int u2, int v2, Direction front, int floors, int style) {
         int xa = x(u1, v1), za = z(u1, v1), xb = x(u2, v2), zb = z(u2, v2);
         return new VillagePlan.Lot(type, Math.min(xa, xb), Math.min(za, zb), Math.max(xa, xb), Math.max(za, zb),
-                toVillage(front), floors, style, rnd.nextLong());
+                toVillage(front), floors, style, rnd.nextLong(), lot.colour());
     }
 
     public <T> T pick(java.util.List<T> list) {

@@ -95,6 +95,110 @@ public enum VillagePalette {
         this.kageTitle = kageTitle;
     }
 
+    // ------------------------------------------------------------ colourways
+
+    /**
+     * The colourway with index {@code index} (any int; it wraps). Index = wall + 4 × (roof + 20 ×
+     * trim), so the planner can pick neighbours that differ in wall and roof. Roof schemes are
+     * weighted (they repeat in the roof table), measured from how the villages look in the series:
+     * Leaf roofs are mostly orange and ochre, some terracotta, a few teal, rare green and red.
+     */
+    public Materials.Colourway colourway(int index) {
+        Block[] walls = walls();
+        Block[][] roofs = roofTable();
+        Block[] trims = trims();
+        int i = Math.floorMod(index, 1 << 30);
+        Block wall = walls[i % walls.length];
+        Block[] roof = roofs[(i / 4) % roofs.length];
+        Block trim = trims[(i / 80) % trims.length];
+        Block accent = this == LEAF ? (wall == Blocks.SMOOTH_SANDSTONE ? Blocks.SPRUCE_PLANKS : Blocks.STRIPPED_SPRUCE_LOG)
+                : this == SAND ? Blocks.TERRACOTTA : Blocks.SPRUCE_PLANKS;
+        return new Materials.Colourway(wall, accent, roof[0], roof[1], roof[2], trim, roof[3]);
+    }
+
+    /** Wall plasters (4 of them). */
+    private Block[] walls() {
+        return switch (this) {
+            case LEAF -> new Block[] {Blocks.SMOOTH_SANDSTONE, Blocks.WHITE_TERRACOTTA, Blocks.BIRCH_PLANKS, Blocks.CALCITE};
+            case SAND -> new Block[] {Blocks.SMOOTH_SANDSTONE, Blocks.SANDSTONE, Blocks.PACKED_MUD, Blocks.CUT_SANDSTONE};
+            case SNOW -> new Block[] {Blocks.SPRUCE_PLANKS, Blocks.WHITE_TERRACOTTA, Blocks.STONE_BRICKS, Blocks.STRIPPED_SPRUCE_LOG};
+        };
+    }
+
+    /** Roof schemes {flat deck, tile stairs, tile slab, cloth banner}, repeated by weight (20 rows). */
+    private Block[][] roofTable() {
+        Block[] orange = {Blocks.ORANGE_TERRACOTTA, Blocks.WAXED_CUT_COPPER_STAIRS, Blocks.WAXED_CUT_COPPER_SLAB, Blocks.ORANGE_WALL_BANNER};
+        Block[] ochre = {Blocks.YELLOW_TERRACOTTA, Blocks.BAMBOO_MOSAIC_STAIRS, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.YELLOW_WALL_BANNER};
+        Block[] terracotta = {Blocks.TERRACOTTA, Blocks.BRICK_STAIRS, Blocks.BRICK_SLAB, Blocks.RED_WALL_BANNER};
+        Block[] teal = {Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS, Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB, Blocks.CYAN_WALL_BANNER};
+        Block[] green = {Blocks.GREEN_TERRACOTTA, Blocks.DARK_PRISMARINE_STAIRS, Blocks.DARK_PRISMARINE_SLAB, Blocks.GREEN_WALL_BANNER};
+        Block[] red = {Blocks.RED_TERRACOTTA, Blocks.RED_NETHER_BRICK_STAIRS, Blocks.RED_NETHER_BRICK_SLAB, Blocks.WHITE_WALL_BANNER};
+        Block[] sand = {Blocks.SMOOTH_SANDSTONE, Blocks.SMOOTH_SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.WHITE_WALL_BANNER};
+        Block[] clay = {Blocks.TERRACOTTA, Blocks.SANDSTONE_STAIRS, Blocks.SANDSTONE_SLAB, Blocks.BROWN_WALL_BANNER};
+        Block[] rust = {Blocks.ORANGE_TERRACOTTA, Blocks.RED_SANDSTONE_STAIRS, Blocks.RED_SANDSTONE_SLAB, Blocks.ORANGE_WALL_BANNER};
+        Block[] slate = {Blocks.GRAY_TERRACOTTA, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.BLUE_WALL_BANNER};
+        Block[] wood = {Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_STAIRS, Blocks.DARK_OAK_SLAB, Blocks.RED_WALL_BANNER};
+        Block[] blue = {Blocks.BLUE_TERRACOTTA, Blocks.SPRUCE_STAIRS, Blocks.SPRUCE_SLAB, Blocks.LIGHT_BLUE_WALL_BANNER};
+        return switch (this) {
+            case LEAF -> weighted(orange, 6, ochre, 6, terracotta, 4, teal, 2, green, 1, red, 1);
+            case SAND -> weighted(sand, 9, clay, 7, rust, 4);
+            case SNOW -> weighted(slate, 8, wood, 7, blue, 5);
+        };
+    }
+
+    private static Block[][] weighted(Object... schemesAndWeights) {
+        java.util.List<Block[]> rows = new java.util.ArrayList<>();
+        for (int i = 0; i + 1 < schemesAndWeights.length; i += 2) {
+            for (int k = 0; k < (Integer) schemesAndWeights[i + 1]; k++) {
+                rows.add((Block[]) schemesAndWeights[i]);
+            }
+        }
+        return rows.toArray(new Block[0][]);
+    }
+
+    /** Timber for corner posts and beams (3 of them). */
+    private Block[] trims() {
+        return switch (this) {
+            case LEAF -> new Block[] {Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_BIRCH_LOG};
+            case SAND -> new Block[] {Blocks.TERRACOTTA, Blocks.CUT_SANDSTONE, Blocks.STRIPPED_ACACIA_LOG};
+            case SNOW -> new Block[] {Blocks.SPRUCE_LOG, Blocks.DARK_OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG};
+        };
+    }
+
+    /** How many distinct colourways there are (index range for the planner). */
+    public int colourways() {
+        return walls().length * roofTable().length * trims().length;
+    }
+
+    // ------------------------------------------------------------ block mixes
+
+    /** Stone masonry with cracked and mossy blocks mixed in. */
+    public Materials.Mix stoneMix() {
+        return Materials.Mix.of(Blocks.STONE_BRICKS, 55, Blocks.CRACKED_STONE_BRICKS, 15, Blocks.MOSSY_STONE_BRICKS, 20, Blocks.ANDESITE, 10);
+    }
+
+    /** How a street of each kind is paved, as a mix (dirt paths with gravel and coarse dirt, plazas with flagstones…). */
+    public Materials.Mix pavingMix(VillagePlan.Paving paving) {
+        return switch (this) {
+            case LEAF -> switch (paving) {
+                case AVENUE -> Materials.Mix.of(Blocks.PACKED_MUD, 60, Blocks.DIRT_PATH, 25, Blocks.COARSE_DIRT, 15);
+                case STREET -> Materials.Mix.of(Blocks.DIRT_PATH, 60, Blocks.COARSE_DIRT, 15, Blocks.GRAVEL, 10, Blocks.PACKED_MUD, 15);
+                case PATH -> Materials.Mix.of(Blocks.COARSE_DIRT, 50, Blocks.GRAVEL, 30, Blocks.DIRT_PATH, 20);
+                case PLAZA -> Materials.Mix.of(Blocks.STONE_BRICKS, 70, Blocks.POLISHED_ANDESITE, 20, Blocks.CRACKED_STONE_BRICKS, 10);
+            };
+            case SAND -> switch (paving) {
+                case AVENUE, PLAZA -> Materials.Mix.of(Blocks.SMOOTH_SANDSTONE, 70, Blocks.CUT_SANDSTONE, 20, Blocks.SANDSTONE, 10);
+                case STREET -> Materials.Mix.of(Blocks.CUT_SANDSTONE, 50, Blocks.SANDSTONE, 30, Blocks.PACKED_MUD, 20);
+                case PATH -> Materials.Mix.of(Blocks.SANDSTONE, 60, Blocks.PACKED_MUD, 40);
+            };
+            case SNOW -> switch (paving) {
+                case AVENUE, PLAZA -> Materials.Mix.of(Blocks.POLISHED_ANDESITE, 60, Blocks.STONE_BRICKS, 30, Blocks.CRACKED_STONE_BRICKS, 10);
+                case STREET -> Materials.Mix.of(Blocks.STONE_BRICKS, 50, Blocks.COBBLESTONE, 25, Blocks.GRAVEL, 25);
+                case PATH -> Materials.Mix.of(Blocks.COARSE_DIRT, 50, Blocks.GRAVEL, 50);
+            };
+        };
+    }
+
     /** Whether the village sits under a Kage Rock (the Sand village is ringed by cliffs instead). */
     public boolean hasKageRock() {
         return this != SAND;

@@ -27,15 +27,27 @@ public final class VillagePlan {
     public enum LotType {
         HOUSE, ROUND_HOUSE, APARTMENT, ROUND_TOWER, SHOP, RESTAURANT, STALL, RAMEN_SHOP, WAREHOUSE, GARDEN, PARK,
         KAGE_TOWER, ACADEMY, HOSPITAL, CLAN_COMPOUND, CLAN_HOUSE, ONSEN, SHRINE, TRAINING_GROUND, GUARD_POST,
-        INN, CHIEF_HOUSE, WATCHTOWER
+        INN, CHIEF_HOUSE, WATCHTOWER,
+        /** A small leftover plot between houses: kitchen garden, laundry yard, woodpile, shed, koi pond, bamboo, roadside shrine ({@code style} picks). */
+        YARD,
+        /** A park around one giant tree, with a pond and a playground. */
+        GIANT_TREE,
+        /** A slender tower that breaks the skyline: a cone spire, a "bottle" spire or a bell turret ({@code style} picks). */
+        SPIRE
     }
 
     /**
      * One building plot, from (x1, z1) to (x2, z2) inclusive. {@code facing} is the side the front
      * door is on (towards its street); {@code floors} the number of storeys; {@code style} a free
-     * number the building uses for its variant (roof shape, shop kind…).
+     * number the building uses for its variant (roof shape, shop kind…); {@code colour} the index of
+     * the palette colourway it's painted in ({@link VillagePalette#colourway}), chosen by the planner
+     * so neighbours differ.
      */
-    public record Lot(LotType type, int x1, int z1, int x2, int z2, Direction facing, int floors, int style, long seed) {
+    public record Lot(LotType type, int x1, int z1, int x2, int z2, Direction facing, int floors, int style, long seed, int colour) {
+        public Lot(LotType type, int x1, int z1, int x2, int z2, Direction facing, int floors, int style, long seed) {
+            this(type, x1, z1, x2, z2, facing, floors, style, seed, (int) ((seed >>> 33) & 0xFF));
+        }
+
         public int cx() {
             return (x1 + x2) >> 1;
         }
@@ -105,7 +117,9 @@ public final class VillagePlan {
     public record Wire(int x1, int z1, int x2, int z2, int y) {}
 
     /** Who lives here. */
-    public enum Role { KAGE, GUARD, PATROL, RUNNER, TRAINEE, CLAN_NINJA, NINJA, MERCHANT, CIVILIAN, CHILD, TEACHER, DUMMY, CHIEF }
+    public enum Role { KAGE, GUARD, PATROL, RUNNER, TRAINEE, CLAN_NINJA, NINJA, MERCHANT, CIVILIAN, CHILD, TEACHER, DUMMY, CHIEF,
+        /** Village animals: a cat on a porch, chickens in a yard, koi in a pond. */
+        CAT, CHICKEN, KOI }
 
     /**
      * A resident: where they spawn ({@code x, y, z}), where they belong ({@code homeX/Z},
@@ -129,6 +143,12 @@ public final class VillagePlan {
     public final List<Spawn> spawns = new ArrayList<>();
     /** The canon clan living in the clan compound (capital only), or "" for none. */
     public String compoundClan = "";
+    /** Where the capital's landmarks are (local coordinates), set by the planner. */
+    public int towerX = 0, towerZ = VillagePlanner.TOWER_Z;
+    /** The Kage Rock: the cliff face is at z = {@code rockZ}, and it spans |x| ≤ {@code rockHalf}. */
+    public int rockZ = VillagePlanner.ROCK_Z, rockHalf = VillagePlanner.ROCK_HALF;
+    /** The z of the street that leaves through the side gates (east and west). */
+    public int crossZ = VillagePlanner.CROSS_Z;
 
     VillagePlan(VillageKind kind, VillagePalette palette, long seed) {
         this.kind = kind;
