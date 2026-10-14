@@ -136,7 +136,8 @@ public final class VillageGameTests {
             expect(helper, level, gate.offset(0, 6, 0), Blocks.AIR, "an open gateway");
             expect(helper, level, gate.offset(0, 18, -1), Blocks.OAK_PLANKS, "a lintel over it");
             expect(helper, level, gate.offset(-6, 3, -5), Blocks.GREEN_TERRACOTTA, "the great doors stand open");
-            expect(helper, level, origin.offset(20, 5, 117), Blocks.STONE_BRICKS, "the wall");
+            int wallZ = (int) Math.floor(Math.sqrt((double) w * w - 400)) - 1;
+            expect(helper, level, origin.offset(20, 5, wallZ), Blocks.STONE_BRICKS, "the wall");
             expect(helper, level, origin.offset(0, -1, w - 2), Blocks.PACKED_MUD, "the avenue runs through");
             var guards = level.getEntitiesOfClass(SparringNinja.class, AABB.of(area), SparringNinja::isResident);
             helper.assertTrue(guards.size() >= 2, "guards at the gate, found " + guards.size());

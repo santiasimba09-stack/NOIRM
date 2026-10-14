@@ -10,19 +10,21 @@ import net.minecraft.util.StringRepresentable;
  * <p>Saved by position in the list ({@code Kind} in the piece's NBT), so new kinds go at the end.
  *
  * <p>A structure can reach at most 8 chunks from the chunk it starts in (vanilla's
- * {@code ChunkGenerator.createReferences}), about 128 blocks; the capital uses nearly all of it.
+ * {@code ChunkGenerator.createReferences}), about 128 blocks. Towns and outposts fit; the capital
+ * is assembled from per-chunk "ward" starts instead.
  */
 public enum VillageKind implements StringRepresentable {
     /**
      * A hidden village, like the Hidden Leaf: a great wall and gate, the Kage tower and the Kage
-     * Rock, an academy, a hospital, a clan district, markets and streets full of houses. ~250
-     * blocks across.
+     * Rock, an academy, a hospital, a clan district, markets and streets full of houses. ~545
+     * blocks across: bigger than one structure can reach, so it's built by many cooperating
+     * structure starts (one per chunk) from the same plan.
      */
-    CAPITAL("capital", 124, 120, 64, 30),
+    CAPITAL("capital", 272, 264, 72, 40),
     /** A small outpost: a palisade, a watchtower, a few houses and a training post. ~30 blocks across. */
     OUTPOST("outpost", 15, 14, 20, 9),
-    /** A small village of the Land of Fire: a main street with shops and an inn, a chief, a shrine. ~110 blocks across. */
-    TOWN("town", 56, 52, 36, 18);
+    /** A small village of the Land of Fire: a main street with shops and an inn, a chief, a shrine. ~145 blocks across. */
+    TOWN("town", 72, 68, 36, 20);
 
     public static final com.mojang.serialization.Codec<VillageKind> CODEC = StringRepresentable.fromEnum(VillageKind::values);
 
