@@ -90,27 +90,24 @@ public final class VillageBuilder {
     }
 
     /**
-     * Builds a whole village at once in a live world, centred on {@code centre} (the ground under it
-     * becomes the village floor), then joins up fences, panes and stairs the way world generation
-     * would. Used by {@code /noirm village}.
+     * Builds a village in a live world, centred on {@code centre} (the ground under it becomes the
+     * village floor), a few chunks every server tick so even a hidden village doesn't freeze the
+     * server ({@link VillageBuildQueue}). Each chunk is built like world generation would, and its
+     * fences, panes, walls and stairs joined up. {@code onDone} runs when the last chunk is built.
+     * Used by {@code /noirm village}.
+     */
+    public static VillageBuildQueue.Job buildNow(net.minecraft.server.level.ServerLevel level, BlockPos centre, VillageKind kind, VillagePalette palette,
+                                                 long seed, java.util.function.Consumer<VillageBuildQueue.Job> onDone) {
+        return VillageBuildQueue.submit(level, centre, kind, palette, Rotation.NONE, seed, onDone);
+    }
+
+    /**
+     * Builds a whole village in a live world right away, chunk by chunk, as {@link #buildNow(net.minecraft.server.level.ServerLevel,
+     * BlockPos, VillageKind, VillagePalette, long, java.util.function.Consumer) the queued version} does. Fine for an outpost or a
+     * town (and tests); a hidden village holds the server up for a while.
      */
     public static void buildNow(net.minecraft.server.level.ServerLevel level, BlockPos centre, VillageKind kind, VillagePalette palette, long seed) {
-        int r = kind.radius + 2;
-        int top = kind.height + 12;
-        BoundingBox box = new BoundingBox(centre.getX() - r, centre.getY() - 41, centre.getZ() - r,
-                centre.getX() + r, centre.getY() + top, centre.getZ() + r);
-        build(level, box, kind, palette, centre, Rotation.NONE, seed, kind.height);
-        for (BlockPos pos : BlockPos.betweenClosed(box.minX(), centre.getY() - 3, box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-            BlockState state = level.getBlockState(pos);
-            Block block = state.getBlock();
-            if (block instanceof net.minecraft.world.level.block.FenceBlock || block instanceof net.minecraft.world.level.block.IronBarsBlock
-                    || block instanceof net.minecraft.world.level.block.WallBlock || block instanceof net.minecraft.world.level.block.StairBlock) {
-                BlockState joined = Block.updateFromNeighbourShapes(state, level, pos);
-                if (joined != state) {
-                    level.setBlock(pos, joined, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-                }
-            }
-        }
+        VillageBuildQueue.buildAll(level, centre, kind, palette, Rotation.NONE, seed);
     }
 
     /** Builds only the Kage tower (and its Kage), centred on {@code origin}. Used by the game tests. */
@@ -186,10 +183,9 @@ public final class VillageBuilder {
     // ================================================================ lots, props, people
 
     private void lots() {
-        for (Lot lot : plan.lots) {
-            if (lot.overlaps(lx1, lz1, lx2, lz2, 4)) {
-                Buildings.draw(new LotFrame(c, p, lot));
-            }
+        // Only the lots near this chunk (the plan's index), in plan order.
+        for (Lot lot : plan.lotsIn(lx1, lz1, lx2, lz2)) {
+            Buildings.draw(new LotFrame(c, p, lot));
         }
     }
 

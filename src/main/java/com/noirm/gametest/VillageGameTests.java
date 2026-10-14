@@ -44,13 +44,27 @@ public final class VillageGameTests {
     public static void villageStructuresAreRegistered(GameTestHelper helper) {
         var structures = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
         var capital = structures.get(Noirm.id("hidden_village"));
+        var ward = structures.get(Noirm.id("hidden_village_ward"));
         var outpost = structures.get(Noirm.id("ninja_outpost"));
         var town = structures.get(Noirm.id("ninja_town"));
         helper.assertTrue(capital instanceof NinjaVillageStructure village && village.kind() == VillageKind.CAPITAL, "the hidden village is registered");
+        helper.assertTrue(ward instanceof com.noirm.world.village.VillageWardStructure wards && wards.anchors().location().equals(Noirm.id("hidden_villages"))
+                && ward.terrainAdaptation() == net.minecraft.world.level.levelgen.structure.TerrainAdjustment.BEARD_THIN,
+                "with wards for the chunks around its core, anchored on the hidden villages");
         helper.assertTrue(outpost instanceof NinjaVillageStructure village && village.kind() == VillageKind.OUTPOST, "the outpost is registered");
         helper.assertTrue(town instanceof NinjaVillageStructure village && village.kind() == VillageKind.TOWN, "the town is registered");
         var sets = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
-        helper.assertTrue(sets.containsKey(Noirm.id("hidden_villages")) && sets.containsKey(Noirm.id("ninja_settlements")), "and they have placement rules");
+        var capitals = sets.get(Noirm.id("hidden_villages"));
+        var wards = sets.get(Noirm.id("hidden_village_wards"));
+        var settlements = sets.get(Noirm.id("ninja_settlements"));
+        helper.assertTrue(capitals != null && wards != null && settlements != null, "and they have placement rules");
+        helper.assertTrue(capitals.placement() instanceof net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement spread
+                && spread.spacing() == 96 && spread.separation() == 48, "hidden villages are far apart (spacing 96, separation 48)");
+        helper.assertTrue(wards.placement() instanceof com.noirm.world.village.WardPlacement placement
+                && placement.anchors().location().equals(Noirm.id("hidden_villages")) && wards.structures().get(0).structure().value() == ward,
+                "the wards are placed around the hidden villages");
+        helper.assertTrue(settlements.structures().stream().allMatch(e -> e.structure().value() == town || e.structure().value() == outpost),
+                "towns and outposts share a set");
         helper.succeed();
     }
 
