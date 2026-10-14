@@ -590,7 +590,7 @@ final class Buildings {
     /** A walled garden: a hedge, flower beds, a small tree, a stone lantern and a bench. */
     static void garden(LotFrame f) {
         int u1 = 0, u2 = f.w - 1, v1 = 0, v2 = f.d - 1;
-        BlockState hedge = leaves(f.p.tree(f.rnd.nextInt(4))[1]);
+        BlockState hedge = leaves(f.p.tree(2)[1]); // a green hedge (blossom is for the trees)
         int gate = (u1 + u2) / 2;
         for (int u = u1; u <= u2; u++) {
             for (int v = v1; v <= v2; v++) {

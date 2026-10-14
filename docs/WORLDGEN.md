@@ -53,36 +53,71 @@ outposts and hamlets in the Land of Fire are a few houses with a fence and a loo
 
 ## Design (what we built)
 
-_Round 5 (villages v2) replaced the first version: villages are now planned, then built._
+_Round 6 (villages v3) made the hidden village about 545 blocks across and rebuilt its layout and
+looks. Round 5 (v2) introduced the plan-then-build approach it still uses._
 
 Everything is built from Java code (`com.noirm.world.village`). There are no hand-made structure
 files, so there's no artist dependency.
 
 **How it works**
 - `VillagePlanner` lays a village out once from its seed (`VillagePlan`): streets first, then the
-  landmarks, then house plots packed along every street (7–12 wide, 8–13 deep, door to the
-  street), then back-street houses, gardens and parks in what's left, then trees, lanterns,
-  power poles and wires, and finally the people. An occupancy grid stops overlaps.
+  landmarks, then plots packed along every street (door to the street), then back plots, then
+  **yards in every leftover patch** (no idle lawns), then street furniture and the people. Streets
+  and the river are kept as rasters (one entry per block), so curved streets cost nothing.
 - `VillageBuilder` builds one chunk at a time from the (cached) plan: level the ground, pave the
-  streets, the walls / Kage Rock / cliffs, then only the lots that touch the chunk.
+  streets, dig the river and build its bridges (`Waterways`), the walls / Kage Rock / cliffs
+  (`Fortifications`), then only the lots, props and people near that chunk (the plan keeps a
+  per-chunk index).
 - Each lot is drawn in a `LotFrame` ("front faces south"), so every building works on any side
-  of any street. `Buildings` has the homes and shops, `Landmarks` the big buildings.
-- **Size limit:** a structure can only reach 8 chunks from where it starts (vanilla's
-  `ChunkGenerator.createReferences`), about 128 blocks. The capital uses nearly all of it
-  (radius 124). Going bigger would need several structures stitched together.
+  of any street. `Buildings` has the homes and shops, `Landmarks` the big buildings,
+  `RoundBuildings` the spires and the jōnin station, `Yards` the yards, giant tree and cemetery;
+  `Shapes` has the round parts (drums, flared ring eaves, medallions) and `Materials` the block
+  mixes and colourways.
+- **Bigger than one structure.** A structure can only reach 8 chunks from where it starts
+  (vanilla's `ChunkGenerator.createReferences`), about 128 blocks. So a hidden village is a
+  **core** start (`hidden_village`, in its anchor chunk, the one `/locate` finds) plus one
+  **ward** start in every other chunk it covers (`hidden_village_ward`, placed by our own
+  `noirm:village_wards` placement, `WardPlacement`). Each ward works out which anchor it belongs
+  to with the same maths as vanilla's `random_spread`, asks the core for that village's site
+  (measured once per anchor and remembered), and builds its own chunk from the shared plan. The
+  same trick as Large Structure Lib.
 - `/noirm village <capital|town|outpost> [leaf|sand|snow]` builds one where you stand (no site
-  checks) for testing.
+  checks), a few chunks every tick (`VillageBuildQueue`), and says when it's done.
 
 | | Hidden village (`hidden_village`) | Town (`ninja_town`) | Outpost (`ninja_outpost`) |
 |---|---|---|---|
-| Size | ~250 blocks across (wall radius 120) | ~110 (fence radius 52) | ~30 (palisade radius 14) |
-| How often | spacing 64 chunks, separation 32 (rare) | shares a set with outposts (weight 2 of 5), spacing 26, never within 12 chunks of a capital | weight 3 of 5 |
-| Contents | Great wall (14 high, wall walk, battlements, lookout pavilions, ladders), the great gate (pillars, roof, symbol plaque, open doors painted "a" / "un"), two side gates; the **Kage tower** (r 12, 4 floors: reception, archives, council room; balcony; office; symbol 2× size); the **Kage Rock** (a mountain with 4 carved faces and a forest on top; the Sand village has a ring of desert cliffs instead); **Academy** (classrooms with desks and blackboards, swing tree, sandpit, targets); **hospital** (wards, red cross); a **clan district** (Uchiha or Hyūga: wall, crest on the gate, koi pond, clan houses); a **shrine** with torii and cherry trees; a **hot spring**; two **training grounds** (posts, targets, memorial stone, one with a lake); the **ramen shop**; a gate guard booth; ~130 lots of houses (1–4 storeys), apartment blocks with galleries, round towers, shops (weapons, scrolls, flowers), restaurants, stalls, warehouses, gardens, parks; avenues, a plaza, streets, lanterns, power lines, trees | Main and cross street, a well on the square, the chief's house, an inn, a shrine, a training ground, a guard post, shops and houses, a fence and hedge with four wooden gates | Palisade, watchtower, 2–3 houses, campfire, training posts |
-| People | Kage, guards, 4 wall patrols, ~6 rooftop runners, trainees, clan ninjas, 2 teachers, ~16 shopkeepers, ~18 villagers, ~6 children | chief, guards, a trainee, a ninja, ~8 shopkeepers, ~10 villagers, children | 3 ninjas, a merchant, a dummy |
+| Size | ~545 blocks across (wall radius 264) | ~145 (fence radius 68) | ~30 (palisade radius 14) |
+| How often | spacing 96 chunks, separation 48 (rare) | shares a set with outposts (weight 2 of 5), spacing 26; never within 16 chunks of a capital's anchor, and never overlapping a capital | weight 3 of 5 |
+| Layout | **Leaf / Snow:** a fan of 7 avenues from the Kage residence under the Kage Rock, 6 street arcs round it, alleys between them, a river with bridges. **Sand:** 8 spokes and 2 ring streets round a central plaza, no river. | a post town: main street of shopfronts with lanterns strung across and arched gates, a cross street, back lanes | palisade, watchtower |
+| Contents | ~1,600 lots (~550 buildings, the rest yards, gardens, parks); districts: market, shinobi quarter, clan district (by the river), temple hill, lantern street, homes, outer ring | chief's house, inn, shrine, training ground, shops, houses | 2–3 houses, campfire, posts |
+| People | up to 140: Kage, guards, wall patrols, rooftop runners, trainees, clan ninjas, teachers, shopkeepers, villagers, children, cats, chickens, koi | chief, guards, a trainee, shopkeepers, villagers, children | 3 ninjas, a merchant, a dummy |
 
-Houses have insides: kitchens (stove, cauldron, barrel), tables and stools, beds, chests,
-bookshelves, flower pots, rugs, ladders between floors, lanterns; balconies, chimneys with smoke,
-rooftop water tanks and gardens. Shops have counters, cloth curtains (noren) and awnings.
+**The look (v3)** — from the research in `docs/research-villages-v3.txt` (motifs only):
+- **Colourways.** Every lot gets a paint job (`VillagePalette.colourway`): wall plaster, an accent
+  timber, a roof colour (Leaf roofs weighted ~⅓ orange, ⅓ ochre, ⅙ terracotta, a few teal, rare
+  green and red), timber trim and a cloth colour. The planner makes neighbours differ, so one house
+  design reads as many.
+- **Façades with depth:** a timber skirting, a timber band at each floor, a pent eave of roof tiles
+  along the front at the floor line, window sills, open shutters, flower pots on some sills, and a
+  mix of clear glass, white paper screens and a few warm lit windows.
+- **Roofs:** flat roofs have a coloured tile lip and something on top (a cluster of water tanks, a
+  roof garden, washing on a line, or a bench and an aerial); pitched roofs use the lot's tiles.
+- **Round buildings** (round houses, round towers, spires, the jōnin station, the Kage residence)
+  get the flared ring eave: a ring of tile stairs, then a ring of slabs, at the roof and slimmer
+  ones between floors.
+- **Skyline:** a low carpet of 1–3 storeys, a few blocks of flats (4–5) near the plaza, and 8–12
+  slender **spires** (a cone, a "bottle", a bell turret) to break it up.
+- **Street life:** avenue lamps (a redstone lamp under an inverted daylight sensor: lit at dusk),
+  shop signboards and paper lanterns (shroomlight and froglights on chains), lanterns strung
+  across the lantern street with arched gates at its ends, notice boards, benches, barrels and
+  flower pots, power poles with sagging wires, transformers and service drops to the houses.
+- **Yards** fill every leftover patch: kitchen gardens and fields, laundry, woodpiles, sheds, koi
+  ponds, bamboo, roadside shrines and wells. Plus a giant-tree park and a cemetery with a memorial
+  stone and an eternal flame.
+- **The Kage residence:** the great drum with flared eaves at every floor band, two round wing
+  towers with roof terraces, and the village symbol on a round medallion over the door.
+- **The river:** five blocks wide between mossy stone banks, steps down to the water, red arched
+  footbridges with lanterns where streets cross and flat stone bridges with parapets for avenues.
 
 **Looks by biome** (`VillagePalette`):
 - **Leaf**: plains and forests. White and birch walls, orange and red roofs, a red tower.
@@ -112,13 +147,20 @@ fills holes below with the foundation block.
   - **Villagers** go out into the village by day and home at night or in the rain (doors open).
   - **Children** spend the day at the Academy and go home at night.
   - The town's **chief**. Right-click anyone who isn't trading and they say something.
+  - **Neighbours chat** (`VillagerChatGoal`): two villagers who meet by day stop, face each other
+    and take turns talking, a speech bubble (a small text display riding on them) over the
+    speaker's head. A chat leaves a cooldown of 30–60 seconds.
+  - **Monsters in the village:** villagers run from them, and resident ninjas go after any vanilla
+    monster that comes in (not creepers, which would blow the houses up).
+- **Animals:** a cat on some porches, chickens in the kitchen gardens, koi in the ponds.
 
 ## Limitations / ideas for later
 
-- About 250 blocks is the most one structure can cover; a bigger capital would need several
-  structures (districts) placed together.
 - Trees growing in a neighbouring chunk *after* the village chunk was built can still poke over
   the edge.
-- Villages need fairly flat, dry land, so capitals are rare (often 1,500–2,500 blocks apart).
+- Villages need fairly flat, dry land (the capital's site is measured on a 9×9 grid plus the cell
+  middles, ignoring the highest and lowest tenth), so capitals are rare.
+- Seats (villagers sitting on benches), shelter from the rain under eaves, the Kiri / Kumo / Iwa
+  looks, and fog over the village are researched but not built yet.
 - Leaf villages don't prefer Leaf clans yet (except the clan district).
-- Next: missions board, masters living in villages (M4), the Kage as a teacher, bridges over rivers.
+- Next: missions board, masters living in villages (M4), the Kage as a teacher.

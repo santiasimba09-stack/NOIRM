@@ -156,20 +156,27 @@ Uzumaki clothes, flak vests and ANBU gear. Each piece gives armor points and has
 ## How to find ninja villages
 
 **See one right away:** stand on fairly open ground and type `/noirm village capital` (or `town`,
-`outpost`). Add `leaf`, `sand` or `snow` to choose the look. A capital is ~250 blocks across, so
-give it room (and a few seconds to build).
+`outpost`). Add `leaf`, `sand` or `snow` to choose the look. A capital is ~545 blocks across, so
+give it room. It's built a few chunks at a time (about a minute) and the chat tells you when it's
+done. Fly up high to see it all.
 
 **Find natural ones:** they're only built in **newly generated land**, so start a new world or
-explore far away. Then `/locate structure noirm:hidden_village` (rare), `noirm:ninja_town` or
-`noirm:ninja_outpost`, and `/tp` to the coordinates it prints.
+explore far away. Then `/locate structure noirm:hidden_village` (rare: they're thousands of blocks
+apart), `noirm:ninja_town` or `noirm:ninja_outpost`, and `/tp` to the coordinates it prints.
 
 **Things to try in a hidden village:**
-- Walk through the great gate up the main avenue to the Kage tower; climb its ladder to the
-  Kage's office on the balcony.
-- Look for ninjas leaping across the rooftops, and patrols on the wall walk.
-- Visit the Academy (swing tree), the ramen shop, the hot spring, the shrine and the clan district.
+- Walk through the great gate up the main avenue (street lamps, shops, signboards) to the Kage
+  residence under the Kage Rock; climb the tower's ladder to the Kage's office on the balcony.
+- Follow the river: red footbridges, stone bridges, steps down to the water, the clan district on
+  its bank.
+- Walk the lantern street (restaurants, paper lanterns strung across it) to the hot spring.
+- Look for ninjas leaping across the rooftops, patrols on the wall walk, and neighbours stopping
+  to chat (a speech bubble over their heads).
+- Find the giant tree, the spires, the jōnin station by the Academy, the cemetery with its flame,
+  koi ponds, bamboo groves and the little roadside shrines.
 - Right-click shopkeepers to trade (each shop sells different things) and anyone else to chat.
-- Stay until night: villagers go home and the lanterns light the streets.
+- Stay until night: villagers go home and the street lamps switch on by themselves.
+- If a zombie wanders in, the village ninjas deal with it (villagers run).
 
 Village ninjas leave you alone in combat mode unless you attack someone in the village. Then
 every ninja nearby comes for you.

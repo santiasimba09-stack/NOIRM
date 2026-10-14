@@ -2,6 +2,38 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-14 — Villages v3: twice as wide, a real layout, lively streets, v0.6.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Hidden villages ~545 blocks across** (more than twice as wide as v2, about 4.6× the area),
+  ~1,600 lots (~550 buildings, the rest yards, gardens and parks), up to 140 people.
+  - **Bigger than one structure:** a core start plus one "ward" start per chunk, placed by our own
+    structure placement (`WardPlacement`), all building from one shared plan. The site is measured
+    once per village and remembered; the plan keeps a per-chunk index.
+  - Towns and outposts keep clear of hidden villages; hidden villages are rarer (spacing 96).
+  - `/noirm village` builds a few chunks per tick and tells you when it's done.
+- **A layout like the series:** a fan of seven avenues from the Kage residence under the Kage
+  Rock, six street arcs, alleys, a river with stone banks, landings and bridges (red arched
+  footbridges, flat stone ones for avenues), and districts (market, shinobi quarter, clan district
+  on the river, temple hill, lantern street, homes, outer ring). The desert village has spokes and
+  ring streets round a central plaza.
+- **Buildings that look lived in:**
+  - every lot has its own colourway (walls, roof colour, trim, accent), neighbours differ;
+  - façades: timber skirting and floor bands, pent eaves, sills, shutters, flower pots, mixed
+    glass (clear, paper, warm lit);
+  - roofs: coloured tile lips, water-tank clusters, roof gardens, washing lines, aerials;
+  - round buildings with flared ring eaves; spires (cone, bottle, bell turret) in the skyline;
+  - shop signboards, paper lanterns, lanterns strung across the lantern street with arched gates,
+    avenue lamps that light at dusk, notice boards, power poles with sagging wires;
+  - yards in every gap: kitchen gardens and fields, laundry, woodpiles, sheds, koi ponds, bamboo,
+    roadside shrines, wells; a giant-tree park, a cemetery with a memorial stone and flame;
+  - the jōnin standby station; the Kage residence with tiered eaves, round wing towers and a round
+    village-symbol medallion.
+- **Village life:** neighbours stop to chat (speech bubbles), villagers run from monsters, resident
+  ninjas fight monsters that wander in (not creepers); cats, chickens and koi.
+- Research notes in `docs/research-villages-v3.txt` (motifs only, nothing copied).
+- 18 new game tests (137 in all), including every new building and the new life. Screenshots
+  `docs/screenshots/r6-*.jpg`.
+
 ## 2026-10-13 — Villages v2: big hidden villages, towns, living villagers, v0.5.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Hidden villages ~250 blocks across** (3× wider, ~9× the area; about the most one structure

@@ -118,6 +118,9 @@ final class Yards {
                     .setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 2));
             f.set(u2, 0, v - 1 >= 0 ? v - 1 : v + 1, Blocks.BARREL);
         }
+        if (f.w >= 7 && f.d >= 7) {
+            treeOf(f, f.w - 2, f.d - 2, 4, f.p.tree(2)); // shade for the washing
+        }
     }
 
     /** Split logs stacked under a lean-to roof, a chopping stump and a few hay bales. */
@@ -145,6 +148,9 @@ final class Yards {
             f.set(f.w - 2, 0, f.d - 2, Blocks.HAY_BLOCK);
             f.set(f.w - 2, 1, f.d - 2, Blocks.HAY_BLOCK);
             f.set(f.w - 3, 0, f.d - 2, Blocks.HAY_BLOCK);
+        }
+        if (f.w >= 8 && f.d >= 6) {
+            treeOf(f, f.w - 2, 2, 5, f.p.tree(2));
         }
     }
 
@@ -181,6 +187,9 @@ final class Yards {
         if (u2 + 1 < f.w) {
             f.set(u2 + 1, 0, v2, Blocks.BARREL);
             f.set(u2 + 1, 1, v2, Blocks.BARREL);
+        }
+        if (f.w >= 9 && f.d >= 8) {
+            treeOf(f, f.w - 2, f.d - 2, 4, f.p.tree(1));
         }
     }
 
@@ -274,6 +283,9 @@ final class Yards {
         if (f.w >= 5 && gv >= back + 4) {
             torii(f, cu, gv, 1, Blocks.RED_TERRACOTTA);
         }
+        if (f.w >= 8 && f.d >= 6) {
+            treeOf(f, 1, f.d / 2, 4, f.p.tree(0)); // a blossom tree by the shrine
+        }
     }
 
     /** A stone well with a little roof, a rope (chain) and a bucket rest, and a bench beside it. */
@@ -302,6 +314,9 @@ final class Yards {
         f.set(cu, 2, cv, Blocks.CHAIN);
         if (f.w >= 6) {
             f.set(cu + 3 < f.w ? cu + 3 : cu - 3, 0, cv, stairs(f.p.stairs, Direction.WEST));
+        }
+        if (f.w >= 7 && f.d >= 7) {
+            treeOf(f, 1, 1, 4, f.p.tree(2));
         }
     }
 
@@ -493,12 +508,12 @@ final class Yards {
         f.fill(u, 0, v, u, height, v, kind[0]);
     }
 
-    /** Gravel and coarse dirt over the whole yard (a working yard, trodden bare). */
+    /** A working yard, trodden half bare: grass with patches of coarse dirt, gravel and roots. */
     private static void gravel(LotFrame f) {
         for (int u = 0; u < f.w; u++) {
             for (int v = 0; v < f.d; v++) {
-                long h = Materials.hash(f.x(u, v), -1, f.z(u, v), f.lot.seed());
-                f.set(u, -1, v, h % 5 == 0 ? Blocks.GRAVEL : h % 5 == 1 ? f.p.ground : Blocks.COARSE_DIRT);
+                long h = Materials.hash(f.x(u, v), -1, f.z(u, v), f.lot.seed()) % 20;
+                f.set(u, -1, v, h < 10 ? f.p.ground : h < 15 ? Blocks.COARSE_DIRT : h < 17 ? Blocks.GRAVEL : Blocks.ROOTED_DIRT);
             }
         }
     }

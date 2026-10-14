@@ -41,7 +41,7 @@ Each milestone ends with something you can play and test.
 | 3.6 | **Playtest round 1** ✅ | Animations fixed; eyes vs all mobs; living Sharingan; Vitality and Reserves; the nature tree with 9 combinations; 39 jutsu; the new jutsu screen. |
 | 4 | **First master** | Might Guy, a taijutsu master who tests you with a spar, then teaches techniques (e.g. Lotus, Hirudora). More masters follow. |
 | 5 | **First jutsu** | Hand seals, a chakra cost, and three starter jutsu with data-driven VFX. |
-| 6 | **First village** (part 1 ✅) | Hidden villages with a Kage tower and Kage, outposts, residents and merchants (round 4). Part 2: village clans, an academy, a dojo where masters live, missions. |
+| 6 | **Villages** (parts 1–3 ✅) | Part 1 (round 4): hidden villages with a Kage tower and Kage, outposts, residents and merchants. Part 2 (v0.5.0): planned ~250-block capitals, towns, landmarks, living villagers. Part 3 (v0.6.0): ~545-block capitals built from per-chunk wards, a fan layout with a river and districts, colourways and façades, yards, spires, village life. Next: village clans, a dojo where masters live, missions. |
 | 7 | **Exploration** | Ruins, scroll loot, rare wandering masters, and a first custom biome. |
 | 3.7 | **Playtest rounds 2–4** ✅ | Combat styles, destruction, 56 jutsu, crew allies with respect and growth, beast bond and tails, NPC animations, wearable clan gear, random looks. |
 | later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |

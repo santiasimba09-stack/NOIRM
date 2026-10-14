@@ -1,32 +1,34 @@
 # Project status
 
-_Last updated: 2026-10-13 (villages v2, v0.5.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-14 (villages v3, v0.6.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**Villages v2 is done (v0.5.0). 119/119 game tests green; checked in the real client**
-(screenshots `docs/screenshots/r5-*.png`). Round 4 (v0.4.0) is in `CHANGELOG.md`.
+**Villages v3 is done (v0.6.0). 137/137 game tests green; checked in the real client**
+(screenshots `docs/screenshots/r6-*.jpg`). Villages v2 (v0.5.0) is in `CHANGELOG.md`.
 
 | Area | State |
 |---|---|
-| **Hidden village ~250 blocks**: wall and gate, Kage tower, Kage Rock, Academy, hospital, clan district, shrine, hot spring, training grounds, ~130 buildings with interiors | ✅ seen in client (Leaf and Sand) |
-| **Towns** (~110 blocks) and outposts | ✅ seen in client |
-| **Villagers**: shop roles, day/night routine, children, chief, dialogue | ✅ tested |
-| **Village ninjas**: rooftop runners, wall patrols, trainees, clan district | ✅ tested; runners seen moving in client |
-| `/noirm village` to build one on the spot | ✅ |
+| **Hidden village ~545 blocks** built from per-chunk "ward" starts sharing one plan | ✅ tested (registry, placement maths); built in client with `/noirm village` |
+| **Layout:** fan of avenues from the Kage Rock, street arcs, alleys, river and bridges, districts, ~1,600 lots | ✅ tested |
+| **Looks:** colourways, façades with depth, ring eaves, spires, rooftop clutter, signage, lamps, yards everywhere, giant tree, cemetery, jōnin station, Kage residence wings | ✅ tested; seen in client |
+| **Life:** villagers chat (speech bubbles) and flee monsters; resident ninjas fight monsters; cats, chickens, koi | ✅ tested |
+| Towns (~145 blocks, post-town main street) and outposts | ✅ tested |
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.5.0.
+Nothing. Waiting on the owner's playtest of v0.6.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback**: village size and density, how often villages appear, villager behaviour.
-2. **Villages, part 3:** missions board, masters living in villages, the Kage as a teacher, residents
-   from the village's own clans; districts beyond the 250-block limit if wanted.
-3. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
-4. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
-5. More canon jutsu on the existing behaviors.
+1. **Owner playtest + feedback**: how the big villages feel to walk through, how often they
+   appear, how long world generation takes around one.
+2. **Villages, part 4 (researched, not built):** villagers sitting on benches (a seat entity),
+   sheltering under eaves in the rain, fog/haze over the village, Kiri / Kumo / Iwa looks.
+3. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher,
+   residents from the village's own clans.
+4. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
+5. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
 
 ## Code map
 
@@ -49,11 +51,11 @@ Nothing. Waiting on the owner's playtest of v0.5.0.
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
-| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed, cached), `VillageBuilder` (ground, streets, walls, Kage Rock; draws lots per chunk), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops), `Landmarks` (Kage tower, Academy, hospital, clan district, shrine, training grounds, hot spring), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind` (capital/outpost/town), `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine), `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, banks, bridges), `Fortifications` (wall, gates, Kage Rock, cliffs, fences), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
 | `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
-| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `TestClans`, `TestKit` (shared helpers) |
+| `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `VillageLayoutGameTests`, `VillageWorldgenGameTests`, `VillageLifeGameTests`, `TestClans`, `TestKit` (shared helpers) |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt`, `worldgen/structure` + `structure_set` (villages), `tags/worldgen/biome/has_structure/` |
 | `tools/skingen/` | `gen_parts.py` + `looks.py`: the skin parts and look tables behind random ninja looks |
 | `tools/gear/` | `gen_gear.py`: the gear textures and icons |
@@ -103,9 +105,12 @@ Nothing. Waiting on the owner's playtest of v0.5.0.
   waist); players stay on PlayerAnimator without bends (bendy-lib = possible follow-up). See
   `docs/COMBAT_DESIGN.md`, "NPC animation and bendy limbs".
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
-- **Villages (round 4):** built procedurally in Java (no NBT files), one piece per village,
-  `top_layer_modification` step so trees are cleared. Residents never start fights; attacking one
-  alarms the village. Capital: spacing 64 / separation 32 chunks; outpost 24 / 10.
+- **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
+  step so trees are cleared. Residents never start fights with players; attacking one alarms the
+  village.
+- **Villages v3:** a hidden village is ~545 blocks across, built as a core start plus one ward
+  start per chunk (the 8-chunk structure reach can't be raised); spacing 96 / separation 48 chunks.
+  Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
 
@@ -116,5 +121,6 @@ Nothing. Waiting on the owner's playtest of v0.5.0.
 - How hard should training a basic nature you weren't born with be (time, a master, an item)?
 - Should Yin, Yang and Yin-Yang join the tree (genjutsu and medical / body jutsu)?
 - Where should tailed beasts live in the world?
-- Villages: big enough now? Denser or more open? Should the Kage teach or give missions? Capitals are rare
-  (often 1,500–2,500 blocks apart): more often?
+- Villages: does the ~545-block capital feel big enough, or too big to walk? Denser or more open?
+  Capitals are rare (spacing 96 chunks, often 2,000+ blocks apart): more often? Should the Kage
+  teach or give missions?

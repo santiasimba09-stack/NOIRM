@@ -189,13 +189,17 @@ public enum VillagePalette {
         return Materials.Mix.of(Blocks.STONE_BRICKS, 55, Blocks.CRACKED_STONE_BRICKS, 15, Blocks.MOSSY_STONE_BRICKS, 20, Blocks.ANDESITE, 10);
     }
 
-    /** How a street of each kind is paved, as a mix (dirt paths with gravel and coarse dirt, plazas with flagstones…). */
+    /**
+     * How a street of each kind is paved, as a mix (packed earth with some gravel, plazas with
+     * flagstones…). Full blocks and the lower dirt path aren't mixed, so streets don't look stepped;
+     * alleys are half grass, a worn path.
+     */
     public Materials.Mix pavingMix(VillagePlan.Paving paving) {
         return switch (this) {
             case LEAF -> switch (paving) {
-                case AVENUE -> Materials.Mix.of(Blocks.PACKED_MUD, 60, Blocks.DIRT_PATH, 25, Blocks.COARSE_DIRT, 15);
-                case STREET -> Materials.Mix.of(Blocks.DIRT_PATH, 60, Blocks.COARSE_DIRT, 15, Blocks.GRAVEL, 10, Blocks.PACKED_MUD, 15);
-                case PATH -> Materials.Mix.of(Blocks.COARSE_DIRT, 50, Blocks.GRAVEL, 30, Blocks.DIRT_PATH, 20);
+                case AVENUE -> Materials.Mix.of(Blocks.PACKED_MUD, 80, Blocks.COARSE_DIRT, 12, Blocks.GRAVEL, 8);
+                case STREET -> Materials.Mix.one(Blocks.DIRT_PATH);
+                case PATH -> Materials.Mix.of(Blocks.GRASS_BLOCK, 45, Blocks.COARSE_DIRT, 25, Blocks.ROOTED_DIRT, 15, Blocks.GRAVEL, 15);
                 case PLAZA -> Materials.Mix.of(Blocks.STONE_BRICKS, 70, Blocks.POLISHED_ANDESITE, 20, Blocks.CRACKED_STONE_BRICKS, 10);
             };
             case SAND -> switch (paving) {
@@ -206,7 +210,7 @@ public enum VillagePalette {
             case SNOW -> switch (paving) {
                 case AVENUE, PLAZA -> Materials.Mix.of(Blocks.POLISHED_ANDESITE, 60, Blocks.STONE_BRICKS, 30, Blocks.CRACKED_STONE_BRICKS, 10);
                 case STREET -> Materials.Mix.of(Blocks.STONE_BRICKS, 50, Blocks.COBBLESTONE, 25, Blocks.GRAVEL, 25);
-                case PATH -> Materials.Mix.of(Blocks.COARSE_DIRT, 50, Blocks.GRAVEL, 50);
+                case PATH -> Materials.Mix.of(Blocks.SNOW_BLOCK, 40, Blocks.COARSE_DIRT, 30, Blocks.GRAVEL, 30);
             };
         };
     }
