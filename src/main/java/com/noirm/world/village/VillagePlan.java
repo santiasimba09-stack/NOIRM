@@ -33,7 +33,11 @@ public final class VillagePlan {
         /** A park around one giant tree, with a pond and a playground. */
         GIANT_TREE,
         /** A slender tower that breaks the skyline: a cone spire, a "bottle" spire or a bell turret ({@code style} picks). */
-        SPIRE
+        SPIRE,
+        /** The jōnin standby station: a round plank-clad lounge beside the Academy. */
+        JONIN_STATION,
+        /** The cemetery on the village edge: rows of graves and a flame memorial. */
+        CEMETERY
     }
 
     /**
@@ -149,6 +153,16 @@ public final class VillagePlan {
     public int rockZ = VillagePlanner.ROCK_Z, rockHalf = VillagePlanner.ROCK_HALF;
     /** The z of the street that leaves through the side gates (east and west). */
     public int crossZ = VillagePlanner.CROSS_Z;
+    /**
+     * The gates through the outer wall: {x, z, width} at the wall line (local coordinates). The
+     * fortifications open the wall there; the planner lays a street through each.
+     */
+    public final List<int[]> gates = new ArrayList<>();
+
+    /** Whether (x, z) is river or canal water (the wall leaves a barred water gate there). */
+    public boolean isWater(int x, int z) {
+        return false;
+    }
 
     VillagePlan(VillageKind kind, VillagePalette palette, long seed) {
         this.kind = kind;
