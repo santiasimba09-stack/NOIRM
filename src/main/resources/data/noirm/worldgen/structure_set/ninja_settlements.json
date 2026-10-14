@@ -8,6 +8,6 @@
     "spacing": 26,
     "separation": 11,
     "salt": 551390827,
-    "exclusion_zone": { "other_set": "noirm:hidden_villages", "chunk_count": 12 }
+    "exclusion_zone": { "other_set": "noirm:hidden_villages", "chunk_count": 16 }
   }
 }

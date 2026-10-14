@@ -144,9 +144,13 @@ public final class PowersCommand {
         net.minecraft.core.BlockPos centre = source.getLevel().getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 net.minecraft.core.BlockPos.containing(source.getPosition()));
         long seed = source.getLevel().getRandom().nextLong();
-        com.noirm.world.village.VillageBuilder.buildNow(source.getLevel(), centre, kind, palette, seed);
-        source.sendSuccess(() -> Component.translatable("commands.noirm.village.built", kind.getSerializedName(),
-                palette.name().toLowerCase(Locale.ROOT)), true);
+        String sizeName = kind.getSerializedName();
+        String lookName = palette.name().toLowerCase(Locale.ROOT);
+        // Built a few chunks per tick (a hidden village is ~1,000 chunks), so tell the player when it's done.
+        var job = com.noirm.world.village.VillageBuilder.buildNow(source.getLevel(), centre, kind, palette, seed,
+                done -> source.sendSuccess(() -> Component.translatable("commands.noirm.village.built", sizeName, lookName), true));
+        source.sendSuccess(() -> Component.translatableWithFallback("commands.noirm.village.building",
+                "Building a %s (%s look) here: %s chunks, a few every tick...", sizeName, lookName, job.chunks()), true);
         return 1;
     }
 
