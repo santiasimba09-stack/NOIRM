@@ -82,9 +82,13 @@ public class VillageMerchant extends AbstractVillager {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
         goalSelector.addGoal(1, new PanicGoal(this, 0.6));
+        // Monsters in the village: run (the ninjas deal with them).
+        goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.AvoidEntityGoal<>(this, net.minecraft.world.entity.monster.Monster.class,
+                12f, 0.55, 0.7));
         goalSelector.addGoal(2, new LookAtTradingPlayerGoal(this));
         goalSelector.addGoal(3, new OpenDoorGoal(this, true));
         goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.55));
+        goalSelector.addGoal(5, new VillagerChatGoal(this));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.35));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8f));
         goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -146,6 +150,114 @@ public class VillageMerchant extends AbstractVillager {
         if (tickCount % 40 == 0) {
             followSchedule();
         }
+        if (chatTicks > 0) {
+            chatTicks--;
+        }
+        if (chatCooldown > 0) {
+            chatCooldown--;
+        }
+        // A speech bubble lasts a couple of seconds (and one left over from before a reload goes at once).
+        if (bubbleTicks > 0) {
+            bubbleTicks--;
+        }
+        if (bubbleTicks == 0 && isVehicle()) {
+            clearBubbles();
+        }
+    }
+
+    // ------------------------------------------------------------ chatting
+
+    private VillageMerchant chatPartner;
+    private int chatTicks, chatCooldown, bubbleTicks;
+    private boolean chatStarter;
+
+    public VillageMerchant chatPartner() {
+        return chatPartner;
+    }
+
+    public int chatTicks() {
+        return chatTicks;
+    }
+
+    public int chatCooldown() {
+        return chatCooldown;
+    }
+
+    public boolean chatStarter() {
+        return chatStarter;
+    }
+
+    /** Stops to chat with {@code partner} for {@code ticks} ticks ({@code starter}: speaks first). */
+    public void startChat(VillageMerchant partner, int ticks, boolean starter) {
+        chatPartner = partner;
+        chatTicks = ticks;
+        chatStarter = starter;
+        getNavigation().stop();
+    }
+
+    public void endChat() {
+        chatPartner = null;
+        chatTicks = 0;
+        chatCooldown = 600 + getRandom().nextInt(600);
+    }
+
+    /** Says one of this person's lines in a speech bubble for {@code ticks} ticks. */
+    public void sayLine(int ticks) {
+        String kind = role == Role.CHILD ? "child" : role == Role.CHIEF ? "chief" : "adult";
+        int count = role == Role.CHILD ? CHILD_LINES : role == Role.CHIEF ? CHIEF_LINES : ADULT_LINES;
+        say(Component.translatable("villager.noirm.line." + kind + "." + getRandom().nextInt(count)), ticks);
+        playSound(getAmbientSound(), 0.6f, isBaby() ? 1.5f : 0.9f + getRandom().nextFloat() * 0.2f);
+        swing(InteractionHand.MAIN_HAND);
+    }
+
+    /**
+     * A speech bubble over this person's head: a small text display riding on them, gone after
+     * {@code ticks} ticks.
+     */
+    public void say(Component text, int ticks) {
+        if (!(level() instanceof ServerLevel server)) {
+            return;
+        }
+        clearBubbles();
+        var bubble = EntityType.TEXT_DISPLAY.create(server);
+        if (bubble == null) {
+            return;
+        }
+        CompoundTag tag = new CompoundTag();
+        tag.putString("text", Component.Serializer.toJson(text));
+        tag.putString("billboard", "center");
+        tag.putInt("line_width", 140);
+        tag.putInt("background", 0xA0FFFFFF);
+        CompoundTag transformation = new CompoundTag();
+        transformation.put("left_rotation", floats(0f, 0f, 0f, 1f));
+        transformation.put("right_rotation", floats(0f, 0f, 0f, 1f));
+        transformation.put("translation", floats(0f, 0.95f, 0f)); // riders sit at three quarters of the height: lift it over the head
+        transformation.put("scale", floats(0.45f, 0.45f, 0.45f));
+        tag.put("transformation", transformation);
+        bubble.load(tag);
+        bubble.addTag(BUBBLE_TAG);
+        bubble.moveTo(getX(), getY() + getBbHeight(), getZ());
+        server.addFreshEntity(bubble);
+        bubble.startRiding(this, true);
+        bubbleTicks = ticks;
+    }
+
+    private static final String BUBBLE_TAG = "noirm_bubble";
+
+    private void clearBubbles() {
+        for (var passenger : java.util.List.copyOf(getPassengers())) {
+            if (passenger.getTags().contains(BUBBLE_TAG)) {
+                passenger.discard();
+            }
+        }
+    }
+
+    private static net.minecraft.nbt.ListTag floats(float... values) {
+        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
+        for (float value : values) {
+            list.add(net.minecraft.nbt.FloatTag.valueOf(value));
+        }
+        return list;
     }
 
     /** By day, out to work (or school); at night and in the rain, home. (Runs every two seconds.) */

@@ -123,6 +123,11 @@ public final class VillageBuilder {
         }
     }
 
+    /** Draws a single lot (its village-local coordinates measured from {@code origin}). Used by the game tests. */
+    public static void buildLot(WorldGenLevel level, BoundingBox clip, VillagePalette palette, BlockPos origin, Lot lot) {
+        Buildings.draw(new LotFrame(new VillageCanvas(level, clip, origin, Rotation.NONE), palette, lot));
+    }
+
     // ================================================================ ground and streets
 
     /**
@@ -205,10 +210,8 @@ public final class VillageBuilder {
     }
 
     private void props() {
-        for (Prop prop : plan.props) {
-            if (prop.x() < lx1 - 8 || prop.x() > lx2 + 8 || prop.z() < lz1 - 8 || prop.z() > lz2 + 8) {
-                continue;
-            }
+        // Only the props near this chunk (the plan's index): lantern lines and street gates reach a few blocks.
+        for (Prop prop : plan.propsIn(lx1, lz1, lx2, lz2)) {
             int x = prop.x(), z = prop.z();
             switch (prop.type()) {
                 case LANTERN -> {
@@ -452,11 +455,8 @@ public final class VillageBuilder {
     }
 
     private void spawns() {
-        for (int i = 0; i < plan.spawns.size(); i++) {
-            Spawn spawn = plan.spawns.get(i);
-            if (spawn.x() >= lx1 && spawn.x() <= lx2 && spawn.z() >= lz1 && spawn.z() <= lz2) {
-                VillageResidents.spawn(c, plan, spawn, plan.seed + i * 31L);
-            }
+        for (int i : plan.spawnIndicesIn(lx1, lz1, lx2, lz2)) {
+            VillageResidents.spawn(c, plan, plan.spawns.get(i), plan.seed + i * 31L);
         }
     }
 

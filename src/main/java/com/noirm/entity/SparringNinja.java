@@ -662,6 +662,21 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         // A challenge: anyone who enters combat mode nearby gets a fight.
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::wouldChallenge));
+        // Village residents keep monsters out of their village.
+        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.monster.Monster.class, 10, true, false,
+                this::wouldDefendAgainst));
+    }
+
+    /**
+     * Whether this resident goes after a monster that came into the village: any vanilla monster
+     * but a creeper (they'd blow the houses up), and never this mod's own creatures.
+     */
+    public boolean wouldDefendAgainst(LivingEntity monster) {
+        if (!resident || isYielded() || monster instanceof net.minecraft.world.entity.monster.Creeper) {
+            return false;
+        }
+        var key = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(monster.getType());
+        return key != null && "minecraft".equals(key.getNamespace());
     }
 
     /**

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 /**
  * Tests for how villages are laid out (villages v3): the hidden village's fan of avenues and arcs
- * under the Kage Rock, its wards, small packed plots, river and bridges, colourways, street
+ * under the Kage Rock, its districts, small packed plots, river and bridges, colourways, street
  * furniture and people; the Sand village's spokes; the post town. The plan tests only plan (fast);
  * the building tests build a small slice of a capital and put every block back afterwards.
  */
@@ -178,8 +178,8 @@ public final class VillageLayoutGameTests {
         }
         helper.assertTrue(pairs >= 100 && differ * 4 >= pairs * 3, name + ": neighbours' roofs differ: " + differ + " of " + pairs);
         // Wards.
-        Set<VillagePlan.Ward> wards = plan.lots.stream().map(l -> plan.ward(l.cx(), l.cz())).collect(Collectors.toCollection(() -> EnumSet.noneOf(VillagePlan.Ward.class)));
-        helper.assertTrue(wards.size() >= 6, name + ": wards " + wards);
+        Set<VillagePlan.District> districts = plan.lots.stream().map(l -> plan.district(l.cx(), l.cz())).collect(Collectors.toCollection(() -> EnumSet.noneOf(VillagePlan.District.class)));
+        helper.assertTrue(districts.size() >= 6, name + ": districts " + districts);
 
         // Gates, the river, the rock.
         helper.assertTrue(plan.gates.size() == (fan ? 3 : 1), name + ": gates " + plan.gates.size());
@@ -228,7 +228,7 @@ public final class VillageLayoutGameTests {
         helper.assertTrue(props(plan, PropType.LAMP_POST) >= 30, name + ": street lamps: " + props(plan, PropType.LAMP_POST));
         helper.assertTrue(plan.props.stream().filter(p -> p.type() == PropType.LAMP_POST).allMatch(p -> plan.paving(p.x(), p.z()) == Paving.AVENUE),
                 name + ": lamps stand on the avenues");
-        helper.assertTrue(props(plan, PropType.POLE) >= 30 && plan.wires.size() >= 40, name + ": poles and wires");
+        helper.assertTrue(props(plan, PropType.POLE) >= 30 && plan.wires.size() >= 40, name + ": poles and wires: " + props(plan, PropType.POLE) + " poles, " + plan.wires.size() + " wires");
         helper.assertTrue(plan.wires.stream().anyMatch(w -> w.y() != w.y2()), name + ": service drops to the houses");
         helper.assertTrue(props(plan, PropType.LANTERN_LINE) >= 8 && props(plan, PropType.STREET_GATE) == 2, name + ": the lantern street");
         helper.assertTrue(props(plan, PropType.NOTICE_BOARD) >= 2 && props(plan, PropType.BENCH) >= 4 && props(plan, PropType.BARRELS) >= 5,
@@ -258,8 +258,8 @@ public final class VillageLayoutGameTests {
                 }
             }
         }
-        Noirm.LOGGER.info("Village layout {}: {} lots ({} buildings, {} tall, {} spires), {} props, {} wires, {} bridges, {} residents, wards {}",
-                name, plan.lots.size(), buildings, tall, spires.size(), plan.props.size(), plan.wires.size(), plan.bridges.size(), plan.spawns.size(), wards);
+        Noirm.LOGGER.info("Village layout {}: {} lots ({} buildings, {} tall, {} spires), {} props, {} wires, {} bridges, {} residents, districts {}",
+                name, plan.lots.size(), buildings, tall, spires.size(), plan.props.size(), plan.wires.size(), plan.bridges.size(), plan.spawns.size(), districts);
     }
 
     /** No overlaps, everything inside the limit, nothing on a street or in the river. */

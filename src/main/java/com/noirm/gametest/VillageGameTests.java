@@ -113,10 +113,18 @@ public final class VillageGameTests {
             expect(helper, level, origin.offset(0, 3, -(r - 1)), Blocks.LADDER, "a ladder inside");
             expect(helper, level, origin.offset(0, h, r + 2), Blocks.OAK_PLANKS, "a balcony on top");
             expect(helper, level, origin.offset(0, h + 1, r + 3), Blocks.OAK_FENCE, "with a railing");
-            // The fire symbol, two blocks per pixel: its top row is ". # . # .".
-            expect(helper, level, origin.offset(-6, h - 3, r + 1), Blocks.ORANGE_TERRACOTTA, "a framed plaque");
-            expect(helper, level, origin.offset(-5, h - 3, r + 1), Blocks.WHITE_CONCRETE, "a white plaque");
-            expect(helper, level, origin.offset(-3, h - 3, r + 1), Blocks.RED_CONCRETE, "painted with the village symbol");
+            expect(helper, level, origin.offset(r + 1, VillageBuilder.TOWER_FLOOR, 0), Blocks.BRICK_STAIRS, "a flared eave at each floor");
+            // The fire symbol on a round medallion over the door.
+            expect(helper, level, origin.offset(-5, h - 8, r + 1), Blocks.ORANGE_TERRACOTTA, "a round medallion");
+            int white = 0, red = 0;
+            for (int dx = -3; dx <= 3; dx++) {
+                for (int dy = -3; dy <= 3; dy++) {
+                    BlockState here = level.getBlockState(origin.offset(dx, h - 8 + dy, r + 1));
+                    white += here.is(Blocks.WHITE_CONCRETE) ? 1 : 0;
+                    red += here.is(Blocks.RED_CONCRETE) ? 1 : 0;
+                }
+            }
+            helper.assertTrue(white >= 10 && red >= 5, "white, painted with the village symbol: " + white + " white, " + red + " red");
             expect(helper, level, origin.offset(0, h + 1, -3), Blocks.LECTERN, "the Kage's office");
             var kage = level.getEntitiesOfClass(SparringNinja.class, AABB.of(area), SparringNinja::hasCustomName);
             helper.assertTrue(kage.size() == 1, "the Kage is in the tower, found " + kage.size());

@@ -135,14 +135,15 @@ final class Landmarks {
             f.set(cu + 4, Math.min(y + floor, h) - 1, cv + 4, HANGING_LANTERN);
             f.set(cu - 4, Math.min(y + floor, h) - 1, cv - 4, HANGING_LANTERN);
         }
-        // The village symbol, twice the size of a block-pixel, on a plaque over the door.
-        int top = h - 3;
-        for (int gx = -1; gx <= 10; gx++) {
-            for (int gy = -1; gy <= 10; gy++) {
-                boolean border = gx < 0 || gy < 0 || gx > 9 || gy > 9;
-                boolean painted = !border && p.glyph.painted(gx / 2, gy / 2);
-                f.set(cu - 5 + gx, top - gy, cv + r + 1, border ? p.towerRoof : painted ? p.paint : p.plaque);
-            }
+        // Flared ring eaves at every floor band: the tower rises in tiers.
+        Block eaveStairs = eaveStairs(p), eaveSlab = eaveSlab(p);
+        for (int band = floor; band < h; band += floor) {
+            Shapes.ringEave(f, cu, cv, r, band, eaveStairs, eaveSlab, band == floor);
+        }
+        // The village symbol on a great round medallion over the door.
+        Shapes.medallion(f, cu, h - 8, cv + r + 1, p.glyph, p.towerRoof, p.plaque, p.paint, 11);
+        if (f.w >= 58) {
+            kageWings(f, cu, cv, r);
         }
         // The Kage's office on the balcony.
         int office = 7;
@@ -170,6 +171,7 @@ final class Landmarks {
                 }
             }
             f.set(cu, h + 7 + office + 3, cv, Blocks.LIGHTNING_ROD);
+            Shapes.ringEave(f, cu, cv, office, h + 6, eaveStairs, eaveSlab, false);
         }
         f.fill(cu - 1, h + 1, cv + office, cu + 1, h + 3, cv + office, Blocks.AIR); // office door, facing the gate
         f.set(cu, h + 1, cv - 3, Blocks.LECTERN);
@@ -183,6 +185,85 @@ final class Landmarks {
         for (int k = 0; k < 8; k++) {
             double a = k * Math.PI / 4;
             f.set(cu + (int) Math.round(Math.sin(a) * (r + 2)), h + 1, cv + (int) Math.round(Math.cos(a) * (r + 2)), Blocks.LANTERN);
+        }
+    }
+
+    /** Tiles for the Kage residence's eaves: red brick in the Leaf, sandstone in the Sand, slate in the Snow. */
+    private static Block eaveStairs(VillagePalette p) {
+        return p == VillagePalette.SAND ? Blocks.SMOOTH_SANDSTONE_STAIRS : p.roofStairs().get(0);
+    }
+
+    private static Block eaveSlab(VillagePalette p) {
+        return p == VillagePalette.SAND ? Blocks.SMOOTH_SANDSTONE_SLAB : p.roofSlabs().get(0);
+    }
+
+    /**
+     * The Kage residence is a cluster of drums: either side of the great tower a three-storey round
+     * wing joined to it, with windows all round, a coloured band, a flared eave and a flat roof
+     * terrace with lanterns. A doorway leads from each wing into the tower.
+     */
+    private static void kageWings(LotFrame f, int cu, int cv, int r) {
+        VillagePalette p = f.p;
+        int wr = 7, wh = 3 * STOREY;
+        Block eaveStairs = eaveStairs(p), eaveSlab = eaveSlab(p);
+        for (int s = -1; s <= 1; s += 2) {
+            int wu = cu + s * (r + wr), wv = cv + 3;
+            for (int du = -wr; du <= wr; du++) {
+                for (int dv = -wr; dv <= wr; dv++) {
+                    int u = wu + du, v = wv + dv;
+                    double d = Shapes.dist(du, dv);
+                    if (d > wr + 0.5 || Shapes.dist(u - cu, v - cv) <= r + 0.5) {
+                        continue; // outside the wing, or inside the great tower
+                    }
+                    f.set(u, -1, v, Blocks.POLISHED_ANDESITE);
+                    if (d > wr - 0.5) {
+                        f.fill(u, 0, v, u, wh - 1, v, p.towerWall);
+                        f.set(u, STOREY * 2 - 1, v, p.towerRoof); // the coloured band
+                    } else {
+                        f.fill(u, 0, v, u, wh - 1, v, Blocks.AIR);
+                        f.set(u, STOREY - 1, v, p.planks);
+                        f.set(u, 2 * STOREY - 1, v, p.planks);
+                    }
+                }
+            }
+            for (int k = 0; k < 3; k++) {
+                int y = k * STOREY + 1;
+                for (int a = 0; a < 12; a++) {
+                    double ang = a * Math.PI / 6;
+                    int du = (int) Math.round(Math.sin(ang) * wr), dv = (int) Math.round(Math.cos(ang) * wr);
+                    if (Shapes.dist(wu + du - cu, wv + dv - cv) > r + 1.5) {
+                        f.set(wu + du, y, wv + dv, Buildings.window(f, wu + du, y, wv + dv));
+                    }
+                }
+                f.set(wu, k * STOREY + 2, wv, Buildings.HANGING_LANTERN);
+            }
+            Shapes.disk(f, wu, wv, wr, wh, p.towerRoof.defaultBlockState());
+            Shapes.ringEave(f, wu, wv, wr, wh, eaveStairs, eaveSlab, true);
+            Shapes.ringEave(f, wu, wv, wr, 2 * STOREY - 1, eaveStairs, eaveSlab, false);
+            for (int du = -wr - 2; du <= wr + 2; du++) {
+                for (int dv = -wr - 2; dv <= wr + 2; dv++) {
+                    double d = Shapes.dist(du, dv);
+                    if (d > wr + 1.5 && d <= wr + 2.5 && Shapes.dist(wu + du - cu, wv + dv - cv) > r + 0.5) {
+                        f.set(wu + du, 2 * STOREY - 1, wv + dv, Blocks.AIR); // keep the middle eave slim
+                    }
+                }
+            }
+            // The roof terrace: a railing and lanterns.
+            for (int a = 0; a < 16; a++) {
+                double ang = a * Math.PI / 8;
+                int du = (int) Math.round(Math.sin(ang) * (wr - 1)), dv = (int) Math.round(Math.cos(ang) * (wr - 1));
+                if (Shapes.dist(wu + du - cu, wv + dv - cv) > r + 1.5) {
+                    f.set(wu + du, wh + 1, wv + dv, a % 4 == 0 ? Blocks.LANTERN.defaultBlockState() : p.fence.defaultBlockState());
+                }
+            }
+            // The doorway into the great tower, and a door out to the plaza.
+            int du = -s * wr;
+            f.fill(wu + du, 0, wv - 3, wu + du, 2, wv - 3, Blocks.AIR);
+            f.fill(cu + s * r, 0, wv - 3, cu + s * r, 2, wv - 3, Blocks.AIR);
+            f.fill(cu + s * (r - 1), 0, wv - 3, cu + s * (r - 1), 2, wv - 3, Blocks.AIR);
+            Buildings.door(f, wu, 0, wv + wr, Direction.SOUTH);
+            f.set(wu - 1, 2, wv + wr + 1, Buildings.HANGING_LANTERN);
+            f.set(wu + 1, 2, wv + wr + 1, Buildings.HANGING_LANTERN);
         }
     }
 

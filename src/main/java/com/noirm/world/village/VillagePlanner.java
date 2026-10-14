@@ -11,7 +11,7 @@ import com.noirm.world.village.VillagePlan.Road;
 import com.noirm.world.village.VillagePlan.Role;
 import com.noirm.world.village.VillagePlan.Spawn;
 import com.noirm.world.village.VillagePlan.Street;
-import com.noirm.world.village.VillagePlan.Ward;
+import com.noirm.world.village.VillagePlan.District;
 import com.noirm.world.village.VillagePlan.Wire;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -34,7 +34,7 @@ import static com.noirm.world.village.VillagePlan.STOREY;
  * gate, two to the side gates), street arcs ring the plaza every ~50 blocks, and narrow alleys run
  * between the arcs. Plots are small and packed wall to wall near the plaza, and get bigger, with
  * gardens, towards the wall. A river winds across the village with stone banks and bridges, and
- * the village is split into wards (market, shinobi quarter, clan district, temple hill, lantern
+ * the village is split into districts (market, shinobi quarter, clan district, temple hill, lantern
  * street, homes, the outer ring) that pick what gets built and in what colours. The Sand village
  * has eight spokes and two ring streets round a central plaza instead, and no river.
  *
@@ -149,10 +149,22 @@ final class VillagePlanner {
             river();
         }
         lay(arc(0, 0, limit + 2.5, Paving.STREET, 4), 12, half - 1);
-        for (int bearing : avenues) {
-            boolean gate = isGate(bearing);
-            int reach = gate ? half - 1 : limit + 3;
-            lay(ray(px, pz, bearing, PLAZA - 2, reach, Paving.AVENUE, 7, false), 4, reach);
+        // The avenues to the gates, then (in the Leaf village) the clan district by the river, then the
+        // other avenues, which stop at its wall rather than crowd it off the bank.
+        Lot riverside = null;
+        for (int pass = 0; pass < 2; pass++) {
+            for (int bearing : avenues) {
+                boolean gate = isGate(bearing);
+                if (gate != (pass == 0)) {
+                    continue;
+                }
+                int reach = gate ? half - 1 : limit + 3;
+                // The ray runs on until it leaves the village; lay() keeps it within reach of the centre.
+                lay(ray(px, pz, bearing, PLAZA - 2, 2 * half, Paving.AVENUE, 7, false), 4, reach);
+            }
+            if (pass == 0 && fan) {
+                riverside = riversideCompound();
+            }
         }
         // ---- the landmarks the streets go round
         Lot academy, compound, shrine;
@@ -161,7 +173,7 @@ final class VillagePlanner {
             placeNear(LotType.JONIN_STATION, 15, 15, Direction.SOUTH, 1, 0, 24, new int[] {px - 45, pz - 25},
                     academy == null ? new int[] {px - 60, pz + 10} : new int[] {academy.x1() - 10, academy.cz()});
             shrine = placeNear(LotType.SHRINE, 36, 41, Direction.SOUTH, 1, 0, 40, new int[] {px + 95, pz - 12}, new int[] {px + 120, pz + 10});
-            compound = riversideCompound();
+            compound = riverside;
         } else {
             academy = placeNear(LotType.ACADEMY, 47, 36, null, 2, 0, 24, polar(-112, 68), polar(112, 68), polar(-157, 140), polar(157, 140));
             placeNear(LotType.JONIN_STATION, 15, 15, null, 1, 0, 24,
@@ -187,17 +199,23 @@ final class VillagePlanner {
             lay(arc(px, pz, arcs[k], Paving.STREET, 5), 12, limit + 2);
         }
         // ---- landmarks that sit on the streets
-        hospital(arcs[0]);
+        // (Between the Leaf village's first two arcs the avenues are too close together for it.)
+        if (fan) {
+            hospital(arcs[1], arcs[2], arcs[0]);
+        } else {
+            hospital(arcs[0], arcs[1]);
+        }
         placeNear(LotType.RAMEN_SHOP, 9, 10, Direction.WEST, 1, 0, 14, new int[] {px + 10, pz + arcs[0] + 9}, new int[] {px - 10, pz + arcs[0] + 9});
         outerLandmarks(fan);
-        // ---- the wards
-        wards(fan, academy, shrine, compound, lanternStreet);
+        // ---- the districts
+        districts(fan, academy, shrine, compound, lanternStreet);
         // ---- alleys between the arcs
         alleys(arcs);
         // ---- the plots
         spires(8 + rnd.nextInt(5));
         packAll();
         backLots();
+        ensureTall(6);
         yards();
         // ---- street furniture
         lampPosts();
@@ -238,10 +256,10 @@ final class VillagePlanner {
         int n = plan.river.size();
         int start = rnd.nextInt(n);
         int style = rnd.nextInt(2);
-        for (int k = 0; k < n; k += 6) {
+        for (int k = 0; k < n; k += 3) {
             int[] p = plan.river.get((start + k) % n);
             double d = Math.hypot(p[0] - px, p[1] - pz);
-            if (Math.abs(p[0]) < 70 || d < 110 || d > 230) {
+            if (Math.abs(p[0]) < 70 || d < 110 || d > 260) {
                 continue;
             }
             int[] q = plan.river.get(Math.min(n - 1, (start + k) % n + 2));
@@ -259,7 +277,7 @@ final class VillagePlanner {
                 boolean sideways = facing.getAxis() == Direction.Axis.X;
                 int wx = sideways ? 51 : 61, wz = sideways ? 61 : 51;
                 int reach = (sideways ? wx : wz) / 2 + 8;
-                for (int push = 0; push <= 10; push += 2) {
+                for (int push = 0; push <= 4; push += 2) {
                     int cx = (int) Math.round(p[0] + nx * (reach + push)), cz = (int) Math.round(p[1] + nz * (reach + push));
                     int x1 = cx - wx / 2, z1 = cz - wz / 2;
                     if (free(x1 - 1, z1 - 1, x1 + wx, z1 + wz)) {
@@ -289,21 +307,23 @@ final class VillagePlanner {
         return pieces.isEmpty() ? null : pieces.get(0);
     }
 
-    /** The hospital, fronting the first arc. */
-    private void hospital(int arc) {
-        int[] bearings = {-42, 42, -15, 15, -68, 68, -40, 40};
+    /** The hospital, fronting one of the street arcs (the first of {@code arcs} with room). */
+    private void hospital(int... arcs) {
+        int[] bearings = {-42, 42, -15, 15, -68, 68, -33, 33, -50, 50, -6, 6, -75, 75, -24, 24};
         int start = rnd.nextInt(2);
-        for (int k = 0; k < bearings.length; k++) {
-            double bearing = bearings[(k + start) % bearings.length];
-            for (int extra = 0; extra <= 12; extra += 2) {
-                int[] c = polar(bearing, arc + 2.5 + 1 + 17 + extra);
-                Direction facing = cardinal(px - c[0], pz - c[1]);
-                if (tryLandmark(LotType.HOSPITAL, 42, 32, facing, 3, 0, c[0], c[1]) != null) {
-                    return;
+        for (int arc : arcs) {
+            for (int k = 0; k < bearings.length; k++) {
+                double bearing = bearings[(k + start) % bearings.length];
+                for (int extra = 0; extra <= 12; extra += 2) {
+                    int[] c = polar(bearing, arc + 2.5 + 1 + 17 + extra);
+                    Direction facing = cardinal(px - c[0], pz - c[1]);
+                    if (tryLandmark(LotType.HOSPITAL, 42, 32, facing, 3, 0, c[0], c[1]) != null) {
+                        return;
+                    }
                 }
             }
         }
-        placeNear(LotType.HOSPITAL, 42, 32, null, 3, 0, 40, polar(30, arc + 40), polar(-30, arc + 40));
+        placeNear(LotType.HOSPITAL, 42, 32, null, 3, 0, 40, polar(30, arcs[0] + 40), polar(-30, arcs[0] + 40));
     }
 
     /** The training glades, the cemetery, the giant-tree parks and groves of the outer ring. */
@@ -324,10 +344,14 @@ final class VillagePlanner {
                 }
             }
         }
+        // The cemetery: between two street arcs (or the Sand village's outer ring and the wall), well out.
         shuffle(bearings);
-        for (int bearing : bearings) {
-            if (placeNear(LotType.CEMETERY, 25, 31, null, 0, 0, 10, polar(bearing, fan ? 280 : 210)) != null) {
-                break;
+        boolean cemetery = false;
+        for (double r : fan ? new double[] {247, 196, 302} : new double[] {212}) {
+            for (int bearing : bearings) {
+                if (!cemetery && placeNear(LotType.CEMETERY, 25, 31, null, 0, 0, 12, polar(bearing, r)) != null) {
+                    cemetery = true;
+                }
             }
         }
         // The giant tree park: one in the middle of the village (two in the Leaf village).
@@ -506,10 +530,10 @@ final class VillagePlanner {
         lay(segment(-18, -52, -18, 52, Paving.PATH, 3, false), 8, limit);
         // Wards: the market down the main street, homes behind.
         for (int z : new int[] {-58, -38, -18, 18, 38, 58}) {
-            ward(Ward.MARKET, 0, z);
+            district(District.MARKET, 0, z);
         }
         for (int[] c : new int[][] {{-40, -30}, {40, -30}, {-40, 30}, {40, 30}, {-52, 0}, {52, 0}}) {
-            ward(Ward.RESIDENTIAL, c[0], c[1]);
+            district(District.RESIDENTIAL, c[0], c[1]);
         }
         packAll();
         backLots();
@@ -716,7 +740,8 @@ final class VillagePlanner {
                 }
                 int shift = Math.floorDiv(a - b, 2);
                 int reachOut = Math.max(a - shift, b + shift) + 2;
-                boolean arched = line.paving != Paving.AVENUE;
+                // Red arched footbridges carry the streets, flat stone ones the avenues and the ring road by the wall.
+                boolean arched = line.paving != Paving.AVENUE && VillageBuilder.inDisk(x, z, plan.kind.wall - 14);
                 plan.bridges.add(new Bridge(x + dx * shift, z + dz * shift, axis, reachOut * 2 + 1,
                         arched ? 3 : (int) Math.round(line.hw * 2), arched));
                 start = -1;
@@ -843,7 +868,7 @@ final class VillagePlanner {
                     int cx = (int) Math.round(end[0] + tx * 3), cz = (int) Math.round(end[1] + tz * 3);
                     if (free(cx - 1, cz - 1, cx + 2, cz + 2)) {
                         addLot(LotType.YARD, cx - 1, cz - 1, cx + 2, cz + 2, cardinal(-tx, -tz), 0, rnd.nextBoolean() ? 6 : 7,
-                                colourFor(plan.ward(cx, cz), rnd.nextInt(4), null));
+                                colourFor(plan.district(cx, cz), rnd.nextInt(4), null));
                     }
                 }
             }
@@ -861,59 +886,59 @@ final class VillagePlanner {
         return false;
     }
 
-    // ================================================================ wards
+    // ================================================================ districts
 
-    private void ward(Ward ward, double x, double z) {
-        plan.wardCentres.add(new int[] {(int) Math.round(x), (int) Math.round(z), ward.ordinal()});
+    private void district(District district, double x, double z) {
+        plan.districtCentres.add(new int[] {(int) Math.round(x), (int) Math.round(z), district.ordinal()});
     }
 
-    /** Splits the capital into wards round fixed centres (a place belongs to the nearest one). */
-    private void wards(boolean fan, Lot academy, Lot shrine, Lot compound, Line lanternStreet) {
-        ward(Ward.SHINOBI, px, pz);
+    /** Splits the capital into districts round fixed centres (a place belongs to the nearest one). */
+    private void districts(boolean fan, Lot academy, Lot shrine, Lot compound, Line lanternStreet) {
+        district(District.SHINOBI, px, pz);
         if (academy != null) {
-            ward(Ward.SHINOBI, academy.cx(), academy.cz());
+            district(District.SHINOBI, academy.cx(), academy.cz());
         }
         Lot hospital = plan.first(LotType.HOSPITAL);
         if (hospital != null) {
-            ward(Ward.SHINOBI, hospital.cx(), hospital.cz());
+            district(District.SHINOBI, hospital.cx(), hospital.cz());
         }
         if (shrine != null) {
-            ward(Ward.TEMPLE, shrine.cx(), shrine.cz());
+            district(District.TEMPLE, shrine.cx(), shrine.cz());
         }
         if (compound != null) {
-            ward(Ward.CLAN, compound.cx(), compound.cz());
+            district(District.CLAN, compound.cx(), compound.cz());
             double dx = compound.cx() - px, dz = compound.cz() - pz, len = Math.max(1, Math.hypot(dx, dz));
-            ward(Ward.CLAN, compound.cx() + dx / len * 45, compound.cz() + dz / len * 45);
+            district(District.CLAN, compound.cx() + dx / len * 45, compound.cz() + dz / len * 45);
         }
         if (lanternStreet != null) {
             for (int k = 1; k <= 3; k++) {
                 int i = lanternStreet.size() * k / 4;
-                ward(Ward.LANTERN, lanternStreet.x(i), lanternStreet.z(i));
+                district(District.LANTERN, lanternStreet.x(i), lanternStreet.z(i));
             }
         }
         // The market all along the gate avenue.
         double toGate = plan.gates.isEmpty() ? plan.kind.wall : Math.hypot(plan.gates.get(0)[0] - px, plan.gates.get(0)[1] - pz);
         for (double r = 70; r < toGate - 20; r += 75) {
-            ward(Ward.MARKET, px, pz + r);
+            district(District.MARKET, px, pz + r);
         }
         if (fan) {
             for (int s = -1; s <= 1; s += 2) {
-                ward(Ward.RESIDENTIAL, s * 105, -125);
-                ward(Ward.RESIDENTIAL, s * 120, -45);
-                ward(Ward.RESIDENTIAL, s * 95, 30);
-                ward(Ward.RESIDENTIAL, s * 175, -95);
-                ward(Ward.OUTER, s * 215, 25);
-                ward(Ward.OUTER, s * 170, 140);
-                ward(Ward.OUTER, s * 95, 205);
+                district(District.RESIDENTIAL, s * 105, -125);
+                district(District.RESIDENTIAL, s * 120, -45);
+                district(District.RESIDENTIAL, s * 95, 30);
+                district(District.RESIDENTIAL, s * 175, -95);
+                district(District.OUTER, s * 215, 25);
+                district(District.OUTER, s * 170, 140);
+                district(District.OUTER, s * 95, 205);
             }
         } else {
             for (int bearing = 45; bearing < 360; bearing += 45) {
                 int[] c = polar(bearing, 115);
-                ward(Ward.RESIDENTIAL, c[0], c[1]);
+                district(District.RESIDENTIAL, c[0], c[1]);
             }
             for (int bearing = 22; bearing < 360; bearing += 45) {
                 int[] c = polar(bearing, 220);
-                ward(Ward.OUTER, c[0], c[1]);
+                district(District.OUTER, c[0], c[1]);
             }
         }
     }
@@ -931,7 +956,7 @@ final class VillagePlanner {
     /** A landmark, with a block of space round it. */
     private Lot landmark(LotType type, int x1, int z1, int x2, int z2, Direction facing, int floors, int style) {
         int cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
-        Lot lot = new Lot(type, x1, z1, x2, z2, facing, floors, style, rnd.nextLong(), colourFor(plan.ward(cx, cz), rnd.nextInt(4), null));
+        Lot lot = new Lot(type, x1, z1, x2, z2, facing, floors, style, rnd.nextLong(), colourFor(plan.district(cx, cz), rnd.nextInt(4), null));
         plan.lots.add(lot);
         mark(x1 - 1, z1 - 1, x2 + 1, z2 + 1, LOT);
         return lot;
@@ -1001,9 +1026,9 @@ final class VillagePlanner {
                 if (ci < 0 || !within(qx, qz) || occ[ci] != FREE && occ[ci] != ROAD) {
                     continue;
                 }
-                Ward ward = plan.ward(qx, qz);
+                District district = plan.district(qx, qz);
                 int ring = ring(qx, qz);
-                LotType type = frontType(ward, ring, qx, qz);
+                LotType type = frontType(district, ring, qx, qz);
                 int[] dims = dims(type, ring);
                 int gap = gap(ring);
                 int[] r = tryPlot(line, i, side, dims[0], dims[1], gap);
@@ -1015,8 +1040,8 @@ final class VillagePlanner {
                     blockWall = rnd.nextInt(4);
                 }
                 int wall = rnd.nextFloat() < 0.8f ? blockWall : rnd.nextInt(4);
-                int colour = colourFor(ward, wall, joined ? prev : null);
-                Lot lot = addLot(type, r[0], r[1], r[2], r[3], Direction.from2DDataValue(r[4]), floors(type, ring, ward), style(type, ward, ring), colour);
+                int colour = colourFor(district, wall, joined ? prev : null);
+                Lot lot = addLot(type, r[0], r[1], r[2], r[3], Direction.from2DDataValue(r[4]), floors(type, ring, district), style(type, district, ring), colour);
                 if (type == LotType.APARTMENT || type == LotType.ROUND_TOWER) {
                     tall++;
                 }
@@ -1102,10 +1127,10 @@ final class VillagePlanner {
         return d <= CORE ? 0 : d <= MIDDLE ? 1 : 2;
     }
 
-    /** What a street-front plot becomes, by ward. */
-    private LotType frontType(Ward ward, int ring, int x, int z) {
+    /** What a street-front plot becomes, by district. */
+    private LotType frontType(District district, int ring, int x, int z) {
         float r = rnd.nextFloat();
-        LotType type = switch (ward) {
+        LotType type = switch (district) {
             case MARKET -> r < 0.38f ? LotType.SHOP : r < 0.56f ? LotType.RESTAURANT : r < 0.68f ? LotType.STALL
                     : r < 0.94f ? LotType.HOUSE : LotType.WAREHOUSE;
             case LANTERN -> r < 0.45f ? LotType.RESTAURANT : r < 0.65f ? LotType.SHOP : r < 0.75f ? LotType.STALL : LotType.HOUSE;
@@ -1171,7 +1196,7 @@ final class VillagePlanner {
     }
 
     /** Storeys: a low 2–3-storey carpet, apartments and round towers up to 5. */
-    private int floors(LotType type, int ring, Ward ward) {
+    private int floors(LotType type, int ring, District district) {
         float r = rnd.nextFloat();
         return switch (type) {
             case APARTMENT, ROUND_TOWER -> 4 + rnd.nextInt(2);
@@ -1179,7 +1204,7 @@ final class VillagePlanner {
                     : ring == 0 ? (r < 0.2f ? 1 : r < 0.75f ? 2 : 3)
                     : ring == 1 ? (r < 0.35f ? 1 : r < 0.85f ? 2 : 3)
                     : (r < 0.6f ? 1 : 2);
-            case SHOP, RESTAURANT -> ring == 0 || ward == Ward.MARKET || ward == Ward.LANTERN ? 2 : 1 + rnd.nextInt(2);
+            case SHOP, RESTAURANT -> ring == 0 || district == District.MARKET || district == District.LANTERN ? 2 : 1 + rnd.nextInt(2);
             case ROUND_HOUSE, WAREHOUSE -> 1 + rnd.nextInt(2);
             case STALL -> 1;
             default -> 0;
@@ -1187,11 +1212,11 @@ final class VillagePlanner {
     }
 
     /** The building's variant; shops lean to weapons in the shinobi quarter and flowers on temple hill. */
-    private int style(LotType type, Ward ward, int ring) {
+    private int style(LotType type, District district, int ring) {
         return switch (type) {
             case SHOP -> {
-                int kind = ward == Ward.SHINOBI && rnd.nextFloat() < 0.6f ? 0
-                        : ward == Ward.TEMPLE && rnd.nextFloat() < 0.5f ? 2 : rnd.nextInt(3);
+                int kind = district == District.SHINOBI && rnd.nextFloat() < 0.6f ? 0
+                        : district == District.TEMPLE && rnd.nextFloat() < 0.5f ? 2 : rnd.nextInt(3);
                 yield rnd.nextInt(4) * 3 + kind;
             }
             case YARD -> yardStyle(ring);
@@ -1209,6 +1234,40 @@ final class VillagePlanner {
         }
         int r = rnd.nextInt(100);
         return r < 15 ? 0 : r < 33 ? 1 : r < 48 ? 2 : r < 63 ? 3 : r < 71 ? 4 : r < 83 ? 5 : r < 90 ? 6 : 7;
+    }
+
+    /**
+     * If the plots gave the capital fewer than {@code min} blocks of flats, turns the roomiest houses
+     * nearest the plaza into some (well apart): the skyline needs a few mid-rise accents.
+     */
+    private void ensureTall(int min) {
+        List<Integer> candidates = new ArrayList<>();
+        for (int i = 0; i < plan.lots.size(); i++) {
+            Lot lot = plan.lots.get(i);
+            // (Not in the core, where the small party-wall houses are.)
+            double d = Math.hypot(lot.cx() - px, lot.cz() - pz);
+            boolean roomy = lot.type() == LotType.HOUSE && frameW(lot) >= 8 && frameD(lot) >= 9
+                    || lot.type() == LotType.ROUND_HOUSE && Math.min(frameW(lot), frameD(lot)) >= 9;
+            if (roomy && d >= CORE && d <= TALL_RANGE + 8) {
+                candidates.add(i);
+            }
+        }
+        candidates.sort(Comparator.comparingDouble(i -> Math.hypot(plan.lots.get(i).cx() - px, plan.lots.get(i).cz() - pz)));
+        List<Lot> placed = new ArrayList<>(plan.lots.stream().filter(l -> l.type() == LotType.APARTMENT || l.type() == LotType.ROUND_TOWER).toList());
+        for (int i : candidates) {
+            if (tall >= min) {
+                break;
+            }
+            Lot lot = plan.lots.get(i);
+            if (placed.stream().anyMatch(o -> Math.hypot(o.cx() - lot.cx(), o.cz() - lot.cz()) < 24)) {
+                continue;
+            }
+            LotType type = lot.type() == LotType.ROUND_HOUSE ? LotType.ROUND_TOWER : LotType.APARTMENT;
+            Lot flats = new Lot(type, lot.x1(), lot.z1(), lot.x2(), lot.z2(), lot.facing(), 4 + rnd.nextInt(2), lot.style(), lot.seed(), lot.colour());
+            plan.lots.set(i, flats);
+            placed.add(flats);
+            tall++;
+        }
     }
 
     /** Slender spires that break the skyline, at street corners, well apart. */
@@ -1234,7 +1293,7 @@ final class VillagePlanner {
                 continue;
             }
             placed.add(addLot(LotType.SPIRE, r[0], r[1], r[2], r[3], Direction.from2DDataValue(r[4]), 0, style,
-                    colourFor(plan.ward(cx, cz), rnd.nextInt(4), null)));
+                    colourFor(plan.district(cx, cz), rnd.nextInt(4), null)));
         }
     }
 
@@ -1268,7 +1327,7 @@ final class VillagePlanner {
                 continue;
             }
             Direction facing = towardsStreet(x1, z1, x2, z2, 10);
-            Ward ward = plan.ward((x1 + x2) / 2, (z1 + z2) / 2);
+            District district = plan.district((x1 + x2) / 2, (z1 + z2) / 2);
             float houses = ring == 0 ? 0.85f : ring == 1 ? 0.75f : 0.55f;
             LotType type;
             if (facing == null) {
@@ -1278,8 +1337,8 @@ final class VillagePlanner {
             } else {
                 type = roll < houses + 0.2f ? LotType.GARDEN : ring == 2 ? LotType.YARD : LotType.PARK;
             }
-            addLot(type, x1, z1, x2, z2, facing == null ? Direction.SOUTH : facing, floors(type, ring, ward), style(type, ward, ring),
-                    colourFor(ward, rnd.nextInt(4), null));
+            addLot(type, x1, z1, x2, z2, facing == null ? Direction.SOUTH : facing, floors(type, ring, district), style(type, district, ring),
+                    colourFor(district, rnd.nextInt(4), null));
         }
     }
 
@@ -1315,7 +1374,7 @@ final class VillagePlanner {
                 if (x2 >= 0) {
                     Direction facing = towardsStreet(x, z, x2, z2, 6);
                     addLot(LotType.YARD, x, z, x2, z2, facing == null ? Direction.SOUTH : facing, 0, yardStyle(ring),
-                            colourFor(plan.ward(x, z), rnd.nextInt(4), null));
+                            colourFor(plan.district(x, z), rnd.nextInt(4), null));
                 } else {
                     road(x, z, Paving.PATH); // a sliver between buildings: a gravel alley
                 }
@@ -1360,18 +1419,18 @@ final class VillagePlanner {
     // ================================================================ colourways
 
     /**
-     * A colourway for a lot: the street block's wall plaster, a roof picked with the ward's taste
+     * A colourway for a lot: the street block's wall plaster, a roof picked with the district's taste
      * (warm reds and oranges in the shinobi quarter, dark tiles in the clan district), re-rolled so
      * it differs from the neighbour's roof.
      */
-    private int colourFor(Ward ward, int wall, Lot neighbour) {
+    private int colourFor(District district, int wall, Lot neighbour) {
         int trim = rnd.nextInt(3);
-        int roof = roofRow(ward);
+        int roof = roofRow(district);
         int index = wall + 4 * (roof + 20 * trim);
         if (neighbour != null) {
             Object roofBlock = palette.colourway(neighbour.colour()).roofFlat();
             for (int k = 0; k < 4 && palette.colourway(index).roofFlat() == roofBlock; k++) {
-                roof = roofRow(ward);
+                roof = roofRow(district);
                 index = wall + 4 * (roof + 20 * trim);
             }
             for (int k = 1; k < 20 && palette.colourway(index).roofFlat() == roofBlock; k++) {
@@ -1381,21 +1440,21 @@ final class VillagePlanner {
         return index;
     }
 
-    /** A row of the palette's 20-row roof table, leaning the way the ward likes. */
-    private int roofRow(Ward ward) {
+    /** A row of the palette's 20-row roof table, leaning the way the district likes. */
+    private int roofRow(District district) {
         int[] rows = switch (palette) {
-            case LEAF -> switch (ward) {
+            case LEAF -> switch (district) {
                 case SHINOBI -> new int[] {0, 1, 2, 3, 4, 5, 12, 13, 19, 19, 19};
                 case CLAN -> new int[] {12, 13, 14, 15, 18, 19};
                 case TEMPLE -> new int[] {19, 19, 18, 12, 13, 0, 1};
                 default -> null;
             };
-            case SAND -> switch (ward) {
+            case SAND -> switch (district) {
                 case SHINOBI, TEMPLE -> new int[] {16, 17, 18, 19, 9, 10};
                 case CLAN -> new int[] {9, 10, 11, 12, 13, 14, 15};
                 default -> null;
             };
-            case SNOW -> switch (ward) {
+            case SNOW -> switch (district) {
                 case SHINOBI, TEMPLE -> new int[] {8, 9, 10, 11, 12, 15, 16};
                 case CLAN -> new int[] {0, 1, 2, 3, 4, 5, 6, 7};
                 default -> null;
@@ -1496,8 +1555,14 @@ final class VillagePlanner {
             int side = -line.tz(mid) * ox + line.tx(mid) * oz >= 0 ? 1 : -1;
             int[] last = null;
             int k = 0;
-            for (int i = 6; i < line.size() - 3; i += 12) {
-                int[] edge = edgeCell(line, i, side);
+            for (int at = 6; at < line.size() - 3; at += 12) {
+                // The planned spot, or the next free one a few blocks on (a gateway, a bench).
+                int[] edge = null;
+                int i = at;
+                for (int t = 0; t < 4 && edge == null && at + t < line.size() - 3; t++) {
+                    i = at + t;
+                    edge = edgeCell(line, i, side);
+                }
                 if (edge == null || Math.hypot(edge[0] - px, edge[1] - pz) < clear) {
                     last = null;
                     continue;
@@ -1799,7 +1864,7 @@ final class VillagePlanner {
             shops.set(j, t);
         }
         shops.sort(Comparator.comparingInt(l -> l.type() == LotType.RAMEN_SHOP || l.type() == LotType.INN ? 0
-                : plan.ward(l.cx(), l.cz()) == Ward.MARKET || plan.ward(l.cx(), l.cz()) == Ward.LANTERN ? 1 : 2));
+                : plan.district(l.cx(), l.cz()) == District.MARKET || plan.district(l.cx(), l.cz()) == District.LANTERN ? 1 : 2));
         int n = 0;
         for (Lot lot : shops) {
             if (n >= max) {
@@ -1829,8 +1894,8 @@ final class VillagePlanner {
         List<Lot> outings = plan.lots.stream().filter(l -> l.type() == LotType.SHOP || l.type() == LotType.RESTAURANT
                 || l.type() == LotType.PARK || l.type() == LotType.STALL || l.type() == LotType.RAMEN_SHOP).toList();
         List<Lot> market = outings.stream().filter(l -> {
-            Ward w = plan.ward(l.cx(), l.cz());
-            return w == Ward.MARKET || w == Ward.LANTERN;
+            District w = plan.district(l.cx(), l.cz());
+            return w == District.MARKET || w == District.LANTERN;
         }).toList();
         for (int i = 0; i < adults + children + ninjas && !homes.isEmpty(); i++) {
             Lot home = homes.remove(rnd.nextInt(homes.size()));

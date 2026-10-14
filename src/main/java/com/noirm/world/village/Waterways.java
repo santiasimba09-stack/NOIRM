@@ -2,7 +2,6 @@ package com.noirm.world.village;
 
 import com.noirm.world.village.VillagePlan.Bridge;
 import com.noirm.world.village.VillagePlan.Landing;
-import com.noirm.world.village.VillagePlan.Paving;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -64,7 +63,7 @@ final class Waterways {
         }
     }
 
-    /** One column of river: water two deep at the edges and three in the middle over a gravel and clay bed; a flat stone deck where an avenue crosses. */
+    /** One column of river: water two deep at the edges and three in the middle over a gravel and clay bed; a flat stone deck where an avenue (or a street by the wall) crosses. */
     private static void channel(VillageCanvas c, VillagePlan plan, int x, int z, long seed) {
         int depth = deep(plan, x, z) ? 3 : 2;
         c.set(x, -1, z, AIR);
@@ -72,16 +71,32 @@ final class Waterways {
             c.set(x, y, z, WATER);
         }
         c.set(x, SURFACE - depth, z, BED.at(x, SURFACE - depth, z, seed));
-        if (plan.paving(x, z) == Paving.AVENUE) {
+        if (plan.paving(x, z) != null && onFlatBridge(plan, x, z)) {
             c.set(x, -1, z, BANK.at(x, -1, z, seed + 1));
             for (Direction d : Direction.Plane.HORIZONTAL) {
                 int nx = x + d.getStepX(), nz = z + d.getStepZ();
-                if (plan.isWater(nx, nz) && plan.paving(nx, nz) != Paving.AVENUE) {
+                if (plan.isWater(nx, nz) && (plan.paving(nx, nz) == null || !onFlatBridge(plan, nx, nz))) {
                     c.set(x, 0, z, Blocks.STONE_BRICK_WALL); // a parapet along the bridge's side
                     break;
                 }
             }
         }
+    }
+
+    /** Whether (x, z) is on the deck of a flat stone bridge (an avenue's, or a street's by the wall). */
+    private static boolean onFlatBridge(VillagePlan plan, int x, int z) {
+        for (Bridge bridge : plan.bridges) {
+            if (bridge.arched()) {
+                continue;
+            }
+            boolean alongX = bridge.axis() == Direction.Axis.X;
+            int along = alongX ? x - bridge.x() : z - bridge.z();
+            int across = alongX ? z - bridge.z() : x - bridge.x();
+            if (Math.abs(along) <= bridge.length() / 2 && Math.abs(across) <= bridge.width() / 2 + 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Whether (x, z) is well inside the river (the middle three blocks are deeper). */

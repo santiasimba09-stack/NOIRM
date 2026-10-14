@@ -132,7 +132,7 @@ public final class VillagePlan {
      * hill under the rock, the lantern street of restaurants and the hot spring, the homes, and the
      * outer ring of gardens, fields and training glades.
      */
-    public enum Ward { MARKET, SHINOBI, CLAN, TEMPLE, LANTERN, RESIDENTIAL, OUTER }
+    public enum District { MARKET, SHINOBI, CLAN, TEMPLE, LANTERN, RESIDENTIAL, OUTER }
 
     /** Small things along the streets. */
     public enum PropType {
@@ -222,7 +222,7 @@ public final class VillagePlan {
      */
     public final List<int[]> gates = new ArrayList<>();
 
-    // ------------------------------------------------------------ street, water and ward rasters
+    // ------------------------------------------------------------ street, water and district rasters
 
     /** The rasters cover -half..half on both axes (half = the village's radius). */
     private final int half;
@@ -231,8 +231,8 @@ public final class VillagePlan {
     final byte[] streetGrid;
     /** One bit per block: river or canal water. */
     final long[] waterBits;
-    /** Ward centres {x, z, ward ordinal}: a place belongs to the ward of the nearest centre. */
-    final List<int[]> wardCentres = new ArrayList<>();
+    /** District centres {x, z, district ordinal}: a place belongs to the district of the nearest centre. */
+    final List<int[]> districtCentres = new ArrayList<>();
 
     /** Whether (x, z) is river or canal water (the wall leaves a barred water gate there). */
     public boolean isWater(int x, int z) {
@@ -260,16 +260,16 @@ public final class VillagePlan {
         return i >= 0 && streetGrid[i] != 0;
     }
 
-    /** The ward (district) that (x, z) belongs to; RESIDENTIAL in a plan without wards (towns, outposts). */
-    public Ward ward(int x, int z) {
-        Ward best = Ward.RESIDENTIAL;
+    /** The district that (x, z) belongs to; RESIDENTIAL in a plan without districts (towns, outposts). */
+    public District district(int x, int z) {
+        District best = District.RESIDENTIAL;
         long bestDistance = Long.MAX_VALUE;
-        for (int[] centre : wardCentres) {
+        for (int[] centre : districtCentres) {
             long dx = x - centre[0], dz = z - centre[1];
             long d = dx * dx + dz * dz;
             if (d < bestDistance) {
                 bestDistance = d;
-                best = Ward.values()[centre[2]];
+                best = District.values()[centre[2]];
             }
         }
         return best;
@@ -403,8 +403,8 @@ public final class VillagePlan {
     public static final int BUCKET = 16;
     /** How far a lot's drawing may spill past its plot (roofs, eaves, steps). */
     public static final int LOT_MARGIN = 4;
-    /** How far a prop's drawing may spill past its spot (tree crowns, benches, wells). */
-    public static final int PROP_MARGIN = 6;
+    /** How far a prop's drawing may spill past its spot (tree crowns, lantern lines and street gates across a street). */
+    public static final int PROP_MARGIN = 10;
 
     private volatile Index index;
 
