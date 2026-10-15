@@ -250,7 +250,7 @@ public final class Susanoo {
 
     private static void draw(ServerLevel level, LivingEntity entity, State state) {
         int color = state.color;
-        var glow = Vfx.glow(lighten(color), color, 0.32f, 0.12f, 5);
+        var glow = Vfx.glow(color, color, 0.26f, 0.1f, 5); // pure colour: overlapping glows add up
         float yaw = entity.getYRot() * Mth.DEG_TO_RAD;
         Vec3 base = entity.position();
         float scale = state.stage == 1 ? 1f : state.stage == 2 ? 1.5f : 2.2f;

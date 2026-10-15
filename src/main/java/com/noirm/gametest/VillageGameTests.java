@@ -258,6 +258,9 @@ public final class VillageGameTests {
         ninja.moveTo(from.getX() + 0.5, from.getY(), from.getZ() + 0.5, 0, 0);
         ninja.setNoAi(false);
         level.addFreshEntity(ninja);
+        // Only the jump is under test: without goals nothing steers it mid-air (wandering made this flaky).
+        ninja.goalSelector.removeAllGoals(goal -> true);
+        ninja.targetSelector.removeAllGoals(goal -> true);
         net.minecraft.world.phys.Vec3 target = new net.minecraft.world.phys.Vec3(to.getX() + 0.5, to.getY() + 0.1, to.getZ() + 0.5);
         ninja.setDeltaMovement(VillageRoutineGoal.leapVelocity(ninja.position(), target));
         ninja.hasImpulse = true;
