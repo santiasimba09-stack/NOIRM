@@ -1,11 +1,22 @@
 # Project status
 
-_Last updated: 2026-10-14 (villages part 4, v0.7.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-15 (playtest round 5, v0.8.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**Villages part 4 is done (v0.7.0). 144/144 game tests green; checked in the real client**
-(screenshots `docs/screenshots/r7-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
+**Playtest round 5 is done (v0.8.0). 170/170 game tests green; checked in the real client**
+(screenshots `docs/screenshots/r8-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
+
+| Round 5 (owner's requests) | State |
+|---|---|
+| **Animations rebuilt:** our own engine (no PlayerAnimator), players and ninjas on one jointed body; ninja run, landings, directional flinches, springs; first-person arms; 51 new animations | ✅ tested (parsing, rig maths); checked in client |
+| **Weapons:** kunai, shuriken, fūma, senbon, explosive tag / kunai, bō staff, ninjatō, chakra blade; throws; kunai / staff / sword movesets | ✅ tested; checked in client |
+| **Allies** use what they hold (weapon damage + enchantments, bows, shields), can be fed, and rogues fight whoever engages them (threat) | ✅ tested |
+| **Ninjas use jutsu** by range, chakra and situation | ✅ tested |
+| **Water walking** (chakra; sneak to sink) for players and ninjas | ✅ tested; checked in client |
+| **Sharingan** awakens by four routes and grows by fighting (shown in HUD and jutsu screen) | ✅ tested |
+
+The villages (v0.7.0):
 
 | Area | State |
 |---|---|
@@ -18,16 +29,19 @@ _Last updated: 2026-10-14 (villages part 4, v0.7.0) · branch `claude/keen-cray-
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.7.0.
+Nothing. Waiting on the owner's playtest of v0.8.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback** on all six looks; how often villages appear; world generation speed.
-2. **Villages, part 5 (researched, not built):** terraces on uneven land, the village's own clans
+1. **Owner playtest + feedback** on the new animations (which moves feel weak), weapons, allies,
+   water walking and the Sharingan.
+2. **Animation, part 2:** weapon trails, more moves per style (each style gets 6–8 distinct
+   animations), hit reactions by strength (stagger, knockdown, launch), hand seals per jutsu.
+3. **Villages, part 5 (researched, not built):** terraces on uneven land, the village's own clans
    in the clan district (Mist/Cloud/Stone clans), town designs per look, roads between settlements.
-3. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher.
-4. **Training, part 2:** chakra control (tree climbing → Rasengan path), nature training.
-5. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
+4. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher.
+5. **Training, part 2:** chakra control (tree climbing, water walking as training), nature training.
+6. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
 
 ## Code map
 
@@ -39,26 +53,29 @@ Nothing. Waiting on the owner's playtest of v0.7.0.
 | `com.noirm.combat` | `CombatSystem` (rules + constants, clinch, wall splat, juggles), `StyleSystem` (choosing styles), `CombatState`, `Perception` (incl. eye/state multipliers), `CombatData`, `CombatEffects`, `CombatEvents` |
 | `com.noirm.clan` | `Clan`, `Nature` (basic + combined), `NatureSystem` (tree: owned/available/locked, unlock, mastery unlocks), `ClanTrait`, `AwakeningPath`, `ClanGenerator`, `WorldClans` (per-world registry), `ClanData` (canon), `ClanIdentity` (on the player), `ClanSystem` (joining) |
 | `com.noirm.jutsu` | `JutsuDefinition`/`JutsuData` (JSON), `JutsuBehaviors` (what jutsu do), `HyugaTechniques` (Rotation, 64 Palms), `ElementalBehaviors` (bind, pillar, cloud, rain, beam, buff), `CanonTechniques` (dome, heal, Rasengan, shadow bind, shadow clone), `GreatTechniques` (strike, wave, nova), `ModeSystem` (toggle modes like Lightning Armor), `JutsuAreas` (lingering areas), `JutsuCaster` (casting, affinity, power, cost), `JutsuBook` (known, mastery, loadout), `JutsuProjectile`, `Substitution`, `EarthWallBlock`, `JutsuUser` (NPCs) |
-| `com.noirm.dojutsu` | `Sharingan`, `Byakugan` (incl. Gentle Fist, chakra points), `ThreatSense` (eyes vs vanilla mobs/projectiles), `EyeData` |
+| `com.noirm.dojutsu` | `Sharingan` (growth), `SharinganAwakening` (four routes, pressure), `Byakugan` (incl. Gentle Fist, chakra points), `ThreatSense` (eyes vs vanilla mobs/projectiles), `EyeData` |
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork` (protocol 7), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
-| `com.noirm.client.anim` | NPC animation: `KeyframeAnimation` (reads `player_animation/*.json`, plain Java so tests use it), `SkeletonPose`, `NpcAnimations` (client reload listener), `NpcAnimator` (layers + cross-fades); the model is `client/BendyNinjaModel` |
-| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `Trait`, `Order`, `AllyMenu` + `AllyPackets` (the ally screen) |
+| `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
+| `com.noirm.weapon` | Ninja weapons (`NinjaWeapons` registry, `ThrowingWeaponItem`, `StaffItem`, `ChakraBladeItem`, `ExplosiveTagItem`, `ThrownWeapon`, `Throwing`, `Moveset` + `WeaponMoves`, `NinjaArsenal`); see `docs/WEAPONS.md` |
+| `com.noirm.chakra` + `com.noirm.mixin` | Water walking (`WaterWalking`, `WaterWalker`; `BlockStateBaseMixin` gives the water surface a skin; config `noirm.mixins.json`) |
+| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `AllyFood` (feeding), `Trait`, `Order`, `AllyMenu` + `AllyPackets` (the ally screen) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
 | `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, canals, banks, bridges), `Fortifications` (walls and bastions, gates, Kage Rock with stairs and tunnels, cliff and spire rings, fences), `VillageAtmosphere` (tells the client which village it's in), `VillageSpawns` (no raiders inside), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station, rock spires), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
-| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `VillagerSitGoal` + `SeatEntity`, `VillagerShelterGoal`, `ShadowClone`, `NinjaFightGoal`, `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
+| `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `VillagerSitGoal` + `SeatEntity`, `VillagerShelterGoal`, `ShadowClone`, `NinjaFightGoal` (melee, bows, jutsu by range), `NinjaThrowGoal`, `Threat` (who a fighter targets), `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
-| `com.noirm.command` | `NoirmCommand` (resources/stats), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
+| `com.noirm.command` | `NoirmCommand` (resources/stats), `AnimCommand` (`/noirm anim`), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
 | `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `VillageLayoutGameTests`, `VillageWorldgenGameTests`, `VillageLifeGameTests`, `TestClans`, `TestKit` (shared helpers) |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt`, `worldgen/structure` + `structure_set` (villages), `tags/worldgen/biome/has_structure/` |
 | `tools/skingen/` | `gen_parts.py` + `looks.py`: the skin parts and look tables behind random ninja looks |
 | `tools/gear/` | `gen_gear.py`: the gear textures and icons |
-| `tools/animgen/` | `gen_anims.py`: generates our own animations from simple poses (with `bend`s); `check_uv.py`: checks the bendy model's skin UVs |
+| `tools/animgen/` | `gen_anims.py` + `motion.py`: author and generate every animation (timed to the moves); `check_uv.py`: checks the bendy model's skin UVs |
+| `tools/weapongen/` | `gen_weapons.py` (weapon icons), `gen_moves.py` (weapon moves and styles) |
 | `tools/client-smoke/` | Run the real client off-screen (Hyūga player, dummy, ninja behind a wall, a beast, a subdued Nine-Tails) |
 
 ## Decisions made
@@ -100,9 +117,16 @@ Nothing. Waiting on the owner's playtest of v0.7.0.
 - **Jutsu learning:** clan starters, then mastery chains (★2 on one teaches the next).
 - **Eyes vs the world (owner):** the same rules apply to vanilla mobs and projectiles.
 - **Stats (owner):** four trained stats: taijutsu, speed, vitality (health), reserves (chakra).
-- **NPC animation:** NPCs play the player's animation files on a jointed model (elbows, knees,
-  waist); players stay on PlayerAnimator without bends (bendy-lib = possible follow-up). See
-  `docs/COMBAT_DESIGN.md`, "NPC animation and bendy limbs".
+- **Animation (round 5):** our own engine (`client/anim/HumanoidAnimator`) drives players and NPC
+  ninjas alike on one jointed model (`client/BendyModel`: elbows, knees, waist; the torso carries
+  the head and arms). PlayerAnimator is gone (one less mod to install). Animations are generated by
+  `tools/animgen/gen_anims.py` and timed to each move's windup. See `docs/COMBAT_DESIGN.md`,
+  "Animation engine (round 5)". `/noirm anim <name> [ticks] [targets]` previews any animation.
+- **Weapons (round 5):** see `docs/WEAPONS.md`. A weapon in hand picks its moveset in combat mode.
+- **Sharingan (round 5):** awakened by near death, a comrade's death, a long fight against a much
+  stronger foe, or built-up pressure; grows only in real fights. See `docs/POWERS_DESIGN.md` §4b.
+- **Water walking (round 5):** free for everyone with chakra for now (it may become a training
+  step). See `docs/POWERS_DESIGN.md` §12.
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 - **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
   step so trees are cleared. Residents never start fights with players; attacking one alarms the
@@ -112,6 +136,13 @@ Nothing. Waiting on the owner's playtest of v0.7.0.
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
+
+- **Animations:** which moves still feel weak? First person: are the arms the right size and place?
+  Should the ninja run happen on every sprint, or only above a certain speed stat?
+- **Water walking:** free for everyone, or learned through chakra-control training? Costs feel right?
+- **Sharingan:** do the awakening routes and XP pace feel right (about 4 real fights of pressure;
+  300 / 1200 XP for 2 / 3 tomoe)? A Mangekyō later?
+- **Weapons:** damage and throw cooldowns; should shields fully block guarded hits (players too)?
 
 - Ally respect: too quick or too slow to change? Should allies ever betray you?
 - Do the NPCs' bent limbs look right? Should the player bend too (needs bendy-lib, an extra mod)?

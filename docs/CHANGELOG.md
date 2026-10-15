@@ -2,6 +2,39 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-15 — Playtest round 5: our own animation engine, weapons, allies, water walking, Sharingan growth, v0.8.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Animations rebuilt from scratch** (the most urgent request):
+  - our own engine replaces PlayerAnimator (so it no longer needs installing): players and NPC
+    ninjas share one jointed body (elbows, knees, waist) where the **torso carries the arms and
+    head** (before, a twisting punch left the shoulders behind);
+  - living layers, in the spirit of Epic Fight: a real walk with knees and elbows, the **ninja
+    run** when sprinting, knees tucking in jumps and sinking on landings, each style's own footwork,
+    hits that throw the body away from where they came from, leaning into turns, hit-stop that
+    freezes both fighters, and **springs** on every joint so limbs follow through and settle;
+  - **51 new animations** (every old one replaced, the Boundless set too): each attack winds up,
+    lands on the exact tick of the server's hit, follows through and settles; combos alternate
+    sides; weapon movesets (kunai, staff, sword), throws, hand seals and a release push for jutsu;
+  - **first-person arms:** in combat mode you see your real animated arms (fists up, punches,
+    weapon swings);
+  - `/noirm anim <name> [ticks] [targets]` previews any animation; `tools/animgen/motion.py` is
+    the new authoring library.
+- **Ninja weapons** (`docs/WEAPONS.md`): kunai, shuriken (sneak for a fan of 3), fūma shuriken,
+  senbon, explosive tags and kunai (dig only with `noirmTerrainDamage`), bō staff, ninjatō, chakra
+  blade (takes your nature). Throws stick in blocks and can be picked up; held weapons swap your
+  combat moveset; ninjas carry and throw them; the village weapon shop sells them.
+- **Allies:** weapons in hand count fully with their enchantments (Sharpness, Fire Aspect,
+  Knockback, Sweeping…) for players and ninjas; allies shoot bows, block with shields; **feed**
+  them by right-clicking with food (golden apples work, ramen restores chakra); a rogue now fights
+  whoever engages it (a threat system) instead of chasing you.
+- **Ninjas use jutsu much more,** chosen by range and situation, paying chakra, never through a
+  crew mate.
+- **Water walking:** stand and run on water with chakra; sneak to sink; ripples; allies follow.
+- **Sharingan:** four ways to awaken (near death, a comrade's death, a long fight against a much
+  stronger foe, built-up pressure with hints), growth only in real fights, progress in the HUD and
+  jutsu screen; some NPC Uchiha awaken too.
+- 26 new game tests (170 in all). Screenshots `docs/screenshots/r8-*.jpg`.
+
 ## 2026-10-14 — Villages, part 4: the Mist, Cloud and Stone villages, the canon Leaf wall, seats, mist, v0.7.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Three new hidden villages**, picked by biome:

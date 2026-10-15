@@ -55,7 +55,7 @@ its 3×3 area (cleanup only clears entities inside it). Leftovers break later te
   animation.
 - Combat tuning: move numbers live in `data/noirm/combat/moves/**.json`; system numbers are the
   constants at the top of `CombatSystem`. Read `docs/COMBAT_DESIGN.md` before combat work.
-- Client-only classes (anything importing `net.minecraft.client` or PlayerAnimator) stay in
+- Client-only classes (anything importing `net.minecraft.client`) stay in
   `com.noirm.client`, and server→client packets reach them through `DistExecutor`.
 - Every entity type needs a client renderer in `client/NoirmRenderers` (even particle-only ones,
   via `NoopRenderer`), or the client crashes when it spawns. Game tests can't catch this; run the

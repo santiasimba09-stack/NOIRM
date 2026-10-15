@@ -29,8 +29,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
 public final class FirstPersonArms {
     /** How far the arms are lifted and pushed forward in first person (blocks). */
-    private static final float FP_LIFT = 0.2f;
-    private static final float FP_FORWARD = 0.12f;
+    private static final float FP_LIFT = 0.08f;
+    private static final float FP_FORWARD = 0.3f;
 
     private FirstPersonArms() {}
 

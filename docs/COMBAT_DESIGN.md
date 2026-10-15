@@ -161,3 +161,40 @@ moving parts, like Better Combat and Epic Fight."
   format PlayerAnimator's GeckoLib reader understands (it only reads `rotation` and `position`),
   i.e. converting the files to Emotecraft JSON or a small custom loader, and it adds a mod
   players must install. Revisit if the owner wants the player to bend too.
+
+## Animation engine (round 5, 2026-10-15)
+
+**Owner:** "I don't like how the animations are going… the combos work great but the animations
+are lacking and take away some of the feeling. Maybe change the player animation mod, or create
+our own that works like it but lets you do what I want with the combat. Look at Better Combat and
+Epic Fight for inspiration."
+
+**What was wrong:** keyframes were few and linear; players couldn't bend (PlayerAnimator without
+bendy-lib); the vanilla model has no hierarchy, so a torso twist left the shoulders and head
+behind; legs mostly kept walking under the attack; nothing moved between moves.
+
+**What we built (our own, replacing PlayerAnimator):**
+- **One body for everyone** (`client/BendyModel`, `client/NoirmPlayerRenderer`): players are drawn
+  with the same jointed model as NPC ninjas (slim and wide skins). `client/anim/Rig` bakes a real
+  hierarchy into the vanilla parts: the torso turns about the hips and carries the head and arms
+  (then the waist bend carries them again); armor, held items and eye layers follow untouched.
+- **Living layers** (`client/anim/HumanoidAnimator`), Epic Fight's "living animations" in spirit:
+  vanilla base → our gait (knees, elbows, shoulders countering the hips, bob) and the **ninja run**
+  → air (tuck up, reach down) and landing (sinks into the knees by how hard) → the style's stance
+  (upper body always, its footwork only standing) → the move (stretched to the server's timing,
+  cross-faded) → guard / stagger → a **flinch** thrown away from the hit's direction → lean into
+  turns → **springs** on every joint (frequency, damping, response per bone; arms overshoot a
+  little for follow-through). **Hit-stop** freezes both fighters' animation clocks on the client
+  (server sends it with the hit).
+- **Authoring** (`tools/animgen/motion.py` + `gen_anims.py`): poses in plain degrees, mirroring,
+  per-key easing (back, expo, cubic… and true Catmull-Rom), and `strike()`, which times anticipation
+  → contact → follow-through → settle from the move's own windup/active/recovery so the contact key
+  lands on the hit tick. Whole-body by default: hips turn, feet step, the head is left to the engine.
+- **First person** (`client/FirstPersonArms`): in combat mode (or mid-move) the model's own arms are
+  drawn from the eyes, so fists, punches and weapon swings match third person.
+- **Preview:** `/noirm anim <name> [ticks] [targets]`; F3+T reloads animation files.
+
+**Inspiration only:** Epic Fight (armature, living animations, hit-stop) and Better Combat (bendy
+limbs, weapon movesets) were studied for ideas; no code or animation data was taken from them.
+The old section above ("NPC animation and bendy limbs") describes round 4; its PlayerAnimator
+parts no longer apply.
