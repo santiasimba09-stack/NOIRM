@@ -452,6 +452,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             com.noirm.ally.AllyMind.drift(this, player);
         }
         com.noirm.ally.AllyMind.support(this, player);
+        com.noirm.ally.NatureTeaching.tick(this, player);
         LivingEntity target = getTarget();
         if (target != null && com.noirm.ally.Crew.sameSide(this, target)) {
             setTarget(null);
@@ -589,6 +590,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         for (Nature nature : natures.keySet()) {
             jutsu.addAll(JutsuData.allFor(nature)); // ninjas have mastered their clan's natures
         }
+        allyState.learned().forEach(natures::putIfAbsent); // natures their leader taught them
         jutsu.addAll(JutsuData.startersFor(null));
         taught.stream().filter(id -> JutsuData.get(id) != null && !jutsu.contains(id)).forEach(jutsu::add);
         entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : 0));
@@ -926,6 +928,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 tag.putLongArray("Route", route.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
             }
         }
+        tag.put("Ally", allyState.save());
         if (leader != null) {
             tag.putUUID("Leader", leader);
             tag.putString("Order", order.name());
@@ -964,6 +967,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         // Ninjas saved before clan gear existed get theirs once, when they rejoin their clan below.
         gearRolled = tag.getBoolean("GearRolled");
         chakra = tag.contains("Chakra") ? Math.max(0f, tag.getFloat("Chakra")) : -1f;
+        allyState.load(tag.getCompound("Ally"));
         if (tag.getBoolean("Resident")) {
             resident = true;
             villageRole = tag.getString("VillageRole");
@@ -1053,6 +1057,26 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.PLAYER_DEATH;
+    }
+
+    // ---------------------------------------------------------------- tactics and nature lessons (ally/AllyState)
+
+    /** Tactics, the nature being taught and natures learned (see {@code ally/NatureTeaching}). */
+    private final com.noirm.ally.AllyState allyState = new com.noirm.ally.AllyState();
+
+    public com.noirm.ally.AllyState allyState() {
+        return allyState;
+    }
+
+    /** Gains a nature from a teacher (kept across saves and clan re-joins). */
+    public void learnNature(Nature nature, float affinity) {
+        allyState.learned().merge(nature, affinity, Math::max);
+        natures.merge(nature, affinity, Math::max);
+    }
+
+    /** Every nature they have, with its affinity. */
+    public java.util.Map<Nature, Float> natures() {
+        return java.util.Collections.unmodifiableMap(natures);
     }
 
     // ---------------------------------------------------------------- water walking (chakra/WaterWalking)

@@ -30,9 +30,94 @@ public final class AllyPackets {
     /** A jutsu you could teach: {@code blocker} is empty if you can, else why not (a translation key). */
     public record Teachable(ResourceLocation id, String rank, String blocker) {}
 
+    /** How a nature looks from the ally screen's Natures tab (one per {@link com.noirm.clan.Nature}). */
+    public static final int NATURE_OWNED = 0, NATURE_LEARNING = 1, NATURE_TEACHABLE = 2, NATURE_NEEDS_PARTS = 3,
+            NATURE_YOU_LACK = 4, NATURE_BUSY = 5;
+    /** Lesson pace flags (bits of {@link Lesson#flags}). */
+    public static final int PACE_STUDYING = 1, PACE_NEAR = 2, PACE_FIGHTING = 4, PACE_MASTERED = 8, PACE_TEACHER_HAS = 16;
+
+    /**
+     * The extra half of the screen's data (round 6): clan, chakra, the unarmed style and the
+     * weapon's moveset, tactics, natures and the nature lesson.
+     */
+    public record Extra(String clan, float chakra, float maxChakra, String weaponStyle, int range, int jutsuUse,
+                        byte[] natureStatus, float[] natureAffinity, Lesson lesson) {
+        static Extra of(ServerPlayer player, SparringNinja ally) {
+            com.noirm.clan.Nature[] all = com.noirm.clan.Nature.values();
+            byte[] status = new byte[all.length];
+            float[] affinity = new float[all.length];
+            com.noirm.clan.Nature current = ally.allyState().lesson();
+            for (com.noirm.clan.Nature nature : all) {
+                affinity[nature.ordinal()] = ally.jutsuAffinity(nature);
+                String why = NatureTeaching.blocker(player, ally, nature);
+                status[nature.ordinal()] = (byte) (nature == current ? NATURE_LEARNING : switch (why) {
+                    case "" -> NATURE_TEACHABLE;
+                    case "screen.noirm.ally.nature.why.owned" -> NATURE_OWNED;
+                    case "screen.noirm.ally.nature.why.parts" -> NATURE_NEEDS_PARTS;
+                    case "screen.noirm.ally.nature.why.busy" -> NATURE_BUSY;
+                    default -> NATURE_YOU_LACK;
+                });
+            }
+            NatureTeaching.Pace pace = NatureTeaching.pace(ally, player);
+            int flags = (pace.studying() ? PACE_STUDYING : 0) | (pace.near() ? PACE_NEAR : 0) | (pace.fighting() ? PACE_FIGHTING : 0)
+                    | (pace.mastered() ? PACE_MASTERED : 0) | (pace.teacherHas() ? PACE_TEACHER_HAS : 0);
+            Lesson lesson = current == null ? Lesson.NONE
+                    : new Lesson(current.ordinal(), ally.allyState().lessonSeconds(), NatureTeaching.secondsNeeded(current), pace.rate(), flags);
+            String clan = player.getServer() == null ? "" : com.noirm.clan.WorldClans.get(player.getServer()).find(ally.clanId())
+                    .map(com.noirm.clan.Clan::name).orElse("");
+            ResourceLocation weapon = com.noirm.weapon.WeaponMoves.styleFor(ally.getMainHandItem());
+            return new Extra(clan, ally.chakra(), ally.maxChakra(), weapon == null ? "" : weapon.getPath(),
+                    ally.allyState().range().ordinal(), ally.allyState().jutsuUse().ordinal(), status, affinity, lesson);
+        }
+
+        void encode(FriendlyByteBuf buf) {
+            buf.writeUtf(clan, 64);
+            buf.writeFloat(chakra);
+            buf.writeFloat(maxChakra);
+            buf.writeUtf(weaponStyle, 64);
+            buf.writeVarInt(range);
+            buf.writeVarInt(jutsuUse);
+            buf.writeByteArray(natureStatus);
+            buf.writeVarInt(natureAffinity.length);
+            for (float f : natureAffinity) {
+                buf.writeFloat(f);
+            }
+            buf.writeVarInt(lesson.nature() + 1);
+            buf.writeFloat(lesson.seconds());
+            buf.writeFloat(lesson.needed());
+            buf.writeFloat(lesson.rate());
+            buf.writeVarInt(lesson.flags());
+        }
+
+        static Extra decode(FriendlyByteBuf buf) {
+            String clan = buf.readUtf(64);
+            float chakra = buf.readFloat();
+            float max = buf.readFloat();
+            String weapon = buf.readUtf(64);
+            int range = buf.readVarInt();
+            int use = buf.readVarInt();
+            byte[] status = buf.readByteArray(64);
+            float[] affinity = new float[Math.min(64, buf.readVarInt())];
+            for (int i = 0; i < affinity.length; i++) {
+                affinity[i] = buf.readFloat();
+            }
+            Lesson lesson = new Lesson(buf.readVarInt() - 1, buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readVarInt());
+            return new Extra(clan, chakra, max, weapon, range, use, status, affinity, lesson);
+        }
+    }
+
+    /** The nature lesson: which nature (-1 = none), seconds done and needed, the current pace and why ({@code PACE_*} bits). */
+    public record Lesson(int nature, float seconds, float needed, float rate, int flags) {
+        public static final Lesson NONE = new Lesson(-1, 0f, 1f, 0f, 0);
+
+        public boolean has(int flag) {
+            return (flags & flag) != 0;
+        }
+    }
+
     public record Info(int entityId, float health, float maxHealth, float[] stats, float[] progress, int order,
                        String style, List<String> styles, String outfit, List<ResourceLocation> known, List<Teachable> teachable,
-                       float respect, String trait, List<ResourceLocation> loadout, List<Integer> mastery) {
+                       float respect, String trait, List<ResourceLocation> loadout, List<Integer> mastery, Extra extra) {
 
         public static Info of(ServerPlayer player, SparringNinja ally) {
             float[] stats = new float[Stat.values().length];
@@ -61,12 +146,14 @@ public final class AllyPackets {
                     teachable.add(new Teachable(id, def.rank(), blocker(ally, def)));
                 }
             });
-            teachable.sort((a, b) -> a.id().toString().compareTo(b.id().toString()));
+            // Ones they can learn right now first, then the rest (each alphabetically).
+            teachable.sort(java.util.Comparator.comparing((Teachable t) -> !t.blocker().isEmpty()).thenComparing(t -> t.id().toString()));
             List<ResourceLocation> known = List.copyOf(ally.knownJutsu());
             List<Integer> mastery = known.stream().map(ally::jutsuMastery).toList();
+            ResourceLocation own = ally.combatStyle() == null ? com.noirm.combat.CombatData.DEFAULT_STYLE : ally.combatStyle();
             return new Info(ally.getId(), ally.getHealth(), ally.getMaxHealth(), stats, progress, ally.order().ordinal(),
-                    com.noirm.combat.CombatSystem.styleFor(ally).getPath(), styles, ally.outfit(), known, teachable,
-                    ally.respect(), ally.trait().name(), List.copyOf(ally.loadout()), mastery);
+                    own.getPath(), styles, ally.outfit(), known, teachable,
+                    ally.respect(), ally.trait().name(), List.copyOf(ally.loadout()), mastery, Extra.of(player, ally));
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -91,6 +178,7 @@ public final class AllyPackets {
             buf.writeUtf(trait, 16);
             buf.writeCollection(loadout, FriendlyByteBuf::writeResourceLocation);
             buf.writeCollection(mastery, FriendlyByteBuf::writeVarInt);
+            extra.encode(buf);
         }
 
         public static Info decode(FriendlyByteBuf buf) {
@@ -114,7 +202,8 @@ public final class AllyPackets {
             String trait = buf.readUtf(16);
             List<ResourceLocation> loadout = buf.readList(FriendlyByteBuf::readResourceLocation);
             List<Integer> mastery = buf.readList(FriendlyByteBuf::readVarInt);
-            return new Info(id, health, max, stats, progress, order, style, styles, outfit, known, teachable, respect, trait, loadout, mastery);
+            return new Info(id, health, max, stats, progress, order, style, styles, outfit, known, teachable, respect, trait, loadout,
+                    mastery, Extra.decode(buf));
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {
@@ -141,7 +230,7 @@ public final class AllyPackets {
         return "";
     }
 
-    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP }
+    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP, NATURE_TEACH, NATURE_STOP, RANGE, JUTSU_USE }
 
     public record Command(int entityId, Action action, String arg) {
         public void encode(FriendlyByteBuf buf) {
@@ -210,6 +299,27 @@ public final class AllyPackets {
                     AllyMind.respect(ally, 5f, "message.noirm.ally.grateful");
                     player.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
                             Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+                }
+            }
+            case NATURE_TEACH -> {
+                com.noirm.clan.Nature nature = AllyState.nature(arg);
+                if (nature != null) {
+                    NatureTeaching.start(player, ally, nature);
+                }
+            }
+            case NATURE_STOP -> NatureTeaching.stop(ally);
+            case RANGE -> {
+                for (Tactics.Range range : Tactics.Range.values()) {
+                    if (range.name().equals(arg)) {
+                        ally.allyState().setRange(range);
+                    }
+                }
+            }
+            case JUTSU_USE -> {
+                for (Tactics.JutsuUse use : Tactics.JutsuUse.values()) {
+                    if (use.name().equals(arg)) {
+                        ally.allyState().setJutsuUse(use);
+                    }
                 }
             }
             case DISMISS -> {
