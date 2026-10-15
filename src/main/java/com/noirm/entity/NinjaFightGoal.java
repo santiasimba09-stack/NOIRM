@@ -114,12 +114,13 @@ class NinjaFightGoal extends Goal {
 
     private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
     /** Jutsu behaviors by when they're used. */
-    private static final Set<String> RANGED = Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave");
-    private static final Set<String> CLOSE = Set.of("burst", "nova", "rasengan", "palms");
+    private static final Set<String> RANGED = Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave",
+            "amaterasu", "tsukuyomi", "kotoamatsukami");
+    private static final Set<String> CLOSE = Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui");
     private static final Set<String> DASH = Set.of("dash_strike");
     private static final Set<String> FLICKER = Set.of("flicker");
-    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "buff");
-    private static final Set<String> DEFENSIVE = Set.of("dome", "wall");
+    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "buff", "susanoo");
+    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "susanoo", "izanagi");
 
     private final SparringNinja ninja;
     private final Deque<AttackInput> combo = new ArrayDeque<>();

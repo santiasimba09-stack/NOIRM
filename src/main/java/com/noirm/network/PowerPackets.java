@@ -145,7 +145,28 @@ public final class PowerPackets {
                              float resolve, int lockedInTicks, int exhaustionTicks,
                              int tails, int cloakStage, int cloakTicks, int cloakCooldown,
                              int cloakTails, int unlockedTails, int bond,
-                             int sharinganPressure, int sharinganDrillXp) {
+                             int sharinganPressure, int sharinganDrillXp,
+                             int mangekyoFlags, int mangekyoPattern, int mangekyoDonorPattern,
+                             int mangekyoLeft, int mangekyoRight, float mangekyoStrain, int susanooStage) {
+        /** {@link #mangekyoFlags} bits. */
+        public static final int MS = 1, MS_ETERNAL = 2, MS_TRANSPLANTED = 4, MS_BLIND = 8;
+
+        public boolean mangekyo() {
+            return (mangekyoFlags & MS) != 0;
+        }
+
+        public boolean eternal() {
+            return (mangekyoFlags & MS_ETERNAL) != 0;
+        }
+
+        public boolean transplanted() {
+            return (mangekyoFlags & MS_TRANSPLANTED) != 0;
+        }
+
+        public boolean blind() {
+            return (mangekyoFlags & MS_BLIND) != 0;
+        }
+
 
         public static SyncPowers of(ServerPlayer player, ShinobiData data) {
             List<Integer> natures = new ArrayList<>();
@@ -184,7 +205,12 @@ public final class PowerPackets {
                     awakening.resolve(), awakening.lockedInTicks(), awakening.exhaustionTicks(),
                     data.biju().tails(), data.biju().cloakStage(), data.biju().cloakTicks(), data.biju().cooldownTicks(),
                     data.biju().cloakTails(), data.biju().unlockedTails(), data.biju().bond(),
-                    com.noirm.dojutsu.SharinganAwakening.isDormant(data) ? Math.round(eyes.pressure()) : -1, eyes.drillXp());
+                    com.noirm.dojutsu.SharinganAwakening.isDormant(data) ? Math.round(eyes.pressure()) : -1, eyes.drillXp(),
+                    (eyes.hasMangekyo() ? MS : 0) | (eyes.isEternal() ? MS_ETERNAL : 0) | (eyes.isTransplanted() ? MS_TRANSPLANTED : 0)
+                            | (eyes.isBlind() ? MS_BLIND : 0),
+                    eyes.pattern(), eyes.donorPattern(),
+                    eyes.left() == null ? -1 : eyes.left().ordinal(), eyes.right() == null ? -1 : eyes.right().ordinal(),
+                    eyes.strain(), com.noirm.dojutsu.Susanoo.stage(player));
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -217,6 +243,13 @@ public final class PowerPackets {
             buf.writeVarInt(bond + 100);
             buf.writeVarInt(sharinganPressure + 1);
             buf.writeVarInt(sharinganDrillXp);
+            buf.writeVarInt(mangekyoFlags);
+            buf.writeByte(mangekyoPattern);
+            buf.writeByte(mangekyoDonorPattern);
+            buf.writeByte(mangekyoLeft);
+            buf.writeByte(mangekyoRight);
+            buf.writeFloat(mangekyoStrain);
+            buf.writeByte(susanooStage);
         }
 
         public static SyncPowers decode(FriendlyByteBuf buf) {
@@ -229,7 +262,8 @@ public final class PowerPackets {
                     buf.readFloat(), buf.readVarInt(), buf.readVarInt(),
                     buf.readByte(), buf.readByte(), buf.readVarInt(), buf.readVarInt(),
                     buf.readByte(), buf.readByte(), buf.readVarInt() - 100,
-                    buf.readVarInt() - 1, buf.readVarInt());
+                    buf.readVarInt() - 1, buf.readVarInt(),
+                    buf.readVarInt(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readFloat(), buf.readByte());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {
@@ -239,16 +273,17 @@ public final class PowerPackets {
     }
 
     /** How a player's powers look to everyone (red eyes, chakra cloak). */
-    public record Visuals(int entityId, int sharinganStage, boolean byakugan, int cloakStage) {
+    public record Visuals(int entityId, int sharinganStage, boolean byakugan, int cloakStage, int mangekyoLook) {
         public void encode(FriendlyByteBuf buf) {
             buf.writeVarInt(entityId);
             buf.writeByte(sharinganStage);
             buf.writeBoolean(byakugan);
             buf.writeByte(cloakStage);
+            buf.writeVarInt(mangekyoLook);
         }
 
         public static Visuals decode(FriendlyByteBuf buf) {
-            return new Visuals(buf.readVarInt(), buf.readByte(), buf.readBoolean(), buf.readByte());
+            return new Visuals(buf.readVarInt(), buf.readByte(), buf.readBoolean(), buf.readByte(), buf.readVarInt());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

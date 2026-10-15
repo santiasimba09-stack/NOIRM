@@ -58,6 +58,19 @@ public final class PowerHud {
                 graphics.fill(barX, y + 3, barX + Math.round(30 * growth), y + 6, 0xFFD02020);
             }
             y += LINE;
+            if (powers.mangekyo()) {
+                // The Mangekyō: its kind, and how much sight is left (the strain bar empties toward blindness).
+                String key = powers.eternal() ? "hud.noirm.mangekyo.eternal" : powers.blind() ? "hud.noirm.mangekyo.blind" : "hud.noirm.mangekyo";
+                Component ms = Component.translatable(key);
+                graphics.drawString(font, ms, X, y, powers.eternal() ? 0xFFFF6A3A : 0xFFC01020, true);
+                if (!powers.eternal()) {
+                    int barX = X + font.width(ms) + 4;
+                    float sight = 1f - powers.mangekyoStrain() / com.noirm.dojutsu.Mangekyo.MAX_STRAIN;
+                    graphics.fill(barX - 1, y + 2, barX + 41, y + 7, 0xA0000000);
+                    graphics.fill(barX, y + 3, barX + Math.round(40 * sight), y + 6, sight > 0.3f ? 0xFFE8E8E8 : 0xFFB02020);
+                }
+                y += LINE;
+            }
         } else if (powers.byakugan()) {
             Component text = Component.translatable(powers.eyesActive() ? "hud.noirm.byakugan.on" : "hud.noirm.byakugan.off");
             graphics.drawString(font, text, X, y, powers.eyesActive() ? 0xFFD8D0FF : 0xFF8080A0, true);

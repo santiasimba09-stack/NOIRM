@@ -14,8 +14,9 @@ public final class PowerVisuals {
 
     public static PowerPackets.Visuals of(Player player) {
         return ShinobiCapability.get(player)
-                .map(d -> new PowerPackets.Visuals(player.getId(), d.eyes().activeStage(), d.eyes().isByakuganActive(), d.biju().cloakStage()))
-                .orElse(new PowerPackets.Visuals(player.getId(), 0, false, 0));
+                .map(d -> new PowerPackets.Visuals(player.getId(), d.eyes().activeStage(), d.eyes().isByakuganActive(), d.biju().cloakStage(),
+                        com.noirm.dojutsu.Mangekyo.look(d.eyes())))
+                .orElse(new PowerPackets.Visuals(player.getId(), 0, false, 0, 0));
     }
 
     public static void broadcast(ServerPlayer player) {

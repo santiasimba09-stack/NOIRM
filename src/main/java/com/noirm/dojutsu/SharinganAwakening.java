@@ -300,6 +300,9 @@ public final class SharinganAwakening {
         if (isDormant(data)) {
             return awaken(witness, data, Route.ALLY);
         }
+        if (Mangekyo.onLoss(witness, data, dead)) {
+            return true; // a deep loss at 3 tomoe: the Mangekyō
+        }
         Sharingan.addXp(witness, data, Sharingan.ALLY_LOSS_XP);
         return true;
     }

@@ -39,6 +39,12 @@ public final class NoirmItems {
     public static final RegistryObject<Item> VILLAGE_MERCHANT_SPAWN_EGG = ITEMS.register("village_merchant_spawn_egg",
             () -> new ForgeSpawnEggItem(NoirmEntities.VILLAGE_MERCHANT, 0xE8D3A9, 0xD9661E, new Item.Properties()));
 
+    /** Eyes taken from a fallen Uchiha, for transplants (see dojutsu/MangekyoTransplant). */
+    public static final RegistryObject<Item> SHARINGAN_EYE = ITEMS.register("sharingan_eye",
+            () -> new com.noirm.dojutsu.SharinganEyeItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)));
+    public static final RegistryObject<Item> MANGEKYO_EYES = ITEMS.register("mangekyo_eyes",
+            () -> new com.noirm.dojutsu.SharinganEyeItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
+
     private NoirmItems() {}
 
     public static void register(IEventBus modBus) {
@@ -67,6 +73,7 @@ public final class NoirmItems {
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(TRAINING_DUMMY);
             event.accept(SEALING_SCROLL);
+            event.accept(com.noirm.dojutsu.MangekyoTransplant.EyeInfo.sharingan(3, "").toStack());
         }
     }
 }

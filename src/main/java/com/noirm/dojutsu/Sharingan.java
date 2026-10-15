@@ -65,6 +65,8 @@ public final class Sharingan {
     public static final int PRECOGNITION_STAGE = 2;
     public static final int COPY_STAGE = 3;
     public static final double COPY_RANGE = 16;
+    /** An implanted eye (not born an Uchiha): 0.5 chakra a second, always (regen is 1/s). */
+    public static final float TRANSPLANT_DRAIN_PER_TICK = 0.025f;
 
     private Sharingan() {}
 
@@ -78,7 +80,7 @@ public final class Sharingan {
 
     /** Perception multiplier from the active Sharingan. */
     public static float perceptionMultiplier(LivingEntity entity) {
-        return 1f + 0.25f * activeStage(entity);
+        return 1f + 0.25f * activeStage(entity) + Mangekyo.perceptionBonus(entity);
     }
 
     /** The eye toggle key (G): opens or closes whichever dōjutsu the player has. */
@@ -87,6 +89,15 @@ public final class Sharingan {
             EyeData eyes = data.eyes();
             if (!eyes.hasEyes()) {
                 player.displayClientMessage(Component.translatable("message.noirm.sharingan.none"), true);
+                return;
+            }
+            if (eyes.isBlind()) {
+                player.displayClientMessage(Component.translatable("message.noirm.mangekyo.blind"), true);
+                return;
+            }
+            if (eyes.isTransplanted() && eyes.isActive()) {
+                // An implanted eye can't be closed (the price of an eye you weren't born with).
+                player.displayClientMessage(Component.translatable("message.noirm.transplant.cant_close"), true);
                 return;
             }
             setActive(player, data, !eyes.isActive());
@@ -113,12 +124,21 @@ public final class Sharingan {
         if (eyes.freeTicks() > 0) {
             eyes.setFreeTicks(eyes.freeTicks() - 1);
         }
+        if (eyes.isTransplanted() && !eyes.isActive() && !eyes.isBlind()) {
+            setActive(player, data, true); // an implanted eye is always open
+        }
         if (eyes.activeStage() == 0) {
             return;
         }
         boolean free = data.awakening().isLockedIn() || eyes.freeTicks() > 0;
-        float drain = DRAIN_PER_TICK_PER_STAGE * eyes.sharinganStage();
-        if (!free && !player.getAbilities().instabuild && !data.tryConsumeChakra(drain)) {
+        if (eyes.isTransplanted()) {
+            // A constant drain; with no chakra left it feeds on the body instead (it never closes).
+            if (!free && !player.getAbilities().instabuild && !data.tryConsumeChakra(TRANSPLANT_DRAIN_PER_TICK)) {
+                player.causeFoodExhaustion(0.05f);
+            }
+        }
+        float drain = DRAIN_PER_TICK_PER_STAGE * eyes.sharinganStage() * (eyes.isEternal() ? 0.5f : 1f);
+        if (!eyes.isTransplanted() && !free && !player.getAbilities().instabuild && !data.tryConsumeChakra(drain)) {
             setActive(player, data, false);
             player.displayClientMessage(Component.translatable("message.noirm.sharingan.exhausted"), true);
             return;
@@ -271,7 +291,7 @@ public final class Sharingan {
 
     /** {@code watcher} saw {@code caster} use a jutsu: with 3 tomoe active, they learn it. */
     public static boolean tryCopy(Player watcher, LivingEntity caster, ResourceLocation id) {
-        if (activeStage(watcher) < COPY_STAGE || !isWatching(watcher, caster)) {
+        if (activeStage(watcher) < COPY_STAGE || Mangekyo.isMangekyoJutsu(id) || !isWatching(watcher, caster)) {
             return false;
         }
         ShinobiData data = ShinobiCapability.get(watcher).orElse(null);
