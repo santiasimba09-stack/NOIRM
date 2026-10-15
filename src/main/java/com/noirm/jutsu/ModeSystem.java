@@ -98,6 +98,12 @@ public final class ModeSystem {
         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5f, 1.4f);
     }
 
+    /** The mode {@code entity} has on, or null. */
+    public static ResourceLocation activeMode(LivingEntity entity) {
+        Active active = ACTIVE.get(entity);
+        return active == null ? null : active.id();
+    }
+
     public static boolean isActive(LivingEntity entity, ResourceLocation id) {
         Active active = ACTIVE.get(entity);
         return active != null && active.id().equals(id);

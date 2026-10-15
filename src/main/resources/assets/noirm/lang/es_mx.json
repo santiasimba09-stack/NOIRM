@@ -445,5 +445,7 @@
   "villager.noirm.line.chief.2": "Si te quedas a pasar la noche, la posada de la calle principal tiene cuartos.",
   "villager.noirm.line.chief.3": "Reza en nuestro santuario antes de seguir. Los caminos no son seguros.",
   "commands.noirm.village.built": "Se construyó un %s (estilo %s) aquí.",
-  "commands.noirm.village.unknown": "Tamaño o estilo desconocido. Tamaños: capital, town, outpost. Estilos: leaf, sand, snow."
+  "commands.noirm.village.unknown": "Tamaño o estilo desconocido. Tamaños: capital, town, outpost. Estilos: leaf, sand, snow.",
+  "message.noirm.ally.fed": "%s se come: %s.",
+  "message.noirm.ally.still_eating": "%s todavía está comiendo."
 }

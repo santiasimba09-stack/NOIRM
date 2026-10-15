@@ -168,9 +168,65 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         if (!level().isClientSide()) {
             tickCrew();
+            if (!isYielded()) {
+                Threat.tick(this); // turn on whoever is hurting them most
+            }
+            tickChakra();
+            com.noirm.ally.AllyFood.tickSelfFeed(this);
             syncAnimationState();
         }
         super.aiStep();
+    }
+
+    // ---------------------------------------------------------------- chakra (NPCs pay for their jutsu too)
+
+    /** Chakra regained per tick, and how much faster out of a fight. */
+    public static final float CHAKRA_REGEN_PER_TICK = 0.25f;
+    public static final float CHAKRA_REGEN_RESTING = 2f;
+    /** The least max chakra a ninja has, however low their reserves. */
+    public static final float MIN_MAX_CHAKRA = 40f;
+
+    /** Current chakra; below 0 = full (not spent yet). */
+    private float chakra = -1f;
+    /** How many jutsu they've cast (this session; for tests and tuning). */
+    private int jutsuCasts;
+
+    /** Max chakra, from reserves like a player's: 100 at 10, +5 per point above. */
+    public float maxChakra() {
+        return Math.max(MIN_MAX_CHAKRA, ShinobiData.DEFAULT_MAX_CHAKRA
+                + (combatReserves() - ShinobiData.DEFAULT_STAT) * com.noirm.training.TrainingSystem.CHAKRA_PER_RESERVES);
+    }
+
+    public float chakra() {
+        return chakra < 0 ? maxChakra() : Math.min(chakra, maxChakra());
+    }
+
+    public void setChakra(float value) {
+        chakra = Mth.clamp(value, 0f, maxChakra());
+    }
+
+    /** Spends {@code cost} chakra if they have it. */
+    public boolean tryUseChakra(float cost) {
+        if (chakra() < cost) {
+            return false;
+        }
+        setChakra(chakra() - cost);
+        return true;
+    }
+
+    public int jutsuCasts() {
+        return jutsuCasts;
+    }
+
+    /** Called by {@code JutsuCaster.npcCast} after each cast. */
+    public void onJutsuCast() {
+        jutsuCasts++;
+    }
+
+    private void tickChakra() {
+        if (chakra >= 0 && chakra < maxChakra()) {
+            setChakra(chakra + CHAKRA_REGEN_PER_TICK * (getTarget() == null ? CHAKRA_REGEN_RESTING : 1f));
+        }
     }
 
     // ---------------------------------------------------------------- crew (allies)
@@ -489,13 +545,21 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             return super.mobInteract(player, hand);
         }
         if (level().isClientSide()) {
-            return isYielded() || player.getUUID().equals(leader) ? net.minecraft.world.InteractionResult.SUCCESS : super.mobInteract(player, hand);
+            // (The client doesn't know the leader: a crew mate offered food is being fed, not eaten by you.)
+            boolean feeding = inCrew() && !player.isShiftKeyDown() && com.noirm.ally.AllyFood.isFood(player.getItemInHand(hand), this);
+            return feeding || isYielded() || player.getUUID().equals(leader) ? net.minecraft.world.InteractionResult.SUCCESS
+                    : super.mobInteract(player, hand);
         }
         if (isYielded() && player.getUUID().equals(yieldedTo)) {
             com.noirm.ally.Crew.recruit(player, this);
             return net.minecraft.world.InteractionResult.CONSUME;
         }
         if (player.getUUID().equals(leader)) {
+            // Food in hand: feed them (sneak still gives orders, anything else opens their screen).
+            if (!player.isShiftKeyDown() && com.noirm.ally.AllyFood.isFood(player.getItemInHand(hand), this)) {
+                com.noirm.ally.AllyFood.feed(this, player, hand);
+                return net.minecraft.world.InteractionResult.CONSUME;
+            }
             if (player.isShiftKeyDown()) {
                 setOrder(order == com.noirm.ally.Order.FOLLOW ? com.noirm.ally.Order.WAIT : com.noirm.ally.Order.FOLLOW);
                 player.displayClientMessage(Component.translatable(isWaiting() ? "message.noirm.crew.wait" : "message.noirm.crew.follow",
@@ -842,6 +906,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         tag.putString("Skin", outfit());
         tag.putBoolean("GearRolled", gearRolled);
+        if (chakra >= 0) {
+            tag.putFloat("Chakra", chakra);
+        }
         if (resident) {
             tag.putBoolean("Resident", true);
             if (hasRestriction()) {
@@ -892,6 +959,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         // Ninjas saved before clan gear existed get theirs once, when they rejoin their clan below.
         gearRolled = tag.getBoolean("GearRolled");
+        chakra = tag.contains("Chakra") ? Math.max(0f, tag.getFloat("Chakra")) : -1f;
         if (tag.getBoolean("Resident")) {
             resident = true;
             villageRole = tag.getString("VillageRole");

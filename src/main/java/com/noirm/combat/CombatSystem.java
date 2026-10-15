@@ -21,6 +21,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -79,6 +81,27 @@ public final class CombatSystem {
     public static final int FOCUS_TICKS = 20;
     /** Enemies caught in a focus moment act at this fraction of normal speed. */
     public static final float FOCUS_TIME_SCALE = 0.3f;
+
+    /**
+     * Weapons. Each hit adds this share of the held weapon's attack damage (what it adds over bare
+     * fists, so Strength potions count too), scaled by how heavy the move is: its damage over
+     * {@link #WEAPON_REFERENCE_DAMAGE}, kept between {@link #WEAPON_WEIGHT_MIN} and
+     * {@link #WEAPON_WEIGHT_MAX}. Taijutsu doesn't multiply the weapon part, so fists stay the
+     * thing to train; enchantments (Sharpness, Smite, Bane) add their full bonus like vanilla.
+     */
+    public static final float WEAPON_DAMAGE_SHARE = 0.6f;
+    public static final float WEAPON_REFERENCE_DAMAGE = 4f;
+    public static final float WEAPON_WEIGHT_MIN = 0.6f;
+    public static final float WEAPON_WEIGHT_MAX = 1.5f;
+    /** Knockback enchantment: extra push per level. */
+    public static final float KNOCKBACK_PER_LEVEL = 0.4f;
+    /** Fire Aspect: seconds on fire per level (vanilla's 4). */
+    public static final int FIRE_ASPECT_SECONDS = 4;
+    /** Sweeping Edge: the swing's arc widens by this many degrees per level. */
+    public static final float SWEEP_ARC_PER_LEVEL = 20f;
+    /** Guarding with a shield in either hand: this much of a blocked hit gets through, and posture builds slower. */
+    public static final float SHIELD_DAMAGE_MULTIPLIER = 0f;
+    public static final float SHIELD_POSTURE_MULTIPLIER = 0.6f;
 
     private static final UUID GUARD_SLOW_ID = UUID.fromString("6f4a3c1e-2b7d-4e0a-9c55-1d2e3f4a5b6c");
     private static final AttributeModifier GUARD_SLOW = new AttributeModifier(GUARD_SLOW_ID, "noirm_guard", -0.5, AttributeModifier.Operation.MULTIPLY_TOTAL);
@@ -271,8 +294,9 @@ public final class CombatSystem {
         }
         Entity attacker = source.getEntity();
         if (classify(target, state, attacker) == Outcome.GUARDED) {
-            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE, amount);
-            return amount * GUARD_DAMAGE_MULTIPLIER;
+            boolean shield = blocksWithShield(target, amount);
+            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : 1f), amount);
+            return amount * (shield ? SHIELD_DAMAGE_MULTIPLIER : GUARD_DAMAGE_MULTIPLIER);
         }
         if (attacker != null) {
             addPosture(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * UNGUARDED_POSTURE_RATIO);
@@ -528,15 +552,28 @@ public final class CombatSystem {
     private static void sweep(LivingEntity attacker, CombatState state) {
         CombatMove.Hit hit = state.move.hit();
         AABB area = attacker.getBoundingBox().inflate(hit.range() + 1);
+        int sweeping = sweepingLevel(attacker);
+        float arc = Math.min(360f, hit.arc() + SWEEP_ARC_PER_LEVEL * sweeping);
+        int hits = 0;
         for (LivingEntity target : attacker.level().getEntitiesOfClass(LivingEntity.class, area,
                 t -> t != attacker && t.isAlive() && !t.isSpectator() && !attacker.isAlliedTo(t) && !com.noirm.ally.Crew.sameSide(attacker, t)
-                        && !state.hitThisSwing.contains(t.getId()) && inSwing(attacker, t, hit.range(), hit.arc()))) {
+                        && !state.hitThisSwing.contains(t.getId()) && inSwing(attacker, t, hit.range(), arc))) {
+            // The weapon wears once per swing, like vanilla (on the first one hit); the rest is the sweep.
+            boolean first = state.hitThisSwing.isEmpty();
             state.hitThisSwing.add(target.getId());
-            applyHit(attacker, state, target, state.move);
+            applyHit(attacker, state, target, state.move, first);
+            hits++;
+        }
+        if (hits > 0 && sweeping > 0 && attacker.level() instanceof net.minecraft.server.level.ServerLevel level) {
+            Vec3 front = attacker.position().add(Vec3.directionFromRotation(0, attacker.getYHeadRot()).scale(1.2))
+                    .add(0, attacker.getBbHeight() * 0.55, 0);
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK, front.x, front.y, front.z, 1, 0, 0, 0, 0);
+            level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP,
+                    attacker.getSoundSource(), 1f, 1f);
         }
     }
 
-    private static void applyHit(LivingEntity attacker, CombatState attackerState, LivingEntity target, CombatMove move) {
+    private static void applyHit(LivingEntity attacker, CombatState attackerState, LivingEntity target, CombatMove move, boolean firstOfSwing) {
         if (Substitution.trySubstitute(target, attacker) || HyugaTechniques.deflect(target, attacker)) {
             return;
         }
@@ -560,14 +597,16 @@ public final class CombatSystem {
         // Gentle Fist (Byakugan open): more posture damage, and a guard keeps out less.
         boolean gentleFist = Byakugan.isActive(attacker);
         float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
-        float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponBonus(attacker);
+        float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponDamage(attacker, target, hit.damage());
         boolean airborne = !target.onGround() && !guarded;
         if (airborne) {
             damage *= Math.max(0.5f, 1f - 0.1f * targetState.juggleHits);
         }
         if (guarded) {
-            absorbGuardedHit(target, targetState, posture, damage);
-            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : GUARD_DAMAGE_MULTIPLIER, hit.pierce());
+            boolean shield = !gentleFist && blocksWithShield(target, damage); // Gentle Fist goes through shields
+            absorbGuardedHit(target, targetState, posture * (shield ? SHIELD_POSTURE_MULTIPLIER : 1f), damage);
+            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : shield ? SHIELD_DAMAGE_MULTIPLIER : GUARD_DAMAGE_MULTIPLIER,
+                    hit.pierce());
             damage *= kept;
         } else {
             addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
@@ -588,9 +627,11 @@ public final class CombatSystem {
         if (!hurt) {
             return;
         }
+        attacker.setLastHurtMob(target); // like a vanilla attack: crew mates fight what their leader fights
+        applyWeaponEffects(attacker, target, guarded, firstOfSwing);
 
         float yaw = attacker.getYHeadRot() * Mth.DEG_TO_RAD;
-        float knockback = hit.knockback() * (guarded ? 0.4f : 1f);
+        float knockback = (hit.knockback() + KNOCKBACK_PER_LEVEL * EnchantmentHelper.getKnockbackBonus(attacker)) * (guarded ? 0.4f : 1f);
         boolean splatted = !guarded && knockback >= WALL_SPLAT_KNOCKBACK && wallSplat(attacker, target, targetState, damage, knockback);
         if (knockback > 0 && !splatted) {
             target.knockback(knockback, Mth.sin(yaw), -Mth.cos(yaw));
@@ -889,11 +930,84 @@ public final class CombatSystem {
                 : attacker.damageSources().mobAttack(attacker);
     }
 
-    /** A weapon in hand adds half its bonus damage on top of taijutsu (players and armed crew mates). */
-    private static float weaponBonus(LivingEntity attacker) {
-        if (attacker.getAttribute(Attributes.ATTACK_DAMAGE) == null) {
-            return 0;
+    // ---------------------------------------------------------------- weapons
+
+    /**
+     * What the weapon in hand adds to a hit of {@code moveDamage}: a share of its attack damage
+     * scaled by the move's weight, plus its enchantment bonus against this target, times the
+     * fighter's state (locked in, cloak, mode). 0 with bare hands. See {@link #WEAPON_DAMAGE_SHARE}.
+     */
+    public static float weaponDamage(LivingEntity attacker, LivingEntity target, float moveDamage) {
+        AttributeInstance attack = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
+        float bonus = attack == null ? 0f : Math.max(0f, (float) (attack.getValue() - attack.getBaseValue()));
+        float weight = Mth.clamp(moveDamage / WEAPON_REFERENCE_DAMAGE, WEAPON_WEIGHT_MIN, WEAPON_WEIGHT_MAX);
+        float enchanted = target == null ? 0f : EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), target.getMobType());
+        float extra = bonus * WEAPON_DAMAGE_SHARE * weight + enchanted;
+        return extra <= 0 ? 0f : extra * Perception.stateMultiplier(attacker);
+    }
+
+    /**
+     * After a landed hit the weapon in hand acts like it does in vanilla: Fire Aspect sets the
+     * target alight (not through a guard), the enchantment hooks run (Bane of Arthropods' slowness,
+     * Thorns on the target's armor…), and the weapon wears once per swing. A player's broken
+     * weapon leaves their hand.
+     */
+    private static void applyWeaponEffects(LivingEntity attacker, LivingEntity target, boolean guarded, boolean firstOfSwing) {
+        int fire = EnchantmentHelper.getFireAspect(attacker);
+        if (fire > 0 && !guarded && target.isAlive()) {
+            target.setSecondsOnFire(fire * FIRE_ASPECT_SECONDS);
         }
-        return Math.max(0f, (float) attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1f) * 0.5f;
+        EnchantmentHelper.doPostHurtEffects(target, attacker);
+        EnchantmentHelper.doPostDamageEffects(attacker, target);
+        ItemStack weapon = attacker.getMainHandItem();
+        if (!firstOfSwing || weapon.isEmpty()) {
+            return;
+        }
+        if (attacker instanceof Player player) {
+            ItemStack before = weapon.copy();
+            weapon.hurtEnemy(target, player);
+            if (weapon.isEmpty()) {
+                net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, before, net.minecraft.world.InteractionHand.MAIN_HAND);
+                player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            }
+        } else {
+            weapon.getItem().hurtEnemy(weapon, target, attacker);
+        }
+    }
+
+    /** The Sweeping Edge level of the weapon in hand (only weapons that can sweep, like swords). */
+    private static int sweepingLevel(LivingEntity attacker) {
+        ItemStack weapon = attacker.getMainHandItem();
+        return weapon.canPerformAction(net.minecraftforge.common.ToolActions.SWORD_SWEEP)
+                ? EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.SWEEPING_EDGE, weapon) : 0;
+    }
+
+    /** The shield {@code entity} holds (off hand first), or an empty stack. */
+    public static ItemStack heldShield(LivingEntity entity) {
+        for (ItemStack stack : new ItemStack[] {entity.getOffhandItem(), entity.getMainHandItem()}) {
+            if (stack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /**
+     * A guarded hit on a fighter holding a shield: the shield takes it, with its block sound, and
+     * wears like vanilla (1 + the damage, for hits of 3 or more). False without a shield.
+     */
+    private static boolean blocksWithShield(LivingEntity target, float damage) {
+        ItemStack shield = heldShield(target);
+        if (shield.isEmpty()) {
+            return false;
+        }
+        if (damage >= 3f) {
+            net.minecraft.world.entity.EquipmentSlot slot = target.getOffhandItem() == shield
+                    ? net.minecraft.world.entity.EquipmentSlot.OFFHAND : net.minecraft.world.entity.EquipmentSlot.MAINHAND;
+            shield.hurtAndBreak(1 + Mth.floor(damage), target, e -> e.broadcastBreakEvent(slot));
+        }
+        target.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.SHIELD_BLOCK,
+                target.getSoundSource(), 0.9f, 0.9f + target.getRandom().nextFloat() * 0.2f);
+        return true;
     }
 }

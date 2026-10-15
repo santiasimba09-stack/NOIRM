@@ -214,7 +214,8 @@ public final class CombatGameTests {
 
     // ------------------------------------------------------------ AI
 
-    @GameTest(template = "empty", timeoutTicks = 200)
+    /** Its own batch: fighters with AI use jutsu (bursts, clones) that would reach the tests next door. */
+    @GameTest(template = "empty", batch = "noirm_fight_ai", timeoutTicks = 200)
     public static void ninjaFightsItsTarget(GameTestHelper helper) {
         floor(helper);
         SparringNinja attacker = helper.spawn(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 0.5f);
@@ -222,7 +223,11 @@ public final class CombatGameTests {
         SparringNinja target = helper.spawn(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 2.0f);
         target.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // tests expect the basic moves
         attacker.setTarget(target);
-        helper.succeedWhen(() -> helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the ninja should land a hit on its target"));
+        helper.onEachTick(() -> {
+            if (target.getHealth() < NINJA_HEALTH) {
+                clearAround(helper); // landed a hit
+            }
+        });
     }
 
     // ------------------------------------------------------------ helpers

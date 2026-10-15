@@ -103,6 +103,9 @@ public final class AllyMind {
             return;
         }
         JutsuDefinition def = JutsuData.get(heal);
+        if (!ally.tryUseChakra(com.noirm.jutsu.JutsuCaster.cost(ally, heal, def))) {
+            return; // out of chakra (ramen helps)
+        }
         float amount = def.params().damage() * com.noirm.jutsu.JutsuCaster.power(ally, heal, def) * 2f;
         patient.heal(amount);
         ally.addJutsuXp(heal, 1);

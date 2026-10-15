@@ -40,6 +40,15 @@ public final class Crew {
     public static final class CrewEvents {
         private CrewEvents() {}
 
+        /** A crew mate's arrows (or anything else they throw) never hurt their own side. */
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public static void attack(net.minecraftforge.event.entity.living.LivingAttackEvent event) {
+            if (!event.getEntity().level().isClientSide() && event.getSource().getEntity() instanceof SparringNinja mate
+                    && mate.leaderId() != null && mate != event.getEntity() && sameSide(mate, event.getEntity())) {
+                event.setCanceled(true);
+            }
+        }
+
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public static void death(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
             if (!(event.getSource().getEntity() instanceof LivingEntity killer) || killer.level().isClientSide()

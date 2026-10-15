@@ -445,5 +445,7 @@
   "villager.noirm.line.chief.2": "If you're staying the night, the inn by the main street has rooms.",
   "villager.noirm.line.chief.3": "Pray at our shrine before you travel on. The roads are not safe.",
   "commands.noirm.village.built": "Built a %s (%s look) here.",
-  "commands.noirm.village.unknown": "Unknown size or look. Sizes: capital, town, outpost. Looks: leaf, sand, snow."
+  "commands.noirm.village.unknown": "Unknown size or look. Sizes: capital, town, outpost. Looks: leaf, sand, snow.",
+  "message.noirm.ally.fed": "%s eats the %s.",
+  "message.noirm.ally.still_eating": "%s is still eating."
 }
