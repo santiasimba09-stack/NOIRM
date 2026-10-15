@@ -24,11 +24,15 @@ import net.minecraftforge.network.NetworkHooks;
 public class AllyMenu extends AbstractContainerMenu {
     public static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET,
             EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND};
-    /** Where the equipment column and the player inventory sit in the screen (pixels). */
-    public static final int EQUIP_X = 8;
-    public static final int EQUIP_Y = 24;
-    public static final int INVENTORY_X = 8;
-    public static final int INVENTORY_Y = 152;
+    /** Where the equipment column and the player inventory sit in the screen's Gear tab (pixels). */
+    public static final int EQUIP_X = 18;
+    public static final int EQUIP_Y = 64;
+    public static final int EQUIP_STEP = 21;
+    public static final int INVENTORY_X = 196;
+    public static final int INVENTORY_Y = 64;
+
+    /** Client side: the slots show (and take clicks) only on the screen's Gear tab. */
+    public boolean slotsShown = true;
 
     private final SparringNinja ally;
     private final Player player;
@@ -41,7 +45,12 @@ public class AllyMenu extends AbstractContainerMenu {
         Container equipment = new Equipment(ally);
         for (int i = 0; i < SLOTS.length; i++) {
             EquipmentSlot slot = SLOTS[i];
-            addSlot(new Slot(equipment, i, EQUIP_X, EQUIP_Y + i * 18) {
+            addSlot(new Slot(equipment, i, EQUIP_X, EQUIP_Y + i * EQUIP_STEP) {
+                @Override
+                public boolean isActive() {
+                    return slotsShown;
+                }
+
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return slot.getType() == EquipmentSlot.Type.HAND || stack.canEquip(slot, ally);
@@ -55,11 +64,11 @@ public class AllyMenu extends AbstractContainerMenu {
         }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, INVENTORY_X + col * 18, INVENTORY_Y + row * 18));
+                addSlot(new TabSlot(inventory, col + row * 9 + 9, INVENTORY_X + col * 18, INVENTORY_Y + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, INVENTORY_X + col * 18, INVENTORY_Y + 58));
+            addSlot(new TabSlot(inventory, col, INVENTORY_X + col * 18, INVENTORY_Y + 58));
         }
     }
 
@@ -128,6 +137,18 @@ public class AllyMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return copy;
+    }
+
+    /** One of your inventory's slots, shown only on the Gear tab. */
+    private class TabSlot extends Slot {
+        TabSlot(Container container, int index, int x, int y) {
+            super(container, index, x, y);
+        }
+
+        @Override
+        public boolean isActive() {
+            return slotsShown;
+        }
     }
 
     /** The ally's equipment as a container. What they're given, they drop when they fall. */

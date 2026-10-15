@@ -116,6 +116,7 @@ public final class HumanoidAnimator {
         }
         compose(entity, model, state, pose, limbSwing, limbAmount);
         state.springs(pose, state.partsDt, state.partsTime != state.partsTime || !state.partsValid);
+        plantFeet(entity, state, pose, limbAmount);
         state.parts.copyFrom(pose);
         state.partsTime = time;
         state.partsValid = true;
@@ -206,11 +207,18 @@ public final class HumanoidAnimator {
         float landStrength;
         float fallSpeed;
         int lastHurtTime;
+        /** How hard the last hit was (0.5 a tap … 1.6 a crushing blow), from the health it took. */
+        float flinchStrength = 1f;
+        float lastHealth = Float.NaN;
         float flinchStart = Float.NEGATIVE_INFINITY;
         float flinchFront;
         float flinchSide;
         float lastBodyYaw = Float.NaN;
         float lean;
+        float pelvisTarget;
+        final float[] anchor = new float[4];
+        final boolean[] anchored = new boolean[2];
+        float pelvis;
         float speed;
         boolean procedural;
         final SkeletonPose stancePose = new SkeletonPose();
@@ -465,8 +473,22 @@ public final class HumanoidAnimator {
             state.flinchFront = Mth.cos(rel);
             state.flinchSide = Mth.sin(rel);
             state.freezeUntil = Math.max(state.freezeUntil, time + 2f);
+            state.flinchStrength = 0.5f;
         }
         state.lastHurtTime = entity.hurtTime;
+        // Hit reactions by strength: the health a hit took (synced a moment before or after the hurt
+        // flash) sizes the reaction: a jab snaps the head, a heavy blow buckles the knees and
+        // shoves the body back a step, with a longer hit-stop.
+        float health = entity.getHealth();
+        if (!Float.isNaN(state.lastHealth) && health < state.lastHealth && time - state.flinchStart < 3f) {
+            float lost = (state.lastHealth - health) / Math.max(1f, Math.min(entity.getMaxHealth(), 40f)) * 20f;
+            float strength = Mth.clamp(0.5f + lost / 8f, 0.5f, 1.6f);
+            if (strength > state.flinchStrength) {
+                state.flinchStrength = strength;
+                state.freezeUntil = Math.max(state.freezeUntil, state.flinchStart + 1f + strength * 1.5f);
+            }
+        }
+        state.lastHealth = health;
 
         // Lean into turns.
         float yaw = entity.yBodyRot;
@@ -495,8 +517,11 @@ public final class HumanoidAnimator {
         float bob = state.procedural && onGround ? gaitBob(limbSwing, limbAmount, state.runWeight) : 0f;
         add(body, Bone.BODY, SkeletonPose.PY, bob - landingDip(state, time) - stanceDip(state, limbAmount));
         float flinch = flinchEnvelope(state, time);
-        add(body, Bone.BODY, SkeletonPose.PZ, 0.07f * state.flinchFront * flinch);
+        add(body, Bone.BODY, SkeletonPose.PZ, 0.07f * state.flinchFront * flinch * state.flinchStrength * state.flinchStrength);
+        add(body, Bone.BODY, SkeletonPose.PY, -0.06f * Math.max(0f, state.flinchStrength - 0.9f) * flinch);
         add(body, Bone.BODY, SkeletonPose.RZ, state.lean);
+        state.pelvis += (state.pelvisTarget - state.pelvis) * Math.min(1f, dt * 0.5f);
+        add(body, Bone.BODY, SkeletonPose.PY, -state.pelvis / 16f);
         smoothBody(state, body, dt);
     }
 
@@ -574,7 +599,7 @@ public final class HumanoidAnimator {
         composeLayers(state, pose);
         float flinch = flinchEnvelope(state, time);
         if (flinch > 0f) {
-            flinch(pose, flinch, state.flinchFront, state.flinchSide);
+            flinch(pose, flinch, state.flinchFront, state.flinchSide, state.flinchStrength);
         }
         // The head keeps looking ahead while the torso twists.
         add(pose, Bone.HEAD, SkeletonPose.RY, -HEAD_STABILISE * pose.get(Bone.TORSO, SkeletonPose.RY));
@@ -715,28 +740,142 @@ public final class HumanoidAnimator {
 
     private static float flinchEnvelope(State state, float time) {
         float t = time - state.flinchStart;
-        if (t < 0f || t > FLINCH_TICKS) {
+        float length = FLINCH_TICKS * (0.6f + 0.45f * state.flinchStrength);
+        if (t < 0f || t > length) {
             return 0f;
         }
-        return t < 1f ? t : Math.max(0f, 1f - (t - 1f) / (FLINCH_TICKS - 1f));
+        return t < 1f ? t : Math.max(0f, 1f - (t - 1f) / (length - 1f));
     }
 
-    /** Thrown back from a hit: chest and head snap away from it, arms fly loose, knees give. */
-    static void flinch(SkeletonPose p, float e, float front, float side) {
+    /**
+     * Thrown back from a hit: chest and head snap away from it, arms fly loose, knees give.
+     * {@code strength} (0.5–1.6) scales it: light hits mostly move the head, heavy ones the whole body.
+     */
+    static void flinch(SkeletonPose p, float e, float front, float side, float strength) {
+        float head = e * (0.7f + 0.3f * strength);
+        float knees = Math.max(0f, strength - 0.6f) * 0.9f * e;
+        e *= strength;
         add(p, Bone.TORSO, SkeletonPose.RX, -0.45f * front * e);
         add(p, Bone.TORSO, SkeletonPose.RZ, -0.3f * side * e);
         add(p, Bone.TORSO, SkeletonPose.RY, 0.35f * side * e);
         add(p, Bone.TORSO, SkeletonPose.BEND, 0.15f * e);
-        add(p, Bone.HEAD, SkeletonPose.RX, -0.5f * front * e);
-        add(p, Bone.HEAD, SkeletonPose.RZ, -0.3f * side * e);
+        add(p, Bone.HEAD, SkeletonPose.RX, -0.5f * front * head);
+        add(p, Bone.HEAD, SkeletonPose.RZ, -0.3f * side * head);
         add(p, Bone.RIGHT_ARM, SkeletonPose.RX, 0.35f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.RX, 0.35f * e);
         add(p, Bone.RIGHT_ARM, SkeletonPose.RZ, 0.3f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.RZ, -0.3f * e);
         add(p, Bone.RIGHT_ARM, SkeletonPose.BEND, 0.4f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.BEND, 0.4f * e);
-        add(p, Bone.RIGHT_LEG, SkeletonPose.BEND, 0.3f * e);
-        add(p, Bone.LEFT_LEG, SkeletonPose.BEND, 0.3f * e);
+        add(p, Bone.RIGHT_LEG, SkeletonPose.BEND, 0.15f * e + knees);
+        add(p, Bone.LEFT_LEG, SkeletonPose.BEND, 0.15f * e + knees);
+    }
+
+    // ------------------------------------------------------------ footwork: feet stay on the ground
+
+    /** Feet within this many pixels of the ground count as standing on it. */
+    static final float PLANT_REACH = 2.5f;
+    /** Thigh and shin length (pixels). */
+    static final float SEGMENT = 6f;
+
+    /**
+     * Keeps standing feet on the ground (two-bone IK). The animation decides where each foot goes
+     * across the ground; this only makes sure a foot that should be down really is: when the body
+     * lunges, dips or rises, the hips and knees bend to keep the soles planted instead of the feet
+     * sliding along, sinking into the floor or floating. Feet the animation lifts (kicks, knees)
+     * are left alone. Off while airborne, swimming, riding or flipping.
+     */
+    static void plantFeet(LivingEntity entity, State state, SkeletonPose pose, float limbAmount) {
+        if (!state.procedural || !entity.onGround() || state.airWeight > 0.5f) {
+            state.anchored[0] = state.anchored[1] = false;
+            return;
+        }
+        SkeletonPose body = state.bodyOut;
+        float bx = body.get(Bone.BODY, SkeletonPose.RX), by = body.get(Bone.BODY, SkeletonPose.RY), bz = body.get(Bone.BODY, SkeletonPose.RZ);
+        if (Math.abs(bx) > 0.25f || Math.abs(bz) > 0.25f || Math.abs(by) > 0.35f) {
+            return; // spinning or flipping: the whole body leaves the ground's frame
+        }
+        float walking = Mth.clamp(limbAmount * 2f, 0f, 1f);
+        if (walking > 0.2f) {
+            state.anchored[0] = state.anchored[1] = false; // walking feet go where the gait puts them
+        }
+        float weight = Math.max(state.currentWeight, Math.max(state.stanceWeight, state.guardWeight) * (1f - walking));
+        weight = Math.max(weight, 1f - walking) * (1f - state.airWeight);
+        if (weight <= 0.01f) {
+            return;
+        }
+        // The body bone's offset in model space (pixels; model Y points down, X is mirrored).
+        float ox = -body.get(Bone.BODY, SkeletonPose.PX) * 16f;
+        float oy = -body.get(Bone.BODY, SkeletonPose.PY) * 16f;
+        float oz = body.get(Bone.BODY, SkeletonPose.PZ) * 16f;
+        float shortR = plantLeg(state, 0, pose, Bone.RIGHT_LEG, Rig.REST[Bone.RIGHT_LEG.ordinal()], ox, oy, oz, weight);
+        float shortL = plantLeg(state, 1, pose, Bone.LEFT_LEG, Rig.REST[Bone.LEFT_LEG.ordinal()], ox, oy, oz, weight);
+        // A wide stance the legs can't reach: lower the hips next frame instead of letting a foot hover.
+        state.pelvisTarget = Math.min(MAX_PELVIS_DROP, Math.max(shortR, shortL) * weight);
+    }
+
+    /** How far (pixels) the hips may sink to keep both feet down. */
+    static final float MAX_PELVIS_DROP = 3f;
+
+    /** Plants one leg; returns how many pixels short of the ground it still is (0 if it reached). */
+    /**
+     * A planted foot stays where it stands (its anchor) until the animation moves it clearly
+     * elsewhere: then it steps there quickly. So a lunge drives the body over a fixed front foot
+     * and stretches the rear leg, instead of sliding both feet along.
+     */
+    static final float STEP_DISTANCE = 2.5f;
+    /** How quickly a stepping foot reaches its new spot (fraction per tick). */
+    static final float STEP_SPEED = 0.55f;
+
+    private static float plantLeg(State state, int side, SkeletonPose pose, Bone leg, float[] rest, float ox, float oy, float oz, float weight) {
+        if (Math.abs(pose.get(leg, SkeletonPose.RY)) > 0.3f) {
+            return 0f;
+        }
+        float x = pose.get(leg, SkeletonPose.RX), z = pose.get(leg, SkeletonPose.RZ), b = pose.get(leg, SkeletonPose.BEND);
+        float hx = rest[0] + pose.get(leg, SkeletonPose.PX), hy = rest[1] + pose.get(leg, SkeletonPose.PY), hz = rest[2] + pose.get(leg, SkeletonPose.PZ);
+        // Where the animation puts the sole (leg plane, then the sideways swing).
+        float ly = SEGMENT * (Mth.cos(x) + Mth.cos(x + b));
+        float lz = SEGMENT * (Mth.sin(x) + Mth.sin(x + b));
+        float fx = hx - ly * Mth.sin(z), fy = hy + ly * Mth.cos(z), fz = hz + lz;
+        float ground = 24f;
+        if (fy + oy < ground - PLANT_REACH) {
+            state.anchored[side] = false;
+            return 0f; // lifted on purpose (a kick, a knee)
+        }
+        // Where the animation wants the foot, on the ground (body-offset-free coordinates)…
+        float wx = fx + ox, wz = fz + oz;
+        int a = side * 2;
+        if (!state.anchored[side]) {
+            state.anchor[a] = wx;
+            state.anchor[a + 1] = wz;
+            state.anchored[side] = true;
+        } else {
+            float dx = wx - state.anchor[a], dz = wz - state.anchor[a + 1];
+            if (dx * dx + dz * dz > STEP_DISTANCE * STEP_DISTANCE) { // …a real step: move there
+                float k = Math.min(1f, state.partsDt * STEP_SPEED);
+                state.anchor[a] += dx * k;
+                state.anchor[a + 1] += dz * k;
+            }
+        }
+        // …and where it actually stands: on its anchor, back in model space.
+        float tx = state.anchor[a] - ox, ty = ground - oy, tz = state.anchor[a + 1] - oz;
+        float vx = tx - hx, vy = ty - hy, vz = tz - hz;
+        float d = Mth.sqrt(vx * vx + vy * vy + vz * vz);
+        if (d < 1.0e-3f) {
+            return 0f;
+        }
+        float reach = Mth.clamp(d, 3f, 2 * SEGMENT - 0.05f);
+        float bend = 2f * (float) Math.acos(reach / (2 * SEGMENT));
+        float ux = vx / d, uy = vy / d, uz = vz / d;
+        float pitch = (float) Math.asin(Mth.clamp(uz, -1f, 1f));
+        float roll = (float) Math.atan2(-ux, uy);
+        float newX = pitch - bend / 2f;
+        pose.set(leg, SkeletonPose.RX, x + (newX - x) * weight);
+        pose.set(leg, SkeletonPose.RZ, z + (roll - z) * weight);
+        pose.set(leg, SkeletonPose.BEND, b + (bend - b) * weight);
+        float horizontal = vx * vx + vz * vz, full = 2 * SEGMENT - 0.05f;
+        float maxDown = horizontal >= full * full ? 0f : Mth.sqrt(full * full - horizontal);
+        return Math.max(0f, vy - maxDown);
     }
 
     static void add(SkeletonPose p, Bone bone, int channel, float delta) {

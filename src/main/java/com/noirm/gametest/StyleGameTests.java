@@ -33,12 +33,14 @@ public final class StyleGameTests {
     @GameTest(template = "empty")
     public static void directionalAttacksAndStyles(GameTestHelper helper) {
         Player player = helper.makeMockPlayer();
-        assertMove(helper, player, AttackInput.FORWARD_LIGHT, "basic/jab", "a dash attack falls back to the plain one");
+        assertMove(helper, player, AttackInput.FORWARD_HEAVY, "basic/heavy_kick", "a dash attack falls back to the plain one");
+        assertMove(helper, player, AttackInput.BACK_LIGHT, "basic/low_sweep", "holding back sweeps low");
         assertMove(helper, player, AttackInput.GRAB, "clinch/grab", "everyone can grab");
         var data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
         data.setCombatStyle(Noirm.id("brawler").toString());
         assertMove(helper, player, AttackInput.LIGHT, "brawler/elbow", "Brawlers open with an elbow");
         assertMove(helper, player, AttackInput.FORWARD_HEAVY, "brawler/flying_knee", "and dash in with a flying knee");
+        assertMove(helper, player, AttackInput.BACK_LIGHT, "brawler/body_hook", "and dig a hook to the body");
         helper.assertFalse(StyleSystem.available(data).contains(Noirm.id("strong_fist")), "Strong Fist needs taijutsu");
         helper.assertFalse(StyleSystem.available(data).contains(StyleSystem.GENTLE_FIST), "the Gentle Fist needs the Byakugan");
         data.setTaijutsu(20);

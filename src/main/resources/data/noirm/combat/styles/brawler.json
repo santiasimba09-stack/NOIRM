@@ -5,7 +5,8 @@
     "launcher": "noirm:basic/uppercut",
     "forward_light": "noirm:brawler/rising_knee",
     "forward_heavy": "noirm:brawler/flying_knee",
-    "back_heavy": "noirm:brawler/back_elbow"
+    "back_heavy": "noirm:brawler/back_elbow",
+    "back_light": "noirm:brawler/body_hook"
   },
   "npc_weight": 2
 }

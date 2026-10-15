@@ -293,6 +293,19 @@ public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
         poseStack.translate(-forearm.x / 16f, -forearm.y / 16f, -forearm.z / 16f);
     }
 
+    /** Armor follows the joints too (the part poses are copied by vanilla; the bends here). */
+    @Override
+    public void copyPropertiesTo(net.minecraft.client.model.HumanoidModel<T> model) {
+        super.copyPropertiesTo(model);
+        if (model instanceof BendyArmorModel<T> armor) {
+            armor.rightForearm.copyFrom(rightForearm);
+            armor.leftForearm.copyFrom(leftForearm);
+            armor.rightShin.copyFrom(rightShin);
+            armor.leftShin.copyFrom(leftShin);
+            armor.upperTorso.copyFrom(upperTorso);
+        }
+    }
+
     public boolean slim() {
         return slimArms;
     }

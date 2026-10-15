@@ -309,6 +309,102 @@ lw.key(w + a_ + r * 0.5, STRONG(right_leg=(-20, 0, 20, 60), body=dict(pos=(0, 0,
 lw.key(sum(t), STRONG(body=dict(rot=(0, -360, 0))), "easeInOutSine")
 add(lw)
 
+# ------------------------------------------------------------------ more moves per style (round 6)
+# Academy: a turning backfist (dash), a low sweep (back) and a push kick (back heavy).
+t = timing_of("basic/backfist")
+add(strike("spinning_backfist", BASIC,
+           BASIC(torso=(12, -40, 0, 8), right_arm=(-70, -70, 0, 125), right_leg=(16, 0, 12, 30)),
+           BASIC(torso=(12, 30, 0, 6), right_arm=(-92, 55, 0, 12), left_arm=(-55, 0, 0, 115), left_leg=(-26, 0, -4, 28),
+                 body=dict(pos=(0, 0, -1.5))),
+           BASIC(torso=(12, 38, 0, 6), right_arm=(-88, 62, 0, 18), left_arm=(-55, 0, 0, 115), left_leg=(-26, 0, -4, 28),
+                 body=dict(pos=(0, 0, -1.5))),
+           t))
+t = timing_of("basic/low_sweep")
+add(strike("low_sweep", BASIC,
+           BASIC(torso=(28, 20, 0, 14), right_arm=(-20, 0, 25, 60), left_arm=(-40, 0, -20, 80), left_leg=(-55, 0, -8, 105),
+                 right_leg=(5, 0, 40, 10), body=dict(pos=(0, -4.5, 0))),
+           BASIC(torso=(30, -20, 0, 14), right_arm=(10, 0, 30, 40), left_arm=(-40, 0, -25, 80), left_leg=(-55, 0, -8, 105),
+                 right_leg=(-55, 0, -15, 5), body=dict(pos=(0, -4.5, -1))),
+           BASIC(torso=(30, -30, 0, 14), right_arm=(10, 0, 30, 40), left_arm=(-40, 0, -25, 80), left_leg=(-55, 0, -8, 105),
+                 right_leg=(-60, 0, -30, 5), body=dict(pos=(0, -4.5, -1))),
+           t, weight=False))
+t = timing_of("basic/push_kick")
+add(strike("push_kick", BASIC,
+           BASIC(torso=(-4, 5, 0, 2), right_leg=(-85, 0, 4, 105), left_leg=(-6, 0, -4, 20)),
+           BASIC(torso=(-16, 0, 0, -4), right_arm=(-70, -20, 5, 120), right_leg=(-88, 0, 4, 0), left_leg=(-4, 0, -4, 18),
+                 body=dict(pos=(0, 0.5, -1))),
+           BASIC(torso=(-14, 0, 0, -4), right_arm=(-70, -20, 5, 120), right_leg=(-80, 0, 4, 10), left_leg=(-4, 0, -4, 18),
+                 body=dict(pos=(0, 0.5, -1))),
+           t, weight=False))
+
+# Brawler: a body hook (back) and a two-handed hammer fist (heavy finisher).
+t = timing_of("brawler/body_hook")
+add(strike("body_hook", BRAWLER,
+           BRAWLER(torso=(22, 30, 0, 16), left_arm=(-40, 10, -20, 112)),
+           BRAWLER(torso=(26, -28, 0, 18), left_arm=(-58, 42, 0, 96), left_leg=(-18, 0, -6, 40), body=dict(pos=(0, -0.5, -1))),
+           BRAWLER(torso=(26, -34, 0, 18), left_arm=(-56, 48, 0, 98), left_leg=(-18, 0, -6, 40), body=dict(pos=(0, -0.5, -1))),
+           t))
+t = timing_of("brawler/hammer_fist")
+add(strike("hammer_fist", BRAWLER,
+           BRAWLER(torso=(-12, 0, 0, -6), right_arm=(-172, -12, 0, 45), left_arm=(-172, 12, 0, 45), body=dict(pos=(0, 0.5, 0))),
+           BRAWLER(torso=(34, 0, 0, 18), right_arm=(-62, -14, 0, 18), left_arm=(-62, 14, 0, 18), left_leg=(-24, 0, -6, 44),
+                   body=dict(pos=(0, -1, -2))),
+           BRAWLER(torso=(36, 0, 0, 20), right_arm=(-52, -14, 0, 22), left_arm=(-52, 14, 0, 22), left_leg=(-24, 0, -6, 44),
+                   body=dict(pos=(0, -1, -2))),
+           t))
+
+# Strong Fist: a spinning back kick (back), the Leaf Great Flash heel drop (finisher) and the
+# Leaf Gale, a low spinning sweep (back heavy).
+t = timing_of("strong_fist/back_kick")
+add(strike("strong_back_kick", STRONG,
+           STRONG(torso=(20, 0, 0, 8), right_leg=(20, 0, 4, 80), body=dict(rot=(0, 90, 0))),
+           STRONG(torso=(42, 0, 0, 10), right_arm=(-30, 0, 30, 40), right_leg=(80, 0, 4, 0), left_leg=(-8, 0, -4, 24),
+                  body=dict(rot=(0, 180, 0), pos=(0, 0, -1))),
+           STRONG(torso=(40, 0, 0, 10), right_arm=(-30, 0, 30, 40), right_leg=(72, 0, 4, 10), left_leg=(-8, 0, -4, 24),
+                  body=dict(rot=(0, 190, 0), pos=(0, 0, -1))),
+           t, settle=STRONG(body=dict(rot=(0, 270, 0))), end=STRONG(body=dict(rot=(0, 360, 0)))))
+t = timing_of("strong_fist/leaf_great_flash")
+add(strike("leaf_great_flash", STRONG,
+           STRONG(torso=(-18, -10, 0, -4), right_arm=(-40, 25, 40, 15), left_arm=(-40, 0, -40, 15), right_leg=(-160, 0, 4, 0),
+                  left_leg=(-4, 0, -4, 16), body=dict(pos=(0, 1, 0))),
+           STRONG(torso=(28, -10, 0, 12), right_arm=(-20, 25, 40, 15), left_arm=(-20, 0, -40, 15), right_leg=(-48, 0, 4, 0),
+                  left_leg=(-4, 0, -4, 40), body=dict(pos=(0, -2, -2))),
+           STRONG(torso=(30, -10, 0, 12), right_arm=(-20, 25, 40, 15), left_arm=(-20, 0, -40, 15), right_leg=(-40, 0, 4, 10),
+                  left_leg=(-4, 0, -4, 40), body=dict(pos=(0, -2, -2))),
+           t, weight=False))
+t = timing_of("strong_fist/leaf_gale")
+low = dict(torso=(30, 0, 0, 14), left_leg=(-60, 0, -8, 110), right_arm=(10, 0, 40, 30), left_arm=(-30, 0, -30, 60))
+add(strike("leaf_gale", STRONG,
+           STRONG(right_leg=(10, 0, 50, 10), body=dict(pos=(0, -5, 0), rot=(0, -60, 0)), **low),
+           STRONG(right_leg=(-10, 0, 80, 0), body=dict(pos=(0, -5, 0), rot=(0, -190, 0)), **low),
+           STRONG(right_leg=(-10, 0, 75, 5), body=dict(pos=(0, -5, 0), rot=(0, -290, 0)), **low),
+           t, weight=False, settle=STRONG(body=dict(pos=(0, -2, 0), rot=(0, -340, 0))), end=STRONG(body=dict(rot=(0, -360, 0)))))
+
+# Gentle Fist: a pivoting palm (back), a low trigram sweep (back heavy) and twin lion palms (dash heavy).
+t = timing_of("gentle_fist/back_palm")
+add(strike("pivot_palm", GENTLE,
+           GENTLE(torso=(8, 70, 0, 8), right_arm=(-60, -10, 20, 90)),
+           GENTLE(torso=(10, -30, 0, 8), right_arm=(-92, -6, 0, 4), left_arm=(-30, -20, 0, 40), body=dict(pos=(0, -1.2, -1))),
+           GENTLE(torso=(10, -36, 0, 8), right_arm=(-90, -6, 0, 8), left_arm=(-30, -20, 0, 40), body=dict(pos=(0, -1.2, -1))),
+           t))
+t = timing_of("gentle_fist/trigram_sweep")
+add(strike("trigram_sweep", GENTLE,
+           GENTLE(torso=(24, 60, 0, 14), right_arm=(-30, -40, 30, 50), left_arm=(-50, 30, -20, 40), left_leg=(-50, 0, -14, 90),
+                  right_leg=(40, 0, 20, 50), body=dict(pos=(0, -4, 0))),
+           GENTLE(torso=(28, -40, 0, 14), right_arm=(-50, 60, 0, 6), left_arm=(-50, -50, 0, 6), left_leg=(-50, 0, -14, 90),
+                  right_leg=(40, 0, 20, 50), body=dict(pos=(0, -4, -1))),
+           GENTLE(torso=(28, -50, 0, 14), right_arm=(-48, 66, 0, 8), left_arm=(-48, -56, 0, 8), left_leg=(-50, 0, -14, 90),
+                  right_leg=(40, 0, 20, 50), body=dict(pos=(0, -4, -1))),
+           t, weight=False))
+t = timing_of("gentle_fist/lion_palms")
+add(strike("lion_palms", GENTLE,
+           GENTLE(torso=(-6, 0, 0, -2), right_arm=(35, 0, 15, 50), left_arm=(35, 0, -15, 50), right_leg=(20, 0, 10, 40)),
+           GENTLE(torso=(22, 0, 0, 10), right_arm=(-96, 10, 0, 0), left_arm=(-96, -10, 0, 0), left_leg=(-42, 0, -10, 44),
+                  right_leg=(34, 0, 12, 20), body=dict(pos=(0, -1, -5))),
+           GENTLE(torso=(20, 0, 0, 10), right_arm=(-94, 10, 0, 4), left_arm=(-94, -10, 0, 4), left_leg=(-42, 0, -10, 44),
+                  right_leg=(34, 0, 12, 20), body=dict(pos=(0, -1, -5))),
+           t))
+
 # ------------------------------------------------------------------ dodge rolls
 # A tight ball rolling about a point ~0.4 blocks up (the body pivot is 0.7 up, hence the small drop).
 TUCK = P(torso=(55, 0, 0, 60), head=(45, 0, 0), right_arm=(-70, 0, 20, 130), left_arm=(-70, 0, -20, 130),
@@ -468,5 +564,5 @@ if __name__ == "__main__":
     # Old files whose animations no longer exist here are left alone; list them so they can be reviewed.
     names = {a.name for a in ANIMS}
     for f in sorted(glob.glob(os.path.join("src/main/resources/assets/noirm/player_animation", "*.json"))):
-        if os.path.basename(f)[:-5] not in names:
+        if os.path.basename(f)[:-5] not in names and not os.path.basename(f).startswith("seals_"):
             print("not generated here:", os.path.basename(f))

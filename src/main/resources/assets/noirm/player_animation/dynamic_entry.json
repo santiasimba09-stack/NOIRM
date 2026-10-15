@@ -67,24 +67,24 @@
       "0.1375": {
        "vector": [
         0.0,
-        -3.5,
-        1.0
+        -4.5,
+        1.5
        ],
        "easing": "easeOutQuad"
       },
       "0.25": {
        "vector": [
         0.0,
-        9.0,
-        -13.0
+        7.6,
+        -14.5
        ],
        "easing": "easeInCubic"
       },
       "0.395": {
        "vector": [
         0.0,
-        6.0,
-        -12.0
+        4.6,
+        -13.5
        ],
        "easing": "easeOutQuad"
       },

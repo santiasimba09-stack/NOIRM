@@ -57,6 +57,23 @@ public final class AnimationGameTests {
         return all;
     }
 
+    /** Every jutsu's seal sequence belongs to a real jutsu, uses known seals, and has its animation, as long as it says. */
+    @GameTest(template = "empty")
+    public static void sealSequencesHaveAnimations(GameTestHelper helper) {
+        Map<String, KeyframeAnimation> all = loadAll(helper);
+        java.util.Set<String> known = java.util.Set.of("rat", "ox", "tiger", "hare", "dragon", "snake", "horse", "ram", "monkey",
+                "bird", "dog", "boar", "clone");
+        helper.assertTrue(com.noirm.jutsu.JutsuSeals.all().size() >= 20, "seal sequences loaded: " + com.noirm.jutsu.JutsuSeals.all().size());
+        com.noirm.jutsu.JutsuSeals.all().forEach((jutsu, seq) -> {
+            helper.assertTrue(com.noirm.jutsu.JutsuData.get(jutsu) != null, "seals for a jutsu that doesn't exist: " + jutsu);
+            helper.assertTrue(known.containsAll(seq.seals()), "unknown seal in " + jutsu + ": " + seq.seals());
+            KeyframeAnimation anim = all.get(seq.animation(jutsu).getPath());
+            helper.assertTrue(anim != null, "no animation " + seq.animation(jutsu));
+            assertNear(helper, seq.ticks(), anim.lengthTicks, "animation length of " + jutsu);
+        });
+        helper.succeed();
+    }
+
     /** The torso carries the head and arms: turned 90°, the right shoulder swings round with it. */
     @GameTest(template = "empty")
     public static void rigCarriesHeadAndArms(GameTestHelper helper) {
