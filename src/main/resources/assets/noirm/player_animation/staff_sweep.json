@@ -67,32 +67,32 @@
       "0.1375": {
        "vector": [
         0.0,
-        0.0,
-        0.0
+        -1.0,
+        0.5
        ],
        "easing": "easeOutQuad"
       },
       "0.25": {
        "vector": [
         0.0,
-        -1.0,
-        -2.0
+        -2.4,
+        -3.5
        ],
        "easing": "easeInCubic"
       },
       "0.365": {
        "vector": [
         0.0,
-        -1.0,
-        -2.0
+        -2.4,
+        -3.5
        ],
        "easing": "easeOutQuad"
       },
       "0.6025": {
        "vector": [
         0.0,
-        -1.0,
-        -2.0
+        -2.4,
+        -3.5
        ],
        "easing": "easeInOutSine"
       },

@@ -213,6 +213,8 @@ public final class HumanoidAnimator {
         float lastBodyYaw = Float.NaN;
         float lean;
         float pelvisTarget;
+        final float[] anchor = new float[4];
+        final boolean[] anchored = new boolean[2];
         float pelvis;
         float speed;
         boolean procedural;
@@ -760,6 +762,7 @@ public final class HumanoidAnimator {
      */
     static void plantFeet(LivingEntity entity, State state, SkeletonPose pose, float limbAmount) {
         if (!state.procedural || !entity.onGround() || state.airWeight > 0.5f) {
+            state.anchored[0] = state.anchored[1] = false;
             return;
         }
         SkeletonPose body = state.bodyOut;
@@ -768,6 +771,9 @@ public final class HumanoidAnimator {
             return; // spinning or flipping: the whole body leaves the ground's frame
         }
         float walking = Mth.clamp(limbAmount * 2f, 0f, 1f);
+        if (walking > 0.2f) {
+            state.anchored[0] = state.anchored[1] = false; // walking feet go where the gait puts them
+        }
         float weight = Math.max(state.currentWeight, Math.max(state.stanceWeight, state.guardWeight) * (1f - walking));
         weight = Math.max(weight, 1f - walking) * (1f - state.airWeight);
         if (weight <= 0.01f) {
@@ -777,8 +783,8 @@ public final class HumanoidAnimator {
         float ox = -body.get(Bone.BODY, SkeletonPose.PX) * 16f;
         float oy = -body.get(Bone.BODY, SkeletonPose.PY) * 16f;
         float oz = body.get(Bone.BODY, SkeletonPose.PZ) * 16f;
-        float shortR = plantLeg(pose, Bone.RIGHT_LEG, Rig.REST[Bone.RIGHT_LEG.ordinal()], ox, oy, oz, weight);
-        float shortL = plantLeg(pose, Bone.LEFT_LEG, Rig.REST[Bone.LEFT_LEG.ordinal()], ox, oy, oz, weight);
+        float shortR = plantLeg(state, 0, pose, Bone.RIGHT_LEG, Rig.REST[Bone.RIGHT_LEG.ordinal()], ox, oy, oz, weight);
+        float shortL = plantLeg(state, 1, pose, Bone.LEFT_LEG, Rig.REST[Bone.LEFT_LEG.ordinal()], ox, oy, oz, weight);
         // A wide stance the legs can't reach: lower the hips next frame instead of letting a foot hover.
         state.pelvisTarget = Math.min(MAX_PELVIS_DROP, Math.max(shortR, shortL) * weight);
     }
@@ -787,7 +793,16 @@ public final class HumanoidAnimator {
     static final float MAX_PELVIS_DROP = 3f;
 
     /** Plants one leg; returns how many pixels short of the ground it still is (0 if it reached). */
-    private static float plantLeg(SkeletonPose pose, Bone leg, float[] rest, float ox, float oy, float oz, float weight) {
+    /**
+     * A planted foot stays where it stands (its anchor) until the animation moves it clearly
+     * elsewhere: then it steps there quickly. So a lunge drives the body over a fixed front foot
+     * and stretches the rear leg, instead of sliding both feet along.
+     */
+    static final float STEP_DISTANCE = 2.5f;
+    /** How quickly a stepping foot reaches its new spot (fraction per tick). */
+    static final float STEP_SPEED = 0.55f;
+
+    private static float plantLeg(State state, int side, SkeletonPose pose, Bone leg, float[] rest, float ox, float oy, float oz, float weight) {
         if (Math.abs(pose.get(leg, SkeletonPose.RY)) > 0.3f) {
             return 0f;
         }
@@ -799,10 +814,26 @@ public final class HumanoidAnimator {
         float fx = hx - ly * Mth.sin(z), fy = hy + ly * Mth.cos(z), fz = hz + lz;
         float ground = 24f;
         if (fy + oy < ground - PLANT_REACH) {
+            state.anchored[side] = false;
             return 0f; // lifted on purpose (a kick, a knee)
         }
-        // The same spot on the ground, in model space.
-        float tx = fx, ty = ground - oy, tz = fz;
+        // Where the animation wants the foot, on the ground (body-offset-free coordinates)…
+        float wx = fx + ox, wz = fz + oz;
+        int a = side * 2;
+        if (!state.anchored[side]) {
+            state.anchor[a] = wx;
+            state.anchor[a + 1] = wz;
+            state.anchored[side] = true;
+        } else {
+            float dx = wx - state.anchor[a], dz = wz - state.anchor[a + 1];
+            if (dx * dx + dz * dz > STEP_DISTANCE * STEP_DISTANCE) { // …a real step: move there
+                float k = Math.min(1f, state.partsDt * STEP_SPEED);
+                state.anchor[a] += dx * k;
+                state.anchor[a + 1] += dz * k;
+            }
+        }
+        // …and where it actually stands: on its anchor, back in model space.
+        float tx = state.anchor[a] - ox, ty = ground - oy, tz = state.anchor[a + 1] - oz;
         float vx = tx - hx, vy = ty - hy, vz = tz - hz;
         float d = Mth.sqrt(vx * vx + vy * vy + vz * vz);
         if (d < 1.0e-3f) {
