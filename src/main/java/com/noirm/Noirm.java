@@ -29,6 +29,7 @@ public final class Noirm {
         NoirmItems.register(modBus);
         com.noirm.gear.NoirmGear.register(modBus);
         com.noirm.weapon.NinjaWeapons.register(modBus);
+        com.noirm.weapon.SpecialWeapons.register(modBus);
         com.noirm.registry.NoirmStructures.register(modBus);
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);

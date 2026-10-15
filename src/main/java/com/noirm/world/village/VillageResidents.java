@@ -66,8 +66,8 @@ public final class VillageResidents {
         BlockPos home = c.world(s.homeX(), s.homeY(), s.homeZ());
         BlockPos work = c.world(s.workX(), 0, s.workZ());
         switch (s.role()) {
-            case KAGE -> kage(level, pos, 120 + r.nextFloat() * 80, 120 + r.nextFloat() * 80, plan.palette.kageTitle);
-            case GUARD -> resident(level, pos, home, s.radius(), 20 + r.nextFloat() * 15, 20 + r.nextFloat() * 15, "GUARD", null, null);
+            case KAGE -> kage(level, pos, 120 + r.nextFloat() * 80, 120 + r.nextFloat() * 80, plan.palette.kageTitle, plan.palette);
+            case GUARD -> resident(level, pos, home, s.radius(), 20 + r.nextFloat() * 15, 20 + r.nextFloat() * 15, "GUARD", null, null, plan.palette);
             case TRAINEE -> resident(level, pos, home, s.radius(), 12 + r.nextFloat() * 15, 12 + r.nextFloat() * 15, "TRAINEE", null, null);
             case NINJA -> resident(level, pos, home, 24, 15 + r.nextFloat() * 15, 15 + r.nextFloat() * 15, "", null, null);
             case CLAN_NINJA -> resident(level, pos, home, s.radius(), 20 + r.nextFloat() * 20, 20 + r.nextFloat() * 20, "", plan.compoundClan, null);
@@ -85,7 +85,7 @@ public final class VillageResidents {
                 }
                 boolean runner = s.role() == VillagePlan.Role.RUNNER;
                 float speed = runner ? 25 + r.nextFloat() * 20 : 18 + r.nextFloat() * 12;
-                resident(level, pos, home, 128, speed, 18 + r.nextFloat() * 15, s.role().name(), null, route);
+                resident(level, pos, home, 128, speed, 18 + r.nextFloat() * 15, s.role().name(), null, route, plan.palette);
             }
             case MERCHANT, CIVILIAN, CHILD, CHIEF -> villager(level, pos, s, home, work);
             case DUMMY -> dummy(level, pos);
@@ -110,6 +110,11 @@ public final class VillageResidents {
 
     private static void resident(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius, float speed, float taijutsu,
                                  String role, String clan, List<BlockPos> route) {
+        resident(level, pos, home, radius, speed, taijutsu, role, clan, route, null);
+    }
+
+    private static void resident(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius, float speed, float taijutsu,
+                                 String role, String clan, List<BlockPos> route, VillagePalette palette) {
         SparringNinja ninja = create(level, pos, home, radius, speed, taijutsu);
         if (ninja == null) {
             return;
@@ -117,6 +122,9 @@ public final class VillageResidents {
         ninja.setVillageRole(role);
         if ("GUARD".equals(role) || "PATROL".equals(role)) {
             com.noirm.weapon.NinjaArsenal.armGuard(ninja, level.getRandom());
+            if (palette != null) {
+                com.noirm.gear.ClanOutfits.dressResident(ninja, role, palette, level.getRandom()); // the village's look
+            }
         }
         if (route != null) {
             ninja.setRoute(route);
@@ -165,6 +173,18 @@ public final class VillageResidents {
         // it's added, and later changes would be lost.
         kage.setCustomName(Component.translatable(titleKey));
         kage.setCustomNameVisible(true);
+        return place(level, kage);
+    }
+
+    /** The Kage, dressed in the robe and the hat of the village's look. */
+    public static SparringNinja kage(ServerLevelAccessor level, BlockPos pos, float speed, float taijutsu, String titleKey, VillagePalette palette) {
+        SparringNinja kage = create(level, pos, pos, 5, speed, taijutsu);
+        if (kage == null) {
+            return null;
+        }
+        kage.setCustomName(Component.translatable(titleKey));
+        kage.setCustomNameVisible(true);
+        com.noirm.gear.ClanOutfits.dressResident(kage, "KAGE", palette, level.getRandom());
         return place(level, kage);
     }
 

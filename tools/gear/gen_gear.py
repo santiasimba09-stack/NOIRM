@@ -9,6 +9,7 @@ Writes
     docs/screenshots/gear-and-skins.png  (gear worn on a clean base, plus random NPC looks)
 
 The preview needs the appearance parts, so run tools/skingen/gen_parts.py first.
+The second set (kimonos, cloaks, masks, vests...) lives in more_gear.py.
 All art is original and drawn by the code below. Standard library only.
 Run from the repo root:  python3 tools/gear/gen_gear.py
 """
@@ -1142,6 +1143,71 @@ def main():
     print("wrote %d armour layers and %d icons" % (written, len(item_icons)))
     preview(tex, item_icons)
     print("preview:", os.path.relpath(PREVIEW, ROOT))
+    more(tex)
+
+
+MORE_PREVIEW = os.path.join(ROOT, "docs/screenshots/gear-more.png")
+
+
+def more(tex):
+    """The second gear set (tools/gear/more_gear.py): textures, icons and its own preview."""
+    import more_gear as M
+    extra = M.textures()
+    written = 0
+    for name, pair in extra.items():
+        for i, cv in enumerate(pair):
+            if cv is not None:
+                cv.save(os.path.join(ARMOR_DIR, "%s_layer_%d.png" % (name, i + 1)))
+                written += 1
+    extra_icons = M.icons({"CHEST": CHEST, "LEGS": LEGS, "BOOTS": BOOTS, "BAND": BAND})
+    for name, cv in extra_icons.items():
+        cv.save(os.path.join(ITEM_DIR, name + ".png"))
+    print("more gear: wrote %d armour layers and %d icons" % (written, len(extra_icons)))
+    looks = L.load_looks(PARTS_DIR)
+    skin = L.compose(L.decode("generic:3a7f00c9b2", looks), looks, PARTS_DIR)
+    s = 4
+    doll_w, doll_h = 16 * s, 32 * s
+    l1 = lambda n: extra[n][0]
+    pants, sandals = tex["shinobi"][1], tex["shinobi"][0]
+    sets = [
+        {"chest": l1("kimono_indigo"), "legs": extra["kimono_indigo"][1], "feet": l1("waraji")},
+        {"chest": l1("kimono_crimson"), "legs": extra["kimono_crimson"][1], "feet": l1("tabi")},
+        {"chest": l1("kimono_sage"), "legs": extra["kimono_sage"][1], "head": l1("straw_hat")},
+        {"chest": l1("kimono_plum"), "legs": extra["kimono_plum"][1], "head": l1("oni_mask")},
+        {"chest": l1("haori"), "legs": extra["hakama"][1], "feet": l1("tabi")},
+        {"chest": l1("jonin_vest"), "legs": pants, "feet": sandals, "head": l1("cloth_mask")},
+        {"chest": l1("vest_sand"), "legs": pants, "feet": sandals, "head": l1("head_wrap_protector")},
+        {"chest": l1("vest_snow"), "legs": pants, "feet": l1("shin_guards")},
+        {"chest": l1("vest_mist"), "legs": pants, "feet": sandals, "head": l1("mask_wolf")},
+        {"chest": l1("vest_cloud"), "legs": pants, "feet": sandals, "head": l1("mask_hawk")},
+        {"chest": l1("vest_stone"), "legs": pants, "feet": sandals, "head": l1("mask_boar")},
+        {"chest": l1("travel_cloak"), "legs": pants, "feet": l1("waraji"), "head": l1("straw_hat")},
+        {"chest": l1("rogue_cloak"), "legs": pants, "feet": sandals, "head": l1("forehead_protector_slashed")},
+        {"chest": l1("kage_robe"), "legs": pants, "feet": sandals, "head": l1("kage_hat_red")},
+        {"chest": l1("kage_robe"), "legs": pants, "feet": sandals, "head": l1("kage_hat_teal")},
+        {"chest": l1("arm_guards"), "legs": extra["hakama"][1], "feet": l1("tabi"), "head": l1("mask_crane")},
+        {"chest": l1("hand_wraps"), "legs": pants, "feet": l1("shin_guards")},
+    ]
+    per_row = 9
+    set_w = doll_w * 2 + 3 * s
+    rows = (len(sets) + per_row - 1) // per_row
+    icon_rows = (len(extra_icons) + 15) // 16
+    W = per_row * (set_w + 12) + 20
+    H = 10 + rows * (doll_h + 20) + icon_rows * 74 + 20
+    sheet = Canvas(W, H, (46, 48, 54, 255))
+    for i, armor in enumerate(sets):
+        x = 10 + (i % per_row) * (set_w + 12)
+        y = 10 + (i // per_row) * (doll_h + 20)
+        doll(sheet, skin, armor, x, y, s, "front")
+        doll(sheet, skin, armor, x + doll_w + 3 * s, y, s, "back")
+    y0 = 10 + rows * (doll_h + 20)
+    for i, (name, cv) in enumerate(extra_icons.items()):
+        x = 10 + (i % 16) * 74
+        y = y0 + (i // 16) * 74
+        sheet.fill_rect(x - 2, y - 2, 68, 68, (62, 64, 72, 255))
+        sheet.blit(cv, 0, 0, 16, 16, x, y, 4)
+    sheet.save(MORE_PREVIEW)
+    print("preview:", os.path.relpath(MORE_PREVIEW, ROOT))
 
 
 if __name__ == "__main__":

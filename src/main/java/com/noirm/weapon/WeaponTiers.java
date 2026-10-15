@@ -9,7 +9,9 @@ public enum WeaponTiers implements Tier {
     /** Ninjatō: tougher than an iron sword, a little less enchantable than gold. */
     NINJATO(350, 6f, 2f, 2, 16),
     /** Chakra-conducting metal (chakra blades): takes the wielder's nature. */
-    CHAKRA_METAL(450, 6f, 2f, 2, 18);
+    CHAKRA_METAL(450, 6f, 2f, 2, 18),
+    /** The legendary blades (special weapons): diamond-tough, very enchantable, mended with diamonds. */
+    LEGENDARY(1561, 8f, 3f, 3, 22);
 
     private final int uses;
     private final float speed;
@@ -52,6 +54,9 @@ public enum WeaponTiers implements Tier {
 
     @Override
     public Ingredient getRepairIngredient() {
+        if (this == LEGENDARY) {
+            return Ingredient.of(Items.DIAMOND);
+        }
         return this == CHAKRA_METAL ? Ingredient.of(Items.IRON_INGOT, Items.LAPIS_LAZULI) : Ingredient.of(Items.IRON_INGOT);
     }
 }

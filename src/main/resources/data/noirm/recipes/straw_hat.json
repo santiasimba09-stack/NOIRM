@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " H ",
+    "HHH"
+  ],
+  "key": {
+    "H": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "noirm:straw_hat"
+  }
+}
