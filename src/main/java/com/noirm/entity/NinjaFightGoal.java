@@ -221,8 +221,11 @@ class NinjaFightGoal extends Goal {
             ninja.stopUsingItem();
         }
         boolean busy = self.phase() != CombatPhase.IDLE || self.isGuarding();
+        com.noirm.ally.Tactics.Range range = com.noirm.ally.Tactics.range(ninja);
         if (busy) {
             ninja.getNavigation().stop();
+        } else if (range == com.noirm.ally.Tactics.Range.FAR || (range == com.noirm.ally.Tactics.Range.MID && attackCooldown > 0)) {
+            holdBand(target, distance, range); // a crew mate's tactics: hang back (mid range only between combos)
         } else if (distance > ATTACK_RANGE - 0.2) {
             ninja.getNavigation().moveTo(target, 1.0);
         } else {
@@ -256,8 +259,32 @@ class NinjaFightGoal extends Goal {
 
     // ---------------------------------------------------------------- jutsu
 
+    /** Keeps the distance band a crew mate's range tactic asks for. */
+    private void holdBand(LivingEntity target, double distance, com.noirm.ally.Tactics.Range range) {
+        boolean far = range == com.noirm.ally.Tactics.Range.FAR;
+        double min = far ? com.noirm.ally.Tactics.FAR_MIN : com.noirm.ally.Tactics.MID_MIN;
+        double max = far ? com.noirm.ally.Tactics.FAR_MAX : com.noirm.ally.Tactics.MID_MAX;
+        if (distance > max) {
+            ninja.getNavigation().moveTo(target, 1.0);
+        } else if (distance < min) {
+            Vec3 away = ninja.position().subtract(target.position()).normalize().scale(4);
+            ninja.getNavigation().moveTo(ninja.getX() + away.x, ninja.getY(), ninja.getZ() + away.z, 1.15);
+        } else {
+            ninja.getNavigation().stop();
+        }
+    }
+
+    /** Chakra kept back: the Substitution reserve, or half their chakra when told to conserve it. */
+    private float chakraReserve() {
+        return com.noirm.ally.Tactics.jutsuUse(ninja) == com.noirm.ally.Tactics.JutsuUse.CONSERVE
+                ? Math.max(CHAKRA_RESERVE, ninja.maxChakra() * com.noirm.ally.Tactics.CONSERVE_RESERVE) : CHAKRA_RESERVE;
+    }
+
     /** Every few ticks, between combos: maybe use a jutsu that suits the range. */
     private void thinkJutsu(LivingEntity target, double distance, boolean retreating) {
+        if (com.noirm.ally.Tactics.jutsuUse(ninja) == com.noirm.ally.Tactics.JutsuUse.NONE) {
+            return; // told to fight without jutsu
+        }
         if (jutsuRest > 0 || !combo.isEmpty() || ninja.tickCount % JUTSU_THINK_TICKS != 0 || !CombatSystem.canAct(ninja)) {
             return;
         }
@@ -295,6 +322,9 @@ class NinjaFightGoal extends Goal {
         }
         if (pick != null && cast(pick, target, 0.5f + 0.5f * random.nextFloat(), away)) {
             jutsuRest = JUTSU_REST_MIN + random.nextInt(JUTSU_REST_MAX - JUTSU_REST_MIN + 1);
+            if (com.noirm.ally.Tactics.jutsuUse(ninja) == com.noirm.ally.Tactics.JutsuUse.CONSERVE) {
+                jutsuRest *= com.noirm.ally.Tactics.CONSERVE_REST_FACTOR;
+            }
         }
     }
 
@@ -318,7 +348,7 @@ class NinjaFightGoal extends Goal {
                 return false;
             }
             return JutsuCaster.npcReady(ninja, id) && JutsuCaster.checkRequirements(ninja, id, def) == JutsuCaster.Result.OK
-                    && ninja.chakra() - JutsuCaster.cost(ninja, id, def) >= CHAKRA_RESERVE;
+                    && ninja.chakra() - JutsuCaster.cost(ninja, id, def) >= chakraReserve();
         }).toList();
         return options.isEmpty() ? null : options.get(ninja.getRandom().nextInt(options.size()));
     }
