@@ -39,9 +39,6 @@ public class SharinganEyesLayer<T extends LivingEntity, M extends HumanoidModel<
             return;
         }
         poseStack.pushPose();
-        if (getParentModel() instanceof BendyNinjaModel bendy) {
-            bendy.applyUpperBodyTransform(poseStack); // the head rides the bent torso
-        }
         getParentModel().head.render(poseStack, buffers.getBuffer(stage > 0 ? EYES : BYAKUGAN), FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }

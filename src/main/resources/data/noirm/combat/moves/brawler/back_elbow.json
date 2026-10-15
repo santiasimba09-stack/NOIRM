@@ -1,5 +1,5 @@
 {
-  "animation": "noirm:elbow_strike",
+  "animation": "noirm:back_elbow",
   "timing": {
     "windup": 3,
     "active": 2,

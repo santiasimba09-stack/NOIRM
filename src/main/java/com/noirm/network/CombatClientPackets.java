@@ -16,6 +16,9 @@ import java.util.function.Supplier;
 public final class CombatClientPackets {
     private CombatClientPackets() {}
 
+    /** Not an animation: tells clients to freeze the entity's animation for {@code durationTicks} (hit-stop). */
+    public static final ResourceLocation HITSTOP = com.noirm.Noirm.id("hitstop");
+
     /** Play a player animation on {@code entityId}, stretched to last {@code durationTicks}. */
     public record PlayAnimation(int entityId, ResourceLocation animation, int durationTicks) {
         public void encode(FriendlyByteBuf buf) {

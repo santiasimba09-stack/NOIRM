@@ -105,8 +105,12 @@ public final class ClientCombat {
             return;
         }
         Entity entity = minecraft.level.getEntity(packet.entityId());
-        if (entity instanceof AbstractClientPlayer player) {
-            PlayerAnimations.play(player, packet.animation(), packet.durationTicks());
+        if (packet.animation().equals(CombatClientPackets.HITSTOP)) {
+            if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
+                com.noirm.client.anim.HumanoidAnimator.hitstop(living, packet.durationTicks());
+            }
+        } else if (entity instanceof AbstractClientPlayer player) {
+            com.noirm.client.anim.HumanoidAnimator.playOnPlayer(player.getId(), packet.animation(), packet.durationTicks(), minecraft.level.getGameTime());
         }
     }
 

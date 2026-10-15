@@ -2,10 +2,9 @@ package com.noirm.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import com.noirm.client.anim.SkeletonPose;
 import com.noirm.client.anim.SkeletonPose.Bone;
-import com.noirm.entity.SparringNinja;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -37,7 +36,7 @@ import java.util.Set;
  * layer keep working; the vanilla sleeve / pants / jacket parts are left empty because the
  * segments carry their own outer layer.
  */
-public class BendyNinjaModel extends PlayerModel<SparringNinja> {
+public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
     private static final float TEX = 64f;
     private static final Set<Direction> TOP_AND_SIDES = EnumSet.of(Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
     private static final Set<Direction> SIDES = EnumSet.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
@@ -55,12 +54,23 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
     public final ModelPart upperTorso;
     private final SkeletonPose scratch = new SkeletonPose();
 
-    public BendyNinjaModel() {
-        this(createRoot());
+    private final boolean slimArms;
+    /** This frame's final pose (after every animation layer and the hierarchy), for first-person arms. */
+    public final SkeletonPose lastPose = new SkeletonPose();
+    private final com.noirm.client.anim.Rig rig = new com.noirm.client.anim.Rig();
+
+    public BendyModel() {
+        this(false);
     }
 
-    private BendyNinjaModel(ModelPart root) {
-        super(root, false);
+    /** {@code slim}: the 3-pixel arms of "slim" (Alex-type) player skins. */
+    public BendyModel(boolean slim) {
+        this(createRoot(slim), slim);
+    }
+
+    private BendyModel(ModelPart root, boolean slim) {
+        super(root, slim);
+        this.slimArms = slim;
         rightForearm = rightArm.getChild("forearm");
         leftForearm = leftArm.getChild("forearm");
         rightShin = rightLeg.getChild("shin");
@@ -77,7 +87,7 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
     static final int[] RIGHT_LEG_UV = {0, 16, 0, 32};
     static final int[] LEFT_LEG_UV = {16, 48, 0, 48};
 
-    static ModelPart createRoot() {
+    static ModelPart createRoot(boolean slim) {
         Map<String, ModelPart> root = new HashMap<>();
         root.put("head", part(0, 0, 0, List.of(cube(0, 0, -4, -8, -4, 8, 8, 8, 0, 0, ALL)), Map.of()));
         root.put("hat", part(0, 0, 0, List.of(cube(32, 0, -4, -8, -4, 8, 8, 8, 0.5f, 0.5f, ALL)), Map.of()));
@@ -89,10 +99,11 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
         half(torsoLower, BODY_UV, -4, JOINT, -2, 8, 4, false);
         root.put("body", part(0, 0, 0, torsoLower, Map.of("upper", part(0, JOINT, 0, torsoUpper, Map.of()))));
 
-        root.put("right_arm", limb(RIGHT_ARM_UV, -5, 2, -3, -2, "forearm"));
-        root.put("left_arm", limb(LEFT_ARM_UV, 5, 2, -1, -2, "forearm"));
-        root.put("right_leg", limb(RIGHT_LEG_UV, -1.9f, 12, -2, 0, "shin"));
-        root.put("left_leg", limb(LEFT_LEG_UV, 1.9f, 12, -2, 0, "shin"));
+        int arm = slim ? 3 : 4;
+        root.put("right_arm", limb(RIGHT_ARM_UV, -5, 2, slim ? -2 : -3, -2, arm, "forearm"));
+        root.put("left_arm", limb(LEFT_ARM_UV, 5, 2, -1, -2, arm, "forearm"));
+        root.put("right_leg", limb(RIGHT_LEG_UV, -1.9f, 12, -2, 0, 4, "shin"));
+        root.put("left_leg", limb(LEFT_LEG_UV, 1.9f, 12, -2, 0, 4, "shin"));
 
         for (String empty : new String[]{"ear", "cloak", "left_sleeve", "right_sleeve", "left_pants", "right_pants", "jacket"}) {
             root.put(empty, part(0, 0, 0, List.of(), Map.of()));
@@ -104,13 +115,13 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
      * An arm or leg: the upper segment at the shoulder / hip pivot, the lower segment a child at
      * the joint (on the limb's centre line, halfway down).
      */
-    private static ModelPart limb(int[] uv, float pivotX, float pivotY, float boxX, float boxTop, String lowerName) {
+    private static ModelPart limb(int[] uv, float pivotX, float pivotY, float boxX, float boxTop, int width, String lowerName) {
         List<ModelPart.Cube> upper = new ArrayList<>();
-        half(upper, uv, boxX, boxTop, -2, 4, 4, true);
-        float jointX = boxX + 2; // centre of the 4-wide limb
+        half(upper, uv, boxX, boxTop, -2, width, 4, true);
+        float jointX = boxX + width / 2f; // centre of the limb
         float jointY = boxTop + JOINT;
         List<ModelPart.Cube> lower = new ArrayList<>();
-        half(lower, uv, -2, 0, -2, 4, 4, false);
+        half(lower, uv, -width / 2f, 0, -2, width, 4, false);
         ModelPart lowerPart = part(jointX, jointY, 0, lower, Map.of());
         return part(pivotX, pivotY, 0, upper, Map.of(lowerName, lowerPart));
     }
@@ -149,9 +160,6 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
 
     // ------------------------------------------------------------ posing
 
-    private static final float[][] REST = {
-            {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {-5, 2, 0}, {5, 2, 0}, {-1.9f, 12, 0}, {1.9f, 12, 0}};
-
     private ModelPart partFor(Bone bone) {
         return switch (bone) {
             case TORSO -> body;
@@ -165,65 +173,81 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
     }
 
     @Override
-    public void setupAnim(SparringNinja ninja, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        super.setupAnim(ninja, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        // 1. The vanilla walk/look pose is the base…
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        // Vanilla doesn't reset every position it never touches (leg x, head x/z…); last frame's
+        // animated values must not leak into this frame's base pose.
+        for (ModelPart part : new ModelPart[]{body, head, hat, rightArm, leftArm, rightLeg, leftLeg}) {
+            part.resetPose();
+        }
+        super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         SkeletonPose pose = scratch;
+        captureVanilla(pose);
+        // Our layers: gait, stance, moves, guard, flinch, landing… then springs (HumanoidAnimator).
+        com.noirm.client.anim.HumanoidAnimator.animateParts(entity, this, pose, limbSwing, limbSwingAmount, ageInTicks);
+        lastPose.copyFrom(pose);
+        applyPose(pose);
+    }
+
+    /**
+     * Vanilla's pose as the base layer, rewritten for our hierarchy: vanilla fakes a torso twist
+     * (attacks) and a crouch by moving the arms and head by hand; here the torso carries them, so
+     * those hand-made offsets are taken back out and only the torso's own rotation is kept.
+     */
+    private void captureVanilla(SkeletonPose pose) {
         pose.clear();
+        float twist = body.yRot;
+        boolean crouch = crouching;
         for (Bone bone : Bone.values()) {
             ModelPart part = partFor(bone);
             if (part == null) {
                 continue;
             }
-            float[] rest = REST[bone.ordinal()];
+            float[] rest = com.noirm.client.anim.Rig.REST[bone.ordinal()];
+            boolean upper = bone == Bone.HEAD || bone == Bone.RIGHT_ARM || bone == Bone.LEFT_ARM;
             pose.set(bone, SkeletonPose.RX, part.xRot);
             pose.set(bone, SkeletonPose.RY, part.yRot);
             pose.set(bone, SkeletonPose.RZ, part.zRot);
-            pose.set(bone, SkeletonPose.PX, part.x - rest[0]);
-            pose.set(bone, SkeletonPose.PY, part.y - rest[1]);
-            pose.set(bone, SkeletonPose.PZ, part.z - rest[2]);
+            boolean resetPosition = bone == Bone.TORSO || upper || crouch;
+            pose.set(bone, SkeletonPose.PX, resetPosition ? 0 : part.x - rest[0]);
+            pose.set(bone, SkeletonPose.PY, resetPosition ? 0 : part.y - rest[1]);
+            pose.set(bone, SkeletonPose.PZ, resetPosition ? 0 : part.z - rest[2]);
         }
-        // 2. …with soft joints: knees flex as each leg swings through, elbows stay a little bent.
-        naturalBends(pose, limbSwing, limbSwingAmount, ageInTicks);
-        // 3. Then the stance, the move's animation, guard and flinch, cross-faded (NpcAnimator).
-        com.noirm.client.anim.NpcAnimator.State state = com.noirm.client.anim.NpcAnimator.stateFor(ninja, ageInTicks);
-        com.noirm.client.anim.NpcAnimator.compose(state, pose);
-        // 4. Back onto the model parts.
-        for (Bone bone : Bone.values()) {
-            ModelPart part = partFor(bone);
-            if (part == null) {
-                continue;
-            }
-            float[] rest = REST[bone.ordinal()];
-            part.xRot = pose.get(bone, SkeletonPose.RX);
-            part.yRot = pose.get(bone, SkeletonPose.RY);
-            part.zRot = pose.get(bone, SkeletonPose.RZ);
-            part.x = rest[0] + pose.get(bone, SkeletonPose.PX);
-            part.y = rest[1] + pose.get(bone, SkeletonPose.PY);
-            part.z = rest[2] + pose.get(bone, SkeletonPose.PZ);
+        if (twist != 0f) { // the arms turned with the torso by hand; the hierarchy does it now
+            pose.set(Bone.RIGHT_ARM, SkeletonPose.RY, rightArm.yRot - twist);
+            pose.set(Bone.LEFT_ARM, SkeletonPose.RY, leftArm.yRot - twist);
+            pose.set(Bone.LEFT_ARM, SkeletonPose.RX, leftArm.xRot - twist);
         }
+        if (crouch) { // lean from the hips with soft knees, instead of vanilla's shifted parts
+            pose.set(Bone.TORSO, SkeletonPose.RX, 0.42f);
+            pose.set(Bone.RIGHT_LEG, SkeletonPose.BEND, 0.6f);
+            pose.set(Bone.LEFT_LEG, SkeletonPose.BEND, 0.6f);
+            pose.set(Bone.RIGHT_LEG, SkeletonPose.RX, rightLeg.xRot - 0.3f);
+            pose.set(Bone.LEFT_LEG, SkeletonPose.RX, leftLeg.xRot - 0.3f);
+        }
+    }
+
+    /** The final pose onto the model parts, through the hierarchy ({@link com.noirm.client.anim.Rig}). */
+    private void applyPose(SkeletonPose pose) {
+        rig.bake(pose);
+        copy(rig.torso, body);
+        copy(rig.head, head);
+        copy(rig.rightArm, rightArm);
+        copy(rig.leftArm, leftArm);
+        copy(rig.rightLeg, rightLeg);
+        copy(rig.leftLeg, leftLeg);
         setBends(pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), pose.get(Bone.LEFT_ARM, SkeletonPose.BEND),
                 pose.get(Bone.RIGHT_LEG, SkeletonPose.BEND), pose.get(Bone.LEFT_LEG, SkeletonPose.BEND),
                 pose.get(Bone.TORSO, SkeletonPose.BEND));
         hat.copyFrom(head);
     }
 
-    /** Idle and walking bends (radians), so the NPC never stands like a set of straight sticks. */
-    static void naturalBends(SkeletonPose pose, float limbSwing, float limbSwingAmount, float ageInTicks) {
-        float amount = Mth.clamp(limbSwingAmount, 0f, 1f);
-        float phase = limbSwing * 0.6662f;
-        // A leg moving forward (vanilla swings it with cos(phase)) is in its swing phase: the knee folds.
-        float rightKnee = 0.08f + amount * (0.15f + 0.8f * Math.max(0f, Mth.sin(phase)));
-        float leftKnee = 0.08f + amount * (0.15f + 0.8f * Math.max(0f, -Mth.sin(phase)));
-        // The arm in front bends more (vanilla right arm: cos(phase + π)).
-        float rightElbow = 0.14f + amount * (0.15f + 0.35f * Math.max(0f, Mth.cos(phase)));
-        float leftElbow = 0.14f + amount * (0.15f + 0.35f * Math.max(0f, -Mth.cos(phase)));
-        float breath = 0.02f * Mth.sin(ageInTicks * 0.08f);
-        pose.set(Bone.RIGHT_LEG, SkeletonPose.BEND, rightKnee);
-        pose.set(Bone.LEFT_LEG, SkeletonPose.BEND, leftKnee);
-        pose.set(Bone.RIGHT_ARM, SkeletonPose.BEND, rightElbow + breath);
-        pose.set(Bone.LEFT_ARM, SkeletonPose.BEND, leftElbow + breath);
-        pose.set(Bone.TORSO, SkeletonPose.BEND, 0.03f + breath + amount * 0.06f);
+    private static void copy(com.noirm.client.anim.Rig.Part from, ModelPart to) {
+        to.x = from.x;
+        to.y = from.y;
+        to.z = from.z;
+        to.xRot = from.xRot;
+        to.yRot = from.yRot;
+        to.zRot = from.zRot;
     }
 
     /** Positive bends flex the joints: forearms curl forward, shins fold back, the chest leans in. */
@@ -238,22 +262,10 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
     // ------------------------------------------------------------ drawing
 
     /**
-     * The waist bend, as a matrix in model space: the head and arms are separate parts in the
-     * vanilla layout, so they're carried along the bent upper torso with this.
+     * Kept for callers from before the hierarchy was baked into the parts: the head and arms now
+     * already ride the torso, so there is nothing left to add.
      */
     public void applyUpperBodyTransform(PoseStack poseStack) {
-        float bend = upperTorso.xRot;
-        if (Math.abs(bend) < 1.0e-4f) {
-            return;
-        }
-        Quaternionf bodyRotation = new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot);
-        poseStack.translate(body.x / 16f, body.y / 16f, body.z / 16f);
-        poseStack.mulPose(bodyRotation);
-        poseStack.translate(upperTorso.x / 16f, upperTorso.y / 16f, upperTorso.z / 16f);
-        poseStack.mulPose(Axis.XP.rotation(bend));
-        poseStack.translate(-upperTorso.x / 16f, -upperTorso.y / 16f, -upperTorso.z / 16f);
-        poseStack.mulPose(bodyRotation.conjugate());
-        poseStack.translate(-body.x / 16f, -body.y / 16f, -body.z / 16f);
     }
 
     @Override
@@ -261,24 +273,27 @@ public class BendyNinjaModel extends PlayerModel<SparringNinja> {
         body.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
         rightLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
         leftLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        poseStack.pushPose();
-        applyUpperBodyTransform(poseStack);
         head.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
         hat.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
         rightArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
         leftArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        poseStack.popPose();
     }
 
     /** Held items sit in the hand at the end of the bent forearm. */
     @Override
     public void translateToHand(HumanoidArm side, PoseStack poseStack) {
-        applyUpperBodyTransform(poseStack);
         ModelPart arm = getArm(side);
         ModelPart forearm = side == HumanoidArm.RIGHT ? rightForearm : leftForearm;
+        float shift = slimArms ? 0.5f * (side == HumanoidArm.RIGHT ? 1 : -1) : 0f;
+        arm.x += shift;
         arm.translateAndRotate(poseStack);
+        arm.x -= shift;
         poseStack.translate(forearm.x / 16f, forearm.y / 16f, forearm.z / 16f);
         poseStack.mulPose(new Quaternionf().rotationZYX(forearm.zRot, forearm.yRot, forearm.xRot));
         poseStack.translate(-forearm.x / 16f, -forearm.y / 16f, -forearm.z / 16f);
+    }
+
+    public boolean slim() {
+        return slimArms;
     }
 }

@@ -124,7 +124,19 @@ public final class KeyframeAnimation {
             float span = ticks[i + 1] - ticks[i];
             float f = span <= 0 ? 1f : (t - ticks[i]) / span;
             // GeckoLib's rule: a keyframe's easing shapes the way *into* it.
-            f = ease(eases[i + 1], f);
+            String ease = eases[i + 1];
+            if (ease != null && ease.equalsIgnoreCase("catmullrom")) {
+                // A smooth curve through the neighbouring keys (no stop at each key).
+                float[] p0 = values[Math.max(0, i - 1)], p1 = values[i], p2 = values[i + 1], p3 = values[Math.min(last, i + 2)];
+                float f2 = f * f, f3 = f2 * f;
+                for (int k = 0; k < scratch.length; k++) {
+                    scratch[k] = 0.5f * (2 * p1[k] + (-p0[k] + p2[k]) * f
+                            + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * f2
+                            + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * f3);
+                }
+                return scratch;
+            }
+            f = ease(ease, f);
             for (int k = 0; k < scratch.length; k++) {
                 scratch[k] = values[i][k] + (values[i + 1][k] - values[i][k]) * f;
             }
@@ -150,6 +162,15 @@ public final class KeyframeAnimation {
             case "easeinoutcubic" -> x < 0.5f ? 4 * x * x * x : 1 - (float) Math.pow(-2 * x + 2, 3) / 2;
             case "easeinquart" -> x * x * x * x;
             case "easeoutquart" -> 1 - (float) Math.pow(1 - x, 4);
+            case "easeinoutquart" -> x < 0.5f ? 8 * x * x * x * x : 1 - (float) Math.pow(-2 * x + 2, 4) / 2;
+            case "easeinexpo" -> x <= 0f ? 0f : (float) Math.pow(2, 10 * x - 10);
+            case "easeoutexpo" -> x >= 1f ? 1f : 1 - (float) Math.pow(2, -10 * x);
+            // "Back": a small wind-back before (in) or overshoot after (out) — anticipation and follow-through.
+            case "easeinback" -> 2.70158f * x * x * x - 1.70158f * x * x;
+            case "easeoutback" -> 1 + 2.70158f * (float) Math.pow(x - 1, 3) + 1.70158f * (float) Math.pow(x - 1, 2);
+            case "easeinoutback" -> x < 0.5f
+                    ? (float) (Math.pow(2 * x, 2) * ((2.5949095f + 1) * 2 * x - 2.5949095f)) / 2
+                    : (float) (Math.pow(2 * x - 2, 2) * ((2.5949095f + 1) * (x * 2 - 2) + 2.5949095f) + 2) / 2;
             default -> x;
         };
     }

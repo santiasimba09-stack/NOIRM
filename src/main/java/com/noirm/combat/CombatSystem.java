@@ -623,6 +623,7 @@ public final class CombatSystem {
         int hitstop = guarded ? hit.hitstop() / 2 : splatted ? hit.hitstop() + 4 : hit.hitstop();
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);
         targetState.hitstop = Math.max(targetState.hitstop, hitstop);
+        CombatEffects.hitstop(attacker, target, hitstop);
         CombatEffects.hitLanded(attacker, target, move, guarded, targetState);
     }
 

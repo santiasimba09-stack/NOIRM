@@ -3,7 +3,7 @@ package com.noirm.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.noirm.Noirm;
-import com.noirm.client.anim.NpcAnimator;
+import com.noirm.client.anim.HumanoidAnimator;
 import com.noirm.client.anim.SkeletonPose;
 import com.noirm.client.anim.SkeletonPose.Bone;
 import com.noirm.entity.SparringNinja;
@@ -14,9 +14,9 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Draws the sparring ninja with a jointed player-skin model ({@link BendyNinjaModel}: elbows,
+ * Draws the sparring ninja with a jointed player-skin model ({@link BendyModel}: elbows,
  * knees and a waist) that plays the very same keyframe animations as the player
- * ({@link NpcAnimator}): the style's stance in a fight, each move's animation at the server's
+ * ({@link HumanoidAnimator}): the style's stance in a fight, each move's animation at the server's
  * timing, rolls on dodges, a guard and a hit flinch, all cross-faded.
  * Its skin is built from its look ({@link NinjaSkins}), with any worn gear on top.
  */
@@ -25,7 +25,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
     private static final ResourceLocation TEXTURE = Noirm.vanillaId("textures/entity/player/wide/kai.png");
 
     public SparringNinjaRenderer(EntityRendererProvider.Context context) {
-        super(context, new BendyNinjaModel(), 0.5f);
+        super(context, new BendyModel<>(), 0.5f);
         addLayer(new SharinganEyesLayer<>(this));
         // What their leader dresses them in.
         addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
@@ -47,15 +47,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
     @Override
     protected void setupRotations(SparringNinja ninja, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks) {
         super.setupRotations(ninja, poseStack, ageInTicks, rotationYaw, partialTicks);
-        SkeletonPose body = NpcAnimator.stateFor(ninja, ageInTicks).bodyOnly;
-        if (!body.isSet(Bone.BODY, SkeletonPose.RX) && !body.isSet(Bone.BODY, SkeletonPose.PX)) {
-            return;
-        }
-        poseStack.translate(body.get(Bone.BODY, SkeletonPose.PX), body.get(Bone.BODY, SkeletonPose.PY) + 0.7f,
-                body.get(Bone.BODY, SkeletonPose.PZ));
-        poseStack.mulPose(Axis.ZP.rotation(body.get(Bone.BODY, SkeletonPose.RZ)));
-        poseStack.mulPose(Axis.YP.rotation(body.get(Bone.BODY, SkeletonPose.RY)));
-        poseStack.mulPose(Axis.XP.rotation(body.get(Bone.BODY, SkeletonPose.RX)));
-        poseStack.translate(0, -0.7f, 0);
+        NoirmPlayerRenderer.applyBody(HumanoidAnimator.bodyTransform(ninja, ageInTicks, ninja.walkAnimation.position(partialTicks),
+                ninja.walkAnimation.speed(partialTicks)), poseStack);
     }
 }

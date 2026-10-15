@@ -44,6 +44,16 @@ final class CombatEffects {
         sound(entity, move.hit().isHeavy() ? SoundEvents.PLAYER_ATTACK_SWEEP : SoundEvents.PLAYER_ATTACK_NODAMAGE, 0.6f, 1.1f);
     }
 
+    /** Both fighters' animations hold still for the hit-stop, on every client that sees them. */
+    static void hitstop(LivingEntity attacker, LivingEntity target, int ticks) {
+        if (ticks <= 0) {
+            return;
+        }
+        for (LivingEntity entity : new LivingEntity[]{attacker, target}) {
+            NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), com.noirm.network.CombatClientPackets.HITSTOP, ticks));
+        }
+    }
+
     static void hitLanded(LivingEntity attacker, LivingEntity target, CombatMove move, boolean guarded, CombatState targetState) {
         CombatMove.Hit hit = move.hit();
         net.minecraft.world.phys.Vec3 chest = target.position().add(0, target.getBbHeight() * 0.6, 0);

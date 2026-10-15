@@ -1,5 +1,5 @@
 {
-  "animation": "noirm:palm_strike",
+  "animation": "noirm:lunging_palm",
   "timing": {
     "windup": 4,
     "active": 2,

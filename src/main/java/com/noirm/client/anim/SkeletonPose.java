@@ -77,6 +77,14 @@ public final class SkeletonPose {
         java.util.Arrays.fill(set, false);
     }
 
+    /** Unsets every channel of one bone. */
+    public void clear(Bone bone) {
+        for (int c = 0; c < CHANNELS; c++) {
+            values[index(bone, c)] = 0f;
+            set[index(bone, c)] = false;
+        }
+    }
+
     public void copyFrom(SkeletonPose other) {
         System.arraycopy(other.values, 0, values, 0, values.length);
         System.arraycopy(other.set, 0, set, 0, set.length);
