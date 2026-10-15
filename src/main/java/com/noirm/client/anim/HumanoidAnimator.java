@@ -116,6 +116,7 @@ public final class HumanoidAnimator {
         }
         compose(entity, model, state, pose, limbSwing, limbAmount);
         state.springs(pose, state.partsDt, state.partsTime != state.partsTime || !state.partsValid);
+        plantFeet(entity, state, pose, limbAmount);
         state.parts.copyFrom(pose);
         state.partsTime = time;
         state.partsValid = true;
@@ -211,6 +212,8 @@ public final class HumanoidAnimator {
         float flinchSide;
         float lastBodyYaw = Float.NaN;
         float lean;
+        float pelvisTarget;
+        float pelvis;
         float speed;
         boolean procedural;
         final SkeletonPose stancePose = new SkeletonPose();
@@ -497,6 +500,8 @@ public final class HumanoidAnimator {
         float flinch = flinchEnvelope(state, time);
         add(body, Bone.BODY, SkeletonPose.PZ, 0.07f * state.flinchFront * flinch);
         add(body, Bone.BODY, SkeletonPose.RZ, state.lean);
+        state.pelvis += (state.pelvisTarget - state.pelvis) * Math.min(1f, dt * 0.5f);
+        add(body, Bone.BODY, SkeletonPose.PY, -state.pelvis / 16f);
         smoothBody(state, body, dt);
     }
 
@@ -737,6 +742,84 @@ public final class HumanoidAnimator {
         add(p, Bone.LEFT_ARM, SkeletonPose.BEND, 0.4f * e);
         add(p, Bone.RIGHT_LEG, SkeletonPose.BEND, 0.3f * e);
         add(p, Bone.LEFT_LEG, SkeletonPose.BEND, 0.3f * e);
+    }
+
+    // ------------------------------------------------------------ footwork: feet stay on the ground
+
+    /** Feet within this many pixels of the ground count as standing on it. */
+    static final float PLANT_REACH = 2.5f;
+    /** Thigh and shin length (pixels). */
+    static final float SEGMENT = 6f;
+
+    /**
+     * Keeps standing feet on the ground (two-bone IK). The animation decides where each foot goes
+     * across the ground; this only makes sure a foot that should be down really is: when the body
+     * lunges, dips or rises, the hips and knees bend to keep the soles planted instead of the feet
+     * sliding along, sinking into the floor or floating. Feet the animation lifts (kicks, knees)
+     * are left alone. Off while airborne, swimming, riding or flipping.
+     */
+    static void plantFeet(LivingEntity entity, State state, SkeletonPose pose, float limbAmount) {
+        if (!state.procedural || !entity.onGround() || state.airWeight > 0.5f) {
+            return;
+        }
+        SkeletonPose body = state.bodyOut;
+        float bx = body.get(Bone.BODY, SkeletonPose.RX), by = body.get(Bone.BODY, SkeletonPose.RY), bz = body.get(Bone.BODY, SkeletonPose.RZ);
+        if (Math.abs(bx) > 0.25f || Math.abs(bz) > 0.25f || Math.abs(by) > 0.35f) {
+            return; // spinning or flipping: the whole body leaves the ground's frame
+        }
+        float walking = Mth.clamp(limbAmount * 2f, 0f, 1f);
+        float weight = Math.max(state.currentWeight, Math.max(state.stanceWeight, state.guardWeight) * (1f - walking));
+        weight = Math.max(weight, 1f - walking) * (1f - state.airWeight);
+        if (weight <= 0.01f) {
+            return;
+        }
+        // The body bone's offset in model space (pixels; model Y points down, X is mirrored).
+        float ox = -body.get(Bone.BODY, SkeletonPose.PX) * 16f;
+        float oy = -body.get(Bone.BODY, SkeletonPose.PY) * 16f;
+        float oz = body.get(Bone.BODY, SkeletonPose.PZ) * 16f;
+        float shortR = plantLeg(pose, Bone.RIGHT_LEG, Rig.REST[Bone.RIGHT_LEG.ordinal()], ox, oy, oz, weight);
+        float shortL = plantLeg(pose, Bone.LEFT_LEG, Rig.REST[Bone.LEFT_LEG.ordinal()], ox, oy, oz, weight);
+        // A wide stance the legs can't reach: lower the hips next frame instead of letting a foot hover.
+        state.pelvisTarget = Math.min(MAX_PELVIS_DROP, Math.max(shortR, shortL) * weight);
+    }
+
+    /** How far (pixels) the hips may sink to keep both feet down. */
+    static final float MAX_PELVIS_DROP = 3f;
+
+    /** Plants one leg; returns how many pixels short of the ground it still is (0 if it reached). */
+    private static float plantLeg(SkeletonPose pose, Bone leg, float[] rest, float ox, float oy, float oz, float weight) {
+        if (Math.abs(pose.get(leg, SkeletonPose.RY)) > 0.3f) {
+            return 0f;
+        }
+        float x = pose.get(leg, SkeletonPose.RX), z = pose.get(leg, SkeletonPose.RZ), b = pose.get(leg, SkeletonPose.BEND);
+        float hx = rest[0] + pose.get(leg, SkeletonPose.PX), hy = rest[1] + pose.get(leg, SkeletonPose.PY), hz = rest[2] + pose.get(leg, SkeletonPose.PZ);
+        // Where the animation puts the sole (leg plane, then the sideways swing).
+        float ly = SEGMENT * (Mth.cos(x) + Mth.cos(x + b));
+        float lz = SEGMENT * (Mth.sin(x) + Mth.sin(x + b));
+        float fx = hx - ly * Mth.sin(z), fy = hy + ly * Mth.cos(z), fz = hz + lz;
+        float ground = 24f;
+        if (fy + oy < ground - PLANT_REACH) {
+            return 0f; // lifted on purpose (a kick, a knee)
+        }
+        // The same spot on the ground, in model space.
+        float tx = fx, ty = ground - oy, tz = fz;
+        float vx = tx - hx, vy = ty - hy, vz = tz - hz;
+        float d = Mth.sqrt(vx * vx + vy * vy + vz * vz);
+        if (d < 1.0e-3f) {
+            return 0f;
+        }
+        float reach = Mth.clamp(d, 3f, 2 * SEGMENT - 0.05f);
+        float bend = 2f * (float) Math.acos(reach / (2 * SEGMENT));
+        float ux = vx / d, uy = vy / d, uz = vz / d;
+        float pitch = (float) Math.asin(Mth.clamp(uz, -1f, 1f));
+        float roll = (float) Math.atan2(-ux, uy);
+        float newX = pitch - bend / 2f;
+        pose.set(leg, SkeletonPose.RX, x + (newX - x) * weight);
+        pose.set(leg, SkeletonPose.RZ, z + (roll - z) * weight);
+        pose.set(leg, SkeletonPose.BEND, b + (bend - b) * weight);
+        float horizontal = vx * vx + vz * vz, full = 2 * SEGMENT - 0.05f;
+        float maxDown = horizontal >= full * full ? 0f : Mth.sqrt(full * full - horizontal);
+        return Math.max(0f, vy - maxDown);
     }
 
     static void add(SkeletonPose p, Bone bone, int channel, float delta) {

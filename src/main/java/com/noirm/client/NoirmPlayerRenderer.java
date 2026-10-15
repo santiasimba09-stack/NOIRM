@@ -27,6 +27,10 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
     public NoirmPlayerRenderer(EntityRendererProvider.Context context, boolean slim) {
         super(context, slim);
         this.model = new BendyModel<>(slim);
+        // Armor that bends at the elbows, knees and waist like the body under it.
+        this.layers.removeIf(layer -> layer instanceof net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<?, ?, ?>);
+        addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
+                new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), context.getModelManager()));
         addLayer(new SharinganEyesLayer<>(this));
     }
 

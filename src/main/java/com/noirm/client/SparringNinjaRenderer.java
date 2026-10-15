@@ -29,8 +29,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
         addLayer(new SharinganEyesLayer<>(this));
         // What their leader dresses them in.
         addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
-                new net.minecraft.client.model.HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
-                new net.minecraft.client.model.HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)),
+                new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), // bends with the body
                 context.getModelManager()));
     }
 
