@@ -463,5 +463,7 @@
   "tooltip.noirm.chakra_blade": "Lleva tu naturaleza: el viento corta más hondo, el fuego quema, el rayo paraliza, el agua empuja, la tierra rompe guardias",
   "style.noirm.weapon_kunai": "Kunai",
   "style.noirm.weapon_staff": "Bastón bō",
-  "style.noirm.weapon_sword": "Espada"
+  "style.noirm.weapon_sword": "Espada",
+  "message.noirm.ally.fed": "%s se come: %s.",
+  "message.noirm.ally.still_eating": "%s todavía está comiendo."
 }

@@ -43,9 +43,16 @@ public final class Perception {
      * tailed beast's cloak.
      */
     public static float damageMultiplier(LivingEntity entity) {
-        float base = statPower(taijutsu(entity));
+        return statPower(taijutsu(entity)) * stateMultiplier(entity);
+    }
+
+    /**
+     * Everything that makes a hit harder besides taijutsu: devotion (crew mates), being locked in,
+     * the beast's cloak, an active mode. Weapons get this too (taijutsu only scales the body).
+     */
+    public static float stateMultiplier(LivingEntity entity) {
         float morale = entity instanceof com.noirm.entity.SparringNinja ninja ? com.noirm.ally.AllyMind.morale(ninja) : 1f;
-        return base * morale * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
+        return morale * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
                 * com.noirm.jutsu.ModeSystem.damageMultiplier(entity);
     }
 

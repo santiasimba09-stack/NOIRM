@@ -463,5 +463,7 @@
   "tooltip.noirm.chakra_blade": "Carries your nature: wind cuts deeper, fire burns, lightning numbs, water pushes, earth breaks guards",
   "style.noirm.weapon_kunai": "Kunai",
   "style.noirm.weapon_staff": "Bō Staff",
-  "style.noirm.weapon_sword": "Sword"
+  "style.noirm.weapon_sword": "Sword",
+  "message.noirm.ally.fed": "%s eats the %s.",
+  "message.noirm.ally.still_eating": "%s is still eating."
 }

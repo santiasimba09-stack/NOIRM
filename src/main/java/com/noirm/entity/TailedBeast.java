@@ -240,6 +240,7 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
             chakraAura();
             return;
         }
+        Threat.tick(this); // turn on whoever is hurting it most
         if (tickCount % 100 == 1) {
             CombatStates.get(this).setMaxPosture(150f + 25f * tails());
         }

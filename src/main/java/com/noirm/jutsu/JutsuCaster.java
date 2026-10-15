@@ -247,8 +247,15 @@ public final class JutsuCaster {
         if (caster instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
             ninja.addJutsuXp(id, 1);
+            ninja.onJutsuCast();
         }
         return true;
+    }
+
+    /** Is this NPC's own cooldown for {@code id} over? */
+    public static boolean npcReady(LivingEntity caster, ResourceLocation id) {
+        Map<ResourceLocation, Long> ready = NPC_READY_AT.get(caster);
+        return ready == null || ready.getOrDefault(id, 0L) <= caster.level().getGameTime();
     }
 
     // ------------------------------------------------------------ shared

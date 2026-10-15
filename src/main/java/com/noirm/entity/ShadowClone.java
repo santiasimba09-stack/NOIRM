@@ -69,12 +69,10 @@ public class ShadowClone extends SparringNinja {
         if (owner instanceof SparringNinja ninja) {
             setOutfit(ninja.outfit()); // looks exactly like them
         }
-        // ...and wears what they wear (a chakra copy: nothing drops when it pops).
+        // ...and wears and wields what they do (a chakra copy: nothing drops when it pops).
         for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
-            if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR) {
-                setItemSlot(slot, owner.getItemBySlot(slot).copy());
-                setDropChance(slot, 0f);
-            }
+            setItemSlot(slot, owner.getItemBySlot(slot).copy());
+            setDropChance(slot, 0f);
         }
         setCombatStyle(com.noirm.combat.CombatSystem.styleFor(owner)); // fights the way you do
         copyPowers(owner);
