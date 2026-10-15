@@ -198,3 +198,21 @@ behind; legs mostly kept walking under the attack; nothing moved between moves.
 limbs, weapon movesets) were studied for ideas; no code or animation data was taken from them.
 The old section above ("NPC animation and bendy limbs") describes round 4; its PlayerAnimator
 parts no longer apply.
+
+## Round 6 additions
+
+- **Footwork:** `HumanoidAnimator.plantFeet` keeps standing feet on the ground with two-bone leg
+  IK (thigh and shin 6 px); a planted foot keeps its spot until the animation steps it more than
+  `STEP_DISTANCE`, and the hips drop up to `MAX_PELVIS_DROP` for wide stances. `motion.strike`
+  adds weight transfer to every attack: the body sinks on the wind-up (`SINK_WINDUP`) and drives
+  forward at contact (`DRIVE_CONTACT`); spins and flips are left alone.
+- **Hit reactions by strength:** the health a hit takes (relative to max health) sets
+  `flinchStrength` (0.5–1.6): light hits move mostly the head, heavy ones shove the body back,
+  buckle the knees, last longer and hold a longer hit-stop.
+- **Weapon trails** (`client/WeaponTrails`): while a move plays with a sword, kunai or staff, the
+  blade's base and tip are sampled each frame and drawn as a fading ribbon after particles.
+- **More moves per style:** the back inputs (hold back + light / heavy) and dash heavy now have
+  their own moves in every style (see `data/noirm/combat/styles/`); NPC combos use them.
+- **Hand seals:** `data/noirm/jutsu_seals/<jutsu>.json` lists a jutsu's seals; `tools/animgen/seals.py`
+  writes them and the matching `seals_<nature>_<name>` animation (3 ticks per seal). Charged and
+  channelled jutsu play the sequence; every cast names the seals above the hotbar.

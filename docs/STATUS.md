@@ -1,20 +1,25 @@
 # Project status
 
-_Last updated: 2026-10-15 (playtest round 5, v0.8.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-15 (playtest round 6, v0.9.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**Playtest round 5 is done (v0.8.0). 170/170 game tests green; checked in the real client**
-(screenshots `docs/screenshots/r8-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
+**Playtest round 6 is done (v0.9.0). 199/199 game tests green (twice in a row); checked in the real
+client** (screenshots `docs/screenshots/r9-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
 
-| Round 5 (owner's requests) | State |
+| Round 6 (owner's requests, then my suggestions) | State |
 |---|---|
-| **Animations rebuilt:** our own engine (no PlayerAnimator), players and ninjas on one jointed body; ninja run, landings, directional flinches, springs; first-person arms; 51 new animations | ✅ tested (parsing, rig maths); checked in client |
-| **Weapons:** kunai, shuriken, fūma, senbon, explosive tag / kunai, bō staff, ninjatō, chakra blade; throws; kunai / staff / sword movesets | ✅ tested; checked in client |
-| **Allies** use what they hold (weapon damage + enchantments, bows, shields), can be fed, and rogues fight whoever engages them (threat) | ✅ tested |
-| **Ninjas use jutsu** by range, chakra and situation | ✅ tested |
-| **Water walking** (chakra; sneak to sink) for players and ninjas | ✅ tested; checked in client |
-| **Sharingan** awakens by four routes and grows by fighting (shown in HUD and jutsu screen) | ✅ tested |
+| **Armor fits the jointed body** (`BendyArmorModel`: armor bends at elbows, knees, waist) | ✅ checked in client |
+| **Footwork** (owner: "the weakest spot"): feet stay planted (two-bone leg IK), every strike sinks and drives through the legs | ✅ checked in client |
+| **More gear:** 39 pieces (kimonos, hakama, haori, masks that hide your name, Kage hats and robes, village vests, cloaks, tabi…), perks; guards, ANBU patrols, Kage and rogues dressed by role | ✅ tested; checked in client |
+| **Special weapons:** Crescent Cleaver, Sharkskin Greatsword, Thunder Fangs, Reedcutter (legendary drops), Gale Gunbai, Kusarigama | ✅ tested |
+| **New ally screen** (5 tabs) + **teaching natures over time** + distance/jutsu tactics | ✅ tested; checked in client |
+| **Mangekyō Sharingan:** awakening, unique pattern + 2 abilities + Susanoo, strain → blindness, Eternal Mangekyō, eye transplants, Mangekyō ninjas | ✅ tested; awakening, eyes, Susanoo checked in client |
+| **Might Guy (M4 part 1):** masters as data, spar test, lessons, Eight Gates (Opening, Limit), Front Lotus, Morning Peacock, Daytime Tiger | ✅ tested; checked in client |
+| Weapon trails, hit reactions by damage, hand seals per jutsu (30 canon sequences), 11 new taijutsu moves | ✅ tested; checked in client |
+
+Round 5 (v0.8.0): own animation engine, weapons, allies use what they hold, NPC jutsu, water
+walking (stays free: owner), Sharingan growth (pace confirmed by the owner).
 
 The villages (v0.7.0):
 
@@ -29,19 +34,18 @@ The villages (v0.7.0):
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.8.0.
+Nothing. Waiting on the owner's playtest of v0.9.0.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback** on the new animations (which moves feel weak), weapons, allies,
-   water walking and the Sharingan.
-2. **Animation, part 2:** weapon trails, more moves per style (each style gets 6–8 distinct
-   animations), hit reactions by strength (stagger, knockdown, launch), hand seals per jutsu.
-3. **Villages, part 5 (researched, not built):** terraces on uneven land, the village's own clans
-   in the clan district (Mist/Cloud/Stone clans), town designs per look, roads between settlements.
-4. **Villages and masters:** missions board, masters living in villages, the Kage as a teacher.
-5. **Training, part 2:** chakra control (tree climbing, water walking as training), nature training.
-6. **Might Guy (M4):** the first master; teaches Strong Fist properly and the Eight Gates.
+1. **Owner playtest + feedback:** gear fit, the ally screen, the Mangekyō (see open questions),
+   Might Guy's test and the gates, the new moves and seals.
+2. **Village clans and masters in villages** (villages part 5): the village's own clans in the
+   clan district, Guy at a dojo, the Kage as a teacher, a missions board.
+3. **Training, part 2:** chakra control (tree climbing, water walking as training), nature
+   training for the player.
+4. **More masters** (as JSON): a ninjutsu master, a medical ninja (who could do eye transplants).
+5. **Guy, part 2:** Reverse Lotus, the later gates, animations for the techniques.
 
 ## Code map
 
@@ -125,8 +129,19 @@ Nothing. Waiting on the owner's playtest of v0.8.0.
 - **Weapons (round 5):** see `docs/WEAPONS.md`. A weapon in hand picks its moveset in combat mode.
 - **Sharingan (round 5):** awakened by near death, a comrade's death, a long fight against a much
   stronger foe, or built-up pressure; grows only in real fights. See `docs/POWERS_DESIGN.md` §4b.
-- **Water walking (round 5):** free for everyone with chakra for now (it may become a training
-  step). See `docs/POWERS_DESIGN.md` §12.
+- **Water walking (owner, round 6):** stays free for everyone with chakra. See `docs/POWERS_DESIGN.md` §12.
+- **Sharingan pace (owner, round 6):** the awakening routes and XP pace feel right; keep them.
+- **Footwork (owner, round 6):** the feet stay on the ground and are the base of every attack
+  (leg IK in `HumanoidAnimator.plantFeet`; strikes sink and drive through `motion.strike`).
+- **Hand seals (round 6):** canon sequences per jutsu in `data/noirm/jutsu_seals/`, written with
+  their animations by `tools/animgen/seals.py`; charged and channelled jutsu play them, every cast
+  names them. (Seals still don't gate casting: the owner rejected seal input.)
+- **Mangekyō (round 6):** strain never heals (canon) until the Eternal Mangekyō; abilities are
+  jutsu that need the Mangekyō open. See `docs/POWERS_DESIGN.md` §4c.
+- **Masters (round 6):** a master is a JSON file in `data/noirm/masters/`; Might Guy is the first.
+  Passing his spar grants the Strong Fist even below taijutsu 18. The Eight Gates burn health.
+- **Allies learn natures (round 6):** you must own the nature; about 3 in-game days under the
+  Train/Meditate order near you, faster when fighting together or if you mastered it.
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 - **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
   step so trees are cleared. Residents never start fights with players; attacking one alarms the
@@ -139,9 +154,13 @@ Nothing. Waiting on the owner's playtest of v0.8.0.
 
 - **Animations:** which moves still feel weak? First person: are the arms the right size and place?
   Should the ninja run happen on every sprint, or only above a certain speed stat?
-- **Water walking:** free for everyone, or learned through chakra-control training? Costs feel right?
-- **Sharingan:** do the awakening routes and XP pace feel right (about 4 real fights of pressure;
-  300 / 1200 XP for 2 / 3 tomoe)? A Mangekyō later?
+- **Mangekyō:** should strain ever heal slowly? Are ~15 uses before weakening and ~20 to blindness
+  too harsh? Should a transplant need a medical ninja or a scroll? Should players drop their eyes
+  on death? Is 8% of 3-tomoe Uchiha ninjas having one right?
+- **Might Guy:** is the test (6 clean hits or a guard break in 90 s) fair? Gate health drain? Guy
+  appears in every Leaf village: fine, or only one per world?
+- **Ally teaching:** is ~3 in-game days per nature right?
+- **Gear:** do the new clothes look right on the body (hats, kimono hems, cloaks only reach the waist)?
 - **Weapons:** damage and throw cooldowns; should shields fully block guarded hits (players too)?
 
 - Ally respect: too quick or too slow to change? Should allies ever betray you?

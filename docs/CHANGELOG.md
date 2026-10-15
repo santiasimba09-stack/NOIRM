@@ -2,6 +2,44 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-15 — Playtest round 6: armor fit, footwork, gear, ally screen, Mangekyō, Might Guy, v0.9.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Armor fits the new body:** `BendyArmorModel` bends armor at the elbows, knees and waist with
+  the animation (clothes no longer float off the body).
+- **Footwork** (owner: the weakest spot): standing feet stay planted (two-bone leg IK; the hips
+  drop for wide stances and lunges), and every strike sinks into the legs on the wind-up and drives
+  through at contact.
+- **More gear (39 pieces):** kimonos and hems in four colours, hakama, haori, the jōnin vest, Sand /
+  Snow / Mist / Cloud / Stone vests, animal and oni masks and a cloth mask (they hide your name),
+  Kage hats and robe, straw hat, travelling and rogue cloaks (our own crescent pattern, faster
+  sprint), arm guards and hand wraps (more punch), tabi and straw sandals (softer falls). Guards,
+  ANBU-style patrols, the Kage and rogues are dressed by role.
+- **Special weapons:** four legendary blades dropped by rogues (Crescent Cleaver heals you,
+  Sharkskin Greatsword drains chakra, Thunder Fangs stun, Reedcutter is the fastest), plus the
+  craftable Gale Gunbai (guards and blows projectiles back) and Kusarigama (pulls targets in).
+- **New ally screen:** five tabs (Overview with a turnable model, Gear, Jutsu, Natures, Orders),
+  no more overlapping text. **Teach natures over time** (about 3 in-game days under Train or
+  Meditate near you; faster when fighting together or if you've mastered it). New tactics:
+  distance (close / mid / far) and jutsu use (free / conserve / none).
+- **Mangekyō Sharingan:** awakens from losing a close ally, another player's death, or 95+ Resolve;
+  each one has its own pattern, two abilities from Amaterasu, Tsukuyomi, Kamui, Kotoamatsukami
+  and Izanagi, and a Susanoo in its own colour that grows in three stages. Every use strains the
+  eyes toward blindness; the **Eternal Mangekyō** (transplanting another Mangekyō) ends that.
+  **Eye transplants** with dropped eyes (a non-Uchiha can carry one implanted Sharingan). Some
+  Uchiha ninjas have one. `/noirm mangekyo …` for testing.
+- **Might Guy, the first master** (M4 part 1): masters are JSON (`data/noirm/masters/`). Talk to
+  him, pass his spar (nobody dies), and he teaches the **Eight Gates** (Gate of Opening, Gate of
+  Limit: much stronger, burns health), **Front Lotus**, **Morning Peacock** and **Daytime Tiger**.
+  Passing grants the Strong Fist. He lives at the training ground of Leaf villages;
+  `/noirm master spawn might_guy`.
+- **My suggestions, built:** weapon trails behind swinging blades; hit reactions scale with the
+  damage (a jab snaps the head, a heavy blow buckles the knees); **hand seals per jutsu** (30 canon
+  sequences, named above the hotbar as you cast); **11 new taijutsu moves** (low sweep, push kick,
+  turning backfist, body hook, hammer fist, spinning back kick, Leaf Great Flash, Leaf Gale, pivot
+  palm, trigram sweep, lion palms), which ninjas use too.
+- Tests: 199 game tests (29 new); several timing-sensitive tests made steady.
+- Screenshots: `docs/screenshots/r9-*.jpg`.
+
 ## 2026-10-15 — Playtest round 5: our own animation engine, weapons, allies, water walking, Sharingan growth, v0.8.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Animations rebuilt from scratch** (the most urgent request):
