@@ -37,6 +37,7 @@ public final class ClanOutfits {
         if (clan.id().startsWith(TEST_PREFIX)) {
             return;
         }
+        com.noirm.weapon.NinjaArsenal.arm(ninja, random); // weapons and throwables (hands only)
         for (EquipmentSlot slot : ARMOR) {
             if (!ninja.getItemBySlot(slot).isEmpty()) {
                 return; // already dressed

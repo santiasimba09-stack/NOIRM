@@ -27,5 +27,7 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(NoirmEntities.JUTSU_PROJECTILE.get(), NoopRenderer::new);
         // Seats are invisible: villagers sitting are all you see.
         event.registerEntityRenderer(NoirmEntities.SEAT.get(), NoopRenderer::new);
+        // Kunai, shuriken, senbon, explosive tags in flight or stuck in a wall.
+        event.registerEntityRenderer(com.noirm.weapon.NinjaWeapons.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
     }
 }

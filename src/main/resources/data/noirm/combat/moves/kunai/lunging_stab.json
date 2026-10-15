@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:kunai_stab",
+  "timing": { "windup": 5, "active": 2, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 16, "range": 3.0, "arc": 50, "knockback": 0.6, "lunge": 0.9, "hitstun": 10, "hitstop": 4, "shake": 0.5, "pierce": 0.2 },
+  "next": { "light": "noirm:kunai/backhand" }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:sword_slash",
+  "timing": { "windup": 6, "active": 3, "recovery": 12, "cancel_after": 7 },
+  "hit": { "damage": 7, "posture": 24, "range": 3.1, "arc": 150, "knockback": 0.9, "lunge": 0.35, "hitstun": 14, "hitstop": 5, "shake": 0.7 },
+  "next": { "light": "noirm:sword/slash" }
+}

@@ -338,8 +338,12 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(buy(new ItemStack(Items.CARROT, 20)));
             }
             case SHOP_WEAPONS -> {
-                offers.add(sell(2, named(new ItemStack(Items.IRON_SWORD), "item.noirm.kunai"), 8));
-                offers.add(sell(1, named(new ItemStack(Items.ARROW, 16), "item.noirm.senbon"), 16));
+                offers.add(sell(2, new ItemStack(com.noirm.weapon.NinjaWeapons.KUNAI.get(), 4), 8));
+                offers.add(sell(1, new ItemStack(com.noirm.weapon.NinjaWeapons.SHURIKEN.get(), 8), 16));
+                offers.add(sell(1, new ItemStack(com.noirm.weapon.NinjaWeapons.SENBON.get(), 16), 16));
+                offers.add(sell(3, new ItemStack(com.noirm.weapon.NinjaWeapons.EXPLOSIVE_TAG.get(), 4), 8));
+                offers.add(sell(6, new ItemStack(com.noirm.weapon.NinjaWeapons.NINJATO.get()), 3));
+                offers.add(sell(4, new ItemStack(com.noirm.weapon.NinjaWeapons.BO_STAFF.get()), 3));
                 offers.add(sell(5, new ItemStack(NoirmGear.FOREHEAD_PROTECTOR_NAVY.get()), 4));
                 offers.add(sell(8, new ItemStack(NoirmGear.FLAK_VEST.get()), 4));
                 offers.add(sell(4, new ItemStack(NoirmGear.SHINOBI_PANTS.get()), 4));
@@ -372,7 +376,7 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(buy(new ItemStack(Items.SWEET_BERRIES, 20)));
             }
             default -> {
-                offers.add(sell(2, named(new ItemStack(Items.IRON_SWORD), "item.noirm.kunai"), 8));
+                offers.add(sell(2, new ItemStack(com.noirm.weapon.NinjaWeapons.KUNAI.get(), 4), 8));
                 offers.add(sell(1, new ItemStack(NoirmItems.RAMEN.get(), 2), 16));
                 offers.add(sell(4, new ItemStack(NoirmItems.TRAINING_DUMMY.get()), 8));
                 offers.add(sell(10, new ItemStack(NoirmItems.SEALING_SCROLL.get()), 4));

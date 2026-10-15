@@ -353,6 +353,11 @@ public final class CombatSystem {
 
     /** The fighting style an entity uses: a player's choice, or an NPC's own. */
     public static ResourceLocation styleFor(LivingEntity entity) {
+        // A weapon in hand (kunai, staff, sword) brings its own moveset.
+        ResourceLocation weapon = com.noirm.weapon.WeaponMoves.styleFor(entity.getMainHandItem());
+        if (weapon != null) {
+            return weapon;
+        }
         if (entity instanceof Player player) {
             var data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {

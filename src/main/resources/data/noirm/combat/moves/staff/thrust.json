@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:staff_thrust",
+  "timing": { "windup": 6, "active": 2, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 6, "posture": 22, "range": 4.2, "arc": 40, "knockback": 1.0, "lunge": 0.3, "hitstun": 12, "hitstop": 4, "shake": 0.6 },
+  "next": { "light": "noirm:staff/sweep", "heavy": "noirm:staff/overhead" }
+}

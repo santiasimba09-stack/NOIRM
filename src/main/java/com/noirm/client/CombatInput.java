@@ -20,8 +20,8 @@ import net.minecraftforge.fml.common.Mod;
 
 /**
  * Turns key presses into combat requests. With combat mode off, nothing changes; with it on:
- * left click = light attack, right click (empty hand or sword) = heavy, crouch + right click =
- * launcher, and mining is disabled.
+ * left click = light attack, right click (empty hand, sword, kunai or staff) = heavy, crouch +
+ * right click = launcher, back + right click with a kunai = throw it, and mining is disabled.
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
 public final class CombatInput {
@@ -79,7 +79,8 @@ public final class CombatInput {
             event.setCanceled(true);
             event.setSwingHand(false);
             NoirmNetwork.sendToServer(new CombatInputPackets.Attack(directional(player, AttackInput.LIGHT)));
-        } else if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND && isCombatHand(player.getMainHandItem())) {
+        } else if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND && isCombatHand(player.getMainHandItem())
+                && !throwsInstead(player)) {
             event.setCanceled(true);
             event.setSwingHand(false);
             if (!useWasDown) { // holding right click repeats; only a fresh press attacks
@@ -134,8 +135,17 @@ public final class CombatInput {
         }
     }
 
-    /** Right click becomes a heavy attack only with an empty hand or a sword, so eating and placing blocks still work. */
+    /**
+     * Right click becomes a heavy attack only with an empty hand, a sword or a weapon with a
+     * moveset (kunai, staff, chakra blades), so eating and placing blocks still work.
+     */
     private static boolean isCombatHand(ItemStack stack) {
-        return stack.isEmpty() || stack.getItem() instanceof SwordItem;
+        return stack.isEmpty() || stack.getItem() instanceof SwordItem || com.noirm.weapon.WeaponMoves.isMeleeWeapon(stack);
+    }
+
+    /** Holding back (S) with a kunai: right click throws it instead of a back heavy. */
+    private static boolean throwsInstead(LocalPlayer player) {
+        return com.noirm.weapon.WeaponMoves.throwsOnUse(player.getMainHandItem()) && !player.isShiftKeyDown()
+                && directional(player, AttackInput.HEAVY) == AttackInput.BACK_HEAVY;
     }
 }
