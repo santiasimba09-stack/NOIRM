@@ -183,6 +183,12 @@ public final class AllyGameTests {
         SparringNinja ally = fighter(helper, 1.5f, 2.5f, TestClans.PLAIN);
         rogue.setInvulnerable(false);
         ally.setInvulnerable(false);
+        // Tough enough that neither falls before the rogue has decided whom to fight (a quick
+        // knockout used to leave the test waiting for a turn that could no longer happen).
+        for (SparringNinja fighter : List.of(rogue, ally)) {
+            fighter.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(200);
+            fighter.setHealth(200);
+        }
         ally.joinCrew(player.getUUID());
         // The player's one hit (a few ticks in: vanilla ignores hits stamped at the mob's tick 0),
         // and the rogue goes after the player.
