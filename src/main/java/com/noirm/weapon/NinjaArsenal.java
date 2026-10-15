@@ -14,6 +14,10 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class NinjaArsenal {
     public static final float DROP_CHANCE = 0.06f;
+    /** Share of sword-carrying rogues whose sword is a legendary blade (about 1 rogue in 85). */
+    public static final float LEGENDARY_CHANCE = 0.15f;
+    /** Chance a legendary blade drops when its rogue swordsman falls. */
+    public static final float LEGENDARY_DROP_CHANCE = 0.3f;
 
     private NinjaArsenal() {}
 
@@ -22,14 +26,12 @@ public final class NinjaArsenal {
         if (!ninja.getMainHandItem().isEmpty() || !ninja.getOffhandItem().isEmpty()) {
             return;
         }
-        float roll = r.nextFloat();
-        Item main = roll < 0.22f ? NinjaWeapons.KUNAI.get()
-                : roll < 0.30f ? NinjaWeapons.NINJATO.get()
-                : roll < 0.36f ? NinjaWeapons.BO_STAFF.get()
-                : roll < 0.38f ? NinjaWeapons.CHAKRA_BLADE.get()
-                : null;
+        Item main = mainWeapon(!ninja.isResident(), r);
         if (main != null) {
             give(ninja, EquipmentSlot.MAINHAND, new ItemStack(main));
+            if (main instanceof SpecialWeaponItem && SpecialWeapons.LEGENDARY.stream().anyMatch(l -> l.get() == main)) {
+                ninja.setDropChance(EquipmentSlot.MAINHAND, LEGENDARY_DROP_CHANCE);
+            }
         }
         if (r.nextFloat() < 0.4f) {
             float pick = r.nextFloat();
@@ -39,6 +41,37 @@ public final class NinjaArsenal {
                     : NinjaWeapons.FUMA_SHURIKEN.get();
             give(ninja, EquipmentSlot.OFFHAND, new ItemStack(off, Math.min(off.getMaxStackSize(), 1 + r.nextInt(4))));
         }
+    }
+
+    /**
+     * A ninja's main weapon, or null for fists. Some carry a kusarigama or a war fan; a rogue
+     * (a wandering ninja, not a village resident) who would carry a sword sometimes carries one of
+     * the legendary blades instead ({@link #LEGENDARY_CHANCE}).
+     */
+    public static Item mainWeapon(boolean rogue, RandomSource r) {
+        float roll = r.nextFloat();
+        if (roll < 0.22f) {
+            return NinjaWeapons.KUNAI.get();
+        }
+        if (roll < 0.30f) {
+            if (rogue && r.nextFloat() < LEGENDARY_CHANCE) {
+                return SpecialWeapons.LEGENDARY.get(r.nextInt(SpecialWeapons.LEGENDARY.size())).get();
+            }
+            return NinjaWeapons.NINJATO.get();
+        }
+        if (roll < 0.36f) {
+            return NinjaWeapons.BO_STAFF.get();
+        }
+        if (roll < 0.38f) {
+            return NinjaWeapons.CHAKRA_BLADE.get();
+        }
+        if (roll < 0.395f) {
+            return SpecialWeapons.KUSARIGAMA.get();
+        }
+        if (roll < 0.405f) {
+            return SpecialWeapons.GALE_GUNBAI.get();
+        }
+        return null;
     }
 
     /** Guards and patrols: a kunai in hand and shuriken ready. */

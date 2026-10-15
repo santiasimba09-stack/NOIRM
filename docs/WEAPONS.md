@@ -22,8 +22,11 @@ Ninja in the series carry a pouch of cheap metal tools and one or two real weapo
   vanilla swords use the same sword moveset.
 - **Chakra blades**: Asuma's trench knives that carry his wind chakra. → **in**: they carry the
   wielder's nature.
-- Not yet: wire strings, smoke bombs, kusarigama, the Seven Swordsmen's swords, flying thunder god
-  kunai. Good next candidates (smoke bomb and wire traps fit the explosive tag code).
+- **Kusarigama** (sickle on a chain) and a **war fan (gunbai)**: → **in** as special weapons (below).
+- **The Seven Swordsmen's swords** and other famous blades: → **in** as four legendary blades of
+  our own design and names (below), inspired by the canon tools, never copied.
+- Not yet: wire strings, smoke bombs, flying thunder god kunai. Good next candidates (smoke bomb and
+  wire traps fit the explosive tag code).
 
 ## The weapons
 
@@ -55,6 +58,28 @@ and they apply when it's thrown too. The staff, ninjatō and chakra blades encha
 them (creative throws can't be picked up, like arrows). They vanish after 2 minutes on the ground.
 Explosives and ninjas' throws can't be picked up.
 
+## Special weapons
+
+_Code: `weapon/SpecialWeapons` (items and every number), `SpecialWeaponItem` (stats, moveset,
+reach, the gunbai's guard), `SpecialWeaponEvents` (effects, server side, on every melee hit:
+vanilla swings and combat moves alike)._
+
+| Weapon | Inspired by | Moveset | Damage | Speed | Reach | Special | How to get |
+|---|---|---|---|---|---|---|---|
+| **Crescent Cleaver** | Kubikiribōchō | sword | 10 | 0.9 swings/s | +0.5 | **heals you 20% of the damage dealt** (max 3 a hit) and **mends 2 durability a hit** | legendary drop |
+| **Sharkskin Greatsword** | Samehada | sword | 9 | 1.0 | +0.5 | **eats 8 chakra** from a player target and gives it to you; a ninja target loses 10 posture instead (a ninja wielder heals 1) | legendary drop |
+| **Thunder Fangs** | Kiba | kunai | 7 | 1.8 | — | **lightning stuns 6 ticks** a hit (players pay 2 chakra; without it, a plain hit) | legendary drop |
+| **Reedcutter** | Kusanagi | sword | 6 | 2.6 | +0.5 | the fastest blade there is | legendary drop |
+| **Gale Gunbai** (war fan) | Madara's gunbai | staff | 5 | 1.2 | +0.5 | **hits blow the target back** (push 1.1, lift 0.25); **guards like a shield** (hold right click, or the combat guard) and **turns projectiles from the front back at the shooter** (arrows, thrown weapons, fireballs; not jutsu) | paper fan on an iron frame + stick |
+| **Kusarigama** | — | staff | 5 | 1.4 | **+2** | **drags a target more than 2.5 blocks away towards you** (no knockback away) | 2 iron + stick + 2 chains |
+
+Legendary blades are diamond-tough (1561 uses, repaired with diamonds), very enchantable (22),
+fireproof and epic rarity. They have no recipe: **rogue swordsmen carry them**. A wandering
+(non-village) ninja who would carry a ninjatō carries a random legendary blade instead 15% of the
+time (about 1 rogue in 85), always dresses as a rogue (cloak), and drops it 30% of the time when
+defeated. Any ninja may also carry a kusarigama (1.5%) or a gunbai (1%). Icons:
+`tools/weapongen/gen_weapons.py`.
+
 ## In combat mode
 
 Holding a weapon in the main hand swaps your fighting style for the weapon's moveset (your own
@@ -62,9 +87,9 @@ style comes back when you put it away). The weapon's stance replaces the style's
 
 | Moveset | Weapons | Light route | Heavy | Launcher | Dash | Back |
 |---|---|---|---|---|---|---|
-| **Kunai** | kunai, chakra blades | slash → backhand → slash → finishing stab | stab | rising cut | lunging stab | light: backhand; **heavy (S + right click): throw the kunai** |
-| **Staff** | bō staff | sweep → return sweep → spinning sweep (360°) | thrust (4.2 reach) → overhead smash (knockdown) | rising sweep | lunging thrust | heavy: spinning sweep |
-| **Sword** | ninjatō, every vanilla sword | slash → cross → finishing slash | thrust (gets 25% through guard) | rising cut | dash thrust | heavy: finishing slash |
+| **Kunai** | kunai, chakra blades, Thunder Fangs | slash → backhand → slash → finishing stab | stab | rising cut | lunging stab | light: backhand; **heavy (S + right click): throw the kunai** |
+| **Staff** | bō staff, Gale Gunbai, kusarigama | sweep → return sweep → spinning sweep (360°) | thrust (4.2 reach) → overhead smash (knockdown) | rising sweep | lunging thrust | heavy: spinning sweep |
+| **Sword** | ninjatō, every vanilla sword, Crescent Cleaver, Sharkskin Greatsword, Reedcutter | slash → cross → finishing slash | thrust (gets 25% through guard) | rising cut | dash thrust | heavy: finishing slash |
 
 Shuriken, senbon and the fūma always throw on right click, in combat mode too.
 

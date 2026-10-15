@@ -36,6 +36,11 @@ public final class GreatGameTests {
         SparringNinja target = ninja(helper, 1.5f, 2.5f, TestClans.PLAIN);
         target.setInvulnerable(false);
         face(caster, target);
+        // Aim right at the target's middle: Kirin picks whatever is closest to the line of sight,
+        // and a level gaze would favour any ninja lined up further off (other tests nearby).
+        net.minecraft.world.phys.Vec3 to = target.position().add(0, target.getBbHeight() * 0.5, 0).subtract(caster.getEyePosition());
+        caster.setXRot((float) -Math.toDegrees(Math.atan2(to.y, to.horizontalDistance())));
+        caster.xRotO = caster.getXRot();
         run(caster, "raiton/kirin", 1f);
         helper.assertTrue(target.getHealth() == target.getMaxHealth(), "nothing yet: the storm gathers first");
         helper.runAfterDelay(35, () -> {

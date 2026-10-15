@@ -232,6 +232,123 @@ def explosive_tag():
     return img
 
 
+# ---------------------------------------------------------------------------
+# Special weapons (original designs; names and looks are our own)
+# ---------------------------------------------------------------------------
+
+SCALE = ((0x9C, 0xB4, 0xC8), (0x5E, 0x78, 0x94), (0x34, 0x46, 0x5C))
+BOLT = ((0xFF, 0xF4, 0x9C), (0xF0, 0xCC, 0x3C), (0xB0, 0x88, 0x18))
+LACQUER = ((0xD8, 0x4A, 0x3A), (0xA8, 0x26, 0x1E), (0x6A, 0x14, 0x10))
+BLACK = ((0x50, 0x50, 0x5A), (0x2C, 0x2C, 0x34), (0x18, 0x18, 0x1E))
+
+
+def crescent_cleaver():
+    img = blank()
+    along(img, (1.4, 14.6), (14.2, 1.8), [
+        (0.00, 0.06, 0.9, 0.9, GUARD),
+        (0.06, 0.30, 0.8, 0.8, WRAP),
+        (0.30, 0.36, 1.6, 1.6, DARK_STEEL),
+        (0.36, 1.00, 3.0, 3.0, STEEL),          # a wide, square-ended slab
+    ], stripes=wrap_stripes)
+    px = img.load()
+    for x, y in ((10, 4), (11, 4), (10, 5), (11, 5)):  # the round hole near the end
+        px[x, y] = (0, 0, 0, 0)
+    for x, y in ((7, 5), (8, 4), (6, 6)):  # the crescent bite out of the back edge
+        px[x, y] = (0, 0, 0, 0)
+    outline(img)
+    return img
+
+
+def sharkskin_greatsword():
+    img = blank()
+
+    def scales(t, s, material):
+        if material is SCALE:
+            if int(t * 22) % 2 == 0 and abs(s) > 1.2:
+                return SCALE[0]  # spines sticking out
+            if (int(t * 22) + int(s + 3)) % 3 == 0:
+                return SCALE[2]
+        return wrap_stripes(t, s, material)
+    along(img, (1.2, 14.8), (14.4, 1.6), [
+        (0.00, 0.06, 1.0, 1.0, BLACK),
+        (0.06, 0.30, 0.8, 0.8, WRAP),
+        (0.30, 0.35, 1.8, 1.8, BLACK),
+        (0.35, 0.92, 2.4, 2.9, SCALE),
+        (0.92, 1.00, 2.9, 1.2, SCALE),          # a blunt, rounded head
+    ], stripes=scales)
+    outline(img)
+    return img
+
+
+def thunder_fangs():
+    img = blank()
+    for offset in (-2.0, 2.0):
+        start = (DIAG[0][0] + offset * 0.7, DIAG[0][1] + offset * 0.7)
+        end = (DIAG[1][0] + offset * 0.7, DIAG[1][1] + offset * 0.7)
+        along(img, start, end, [
+            (0.08, 0.36, 0.6, 0.6, BLACK),
+            (0.36, 0.42, 1.3, 1.3, BRASS),
+            (0.42, 0.95, 0.9, 0.9, BOLT),
+            (0.95, 1.00, 0.9, 0.0, BOLT),
+        ])
+    px = img.load()
+    for x, y in ((8, 4), (9, 5), (11, 7)):  # sparks
+        px[x, y] = BOLT[0] + (255,)
+    outline(img)
+    return img
+
+
+def reedcutter():
+    img = blank()
+    along(img, (1.0, 15.0), (15.2, 0.8), [
+        (0.00, 0.05, 0.8, 0.8, GUARD),
+        (0.05, 0.27, 0.6, 0.6, WRAP),
+        (0.27, 0.30, 1.0, 1.0, BRASS),
+        (0.30, 0.94, 0.6, 0.6, STEEL),          # a long, slim blade
+        (0.94, 1.00, 0.6, 0.0, STEEL),
+    ], stripes=wrap_stripes)
+    outline(img)
+    return img
+
+
+def gale_gunbai():
+    img = blank()
+    along(img, (1.4, 14.6), (8.0, 8.0), [(0.0, 1.0, 0.8, 0.8, WOOD)])
+    px = img.load()
+    cx, cy = 10.0, 6.0
+    for y in range(SIZE):
+        for x in range(SIZE):
+            d = math.hypot(x + 0.5 - cx, (y + 0.5 - cy) * 1.1)
+            if d <= 5.2:
+                side = -(x + 0.5 - cx) - (y + 0.5 - cy)
+                c = LACQUER[0] if side > 2 else LACQUER[2] if side < -2 else LACQUER[1]
+                if 2.6 <= d <= 3.4:
+                    c = PAPER[0]  # our ring
+                elif d < 1.2:
+                    c = BLACK[1]
+                px[x, y] = c + (255,)
+    outline(img)
+    return img
+
+
+def kusarigama():
+    img = blank()
+    along(img, (3.0, 13.0), (8.5, 4.0), [
+        (0.0, 0.1, 0.9, 0.9, STEEL),
+        (0.1, 1.0, 0.7, 0.7, WOOD),
+    ])
+    px = img.load()
+    for x, y, c in ((8, 3, STEEL[1]), (9, 2, STEEL[0]), (10, 2, STEEL[0]), (11, 2, STEEL[1]), (12, 3, STEEL[1]),
+                    (13, 4, STEEL[2]), (13, 5, STEEL[2]), (10, 3, STEEL[2]), (11, 3, STEEL[2])):
+        px[x, y] = c + (255,)  # the curved sickle blade
+    for i, (x, y) in enumerate(((3, 14), (5, 14), (7, 13), (9, 13), (11, 12), (12, 10))):  # the chain
+        px[x, y] = (DARK_STEEL[0] if i % 2 else DARK_STEEL[1]) + (255,)
+    for x, y in ((13, 8), (14, 8), (13, 9), (14, 9)):  # the weight
+        px[x, y] = DARK_STEEL[2] + (255,)
+    outline(img)
+    return img
+
+
 ICONS = {
     "kunai": lambda: kunai(),
     "explosive_kunai": lambda: kunai(tag=True),
@@ -242,6 +359,12 @@ ICONS = {
     "bo_staff": bo_staff,
     "ninjato": ninjato,
     "chakra_blade": chakra_blade,
+    "crescent_cleaver": crescent_cleaver,
+    "sharkskin_greatsword": sharkskin_greatsword,
+    "thunder_fangs": thunder_fangs,
+    "reedcutter": reedcutter,
+    "gale_gunbai": gale_gunbai,
+    "kusarigama": kusarigama,
 }
 
 

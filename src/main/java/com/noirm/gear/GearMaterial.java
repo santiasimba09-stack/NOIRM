@@ -34,7 +34,22 @@ public enum GearMaterial implements ArmorMaterial {
             () -> Ingredient.of(Items.IRON_INGOT)),
     /** Senju battle armour: red lacquered plates. Heavy, a bit better than iron. */
     SENJU("senju", 18, new int[]{2, 6, 7, 2}, 10, SoundEvents.ARMOR_EQUIP_IRON, 1f, 0.05f,
-            () -> Ingredient.of(Items.IRON_INGOT));
+            () -> Ingredient.of(Items.IRON_INGOT)),
+    /** Porcelain and lacquer masks (animal masks, the oni mask). */
+    PORCELAIN("porcelain", 10, new int[]{1, 2, 3, 2}, 14, SoundEvents.ARMOR_EQUIP_IRON, 0f, 0f,
+            () -> Ingredient.of(Items.BONE)),
+    /** Bandages and hand wraps: barely armour at all. */
+    WRAPS("wraps", 6, new int[]{1, 1, 1, 1}, 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0f, 0f,
+            () -> Ingredient.of(Items.STRING)),
+    /** The jonin vest: a heavier flak vest. */
+    JONIN("jonin", 16, new int[]{1, 3, 6, 1}, 12, SoundEvents.ARMOR_EQUIP_LEATHER, 1f, 0f,
+            () -> Ingredient.of(Items.LEATHER)),
+    /** Steel splints over leather: arm guards and shin guards. */
+    STEEL_GUARD("steel_guard", 14, new int[]{2, 3, 3, 2}, 10, SoundEvents.ARMOR_EQUIP_IRON, 0.5f, 0f,
+            () -> Ingredient.of(Items.IRON_INGOT)),
+    /** The Kage's robe and hat: fine cloth woven with chakra thread, very enchantable. */
+    ROBE("robe", 20, new int[]{1, 3, 4, 2}, 25, SoundEvents.ARMOR_EQUIP_LEATHER, 0.5f, 0f,
+            () -> Ingredient.of(Items.WHITE_WOOL));
 
     /** Vanilla's per-piece durability base, {boots, leggings, chest, helmet}. */
     private static final int[] DURABILITY = {13, 15, 16, 11};
