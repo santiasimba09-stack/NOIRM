@@ -104,6 +104,8 @@ class NinjaFightGoal extends Goal {
             List.of(AttackInput.HEAVY),
             List.of(AttackInput.LAUNCHER, AttackInput.LIGHT),
             List.of(AttackInput.LIGHT, AttackInput.BACK_HEAVY),
+            List.of(AttackInput.BACK_LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
+            List.of(AttackInput.FORWARD_LIGHT, AttackInput.LIGHT),
             List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LAUNCHER, AttackInput.LIGHT, AttackInput.LIGHT));
     /** Against a raised guard: grab (grabs beat guard), knee twice, then headbutt or throw. */
     private static final List<List<AttackInput>> GRAPPLES = List.of(

@@ -4,7 +4,9 @@
     "heavy": "noirm:gentle_fist/double_palm",
     "launcher": "noirm:gentle_fist/rising_palm",
     "forward_light": "noirm:gentle_fist/lunging_palm",
-    "forward_heavy": "noirm:gentle_fist/lunging_palm"
+    "forward_heavy": "noirm:gentle_fist/lion_palms",
+    "back_light": "noirm:gentle_fist/back_palm",
+    "back_heavy": "noirm:gentle_fist/trigram_sweep"
   },
   "byakugan": true,
   "npc_weight": 0

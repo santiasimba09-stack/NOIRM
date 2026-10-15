@@ -498,5 +498,18 @@
   "screen.noirm.eyes.routes": "It awakens near death, watching a comrade fall, in a long fight against a far stronger foe, or when the pressure of many fights breaks through.",
   "command.noirm.sharingan.xp": "Sharingan XP: %s (%s tomoe)",
   "command.noirm.sharingan.pressure": "Sharingan pressure: %s / 100",
-  "command.noirm.sharingan.not_dormant": "Only an Uchiha whose Sharingan hasn't awakened has pressure."
+  "command.noirm.sharingan.not_dormant": "Only an Uchiha whose Sharingan hasn't awakened has pressure.",
+  "seal.noirm.rat": "Rat",
+  "seal.noirm.ox": "Ox",
+  "seal.noirm.tiger": "Tiger",
+  "seal.noirm.hare": "Hare",
+  "seal.noirm.dragon": "Dragon",
+  "seal.noirm.snake": "Snake",
+  "seal.noirm.horse": "Horse",
+  "seal.noirm.ram": "Ram",
+  "seal.noirm.monkey": "Monkey",
+  "seal.noirm.bird": "Bird",
+  "seal.noirm.dog": "Dog",
+  "seal.noirm.boar": "Boar",
+  "seal.noirm.clone": "Clone seal"
 }

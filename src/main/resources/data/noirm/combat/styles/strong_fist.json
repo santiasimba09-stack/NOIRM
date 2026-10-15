@@ -5,7 +5,8 @@
     "launcher": "noirm:strong_fist/leaf_rising_wind",
     "forward_light": "noirm:strong_fist/straight",
     "forward_heavy": "noirm:strong_fist/dynamic_entry",
-    "back_heavy": "noirm:strong_fist/leaf_whirlwind"
+    "back_heavy": "noirm:strong_fist/leaf_gale",
+    "back_light": "noirm:strong_fist/back_kick"
   },
   "taijutsu": 18,
   "npc_weight": 2

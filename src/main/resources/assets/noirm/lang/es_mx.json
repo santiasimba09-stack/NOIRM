@@ -498,5 +498,18 @@
   "screen.noirm.eyes.routes": "Despierta al borde de la muerte, al ver caer a un compañero, en una pelea larga contra un rival mucho más fuerte, o cuando la presión de muchas peleas se desborda.",
   "command.noirm.sharingan.xp": "XP del Sharingan: %s (%s tomoe)",
   "command.noirm.sharingan.pressure": "Presión del Sharingan: %s / 100",
-  "command.noirm.sharingan.not_dormant": "Solo un Uchiha cuyo Sharingan no ha despertado tiene presión."
+  "command.noirm.sharingan.not_dormant": "Solo un Uchiha cuyo Sharingan no ha despertado tiene presión.",
+  "seal.noirm.rat": "Rata",
+  "seal.noirm.ox": "Buey",
+  "seal.noirm.tiger": "Tigre",
+  "seal.noirm.hare": "Liebre",
+  "seal.noirm.dragon": "Dragón",
+  "seal.noirm.snake": "Serpiente",
+  "seal.noirm.horse": "Caballo",
+  "seal.noirm.ram": "Carnero",
+  "seal.noirm.monkey": "Mono",
+  "seal.noirm.bird": "Pájaro",
+  "seal.noirm.dog": "Perro",
+  "seal.noirm.boar": "Jabalí",
+  "seal.noirm.clone": "Sello del clon"
 }
