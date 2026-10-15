@@ -32,6 +32,7 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
         addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
                 new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), context.getModelManager()));
         addLayer(new SharinganEyesLayer<>(this));
+        addLayer(new WeaponTrails.Layer<>(this)); // blade arcs through the air
     }
 
     /** The animation's {@code body} bone moves the whole character (lunges, spins, bob, lean). */

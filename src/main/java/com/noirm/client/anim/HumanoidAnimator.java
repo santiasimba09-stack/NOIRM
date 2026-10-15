@@ -207,6 +207,9 @@ public final class HumanoidAnimator {
         float landStrength;
         float fallSpeed;
         int lastHurtTime;
+        /** How hard the last hit was (0.5 a tap … 1.6 a crushing blow), from the health it took. */
+        float flinchStrength = 1f;
+        float lastHealth = Float.NaN;
         float flinchStart = Float.NEGATIVE_INFINITY;
         float flinchFront;
         float flinchSide;
@@ -470,8 +473,22 @@ public final class HumanoidAnimator {
             state.flinchFront = Mth.cos(rel);
             state.flinchSide = Mth.sin(rel);
             state.freezeUntil = Math.max(state.freezeUntil, time + 2f);
+            state.flinchStrength = 0.5f;
         }
         state.lastHurtTime = entity.hurtTime;
+        // Hit reactions by strength: the health a hit took (synced a moment before or after the hurt
+        // flash) sizes the reaction: a jab snaps the head, a heavy blow buckles the knees and
+        // shoves the body back a step, with a longer hit-stop.
+        float health = entity.getHealth();
+        if (!Float.isNaN(state.lastHealth) && health < state.lastHealth && time - state.flinchStart < 3f) {
+            float lost = (state.lastHealth - health) / Math.max(1f, Math.min(entity.getMaxHealth(), 40f)) * 20f;
+            float strength = Mth.clamp(0.5f + lost / 8f, 0.5f, 1.6f);
+            if (strength > state.flinchStrength) {
+                state.flinchStrength = strength;
+                state.freezeUntil = Math.max(state.freezeUntil, state.flinchStart + 1f + strength * 1.5f);
+            }
+        }
+        state.lastHealth = health;
 
         // Lean into turns.
         float yaw = entity.yBodyRot;
@@ -500,7 +517,8 @@ public final class HumanoidAnimator {
         float bob = state.procedural && onGround ? gaitBob(limbSwing, limbAmount, state.runWeight) : 0f;
         add(body, Bone.BODY, SkeletonPose.PY, bob - landingDip(state, time) - stanceDip(state, limbAmount));
         float flinch = flinchEnvelope(state, time);
-        add(body, Bone.BODY, SkeletonPose.PZ, 0.07f * state.flinchFront * flinch);
+        add(body, Bone.BODY, SkeletonPose.PZ, 0.07f * state.flinchFront * flinch * state.flinchStrength * state.flinchStrength);
+        add(body, Bone.BODY, SkeletonPose.PY, -0.06f * Math.max(0f, state.flinchStrength - 0.9f) * flinch);
         add(body, Bone.BODY, SkeletonPose.RZ, state.lean);
         state.pelvis += (state.pelvisTarget - state.pelvis) * Math.min(1f, dt * 0.5f);
         add(body, Bone.BODY, SkeletonPose.PY, -state.pelvis / 16f);
@@ -581,7 +599,7 @@ public final class HumanoidAnimator {
         composeLayers(state, pose);
         float flinch = flinchEnvelope(state, time);
         if (flinch > 0f) {
-            flinch(pose, flinch, state.flinchFront, state.flinchSide);
+            flinch(pose, flinch, state.flinchFront, state.flinchSide, state.flinchStrength);
         }
         // The head keeps looking ahead while the torso twists.
         add(pose, Bone.HEAD, SkeletonPose.RY, -HEAD_STABILISE * pose.get(Bone.TORSO, SkeletonPose.RY));
@@ -722,28 +740,35 @@ public final class HumanoidAnimator {
 
     private static float flinchEnvelope(State state, float time) {
         float t = time - state.flinchStart;
-        if (t < 0f || t > FLINCH_TICKS) {
+        float length = FLINCH_TICKS * (0.6f + 0.45f * state.flinchStrength);
+        if (t < 0f || t > length) {
             return 0f;
         }
-        return t < 1f ? t : Math.max(0f, 1f - (t - 1f) / (FLINCH_TICKS - 1f));
+        return t < 1f ? t : Math.max(0f, 1f - (t - 1f) / (length - 1f));
     }
 
-    /** Thrown back from a hit: chest and head snap away from it, arms fly loose, knees give. */
-    static void flinch(SkeletonPose p, float e, float front, float side) {
+    /**
+     * Thrown back from a hit: chest and head snap away from it, arms fly loose, knees give.
+     * {@code strength} (0.5–1.6) scales it: light hits mostly move the head, heavy ones the whole body.
+     */
+    static void flinch(SkeletonPose p, float e, float front, float side, float strength) {
+        float head = e * (0.7f + 0.3f * strength);
+        float knees = Math.max(0f, strength - 0.6f) * 0.9f * e;
+        e *= strength;
         add(p, Bone.TORSO, SkeletonPose.RX, -0.45f * front * e);
         add(p, Bone.TORSO, SkeletonPose.RZ, -0.3f * side * e);
         add(p, Bone.TORSO, SkeletonPose.RY, 0.35f * side * e);
         add(p, Bone.TORSO, SkeletonPose.BEND, 0.15f * e);
-        add(p, Bone.HEAD, SkeletonPose.RX, -0.5f * front * e);
-        add(p, Bone.HEAD, SkeletonPose.RZ, -0.3f * side * e);
+        add(p, Bone.HEAD, SkeletonPose.RX, -0.5f * front * head);
+        add(p, Bone.HEAD, SkeletonPose.RZ, -0.3f * side * head);
         add(p, Bone.RIGHT_ARM, SkeletonPose.RX, 0.35f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.RX, 0.35f * e);
         add(p, Bone.RIGHT_ARM, SkeletonPose.RZ, 0.3f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.RZ, -0.3f * e);
         add(p, Bone.RIGHT_ARM, SkeletonPose.BEND, 0.4f * e);
         add(p, Bone.LEFT_ARM, SkeletonPose.BEND, 0.4f * e);
-        add(p, Bone.RIGHT_LEG, SkeletonPose.BEND, 0.3f * e);
-        add(p, Bone.LEFT_LEG, SkeletonPose.BEND, 0.3f * e);
+        add(p, Bone.RIGHT_LEG, SkeletonPose.BEND, 0.15f * e + knees);
+        add(p, Bone.LEFT_LEG, SkeletonPose.BEND, 0.15f * e + knees);
     }
 
     // ------------------------------------------------------------ footwork: feet stay on the ground

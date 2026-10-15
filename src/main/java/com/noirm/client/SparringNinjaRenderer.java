@@ -27,6 +27,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
     public SparringNinjaRenderer(EntityRendererProvider.Context context) {
         super(context, new BendyModel<>(), 0.5f);
         addLayer(new SharinganEyesLayer<>(this));
+        addLayer(new WeaponTrails.Layer<>(this)); // blade arcs through the air
         // What their leader dresses them in.
         addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
                 new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), // bends with the body
