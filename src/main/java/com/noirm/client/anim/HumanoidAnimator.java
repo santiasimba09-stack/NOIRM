@@ -133,6 +133,12 @@ public final class HumanoidAnimator {
         return state == null ? 0f : Math.max(state.currentWeight, state.previousWeight);
     }
 
+    /** True while a move the server started on this player is still playing (by game time). */
+    public static boolean hasRecentAction(Player player) {
+        PlayerAction action = PLAYER_ACTIONS.get(player.getId());
+        return action != null && player.level().getGameTime() - action.startedAt <= action.ticks + 3;
+    }
+
     /** How strongly the stance is held (0 = not fighting). */
     public static float stanceWeight(LivingEntity entity) {
         State state = STATES.get(entity);

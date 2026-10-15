@@ -310,20 +310,21 @@ lw.key(sum(t), STRONG(body=dict(rot=(0, -360, 0))), "easeInOutSine")
 add(lw)
 
 # ------------------------------------------------------------------ dodge rolls
-TUCK = P(torso=(40, 0, 0, 40), head=(40, 0, 0), right_arm=(-60, 0, 20, 120), left_arm=(-60, 0, -20, 120),
-         right_leg=(-110, 0, 0, 140), left_leg=(-110, 0, 0, 140))
+# A tight ball rolling about a point ~0.4 blocks up (the body pivot is 0.7 up, hence the small drop).
+TUCK = P(torso=(55, 0, 0, 60), head=(45, 0, 0), right_arm=(-70, 0, 20, 130), left_arm=(-70, 0, -20, 130),
+         right_leg=(-125, 0, 0, 150), left_leg=(-125, 0, 0, 150))
 roll = Anim("forward_roll", 12)
 roll.key(0, P(torso=(20, 0, 0, 10), right_leg=(-30, 0, 0, 60), left_leg=(-30, 0, 0, 60), body=dict(pos=(0, -2, 0))))
-roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -9, -3))), "easeInQuad")
-roll.key(7, TUCK(body=dict(rot=(260, 0, 0), pos=(0, -9, -8))), "linear")
+roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -4.5, -3))), "easeInQuad")
+roll.key(7, TUCK(body=dict(rot=(260, 0, 0), pos=(0, -4.5, -8))), "linear")
 roll.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(345, 0, 0), pos=(0, -3, -10))), "easeOutQuad")
 roll.key(12, P(body=dict(rot=(360, 0, 0), pos=(0, 0, -10))), "easeInOutSine")
 add(roll)
 back = Anim("backward_roll", 12)
 back.key(0, P(torso=(10, 0, 0, 10), right_leg=(-40, 0, 0, 80), left_leg=(-40, 0, 0, 80), body=dict(pos=(0, -3, 0))))
-back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -9, 3))), "easeInQuad")
-back.key(7, TUCK(body=dict(rot=(-260, 0, 0), pos=(0, -9, 8))), "linear")
+back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -4.5, 3))), "easeInQuad")
+back.key(7, TUCK(body=dict(rot=(-260, 0, 0), pos=(0, -4.5, 8))), "linear")
 back.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(-345, 0, 0), pos=(0, -3, 10))), "easeOutQuad")
 back.key(12, P(body=dict(rot=(-360, 0, 0), pos=(0, 0, 10))), "easeInOutSine")

@@ -28,8 +28,9 @@ import net.minecraftforge.fml.common.Mod;
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
 public final class FirstPersonArms {
-    /** Below this, vanilla hands are drawn. */
-    private static final float SHOW = 0.15f;
+    /** How far the arms are lifted and pushed forward in first person (blocks). */
+    private static final float FP_LIFT = 0.2f;
+    private static final float FP_FORWARD = 0.12f;
 
     private FirstPersonArms() {}
 
@@ -45,12 +46,9 @@ public final class FirstPersonArms {
         if (!main.isEmpty() && WeaponStances.kind(main) == null) {
             return; // tools, blocks, food: vanilla hands
         }
-        float fight = Math.max(HumanoidAnimator.actionWeight(player),
-                ClientCombat.isCombatMode() ? HumanoidAnimator.stanceWeight(player) : 0f);
-        if (ClientCombat.isGuarding()) {
-            fight = 1f;
-        }
-        if (fight < SHOW) {
+        // (In first person the body is never drawn, so decide from the inputs, not the animator's weights.)
+        boolean fight = ClientCombat.isCombatMode() || ClientCombat.isGuarding() || HumanoidAnimator.hasRecentAction(player);
+        if (!fight) {
             return;
         }
         event.setCanceled(true);
@@ -85,6 +83,8 @@ public final class FirstPersonArms {
                              PoseStack poseStack, MultiBufferSource buffers, int light) {
         float pitch = Mth.lerp(partial, player.xRotO, player.getXRot());
         poseStack.pushPose();
+        // Lift the arms a little into view: from the real eye, fists at the chin sit just below the screen.
+        poseStack.translate(0, FP_LIFT, -FP_FORWARD);
         // Camera space → the player's model space (the camera looks where the body faces).
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
         poseStack.translate(0, -player.getEyeHeight(), 0);

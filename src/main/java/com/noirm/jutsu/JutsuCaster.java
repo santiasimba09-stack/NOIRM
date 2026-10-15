@@ -127,6 +127,7 @@ public final class JutsuCaster {
         } else {
             Casting casting = new Casting(id, def, slot, player.getAbilities().instabuild ? 0f : cost);
             CASTING.put(player, casting);
+            castAnimation(player, "cast_seals", def.cast() == CastType.CHARGE ? Math.max(8, def.minCharge()) : 14);
             if (def.cast() == CastType.CHANNEL) {
                 runBehavior(player, id, def, 1f, true, 0);
             }
@@ -252,7 +253,19 @@ public final class JutsuCaster {
 
     // ------------------------------------------------------------ shared
 
+    /** The caster's hands: seals while charging or channelling, a push on release (players and ninjas alike). */
+    static void castAnimation(LivingEntity caster, String name, int ticks) {
+        ResourceLocation animation = com.noirm.Noirm.id(name);
+        if (caster instanceof Player) {
+            com.noirm.network.NoirmNetwork.sendToTrackingAndSelf(caster,
+                    new com.noirm.network.CombatClientPackets.PlayAnimation(caster.getId(), animation, ticks));
+        } else if (caster instanceof com.noirm.combat.CombatAnimated animated) {
+            animated.playCombatAnimation(animation, ticks);
+        }
+    }
+
     private static void execute(LivingEntity caster, ResourceLocation id, JutsuDefinition def, float charge) {
+        castAnimation(caster, "cast_release", 10);
         runBehavior(caster, id, def, charge, true, 0);
         afterCast(caster, id, def);
     }
