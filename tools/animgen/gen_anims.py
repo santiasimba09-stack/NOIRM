@@ -535,10 +535,10 @@ add(strike("throw_fuma", NEUTRAL,
            t, antic_at=0.6))
 
 # ------------------------------------------------------------------ jutsu: hand seals and release
-SEAL_L = (-72, 35, 0, 112)
-SEAL_R = (-72, -35, 0, 112)
+SEAL_L = (-32, 35, 0, 70)  # hands together at chest height
+SEAL_R = (-32, -35, 0, 70)
 seals = Anim("cast_seals", 14)
-base = P(torso=(6, 0, 0, 6), right_arm=SEAL_R, left_arm=SEAL_L, head=(10, 0, 0), left_leg=(-8, 0, -4, 14), right_leg=(8, 0, 6, 12))
+base = P(torso=(-2, 0, 0, 0), right_arm=SEAL_R, left_arm=SEAL_L, head=(-4, 0, 0), left_leg=(-8, 0, -4, 14), right_leg=(8, 0, 6, 12))
 seals.key(0, NEUTRAL)
 seals.key(3, base, "easeOutQuad")
 for i, tick in enumerate([5, 7, 9, 11]):

@@ -15,6 +15,8 @@ from motion import Anim, P  # noqa: E402
 
 DATA = "src/main/resources/data/noirm/jutsu_seals"
 TICKS_PER_SEAL = 3
+CHEST_DROP = 40  # degrees
+CHEST_UNBEND = 42  # degrees less elbow flex
 
 # Each seal: (arm pitch, inward swing, elbow bend) for the right arm, the left arm, and a small
 # torso turn. Arms pitch negative = raised forward; the hands meet in front of the chest.
@@ -75,7 +77,10 @@ NEUTRAL = P(torso=(6, 0, 0, 4), right_arm=(-30, 0, 5, 30), left_arm=(-30, 0, -5,
 
 def seal_pose(seal):
     right, left, turn = SEAL_SHAPES[seal]
-    return P(torso=(6, turn, 0, 6), head=(10, 0, 0), right_arm=right, left_arm=left, **LEGS)
+    # The shapes are written for raised hands; drop them to chest height so the face stays visible.
+    right = (right[0] + CHEST_DROP, right[1], right[2], right[3] - CHEST_UNBEND)
+    left = (left[0] + CHEST_DROP, left[1], left[2], left[3] - CHEST_UNBEND)
+    return P(torso=(-2, turn, 0, 0), head=(-4, 0, 0), right_arm=right, left_arm=left, **LEGS)
 
 
 def sequence_anim(name, seals):
