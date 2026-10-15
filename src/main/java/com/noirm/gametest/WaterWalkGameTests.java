@@ -46,6 +46,7 @@ public final class WaterWalkGameTests {
             helper.assertTrue(ninja.getHealth() >= ninja.getMaxHealth() - 0.01f,
                     "landing on water doesn't hurt (" + ninja.getHealth() + "/" + ninja.getMaxHealth() + ")");
             ninja.discard();
+            drain(helper); // later tests reuse this spot: leave no water behind
             helper.succeed();
         });
     }
@@ -61,6 +62,7 @@ public final class WaterWalkGameTests {
             helper.assertTrue(y < 2.7, "a beaten ninja sinks, but is at y=" + y);
             helper.assertTrue(ninja.isInWater(), "in the water");
             ninja.discard();
+            drain(helper); // later tests reuse this spot: leave no water behind
             helper.succeed();
         });
     }
@@ -114,6 +116,7 @@ public final class WaterWalkGameTests {
         helper.assertTrue(lava.getCollisionShape(helper.getLevel(), helper.absolutePos(corner), CollisionContext.of(player)).isEmpty()
                 || WaterWalking.LAVA_WALKING, "no lava walking unless it's switched on");
         helper.setBlock(corner, Blocks.GLASS);
+        drain(helper); // later tests reuse this spot: leave no water behind
         helper.succeed();
     }
 
@@ -126,6 +129,7 @@ public final class WaterWalkGameTests {
         helper.assertFalse(water.getCollisionShape(helper.getLevel(), helper.absolutePos(SURFACE), CollisionContext.of(ninja)).isEmpty(),
                 "the surface holds a ninja");
         ninja.discard();
+        drain(helper); // later tests reuse this spot: leave no water behind
         helper.succeed();
     }
 
@@ -147,6 +151,7 @@ public final class WaterWalkGameTests {
         data.setChakra(0.03f);
         WaterWalking.tick(player);
         helper.assertTrue(data.getChakra() == 0f && !WaterWalking.playerCanWalk(player, false), "run dry and you sink");
+        drain(helper); // later tests reuse this spot: leave no water behind
         helper.succeed();
     }
 
@@ -161,6 +166,13 @@ public final class WaterWalkGameTests {
                     helper.setBlock(new BlockPos(x, y, z), x == 1 && z == 1 ? Blocks.WATER : Blocks.GLASS);
                 }
             }
+        }
+    }
+
+    /** Empties the well (the test framework's cleanup can leave water sources behind). */
+    private static void drain(GameTestHelper helper) {
+        for (int y = 1; y <= 2; y++) {
+            helper.setBlock(new BlockPos(1, y, 1), Blocks.GLASS);
         }
     }
 

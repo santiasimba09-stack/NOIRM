@@ -183,6 +183,7 @@ public final class WeaponGameTests {
             for (int z = 0; z < 3; z++) {
                 helper.setBlock(new BlockPos(x, 0, z), Blocks.DIRT);
                 helper.setBlock(new BlockPos(x, 1, z), Blocks.DIRT);
+                helper.setBlock(new BlockPos(x, 2, z), Blocks.AIR); // nothing left over from earlier tests (water)
             }
         }
         BlockPos under = new BlockPos(1, 1, 1);
@@ -200,7 +201,8 @@ public final class WeaponGameTests {
             int gone = 0;
             for (int x = 0; x < 3; x++) {
                 for (int z = 0; z < 3; z++) {
-                    if (helper.getBlockState(new BlockPos(x, 1, z)).isAir()) {
+                    // Dug out: no longer dirt (water from a neighbouring test can flow into the hole).
+                    if (!helper.getBlockState(new BlockPos(x, 1, z)).is(Blocks.DIRT)) {
                         gone++;
                     }
                 }

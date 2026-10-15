@@ -57,10 +57,39 @@ public final class AnimationGameTests {
         return all;
     }
 
+    /** The torso carries the head and arms: turned 90°, the right shoulder swings round with it. */
+    @GameTest(template = "empty")
+    public static void rigCarriesHeadAndArms(GameTestHelper helper) {
+        com.noirm.client.anim.Rig rig = new com.noirm.client.anim.Rig();
+        SkeletonPose pose = new SkeletonPose();
+        rig.bake(pose);
+        assertNear(helper, -5f, rig.rightArm.x, "rest: right shoulder at x = -5");
+        assertNear(helper, 2f, rig.rightArm.y, "rest: shoulder height");
+        pose.set(Bone.TORSO, SkeletonPose.RY, (float) Math.toRadians(90));
+        rig.bake(pose);
+        assertNear(helper, 0f, rig.rightArm.x, "turned: the shoulder leaves the side");
+        assertNear(helper, 5f, rig.rightArm.z, "turned right: the right shoulder goes back");
+        assertNear(helper, (float) Math.toRadians(90), rig.rightArm.yRot, "the arm turns with the torso");
+        assertNear(helper, (float) Math.toRadians(90), rig.head.yRot, "so does the head");
+        assertNear(helper, 12f, rig.rightLeg.y, "the legs stay on the hips");
+        // Leaning forward from the hips moves the head forward, not the feet.
+        pose.clear();
+        pose.set(Bone.TORSO, SkeletonPose.RX, (float) Math.toRadians(30));
+        rig.bake(pose);
+        helper.assertTrue(rig.head.z < -5f, "leaning forward brings the head forward, z = " + rig.head.z);
+        assertNear(helper, 0f, rig.rightLeg.z, "the feet stay put");
+        // Euler round trip through the hierarchy (vanilla's rotation order).
+        org.joml.Quaternionf q = new org.joml.Quaternionf().rotationZYX(0.3f, -0.7f, 1.1f);
+        float[] e = com.noirm.client.anim.Rig.eulerZYX(q, new org.joml.Matrix3f());
+        org.joml.Quaternionf back = new org.joml.Quaternionf().rotationZYX(e[2], e[1], e[0]);
+        helper.assertTrue(Math.abs(Math.abs(q.dot(back)) - 1f) < 1.0e-4f, "Euler angles round-trip");
+        helper.succeed();
+    }
+
     @GameTest(template = "empty")
     public static void everyAnimationFileParsesAndEvaluates(GameTestHelper helper) {
         Map<String, KeyframeAnimation> all = loadAll(helper);
-        helper.assertTrue(all.size() >= 25, "Expected the 25 animation files, parsed " + all.size());
+        helper.assertTrue(all.size() >= 49, "Expected the 49 animation files, parsed " + all.size());
         SkeletonPose pose = new SkeletonPose();
         for (KeyframeAnimation animation : all.values()) {
             helper.assertTrue(animation.lengthTicks > 0, animation.name + " has no length");
@@ -72,26 +101,23 @@ public final class AnimationGameTests {
                 helper.assertTrue(pose.isFinite(), animation.name + " gives NaN/infinity at tick " + t);
             }
         }
-        // Generated animations carry bends; the Boundless ones don't (and still sample fine).
+        // Every animation is ours now (tools/animgen): whole-body, with bends.
         helper.assertTrue(all.get("elbow_strike").hasBend(Bone.RIGHT_ARM), "elbow_strike should bend the right elbow");
         helper.assertTrue(all.get("knee_strike").hasBend(Bone.RIGHT_LEG), "knee_strike should bend the right knee");
         helper.assertTrue(all.get("stance_brawler").hasBend(Bone.TORSO), "the brawler stance should hunch at the waist");
+        // The jab lands on the move's contact tick (windup 3 of 11): lead arm straight out, feet stepping in.
         KeyframeAnimation jab = all.get("quick_jab");
-        helper.assertFalse(jab.hasBend(Bone.RIGHT_ARM), "quick_jab (Boundless) has no bends");
+        assertNear(helper, 11f, jab.lengthTicks, "quick_jab is as long as the move");
         pose.clear();
         jab.sample(3f, pose);
-        helper.assertFalse(pose.isSet(Bone.RIGHT_ARM, SkeletonPose.BEND), "no bend channel means bend is left to the base pose");
-        helper.assertTrue(pose.isSet(Bone.RIGHT_ARM, SkeletonPose.RX), "quick_jab moves the right arm");
-        helper.assertFalse(pose.isSet(Bone.RIGHT_LEG, SkeletonPose.RX), "quick_jab leaves the legs to the walk");
-        // Bends come out in radians: 130° at the elbow strike's wind-up key.
+        assertNear(helper, (float) Math.toRadians(-90), pose.get(Bone.LEFT_ARM, SkeletonPose.RX), "jab: lead arm level at contact");
+        assertNear(helper, (float) Math.toRadians(4), pose.get(Bone.LEFT_ARM, SkeletonPose.BEND), "jab: elbow straight at contact");
+        helper.assertTrue(pose.isSet(Bone.LEFT_LEG, SkeletonPose.RX), "jab: the feet step too");
+        // Bends come out in radians: the elbow strike's folded elbow at contact.
         KeyframeAnimation elbow = all.get("elbow_strike");
         pose.clear();
-        elbow.sample(0.25f * elbow.lengthTicks, pose);
-        assertNear(helper, (float) Math.toRadians(130), pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), "elbow bend at its key");
-        // Linear interpolation halfway between two keys.
-        pose.clear();
-        elbow.sample(0.125f * elbow.lengthTicks, pose);
-        assertNear(helper, (float) Math.toRadians(65), pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), "elbow bend halfway in");
+        elbow.sample(3f, pose);
+        assertNear(helper, (float) Math.toRadians(150), pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), "elbow bend at contact");
         // Loops wrap: a stance one cycle later is the same pose.
         KeyframeAnimation stance = all.get("stance_basic");
         helper.assertTrue(stance.loop, "stances loop");

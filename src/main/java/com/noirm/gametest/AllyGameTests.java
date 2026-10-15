@@ -66,15 +66,16 @@ public final class AllyGameTests {
             face(attacker, target);
             CombatSystem.requestAttack(attacker, AttackInput.LIGHT);
         });
-        // Jab 3 + netherite's 7 × share × the jab's weight + Sharpness V's 3.
-        float expected = 3f + 7f * CombatSystem.WEAPON_DAMAGE_SHARE
-                * Math.max(CombatSystem.WEAPON_WEIGHT_MIN, 3f / CombatSystem.WEAPON_REFERENCE_DAMAGE) + 3f;
+        // A sword in hand swings with the sword moveset: its slash (5) + netherite's 7 × share × the
+        // slash's weight + Sharpness V's 3.
+        float expected = 5f + 7f * CombatSystem.WEAPON_DAMAGE_SHARE
+                * Math.max(CombatSystem.WEAPON_WEIGHT_MIN, Math.min(CombatSystem.WEAPON_WEIGHT_MAX, 5f / CombatSystem.WEAPON_REFERENCE_DAMAGE)) + 3f;
         helper.onEachTick(() -> {
             if (target.getHealth() >= NINJA_HEALTH) {
                 return;
             }
             float dealt = NINJA_HEALTH - target.getHealth();
-            helper.assertTrue(Math.abs(dealt - expected) < 0.05f, "the sword jab should deal " + expected + ", dealt " + dealt);
+            helper.assertTrue(Math.abs(dealt - expected) < 0.05f, "the sword slash should deal " + expected + ", dealt " + dealt);
             helper.assertTrue(target.isOnFire(), "Fire Aspect sets the target alight");
             ItemStack held = attacker.getMainHandItem();
             helper.assertTrue(held.getDamageValue() == 1, "the sword wears by 1, got " + held.getDamageValue());
