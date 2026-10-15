@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:low_sweep",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 10,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 20,
+    "range": 2.6,
+    "arc": 140,
+    "knockback": 0.2,
+    "hitstun": 14,
+    "hitstop": 3,
+    "shake": 0.45,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:basic/jab"
+  }
+}

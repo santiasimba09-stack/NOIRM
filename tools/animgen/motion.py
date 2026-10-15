@@ -154,11 +154,30 @@ class Anim:
             json.dump(self.to_json(), f, indent=1)
 
 
+# Weight transfer added to every strike (pixels): the body sinks into the legs on the wind-up and
+# drives forward and down at contact. The game keeps standing feet planted (leg IK), so this
+# becomes bent knees and a pushing rear leg instead of feet sinking or sliding.
+SINK_WINDUP = (0.0, -1.0, 0.5)
+DRIVE_CONTACT = (0.0, -1.4, -1.5)
+
+
+def _weighted(pose, offset):
+    b = pose.bones.get("body", {})
+    if "rot" in b and any(abs(v) > 20 for v in b["rot"]):
+        return pose  # spins and flips leave the ground: no weight transfer
+    return pose.add(body=dict(pos=offset))
+
+
 def strike(name, start, windup, contact, follow, timing, end=None, antic_at=0.55, settle=None,
-           ease_in="easeInCubic", hold=0.6):
+           ease_in="easeInCubic", hold=0.6, weight=True):
     """The standard attack shape, timed to the move (windup, active, recovery ticks):
     start pose -> wind-up (anticipation) -> contact (exactly when the hit lands) -> follow-through
-    (held through the active frames) -> settle -> back to the start (or `end`)."""
+    (held through the active frames) -> settle -> back to the start (or `end`).
+    With `weight`, the body sinks on the wind-up and drives through the contact (footwork)."""
+    if weight:
+        windup = _weighted(windup, SINK_WINDUP)
+        contact = _weighted(contact, DRIVE_CONTACT)
+        follow = _weighted(follow, DRIVE_CONTACT)
     w, a, r = timing
     total = w + a + r
     anim = Anim(name, total, timing=timing)

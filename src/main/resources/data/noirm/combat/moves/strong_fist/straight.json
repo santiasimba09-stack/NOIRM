@@ -19,7 +19,7 @@
   },
   "next": {
     "light": "noirm:strong_fist/leaf_whirlwind",
-    "heavy": "noirm:strong_fist/leaf_rising_wind",
+    "heavy": "noirm:strong_fist/leaf_great_flash",
     "launcher": "noirm:strong_fist/leaf_rising_wind"
   }
 }

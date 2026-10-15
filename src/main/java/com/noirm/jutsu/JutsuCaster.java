@@ -122,12 +122,21 @@ public final class JutsuCaster {
         if (!player.getAbilities().instabuild && !data.tryConsumeChakra(cost)) {
             return Result.NO_CHAKRA;
         }
+        JutsuSeals.Sequence named = JutsuSeals.get(id);
+        if (named != null) {
+            player.displayClientMessage(named.describe(), true); // the seals, above the hotbar
+        }
         if (def.cast() == CastType.TAP) {
             execute(player, id, def, 1f);
         } else {
             Casting casting = new Casting(id, def, slot, player.getAbilities().instabuild ? 0f : cost);
             CASTING.put(player, casting);
-            castAnimation(player, "cast_seals", def.cast() == CastType.CHARGE ? Math.max(8, def.minCharge()) : 14);
+            JutsuSeals.Sequence seals = JutsuSeals.get(id);
+            if (seals != null) {
+                castAnimation(player, seals.animation(id), seals.ticks()); // this jutsu's own seals
+            } else {
+                castAnimation(player, "cast_seals", def.cast() == CastType.CHARGE ? Math.max(8, def.minCharge()) : 14);
+            }
             if (def.cast() == CastType.CHANNEL) {
                 runBehavior(player, id, def, 1f, true, 0);
             }
@@ -262,7 +271,10 @@ public final class JutsuCaster {
 
     /** The caster's hands: seals while charging or channelling, a push on release (players and ninjas alike). */
     static void castAnimation(LivingEntity caster, String name, int ticks) {
-        ResourceLocation animation = com.noirm.Noirm.id(name);
+        castAnimation(caster, com.noirm.Noirm.id(name), ticks);
+    }
+
+    static void castAnimation(LivingEntity caster, ResourceLocation animation, int ticks) {
         if (caster instanceof Player) {
             com.noirm.network.NoirmNetwork.sendToTrackingAndSelf(caster,
                     new com.noirm.network.CombatClientPackets.PlayAnimation(caster.getId(), animation, ticks));
