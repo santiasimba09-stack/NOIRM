@@ -81,9 +81,10 @@ change after playtesting. All numbers are tunable (where is noted per section)._
 
 ## 4. Sharingan (owner: all four abilities)
 
-- Uchiha only (the clan's `kekkei_genkai`). It's **awakened by the near-death awakening**, then
-  grows from 1 to 3 tomoe through use (1 XP per second active; 300 / 1200 XP) or further
-  awakenings. **G** toggles it; it drains 0.8 / 1.6 / 2.4 chakra per second (regen is 1/s).
+- Uchiha only (the clan's `kekkei_genkai`). Born **dormant**; it awakens by one of four routes
+  (section 4b), then grows from 1 to 3 tomoe through use in real fights (300 / 1200 XP) or
+  further near-death awakenings. **G** toggles it; it drains 0.8 / 1.6 / 2.4 chakra per second
+  (regen is 1/s).
 - **1+ tomoe:** perception +25% per tomoe (enemy wind-ups look slower: the owner's perception idea).
 - **2+ tomoe:** **precognition** (an attacker glows, plus a red flash and chime before their hit
   lands) and the **Sharingan genjutsu** jutsu.
@@ -96,6 +97,43 @@ change after playtesting. All numbers are tunable (where is noted per section)._
 - **Alive (owner):** the warning is a heartbeat (lub-dub edge pulse + sound) that speeds up as the
   hit nears, with markers pointing at each threat; attackers leave afterimages; opening the eyes
   flashes and spins three tomoe; a faint red tint while active (`EyeEffects`).
+
+## 4b. Sharingan awakening and growth (owner, round 5: "a clearer way")
+
+**Awakening** (dormant Uchiha only; `SharinganAwakening`):
+
+| Route | What it takes |
+|---|---|
+| Near death | The Resolve awakening (section 5), as before: locked in + the Sharingan |
+| A comrade falls | Seeing a crew mate (or another player) die within 24 blocks, in sight, at someone else's hand |
+| A long, hard fight | 60 s of trading blows with an opponent of at least 1.5× your power (pauses up to 5 s keep it going; 15 s ends it) |
+| Pressure | 0–100, built by every real fight: damage taken (0.6/pt) and dealt (0.3/pt) × opponent strength (0.5–2), perfect dodges/parries (+3), hard fights (+0.5/s). When full, the **next intense moment** (a perfect dodge or parry, a hit of 20%+ of your health, or dropping below 40%) opens the eyes |
+
+- **Hints** as the pressure crosses 25 / 50 / 75 / 100: an action-bar line, a red flicker at the
+  edges of vision, a heartbeat from 75. Halfway through a hard fight: "your eyes ache…".
+- The moment: title + subtitle per route, red flash and ring, the eyes open and stay open for
+  10 s without draining chakra.
+
+**Growth** (only while open, only in real fights; the dummy is a drill):
+
+| Source | XP |
+|---|---|
+| Each second in a real fight | 1 × opponent strength (0.5–3×) |
+| Each hit you land on a real opponent | 2 × opponent strength |
+| Perfect dodge / parry | 10, **+15** if the eyes foresaw that attack (precognition, 2+ tomoe) |
+| Reading a jutsu cast in front of you (1–2 tomoe, in a fight, once per 5 s) | 15 |
+| Seeing a comrade fall (already awakened) | 150 |
+| The training dummy (hits, time) | 1 each, **at most 100 in total** |
+
+- Copying happens at 3 tomoe (the top), so it gives no XP for now (a future Mangekyō could use it).
+- Each new tomoe: a title ("Sharingan: 2 tomoe"), the eyes flare open (free for 10 s), and the
+  screen spins that many tomoe.
+- **Shown** in the jutsu screen (sidebar, when no jutsu is hovered or selected: tomoe and an XP
+  bar, or how the dormant eyes feel) and as a thin bar next to the Sharingan line on the HUD.
+- **NPC Uchiha:** 35% of world-rolled Uchiha ninjas are dormant; they awaken when a fight leaves
+  them under 30% health, or when a crew mate falls nearby.
+- Cheats: `/noirm sharingan <0-3>`, `/noirm sharingan xp <n>`, `/noirm sharingan pressure <0-100>`.
+- Tuning: constants at the top of `Sharingan` (growth) and `SharinganAwakening` (routes, pressure).
 
 ## 5. Awakening (owner: Resolve, identity-based)
 
@@ -180,6 +218,21 @@ with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninj
   real opponents × their strength, falls/fire/etc. are drills (cap 30).
 - **Reserves:** +5 max chakra and +2% chakra regen per point above 10 (double chakra at 30).
   XP = 0.25 per chakra spent (jutsu, eyes).
+
+## 12. Water walking (chakra control)
+
+- Everyone (players and NPC ninjas, crew mates included) walks and runs on any water's surface:
+  still, flowing, rivers, ocean. Bubble columns stay as they are. Lava walking exists but is off
+  (`LAVA_WALKING`).
+- Needs 2+ chakra. Standing costs 1 chakra/s (cancels the base regen), walking 1.6/s, running
+  2.4/s; run dry and you sink. **Sneak** to sink or dive; **hold jump** near the surface (10+
+  chakra) to spring back onto it. NPCs can always do it unless beaten, and spring back up if
+  knocked in.
+- Falls onto water stay harmless (as plain water always was), costing 1 chakra per block past 3:
+  you land on your feet on the surface with a splash.
+- How: a mixin gives the top water block a thin solid skin (just above the visible water) for
+  whoever can walk on it; the rule only reads what the client also knows, so movement agrees.
+- Tuning: constants at the top of `chakra/WaterWalking`.
 
 ## Where to tune
 

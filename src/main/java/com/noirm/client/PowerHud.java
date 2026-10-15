@@ -50,6 +50,13 @@ public final class PowerHud {
             String tomoe = "●".repeat(powers.sharinganStage()) + "○".repeat(3 - powers.sharinganStage());
             Component text = Component.translatable(powers.eyesActive() ? "hud.noirm.sharingan.on" : "hud.noirm.sharingan.off", tomoe);
             graphics.drawString(font, text, X, y, powers.eyesActive() ? 0xFFFF3030 : 0xFF904040, true);
+            float growth = sharinganProgress(powers);
+            if (growth >= 0) {
+                // A thin bar: progress toward the next tomoe.
+                int barX = X + font.width(text) + 4;
+                graphics.fill(barX - 1, y + 2, barX + 31, y + 7, 0xA0000000);
+                graphics.fill(barX, y + 3, barX + Math.round(30 * growth), y + 6, 0xFFD02020);
+            }
             y += LINE;
         } else if (powers.byakugan()) {
             Component text = Component.translatable(powers.eyesActive() ? "hud.noirm.byakugan.on" : "hud.noirm.byakugan.off");
@@ -98,6 +105,16 @@ public final class PowerHud {
         if (combat) {
             drawSlots(graphics, font, powers, width, height);
         }
+    }
+
+    /** Progress (0..1) of the Sharingan toward its next tomoe, or -1 if not awakened or already at 3. */
+    static float sharinganProgress(PowerPackets.SyncPowers powers) {
+        int stage = powers.sharinganStage();
+        if (stage <= 0 || powers.sharinganNextXp() <= 0) {
+            return -1f;
+        }
+        int from = Sharingan.STAGE_XP[stage];
+        return Math.min(1f, Math.max(0f, (powers.sharinganXp() - from) / (float) Math.max(1, powers.sharinganNextXp() - from)));
     }
 
     /** A trained stat with a thin bar showing progress toward its next point. */

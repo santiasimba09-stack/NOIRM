@@ -16,13 +16,15 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
 /**
- * The Sharingan. Awakened by an Uchiha's near-death awakening; grows from 1 to 3 tomoe through
- * use and further awakenings. While active (it drains chakra):
+ * The Sharingan. Uchiha are born with it dormant; it awakens in one of several ways (see
+ * {@link SharinganAwakening}), then grows from 1 to 3 tomoe through use in real fights and
+ * further awakenings. While active (it drains chakra):
  * <ul>
  *   <li>1+ tomoe: perception +25% per tomoe — enemy wind-ups look slower</li>
  *   <li>2+ tomoe: precognition — attackers glow and you're warned before their hit lands; the
@@ -36,6 +38,30 @@ public final class Sharingan {
     public static final float DRAIN_PER_TICK_PER_STAGE = 0.04f;
     /** Mastery XP to reach 2 and 3 tomoe through use (awakenings also advance it). */
     public static final int[] STAGE_XP = {0, 0, 300, 1200};
+    // How the eyes grow (only while open, and only in real fights; see the javadoc of addXp):
+    /** Each second in a real fight: this × how much stronger the opponent is (0.5–3×). */
+    public static final float FIGHT_XP_PER_SECOND = 1f;
+    /** Each hit you land on a real opponent: this × their strength ratio. */
+    public static final float HIT_XP = 2f;
+    /** A perfect dodge or parry, and the extra when the eyes warned you of that very attack. */
+    public static final int CLUTCH_XP = 10;
+    public static final int FORESEEN_XP = 15;
+    /** How recent a precognition warning must be for the dodge to count as foreseen. */
+    public static final int FORESEEN_TICKS = 40;
+    /** Reading an opponent's jutsu with 1–2 tomoe (3 tomoe copy it instead); once per cooldown. */
+    public static final int STUDY_XP = 15;
+    public static final int STUDY_COOLDOWN_TICKS = 100;
+    /** Seeing a comrade fall with the eyes already awakened deepens them. */
+    public static final int ALLY_LOSS_XP = 150;
+    /** The training dummy (drills) can teach the eyes at most this much in total. */
+    public static final int DRILL_XP_CAP = 100;
+    /** A fight is "on" for this long after the last blow traded with a real opponent. */
+    public static final int FIGHT_MEMORY_TICKS = 100;
+    /** Strength ratio limits for the XP multiplier. */
+    public static final float MIN_FOE_RATIO = 0.5f;
+    public static final float MAX_FOE_RATIO = 3f;
+    /** After awakening or gaining a tomoe, the eyes stay open this long without draining chakra. */
+    public static final int FREE_TICKS_AFTER_GROWTH = 200;
     public static final int PRECOGNITION_STAGE = 2;
     public static final int COPY_STAGE = 3;
     public static final double COPY_RANGE = 16;
@@ -81,13 +107,16 @@ public final class Sharingan {
         PowerVisuals.broadcast(player);
     }
 
-    /** Every server tick for players: drain chakra and grow with use. */
+    /** Every server tick for players: drain chakra, and grow while open in a real fight. */
     public static void tick(ServerPlayer player, ShinobiData data) {
         EyeData eyes = data.eyes();
+        if (eyes.freeTicks() > 0) {
+            eyes.setFreeTicks(eyes.freeTicks() - 1);
+        }
         if (eyes.activeStage() == 0) {
             return;
         }
-        boolean free = data.awakening().isLockedIn();
+        boolean free = data.awakening().isLockedIn() || eyes.freeTicks() > 0;
         float drain = DRAIN_PER_TICK_PER_STAGE * eyes.sharinganStage();
         if (!free && !player.getAbilities().instabuild && !data.tryConsumeChakra(drain)) {
             setActive(player, data, false);
@@ -95,19 +124,82 @@ public final class Sharingan {
             return;
         }
         if (player.tickCount % 20 == 0) {
-            addXp(player, data, 1);
+            long now = player.level().getGameTime();
+            if (inFight(eyes, now)) {
+                addXp(player, data, ratioXp(FIGHT_XP_PER_SECOND, eyes.foeRatio()));
+            } else if (eyes.lastDrillTick() >= 0 && now - eyes.lastDrillTick() <= FIGHT_MEMORY_TICKS) {
+                addDrillXp(player, data, 1);
+            }
         }
     }
 
-    /** Sharingan growth (1/s active, more for clutch moments). May reach the next tomoe. */
-    public static void addXp(ServerPlayer player, ShinobiData data, int amount) {
+    /** Still in a fight with a real opponent (a blow traded within the last few seconds). */
+    public static boolean inFight(EyeData eyes, long now) {
+        return eyes.lastFightTick() >= 0 && now - eyes.lastFightTick() <= FIGHT_MEMORY_TICKS;
+    }
+
+    /** {@code base} XP scaled by the opponent's strength ratio; at least 1. */
+    static int ratioXp(float base, float ratio) {
+        return Math.max(1, Math.round(base * Mth.clamp(ratio, MIN_FOE_RATIO, MAX_FOE_RATIO)));
+    }
+
+    /**
+     * A hit {@code player} landed on {@code target} (any damage). With the eyes open: XP scaled by
+     * the target's strength for a real opponent, a capped trickle for the training dummy.
+     */
+    public static void onHitLanded(Player player, LivingEntity target) {
+        ShinobiData data = ShinobiCapability.get(player).orElse(null);
+        if (data == null || data.eyes().activeStage() == 0) {
+            return;
+        }
+        float ratio = SharinganAwakening.foeRatio(player, target);
+        if (ratio < 0) {
+            addDrillXp(player, data, 1);
+        } else if (ratio > 0) {
+            addXp(player, data, ratioXp(HIT_XP, ratio));
+        }
+    }
+
+    /** A perfect dodge or parry with the eyes open; more if they warned you about that attack. */
+    public static void onClutch(Player player, ShinobiData data) {
         EyeData eyes = data.eyes();
-        if (eyes.sharinganStage() == 0 || eyes.sharinganStage() >= EyeData.MAX_STAGE) {
+        if (eyes.activeStage() == 0) {
+            return;
+        }
+        boolean foreseen = eyes.lastWarnedTick() >= 0 && player.level().getGameTime() - eyes.lastWarnedTick() <= FORESEEN_TICKS;
+        addXp(player, data, CLUTCH_XP + (foreseen ? FORESEEN_XP : 0));
+    }
+
+    /** Training-dummy XP: only until {@link #DRILL_XP_CAP} in total (then only real fights teach). */
+    public static void addDrillXp(Player player, ShinobiData data, int amount) {
+        EyeData eyes = data.eyes();
+        int room = DRILL_XP_CAP - eyes.drillXp();
+        if (room <= 0 || amount <= 0 || eyes.sharinganStage() == 0 || eyes.sharinganStage() >= EyeData.MAX_STAGE) {
+            return;
+        }
+        int gained = Math.min(room, amount);
+        eyes.setDrillXp(eyes.drillXp() + gained);
+        addXp(player, data, gained);
+        if (eyes.drillXp() >= DRILL_XP_CAP) {
+            player.displayClientMessage(Component.translatable("message.noirm.sharingan.drill_cap"), true);
+        }
+    }
+
+    /**
+     * Sharingan growth. The eyes grow only while open: each second in a real fight (more against
+     * stronger opponents), each hit landed, perfect dodges and parries (more if foreseen), and
+     * reading jutsu. The dummy teaches only up to {@link #DRILL_XP_CAP}. May reach the next tomoe.
+     */
+    public static void addXp(Player player, ShinobiData data, int amount) {
+        EyeData eyes = data.eyes();
+        if (amount <= 0 || eyes.sharinganStage() == 0 || eyes.sharinganStage() >= EyeData.MAX_STAGE) {
             return;
         }
         eyes.setSharinganXp(eyes.sharinganXp() + amount);
+        data.markPowersDirty();
         if (eyes.sharinganXp() >= STAGE_XP[eyes.sharinganStage() + 1]) {
             advance(player, data, "message.noirm.sharingan.tomoe_growth");
+            SharinganAwakening.growthMoment(player, data);
         }
     }
 
@@ -140,6 +232,10 @@ public final class Sharingan {
             return;
         }
         attacker.addEffect(new MobEffectInstance(MobEffects.GLOWING, Math.max(10, windupTicks + 10), 0, false, false));
+        if (target instanceof Player player) {
+            // Remembered so a dodge of this very attack counts as foreseen (it lands after the wind-up).
+            ShinobiCapability.get(player).ifPresent(d -> d.eyes().setLastWarnedTick(player.level().getGameTime() + windupTicks));
+        }
         if (target instanceof ServerPlayer player) {
             NoirmNetwork.sendToPlayer(player, new PowerPackets.Precognition(attacker.getId(), windupTicks));
         }
@@ -150,8 +246,27 @@ public final class Sharingan {
         List<Player> watchers = caster.level().getEntitiesOfClass(Player.class, caster.getBoundingBox().inflate(COPY_RANGE),
                 p -> p != caster);
         for (Player watcher : watchers) {
-            tryCopy(watcher, caster, id);
+            if (!tryCopy(watcher, caster, id)) {
+                study(watcher, caster);
+            }
         }
+    }
+
+    /** 1–2 tomoe can't copy yet, but reading an opponent's jutsu in a real fight trains the eyes. */
+    public static boolean study(Player watcher, LivingEntity caster) {
+        int stage = activeStage(watcher);
+        ShinobiData data = ShinobiCapability.get(watcher).orElse(null);
+        if (data == null || stage == 0 || stage >= COPY_STAGE || !isWatching(watcher, caster)) {
+            return false;
+        }
+        EyeData eyes = data.eyes();
+        long now = watcher.level().getGameTime();
+        if (!inFight(eyes, now) || (eyes.lastStudyTick() >= 0 && now - eyes.lastStudyTick() < STUDY_COOLDOWN_TICKS)) {
+            return false;
+        }
+        eyes.setLastStudyTick(now);
+        addXp(watcher, data, STUDY_XP);
+        return true;
     }
 
     /** {@code watcher} saw {@code caster} use a jutsu: with 3 tomoe active, they learn it. */
