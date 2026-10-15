@@ -92,6 +92,11 @@ final class CombatEffects {
                     com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.spark(0xFFFFFF, 0.12f, 5), chest.subtract(dir.scale(i * 0.45)), dir.scale(0.4));
                 }
             }
+            case "weapon_kunai", "weapon_sword" -> {
+                sound(target, SoundEvents.PLAYER_ATTACK_SWEEP, 0.5f, heavy ? 1.2f : 1.6f);
+                particles(target, ParticleTypes.CRIT, heavy ? 8 : 4, 0.25);
+            }
+            case "weapon_staff" -> sound(target, SoundEvents.WOOD_HIT, 0.9f, heavy ? 0.7f : 1.0f);
             case "gentle_fist" -> {
                 sound(target, SoundEvents.AMETHYST_BLOCK_HIT, 1f, 1.5f);
                 com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xE8FAFF, 0x6FB8FF, 0.25f, 0.05f, 7), chest, 4, 0.1, 0.06);

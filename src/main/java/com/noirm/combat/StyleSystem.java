@@ -62,7 +62,7 @@ public final class StyleSystem {
             if (styles.isEmpty()) {
                 return;
             }
-            ResourceLocation current = CombatSystem.styleFor(player);
+            ResourceLocation current = styleOf(data); // their own style, not a weapon's
             int index = styles.indexOf(current);
             ResourceLocation next = styles.get((index + 1) % styles.size());
             data.setCombatStyle(next.toString());

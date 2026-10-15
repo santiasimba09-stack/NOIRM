@@ -652,6 +652,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new NinjaFightGoal(this));
+        goalSelector.addGoal(2, new NinjaThrowGoal(this)); // throwables from range, alongside the fight
         // Residents walk back home after a fight (does nothing for ninjas without a home).
         // Village life: patrols, rooftop running, practice (does nothing for ninjas without a role).
         goalSelector.addGoal(3, new com.noirm.world.village.VillageRoutineGoal(this));

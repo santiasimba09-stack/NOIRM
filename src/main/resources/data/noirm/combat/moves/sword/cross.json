@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:sword_cross",
+  "timing": { "windup": 4, "active": 2, "recovery": 9, "cancel_after": 4 },
+  "hit": { "damage": 5, "posture": 14, "range": 3.0, "arc": 120, "knockback": 0.3, "lunge": 0.25, "hitstun": 8, "hitstop": 3, "shake": 0.35 },
+  "next": { "light": "noirm:sword/finishing_slash", "heavy": "noirm:sword/thrust" }
+}

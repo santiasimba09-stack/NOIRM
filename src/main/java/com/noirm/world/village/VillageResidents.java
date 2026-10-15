@@ -115,6 +115,9 @@ public final class VillageResidents {
             return;
         }
         ninja.setVillageRole(role);
+        if ("GUARD".equals(role) || "PATROL".equals(role)) {
+            com.noirm.weapon.NinjaArsenal.armGuard(ninja, level.getRandom());
+        }
         if (route != null) {
             ninja.setRoute(route);
         }
