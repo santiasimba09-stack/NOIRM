@@ -50,6 +50,12 @@ public final class ClientPowers {
         return visuals == null ? 0 : visuals.sharinganStage();
     }
 
+    /** The Mangekyō look of a player (0 = none; see dojutsu/Mangekyo#look). */
+    public static int mangekyoLook(int entityId) {
+        PowerPackets.Visuals visuals = VISUALS.get(entityId);
+        return visuals == null ? 0 : visuals.mangekyoLook();
+    }
+
     public static boolean byakugan(int entityId) {
         PowerPackets.Visuals visuals = VISUALS.get(entityId);
         return visuals != null && visuals.byakugan();
@@ -63,16 +69,20 @@ public final class ClientPowers {
     static void tick() {
         ticksSinceSync++;
         EyeEffects.tick();
+        MangekyoEffects.tick();
     }
 
     static void reset() {
         latest = null;
         VISUALS.clear();
         EyeEffects.reset();
+        MangekyoEffects.reset();
     }
 
     public static void sync(PowerPackets.SyncPowers packet) {
-        if (latest != null && packet.sharinganStage() > latest.sharinganStage()) {
+        if (latest != null && (packet.mangekyo() && !latest.mangekyo() || packet.eternal() && !latest.eternal())) {
+            MangekyoEffects.onAwakened(packet.mangekyoPattern(), packet.eternal() ? packet.mangekyoDonorPattern() : -1);
+        } else if (latest != null && packet.sharinganStage() > latest.sharinganStage()) {
             EyeEffects.onTomoe(packet.sharinganStage()); // awakened, or a new tomoe: spin that many
         } else if (latest != null && !latest.eyesActive() && packet.eyesActive()) {
             EyeEffects.onActivated(packet.sharinganStage() > 0);

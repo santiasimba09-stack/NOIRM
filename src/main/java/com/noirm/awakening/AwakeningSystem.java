@@ -120,6 +120,7 @@ public final class AwakeningSystem {
     /** Locks in now (also used by the test command). */
     public static void awaken(Player player, ShinobiData data) {
         AwakeningData awakening = data.awakening();
+        float resolveBefore = awakening.resolve();
         awakening.setResolve(0f);
         awakening.setLastAwakening(player.level().getGameTime());
         awakening.setLockedInTicks(LOCKED_IN_TICKS);
@@ -134,6 +135,9 @@ public final class AwakeningSystem {
         AwakeningPath path = data.biju().isJinchuriki() ? AwakeningPath.BEAST : data.identity().awakening();
         String subtitle = switch (path) {
             case SHARINGAN -> {
+                if (com.noirm.dojutsu.Mangekyo.onResolveAwakening(player, data, resolveBefore)) {
+                    yield "title.noirm.awakening.mangekyo";
+                }
                 boolean first = data.eyes().sharinganStage() == 0;
                 Sharingan.advance(player, data, first ? "message.noirm.sharingan.awakened" : "message.noirm.sharingan.tomoe_awakening");
                 data.eyes().setActive(true);

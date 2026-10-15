@@ -135,6 +135,81 @@ change after playtesting. All numbers are tunable (where is noted per section)._
 - Cheats: `/noirm sharingan <0-3>`, `/noirm sharingan xp <n>`, `/noirm sharingan pressure <0-100>`.
 - Tuning: constants at the top of `Sharingan` (growth) and `SharinganAwakening` (routes, pressure).
 
+## 4c. The Mangekyō Sharingan (owner: "eye transplants, special abilities for each one")
+
+Code: `com.noirm.dojutsu` (`Mangekyo`, `MangekyoAbility`, `MangekyoAbilities`, `Susanoo`,
+`MangekyoTransplant`, `SharinganEyeItem`, `MangekyoNpcs`), client `MangekyoEffects` and the
+pattern quads in `SharinganEyesLayer`. Jutsu JSON in `data/noirm/jutsu/mangekyo/`.
+
+**Awakening** (born Uchiha with 3 tomoe; rare and dramatic):
+
+| Route | What it takes |
+|---|---|
+| A bond broken | A crew mate with respect 60+ dies within 16 blocks, in sight, at someone else's hand |
+| A death before your eyes | Another player dies within 16 blocks, in sight |
+| The edge of death | The near-death (Resolve) awakening with 95+ Resolve |
+
+The moment: a dark red title and subtitle per route, the Elder Guardian's curse, a heartbeat, a
+black-and-red ring and a quake; on screen a dark red flash and the eye's pattern revealed, huge
+and turning. The eyes stay open for free for 15 s.
+
+**Every Mangekyō is unique:** one of 8 original patterns (Five Petals, Twin Moons, Whirlpool,
+Thorn Crown, Lattice, Eclipse, Tide, Broken Halo; drawn by `tools/eyegen/gen_eyes.py`), two eye
+abilities rolled (weighted) from the pool below, and **Susanoo** in a colour of its own.
+
+**How they're used:** the abilities are **jutsu**. The awakening teaches the two eye abilities and
+Susanoo and puts them in free loadout slots (otherwise the jutsu screen equips them). They need
+the Mangekyō open (G), as the Sharingan genjutsu needs 2 tomoe. No new keys, and NPCs use them
+through the same jutsu AI. A Sharingan can't copy them.
+
+| Ability | What it does | Strain |
+|---|---|---|
+| **Amaterasu** (weight 3) | Black flames where you look (24 blocks): on a creature, or a patch on the ground that lights whoever enters (8 s). 3 dmg/s × power for 10 s; water doesn't put them out | 6 |
+| **Tsukuyomi** (3) | Eye contact (12 blocks; a player must be facing you): frozen 4 s, 25% of max health torn from the mind (× power, at most 60), weakened 10 s; a player sees the world turn red and black. An open Mangekyō resists | 8 |
+| **Kamui** (2) | Looking at someone: hurt and warped 8–14 blocks away. At an incoming projectile: swallowed. Otherwise (or crouching): intangible for 2 s (hits and projectiles pass through) | 4–5 |
+| **Kotoamatsukami** (1) | A creature (not a player) fights for you for 60 s: it can't target you or your crew and hunts your enemies. 3-minute cooldown | 12 |
+| **Izanagi** (1) | Armed for 10 s: a death in that window doesn't happen; you're back where you cast it, at the health you had (at least 30%). 5-minute cooldown | 3, +20 when it triggers |
+| **Susanoo** (both eyes) | Grows every 3 s while kept up: ribcage (damage ×0.6) → torso and arms (×0.45; the key now swipes: 12 dmg, 4.5 blocks) → complete (×0.3; 18 dmg, 6.5 blocks; slower). 25 chakra to summon, 10 per swipe, 3/5/7 chakra a second; crouch + key dismisses; out of chakra it collapses. Drawn as a shell of particles | 4, +0.1/s per stage |
+
+**The cost: blindness.** Strain (0–100) never heals by itself. Hints at 25 / 50 / 70 / 85 / 100;
+the client darkens the edges of vision from 10 on, more at each step. From 70 the abilities come
+out at 75%, from 85 at 50%. At 100 you're **blind**: the eyes close and won't open (no Sharingan
+either), no eye techniques, and the screen stays dark around a dim centre.
+
+**The Eternal Mangekyō** cures it: transplant another Mangekyō's eyes. Strain goes to 0 and never
+builds again, abilities ×1.25, perception +50% (a Mangekyō gives +25%), the eyes drain half the
+chakra and Susanoo grows twice as fast and drains 40% less; the donor's pattern is drawn over your
+own (merged).
+
+**Eye transplants.** Eyes are items (`Sharingan Eye`, `Mangekyō Eyes`) that remember tomoe,
+pattern, abilities, Susanoo colour, strain and donor (NBT). Hold use for 3 s (the "surgery"):
+
+| You | The eye | Result |
+|---|---|---|
+| Uchiha with your own Mangekyō | Mangekyō | **Eternal Mangekyō** |
+| Uchiha without one | Mangekyō | the donor's Mangekyō (pattern, abilities, colour, strain) |
+| Uchiha | Sharingan with more tomoe | your eyes reach its tomoe |
+| Not an Uchiha | Sharingan | **one implanted eye** (the Kakashi case): always open, can't be closed, 0.5 chakra/s for good (with none left it costs hunger) |
+| Not an Uchiha | Mangekyō | one implanted Mangekyō eye: only its first ability, no Susanoo, strain ×1.5 |
+
+Refused (the eye is kept): a weaker Sharingan, a plain eye for a Mangekyō, anything for an
+Eternal Mangekyō, any Sharingan for a Byakugan user.
+
+**Where eyes come from:** a Mangekyō ninja always leaves its eyes; a fallen crew Uchiha always
+leaves its Sharingan; any other Uchiha ninja beaten by you or your crew leaves an eye 12% of the time.
+
+**NPCs:** 8% of 3-tomoe Uchiha ninjas (rolled once) carry a Mangekyō (it shows in their eyes).
+The jutsu AI uses Amaterasu, Tsukuyomi and Kotoamatsukami at range, Kamui and Susanoo up close,
+Susanoo as an opener, and Izanagi or Susanoo when hurt. Their Mangekyō is kept in the entity's
+Forge persistent data; they don't strain.
+
+- Cheats: `/noirm mangekyo` (info) · `awaken` · `clear` · `eternal` · `strain <0-100>` ·
+  `pattern <0-7>` · `ability <left|right> <name>` · `eye <1-3>` · `eyes` · `npc`.
+- Tuning: constants at the top of `Mangekyo` (awakening, strain, power), `MangekyoAbilities`,
+  `Susanoo`, `MangekyoNpcs`; per-ability numbers in each jutsu JSON.
+- Not yet: a medical-ninja ally doing the surgery; taking a player's eyes; Kamui's own dimension;
+  Susanoo as a real model.
+
 ## 5. Awakening (owner: Resolve, identity-based)
 
 - **Resolve** (0–100, visible in combat mode) builds from damage dealt (more against stronger

@@ -323,6 +323,10 @@ public final class JutsuCaster {
             if ("sharingan".equals(requirement.dojutsu()) && Sharingan.activeStage(caster) < requirement.stage()) {
                 return Result.NEEDS_DOJUTSU;
             }
+            if ("mangekyo".equals(requirement.dojutsu()) && !com.noirm.dojutsu.Mangekyo.canUse(caster,
+                    com.noirm.dojutsu.MangekyoAbility.byKey(id.getPath().substring(id.getPath().lastIndexOf('/') + 1)))) {
+                return Result.NEEDS_DOJUTSU;
+            }
             if ("byakugan".equals(requirement.dojutsu()) && !Byakugan.isActive(caster)) {
                 return Result.NEEDS_DOJUTSU;
             }

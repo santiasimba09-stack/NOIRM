@@ -49,6 +49,21 @@ public final class JutsuBook {
         return true;
     }
 
+    /** Forgets a jutsu (e.g. a Mangekyō ability the eyes no longer carry) and takes it out of the loadout. */
+    public boolean forget(ResourceLocation id) {
+        if (mastery.remove(id) == null) {
+            return false;
+        }
+        copied.remove(id);
+        cooldowns.remove(id);
+        for (int i = 0; i < SLOTS; i++) {
+            if (id.equals(loadout[i])) {
+                loadout[i] = null;
+            }
+        }
+        return true;
+    }
+
     public boolean isCopied(ResourceLocation id) {
         return copied.contains(id);
     }

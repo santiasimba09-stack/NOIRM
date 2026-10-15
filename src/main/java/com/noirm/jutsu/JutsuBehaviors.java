@@ -61,7 +61,14 @@ public final class JutsuBehaviors {
             Map.entry("shadow_clone", CanonTechniques::shadowClone),
             Map.entry("strike", GreatTechniques::strike),
             Map.entry("wave", GreatTechniques::wave),
-            Map.entry("nova", GreatTechniques::nova));
+            Map.entry("nova", GreatTechniques::nova),
+            // The Mangekyō Sharingan (dojutsu/MangekyoAbilities, dojutsu/Susanoo)
+            Map.entry("amaterasu", com.noirm.dojutsu.MangekyoAbilities::amaterasu),
+            Map.entry("tsukuyomi", com.noirm.dojutsu.MangekyoAbilities::tsukuyomi),
+            Map.entry("kamui", com.noirm.dojutsu.MangekyoAbilities::kamui),
+            Map.entry("kotoamatsukami", com.noirm.dojutsu.MangekyoAbilities::kotoamatsukami),
+            Map.entry("izanagi", com.noirm.dojutsu.MangekyoAbilities::izanagi),
+            Map.entry("susanoo", com.noirm.dojutsu.Susanoo::cast));
 
     private JutsuBehaviors() {}
 

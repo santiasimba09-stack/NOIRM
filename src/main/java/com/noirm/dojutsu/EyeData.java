@@ -37,12 +37,34 @@ public final class EyeData {
     /** The Sharingan stays open for free this many more ticks (right after awakening or a new tomoe). */
     private int freeTicks;
 
+    // The Mangekyō Sharingan (see Mangekyo). Saved.
+    /** Awakened (or transplanted) Mangekyō. */
+    private boolean mangekyo;
+    /** Eternal Mangekyō: no strain, stronger (another Mangekyō's eyes taken in). */
+    private boolean eternal;
+    /** A Sharingan eye implanted into someone not born an Uchiha: always open, one eye only. */
+    private boolean transplanted;
+    /** The eye's own pattern (0..Mangekyo.PATTERNS-1), and the donor's merged into it (Eternal; -1 = none). */
+    private int pattern;
+    private int donorPattern = -1;
+    /** The ability in each eye (null = none: a single implanted eye has only the left). */
+    private MangekyoAbility left;
+    private MangekyoAbility right;
+    /** Susanoo's colour (0xRRGGBB). */
+    private int susanooColor = 0x8A3CFF;
+    /** Strain on the eyes, 0–100: vision blurs, abilities weaken, 100 = blind. Never heals by itself. */
+    private float strain;
+
     public int sharinganStage() {
         return sharinganStage;
     }
 
     public void setSharinganStage(int stage) {
         sharinganStage = Mth.clamp(stage, 0, MAX_STAGE);
+        if (sharinganStage == 0) {
+            setMangekyo(false); // no Sharingan, no Mangekyō (and no implanted eye)
+            transplanted = false;
+        }
         if (!hasEyes()) {
             active = false;
         }
@@ -77,7 +99,7 @@ public final class EyeData {
     }
 
     public void setActive(boolean active) {
-        this.active = active && hasEyes();
+        this.active = active && hasEyes() && !isBlind();
     }
 
     /** Sharingan tomoe while active, else 0. */
@@ -170,6 +192,104 @@ public final class EyeData {
         freeTicks = Math.max(0, ticks);
     }
 
+    // ---------------------------------------------------------------- Mangekyō
+
+    public boolean hasMangekyo() {
+        return mangekyo && sharinganStage > 0;
+    }
+
+    public void setMangekyo(boolean mangekyo) {
+        this.mangekyo = mangekyo;
+        if (!mangekyo) {
+            eternal = false;
+            donorPattern = -1;
+            left = null;
+            right = null;
+            strain = 0f;
+        }
+    }
+
+    /** The Mangekyō is open right now. */
+    public boolean isMangekyoActive() {
+        return isActive() && hasMangekyo();
+    }
+
+    public boolean isEternal() {
+        return eternal && hasMangekyo();
+    }
+
+    public void setEternal(boolean eternal) {
+        this.eternal = eternal;
+        if (eternal) {
+            strain = 0f;
+        }
+    }
+
+    public boolean isTransplanted() {
+        return transplanted && sharinganStage > 0;
+    }
+
+    public void setTransplanted(boolean transplanted) {
+        this.transplanted = transplanted;
+    }
+
+    public int pattern() {
+        return pattern;
+    }
+
+    public void setPattern(int pattern) {
+        this.pattern = Math.floorMod(pattern, Mangekyo.PATTERNS);
+    }
+
+    public int donorPattern() {
+        return donorPattern;
+    }
+
+    public void setDonorPattern(int pattern) {
+        donorPattern = pattern < 0 ? -1 : Math.floorMod(pattern, Mangekyo.PATTERNS);
+    }
+
+    public MangekyoAbility left() {
+        return left;
+    }
+
+    public MangekyoAbility right() {
+        return right;
+    }
+
+    public void setAbilities(MangekyoAbility left, MangekyoAbility right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    public boolean hasAbility(MangekyoAbility ability) {
+        return hasMangekyo() && ability != null && (ability == left || ability == right);
+    }
+
+    public int susanooColor() {
+        return susanooColor;
+    }
+
+    public void setSusanooColor(int color) {
+        susanooColor = color & 0xFFFFFF;
+    }
+
+    public float strain() {
+        return strain;
+    }
+
+    public void setStrain(float value) {
+        strain = Mth.clamp(value, 0f, Mangekyo.MAX_STRAIN);
+        if (isBlind()) {
+            active = false;
+        }
+    }
+
+    /** The Mangekyō's strain has taken the sight completely (the Eternal Mangekyō cures it). */
+    public boolean isBlind() {
+        return mangekyo && !eternal && strain >= Mangekyo.MAX_STRAIN;
+    }
+
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("SharinganStage", sharinganStage);
@@ -177,6 +297,15 @@ public final class EyeData {
         tag.putBoolean("Byakugan", byakugan);
         tag.putInt("SharinganDrillXp", drillXp);
         tag.putFloat("SharinganPressure", pressure);
+        tag.putBoolean("Mangekyo", mangekyo);
+        tag.putBoolean("Eternal", eternal);
+        tag.putBoolean("Transplanted", transplanted);
+        tag.putInt("Pattern", pattern);
+        tag.putInt("DonorPattern", donorPattern);
+        tag.putString("Left", left == null ? "" : left.key());
+        tag.putString("Right", right == null ? "" : right.key());
+        tag.putInt("SusanooColor", susanooColor);
+        tag.putFloat("Strain", strain);
         return tag;
     }
 
@@ -186,6 +315,15 @@ public final class EyeData {
         byakugan = tag.getBoolean("Byakugan");
         drillXp = Math.max(0, tag.getInt("SharinganDrillXp"));
         pressure = Mth.clamp(tag.getFloat("SharinganPressure"), 0f, 100f);
+        mangekyo = tag.getBoolean("Mangekyo");
+        eternal = tag.getBoolean("Eternal");
+        transplanted = tag.getBoolean("Transplanted");
+        pattern = Math.floorMod(tag.getInt("Pattern"), Mangekyo.PATTERNS);
+        donorPattern = tag.contains("DonorPattern") ? tag.getInt("DonorPattern") : -1;
+        left = MangekyoAbility.byKey(tag.getString("Left"));
+        right = MangekyoAbility.byKey(tag.getString("Right"));
+        susanooColor = tag.contains("SusanooColor") ? tag.getInt("SusanooColor") : 0x8A3CFF;
+        strain = Mth.clamp(tag.getFloat("Strain"), 0f, Mangekyo.MAX_STRAIN);
         active = false;
         freeTicks = 0;
     }

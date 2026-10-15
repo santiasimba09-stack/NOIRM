@@ -68,6 +68,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Fighting style id (for the stance loop) and whether they're in a fight right now. */
     private static final EntityDataAccessor<String> STYLE = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> FIGHTING = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
+    /** The Mangekyō's look (0 = none; see dojutsu/Mangekyo#look). Set from saved data by dojutsu/MangekyoNpcs. */
+    private static final EntityDataAccessor<Integer> MANGEKYO = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.INT);
     /** A jinchūriki ninja calls on its beast below this fraction of its health. */
     public static final float CLOAK_HEALTH = 0.35f;
 
@@ -151,6 +153,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(ANIMATION_SEQ, 0);
         entityData.define(STYLE, "");
         entityData.define(FIGHTING, false);
+        entityData.define(MANGEKYO, 0);
     }
 
     @Override
@@ -702,6 +705,15 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (tomoe >= 2 && JutsuData.get(Sharingan.GENJUTSU) != null && !jutsu.contains(Sharingan.GENJUTSU)) {
             jutsu.add(Sharingan.GENJUTSU);
         }
+    }
+
+    /** The Mangekyō's look (0 = none). */
+    public int mangekyoLook() {
+        return entityData.get(MANGEKYO);
+    }
+
+    public void setMangekyoLook(int look) {
+        entityData.set(MANGEKYO, look);
     }
 
     @Override
