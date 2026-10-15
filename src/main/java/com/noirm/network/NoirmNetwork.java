@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "10";
+    private static final String PROTOCOL_VERSION = "11";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -96,6 +96,15 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(VillagePackets.Atmosphere.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(VillagePackets.Atmosphere::encode).decoder(VillagePackets.Atmosphere::decode)
                 .consumerMainThread(VillagePackets.Atmosphere::handle).add();
+        CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Info.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.noirm.master.MasterPackets.Info::encode).decoder(com.noirm.master.MasterPackets.Info::decode)
+                .consumerMainThread(com.noirm.master.MasterPackets.Info::handle).add();
+        CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.noirm.master.MasterPackets.Command::encode).decoder(com.noirm.master.MasterPackets.Command::decode)
+                .consumerMainThread(com.noirm.master.MasterPackets.Command::handle).add();
+        CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Close.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.noirm.master.MasterPackets.Close::encode).decoder(com.noirm.master.MasterPackets.Close::decode)
+                .consumerMainThread(com.noirm.master.MasterPackets.Close::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

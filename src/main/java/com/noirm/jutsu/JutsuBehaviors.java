@@ -61,7 +61,9 @@ public final class JutsuBehaviors {
             Map.entry("shadow_clone", CanonTechniques::shadowClone),
             Map.entry("strike", GreatTechniques::strike),
             Map.entry("wave", GreatTechniques::wave),
-            Map.entry("nova", GreatTechniques::nova));
+            Map.entry("nova", GreatTechniques::nova),
+            Map.entry("lotus", TaijutsuTechniques::lotus),
+            Map.entry("flurry", TaijutsuTechniques::flurry));
 
     private JutsuBehaviors() {}
 

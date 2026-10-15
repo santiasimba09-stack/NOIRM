@@ -106,8 +106,8 @@ public final class Crew {
     /** {@code player} invites a yielded {@code ninja}. */
     public static boolean recruit(Player player, SparringNinja ninja) {
         var data = ShinobiCapability.get(player).orElse(null);
-        if (data == null) {
-            return false;
+        if (data == null || !ninja.recruitable()) {
+            return false; // (masters teach; they don't follow)
         }
         data.crew().removeIf(id -> !(stillAlive(player, id)));
         if (data.crew().size() >= maxSize(player)) {

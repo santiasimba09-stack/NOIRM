@@ -1901,6 +1901,11 @@ final class VillagePlanner {
             add(Spawn.at(Role.DUMMY, ground.cx() + 1, 0, ground.cz() - 4, 0));
             add(Spawn.at(Role.DUMMY, ground.cx() - 3, 0, ground.cz() - 4, 0));
         }
+        // The Leaf's taijutsu master trains at its first training ground (see data/noirm/masters/).
+        Lot dojo = plan.first(LotType.TRAINING_GROUND);
+        if (dojo != null && plan.palette == VillagePalette.LEAF) {
+            add(Spawn.at(Role.MASTER, dojo.cx() + 4, 0, dojo.cz() - 2, 10));
+        }
         Lot compound = plan.first(LotType.CLAN_COMPOUND);
         if (compound != null) {
             for (int i = 0; i < 5; i++) {

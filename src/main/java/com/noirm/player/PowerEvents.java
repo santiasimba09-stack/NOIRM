@@ -103,6 +103,7 @@ public final class PowerEvents {
             HyugaTechniques.tick(event.getEntity());
             com.noirm.jutsu.ModeSystem.tick(event.getEntity());
             com.noirm.jutsu.CanonTechniques.tick(event.getEntity());
+            com.noirm.jutsu.TaijutsuTechniques.tick(event.getEntity());
         }
     }
 

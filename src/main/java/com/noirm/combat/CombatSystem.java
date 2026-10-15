@@ -191,6 +191,18 @@ public final class CombatSystem {
         stagger(entity, state, ticks);
     }
 
+    /** Knocks a fighter flat (at least {@link #KNOCKDOWN_TICKS} of stun, a thud and dust). Used by jutsu. */
+    public static void knockDown(LivingEntity entity, int ticks) {
+        stun(entity, Math.max(KNOCKDOWN_TICKS, ticks));
+        CombatEffects.knockdown(entity);
+    }
+
+    /** Game time this fighter's posture last broke ({@code Long.MIN_VALUE} if never). For masters' tests. */
+    public static long lastPostureBreak(LivingEntity entity) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        return state == null ? Long.MIN_VALUE : state.lastPostureBreak;
+    }
+
     /** Posture damage from a jutsu (may break the guard). */
     public static void addPostureDamage(LivingEntity entity, float amount) {
         addPosture(entity, CombatStates.get(entity), amount);
@@ -727,6 +739,7 @@ public final class CombatSystem {
         state.wantsGuard = false;
         stopGuard(entity, state);
         state.posture = 0;
+        state.lastPostureBreak = entity.level().getGameTime();
         clearBuffer(state);
         enterPhase(entity, state, CombatPhase.STAGGER, POSTURE_BREAK_STUN);
         state.markDirty();

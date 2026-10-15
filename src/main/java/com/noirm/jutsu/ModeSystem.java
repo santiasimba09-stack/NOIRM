@@ -55,7 +55,7 @@ public final class ModeSystem {
         if (current != null) {
             end(caster);
         }
-        JutsuDefinition.Mode mode = ctx.def().mode().orElse(new JutsuDefinition.Mode(0, 1, 1, 1, 1, 1));
+        JutsuDefinition.Mode mode = ctx.def().mode().orElse(JutsuDefinition.Mode.NONE);
         int duration = ctx.params().duration();
         long until = duration > 0 ? caster.level().getGameTime() + duration : Long.MAX_VALUE;
         int mastery = caster instanceof Player player
@@ -68,8 +68,15 @@ public final class ModeSystem {
             speed.addTransientModifier(new AttributeModifier(SPEED_ID, "noirm_mode", Math.max(-0.9, mode.speed() * active.strength()),
                     AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
-        Vfx.flash(caster.level(), caster.position().add(0, 1, 0), Vfx.palette(ctx.def().nature().orElse(null)), 2.5f);
-        caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.8f, 1.6f);
+        Vfx.flash(caster.level(), caster.position().add(0, 1, 0), paletteOf(active), 2.5f);
+        if (mode.gate() > 0) {
+            // A gate bursts open: a shockwave and a roar of wind around the body.
+            Vfx.shockwave(caster.level(), caster.position().add(0, 0.1, 0), paletteOf(active), 2.5f + mode.gate());
+            Vfx.quake(caster.level(), caster.position(), 0.25f * mode.gate(), 10);
+            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 1f, 0.6f);
+        } else {
+            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.8f, 1.6f);
+        }
     }
 
     /** {@code to} takes on {@code from}'s active mode, if any (a shadow clone copies its owner's). */
@@ -127,9 +134,30 @@ public final class ModeSystem {
                 return;
             }
         }
+        JutsuDefinition.Mode mode = active.mode();
+        if (mode.healthDrain() > 0 || mode.endHealth() > 0) {
+            // The Gates burn the body: health drains, and the gate slams shut before it can kill.
+            float floor = endHealthOf(entity, mode);
+            float next = entity.getHealth() - mode.healthDrain() / 20f;
+            if (next <= floor) {
+                entity.setHealth(Math.max(floor, Math.min(entity.getHealth(), floor)));
+                end(entity);
+                if (entity instanceof Player player) {
+                    player.displayClientMessage(Component.translatable("message.noirm.mode.body_spent"), true);
+                }
+                return;
+            }
+            entity.setHealth(next);
+        }
         Nature nature = active.def().nature().orElse(null);
+        Vfx.Palette palette = paletteOf(active);
         if (entity.tickCount % 2 == 0) {
-            Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), Vfx.palette(nature), 5);
+            Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), palette, 5 + 2 * mode.gate());
+            if (mode.gate() >= 2) {
+                // The higher gates: the body boils off steam.
+                Vfx.burst(entity.level(), Vfx.smoke(palette.mid(), 0.6f, 24), entity.position().add(0, entity.getBbHeight() * 0.6, 0), 2,
+                        entity.getBbWidth() * 0.6, 0.03);
+            }
             if (nature == Nature.LIGHTNING) {
                 Vfx.arcs(entity.level(), entity, 2, Vfx.LIGHTNING);
                 Vfx.radial(entity.level(), Vfx.spark(0x9AD8FF, 0.18f, 5), entity.position().add(0, entity.getBbHeight() * 0.5, 0), 3, 0.35);
@@ -164,6 +192,31 @@ public final class ModeSystem {
     public static float actionSpeed(LivingEntity entity) {
         Active active = ACTIVE.get(entity);
         return active == null ? 1f : active.boost(active.mode().actionSpeed());
+    }
+
+    /** The tier of the Eight Gates {@code entity} has open (0 = none). */
+    public static int gateTier(LivingEntity entity) {
+        Active active = ACTIVE.get(entity);
+        return active == null ? 0 : active.mode().gate();
+    }
+
+    /**
+     * Whether {@code entity} is too hurt to open this mode: modes that end at low health (the
+     * Gates) can't start at or below that line.
+     */
+    public static boolean tooHurtFor(LivingEntity entity, JutsuDefinition def) {
+        JutsuDefinition.Mode mode = def.mode().orElse(null);
+        return mode != null && mode.endHealth() > 0 && entity.getHealth() <= endHealthOf(entity, mode) + 0.5f;
+    }
+
+    /** The health a mode ends at: its {@code end_health} share of max health, and never below 1. */
+    private static float endHealthOf(LivingEntity entity, JutsuDefinition.Mode mode) {
+        return Math.max(1f, entity.getMaxHealth() * mode.endHealth());
+    }
+
+    private static Vfx.Palette paletteOf(Active active) {
+        Vfx.Palette own = active.mode().auraPalette();
+        return own != null ? own : Vfx.palette(active.def().nature().orElse(null));
     }
 
     /** The active mode's run-speed bonus (e.g. 1.0 = twice as fast), for jumps and leaps. */

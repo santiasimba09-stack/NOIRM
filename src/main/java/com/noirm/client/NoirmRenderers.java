@@ -20,6 +20,8 @@ public final class NoirmRenderers {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NoirmEntities.SPARRING_NINJA.get(), SparringNinjaRenderer::new);
         event.registerEntityRenderer(NoirmEntities.SHADOW_CLONE.get(), ShadowCloneRenderer::new);
+        // Masters are ninjas with a fixed look (their skin key comes from data/noirm/masters/).
+        event.registerEntityRenderer(NoirmEntities.MASTER.get(), SparringNinjaRenderer::new);
         event.registerEntityRenderer(NoirmEntities.TRAINING_DUMMY.get(), TrainingDummyRenderer::new);
         event.registerEntityRenderer(NoirmEntities.TAILED_BEAST.get(), TailedBeastRenderer::new);
         event.registerEntityRenderer(NoirmEntities.VILLAGE_MERCHANT.get(), VillageMerchantRenderer::new);

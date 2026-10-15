@@ -868,6 +868,24 @@ CLANS = {
                       ["eyepatch", 1], ["face_bandage", 1]],
         "accessory_color": ACC_COLORS,
     },
+    # Masters: one fixed look per folder (every seed decodes the same). A taijutsu master's green
+    # training jumpsuit, leg warmers, a black bowl cut and thick brows. Our own simple parts only.
+    "taijutsu_master": {
+        "skin": [["#e0ac84", 1]],
+        "hair_style": [["bowl", 1]],
+        "hair_color": [["#141414", 1]],
+        "eyes": [["round", 1]],
+        "eye_color": [["#2a2a2e", 1]],
+        "brows": [["thick", 1]],
+        "shirt": [["turtleneck", 1]],
+        "shirt_color": [["#3e7a2e", 1]],
+        "pants": [["long", 1]],
+        "pants_color": [["#3e7a2e", 1]],
+        "wraps": [[1, 1]],
+        "mark": [["none", 1]],
+        "accessory": [["none", 1]],
+        "accessory_color": ACC_COLORS,
+    },
 }
 
 # A generated clan's members share a family look (seed bits 48-63 = the clan): most of them
