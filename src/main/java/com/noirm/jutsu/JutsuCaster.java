@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT }
 
     /** A CHARGE or CHANNEL jutsu in progress. */
     public static final class Casting {
@@ -345,6 +345,12 @@ public final class JutsuCaster {
             if ("cloak".equals(requirement.dojutsu()) && !BijuSystem.hasBeastChakra(caster)) {
                 return Result.NEEDS_CLOAK;
             }
+            if ("gate".equals(requirement.dojutsu()) && ModeSystem.gateTier(caster) < requirement.stage()) {
+                return Result.NEEDS_GATE;
+            }
+        }
+        if ("mode".equals(def.behavior()) && !ModeSystem.isActive(caster, id) && ModeSystem.tooHurtFor(caster, def)) {
+            return Result.TOO_HURT; // the Gates won't open on a body that's already spent
         }
         return Result.OK;
     }
@@ -383,8 +389,9 @@ public final class JutsuCaster {
         if (def.nature().isPresent() && usesWater(def.nature().get()) && nearWater(caster)) {
             power *= WATER_SOURCE_BONUS; // water jutsu are far stronger with water to draw from
         }
+        boolean taijutsu = isTaijutsu(id);
         if (!(caster instanceof Player) && caster instanceof com.noirm.combat.CombatStats stats) {
-            power *= chakraPower(stats.combatReserves());
+            power *= chakraPower(taijutsu ? stats.combatTaijutsu() : stats.combatReserves());
             if (caster instanceof com.noirm.entity.SparringNinja ninja) {
                 power *= 1f + MASTERY_POWER * ninja.jutsuMastery(id);
             }
@@ -392,7 +399,8 @@ public final class JutsuCaster {
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {
-                power *= chakraPower(data.getReserves());
+                // Taijutsu techniques hit as hard as your body is trained, not your chakra.
+                power *= chakraPower(taijutsu ? data.getTaijutsu() : data.getReserves());
                 power *= 1f + MASTERY_POWER * data.jutsu().masteryLevel(id);
                 AwakeningData awakening = data.awakening();
                 if (awakening.isLockedIn()) {
@@ -433,6 +441,11 @@ public final class JutsuCaster {
             }
         }
         return false;
+    }
+
+    /** Jutsu in {@code jutsu/taijutsu/} (the Gates, Lotus…): their power follows the taijutsu stat. */
+    public static boolean isTaijutsu(ResourceLocation id) {
+        return id.getPath().startsWith("taijutsu/");
     }
 
     /** +15% power per mastery level. */

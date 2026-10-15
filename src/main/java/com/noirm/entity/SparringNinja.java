@@ -158,7 +158,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     @Override
     public void aiStep() {
-        if (!level().isClientSide() && clanId.isEmpty() && level().getServer() != null) {
+        if (!level().isClientSide() && clanId.isEmpty() && rollsClan() && level().getServer() != null) {
             Clan rolled = WorldClans.get(level().getServer()).rollForNewcomer(getRandom());
             joinClan(rolled);
             com.noirm.dojutsu.SharinganAwakening.rollNpcDormant(this, rolled); // some Uchiha haven't awakened yet
@@ -539,6 +539,16 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             setPose(net.minecraft.world.entity.Pose.STANDING);
         }
         return hurt;
+    }
+
+    /** Whether a clan is rolled for this ninja when it has none (masters keep their own look and skills). */
+    protected boolean rollsClan() {
+        return true;
+    }
+
+    /** Whether this ninja can ever join a player's crew (masters can't). */
+    public boolean recruitable() {
+        return true;
     }
 
     /** Whether this ninja can be beaten into joining (not clones, not cloaked jinchūriki, not crew). */

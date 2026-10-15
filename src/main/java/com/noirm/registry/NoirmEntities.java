@@ -53,6 +53,13 @@ public final class NoirmEntities {
                     .clientTrackingRange(10)
                     .build(Noirm.id("shadow_clone").toString()));
 
+    /** A master who tests and teaches (Might Guy…); which one comes from {@code data/noirm/masters/}. */
+    public static final RegistryObject<EntityType<com.noirm.entity.MasterNinja>> MASTER = ENTITY_TYPES.register("master",
+            () -> EntityType.Builder.<com.noirm.entity.MasterNinja>of(com.noirm.entity.MasterNinja::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f)
+                    .clientTrackingRange(10)
+                    .build(Noirm.id("master").toString()));
+
     /** A shopkeeper in a ninja village (see {@code com.noirm.world.village}). */
     public static final RegistryObject<EntityType<com.noirm.entity.VillageMerchant>> VILLAGE_MERCHANT = ENTITY_TYPES.register("village_merchant",
             () -> EntityType.Builder.of(com.noirm.entity.VillageMerchant::new, MobCategory.MISC)
@@ -78,6 +85,7 @@ public final class NoirmEntities {
     public static void attributes(EntityAttributeCreationEvent event) {
         event.put(SPARRING_NINJA.get(), SparringNinja.createAttributes().build());
         event.put(SHADOW_CLONE.get(), SparringNinja.createAttributes().build());
+        event.put(MASTER.get(), SparringNinja.createAttributes().build());
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
         event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());
         event.put(VILLAGE_MERCHANT.get(), com.noirm.entity.VillageMerchant.createAttributes().build());

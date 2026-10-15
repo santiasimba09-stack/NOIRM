@@ -1406,6 +1406,104 @@
      1
     ]
    ]
+  },
+  "taijutsu_master": {
+   "skin": [
+    [
+     "#e0ac84",
+     1
+    ]
+   ],
+   "hair_style": [
+    [
+     "bowl",
+     1
+    ]
+   ],
+   "hair_color": [
+    [
+     "#141414",
+     1
+    ]
+   ],
+   "eyes": [
+    [
+     "round",
+     1
+    ]
+   ],
+   "eye_color": [
+    [
+     "#2a2a2e",
+     1
+    ]
+   ],
+   "brows": [
+    [
+     "thick",
+     1
+    ]
+   ],
+   "shirt": [
+    [
+     "turtleneck",
+     1
+    ]
+   ],
+   "shirt_color": [
+    [
+     "#3e7a2e",
+     1
+    ]
+   ],
+   "pants": [
+    [
+     "long",
+     1
+    ]
+   ],
+   "pants_color": [
+    [
+     "#3e7a2e",
+     1
+    ]
+   ],
+   "wraps": [
+    [
+     1,
+     1
+    ]
+   ],
+   "mark": [
+    [
+     "none",
+     1
+    ]
+   ],
+   "accessory": [
+    [
+     "none",
+     1
+    ]
+   ],
+   "accessory_color": [
+    [
+     "#1f2638",
+     3
+    ],
+    [
+     "#22252b",
+     3
+    ],
+    [
+     "#3a3f48",
+     2
+    ],
+    [
+     "#2c2330",
+     1
+    ]
+   ]
   }
  },
  "family": {

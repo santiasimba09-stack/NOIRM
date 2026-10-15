@@ -186,7 +186,9 @@ public final class VillagePlan {
     /** Who lives here. */
     public enum Role { KAGE, GUARD, PATROL, RUNNER, TRAINEE, CLAN_NINJA, NINJA, MERCHANT, CIVILIAN, CHILD, TEACHER, DUMMY, CHIEF,
         /** Village animals: a cat on a porch, chickens in a yard, koi in a pond. */
-        CAT, CHICKEN, KOI }
+        CAT, CHICKEN, KOI,
+        /** A master who tests and teaches (Might Guy, in the Leaf). */
+        MASTER }
 
     /**
      * A resident: where they spawn ({@code x, y, z}), where they belong ({@code homeX/Z},

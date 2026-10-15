@@ -62,6 +62,7 @@ public final class ShinobiData {
     private final AwakeningData awakening = new AwakeningData();
     private final BijuData biju = new BijuData();
     private final TrainingData training = new TrainingData();
+    private final com.noirm.master.MasterProgress masters = new com.noirm.master.MasterProgress();
     /** Your crew mates (ninjas who joined you), by UUID. */
     private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
 
@@ -87,6 +88,11 @@ public final class ShinobiData {
 
     public java.util.List<java.util.UUID> crew() {
         return crew;
+    }
+
+    /** Masters' tests passed, lessons learned and styles granted. */
+    public com.noirm.master.MasterProgress masters() {
+        return masters;
     }
 
     public TrainingData training() {
@@ -287,6 +293,7 @@ public final class ShinobiData {
         tag.put("Awakening", awakening.save());
         tag.put("Biju", biju.save());
         tag.put("Training", training.save());
+        tag.put("Masters", masters.save());
         return tag;
     }
 
@@ -308,6 +315,7 @@ public final class ShinobiData {
         awakening.load(tag.getCompound("Awakening"));
         biju.load(tag.getCompound("Biju"));
         training.load(tag.getCompound("Training"));
+        masters.load(tag.getCompound("Masters"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

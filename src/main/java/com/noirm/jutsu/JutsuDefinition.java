@@ -52,16 +52,45 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
      * @param defense     damage taken multiplier (0.75 = 25% less)
      * @param actionSpeed how fast your own moves play (1.35 = 35% faster wind-ups and recoveries)
      * @param drain       chakra per second while it's on
+     * @param healthDrain health per second while it's on (the Eight Gates burn the body, not chakra)
+     * @param endHealth   the mode ends (and can't start) at or below this fraction of max health
+     * @param gate        which tier of the Eight Gates this is (0 = not a gate); jutsu can require one
+     * @param aura        the aura's colours, {@code ["#core", "#mid", "#edge", "#accent"]}; empty = the nature's
      */
-    public record Mode(float speed, float perception, float damage, float defense, float actionSpeed, float drain) {
+    public record Mode(float speed, float perception, float damage, float defense, float actionSpeed, float drain,
+                       float healthDrain, float endHealth, int gate, java.util.List<String> aura) {
+        /** A mode with no effects (for a {@code "mode"} jutsu without a {@code mode} block). */
+        public static final Mode NONE = new Mode(0, 1, 1, 1, 1, 1, 0, 0, 0, java.util.List.of());
+
         public static final Codec<Mode> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.FLOAT.optionalFieldOf("speed", 0f).forGetter(Mode::speed),
                 Codec.FLOAT.optionalFieldOf("perception", 1f).forGetter(Mode::perception),
                 Codec.FLOAT.optionalFieldOf("damage", 1f).forGetter(Mode::damage),
                 Codec.FLOAT.optionalFieldOf("defense", 1f).forGetter(Mode::defense),
                 Codec.FLOAT.optionalFieldOf("action_speed", 1f).forGetter(Mode::actionSpeed),
-                Codec.FLOAT.optionalFieldOf("drain", 1f).forGetter(Mode::drain)
+                Codec.FLOAT.optionalFieldOf("drain", 1f).forGetter(Mode::drain),
+                Codec.FLOAT.optionalFieldOf("health_drain", 0f).forGetter(Mode::healthDrain),
+                Codec.floatRange(0, 1).optionalFieldOf("end_health", 0f).forGetter(Mode::endHealth),
+                Codec.intRange(0, 8).optionalFieldOf("gate", 0).forGetter(Mode::gate),
+                Codec.STRING.listOf().optionalFieldOf("aura", java.util.List.of()).forGetter(Mode::aura)
         ).apply(i, Mode::new));
+
+        /** The aura's palette, or null to use the nature's. */
+        public com.noirm.vfx.Vfx.Palette auraPalette() {
+            if (aura.isEmpty()) {
+                return null;
+            }
+            int[] c = new int[4];
+            for (int k = 0; k < 4; k++) {
+                String hex = aura.get(Math.min(k, aura.size() - 1));
+                try {
+                    c[k] = Integer.parseInt(hex.startsWith("#") ? hex.substring(1) : hex, 16);
+                } catch (NumberFormatException e) {
+                    c[k] = 0xFFFFFF;
+                }
+            }
+            return new com.noirm.vfx.Vfx.Palette(c[0], c[1], c[2], c[3]);
+        }
     }
 
     /**
@@ -83,7 +112,10 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
         }
     }
 
-    /** A dōjutsu needed to cast: e.g. {@code {"dojutsu": "sharingan", "stage": 2}} (must be active). */
+    /**
+     * A state needed to cast: a dōjutsu, e.g. {@code {"dojutsu": "sharingan", "stage": 2}} (must be
+     * active), the beast's {@code "cloak"}, or an open {@code "gate"} of at least that tier.
+     */
     public record Requirement(String dojutsu, int stage) {
         public static final Codec<Requirement> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("dojutsu").forGetter(Requirement::dojutsu),

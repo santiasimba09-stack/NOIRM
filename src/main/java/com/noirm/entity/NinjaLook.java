@@ -31,6 +31,8 @@ import java.util.Map;
 public final class NinjaLook {
     /** Clan folders that have their own appearance tables; every other clan uses "generic". */
     public static final List<String> FOLDERS = List.of("uchiha", "senju", "hyuga", "uzumaki", "generic");
+    /** Fixed looks (every seed decodes the same), for masters ({@code data/noirm/masters/}). */
+    public static final List<String> FIXED_FOLDERS = List.of("taijutsu_master");
     /** Decoding order: changing it changes every ninja's look. */
     public static final List<String> FIELDS = List.of("skin", "hair_style", "hair_color", "eyes", "eye_color", "brows",
             "shirt", "shirt_color", "pants", "pants_color", "wraps", "mark", "accessory", "accessory_color");
@@ -70,7 +72,7 @@ public final class NinjaLook {
     // ---------------------------------------------------------------- keys
 
     public static String folderFor(String clanId) {
-        return FOLDERS.contains(clanId) ? clanId : "generic";
+        return FOLDERS.contains(clanId) || FIXED_FOLDERS.contains(clanId) ? clanId : "generic";
     }
 
     public static String key(String folder, long seed) {

@@ -92,7 +92,23 @@ public final class VillageResidents {
             case CAT -> animal(level, net.minecraft.world.entity.EntityType.CAT, pos, s.radius());
             case CHICKEN -> animal(level, net.minecraft.world.entity.EntityType.CHICKEN, pos, s.radius());
             case KOI -> animal(level, net.minecraft.world.entity.EntityType.TROPICAL_FISH, pos, s.radius());
+            case MASTER -> master(level, pos, home, s.radius());
         }
+    }
+
+    /** Might Guy at the training ground (if his data is loaded): stays near it, never despawns. */
+    private static void master(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius) {
+        if (com.noirm.master.MasterData.get(com.noirm.master.MasterData.MIGHT_GUY) == null) {
+            return;
+        }
+        com.noirm.entity.MasterNinja master = NoirmEntities.MASTER.get().create(level.getLevel());
+        if (master == null) {
+            return;
+        }
+        master.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.getRandom().nextFloat() * 360f, 0f);
+        master.setMaster(com.noirm.master.MasterData.MIGHT_GUY);
+        master.restrictTo(home, Math.max(4, radius));
+        place(level, master);
     }
 
     /** A village animal that stays put (persistent, kept near where it was placed). */

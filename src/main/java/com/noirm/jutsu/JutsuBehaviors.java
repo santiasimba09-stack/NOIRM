@@ -68,7 +68,9 @@ public final class JutsuBehaviors {
             Map.entry("kamui", com.noirm.dojutsu.MangekyoAbilities::kamui),
             Map.entry("kotoamatsukami", com.noirm.dojutsu.MangekyoAbilities::kotoamatsukami),
             Map.entry("izanagi", com.noirm.dojutsu.MangekyoAbilities::izanagi),
-            Map.entry("susanoo", com.noirm.dojutsu.Susanoo::cast));
+            Map.entry("susanoo", com.noirm.dojutsu.Susanoo::cast),
+            Map.entry("lotus", TaijutsuTechniques::lotus),
+            Map.entry("flurry", TaijutsuTechniques::flurry));
 
     private JutsuBehaviors() {}
 

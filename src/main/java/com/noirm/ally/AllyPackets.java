@@ -218,6 +218,9 @@ public final class AllyPackets {
     }
 
     static String blocker(SparringNinja ally, JutsuDefinition def) {
+        if (com.noirm.master.MasterData.taughtByMaster(def)) {
+            return "screen.noirm.ally.teach.master"; // the Gates and their techniques: only a master teaches those
+        }
         if (def.requires().isPresent()) {
             return "screen.noirm.ally.teach.eyes"; // dōjutsu and beast techniques can't be taught
         }

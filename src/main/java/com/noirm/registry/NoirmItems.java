@@ -44,6 +44,9 @@ public final class NoirmItems {
             () -> new com.noirm.dojutsu.SharinganEyeItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)));
     public static final RegistryObject<Item> MANGEKYO_EYES = ITEMS.register("mangekyo_eyes",
             () -> new com.noirm.dojutsu.SharinganEyeItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
+    /** A master (Might Guy unless the egg's {@code EntityTag} names another, e.g. {@code {Master:"noirm:might_guy"}}). */
+    public static final RegistryObject<Item> MASTER_SPAWN_EGG = ITEMS.register("master_spawn_egg",
+            () -> new ForgeSpawnEggItem(NoirmEntities.MASTER, 0x3E7A2E, 0xE07A30, new Item.Properties()));
 
     private NoirmItems() {}
 
@@ -68,6 +71,7 @@ public final class NoirmItems {
             }
             event.accept(TAILED_BEAST_SPAWN_EGG);
             event.accept(VILLAGE_MERCHANT_SPAWN_EGG);
+            event.accept(MASTER_SPAWN_EGG);
         } else if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
             event.accept(RAMEN);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {

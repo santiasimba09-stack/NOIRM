@@ -42,12 +42,16 @@ public final class StyleSystem {
         return CombatData.DEFAULT_STYLE;
     }
 
-    /** The styles {@code data} qualifies for, the basic one first. */
+    /**
+     * The styles {@code data} qualifies for, the basic one first. A style a master granted (by
+     * passing their test) counts even below its taijutsu requirement.
+     */
     public static List<ResourceLocation> available(ShinobiData data) {
         List<ResourceLocation> list = new ArrayList<>();
         for (Map.Entry<ResourceLocation, CombatStyle> entry : CombatData.styles().entrySet()) {
             CombatStyle style = entry.getValue();
-            if (style.playable() && style.missingRequirement(data.getTaijutsu(), data.identity().hasByakugan()).isEmpty()) {
+            boolean granted = data.masters().hasStyle(entry.getKey().toString());
+            if (style.playable() && (granted || style.missingRequirement(data.getTaijutsu(), data.identity().hasByakugan()).isEmpty())) {
                 list.add(entry.getKey());
             }
         }

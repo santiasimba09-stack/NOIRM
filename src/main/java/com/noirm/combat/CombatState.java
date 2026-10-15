@@ -40,6 +40,8 @@ public final class CombatState {
     float posture;
     float maxPosture = DEFAULT_MAX_POSTURE;
     int postureRegenDelay;
+    /** Game time of the last posture break (masters count them in a spar). */
+    long lastPostureBreak = Long.MIN_VALUE;
 
     // Clinch (grappling): who this fighter holds, or who holds them
     net.minecraft.world.entity.LivingEntity clinchTarget;
