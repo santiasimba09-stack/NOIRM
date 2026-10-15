@@ -44,7 +44,8 @@ import java.util.Locale;
  *   <li>{@code /noirm clan set <id>} · {@code clan reroll} · {@code clan new} (cheats)</li>
  *   <li>{@code /noirm nature add <nature>} — learn a nature as if by training (cheats)</li>
  *   <li>{@code /noirm jutsu list} · {@code jutsu learn <id>|all} · {@code jutsu equip <slot> <id>} (cheats)</li>
- *   <li>{@code /noirm sharingan <0-3>} · {@code resolve <0-100>} · {@code awaken} (cheats)</li>
+ *   <li>{@code /noirm sharingan <0-3>} · {@code sharingan xp <n>} · {@code sharingan pressure <0-100>} ·
+ *       {@code resolve <0-100>} · {@code awaken} (cheats)</li>
  *   <li>{@code /noirm biju seal <tails>} · {@code biju release} (cheats)</li>
  * </ul>
  */
@@ -206,7 +207,13 @@ public final class PowersCommand {
                                                         ResourceLocationArgument.getId(ctx, "jutsu")))))))
                 .then(Commands.literal("sharingan").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.argument("tomoe", IntegerArgumentType.integer(0, EyeData.MAX_STAGE))
-                                .executes(ctx -> setSharingan(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "tomoe")))))
+                                .executes(ctx -> setSharingan(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "tomoe"))))
+                        .then(Commands.literal("xp")
+                                .then(Commands.argument("amount", IntegerArgumentType.integer(1, 5000))
+                                        .executes(ctx -> sharinganXp(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "amount")))))
+                        .then(Commands.literal("pressure")
+                                .then(Commands.argument("value", FloatArgumentType.floatArg(0, 100))
+                                        .executes(ctx -> sharinganPressure(ctx.getSource(), FloatArgumentType.getFloat(ctx, "value"))))))
                 .then(Commands.literal("byakugan").requires(s -> s.hasPermission(CHEATS))
                         .executes(ctx -> setByakugan(ctx.getSource(), true))
                         .then(Commands.literal("remove").executes(ctx -> setByakugan(ctx.getSource(), false))))
@@ -352,6 +359,29 @@ public final class PowersCommand {
         }
         data.markPowersDirty();
         PowerVisuals.broadcast(player);
+        return 1;
+    }
+
+    /** Grows an awakened Sharingan as if from use (may reach the next tomoe). */
+    private static int sharinganXp(CommandSourceStack source, int amount) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ShinobiData data = data(source);
+        Sharingan.addXp(player, data, amount);
+        source.sendSuccess(() -> Component.translatable("command.noirm.sharingan.xp", data.eyes().sharinganXp(), data.eyes().sharinganStage()), false);
+        return 1;
+    }
+
+    /** Sets a dormant Uchiha's pressure (hints fire as it crosses 25/50/75/100). */
+    private static int sharinganPressure(CommandSourceStack source, float value) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ShinobiData data = data(source);
+        if (!com.noirm.dojutsu.SharinganAwakening.isDormant(data)) {
+            source.sendFailure(Component.translatable("command.noirm.sharingan.not_dormant"));
+            return 0;
+        }
+        data.eyes().setPressure(0f);
+        com.noirm.dojutsu.SharinganAwakening.addPressure(player, data, value);
+        source.sendSuccess(() -> Component.translatable("command.noirm.sharingan.pressure", Math.round(data.eyes().pressure())), false);
         return 1;
     }
 

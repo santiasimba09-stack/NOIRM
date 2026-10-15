@@ -72,8 +72,15 @@ public final class ClientPowers {
     }
 
     public static void sync(PowerPackets.SyncPowers packet) {
-        if (latest != null && !latest.eyesActive() && packet.eyesActive()) {
+        if (latest != null && packet.sharinganStage() > latest.sharinganStage()) {
+            EyeEffects.onTomoe(packet.sharinganStage()); // awakened, or a new tomoe: spin that many
+        } else if (latest != null && !latest.eyesActive() && packet.eyesActive()) {
             EyeEffects.onActivated(packet.sharinganStage() > 0);
+        }
+        int hintBefore = latest == null ? 0 : com.noirm.dojutsu.SharinganAwakening.hintTier(latest.sharinganPressure());
+        int hintNow = com.noirm.dojutsu.SharinganAwakening.hintTier(packet.sharinganPressure());
+        if (latest != null && hintNow > hintBefore) {
+            EyeEffects.onFlicker(hintNow); // a dormant Sharingan stirring
         }
         latest = packet;
         ticksSinceSync = 0;

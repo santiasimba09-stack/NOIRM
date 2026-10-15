@@ -144,7 +144,8 @@ public final class PowerPackets {
                              int sharinganStage, boolean eyesActive, boolean byakugan, int sharinganXp, int sharinganNextXp,
                              float resolve, int lockedInTicks, int exhaustionTicks,
                              int tails, int cloakStage, int cloakTicks, int cloakCooldown,
-                             int cloakTails, int unlockedTails, int bond) {
+                             int cloakTails, int unlockedTails, int bond,
+                             int sharinganPressure, int sharinganDrillXp) {
 
         public static SyncPowers of(ServerPlayer player, ShinobiData data) {
             List<Integer> natures = new ArrayList<>();
@@ -182,7 +183,8 @@ public final class PowerPackets {
                     eyes.sharinganStage(), eyes.isActive(), eyes.hasByakugan(), eyes.sharinganXp(), nextXp,
                     awakening.resolve(), awakening.lockedInTicks(), awakening.exhaustionTicks(),
                     data.biju().tails(), data.biju().cloakStage(), data.biju().cloakTicks(), data.biju().cooldownTicks(),
-                    data.biju().cloakTails(), data.biju().unlockedTails(), data.biju().bond());
+                    data.biju().cloakTails(), data.biju().unlockedTails(), data.biju().bond(),
+                    com.noirm.dojutsu.SharinganAwakening.isDormant(data) ? Math.round(eyes.pressure()) : -1, eyes.drillXp());
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -213,6 +215,8 @@ public final class PowerPackets {
             buf.writeByte(cloakTails);
             buf.writeByte(unlockedTails);
             buf.writeVarInt(bond + 100);
+            buf.writeVarInt(sharinganPressure + 1);
+            buf.writeVarInt(sharinganDrillXp);
         }
 
         public static SyncPowers decode(FriendlyByteBuf buf) {
@@ -224,7 +228,8 @@ public final class PowerPackets {
                     buf.readByte(), buf.readBoolean(), buf.readBoolean(), buf.readVarInt(), buf.readVarInt(),
                     buf.readFloat(), buf.readVarInt(), buf.readVarInt(),
                     buf.readByte(), buf.readByte(), buf.readVarInt(), buf.readVarInt(),
-                    buf.readByte(), buf.readByte(), buf.readVarInt() - 100);
+                    buf.readByte(), buf.readByte(), buf.readVarInt() - 100,
+                    buf.readVarInt() - 1, buf.readVarInt());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

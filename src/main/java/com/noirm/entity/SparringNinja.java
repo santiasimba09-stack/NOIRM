@@ -50,7 +50,8 @@ import java.util.List;
  * jutsu; Uchiha ninjas fight with an active Sharingan. Speed, taijutsu and clan can be set with
  * {@code /summon noirm:sparring_ninja ~ ~ ~ {Speed:15,Taijutsu:15,Clan:"uchiha"}}.
  */
-public class SparringNinja extends PathfinderMob implements CombatStats, CombatListener, JutsuUser, com.noirm.combat.CombatAnimated {
+public class SparringNinja extends PathfinderMob implements CombatStats, CombatListener, JutsuUser, com.noirm.combat.CombatAnimated,
+        com.noirm.chakra.WaterWalker {
     /** What the model should show. Synced to clients. */
     public enum Pose { IDLE, WINDUP_LIGHT, WINDUP_HEAVY, ACTIVE, GUARD, STAGGER }
 
@@ -155,7 +156,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public void aiStep() {
         if (!level().isClientSide() && clanId.isEmpty() && level().getServer() != null) {
-            joinClan(WorldClans.get(level().getServer()).rollForNewcomer(getRandom()));
+            Clan rolled = WorldClans.get(level().getServer()).rollForNewcomer(getRandom());
+            joinClan(rolled);
+            com.noirm.dojutsu.SharinganAwakening.rollNpcDormant(this, rolled); // some Uchiha haven't awakened yet
         }
         if (!level().isClientSide() && !tailsDecided) {
             tailsDecided = true;
@@ -1050,5 +1053,13 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.PLAYER_DEATH;
+    }
+
+    // ---------------------------------------------------------------- water walking (chakra/WaterWalking)
+
+    /** Ninjas walk on water, so their crew can follow you over a lake; a beaten ninja sinks. */
+    @Override
+    public boolean canWaterWalk() {
+        return isAlive() && !isPassenger() && !isYielded();
     }
 }

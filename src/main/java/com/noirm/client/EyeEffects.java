@@ -30,6 +30,8 @@ import java.util.List;
  *   <li><b>Activation:</b> opening the eyes flashes the screen and spins three tomoe (or a pale
  *       ring for the Byakugan).</li>
  *   <li>While the Sharingan is open, a faint red tint at the edges of your vision.</li>
+ *   <li><b>Growth:</b> awakening or gaining a tomoe spins that many tomoe; a dormant Sharingan
+ *       stirring (its pressure rising) flickers red at the edges, with a heartbeat when it's close.</li>
  * </ul>
  */
 public final class EyeEffects {
@@ -55,6 +57,12 @@ public final class EyeEffects {
     private static int beatAge = -1;
     private static int activationAge = -1;
     private static boolean activationSharingan;
+    /** How many tomoe the activation spins (3 when simply opening the eyes). */
+    private static int activationTomoe = 3;
+    private static final int FLICKER_TICKS = 18;
+    /** Ticks since a dormant Sharingan last flickered (-1 = none), and how strongly (1–4). */
+    private static int flickerAge = -1;
+    private static int flickerTier;
 
     private EyeEffects() {}
 
@@ -72,12 +80,31 @@ public final class EyeEffects {
     static void onActivated(boolean sharingan) {
         activationAge = 0;
         activationSharingan = sharingan;
+        activationTomoe = 3;
+    }
+
+    /** The Sharingan just awakened or gained a tomoe: spin {@code tomoe} of them. */
+    static void onTomoe(int tomoe) {
+        activationAge = 0;
+        activationSharingan = true;
+        activationTomoe = Mth.clamp(tomoe, 1, 3);
+    }
+
+    /** A dormant Sharingan stirs: a red flicker at the edges (and a heartbeat from tier 3). */
+    static void onFlicker(int tier) {
+        flickerAge = 0;
+        flickerTier = tier;
+        Minecraft minecraft = Minecraft.getInstance();
+        if (tier >= 3 && minecraft.player != null) {
+            minecraft.player.playSound(SoundEvents.WARDEN_HEARTBEAT, 0.5f, 1.2f);
+        }
     }
 
     static void reset() {
         THREATS.clear();
         beatAge = -1;
         activationAge = -1;
+        flickerAge = -1;
     }
 
     // ---------------------------------------------------------------- ticking
@@ -86,6 +113,9 @@ public final class EyeEffects {
         Minecraft minecraft = Minecraft.getInstance();
         if (activationAge >= 0 && ++activationAge > ACTIVATION_TICKS) {
             activationAge = -1;
+        }
+        if (flickerAge >= 0 && ++flickerAge > FLICKER_TICKS) {
+            flickerAge = -1;
         }
         if (beatAge >= 0) {
             beatAge++;
@@ -156,6 +186,25 @@ public final class EyeEffects {
         }
         drawWarning(graphics, minecraft, partialTick, width, height, tint);
         drawActivation(graphics, minecraft, partialTick, width, height);
+        drawFlicker(graphics, width, height);
+    }
+
+    /** Two quick red flickers at the edges of vision, stronger as the pressure nears full. */
+    private static void drawFlicker(GuiGraphics graphics, int width, int height) {
+        if (flickerAge < 0) {
+            return;
+        }
+        boolean lit = flickerAge < 3 || (flickerAge >= 7 && flickerAge < 10);
+        if (!lit) {
+            return;
+        }
+        int alpha = 40 + 30 * flickerTier;
+        int edge = Math.max(24, height / 7) + 6 * flickerTier;
+        int color = (alpha << 24) | 0xB00000;
+        graphics.fillGradient(0, 0, width, edge, color, 0);
+        graphics.fillGradient(0, height - edge, width, height, 0, color);
+        graphics.fill(0, 0, 3 + flickerTier, height, color);
+        graphics.fill(width - 3 - flickerTier, 0, width, height, color);
     }
 
     private static void drawWarning(GuiGraphics graphics, Minecraft minecraft, float partialTick, int width, int height, int tint) {
@@ -213,9 +262,9 @@ public final class EyeEffects {
             if (activationSharingan) {
                 // Three tomoe spinning around the pupil, speeding as they spread.
                 graphics.pose().mulPose(Axis.ZP.rotationDegrees(t * 540f));
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < activationTomoe; i++) {
                     graphics.pose().pushPose();
-                    graphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 120f));
+                    graphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 360f / activationTomoe));
                     graphics.pose().translate(0, -(10 + 30 * t), 0);
                     graphics.pose().scale(scale, scale, 1f);
                     graphics.drawCenteredString(minecraft.font, "●", 0, -4, (alpha << 24) | 0xFF2020);

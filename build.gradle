@@ -78,6 +78,8 @@ minecraft {
             // These remap them to the dev environment's names; without them the client crashes at launch.
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            // Our own mixins (water walking). The real game finds them through the jar's manifest (below).
+            args '-mixin.config=noirm.mixins.json'
 
             mods {
                 "${mod_id}" {
@@ -181,7 +183,8 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : project.jar.archiveVersion,
                 'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs'            : 'noirm.mixins.json'
         ])
     }
 

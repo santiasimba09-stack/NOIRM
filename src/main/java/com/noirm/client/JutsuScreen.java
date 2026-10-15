@@ -288,6 +288,36 @@ public class JutsuScreen extends Screen {
         String detailsId = hovered != null ? hovered : selected != null ? selected.toString() : null;
         if (detailsId != null) {
             drawDetails(g, ClientJutsuCatalog.get(detailsId), ClientPowers.entry(detailsId), x + 5, y + 5, SIDEBAR - 10);
+        } else {
+            drawEyes(g, powers, x + 5, y + 5, SIDEBAR - 10);
+        }
+    }
+
+    /** The Sharingan's stage and growth (or, still dormant, how close it feels to waking). */
+    private void drawEyes(GuiGraphics g, PowerPackets.SyncPowers powers, int x, int y, int w) {
+        int red = 0xFFE03030;
+        int stage = powers.sharinganStage();
+        if (stage > 0) {
+            String tomoe = "●".repeat(stage) + "○".repeat(3 - stage);
+            y = wrap(g, Component.translatable("screen.noirm.eyes.sharingan", tomoe), x, y, w, red) + 1;
+            float progress = PowerHud.sharinganProgress(powers);
+            if (progress < 0) {
+                y = wrap(g, Component.translatable("screen.noirm.eyes.mature"), x, y, w, GOLD) + 2;
+            } else {
+                y = wrap(g, Component.translatable("screen.noirm.eyes.progress", powers.sharinganXp(), powers.sharinganNextXp()), x, y, w, 0xFFC8C8C8) + 1;
+                g.fill(x, y, x + w, y + 4, 0xFF000000);
+                g.fill(x + 1, y + 1, x + 1 + Math.round((w - 2) * progress), y + 3, 0xFFD02020);
+                y += 7;
+                y = wrap(g, Component.translatable("screen.noirm.eyes.grows"), x, y, w, DIM) + 2;
+                if (powers.sharinganDrillXp() >= Sharingan.DRILL_XP_CAP) {
+                    wrap(g, Component.translatable("screen.noirm.eyes.drill_capped"), x, y, w, DIM);
+                }
+            }
+        } else if (powers.sharinganPressure() >= 0) {
+            y = wrap(g, Component.translatable("screen.noirm.eyes.dormant"), x, y, w, 0xFF904040) + 1;
+            int tier = com.noirm.dojutsu.SharinganAwakening.hintTier(powers.sharinganPressure());
+            y = wrap(g, Component.translatable("screen.noirm.eyes.pressure." + tier), x, y, w, tier >= 3 ? red : 0xFFC8C8C8) + 2;
+            wrap(g, Component.translatable("screen.noirm.eyes.routes"), x, y, w, DIM);
         }
     }
 

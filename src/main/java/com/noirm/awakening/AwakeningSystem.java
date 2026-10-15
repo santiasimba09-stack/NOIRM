@@ -57,8 +57,9 @@ public final class AwakeningSystem {
     public static void onClutch(LivingEntity entity) {
         if (entity instanceof Player player) {
             addResolve(player, 5f);
-            if (player instanceof ServerPlayer serverPlayer) {
-                ShinobiCapability.get(player).ifPresent(d -> Sharingan.addXp(serverPlayer, d, d.eyes().isActive() ? 10 : 0));
+            if (!player.level().isClientSide()) {
+                // The Sharingan grows (more if it foresaw the attack); a dormant one builds pressure.
+                ShinobiCapability.get(player).ifPresent(d -> com.noirm.dojutsu.SharinganAwakening.onClutch(player, d));
             }
         }
     }
@@ -136,6 +137,7 @@ public final class AwakeningSystem {
                 boolean first = data.eyes().sharinganStage() == 0;
                 Sharingan.advance(player, data, first ? "message.noirm.sharingan.awakened" : "message.noirm.sharingan.tomoe_awakening");
                 data.eyes().setActive(true);
+                data.eyes().setPressure(0f); // whatever was building has broken through
                 yield first ? "title.noirm.awakening.sharingan" : "title.noirm.awakening.tomoe";
             }
             case NATURE_SURGE -> {
