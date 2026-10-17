@@ -2,6 +2,32 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-17 — Commands for everything, in sections, v0.9.1 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **`/noirm help`:** the commands in 11 clickable sections (me, combat, clan, jutsu, eyes, beast, crew,
+  spawn, kit, world, master); clicking a command types it, hovering shows an example. `/noirm` alone
+  shows the sections. All 80 commands are in `docs/COMMANDS.md` (generated).
+- **New commands:**
+  - **me:** a full profile (`/noirm me`), `me heal` (health, chakra, stamina, food, no cooldowns or bad
+    effects), `me max`, `me stats <speed> <taijutsu> <vitality> <reserves>`;
+  - **combat:** `combat on|off`, `style` (yours and the rest, click to switch), `style set`, `style moves`
+    (which button opens with which move);
+  - **natures and jutsu:** `nature list|remove|all`, `jutsu loadout`, `jutsu learn nature <nature>`,
+    `jutsu forget <jutsu>|all`, `jutsu unequip <slot>|all`, `jutsu mastery all <level>`, `jutsu ready`;
+  - **eyes:** `eyes` (at a glance), `eyes clear`;
+  - **crew:** `crew` (everyone's health, respect, order, lessons), `crew order|range|jutsu`, `crew recruit`
+    (the ninja you look at), `crew summon|heal|respect|teach|dismiss`;
+  - **spawn:** `spawn ninja|rogue|ally|dummy|beast|master` (and `beast spawn`);
+  - **kits:** `kit list` and 17 kits as data (`data/noirm/kits/`): tools, weapons, legendary blades,
+    training, spawn eggs, and outfits that go straight on (Leaf shinobi, jōnin, ANBU-style, Kage, rogue,
+    traveller, kimonos, Uchiha, Hyūga, Uzumaki, Senju, taijutsu fighter);
+  - **world:** `world destruction on|off`, `world regen <seconds>`, `world cleanup [radius]` (never your
+    crew, masters or villagers);
+  - **masters:** `master learnall <master>`, `master reset`.
+- Names default to the mod's namespace: `/noirm kit tools`, `/noirm style set strong_fist`.
+- Tests: two new game tests (every help example parses and has text in all three languages; the main
+  commands do what they say). Ally test ninjas now fight bare-handed (a rolled weapon made one flaky).
+
 ## 2026-10-15 — Playtest round 6: armor fit, footwork, gear, ally screen, Mangekyō, Might Guy, v0.9.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Armor fits the new body:** `BendyArmorModel` bends armor at the elbows, knees and waist with

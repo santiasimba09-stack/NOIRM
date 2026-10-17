@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-15 (playtest round 6, v0.9.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-17 (commands overhaul, v0.9.1) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,7 +34,7 @@ The villages (v0.7.0):
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.9.0.
+Nothing. Waiting on the owner's playtest of v0.9.1 (the command overhaul: `/noirm help`, see `docs/COMMANDS.md`).
 
 ## Next steps (in order)
 
@@ -73,7 +73,7 @@ Nothing. Waiting on the owner's playtest of v0.9.0.
 | `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, canals, banks, bridges), `Fortifications` (walls and bastions, gates, Kage Rock with stairs and tunnels, cliff and spire rings, fences), `VillageAtmosphere` (tells the client which village it's in), `VillageSpawns` (no raiders inside), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station, rock spires), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
 | `com.noirm.entity` | `SparringNinja` (+ jinchūriki, style, village resident flag, fights monsters in its village), `VillageMerchant` (villagers: shop roles, civilians, children, chief; day/night routine; speech bubbles), `VillagerChatGoal`, `VillagerSitGoal` + `SeatEntity`, `VillagerShelterGoal`, `ShadowClone`, `NinjaFightGoal` (melee, bows, jutsu by range), `NinjaThrowGoal`, `Threat` (who a fighter targets), `TrainingDummy`, `TailedBeast`, `BeastFightGoal` |
 | `com.noirm.registry` | `NoirmBlocks`, `NoirmEntities`, `NoirmItems` (incl. ramen), `NoirmStructures` (structure + piece types) |
-| `com.noirm.command` | `NoirmCommand` (resources/stats), `AnimCommand` (`/noirm anim`), `PowersCommand` (clan, nature, jutsu, sharingan, resolve, awaken, biju) |
+| `com.noirm.command` | `CommandGuide` (every command by section, `/noirm help`; the source of `docs/COMMANDS.md`), `Cmd` (shared helpers), `MeCommand`, `CombatCommand` (combat mode, styles), `PowersCommand` + `JutsuExtraCommand` (clan, natures, jutsu), `EyesCommand`, `MangekyoCommand`, `CrewCommand`, `SpawnCommand`, `KitCommand` (kits from `data/noirm/kits/`), `WorldCommand`, `MasterCommand`, `NoirmCommand` (bars, stats), `AnimCommand` |
 | `com.noirm.gametest` | `NoirmGameTests`, `ShinobiGameTests`, `CombatGameTests`, `PowersGameTests`, `TrainingGameTests`, `ByakuganGameTests`, `BijuGameTests`, `ThreatSenseGameTests`, `NatureGameTests`, `DangerGameTests`, `CanonGameTests`, `StyleGameTests`, `CrewGameTests`, `GreatGameTests`, `VillageGameTests`, `VillageLayoutGameTests`, `VillageWorldgenGameTests`, `VillageLifeGameTests`, `TestClans`, `TestKit` (shared helpers) |
 | `data/noirm/` | `combat/` (moves, styles: basic, brawler, strong_fist, gentle_fist, beast), `clans/` (canon), `jutsu/` (by nature, `byakugan/`, `biju/`), `recipes/`, `structures/empty.nbt`, `worldgen/structure` + `structure_set` (villages), `tags/worldgen/biome/has_structure/` |
 | `tools/skingen/` | `gen_parts.py` + `looks.py`: the skin parts and look tables behind random ninja looks |
@@ -138,6 +138,10 @@ Nothing. Waiting on the owner's playtest of v0.9.0.
   names them. (Seals still don't gate casting: the owner rejected seal input.)
 - **Mangekyō (round 6):** strain never heals (canon) until the Eternal Mangekyō; abilities are
   jutsu that need the Mangekyō open. See `docs/POWERS_DESIGN.md` §4c.
+- **Commands (v0.9.1):** every command lives under `/noirm`, in sections (`/noirm help`); names
+  default to the mod's namespace (`/noirm kit tools`, `style set strong_fist`). Every command is
+  listed in `CommandGuide` with an example that a game test parses; `docs/COMMANDS.md` is generated
+  from it (`tools/docs/gen_commands.py`).
 - **Masters (round 6):** a master is a JSON file in `data/noirm/masters/`; Might Guy is the first.
   Passing his spar grants the Strong Fist even below taijutsu 18. The Eight Gates burn health.
 - **Allies learn natures (round 6):** you must own the nature; about 3 in-game days under the

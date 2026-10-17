@@ -272,6 +272,9 @@ public final class AllyGameTests {
         ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE);
         ninja.joinClan(clan);
         ninja.sealBeast(0); // never a surprise jinchūriki
+        // Bare hands: a rolled weapon (bow, kusarigama, gunbai…) changes how they fight.
+        ninja.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, net.minecraft.world.item.ItemStack.EMPTY);
+        ninja.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, net.minecraft.world.item.ItemStack.EMPTY);
     }
 
     /**

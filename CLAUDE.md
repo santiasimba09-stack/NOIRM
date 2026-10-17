@@ -64,6 +64,9 @@ its 3×3 area (cleanup only clears entities inside it). Leftovers break later te
   event type, per package. Two nested `Registration` classes in `com.noirm.client` that both have
   `registerOverlays(RegisterGuiOverlaysEvent)` collide and the client crashes at launch. Give
   subscriber classes distinct names (`VignetteRegistration`, …).
+- New command: register it under `/noirm` in the right `command/*Command` class, add it to
+  `CommandGuide` (syntax, example, cheats) with a `help.noirm.<section>.<key>` text in all three lang
+  files, then run `python3 tools/docs/gen_commands.py`. A game test parses every example.
 - New jutsu: add JSON under `data/noirm/jutsu/` using an existing behavior (`JutsuBehaviors`),
   plus a `jutsu.noirm.<path>` name in the lang files. New player data goes in a sub-object of
   `ShinobiData` and is synced via `PowerPackets.SyncPowers`.

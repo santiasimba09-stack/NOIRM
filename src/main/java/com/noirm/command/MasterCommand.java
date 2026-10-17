@@ -43,7 +43,45 @@ public final class MasterCommand {
                                 .executes(ctx -> spawn(ctx.getSource(), StringArgumentType.getString(ctx, "id")))))
                 .then(Commands.literal("pass").requires(s -> s.hasPermission(CHEATS))
                         .then(Commands.argument("id", StringArgumentType.greedyString()).suggests(MASTERS)
-                                .executes(ctx -> pass(ctx.getSource(), StringArgumentType.getString(ctx, "id")))))));
+                                .executes(ctx -> pass(ctx.getSource(), StringArgumentType.getString(ctx, "id")))))
+                .then(Commands.literal("learnall").requires(s -> s.hasPermission(CHEATS))
+                        .then(Commands.argument("id", StringArgumentType.greedyString()).suggests(MASTERS)
+                                .executes(ctx -> learnAll(ctx.getSource(), StringArgumentType.getString(ctx, "id")))))
+                .then(Commands.literal("reset").requires(s -> s.hasPermission(CHEATS))
+                        .executes(ctx -> reset(ctx.getSource())))));
+    }
+
+    /** Passes the master's test and learns every lesson at once, skipping their requirements. */
+    private static int learnAll(CommandSourceStack source, String text) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ResourceLocation id = parse(text);
+        var def = id == null ? null : MasterData.get(id);
+        if (def == null) {
+            source.sendFailure(Component.translatable("commands.noirm.master.unknown", text));
+            return 0;
+        }
+        ServerPlayer player = source.getPlayerOrException();
+        var data = Cmd.data(source);
+        if (!data.masters().passed(id.toString())) {
+            MasterSystem.passTest(player, id);
+        }
+        int count = 0;
+        for (var lesson : def.lessons()) {
+            data.masters().learn(id.toString(), lesson.id());
+            if (com.noirm.jutsu.JutsuData.get(lesson.jutsu()) != null && data.jutsu().learn(lesson.jutsu(), false)) {
+                data.jutsu().equipIfRoom(lesson.jutsu());
+            }
+            count++;
+        }
+        data.markPowersDirty();
+        return Cmd.ok(source, "command.noirm.master.learned_all", Component.translatable(def.name()), count);
+    }
+
+    /** Forgets every test passed and lesson learned (the jutsu stay; {@code /noirm jutsu forget} removes those). */
+    private static int reset(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var data = Cmd.data(source);
+        data.masters().clear();
+        data.markPowersDirty();
+        return Cmd.ok(source, "command.noirm.master.reset");
     }
 
     /** "might_guy" or "noirm:might_guy". */
