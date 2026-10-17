@@ -1,0 +1,7 @@
+{
+  "id": "senju", "name": "Senju", "weight": 2,
+  "natures": { "earth": 1.5, "water": 1.0, "yang": 0.8 },
+  "traits": ["iron_body", "deep_reserves"],
+  "taijutsu_bonus": 1,
+  "awakening": "nature_surge"
+}

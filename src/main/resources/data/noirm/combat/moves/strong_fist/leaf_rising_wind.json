@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:leaf_rising_wind",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 12,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 20,
+    "range": 2.6,
+    "arc": 90,
+    "knockback": 0.1,
+    "lift": 1.0,
+    "hitstun": 22,
+    "hitstop": 4,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:basic/flip_kick",
+    "heavy": "noirm:strong_fist/dynamic_entry"
+  }
+}

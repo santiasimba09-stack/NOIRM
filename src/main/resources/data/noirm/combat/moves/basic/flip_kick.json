@@ -1,0 +1,5 @@
+{
+  "animation": "noirm:aerial_flip_kick",
+  "timing": { "windup": 7, "active": 3, "recovery": 12, "cancel_after": 8 },
+  "hit": { "damage": 8, "posture": 30, "range": 2.8, "arc": 100, "knockback": 0.5, "lift": 0.55, "lunge": 0.35, "hitstun": 18, "hitstop": 5, "shake": 0.9 }
+}

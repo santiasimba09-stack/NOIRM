@@ -1,0 +1,5 @@
+{
+  "nature": "yin", "cast": "tap", "behavior": "genjutsu", "rank": "D", "starter": true,
+  "chakra_cost": 20, "cooldown": 240,
+  "params": { "range": 10, "stun": 40, "duration": 80 }
+}

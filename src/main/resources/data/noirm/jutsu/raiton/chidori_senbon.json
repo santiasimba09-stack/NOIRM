@@ -1,0 +1,22 @@
+{
+  "nature": "lightning",
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 20,
+  "cooldown": 120,
+  "unlock": {
+    "after": "noirm:raiton/chidori",
+    "mastery": 1
+  },
+  "params": {
+    "count": 5,
+    "spread": 18,
+    "damage": 3,
+    "speed": 2.2,
+    "radius": 0,
+    "knockback": 0.1,
+    "posture": 10,
+    "effect": "slowness:1",
+    "effect_ticks": 40
+  }
+}

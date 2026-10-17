@@ -1,0 +1,6 @@
+{
+  "id": "uzumaki", "name": "Uzumaki", "weight": 2,
+  "natures": { "wind": 1.5, "water": 1.0 },
+  "traits": ["deep_reserves", "iron_will"],
+  "awakening": "will"
+}

@@ -1,0 +1,20 @@
+{
+  "nature": "fire",
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 35,
+  "cooldown": 240,
+  "unlock": {
+    "after": "noirm:katon/phoenix_flower",
+    "mastery": 2
+  },
+  "params": {
+    "damage": 12,
+    "speed": 0.9,
+    "radius": 3,
+    "knockback": 1.2,
+    "posture": 40,
+    "fire_seconds": 6,
+    "homing": 0.14
+  }
+}

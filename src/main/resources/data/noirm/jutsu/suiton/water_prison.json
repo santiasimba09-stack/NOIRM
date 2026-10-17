@@ -1,0 +1,17 @@
+{
+  "nature": "water",
+  "behavior": "bind",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:suiton/water_dragon",
+    "mastery": 2
+  },
+  "params": {
+    "range": 8,
+    "stun": 70,
+    "damage": 1,
+    "posture": 20
+  }
+}
