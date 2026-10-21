@@ -2,6 +2,29 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-22 — Character creation, movement feel, gore, v0.11.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+Built from the owner's answers on the blueprint (character creation: yes; movement: the blueprint's,
+but light; gore: yes; no melee while forming seals).
+
+- **Character creation** (`creator/`): on first join the screen opens and you're held in place until
+  you press Begin. A turnable, zoomable 3D view; tabs for face, body (skin, muscle, scars,
+  weathering, markings, underwear and colours, height 0.85–1.15× with the hitbox following), hair,
+  clothes, and genetics: a clan from the world's list with five rolled stats (8–12, traits add a
+  little), one free roll plus 3 rerolls, keep any of them. Your look is built from generated parts
+  (`tools/skingen/gen_player_parts.py`) and shows for everyone, first person too. `/noirm creator`
+  (look only), `creator reroll|skip|height`, gamerule `noirmCharacterCreation`.
+- **Movement feel** (`movement/MovementFeel`): a short slide to a stop (4 ticks), a 2-tick momentum
+  pivot, gravity ×1.2 with jumps boosted to keep their height, 1–3 ticks of landing recovery after
+  3+ block falls (a dodge skips it). Ninjas keep normal gravity. Gamerule `noirmMovementFeel`.
+- **No melee while forming seals** (`combat/SealLock`), players and ninjas; a one-time hint.
+- **Gore** (`gore/`): bruises, cuts, soot and dirt build up by damage type and fade; a killing blade,
+  crit, blast or heavy blow can sever an arm, leg or head, which tumbles, then burns away in blue
+  chakra flame after 5 s (12 at most, unseen beyond 32 m). Visual only. Gamerule `noirmGore`,
+  `/noirm world gore on|off`.
+- The roof-leap test clears its flight path first (it flew into blocks earlier tests left behind).
+- Network protocol 14. Tests: 251/251 pass twice in a row (18 new: creator, movement, seal lock, gore); the merged build checked in the real client.
+
 ## 2026-10-21 — Crew overhaul, meditation and blueprint Phase 1, v0.10.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **The owner's blueprint** is summarised in `docs/BLUEPRINT.md`. Rule: keep what we have, build what

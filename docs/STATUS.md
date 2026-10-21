@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-21 (crew overhaul + blueprint Phase 1, v0.10.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-22 (character creation, movement feel, gore, v0.11.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,8 +34,13 @@ The villages (v0.7.0):
 
 ## In progress
 
-Blueprint Phase 2 (owner's answers): **character creation**, **movement feel** (inertia, gravity,
-no melee while sealing), **gore**. Helpers building them in parallel.
+Waiting on the owner's playtest of v0.11.0.
+
+| Blueprint Phase 2 (v0.11.0) | State |
+|---|---|
+| **Character creation** (first join; face, body, hair, clothes, height, clan rolls) | ✅ tested; checked in client (`r12-creator-*`) |
+| **Movement feel** (slide, pivot, gravity ×1.2, landing recovery) + **no melee while sealing** | ✅ tested; measured in client |
+| **Gore** (damage marks, severed limbs burning away) | ✅ tested; checked in client (`r12-gore-*`) |
 
 **Done in v0.10.0: crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
 
@@ -78,6 +83,9 @@ no melee while sealing), **gore**. Helpers building them in parallel.
 | `com.noirm.weapon` | Ninja weapons (`NinjaWeapons` registry, `ThrowingWeaponItem`, `StaffItem`, `ChakraBladeItem`, `ExplosiveTagItem`, `ThrownWeapon`, `Throwing`, `Moveset` + `WeaponMoves`, `NinjaArsenal`); see `docs/WEAPONS.md` |
 | `com.noirm.chakra` + `com.noirm.mixin` | Water walking (`WaterWalking`, `WaterWalker`; `BlockStateBaseMixin` gives the water surface a skin; config `noirm.mixins.json`) |
 | `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `CrewBrain` (the crew mate's mind every tick: targets by behaviour/job/order, following, posts, duties; tuning constants at the top), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `AllyFood` (feeding), `NatureTeaching` (lessons, queue), `Trait`, `Order`, `Occupation`, `Behaviour`, `AllyState` (saved crew data), `AllyMenu` + `AllyPackets` (the ally screen), `CrewPackets` (crew-wide orders, K screen) |
+| `com.noirm.creator` | Character creation: `CharacterCreator` (rules, rolls, holding newcomers), `PlayerLook` (part ids, colours, height), `GeneticRoll`, `CreatorData`, `CreatorPackets`, `CreatorEvents`; client side `CreatorScreen`, `PlayerSkins` (skin from parts), `HairVolumeLayer` |
+| `com.noirm.movement` | `MovementFeel` (slide, pivot, gravity, landing recovery; constants at the top); client side `MovementFeelClient` |
+| `com.noirm.gore` | `Gore` (marks, severing, constants), `GoreMarks`, `GorePackets`, `SeveredLimb`; client side `GoreMarksLayer`, `SeveredLimbRenderer` |
 | `com.noirm.senjutsu` | `Meditation` (rules and constants; `isMeditating`, `natureEnergy`), `MeditationData` (saved), `MeditationEvents` (ticking, what ends it) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
@@ -177,6 +185,15 @@ no melee while sealing), **gore**. Helpers building them in parallel.
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
+
+- **Creator:** 1 free roll + 3 rerolls, keep any you've seen: right? Stats 8–12 and +2 trait bonuses?
+  Roll vitality too? Is the Clothes tab welcome? Should changing your look later be free, or need
+  something (an item, a barber in villages)? Height changes after creation?
+- **Movement:** the slide is subtle (about 0.1 block longer than before): more? Sprint-jump leaps
+  are ~8% shorter with the heavier gravity: boost them? Should ninjas get the heavier gravity too?
+- **Gore:** marks bolder, or over armor too? Faster or slower fading? Should heavy blunt killing
+  blows sever (50% now)? Ever sever limbs on living NPCs? Limbs stay longer than 5 s, bigger blood?
+- **Seals:** show the "hands busy" hint on every blocked press, not just once per cast?
 
 - **Just-frame parry:** once you've tried it, is the 10-tick (0.5 s) counter window right?
 - **Casting:** should combined natures (ice, lava, storm…) join the clash wheel?
