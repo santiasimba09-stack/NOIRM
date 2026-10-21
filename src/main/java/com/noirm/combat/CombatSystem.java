@@ -149,6 +149,9 @@ public final class CombatSystem {
 
     /** Starts an attack now if possible, otherwise remembers it briefly. Returns true if it started. */
     public static boolean requestAttack(LivingEntity entity, AttackInput input) {
+        if (SealLock.blocksMelee(entity)) {
+            return false; // hands busy forming seals: refused, not buffered
+        }
         CombatState state = CombatStates.get(entity);
         if (canAttack(state)) {
             return startAttack(entity, state, input);
@@ -445,6 +448,10 @@ public final class CombatSystem {
     }
 
     private static boolean startAttack(LivingEntity entity, CombatState state, AttackInput input) {
+        if (SealLock.blocksMelee(entity)) {
+            clearBuffer(state); // an attack buffered before the seals doesn't fire through them
+            return false;
+        }
         ResourceLocation from = state.phase == CombatPhase.RECOVERY ? state.moveId : state.comboFrom;
         ResourceLocation id = resolveMove(entity, from, input);
         CombatMove move = id == null ? null : CombatData.move(id);
@@ -514,6 +521,7 @@ public final class CombatSystem {
         state.comboFrom = null;
         state.perfectDodgeUsed = false;
         enterPhase(entity, state, CombatPhase.DODGE, DODGE_TICKS);
+        com.noirm.movement.MovementFeel.noteDodge(entity); // a dodge is the roll that skips landing recovery
         CombatEffects.dodge(entity, forward >= 0, DODGE_TICKS);
         TrainingSystem.onDodge(entity);
         return true;

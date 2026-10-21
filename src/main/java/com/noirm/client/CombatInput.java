@@ -55,12 +55,15 @@ public final class CombatInput {
         } else {
             while (CombatKeys.DODGE.consumeClick()) {
                 NoirmNetwork.sendToServer(new CombatInputPackets.Dodge(player.input.forwardImpulse, player.input.leftImpulse));
+                com.noirm.movement.MovementFeel.noteDodge(player); // the roll: no landing recovery
             }
             while (CombatKeys.LOCK_ON.consumeClick()) {
                 LockOn.toggle(minecraft);
             }
             while (CombatKeys.GRAB.consumeClick()) {
-                NoirmNetwork.sendToServer(new CombatInputPackets.Attack(AttackInput.GRAB));
+                if (!SealLockInput.refuse(player)) { // no grabs while forming seals
+                    NoirmNetwork.sendToServer(new CombatInputPackets.Attack(AttackInput.GRAB));
+                }
             }
             sendGuard(CombatKeys.GUARD.isDown() && minecraft.screen == null);
             LockOn.tick(minecraft);
@@ -83,7 +86,7 @@ public final class CombatInput {
                 && !throwsInstead(player)) {
             event.setCanceled(true);
             event.setSwingHand(false);
-            if (!useWasDown) { // holding right click repeats; only a fresh press attacks
+            if (!useWasDown && !SealLockInput.refuse(player)) { // holding right click repeats; only a fresh press attacks
                 NoirmNetwork.sendToServer(new CombatInputPackets.Attack(player.isShiftKeyDown() ? AttackInput.LAUNCHER : directional(player, AttackInput.HEAVY)));
             }
         }

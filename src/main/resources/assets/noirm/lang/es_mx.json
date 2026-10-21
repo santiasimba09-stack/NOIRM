@@ -1093,5 +1093,7 @@
   "help.noirm.crew.teachjutsu": "enseña a todos un jutsu, o todos los que puedas",
   "command.noirm.crew.lesson_started": "%s compañeros: lección iniciada o en cola (%s).",
   "message.noirm.jutsu.fizzled": "Se rompieron tus sellos: el jutsu se disipó",
-  "message.noirm.jutsu.seals_shaken": "Te golpearon a mitad de los sellos: tus manos vacilan"
+  "message.noirm.jutsu.seals_shaken": "Te golpearon a mitad de los sellos: tus manos vacilan",
+  "message.noirm.jutsu.hands_busy": "Tienes las manos ocupadas haciendo sellos",
+  "gamerule.noirmMovementFeel": "NOIRM: sensación de movimiento (frenado con deslizamiento, gravedad más pesada, recuperación al aterrizar)"
 }

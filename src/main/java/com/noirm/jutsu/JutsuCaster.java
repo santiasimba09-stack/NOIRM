@@ -156,6 +156,7 @@ public final class JutsuCaster {
         net.minecraft.world.entity.ai.attributes.AttributeInstance speed = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         if (speed != null && speed.getModifier(WEAVING_ID) == null) {
             speed.addTransientModifier(WEAVING); // transient: never saved, so it can't survive a relog
+            sendSealState(entity, true);
         }
     }
 
@@ -163,6 +164,14 @@ public final class JutsuCaster {
         net.minecraft.world.entity.ai.attributes.AttributeInstance speed = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         if (speed != null && speed.getModifier(WEAVING_ID) != null) {
             speed.removeModifier(WEAVING_ID);
+            sendSealState(entity, false);
+        }
+    }
+
+    /** The weaving slow is on exactly while the seals are formed: tell the player's client (no melee meanwhile, see {@link com.noirm.combat.SealLock}). */
+    private static void sendSealState(LivingEntity entity, boolean forming) {
+        if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
+            com.noirm.network.NoirmNetwork.sendToPlayer(player, new com.noirm.network.MovementPackets.SealState(forming));
         }
     }
 

@@ -111,6 +111,13 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Close.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.noirm.master.MasterPackets.Close::encode).decoder(com.noirm.master.MasterPackets.Close::decode)
                 .consumerMainThread(com.noirm.master.MasterPackets.Close::handle).add();
+        // Movement feel and the seal lock: server → client
+        CHANNEL.messageBuilder(MovementPackets.FeelState.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(MovementPackets.FeelState::encode).decoder(MovementPackets.FeelState::decode)
+                .consumerMainThread(MovementPackets.FeelState::handle).add();
+        CHANNEL.messageBuilder(MovementPackets.SealState.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(MovementPackets.SealState::encode).decoder(MovementPackets.SealState::decode)
+                .consumerMainThread(MovementPackets.SealState::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

@@ -1093,5 +1093,7 @@
   "help.noirm.crew.teachjutsu": "teach everyone a jutsu, or all you can",
   "command.noirm.crew.lesson_started": "%s crew mates: lesson started or queued (%s).",
   "message.noirm.jutsu.fizzled": "Your seals broke: the jutsu fizzled",
-  "message.noirm.jutsu.seals_shaken": "Hit mid-seal: your hands falter"
+  "message.noirm.jutsu.seals_shaken": "Hit mid-seal: your hands falter",
+  "message.noirm.jutsu.hands_busy": "Your hands are busy forming seals",
+  "gamerule.noirmMovementFeel": "NOIRM: movement feel (slide to a stop, heavier gravity, landing recovery)"
 }
