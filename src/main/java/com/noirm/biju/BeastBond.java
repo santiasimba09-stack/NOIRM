@@ -205,12 +205,16 @@ public final class BeastBond {
         }
 
         // Too many tails for the trust between you: it may take over.
-        if (biju.cloakStage() == 1 && !fullMode(biju) && biju.cloakTails() > safeTails(biju.bond())) {
-            float chance = 0.04f * (biju.cloakTails() - safeTails(biju.bond()));
+        // Willpower (WIL) lets you hold a few more tails before it pushes back.
+        int safe = safeTails(biju.bond()) + com.noirm.training.Supplementary.extraSafeTails(data);
+        if (biju.cloakStage() == 1 && !fullMode(biju) && biju.cloakTails() > safe) {
+            float chance = 0.04f * (biju.cloakTails() - safe);
             if (random.nextFloat() < chance) {
                 say(player, biju, "message.noirm.beast.seizes");
                 BijuSystem.beastTakesOver(player, data, 200);
                 changeBond(player, biju, -2);
+            } else {
+                com.noirm.training.Supplementary.onResistBeast(player, data, biju.cloakTails() - safe);
             }
         }
 

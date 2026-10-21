@@ -57,6 +57,16 @@ public final class CombatState {
     float timeScale = 1f;
     int timeScaleTicks;
 
+    // Perception focus and the just-frame parry
+    /** Entity id of the defender whose perception is slowing this fighter's current attack (-1 = none). */
+    int perceivedBy = -1;
+    /** How much slower that attack plays for them (0.2 = 20% slower). */
+    float perceivedSlowdown;
+    /** After a just-frame parry: ticks left in which an attack you start becomes a counter. */
+    int counterTicks;
+    /** The attack in progress was started inside the counter window: its next hit is a counter. */
+    boolean counterArmed;
+
     // Sync
     private boolean dirty = true;
     int lastSyncedPosture = -1;
@@ -106,6 +116,21 @@ public final class CombatState {
 
     public float timeScale() {
         return timeScale;
+    }
+
+    /** Entity id of the defender who sees this fighter's attack slowed (perception focus), or -1. */
+    public int perceivedBy() {
+        return perceivedBy;
+    }
+
+    /** Ticks left in this fighter's counter window (after a just-frame parry). */
+    public int counterTicks() {
+        return counterTicks;
+    }
+
+    /** True while the next hit of this fighter's attack is a counter (bonus damage, can't be guarded). */
+    public boolean hasCounter() {
+        return counterTicks > 0 || counterArmed;
     }
 
     public void setMaxPosture(float value) {

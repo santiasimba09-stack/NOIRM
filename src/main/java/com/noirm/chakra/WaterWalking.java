@@ -239,7 +239,9 @@ public final class WaterWalking {
         }
         ShinobiCapability.get(player).ifPresent(data -> {
             boolean lava = player.level().getFluidState(BlockPos.containing(player.getX(), player.getY() - 0.01, player.getZ())).is(FluidTags.LAVA);
-            float drain = (running ? DRAIN_RUNNING : moving ? DRAIN_WALKING : DRAIN_STANDING) * (lava ? LAVA_DRAIN_MULTIPLIER : 1f);
+            float drain = (running ? DRAIN_RUNNING : moving ? DRAIN_WALKING : DRAIN_STANDING) * (lava ? LAVA_DRAIN_MULTIPLIER : 1f)
+                    * com.noirm.training.Supplementary.waterWalkMultiplier(data);
+            com.noirm.training.Supplementary.onWaterWalk(player, data, moving);
             if (!data.tryConsumeChakra(drain)) {
                 data.setChakra(0f);
             }

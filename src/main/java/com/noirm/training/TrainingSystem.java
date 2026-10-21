@@ -121,6 +121,7 @@ public final class TrainingSystem {
         if (attacker instanceof Player player && !player.level().isClientSide()) {
             float xp = (HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f);
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
+            Supplementary.onExchange(player, target);
         } else if (attacker instanceof com.noirm.entity.ShadowClone clone) {
             clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f));
         } else if (attacker instanceof com.noirm.entity.SparringNinja ninja) {
@@ -163,6 +164,9 @@ public final class TrainingSystem {
         Entity attacker = source.getEntity();
         float factor = attacker != null && attacker != player ? opponentFactor(player, attacker, Stat.VITALITY) : drillFactor(player, Stat.VITALITY);
         grant(player, Stat.VITALITY, amount * VITALITY_XP_PER_DAMAGE * factor);
+        if (attacker != null && attacker != player) {
+            Supplementary.onExchange(player, attacker);
+        }
     }
 
     /**
@@ -177,6 +181,7 @@ public final class TrainingSystem {
         if (spent > 0 && !player.getAbilities().instabuild) {
             grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA);
         }
+        Supplementary.tick(player, data);
         applyMovementBonus(player, data.getSpeed());
         applyVitality(player, data.getVitality());
         applyReserves(data);

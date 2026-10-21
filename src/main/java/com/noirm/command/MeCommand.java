@@ -28,8 +28,8 @@ import java.util.List;
  * <ul>
  *   <li>{@code /noirm me} — your profile: clan, natures, bars, stats, style, eyes, beast, crew, masters</li>
  *   <li>{@code /noirm me heal} — full health, chakra and stamina, no cooldowns or bad effects (cheats)</li>
- *   <li>{@code /noirm me max} — all four stats to the maximum, then heal (cheats)</li>
- *   <li>{@code /noirm me stats <speed> <taijutsu> <vitality> <reserves>} — all four at once (cheats)</li>
+ *   <li>{@code /noirm me max} — every stat to the maximum, then heal (cheats)</li>
+ *   <li>{@code /noirm me stats <speed> <taijutsu> <vitality> <reserves> [<ctl> <wil>]} — all at once (cheats)</li>
  *   <li>{@code /noirm me nature <0-100>} — set your nature energy (cheats)</li>
  *   <li>{@code /noirm meditate} — sit down to meditate, or stand up</li>
  * </ul>
@@ -53,7 +53,13 @@ public final class MeCommand {
                                 .then(Commands.argument("vitality", stat).then(Commands.argument("reserves", stat)
                                         .executes(ctx -> setStats(ctx.getSource(), FloatArgumentType.getFloat(ctx, "speed"),
                                                 FloatArgumentType.getFloat(ctx, "taijutsu"), FloatArgumentType.getFloat(ctx, "vitality"),
-                                                FloatArgumentType.getFloat(ctx, "reserves"))))))))));
+                                                FloatArgumentType.getFloat(ctx, "reserves"), -1f, -1f))
+                                        // Optional: chakra control and willpower too.
+                                        .then(Commands.argument("ctl", stat).then(Commands.argument("wil", stat)
+                                                .executes(ctx -> setStats(ctx.getSource(), FloatArgumentType.getFloat(ctx, "speed"),
+                                                        FloatArgumentType.getFloat(ctx, "taijutsu"), FloatArgumentType.getFloat(ctx, "vitality"),
+                                                        FloatArgumentType.getFloat(ctx, "reserves"), FloatArgumentType.getFloat(ctx, "ctl"),
+                                                        FloatArgumentType.getFloat(ctx, "wil"))))))))))));
         event.getDispatcher().register(Commands.literal("noirm").then(Commands.literal("meditate")
                 .executes(ctx -> meditate(ctx.getSource()))));
     }
@@ -84,7 +90,8 @@ public final class MeCommand {
         line(text, Component.translatable("command.noirm.me.bars", Math.round(player.getHealth()), Math.round(player.getMaxHealth()),
                 Math.round(data.getChakra()), Math.round(data.getMaxChakra()), Math.round(data.getStamina()), Math.round(data.getMaxStamina())));
         line(text, Component.translatable("command.noirm.stat", Math.round(data.getSpeed()), Math.round(data.getTaijutsu()),
-                Math.round(Perception.perception(player)), Math.round(data.getVitality()), Math.round(data.getReserves())));
+                Math.round(Perception.perception(player)), Math.round(data.getVitality()), Math.round(data.getReserves()),
+                Math.round(data.getControl()), Math.round(data.getWillpower())));
         line(text, Component.translatable("command.noirm.me.style", Component.translatable(StyleSystem.translationKey(StyleSystem.styleOf(data)))));
         line(text, EyesCommand.summary(data));
         line(text, data.biju().isJinchuriki()
@@ -124,20 +131,29 @@ public final class MeCommand {
     }
 
     static int max(CommandSourceStack source) throws CommandSyntaxException {
-        setStats(source, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT);
+        setStats(source, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT,
+                ShinobiData.MAX_STAT, ShinobiData.MAX_STAT);
         return 1;
     }
 
-    static int setStats(CommandSourceStack source, float speed, float taijutsu, float vitality, float reserves) throws CommandSyntaxException {
+    /** Sets the stats; {@code control} / {@code willpower} below 0 leave those two as they are. */
+    static int setStats(CommandSourceStack source, float speed, float taijutsu, float vitality, float reserves,
+                        float control, float willpower) throws CommandSyntaxException {
         ServerPlayer player = Cmd.player(source);
         ShinobiData data = Cmd.data(source);
         data.setSpeed(speed);
         data.setTaijutsu(taijutsu);
         data.setVitality(vitality);
         data.setReserves(reserves);
+        if (control >= 0f) {
+            data.setControl(control);
+        }
+        if (willpower >= 0f) {
+            data.setWillpower(willpower);
+        }
         restore(player, data);
         PowerVisuals.broadcast(player);
         return Cmd.ok(source, "command.noirm.stat", Math.round(speed), Math.round(taijutsu), Math.round(Perception.perception(player)),
-                Math.round(vitality), Math.round(reserves));
+                Math.round(vitality), Math.round(reserves), Math.round(data.getControl()), Math.round(data.getWillpower()));
     }
 }

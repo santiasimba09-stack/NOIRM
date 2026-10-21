@@ -117,6 +117,37 @@ final class CombatEffects {
         feedback(defender, Feedback.Kind.PARRY, 0.5f);
     }
 
+    /** Tells a defending player their perception is slowing an incoming attack (the client draws the focus). */
+    static void perceptionFocus(LivingEntity target, LivingEntity attacker, int ticks, float slowdown) {
+        if (target instanceof ServerPlayer player) {
+            NoirmNetwork.sendToPlayer(player, Feedback.perceptionFocus(attacker.getId(), ticks, slowdown));
+        }
+    }
+
+    /** A just-frame parry: a bright ring and a clear bell on top of the parry clang. */
+    static void justFrame(LivingEntity defender, LivingEntity attacker) {
+        sound(defender, SoundEvents.BELL_BLOCK, 0.9f, 1.8f);
+        sound(defender, SoundEvents.AMETHYST_BLOCK_CHIME, 1.5f, 0.7f);
+        if (defender.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 mid = defender.position().add(attacker.position()).scale(0.5)
+                    .add(0, defender.getBbHeight() * 0.6, 0);
+            level.sendParticles(ParticleTypes.FLASH, mid.x, mid.y, mid.z, 1, 0, 0, 0, 0);
+            level.sendParticles(ParticleTypes.END_ROD, mid.x, mid.y, mid.z, 16, 0.2, 0.2, 0.2, 0.15);
+        }
+        feedback(defender, Feedback.Kind.JUST_FRAME, 0.6f);
+        if (defender instanceof ServerPlayer player) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.noirm.combat.just_frame")
+                    .withStyle(net.minecraft.ChatFormatting.AQUA), true);
+        }
+    }
+
+    /** The counter after a just-frame parry lands: a heavier crack. */
+    static void counterHit(LivingEntity attacker, LivingEntity target) {
+        sound(target, SoundEvents.PLAYER_ATTACK_CRIT, 1f, 0.7f);
+        particles(target, ParticleTypes.CRIT, 14, 0.35);
+        feedback(attacker, Feedback.Kind.SHAKE, 0.6f);
+    }
+
     static void postureBreak(LivingEntity entity) {
         sound(entity, SoundEvents.SHIELD_BREAK, 1f, 0.8f);
         particles(entity, ParticleTypes.POOF, 10, 0.4);

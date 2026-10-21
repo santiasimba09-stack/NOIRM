@@ -83,6 +83,23 @@ public final class CombatSystem {
     public static final float FOCUS_TIME_SCALE = 0.3f;
 
     /**
+     * Perception focus (blueprint §3): an incoming attack your perception slows by at least this
+     * much (0.15 = it plays 15% slower) gives you the focus feel (cool edges, muffled world). The
+     * client's effect is strongest from {@link #PERCEPTION_FOCUS_FULL} (40%) up.
+     */
+    public static final float PERCEPTION_FOCUS_MIN = 0.15f;
+    public static final float PERCEPTION_FOCUS_FULL = 0.40f;
+    /** Only heavy attacks (hit-stop 4+) trigger it, like the blueprint's "incoming heavy threats". */
+    public static final boolean PERCEPTION_FOCUS_HEAVY_ONLY = true;
+    /**
+     * Just-frame parry: a parry of an attack in perception focus negates it, breaks the attacker's
+     * posture and opens a counter window: an attack you start within it hits ×{@link #COUNTER_DAMAGE}
+     * and can't be guarded or parried.
+     */
+    public static final int COUNTER_TICKS = 10;
+    public static final float COUNTER_DAMAGE = 1.5f;
+
+    /**
      * Weapons. Each hit adds this share of the held weapon's attack damage (what it adds over bare
      * fists, so Strength potions count too), scaled by how heavy the move is: its damage over
      * {@link #WEAPON_REFERENCE_DAMAGE}, kept between {@link #WEAPON_WEIGHT_MIN} and
@@ -229,6 +246,9 @@ public final class CombatSystem {
         }
         if (state.timeScaleTicks > 0 && --state.timeScaleTicks == 0) {
             state.timeScale = 1f;
+        }
+        if (state.counterTicks > 0) {
+            state.counterTicks--;
         }
         if (state.postureRegenDelay > 0) {
             state.postureRegenDelay--;
@@ -432,7 +452,20 @@ public final class CombatSystem {
             return false;
         }
         LivingEntity target = findTarget(entity, move.hit().range() + 1.5f);
-        float windup = move.timing().windup() * (target == null ? 1f : Perception.slowFactor(target, entity));
+        float slow = target == null ? 1f : Perception.slowFactor(target, entity);
+        float windup = move.timing().windup() * slow;
+        // Perception focus: the defender sees this (heavy) attack coming in slow motion.
+        if (target != null && slow - 1f >= PERCEPTION_FOCUS_MIN && (!PERCEPTION_FOCUS_HEAVY_ONLY || move.hit().isHeavy())) {
+            state.perceivedBy = target.getId();
+            state.perceivedSlowdown = slow - 1f;
+            CombatEffects.perceptionFocus(target, entity, Math.round(windup) + move.timing().active(), slow - 1f);
+        } else {
+            state.perceivedBy = -1;
+            state.perceivedSlowdown = 0f;
+        }
+        // Started inside the counter window after a just-frame parry: this attack is the counter.
+        state.counterArmed = state.counterTicks > 0;
+        state.counterTicks = 0;
 
         if (target != null) {
             Sharingan.onAttackWindup(entity, target, Math.round(windup));
@@ -600,6 +633,11 @@ public final class CombatSystem {
             onDodged(target, targetState);
             return;
         }
+        // A counter (after a just-frame parry) can't be guarded or parried.
+        boolean counter = attackerState.hasCounter();
+        if (counter && (outcome == Outcome.GUARDED || outcome == Outcome.PARRIED)) {
+            outcome = Outcome.HIT;
+        }
         if (outcome == Outcome.PARRIED) {
             onParried(target, targetState, attacker);
             return;
@@ -615,6 +653,12 @@ public final class CombatSystem {
         boolean gentleFist = Byakugan.isActive(attacker);
         float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
         float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponDamage(attacker, target, hit.damage());
+        if (counter) {
+            damage *= COUNTER_DAMAGE;
+            attackerState.counterArmed = false;
+            attackerState.counterTicks = 0;
+            CombatEffects.counterHit(attacker, target);
+        }
         boolean airborne = !target.onGround() && !guarded;
         if (airborne) {
             damage *= Math.max(0.5f, 1f - 0.1f * targetState.juggleHits);
@@ -696,6 +740,10 @@ public final class CombatSystem {
     }
 
     private static void onParried(LivingEntity defender, CombatState defenderState, Entity attacker) {
+        if (attacker instanceof LivingEntity livingAttacker && isJustFrame(defender, CombatStates.get(livingAttacker))) {
+            onJustFrameParry(defender, defenderState, livingAttacker, CombatStates.get(livingAttacker));
+            return;
+        }
         CombatEffects.parry(defender);
         TrainingSystem.onParry(defender, attacker);
         AwakeningSystem.onClutch(defender);
@@ -707,6 +755,36 @@ public final class CombatSystem {
             }
         }
         focus(defender);
+    }
+
+    /** The attack being parried is one {@code defender}'s perception is slowing (perception focus). */
+    static boolean isJustFrame(LivingEntity defender, CombatState attackerState) {
+        return attackerState.perceivedBy == defender.getId()
+                && (attackerState.phase == CombatPhase.WINDUP || attackerState.phase == CombatPhase.ACTIVE);
+    }
+
+    /**
+     * Just-frame parry (blueprint §3): no damage, the attacker's posture breaks (a full stun), and
+     * the defender gets {@link #COUNTER_TICKS} to start a counter.
+     */
+    private static void onJustFrameParry(LivingEntity defender, CombatState defenderState, LivingEntity attacker, CombatState attackerState) {
+        CombatEffects.parry(defender);
+        CombatEffects.justFrame(defender, attacker);
+        TrainingSystem.onParry(defender, attacker);
+        AwakeningSystem.onClutch(defender);
+        attackerState.perceivedBy = -1;
+        attackerState.counterArmed = false;
+        attackerState.counterTicks = 0;
+        postureBreak(attacker, attackerState);
+        defenderState.counterTicks = COUNTER_TICKS;
+        defenderState.counterArmed = false;
+        focus(defender);
+    }
+
+    /** Opens a counter window as if {@code entity} had just made a just-frame parry (tests, debugging). */
+    public static void openCounterWindow(LivingEntity entity) {
+        CombatState state = CombatStates.get(entity);
+        state.counterTicks = COUNTER_TICKS;
     }
 
     /** Applies posture (and stamina, for players) from a blocked hit. May break the guard. */

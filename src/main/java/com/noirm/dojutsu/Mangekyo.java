@@ -152,7 +152,9 @@ public final class Mangekyo {
         }
         EyeData eyes = data.eyes();
         float before = eyes.strain();
-        eyes.setStrain(before + amount * (eyes.isTransplanted() ? TRANSPLANT_STRAIN : 1f));
+        float taken = amount * (eyes.isTransplanted() ? TRANSPLANT_STRAIN : 1f) * com.noirm.training.Supplementary.strainMultiplier(data);
+        eyes.setStrain(before + taken);
+        com.noirm.training.Supplementary.onStrain(player, data, before, taken);
         data.markPowersDirty();
         int tierBefore = strainTier(before);
         int tierAfter = strainTier(eyes.strain());

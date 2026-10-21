@@ -58,10 +58,19 @@ public final class CombatClientPackets {
 
     /** Something happened to the local player that the screen should feel: shake, flash, etc. */
     public record Feedback(Kind kind, float strength, int targetId, float targetPosture, float targetMaxPosture) {
-        public enum Kind { HIT_DEALT, HIT_TAKEN, GUARD, PARRY, POSTURE_BREAK, PERFECT_DODGE, FOCUS, NO_STAMINA, SHAKE }
+        public enum Kind { HIT_DEALT, HIT_TAKEN, GUARD, PARRY, POSTURE_BREAK, PERFECT_DODGE, FOCUS, NO_STAMINA, SHAKE,
+            PERCEPTION_FOCUS, JUST_FRAME }
 
         public static Feedback simple(Kind kind, float strength) {
             return new Feedback(kind, strength, -1, 0, 0);
+        }
+
+        /**
+         * Perception focus: your perception slows {@code attackerId}'s incoming attack by {@code slowdown}
+         * (0.2 = 20% slower) for about {@code ticks}. Reuses the fields: targetPosture carries the ticks.
+         */
+        public static Feedback perceptionFocus(int attackerId, int ticks, float slowdown) {
+            return new Feedback(Kind.PERCEPTION_FOCUS, slowdown, attackerId, ticks, 0);
         }
 
         public void encode(FriendlyByteBuf buf) {

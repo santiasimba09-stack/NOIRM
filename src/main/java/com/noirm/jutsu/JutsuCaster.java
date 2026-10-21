@@ -720,7 +720,7 @@ public final class JutsuCaster {
     }
 
     public static float cost(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
-        float cost = def.chakraCost() * (1.5f - 0.5f * affinity(caster, id, def));
+        float cost = def.chakraCost() * (1.5f - 0.5f * affinity(caster, id, def)) * com.noirm.training.Supplementary.costMultiplier(caster);
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {
