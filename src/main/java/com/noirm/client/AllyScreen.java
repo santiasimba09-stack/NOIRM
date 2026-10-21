@@ -924,7 +924,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         int perRow = 3;
         int gap = 4;
         int cw = (full - gap * (perRow - 1)) / perRow;
-        int ch = 30;
+        int ch = 36;
         for (int i = 0; i < orders.length; i++) {
             Order order = orders[i];
             int cx = x0 + (i % perRow) * (cw + gap);
@@ -989,7 +989,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         g.drawString(font, glyph, cx + 4, cy + 4, active ? accent : DIM, false);
         int titleX = cx + 6 + font.width(glyph);
         g.drawString(font, fit(title.getString(), cx + cw - 4 - titleX), titleX, cy + 4, active ? PAPER : 0xFFCFC6D6, false);
-        g.drawString(font, fit(desc.getString(), cw - 8), cx + 4, cy + 16, active ? 0xFFE0D4C0 : FAINT, false);
+        wrap(g, desc, cx + 4, cy + 15, cw - 8, cy + ch - 2, active ? 0xFFE0D4C0 : FAINT);
     }
 
     // ---------------------------------------------------------------- Job
@@ -1005,7 +1005,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         int perRow = 3;
         int gap = 4;
         int cw = (full - gap * (perRow - 1)) / perRow;
-        int ch = 30;
+        int ch = 38;
         for (int i = 0; i < jobs.length; i++) {
             Occupation job = jobs[i];
             int cx = x0 + (i % perRow) * (cw + gap);
