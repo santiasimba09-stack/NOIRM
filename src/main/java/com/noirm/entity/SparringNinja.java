@@ -456,52 +456,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         com.noirm.ally.AllyMind.support(this, player);
         com.noirm.ally.NatureTeaching.tick(this, player);
-        LivingEntity target = getTarget();
-        if (target != null && com.noirm.ally.Crew.sameSide(this, target)) {
-            setTarget(null);
-            target = null;
-        }
-        // Fight what the leader fights, and whoever attacks them.
-        if (target == null || !target.isAlive()) {
-            LivingEntity pick = player.getLastHurtMob();
-            if (pick == null || !pick.isAlive() || com.noirm.ally.Crew.sameSide(this, pick) || player.tickCount - player.getLastHurtMobTimestamp() > 200) {
-                pick = player.getLastHurtByMob();
-            }
-            if (pick != null && pick.isAlive() && !com.noirm.ally.Crew.sameSide(this, pick) && pick.distanceTo(this) < 24) {
-                setTarget(pick);
-            }
-        }
-        if (order == com.noirm.ally.Order.TRAIN && (getTarget() == null || getTarget() instanceof TrainingDummy)) {
-            if (getTarget() == null && tickCount % 20 == 0) {
-                level().getEntitiesOfClass(TrainingDummy.class, getBoundingBox().inflate(24)).stream()
-                        .min(java.util.Comparator.comparingDouble(this::distanceToSqr)).ifPresent(this::setTarget);
-            }
-        }
-        if (order == com.noirm.ally.Order.MEDITATE && getTarget() == null) {
-            getNavigation().stop();
-            setPose(net.minecraft.world.entity.Pose.CROUCHING);
-            if (tickCount % 20 == 0) {
-                com.noirm.ally.AllyTraining.onMeditate(this);
-                heal(com.noirm.ally.Crew.REGEN_PER_SECOND * 2);
-                if (level() instanceof net.minecraft.server.level.ServerLevel level) {
-                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANT, getX(), getY() + 1.2, getZ(), 6, 0.4, 0.4, 0.4, 0.4);
-                }
-            }
-            return;
-        }
-        if (getTarget() == null) {
-            double distance = distanceTo(player);
-            boolean follows = order == com.noirm.ally.Order.FOLLOW;
-            if (follows && distance > com.noirm.ally.Crew.TELEPORT_DISTANCE && player.onGround()) {
-                teleportTo(player.getX(), player.getY(), player.getZ());
-                getNavigation().stop();
-            } else if (follows && distance > 5) {
-                getNavigation().moveTo(player, distance > 12 ? 1.25 : 1.0);
-            }
-            if (tickCount % 20 == 0 && getHealth() < getMaxHealth()) {
-                heal(com.noirm.ally.Crew.REGEN_PER_SECOND);
-            }
-        }
+        // Who to fight, where to be, and their job (follow / guard / patrol / train / meditate…).
+        com.noirm.ally.CrewBrain.tick(this, player);
     }
 
     @Override
@@ -578,7 +534,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 return net.minecraft.world.InteractionResult.CONSUME;
             }
             if (player.isShiftKeyDown()) {
-                setOrder(order == com.noirm.ally.Order.FOLLOW ? com.noirm.ally.Order.WAIT : com.noirm.ally.Order.FOLLOW);
+                com.noirm.ally.CrewBrain.giveOrder(this, order == com.noirm.ally.Order.FOLLOW ? com.noirm.ally.Order.WAIT
+                        : com.noirm.ally.Order.FOLLOW, player);
                 player.displayClientMessage(Component.translatable(isWaiting() ? "message.noirm.crew.wait" : "message.noirm.crew.follow",
                         getDisplayName()), true);
             } else if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
@@ -748,7 +705,12 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         // Village life: patrols, rooftop running, practice (does nothing for ninjas without a role).
         goalSelector.addGoal(3, new com.noirm.world.village.VillageRoutineGoal(this));
         goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal(this, 1.0));
-        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
+        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8) {
+            @Override
+            public boolean canUse() {
+                return !inCrew() && super.canUse(); // crew mates go where their orders say
+            }
+        });
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));

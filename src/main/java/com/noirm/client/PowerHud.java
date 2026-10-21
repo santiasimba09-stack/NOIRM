@@ -45,6 +45,7 @@ public final class PowerHud {
         Font font = minecraft.font;
         boolean combat = ClientCombat.isCombatMode();
         int y = combat ? 6 + 18 * 3 + 12 : 6 + 18 * 2 + 2;
+        y = drawNature(graphics, font, powers, y, minecraft.player.tickCount);
 
         graphics.drawString(font, Component.translatable("hud.noirm.clan", powers.clanName()), X, y, powers.canonClan() ? 0xFFE05050 : 0xFFE0B050, true);
         y += LINE;
@@ -123,6 +124,34 @@ public final class PowerHud {
         if (combat) {
             drawSlots(graphics, font, powers, width, height);
         }
+    }
+
+    private static final int NATURE_COLOR = 0xFF5CCB3A;
+    private static final int NATURE_FULL_COLOR = 0xFFB8F070;
+
+    /**
+     * Meditation: a green nature-energy bar (shown while meditating or while any energy is left)
+     * and a "Meditating…" line. Returns the y below what it drew.
+     */
+    private static int drawNature(GuiGraphics graphics, Font font, PowerPackets.SyncPowers powers, int y, int tick) {
+        float energy = powers.natureEnergy();
+        float max = com.noirm.senjutsu.Meditation.NATURE_MAX;
+        if (!powers.meditating() && energy < 0.5f) {
+            return y;
+        }
+        boolean full = energy >= max - 0.01f;
+        int color = full && (tick / 10) % 2 == 0 ? NATURE_FULL_COLOR : NATURE_COLOR;
+        graphics.drawString(font, Component.translatable("hud.noirm.nature_energy", Math.round(energy), Math.round(max)), X, y, 0xFFFFFFFF, true);
+        int barY = y + font.lineHeight + 1;
+        graphics.fill(X - 1, barY - 1, X + 82, barY + 5, 0xA0000000);
+        graphics.fill(X, barY, X + Math.round(81 * Math.min(1f, energy / max)), barY + 4, color);
+        y += 18;
+        if (powers.meditating()) {
+            String dots = ".".repeat(1 + (tick / 15) % 3);
+            graphics.drawString(font, Component.translatable("hud.noirm.meditating", dots), X, y, 0xFFA8E890, true);
+            y += LINE;
+        }
+        return y;
     }
 
     /** Progress (0..1) of the Sharingan toward its next tomoe, or -1 if not awakened or already at 3. */

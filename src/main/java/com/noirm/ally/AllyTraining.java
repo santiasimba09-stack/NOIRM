@@ -106,9 +106,9 @@ public final class AllyTraining {
     /** Reserves needed before an ally can learn a jutsu of this rank. */
     public static float reservesFor(String rank) {
         return switch (rank) {
-            case "S" -> 60f;
-            case "A" -> 35f;
-            case "B" -> 20f;
+            case "S" -> 30f;
+            case "A" -> 18f;
+            case "B" -> 10f;
             default -> 0f;
         };
     }
