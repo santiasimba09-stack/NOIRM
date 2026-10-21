@@ -250,6 +250,8 @@ public final class VillageGameTests {
         ServerLevel level = helper.getLevel();
         BlockPos from = helper.absolutePos(new BlockPos(1, 1, 1));
         BlockPos to = from.offset(11, 3, 4);
+        // The leap flies far outside this test's 3×3 area: clear its path of anything earlier tests left there.
+        clearCorridor(level, from, to);
         level.setBlock(from.below(), Blocks.STONE.defaultBlockState(), 3);
         for (int y = 0; y < 4; y++) {
             level.setBlock(to.below().below(y), Blocks.STONE.defaultBlockState(), 3);
@@ -271,13 +273,18 @@ public final class VillageGameTests {
             boolean landed = ninja.getY() >= to.getY() - 0.1 && miss < 2.5;
             BlockPos landedAt = ninja.blockPosition();
             ninja.discard();
-            level.setBlock(from.below(), Blocks.AIR.defaultBlockState(), 3);
-            for (int y = 0; y < 4; y++) {
-                level.setBlock(to.below().below(y), Blocks.AIR.defaultBlockState(), 3);
-            }
+            clearCorridor(level, from, to);
             helper.assertTrue(landed, "the leap lands on the far roof (landed at " + landedAt + ", aimed at " + to + ")");
             helper.succeed();
         });
+    }
+
+    private static void clearCorridor(ServerLevel level, BlockPos from, BlockPos to) {
+        for (BlockPos pos : BlockPos.betweenClosed(from.offset(-1, -1, -1), to.offset(1, 4, 1))) {
+            if (!level.getBlockState(pos).isAir()) {
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
     }
 
     /** Villagers go out by day and home at night. */
