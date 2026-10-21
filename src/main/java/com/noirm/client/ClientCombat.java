@@ -85,6 +85,7 @@ public final class ClientCombat {
         if (lastTargetTicks > 0) {
             lastTargetTicks--;
         }
+        PerceptionFocus.tick();
     }
 
     static void reset() {
@@ -94,6 +95,7 @@ public final class ClientCombat {
         lastTargetTicks = 0;
         shake = 0;
         focusTicks = 0;
+        PerceptionFocus.reset();
         LockOn.clear();
     }
 
@@ -138,6 +140,11 @@ public final class ClientCombat {
             case FOCUS -> focusTicks = FOCUS_PULSE_TICKS;
             case NO_STAMINA -> staminaFlashTicks = 12;
             case SHAKE -> shake = Math.max(shake, packet.strength());
+            case PERCEPTION_FOCUS -> PerceptionFocus.start(Math.round(packet.targetPosture()), packet.strength());
+            case JUST_FRAME -> {
+                shake = Math.max(shake, packet.strength());
+                PerceptionFocus.justFrame();
+            }
         }
     }
 }

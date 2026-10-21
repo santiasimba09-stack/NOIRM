@@ -27,6 +27,8 @@ public final class PowerHud {
     private static final int SPEED_COLOR = 0xFF70D0E0;
     private static final int VITALITY_COLOR = 0xFFE86060;
     private static final int RESERVES_COLOR = 0xFF6090FF;
+    private static final int CONTROL_COLOR = 0xFF70E0A0;
+    private static final int WILLPOWER_COLOR = 0xFFD0B0F0;
     private static final int STAT_COLUMN = 84;
     private static final int SLOT_WIDTH = 132;
     private static final int SLOT_HEIGHT = 15;
@@ -89,6 +91,9 @@ public final class PowerHud {
                 y += LINE;
                 drawStat(graphics, font, X, y, "hud.noirm.training.vitality", stats.vitality(), stats.vitalityProgress(), VITALITY_COLOR);
                 drawStat(graphics, font, X + STAT_COLUMN, y, "hud.noirm.training.reserves", stats.reserves(), stats.reservesProgress(), RESERVES_COLOR);
+                y += LINE;
+                drawStat(graphics, font, X, y, "hud.noirm.training.control", stats.control(), stats.controlProgress(), CONTROL_COLOR);
+                drawStat(graphics, font, X + STAT_COLUMN, y, "hud.noirm.training.willpower", stats.willpower(), stats.willpowerProgress(), WILLPOWER_COLOR);
                 y += LINE;
             }
         }

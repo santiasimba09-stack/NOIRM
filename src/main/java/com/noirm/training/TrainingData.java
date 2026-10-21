@@ -18,6 +18,15 @@ public final class TrainingData {
     private float chakraSpent;
     /** The max-chakra bonus from Reserves currently included in the max (so it can be adjusted). */
     private float appliedChakraBonus;
+    /** XP toward the next CTL / WIL point ({@link Supplementary}). */
+    private float controlXp;
+    private float willpowerXp;
+    /** Chakra spent while below half, since the last tick (CTL XP; not saved). */
+    private float pressureSpent;
+    /** Ticks walking on water since the last CTL XP from it (not saved). */
+    private int waterTicks;
+    /** Whether the player was locked in last tick (WIL XP when it ends; not saved). */
+    private boolean wasLockedIn;
 
     public float xp(TrainingSystem.Stat stat) {
         return xp.getOrDefault(stat, 0f);
@@ -25,6 +34,45 @@ public final class TrainingData {
 
     public void setXp(TrainingSystem.Stat stat, float value) {
         xp.put(stat, Math.max(0f, value));
+    }
+
+    public float xp(Supplementary.Stat stat) {
+        return stat == Supplementary.Stat.CONTROL ? controlXp : willpowerXp;
+    }
+
+    public void setXp(Supplementary.Stat stat, float value) {
+        if (stat == Supplementary.Stat.CONTROL) {
+            controlXp = Math.max(0f, value);
+        } else {
+            willpowerXp = Math.max(0f, value);
+        }
+    }
+
+    public void addPressureSpent(float amount) {
+        pressureSpent += Math.max(0f, amount);
+    }
+
+    float takePressureSpent() {
+        float spent = pressureSpent;
+        pressureSpent = 0f;
+        return spent;
+    }
+
+    /** Counts one tick moving on water; returns true (and restarts) every {@code interval} ticks. */
+    boolean waterTick(int interval) {
+        if (++waterTicks >= interval) {
+            waterTicks = 0;
+            return true;
+        }
+        return false;
+    }
+
+    boolean wasLockedIn() {
+        return wasLockedIn;
+    }
+
+    void setWasLockedIn(boolean value) {
+        wasLockedIn = value;
     }
 
     /** Counts one sprinting tick; returns true (and restarts) every {@code interval} ticks. */
@@ -60,6 +108,8 @@ public final class TrainingData {
             tag.putFloat(stat.key() + "Xp", xp(stat));
         }
         tag.putFloat("AppliedChakraBonus", appliedChakraBonus);
+        tag.putFloat("ControlXp", controlXp);
+        tag.putFloat("WillpowerXp", willpowerXp);
         return tag;
     }
 
@@ -69,7 +119,12 @@ public final class TrainingData {
             setXp(stat, tag.getFloat(stat.key() + "Xp"));
         }
         appliedChakraBonus = tag.getFloat("AppliedChakraBonus");
+        controlXp = Math.max(0f, tag.getFloat("ControlXp"));
+        willpowerXp = Math.max(0f, tag.getFloat("WillpowerXp"));
         sprintTicks = 0;
+        pressureSpent = 0f;
+        waterTicks = 0;
+        wasLockedIn = false;
         chakraSpent = 0f;
     }
 }

@@ -13,7 +13,7 @@ import net.minecraft.util.Mth;
 
 /**
  * Everything NOIRM saves about a player: resources (chakra for jutsu, stamina for defensive
- * actions), trained stats (speed, taijutsu, vitality, reserves), and their powers: clan identity, jutsu, eyes,
+ * actions), trained stats (speed, taijutsu, vitality, reserves, plus control and willpower), and their powers: clan identity, jutsu, eyes,
  * awakening and tailed beast.
  *
  * <p>The server owns this data; the client only receives copies for the HUD. All values are
@@ -51,6 +51,10 @@ public final class ShinobiData {
     private float vitality = DEFAULT_STAT;
     /** Chakra reserves: raise max chakra and its regen. */
     private float reserves = DEFAULT_STAT;
+    /** CTL, chakra control: cheaper jutsu and water walking ({@code training.Supplementary}). */
+    private float control = DEFAULT_STAT;
+    /** WIL, willpower: less Mangekyō strain, a steadier hold on a tailed beast. */
+    private float willpower = DEFAULT_STAT;
     /** True when the client's copy is out of date and needs a sync packet. */
     private boolean dirty = true;
     /** Same, for the powers (clan, jutsu, eyes, awakening, biju) — synced separately, less often. */
@@ -149,6 +153,24 @@ public final class ShinobiData {
         return reserves;
     }
 
+    public float getControl() {
+        return control;
+    }
+
+    public float getWillpower() {
+        return willpower;
+    }
+
+    public void setControl(float value) {
+        control = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
+    }
+
+    public void setWillpower(float value) {
+        willpower = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
+    }
+
     public void setVitality(float value) {
         vitality = Mth.clamp(value, 1f, MAX_STAT);
         dirty = true;
@@ -205,6 +227,9 @@ public final class ShinobiData {
         }
         setChakra(chakra - amount);
         training.addChakraSpent(amount);
+        if (amount >= com.noirm.training.Supplementary.PRESSURE_MIN_SPEND && chakra < maxChakra * 0.5f) {
+            training.addPressureSpent(amount); // spending under pressure trains chakra control
+        }
         return true;
     }
 
@@ -283,6 +308,8 @@ public final class ShinobiData {
         tag.putFloat("Taijutsu", taijutsu);
         tag.putFloat("Vitality", vitality);
         tag.putFloat("Reserves", reserves);
+        tag.putFloat("Control", control);
+        tag.putFloat("Willpower", willpower);
         tag.putString("Style", combatStyle);
         net.minecraft.nbt.ListTag crewTag = new net.minecraft.nbt.ListTag();
         crew.forEach(id -> crewTag.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
@@ -306,6 +333,8 @@ public final class ShinobiData {
         taijutsu = Mth.clamp(tag.contains("Taijutsu") ? tag.getFloat("Taijutsu") : DEFAULT_STAT, 1f, MAX_STAT);
         vitality = Mth.clamp(tag.contains("Vitality") ? tag.getFloat("Vitality") : DEFAULT_STAT, 1f, MAX_STAT);
         reserves = Mth.clamp(tag.contains("Reserves") ? tag.getFloat("Reserves") : DEFAULT_STAT, 1f, MAX_STAT);
+        control = Mth.clamp(tag.contains("Control") ? tag.getFloat("Control") : DEFAULT_STAT, 1f, MAX_STAT);
+        willpower = Mth.clamp(tag.contains("Willpower") ? tag.getFloat("Willpower") : DEFAULT_STAT, 1f, MAX_STAT);
         combatStyle = tag.getString("Style");
         crew.clear();
         tag.getList("Crew", net.minecraft.nbt.Tag.TAG_INT_ARRAY).forEach(t -> crew.add(net.minecraft.nbt.NbtUtils.loadUUID(t)));
