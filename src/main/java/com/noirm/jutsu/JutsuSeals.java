@@ -17,7 +17,8 @@ import java.util.Map;
 /**
  * Hand seals per jutsu, from {@code data/<ns>/jutsu_seals/<jutsu path>.json} ({@code {"seals": [...]}}),
  * written with their animations by {@code tools/animgen/seals.py}. Charged and channelled jutsu
- * play the sequence while you charge; every cast names the seals above the hotbar.
+ * play the sequence while you charge; tap jutsu form it, sped up, before they fire (see
+ * {@link JutsuCaster#sealPhaseTicks}); every cast names the seals above the hotbar.
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
 public final class JutsuSeals {

@@ -3,7 +3,8 @@
 Writes, for every jutsu listed in SEQUENCES:
   data/noirm/jutsu_seals/<nature>/<name>.json   {"seals": [...]}  (the game names them as you cast)
   assets/noirm/player_animation/seals_<nature>_<name>.json   the hands going through the sequence
-Charged and channelled jutsu play the sequence while you charge; instant ones only name it.
+Charged and channelled jutsu play the sequence while you charge; tap jutsu play it sped up
+(2 ticks a seal, at most 12) before they fire, unless their JSON says "quick": true.
 Run from the repository root: python3 tools/animgen/seals.py
 """
 import json

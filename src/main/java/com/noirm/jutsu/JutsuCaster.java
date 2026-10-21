@@ -30,20 +30,48 @@ public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
     public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT }
 
-    /** A CHARGE or CHANNEL jutsu in progress. */
+    /**
+     * A jutsu in progress: hand seals before a TAP jutsu (or an NPC's cast) fires, or a CHARGE or
+     * CHANNEL jutsu being held. The first {@code sealTicks} are the <b>seal phase</b>: the caster
+     * moves at {@link #WEAVING_SPEED} and a hit can pause, slow or break the seals.
+     */
     public static final class Casting {
         final ResourceLocation id;
         final JutsuDefinition def;
         final int slot;
-        /** Chakra paid when a CHARGE jutsu started, refunded if released too early. */
+        /** Chakra paid when it started: refunded if a charge is released too early, partly lost if the seals break. */
         final float paid;
+        /** TAP jutsu and NPC casts: fire with {@link #charge} once the seals are done. */
+        final boolean firesAfterSeals;
+        final float charge;
+        /** Length of the seal phase, for the HUD bar of a TAP jutsu. */
+        final int sealTotal;
         int ticks;
+        /** Ticks of hand seals left (0 = past the seal phase, or none). */
+        int sealTicks;
+        /** Ticks the seals are held up by a light hit, and how many have been added so far. */
+        int pauseTicks;
+        int pausedTotal;
 
-        Casting(ResourceLocation id, JutsuDefinition def, int slot, float paid) {
+        Casting(ResourceLocation id, JutsuDefinition def, int slot, float paid, boolean firesAfterSeals, float charge, int sealTicks) {
             this.id = id;
             this.def = def;
             this.slot = slot;
             this.paid = paid;
+            this.firesAfterSeals = firesAfterSeals;
+            this.charge = charge;
+            this.sealTicks = sealTicks;
+            this.sealTotal = sealTicks;
+        }
+
+        /** Still forming hand seals? */
+        public boolean sealing() {
+            return sealTicks > 0;
+        }
+
+        /** The full length of the HUD bar: the seals for a TAP jutsu, the charge or the channel otherwise. */
+        public int barMax() {
+            return firesAfterSeals ? sealTotal : def.cast() == CastType.CHARGE ? def.maxCharge() : def.maxDuration();
         }
 
         public ResourceLocation id() {
@@ -67,10 +95,177 @@ public final class JutsuCaster {
     /** Cooldowns for NPCs (players keep theirs in their JutsuBook): jutsu → game time ready. */
     private static final Map<LivingEntity, Map<ResourceLocation, Long>> NPC_READY_AT = new WeakHashMap<>();
 
+    // ------------------------------------------------------------ the seal phase (blueprint section 4)
+
+    /** Ticks per hand seal before a TAP jutsu (the seal animation, sped up). */
+    public static final int SEAL_PHASE_TICKS_PER_SEAL = 2;
+    /** No jutsu spends longer than this on its seals before it fires. */
+    public static final int SEAL_PHASE_MAX_TICKS = 12;
+    /** Movement while weaving seals: 80% speed. */
+    public static final float WEAVING_SPEED = 0.8f;
+    /** A hit below this fraction of max health only pauses the seals... */
+    public static final float LIGHT_HIT = 0.08f;
+    /** ...below this one it slows you hard for a moment; at or above it (or a stagger) the seals break. */
+    public static final float HEAVY_HIT = 0.20f;
+    /** A light hit holds the seals up this long, at most {@link #MAX_PAUSE_TICKS} in all per cast. */
+    public static final int LIGHT_PAUSE_TICKS = 4;
+    public static final int MAX_PAUSE_TICKS = 12;
+    /** A medium hit: Slowness IV for a second. */
+    public static final int MEDIUM_SLOW_TICKS = 20;
+    public static final int MEDIUM_SLOW_LEVEL = 3;
+    /** Broken seals: this fraction of the jutsu's chakra cost is lost (the rest of what was paid comes back). */
+    public static final float FIZZLE_BACKLASH = 0.3f;
+    /** Broken seals start no cooldown for players; NPCs wait this long before they try again. */
+    public static final int FIZZLE_NPC_COOLDOWN = 20;
+
+    // ------------------------------------------------------------ spam fall-off
+
+    /** Each quick recast of the same minor (E/D/C) projectile jutsu: -20% damage... */
+    public static final float SPAM_STEP = 0.2f;
+    /** ...down to 40%. */
+    public static final float SPAM_FLOOR = 0.4f;
+    /** "Quick" = within 3 s of it being ready again (its cooldown + this). */
+    public static final int SPAM_WINDOW_TICKS = 60;
+
+    private static final java.util.UUID WEAVING_ID = java.util.UUID.fromString("6f1c0a52-3b9e-4d77-9a1e-5e0c7a3f2b11");
+    private static final net.minecraft.world.entity.ai.attributes.AttributeModifier WEAVING = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+            WEAVING_ID, "noirm.weaving_seals", WEAVING_SPEED - 1f, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL);
+    /** Per caster: jutsu -> {game time until which a recast counts as spam, streak}. Touched only when a jutsu fires. */
+    private static final Map<LivingEntity, Map<ResourceLocation, long[]>> SPAM = new WeakHashMap<>();
+
     private JutsuCaster() {}
 
     public static Casting casting(LivingEntity entity) {
         return CASTING.get(entity);
+    }
+
+    /** How long this jutsu's seals take before it fires: 2 ticks a seal, at most 12; 0 if it has none or is quick. */
+    public static int sealPhaseTicks(ResourceLocation id, JutsuDefinition def) {
+        JutsuSeals.Sequence seals = def.quick() ? null : JutsuSeals.get(id);
+        return seals == null || seals.seals().isEmpty() ? 0
+                : Math.min(SEAL_PHASE_MAX_TICKS, SEAL_PHASE_TICKS_PER_SEAL * seals.seals().size());
+    }
+
+    /** Is the 80%-speed weaving modifier on this entity? */
+    public static boolean isWeaving(LivingEntity entity) {
+        net.minecraft.world.entity.ai.attributes.AttributeInstance speed = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        return speed != null && speed.getModifier(WEAVING_ID) != null;
+    }
+
+    private static void startWeaving(LivingEntity entity) {
+        net.minecraft.world.entity.ai.attributes.AttributeInstance speed = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (speed != null && speed.getModifier(WEAVING_ID) == null) {
+            speed.addTransientModifier(WEAVING); // transient: never saved, so it can't survive a relog
+        }
+    }
+
+    private static void stopWeaving(LivingEntity entity) {
+        net.minecraft.world.entity.ai.attributes.AttributeInstance speed = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (speed != null && speed.getModifier(WEAVING_ID) != null) {
+            speed.removeModifier(WEAVING_ID);
+        }
+    }
+
+    /** Ends whatever is in progress, with no effects (death, logout): the weaving slow always goes with it. */
+    public static void cancel(LivingEntity entity) {
+        end(entity);
+    }
+
+    /** Forgets a casting and drops the weaving slow. Every way a cast ends goes through here. */
+    private static void end(LivingEntity entity) {
+        CASTING.remove(entity);
+        stopWeaving(entity);
+    }
+
+    /** Starts the hand seals: the sequence's animation fitted to {@code animationTicks}, and the weaving slow. */
+    private static void startSeals(LivingEntity caster, ResourceLocation id, Casting casting, int animationTicks) {
+        JutsuSeals.Sequence seals = JutsuSeals.get(id);
+        if (seals != null) {
+            castAnimation(caster, seals.animation(id), animationTicks);
+        }
+        if (casting.sealTicks > 0) {
+            startWeaving(caster);
+        }
+    }
+
+    /**
+     * The caster took {@code amount} damage. In the seal phase: a light hit pauses the seals, a
+     * medium one slows you hard, a heavy one breaks them (see {@link #fizzle}).
+     */
+    public static void onHurt(LivingEntity entity, float amount) {
+        Casting casting = CASTING.get(entity);
+        if (casting == null || casting.sealTicks <= 0 || amount <= 0) {
+            return;
+        }
+        float scale = amount / Math.max(1f, entity.getMaxHealth());
+        if (scale >= HEAVY_HIT) {
+            fizzle(entity, casting);
+        } else if (scale >= LIGHT_HIT) {
+            entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN,
+                    MEDIUM_SLOW_TICKS, MEDIUM_SLOW_LEVEL, false, false, true));
+            if (entity instanceof Player player) {
+                player.displayClientMessage(Component.translatable("message.noirm.jutsu.seals_shaken"), true);
+            }
+        } else {
+            int pause = Math.min(LIGHT_PAUSE_TICKS, MAX_PAUSE_TICKS - casting.pausedTotal);
+            if (pause > 0) {
+                casting.pauseTicks += pause;
+                casting.pausedTotal += pause;
+                // The hands hold still for the pause (the animation's hit-stop).
+                com.noirm.network.NoirmNetwork.sendToTrackingAndSelf(entity, new com.noirm.network.CombatClientPackets.PlayAnimation(
+                        entity.getId(), com.noirm.network.CombatClientPackets.HITSTOP, pause));
+            }
+        }
+    }
+
+    /**
+     * The seals broke: the jutsu fizzles in a puff of black smoke, {@link #FIZZLE_BACKLASH} of its
+     * cost is lost (the rest of what was paid comes back) and no cooldown starts.
+     */
+    public static void fizzle(LivingEntity entity, Casting casting) {
+        end(entity);
+        if (entity instanceof Player player) {
+            ShinobiCapability.get(player).ifPresent(data -> {
+                if (!player.getAbilities().instabuild) {
+                    float net = casting.paid - FIZZLE_BACKLASH * cost(player, casting.id, casting.def);
+                    data.setChakra(Math.max(0f, data.getChakra() + net));
+                }
+                data.markPowersDirty();
+            });
+            player.displayClientMessage(Component.translatable("message.noirm.jutsu.fizzled"), true);
+        } else {
+            if (entity instanceof com.noirm.entity.SparringNinja ninja && !(ninja instanceof com.noirm.entity.ShadowClone)) {
+                // The fight goal paid the full cost up front: give back all but the backlash.
+                ninja.setChakra(ninja.chakra() + (1f - FIZZLE_BACKLASH) * cost(ninja, casting.id, casting.def));
+            }
+            NPC_READY_AT.computeIfAbsent(entity, e -> new HashMap<>()).put(casting.id, entity.level().getGameTime() + FIZZLE_NPC_COOLDOWN);
+        }
+        net.minecraft.world.phys.Vec3 hands = entity.getEyePosition().add(entity.getViewVector(1f).scale(0.6)).add(0, -0.45, 0);
+        com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.smoke(0x151515, 0.45f, 34), hands, 14, 0.3, 0.03);
+        com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.smoke(0x050505, 0.7f, 50), hands.add(0, 0.2, 0), 6, 0.4, 0.02);
+        com.noirm.vfx.Vfx.radial(entity.level(), com.noirm.vfx.Vfx.spark(0x6A5A8A, 0.1f, 6), hands, 5, 0.25);
+        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,
+                net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 0.8f);
+    }
+
+    /**
+     * Spam fall-off: recasting the same minor (E/D/C) projectile jutsu within
+     * {@link #SPAM_WINDOW_TICKS} of it being ready again weakens it by {@link #SPAM_STEP} a time,
+     * down to {@link #SPAM_FLOOR}; a pause resets it. Records this cast and returns its multiplier.
+     */
+    public static float spamFactor(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
+        if (!"projectile".equals(def.behavior()) || !isMinorRank(def.rank())) {
+            return 1f;
+        }
+        long now = caster.level().getGameTime();
+        long[] track = SPAM.computeIfAbsent(caster, e -> new HashMap<>()).computeIfAbsent(id, k -> new long[] {Long.MIN_VALUE, 0});
+        track[1] = now <= track[0] ? track[1] + 1 : 0;
+        track[0] = now + cooldown(caster, id, def) + SPAM_WINDOW_TICKS;
+        return Math.max(SPAM_FLOOR, 1f - SPAM_STEP * track[1]);
+    }
+
+    private static boolean isMinorRank(String rank) {
+        return "E".equals(rank) || "D".equals(rank) || "C".equals(rank);
     }
 
     // ------------------------------------------------------------ players
@@ -79,7 +274,7 @@ public final class JutsuCaster {
     public static Result onKey(Player player, int slot, boolean pressed) {
         if (!pressed) {
             Casting casting = CASTING.get(player);
-            if (casting != null && casting.slot == slot) {
+            if (casting != null && casting.slot == slot && !casting.firesAfterSeals) {
                 release(player, casting);
             }
             return Result.OK;
@@ -126,14 +321,24 @@ public final class JutsuCaster {
         if (named != null) {
             player.displayClientMessage(named.describe(), true); // the seals, above the hotbar
         }
+        float paid = player.getAbilities().instabuild ? 0f : cost;
         if (def.cast() == CastType.TAP) {
-            execute(player, id, def, 1f);
+            int seals = sealPhaseTicks(id, def);
+            if (seals == 0) {
+                execute(player, id, def, 1f); // no seals, or a reflex jutsu: at once
+            } else {
+                Casting casting = new Casting(id, def, slot, paid, true, 1f, seals);
+                CASTING.put(player, casting);
+                startSeals(player, id, casting, seals); // the seals, sped up; it fires when they're done
+                data.markPowersDirty();
+            }
         } else {
-            Casting casting = new Casting(id, def, slot, player.getAbilities().instabuild ? 0f : cost);
+            JutsuSeals.Sequence seals = def.quick() ? null : JutsuSeals.get(id);
+            // Charged and channelled jutsu keep their flow: the seals they form while charging are the seal phase.
+            Casting casting = new Casting(id, def, slot, paid, false, 1f, seals == null ? 0 : seals.ticks());
             CASTING.put(player, casting);
-            JutsuSeals.Sequence seals = JutsuSeals.get(id);
             if (seals != null) {
-                castAnimation(player, seals.animation(id), seals.ticks()); // this jutsu's own seals
+                startSeals(player, id, casting, seals.ticks()); // this jutsu's own seals
             } else {
                 castAnimation(player, "cast_seals", def.cast() == CastType.CHARGE ? Math.max(8, def.minCharge()) : 14);
             }
@@ -149,10 +354,41 @@ public final class JutsuCaster {
     public static void tick(LivingEntity entity) {
         Casting casting = CASTING.get(entity);
         if (casting == null) {
+            if ((entity.tickCount & 15) == 0) {
+                stopWeaving(entity); // a safety net: the weaving slow never outlives its cast
+            }
             return;
         }
-        if (CombatSystem.isStaggered(entity) || !entity.isAlive()) {
+        if (!entity.isAlive()) {
             stop(entity, casting, false);
+            return;
+        }
+        if (CombatSystem.isStaggered(entity)) {
+            if (casting.sealTicks > 0) {
+                fizzle(entity, casting); // staggered or knocked down mid-seal: the seals break
+            } else {
+                stop(entity, casting, false);
+            }
+            return;
+        }
+        if (casting.pauseTicks > 0) {
+            casting.pauseTicks--; // a light hit holds the seals up
+            return;
+        }
+        if (casting.sealTicks > 0 && --casting.sealTicks == 0) {
+            stopWeaving(entity);
+        }
+        if (casting.firesAfterSeals) {
+            casting.ticks++;
+            if (casting.sealTicks == 0) {
+                end(entity);
+                execute(entity, casting.id, casting.def, casting.charge);
+                if (entity instanceof Player player) {
+                    ShinobiCapability.get(player).ifPresent(ShinobiData::markPowersDirty);
+                } else {
+                    afterNpcCast(entity, casting.id, casting.def);
+                }
+            }
             return;
         }
         if (casting.def.cast() == CastType.CHARGE && casting.ticks < casting.def.maxCharge()
@@ -217,7 +453,7 @@ public final class JutsuCaster {
             }
             int range = Math.max(1, casting.def.maxCharge() - casting.def.minCharge());
             float charge = Math.min(1f, (casting.ticks - casting.def.minCharge()) / (float) range);
-            CASTING.remove(entity);
+            end(entity);
             execute(entity, casting.id, casting.def, charge);
         } else {
             stop(entity, casting, true);
@@ -226,7 +462,7 @@ public final class JutsuCaster {
 
     /** Ends a charge/channel. {@code completed} channels go on cooldown and earn mastery. */
     private static void stop(LivingEntity entity, Casting casting, boolean completed) {
-        CASTING.remove(entity);
+        end(entity);
         if (completed) {
             afterCast(entity, casting.id, casting.def);
         }
@@ -237,10 +473,13 @@ public final class JutsuCaster {
 
     // ------------------------------------------------------------ NPCs
 
-    /** An NPC casts a jutsu directly (no chakra; its own cooldowns). Returns true if cast. */
+    /**
+     * An NPC casts a jutsu directly (no chakra; its own cooldowns). Returns true if cast, or if
+     * its hand seals started: like a player's, it fires when they're done, and can be broken.
+     */
     public static boolean npcCast(LivingEntity caster, ResourceLocation id, float charge) {
         JutsuDefinition def = JutsuData.get(id);
-        if (def == null || !CombatSystem.canAct(caster) || checkRequirements(caster, id, def) != Result.OK) {
+        if (def == null || CASTING.containsKey(caster) || !CombatSystem.canAct(caster) || checkRequirements(caster, id, def) != Result.OK) {
             return false;
         }
         long now = caster.level().getGameTime();
@@ -251,14 +490,26 @@ public final class JutsuCaster {
         if (def.cast() == CastType.CHANNEL) {
             return false; // NPCs only use instant jutsu for now
         }
+        int seals = sealPhaseTicks(id, def);
+        if (seals > 0) {
+            Casting casting = new Casting(id, def, -1, 0f, true, charge, seals);
+            CASTING.put(caster, casting);
+            startSeals(caster, id, casting, seals);
+            return true;
+        }
         execute(caster, id, def, charge);
-        ready.put(id, now + cooldown(caster, id, def));
+        afterNpcCast(caster, id, def);
+        return true;
+    }
+
+    /** An NPC's jutsu went off: its cooldown, training and mastery. */
+    private static void afterNpcCast(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
+        NPC_READY_AT.computeIfAbsent(caster, e -> new HashMap<>()).put(id, caster.level().getGameTime() + cooldown(caster, id, def));
         if (caster instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
             ninja.addJutsuXp(id, 1);
             ninja.onJutsuCast();
         }
-        return true;
     }
 
     /** Is this NPC's own cooldown for {@code id} over? */
@@ -295,7 +546,9 @@ public final class JutsuCaster {
             Noirm.LOGGER.error("Jutsu {} uses unknown behavior '{}'", id, def.behavior());
             return;
         }
-        JutsuContext context = new JutsuContext(caster, id, def, power(caster, id, def), charge);
+        // A fresh cast of a minor projectile spammed again and again comes out weaker.
+        float power = start ? power(caster, id, def) * spamFactor(caster, id, def) : power(caster, id, def);
+        JutsuContext context = new JutsuContext(caster, id, def, power, charge);
         FriendlyZones.mark(caster);
         if (start) {
             if (!"mode".equals(def.behavior()) || !ModeSystem.isActive(caster, id)) {

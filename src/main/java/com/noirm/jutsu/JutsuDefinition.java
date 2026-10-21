@@ -20,10 +20,12 @@ import java.util.Optional;
  * @param starter    given to everyone with its nature (or to everyone, if it has no nature)
  * @param rank       E–S, for display
  * @param unlock     learned automatically once another jutsu reaches a mastery level
+ * @param quick      a reflex jutsu (Substitution, Body Flicker): it fires at once, skipping its hand seals
  */
 public record JutsuDefinition(Optional<Nature> nature, CastType cast, String behavior, float chakraCost, int cooldown,
                               int minCharge, int maxCharge, int maxDuration, Optional<Requirement> requires,
-                              boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode) {
+                              boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode,
+                              boolean quick) {
 
     public static final Codec<JutsuDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Nature.CODEC.optionalFieldOf("nature").forGetter(JutsuDefinition::nature),
@@ -39,7 +41,8 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
             Codec.STRING.optionalFieldOf("rank", "C").forGetter(JutsuDefinition::rank),
             Params.CODEC.optionalFieldOf("params", Params.DEFAULT).forGetter(JutsuDefinition::params),
             Unlock.CODEC.optionalFieldOf("unlock").forGetter(JutsuDefinition::unlock),
-            Mode.CODEC.optionalFieldOf("mode").forGetter(JutsuDefinition::mode)
+            Mode.CODEC.optionalFieldOf("mode").forGetter(JutsuDefinition::mode),
+            Codec.BOOL.optionalFieldOf("quick", false).forGetter(JutsuDefinition::quick)
     ).apply(i, JutsuDefinition::new));
 
     /**

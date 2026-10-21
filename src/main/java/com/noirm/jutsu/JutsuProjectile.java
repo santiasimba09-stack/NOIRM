@@ -49,6 +49,8 @@ public class JutsuProjectile extends Projectile {
     private float homing;
     private LivingEntity homingTarget;
     private int effectTicks;
+    /** How its last clash with another jutsu ended. */
+    private JutsuClash.Outcome clash = JutsuClash.Outcome.NONE;
 
     public JutsuProjectile(EntityType<? extends JutsuProjectile> type, Level level) {
         super(type, level);
@@ -106,6 +108,65 @@ public class JutsuProjectile extends Projectile {
         return damage;
     }
 
+    public float blastRadius() {
+        return blastRadius;
+    }
+
+    /** What it brings to a clash with another jutsu: its damage (already scaled by power and charge). */
+    public float clashPower() {
+        return damage;
+    }
+
+    public JutsuClash.Outcome clashOutcome() {
+        return clash;
+    }
+
+    /** Won a clash: flies on with {@code remaining} of its strength, a little smaller. */
+    void clashWon(float remaining) {
+        clash = JutsuClash.Outcome.WON;
+        damage *= remaining;
+        posture *= remaining;
+        blastRadius *= (float) Math.sqrt(remaining);
+        entityData.set(SIZE, Math.max(0.2f, size() * (float) Math.sqrt(remaining)));
+    }
+
+    /** Lost a clash: snuffed out (steam if water put out fire), hurting no one. */
+    void clashLost(Nature by) {
+        clash = JutsuClash.Outcome.LOST;
+        if (level() instanceof ServerLevel serverLevel) {
+            com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
+            boolean doused = nature() == Nature.FIRE && by == Nature.WATER;
+            serverLevel.playSound(null, getX(), getY(), getZ(), doused ? SoundEvents.FIRE_EXTINGUISH : SoundEvents.GENERIC_EXTINGUISH_FIRE,
+                    SoundSource.PLAYERS, 0.9f, doused ? 1f : 1.4f);
+            if (doused) {
+                com.noirm.vfx.Vfx.burst(serverLevel, com.noirm.vfx.Vfx.smoke(0xE8EEF2, 0.5f, 40), position(), 10, size() * 0.6, 0.04);
+            }
+        }
+        discard();
+    }
+
+    /** Burst together with the jutsu it met (the explosion is drawn by {@link JutsuClash}). */
+    void clashBurst() {
+        clash = JutsuClash.Outcome.BURST;
+        discard();
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        if (!level().isClientSide()) {
+            JutsuClash.track(this);
+        }
+    }
+
+    @Override
+    public void onRemovedFromWorld() {
+        super.onRemovedFromWorld();
+        if (!level().isClientSide()) {
+            JutsuClash.untrack(this);
+        }
+    }
+
     @Override
     protected void defineSynchedData() {
         entityData.define(NATURE, (byte) -1);
@@ -128,6 +189,10 @@ public class JutsuProjectile extends Projectile {
                     onHit(new EntityHitResult(other));
                     return;
                 }
+            }
+            // Meeting another side's jutsu mid-air: the elements clash (cheap: every few ticks, projectiles only).
+            if (tickCount % JutsuClash.rules().checkInterval() == 0 && JutsuClash.check(this)) {
+                return;
             }
             if ((nature() == Nature.LIGHTNING || nature() == Nature.STORM) && tickCount % 2 == 0) {
                 com.noirm.vfx.Vfx.arcs(level(), this, 1, com.noirm.vfx.Vfx.LIGHTNING);
@@ -215,7 +280,7 @@ public class JutsuProjectile extends Projectile {
     }
 
     /** This projectile's colours (the Tailed Beast Ball is dark and red). */
-    private com.noirm.vfx.Vfx.Palette palette() {
+    com.noirm.vfx.Vfx.Palette palette() {
         return isBeastChakra() ? new com.noirm.vfx.Vfx.Palette(0xFF6060, 0x3A0A40, 0x0A0008) : com.noirm.vfx.Vfx.palette(nature());
     }
 

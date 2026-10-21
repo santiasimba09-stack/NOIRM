@@ -168,6 +168,11 @@ public final class PowersGameTests {
         float before = data.getChakra();
         helper.assertTrue(JutsuCaster.onKey(player, slot, true) == JutsuCaster.Result.OK, "cast should succeed");
         assertNear(helper, before - JutsuCaster.cost(player, WATER_BULLET, JutsuData.get(WATER_BULLET)), data.getChakra(), "chakra spent");
+        helper.assertTrue(JutsuCaster.onKey(player, slot, true) == JutsuCaster.Result.BUSY, "busy while forming its seal");
+        // (Test players aren't in the world, so tick them through the seal phase by hand.)
+        for (int i = 0; i < JutsuCaster.sealPhaseTicks(WATER_BULLET, JutsuData.get(WATER_BULLET)); i++) {
+            JutsuCaster.tick(player);
+        }
         helper.assertTrue(data.jutsu().cooldown(WATER_BULLET) > 0, "should be on cooldown");
         helper.assertTrue(JutsuCaster.onKey(player, slot, true) == JutsuCaster.Result.COOLDOWN, "second cast blocked by cooldown");
         helper.assertTrue(data.jutsu().xp(WATER_BULLET) == 1, "casting earns mastery");

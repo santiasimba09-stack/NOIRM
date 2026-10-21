@@ -193,8 +193,7 @@ public final class PowerPackets {
                 cooldowns.add(id == null ? 0 : book.cooldown(id));
             }
             JutsuCaster.Casting casting = JutsuCaster.casting(player);
-            int castingMax = casting == null ? 0
-                    : casting.def().cast() == com.noirm.jutsu.CastType.CHARGE ? casting.def().maxCharge() : casting.def().maxDuration();
+            int castingMax = casting == null ? 0 : casting.barMax();
             EyeData eyes = data.eyes();
             int nextXp = eyes.sharinganStage() > 0 && eyes.sharinganStage() < EyeData.MAX_STAGE ? Sharingan.STAGE_XP[eyes.sharinganStage() + 1] : 0;
             AwakeningData awakening = data.awakening();

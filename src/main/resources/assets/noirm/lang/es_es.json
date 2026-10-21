@@ -987,5 +987,7 @@
   "kit.noirm.hyuga": "Hyūga",
   "kit.noirm.uzumaki": "Uzumaki",
   "kit.noirm.senju": "Armadura Senju",
-  "kit.noirm.taijutsu": "Luchador de taijutsu"
+  "kit.noirm.taijutsu": "Luchador de taijutsu",
+  "message.noirm.jutsu.fizzled": "Tus sellos se rompieron: el jutsu se disipó",
+  "message.noirm.jutsu.seals_shaken": "Golpe a mitad de los sellos: tus manos vacilan"
 }

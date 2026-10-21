@@ -37,7 +37,8 @@ public final class CrewGameTests {
         caster.setYHeadRot(0);
         caster.setXRot(-20); // aim up, into open sky
         helper.assertTrue(JutsuCaster.npcCast(caster, Noirm.id("katon/great_fireball"), 1f), "cast the Great Fireball");
-        helper.runAfterDelay(5, () -> {
+        int seals = JutsuCaster.sealPhaseTicks(Noirm.id("katon/great_fireball"), com.noirm.jutsu.JutsuData.get(Noirm.id("katon/great_fireball")));
+        helper.runAfterDelay(5 + seals, () -> {
             helper.assertTrue(caster.getHealth() == caster.getMaxHealth(), "the caster is unhurt, health " + caster.getHealth());
             AABB around = caster.getBoundingBox().inflate(20);
             var shots = helper.getLevel().getEntitiesOfClass(JutsuProjectile.class, around);

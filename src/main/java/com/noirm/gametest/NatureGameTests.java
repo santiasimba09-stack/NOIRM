@@ -86,7 +86,7 @@ public final class NatureGameTests {
     }
 
     /** Casts every nature jutsu once (from a ninja with every nature) at a target in front: no errors, and it gets hurt. */
-    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 900)
+    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 1200)
     public static void everyNatureJutsuWorks(GameTestHelper helper) {
         floor(helper);
         List<ResourceLocation> ids = new ArrayList<>();
@@ -107,7 +107,7 @@ public final class NatureGameTests {
             if (index[0] >= ids.size()) {
                 return;
             }
-            if (helper.getTick() % 12 != 0) {
+            if (helper.getTick() % 16 != 0) { // room for each jutsu's hand seals (at most 12 ticks)
                 return;
             }
             ResourceLocation id = ids.get(index[0]++);
@@ -133,10 +133,13 @@ public final class NatureGameTests {
         SparringNinja target = ninja(helper, 1.5f, 3.5f, TestClans.PLAIN);
         face(caster, target);
         helper.assertTrue(JutsuCaster.npcCast(caster, Noirm.id("mokuton/wood_binding"), 1f), "cast Wood Binding");
-        helper.assertTrue(com.noirm.combat.CombatSystem.isStaggered(target), "the target is held");
-        helper.assertTrue(target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "and can't move");
-        helper.assertTrue(target.getHealth() < target.getMaxHealth(), "and hurt");
-        clearAround(helper);
+        // It goes off once its hand seals are done.
+        helper.runAfterDelay(JutsuCaster.sealPhaseTicks(Noirm.id("mokuton/wood_binding"), JutsuData.get(Noirm.id("mokuton/wood_binding"))) + 1, () -> {
+            helper.assertTrue(com.noirm.combat.CombatSystem.isStaggered(target), "the target is held");
+            helper.assertTrue(target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "and can't move");
+            helper.assertTrue(target.getHealth() < target.getMaxHealth(), "and hurt");
+            clearAround(helper);
+        });
     }
 
     @GameTest(template = "empty", batch = "noirm_clouds", timeoutTicks = 100)
@@ -147,9 +150,9 @@ public final class NatureGameTests {
         face(caster, target);
         int before = JutsuAreas.count();
         helper.assertTrue(JutsuCaster.npcCast(caster, Noirm.id("futton/skilled_mist"), 1f), "cast Skilled Mist");
-        helper.assertTrue(JutsuAreas.count() == before + 1, "a mist lingers");
         float start = target.getHealth();
         helper.succeedWhen(() -> {
+            helper.assertTrue(JutsuAreas.count() == before + 1, "a mist lingers (once the seals are done)");
             helper.assertTrue(target.getHealth() < start, "the mist should hurt over time");
             helper.assertTrue(target.hasEffect(MobEffects.WEAKNESS), "and weaken");
         });

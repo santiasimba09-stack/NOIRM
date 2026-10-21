@@ -987,5 +987,7 @@
   "kit.noirm.hyuga": "Hyūga",
   "kit.noirm.uzumaki": "Uzumaki",
   "kit.noirm.senju": "Senju armor",
-  "kit.noirm.taijutsu": "Taijutsu fighter"
+  "kit.noirm.taijutsu": "Taijutsu fighter",
+  "message.noirm.jutsu.fizzled": "Your seals broke: the jutsu fizzled",
+  "message.noirm.jutsu.seals_shaken": "Hit mid-seal: your hands falter"
 }
