@@ -34,6 +34,7 @@ public final class Noirm {
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
         com.noirm.world.Destruction.registerGameRules();
+        com.noirm.gore.Gore.registerGameRules();
         NoirmNetwork.register();
     }
 

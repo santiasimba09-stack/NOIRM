@@ -75,6 +75,18 @@ public final class NoirmEntities {
                     .clientTrackingRange(8)
                     .build(Noirm.id("seat").toString()));
 
+    /** A severed arm, leg or head (gore): a short-lived ragdoll, never saved, seen within 32 blocks. */
+    public static final RegistryObject<EntityType<com.noirm.gore.SeveredLimb>> SEVERED_LIMB = ENTITY_TYPES.register("severed_limb",
+            () -> EntityType.Builder.<com.noirm.gore.SeveredLimb>of(com.noirm.gore.SeveredLimb::new, MobCategory.MISC)
+                    .sized(0.3f, 0.3f)
+                    .noSummon()
+                    .noSave()
+                    .fireImmune()
+                    .clientTrackingRange(2)
+                    .updateInterval(2)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Noirm.id("severed_limb").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {

@@ -125,6 +125,8 @@ public final class CombatSystem {
 
     /** True while NOIRM itself is applying a hit, so the damage events don't handle it twice. */
     private static boolean applyingHit;
+    /** True while that hit is a heavy one (hit-stop 4+ or a knockdown): gore uses it to sever limbs. */
+    private static boolean applyingHeavy;
 
     /** What happens to an incoming attack. */
     public enum Outcome { HIT, GUARDED, PARRIED, DODGED }
@@ -359,6 +361,11 @@ public final class CombatSystem {
     /** True while a NOIRM move's hit is being applied (rather than a vanilla attack). */
     public static boolean isApplyingHit() {
         return applyingHit;
+    }
+
+    /** True while a heavy NOIRM hit (hit-stop 4+ or a knockdown) is being applied. */
+    public static boolean isApplyingHeavyHit() {
+        return applyingHit && applyingHeavy;
     }
 
     // ---------------------------------------------------------------- focus
@@ -679,11 +686,13 @@ public final class CombatSystem {
 
         boolean hurt;
         applyingHit = true;
+        applyingHeavy = hit.isHeavy() || hit.knockdown();
         try {
             target.invulnerableTime = 0;
             hurt = target.hurt(damageSource(attacker), damage);
         } finally {
             applyingHit = false;
+            applyingHeavy = false;
         }
         if (!hurt) {
             return;

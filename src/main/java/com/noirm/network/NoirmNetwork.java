@@ -111,6 +111,10 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Close.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.noirm.master.MasterPackets.Close::encode).decoder(com.noirm.master.MasterPackets.Close::decode)
                 .consumerMainThread(com.noirm.master.MasterPackets.Close::handle).add();
+        // Gore: marks and severed parts (blueprint §7).
+        CHANNEL.messageBuilder(com.noirm.gore.GorePackets.Sync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.noirm.gore.GorePackets.Sync::encode).decoder(com.noirm.gore.GorePackets.Sync::decode)
+                .consumerMainThread(com.noirm.gore.GorePackets.Sync::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

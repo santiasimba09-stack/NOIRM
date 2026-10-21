@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 public class VillageMerchantRenderer extends HumanoidMobRenderer<VillageMerchant, PlayerModel<VillageMerchant>> {
     public VillageMerchantRenderer(EntityRendererProvider.Context context) {
         super(context, new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false), 0.5f);
+        addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot and cuts
     }
 
     @Override
