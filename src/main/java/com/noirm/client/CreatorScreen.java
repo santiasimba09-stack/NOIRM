@@ -53,7 +53,7 @@ public class CreatorScreen extends Screen {
     private static final int LABEL_W = 66;
 
     private enum Tab {
-        FACE("face", 2.6f), BODY("body", 1f), HAIR("hair", 2.2f), CLOTHES("clothes", 1f), GENETICS("genetics", 1f);
+        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), CLOTHES("clothes", 1f), GENETICS("genetics", 1f);
 
         final String key;
         final float zoom;
@@ -212,14 +212,15 @@ public class CreatorScreen extends Screen {
     }
 
     private void drawHeader(GuiGraphics g) {
-        g.drawString(font, title.copy().withStyle(s -> s.withBold(true)), 10, 8, PAPER, false);
+        Component bold = title.copy().withStyle(s -> s.withBold(true));
+        g.drawString(font, bold, 10, 8, PAPER, false);
         String key = switch (state.modeEnum()) {
             case APPEARANCE -> "creator.noirm.subtitle.appearance";
             case FULL -> "creator.noirm.subtitle.full";
             default -> "creator.noirm.subtitle.first_join";
         };
         Component sub = Component.translatable(key);
-        int tw = font.width(title) + 18;
+        int tw = font.width(bold) + 18;
         g.drawString(font, cut(sub, width - tw - 14), tw + 6, 8, DIM, false);
         g.fill(8, 19, width - 8, 20, 0x60606A73);
     }
@@ -234,9 +235,9 @@ public class CreatorScreen extends Screen {
         g.fillGradient(vx + 3, floorY - 30, vx + vw - 3, vy + vh - 3, 0x00000000, 0x406FB3E8);
         if (player != null) {
             float height = draft.height();
-            float base = vh * 0.36f; // not divided by height: taller characters look taller
+            float base = vh * 0.41f; // not divided by height: taller characters look taller
             float scale = base * zoom;
-            float focus = Mth.lerp((zoom - 1f) / 1.6f, 0.95f, 1.62f) * height;
+            float focus = Mth.lerp(Mth.clamp((zoom - 1f) / 0.7f, 0f, 1f), 0.95f, 1.6f) * height;
             int cx = vx + vw / 2;
             int cyCenter = vy + vh / 2 + 6;
             int feetY = (int) (cyCenter + focus * scale * 0.9375f);

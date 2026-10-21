@@ -161,7 +161,7 @@ public final class PlayerLook {
 
     /** How much bigger the hair's outer layer is drawn (1 = as painted). */
     public float hairVolumeScale() {
-        return 1f + 0.06f * get(Slot.HAIR_VOLUME);
+        return 1f + 0.04f * get(Slot.HAIR_VOLUME);
     }
 
     /** A short text naming every choice: the client's skin cache key. */

@@ -13,8 +13,8 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 
 /**
  * Hair volume from the creation screen: the head's outer layer (where the hair is painted) is
- * drawn once more, a little bigger (+6% per step), around the neck, so fuller hair stands out
- * further from the head and higher on top.
+ * drawn once more, a little bigger (+4% per step), around the middle of the head, so fuller hair
+ * stands out further all round.
  */
 public class HairVolumeLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     public HairVolumeLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
@@ -39,6 +39,15 @@ public class HairVolumeLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         float y = hat.yScale;
         float z = hat.zScale;
         float scale = look.hairVolumeScale();
+        // Grow around the middle of the head (4 px above the neck pivot), not the neck itself.
+        org.joml.Vector3f centre = new org.joml.Quaternionf().rotationZYX(hat.zRot, hat.yRot, hat.xRot)
+                .transform(new org.joml.Vector3f(0f, -4f, 0f)).mul(1f - scale);
+        float px = hat.x;
+        float py = hat.y;
+        float pz = hat.z;
+        hat.x += centre.x;
+        hat.y += centre.y;
+        hat.z += centre.z;
         hat.xScale = x * scale;
         hat.yScale = y * scale;
         hat.zScale = z * scale;
@@ -47,5 +56,8 @@ public class HairVolumeLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         hat.xScale = x;
         hat.yScale = y;
         hat.zScale = z;
+        hat.x = px;
+        hat.y = py;
+        hat.z = pz;
     }
 }
