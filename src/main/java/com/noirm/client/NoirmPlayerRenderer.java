@@ -34,6 +34,17 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
         addLayer(new SharinganEyesLayer<>(this));
         addLayer(new WeaponTrails.Layer<>(this)); // blade arcs through the air
         addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot and cuts
+        addLayer(new HairVolumeLayer(this)); // character creation: fuller hair
+    }
+
+    /** Character creation height (0.85-1.15x); the hitbox follows on both sides ({@code creator.CreatorEvents}). */
+    @Override
+    protected void scale(AbstractClientPlayer player, PoseStack poseStack, float partialTick) {
+        super.scale(player, poseStack, partialTick);
+        float height = PlayerSkins.renderHeight(player);
+        if (height != 1f) {
+            poseStack.scale(height, height, height);
+        }
     }
 
     /** The animation's {@code body} bone moves the whole character (lunges, spins, bob, lean). */

@@ -36,6 +36,7 @@ public final class Noirm {
         com.noirm.world.Destruction.registerGameRules();
         com.noirm.movement.MovementFeel.registerGameRules();
         com.noirm.gore.Gore.registerGameRules();
+        com.noirm.creator.CharacterCreator.registerGameRules();
         NoirmNetwork.register();
     }
 

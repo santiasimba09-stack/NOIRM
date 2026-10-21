@@ -88,6 +88,8 @@ public final class FirstPersonArms {
         // Camera space → the player's model space (the camera looks where the body faces).
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
         poseStack.translate(0, -player.getEyeHeight(), 0);
+        float height = PlayerSkins.renderHeight(player); // character creation height: the body is scaled too
+        poseStack.scale(height, height, height);
         // (The camera's yaw and the body's yaw cancel out: the body faces where the camera faces.)
         NoirmPlayerRenderer.applyBody(HumanoidAnimator.bodyTransform(player, player.tickCount + partial,
                 player.walkAnimation.position(partial), player.walkAnimation.speed(partial)), poseStack);

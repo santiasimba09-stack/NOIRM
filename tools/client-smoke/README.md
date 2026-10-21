@@ -20,5 +20,10 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
 4. Check `client.log` for `Exception` or `ERROR` (the OpenAL/sound errors are expected: no audio
    device). Stop the client by killing its `Xvfb :99` and `java` processes.
 
+Character creation: a newcomer gets the creation screen and is held until it's done. The setup
+finishes it at once (`noirm creator skip`). Start with `SMOKE_CREATOR=1 tools/client-smoke/run.sh`
+to keep the screen open (you stay at the world spawn, held), or type `/noirm creator reroll` in
+game to open it again with clan rolls.
+
 Known gotcha: the client crashes at launch without the mixin refmap properties in
 `build.gradle` (`mixin.env.remapRefMap`). Keep them.

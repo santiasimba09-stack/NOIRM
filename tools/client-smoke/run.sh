@@ -25,6 +25,10 @@ echo '{ "pack": { "pack_format": 15, "description": "NOIRM client smoke test" } 
 echo '{ "values": ["smoke:tick"] }' > "$D/data/minecraft/tags/functions/tick.json"
 echo 'execute as @a[tag=!smoke_setup] at @s run function smoke:setup' > "$D/data/smoke/functions/tick.mcfunction"
 cp tools/client-smoke/setup.mcfunction "$D/data/smoke/functions/setup.mcfunction"
+# A newcomer gets the character creation screen; the setup finishes it (creator skip) unless SMOKE_CREATOR=1.
+if [ "${SMOKE_CREATOR:-0}" = "1" ]; then
+  grep -v '^noirm creator skip' tools/client-smoke/setup.mcfunction > "$D/data/smoke/functions/setup.mcfunction"
+fi
 cat > "$RUN/options.txt" <<OPTS
 onboardAccessibility:false
 tutorialStep:none
