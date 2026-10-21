@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-17 (commands overhaul, v0.9.1) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-21 (crew overhaul + blueprint Phase 1, v0.10.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,14 +34,16 @@ The villages (v0.7.0):
 
 ## In progress
 
-**Crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
+Waiting on the owner: v0.10.0 playtest and the blueprint questions below.
+
+**Done in v0.10.0: crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
 
 | Piece | State |
 |---|---|
 | **Crew overhaul:** follow fix, Guard/Patrol posts, Come/Fall back, jobs (bodyguard, vanguard, scout, medic, gatherer), behaviours (aggressive, defensive, passive), lesson queue, "Teach all", jutsu that wait for their nature, K crew-orders screen, Job tab | ✅ tested; checked in client (`r11-crew-*`, `r11-ally-*`) |
 | **Player meditation** (N / `/noirm meditate`): sits, faster chakra and stamina, trains Reserves, fills **nature energy** (0–100) for Sage Mode later; meditating near a learning crew mate doubles their pace | ✅ tested; checked in client (`r11-meditate-*`) |
-| **CTL/WIL stats, PER formula, perception focus, just-frame parry** (Phase 1 #1–2) | helper working |
-| **Automated casting engine:** seal phase, 80% movement, interruption and fizzle, elemental clashes (Phase 1 #4) | helper working |
+| **CTL/WIL stats, PER formula, perception focus, just-frame parry** (Phase 1 #1–2) | ✅ tested; focus checked in client (`r11-focus-*`) |
+| **Automated casting engine:** seal phase, 80% movement, interruption and fizzle, spam fall-off, elemental clashes (Phase 1 #4) | ✅ tested; seals and fizzle checked in client (`r11-casting-*`) |
 | **Character creation HUD** (Phase 1 #3) | waiting on the owner (it replaces the random first-join clan and needs art) |
 
 ## Next steps (in order)
@@ -169,6 +171,11 @@ The villages (v0.7.0):
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
+
+- **Blueprint, systems it would rebuild (asked, waiting):** character creation (replaces the random
+  first-join clan; face/physique need art), movement inertia and gravity, gore, a real world slowdown.
+- **Perception focus / just-frame:** heavy attacks only, or light ones too? Is the 10-tick counter window right?
+- **Casting:** should melee be blocked while forming seals? Should combined natures join the clash wheel?
 
 - **Animations:** which moves still feel weak? First person: are the arms the right size and place?
   Should the ninja run happen on every sprint, or only above a certain speed stat?

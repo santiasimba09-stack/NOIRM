@@ -2,6 +2,39 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-21 — Crew overhaul, meditation and blueprint Phase 1, v0.10.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **The owner's blueprint** is summarised in `docs/BLUEPRINT.md`. Rule: keep what we have, build what
+  fits, ask before rebuilding a system.
+- **Crew overhaul:**
+  - **Follow fixed:** after Train, the dummy stayed their target and they never followed. Now
+    `CrewBrain` drops dummies outside Train and fights far behind you, repaths twice a second, and jumps
+    to your side when stuck or far away.
+  - **Orders:** Follow, Wait, Guard and Patrol (around a post where you stand), Train, Meditate; Come and
+    Fall back; crew-wide on the new **K** screen (keys 1–9).
+  - **Jobs:** bodyguard, vanguard, scout (marks enemies), medic (heals with chakra), gatherer (brings
+    loot). **Behaviours:** aggressive, defensive, passive.
+  - **Easier teaching:** lessons queue up; they move at half pace under any order (full under
+    Train/Meditate), ×2 meditating together; 2 days per basic nature; "Teach all"; a jutsu that needs a
+    nature they lack queues the lesson and is learned when it ends. A new Job tab on the ally screen.
+  - Crew mates on Meditate gather nature energy. New `/noirm crew role|behaviour|come|fallback|attack|lesson|teachjutsu`.
+- **Player meditation** (N or `/noirm meditate`): sit cross-legged; chakra and stamina ×3, Reserves
+  trains (to 30), **nature energy** fills to 100 (more near plants and water, at night) for Sage Mode
+  later; it fades when you don't meditate. HUD bar; `/noirm me nature <v>`.
+- **CTL and WIL stats** (chakra control, willpower): grown only by active play (CTL: spending chakra while
+  low, water walking, holding modes in fights; WIL: surviving locked-in, trading hits with stronger foes,
+  strain, holding extra tails). CTL cuts jutsu cost and water-walk drain; WIL cuts Mangekyō strain and adds
+  safe tails. HUD row, `/noirm stat ctl|wil`.
+- **Perception focus:** a heavy attack slowed by your perception greys and muffles the world (game speed
+  untouched). A parry inside it is a **just-frame parry**: no damage, the attacker's posture breaks, and
+  a 10-tick ×1.5 counter that guards can't stop.
+- **Casting engine:** tap jutsu form their seals quickly first (2 ticks a seal, 12 at most; `quick`
+  jutsu stay instant); you move at 80% while weaving; a hit pauses, slows or breaks the seals (a
+  fizzle: black smoke, 30% of the cost lost, no cooldown); spamming a minor projectile loses power;
+  projectiles **clash** mid-air by the nature wheel (`data/noirm/jutsu_clash/rules.json`).
+- Tests: 233/233 pass twice in a row; 32 new game tests (crew mind, casting, stats and parry, meditation); the roof-leap test uses a
+  fixed clan (random rolls made it flaky).
+
 ## 2026-10-17 — Commands for everything, in sections, v0.9.1 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **`/noirm help`:** the commands in 11 clickable sections (me, combat, clan, jutsu, eyes, beast, crew,
