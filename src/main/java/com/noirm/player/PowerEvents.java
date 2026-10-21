@@ -39,7 +39,13 @@ public final class PowerEvents {
             return;
         }
         ShinobiCapability.get(player).ifPresent(data -> {
-            if (!data.identity().isAssigned()) {
+            if (data.creator().mode() != com.noirm.creator.CreatorData.Mode.NONE) {
+                com.noirm.creator.CharacterCreator.resume(player, data); // logged out mid-creation
+            } else if (!data.identity().isAssigned() && com.noirm.creator.CharacterCreator.enabled(player.server)
+                    && !(player instanceof net.minecraftforge.common.util.FakePlayer)) {
+                // The character creation screen: the clan comes from its rolls (blueprint §6).
+                com.noirm.creator.CharacterCreator.beginFirstJoin(player, data);
+            } else if (!data.identity().isAssigned()) {
                 Clan clan = WorldClans.get(player.server).rollForNewcomer(player.getRandom());
                 ClanSystem.assign(player, data, clan);
                 player.sendSystemMessage(ClanSystem.describe(data.identity()));

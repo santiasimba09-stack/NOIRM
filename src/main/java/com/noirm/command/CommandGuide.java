@@ -51,7 +51,11 @@ public final class CommandGuide {
                 .add("max_bar", "/noirm max <chakra|stamina> <value>", "/noirm max chakra 300", true)
                 .add("refill", "/noirm refill", "/noirm refill", true)
                 .add("resolve", "/noirm resolve <0-100>", "/noirm resolve 100", true)
-                .add("awaken", "/noirm awaken", "/noirm awaken", true);
+                .add("awaken", "/noirm awaken", "/noirm awaken", true)
+                .add("creator", "/noirm creator", "/noirm creator", false)
+                .add("creator_height", "/noirm creator height <0.85-1.15>", "/noirm creator height 1.1", false)
+                .add("creator_reroll", "/noirm creator reroll", "/noirm creator reroll", true)
+                .add("creator_skip", "/noirm creator skip", "/noirm creator skip", true);
         section("combat")
                 .add("mode", "/noirm combat <on|off>", "/noirm combat on", false)
                 .add("style", "/noirm style", "/noirm style", false)

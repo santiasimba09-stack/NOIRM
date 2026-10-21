@@ -6,6 +6,9 @@
   "mixins": [
     "BlockStateBaseMixin"
   ],
+  "client": [
+    "AbstractClientPlayerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

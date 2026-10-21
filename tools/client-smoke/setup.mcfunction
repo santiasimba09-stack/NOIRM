@@ -1,3 +1,4 @@
+noirm creator skip
 time set day
 weather clear
 gamerule doDaylightCycle false

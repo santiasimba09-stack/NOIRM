@@ -111,6 +111,7 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Close.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.noirm.master.MasterPackets.Close::encode).decoder(com.noirm.master.MasterPackets.Close::decode)
                 .consumerMainThread(com.noirm.master.MasterPackets.Close::handle).add();
+        id = com.noirm.creator.CreatorPackets.register(CHANNEL, id); // character creation
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */
