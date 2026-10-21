@@ -62,6 +62,13 @@ Strong hits slam people into walls behind them (and crack the wall); hits in the
 launched enemy floating (a juggle). Destruction heals itself after a while: turn it off with
 `/gamerule noirmTerrainDamage false`, or change how long it takes with `noirmTerrainRegen`.
 
+**Gore (visual only):** fighters show their wounds as they take damage: bruises from fists,
+cuts from blades, soot from fire and blasts, dirt from falls and knockdowns. The marks fade as
+health comes back. A killing blow from a blade, a crit, a blast or a heavy hit can cut off an
+arm, a leg or the head; it lies there for 5 seconds, then burns away in blue chakra flame. It
+never changes the fight (no bleeding). Turn it off with `/noirm world gore off` (or
+`/gamerule noirmGore false`).
+
 **Crew:** beat a ninja below a quarter of their health and they yield (kneel). Right-click them to
 invite them. Sneak + right-click a crew mate: wait here / follow me.
 **Tailed beasts:** once subdued, use a Sealing Scroll on them, or keep hitting to kill them.

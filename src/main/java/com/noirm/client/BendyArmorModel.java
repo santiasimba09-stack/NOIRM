@@ -46,6 +46,33 @@ public class BendyArmorModel<T extends LivingEntity> extends HumanoidModel<T> {
         upperTorso = body.getChild("upper");
     }
 
+    /** Parts the body under it has lost (gore; set by {@link BendyModel#copyPropertiesTo}): not drawn. */
+    public int severedMask;
+
+    /** Like vanilla, but leaves out the pieces over a severed part (bits: head, right/left arm, right/left leg). */
+    @Override
+    public void renderToBuffer(com.mojang.blaze3d.vertex.PoseStack poseStack, com.mojang.blaze3d.vertex.VertexConsumer buffer, int light,
+                               int overlay, float red, float green, float blue, float alpha) {
+        int cut = severedMask;
+        if ((cut & 1) == 0) {
+            head.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+            hat.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        body.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        if ((cut & 2) == 0) {
+            rightArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 4) == 0) {
+            leftArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 8) == 0) {
+            rightLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 16) == 0) {
+            leftLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+    }
+
     static ModelPart createRoot(float g) {
         Map<String, ModelPart> root = new HashMap<>();
         root.put("head", part(0, 0, 0, List.of(cube(0, 0, -4, -8, -4, 8, 8, 8, g, false, ALL)), Map.of()));

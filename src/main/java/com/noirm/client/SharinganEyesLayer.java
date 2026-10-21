@@ -30,7 +30,7 @@ public class SharinganEyesLayer<T extends LivingEntity, M extends HumanoidModel<
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffers, int light, T entity, float limbSwing, float limbSwingAmount,
                        float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entity.isInvisible()) {
+        if (entity.isInvisible() || (GoreClient.severed(entity.getId()) & 1) != 0) { // invisible, or the head is gone
             return;
         }
         int stage = entity instanceof SparringNinja ninja ? ninja.activeSharinganStage() : ClientPowers.eyeStage(entity.getId());

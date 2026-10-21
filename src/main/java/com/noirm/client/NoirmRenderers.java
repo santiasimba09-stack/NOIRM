@@ -31,5 +31,7 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(NoirmEntities.SEAT.get(), NoopRenderer::new);
         // Kunai, shuriken, senbon, explosive tags in flight or stuck in a wall.
         event.registerEntityRenderer(com.noirm.weapon.NinjaWeapons.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
+        // Gore: a severed arm, leg or head in the victim's skin and armor.
+        event.registerEntityRenderer(NoirmEntities.SEVERED_LIMB.get(), SeveredLimbRenderer::new);
     }
 }

@@ -1095,5 +1095,10 @@
   "message.noirm.jutsu.fizzled": "Se rompieron tus sellos: el jutsu se disipó",
   "message.noirm.jutsu.seals_shaken": "Te golpearon a mitad de los sellos: tus manos vacilan",
   "message.noirm.jutsu.hands_busy": "Tienes las manos ocupadas haciendo sellos",
-  "gamerule.noirmMovementFeel": "NOIRM: sensación de movimiento (frenado con deslizamiento, gravedad más pesada, recuperación al aterrizar)"
+  "gamerule.noirmMovementFeel": "NOIRM: sensación de movimiento (frenado con deslizamiento, gravedad más pesada, recuperación al aterrizar)",
+  "entity.noirm.severed_limb": "Miembro cercenado",
+  "gamerule.noirmGore": "Gore de NOIRM (marcas y miembros cercenados, solo visual)",
+  "help.noirm.world.gore": "moretones, tierra, hollín y cortadas en los peleadores, y miembros cercenados (solo visual)",
+  "command.noirm.world.gore_on": "Gore activado: los peleadores muestran sus heridas y los golpes mortales pueden cercenar miembros.",
+  "command.noirm.world.gore_off": "Gore desactivado: sin marcas ni miembros cercenados."
 }

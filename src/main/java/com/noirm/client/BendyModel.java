@@ -186,7 +186,11 @@ public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
         com.noirm.client.anim.HumanoidAnimator.animateParts(entity, this, pose, limbSwing, limbSwingAmount, ageInTicks);
         lastPose.copyFrom(pose);
         applyPose(pose);
+        severedMask = GoreClient.severed(entity.getId()); // gore: parts a dying body has lost
     }
+
+    /** Parts this body has lost (gore, {@code SeveredLimb.Part} bits): not drawn, nor their armor. */
+    public int severedMask;
 
     /**
      * Vanilla's pose as the base layer, rewritten for our hierarchy: vanilla fakes a torso twist
@@ -270,13 +274,24 @@ public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        int cut = severedMask;
         body.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        rightLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        leftLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        head.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        hat.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        rightArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
-        leftArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        if ((cut & 8) == 0) {
+            rightLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 16) == 0) {
+            leftLeg.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 1) == 0) {
+            head.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+            hat.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 2) == 0) {
+            rightArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
+        if ((cut & 4) == 0) {
+            leftArm.render(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        }
     }
 
     /** Held items sit in the hand at the end of the bent forearm. */
@@ -303,6 +318,7 @@ public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
             armor.rightShin.copyFrom(rightShin);
             armor.leftShin.copyFrom(leftShin);
             armor.upperTorso.copyFrom(upperTorso);
+            armor.severedMask = severedMask;
         }
     }
 

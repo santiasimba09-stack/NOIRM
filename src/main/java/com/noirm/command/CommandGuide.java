@@ -130,6 +130,7 @@ public final class CommandGuide {
                 .add("village", "/noirm village <capital|town|outpost> [look]", "/noirm village outpost leaf", true)
                 .add("destruction", "/noirm world destruction <on|off>", "/noirm world destruction off", true)
                 .add("regen", "/noirm world regen <seconds>", "/noirm world regen 60", true)
+                .add("gore", "/noirm world gore <on|off>", "/noirm world gore on", true)
                 .add("cleanup", "/noirm world cleanup [radius]", "/noirm world cleanup 32", true);
         section("master")
                 .add("list", "/noirm master list", "/noirm master list", false)

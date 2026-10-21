@@ -1095,5 +1095,10 @@
   "message.noirm.jutsu.fizzled": "Your seals broke: the jutsu fizzled",
   "message.noirm.jutsu.seals_shaken": "Hit mid-seal: your hands falter",
   "message.noirm.jutsu.hands_busy": "Your hands are busy forming seals",
-  "gamerule.noirmMovementFeel": "NOIRM: movement feel (slide to a stop, heavier gravity, landing recovery)"
+  "gamerule.noirmMovementFeel": "NOIRM: movement feel (slide to a stop, heavier gravity, landing recovery)",
+  "entity.noirm.severed_limb": "Severed Limb",
+  "gamerule.noirmGore": "NOIRM gore (marks and severed limbs, visual only)",
+  "help.noirm.world.gore": "bruises, dirt, soot and cuts on fighters, and severed limbs (visual only)",
+  "command.noirm.world.gore_on": "Gore is on: fighters show their wounds, and killing blows can sever limbs.",
+  "command.noirm.world.gore_off": "Gore is off: no marks, no severed limbs."
 }

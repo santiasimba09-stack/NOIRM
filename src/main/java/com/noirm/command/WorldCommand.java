@@ -22,6 +22,7 @@ import java.util.List;
  * {@code /noirm world …}: the mod's world settings and a quick tidy-up (cheats).
  * <ul>
  *   <li>{@code destruction on|off} — whether jutsu break terrain (the {@code noirmTerrainDamage} rule)</li>
+ *   <li>{@code gore on|off} — bruises, dirt, soot and cuts on fighters, and severed limbs (the {@code noirmGore} rule)</li>
  *   <li>{@code regen <seconds>} — how long broken terrain takes to grow back (0 = never; {@code noirmTerrainRegen})</li>
  *   <li>{@code cleanup [radius]} — removes ninjas (not your crew, masters or village people), beasts,
  *       clones, dummies and stray jutsu around you</li>
@@ -40,6 +41,9 @@ public final class WorldCommand {
                 .then(Commands.literal("destruction")
                         .then(Commands.literal("on").executes(ctx -> destruction(ctx.getSource(), true)))
                         .then(Commands.literal("off").executes(ctx -> destruction(ctx.getSource(), false))))
+                .then(Commands.literal("gore")
+                        .then(Commands.literal("on").executes(ctx -> gore(ctx.getSource(), true)))
+                        .then(Commands.literal("off").executes(ctx -> gore(ctx.getSource(), false))))
                 .then(Commands.literal("regen").then(Commands.argument("seconds", IntegerArgumentType.integer(0, 86400))
                         .executes(ctx -> regen(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "seconds")))))
                 .then(Commands.literal("cleanup")
@@ -51,6 +55,11 @@ public final class WorldCommand {
     static int destruction(CommandSourceStack source, boolean on) {
         source.getLevel().getGameRules().getRule(Destruction.TERRAIN_DAMAGE).set(on, source.getServer());
         return Cmd.ok(source, on ? "command.noirm.world.destruction_on" : "command.noirm.world.destruction_off");
+    }
+
+    static int gore(CommandSourceStack source, boolean on) {
+        source.getLevel().getGameRules().getRule(com.noirm.gore.Gore.GORE).set(on, source.getServer());
+        return Cmd.ok(source, on ? "command.noirm.world.gore_on" : "command.noirm.world.gore_off");
     }
 
     static int regen(CommandSourceStack source, int seconds) {
@@ -74,6 +83,6 @@ public final class WorldCommand {
             return !ninja.inCrew() && !ninja.isResident();
         }
         return entity instanceof TailedBeast || entity instanceof ShadowClone || entity instanceof TrainingDummy
-                || entity instanceof JutsuProjectile;
+                || entity instanceof JutsuProjectile || entity instanceof com.noirm.gore.SeveredLimb;
     }
 }
