@@ -42,6 +42,8 @@ public final class CommandGuide {
                 .add("profile", "/noirm me", "/noirm me", false)
                 .add("heal", "/noirm me heal", "/noirm me heal", true)
                 .add("max", "/noirm me max", "/noirm me max", true)
+                .add("meditate", "/noirm meditate", "/noirm meditate", false)
+                .add("nature", "/noirm me nature <0-100>", "/noirm me nature 50", true)
                 .add("stats", "/noirm me stats <speed> <taijutsu> <vitality> <reserves>", "/noirm me stats 30 40 25 20", true)
                 .add("stat", "/noirm stat <speed|taijutsu|vitality|reserves> <1-100>", "/noirm stat taijutsu 50", true)
                 .add("bars", "/noirm stats", "/noirm stats", false)

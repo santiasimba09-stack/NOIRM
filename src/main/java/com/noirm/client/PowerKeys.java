@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Power keys: G = Sharingan, B = chakra cloak, J = jutsu screen. In combat mode, the hotbar
+ * Power keys: G = Sharingan, B = chakra cloak, J = jutsu screen, N = meditate. In combat mode, the hotbar
  * keys 1–4 cast the jutsu in loadout slots 1–4 (holding them charges or channels) instead of
  * switching hotbar slots.
  */
@@ -27,6 +27,7 @@ public final class PowerKeys {
     public static final KeyMapping SHARINGAN = key("sharingan", GLFW.GLFW_KEY_G);
     public static final KeyMapping CLOAK = key("cloak", GLFW.GLFW_KEY_B);
     public static final KeyMapping JUTSU_SCREEN = key("jutsu_screen", GLFW.GLFW_KEY_J);
+    public static final KeyMapping MEDITATE = key("meditate", GLFW.GLFW_KEY_N);
 
     private static final boolean[] HELD = new boolean[JutsuBook.SLOTS];
 
@@ -78,6 +79,9 @@ public final class PowerKeys {
         while (CLOAK.consumeClick()) {
             NoirmNetwork.sendToServer(new PowerPackets.TogglePower(PowerPackets.Toggle.CLOAK));
         }
+        while (MEDITATE.consumeClick()) {
+            NoirmNetwork.sendToServer(new PowerPackets.TogglePower(PowerPackets.Toggle.MEDITATE));
+        }
         while (JUTSU_SCREEN.consumeClick()) {
             minecraft.setScreen(new JutsuScreen());
         }
@@ -98,6 +102,7 @@ public final class PowerKeys {
             event.register(SHARINGAN);
             event.register(CLOAK);
             event.register(JUTSU_SCREEN);
+            event.register(MEDITATE);
         }
     }
 }

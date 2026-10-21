@@ -8,6 +8,7 @@ import com.noirm.combat.Perception;
 import com.noirm.combat.StyleSystem;
 import com.noirm.player.PowerVisuals;
 import com.noirm.player.ShinobiData;
+import com.noirm.senjutsu.Meditation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -29,6 +30,8 @@ import java.util.List;
  *   <li>{@code /noirm me heal} — full health, chakra and stamina, no cooldowns or bad effects (cheats)</li>
  *   <li>{@code /noirm me max} — all four stats to the maximum, then heal (cheats)</li>
  *   <li>{@code /noirm me stats <speed> <taijutsu> <vitality> <reserves>} — all four at once (cheats)</li>
+ *   <li>{@code /noirm me nature <0-100>} — set your nature energy (cheats)</li>
+ *   <li>{@code /noirm meditate} — sit down to meditate, or stand up</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
@@ -42,12 +45,32 @@ public final class MeCommand {
                 .executes(ctx -> profile(ctx.getSource()))
                 .then(Commands.literal("heal").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> heal(ctx.getSource())))
                 .then(Commands.literal("max").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> max(ctx.getSource())))
+                .then(Commands.literal("nature").requires(s -> s.hasPermission(Cmd.CHEATS))
+                        .then(Commands.argument("energy", FloatArgumentType.floatArg(0f, Meditation.NATURE_MAX))
+                                .executes(ctx -> setNature(ctx.getSource(), FloatArgumentType.getFloat(ctx, "energy")))))
                 .then(Commands.literal("stats").requires(s -> s.hasPermission(Cmd.CHEATS))
                         .then(Commands.argument("speed", stat).then(Commands.argument("taijutsu", stat)
                                 .then(Commands.argument("vitality", stat).then(Commands.argument("reserves", stat)
                                         .executes(ctx -> setStats(ctx.getSource(), FloatArgumentType.getFloat(ctx, "speed"),
                                                 FloatArgumentType.getFloat(ctx, "taijutsu"), FloatArgumentType.getFloat(ctx, "vitality"),
                                                 FloatArgumentType.getFloat(ctx, "reserves"))))))))));
+        event.getDispatcher().register(Commands.literal("noirm").then(Commands.literal("meditate")
+                .executes(ctx -> meditate(ctx.getSource()))));
+    }
+
+    /** {@code /noirm meditate}: sit down, or stand up. */
+    static int meditate(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        boolean wasMeditating = Meditation.isMeditating(player);
+        boolean now = Meditation.toggle(player);
+        return now || wasMeditating ? 1 : 0;
+    }
+
+    static int setNature(CommandSourceStack source, float energy) throws CommandSyntaxException {
+        ShinobiData data = Cmd.data(source);
+        data.senjutsu().setNatureEnergy(energy);
+        data.markPowersDirty();
+        return Cmd.ok(source, "command.noirm.me.nature_set", Math.round(energy), Math.round(Meditation.NATURE_MAX));
     }
 
     static int profile(CommandSourceStack source) throws CommandSyntaxException {
@@ -67,6 +90,9 @@ public final class MeCommand {
         line(text, data.biju().isJinchuriki()
                 ? Component.translatable("command.noirm.me.beast", com.noirm.biju.BijuSystem.beastName(data.biju().tails()), data.biju().bond())
                 : Component.translatable("command.noirm.me.no_beast"));
+        line(text, Component.translatable("command.noirm.me.nature", Math.round(data.senjutsu().natureEnergy()),
+                Math.round(Meditation.NATURE_MAX), Component.translatable(data.senjutsu().isMeditating()
+                        ? "command.noirm.me.nature.meditating" : "command.noirm.me.nature.idle")));
         line(text, Component.translatable("command.noirm.me.progress", data.jutsu().known().size(), data.crew().size(),
                 data.masters().passedTests().size(), Math.round(data.awakening().resolve())));
         source.sendSuccess(() -> text, false);

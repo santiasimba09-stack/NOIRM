@@ -556,6 +556,37 @@ release.key(7, NEUTRAL(torso=(14, 0, 0, 8), right_arm=(-88, 5, 0, 4), left_arm=(
 release.key(10, NEUTRAL, "easeInOutSine")
 add(release)
 
+# ------------------------------------------------------------------ meditation (senjutsu)
+# Cross-legged on the ground: hips dropped to the floor, thighs forward and splayed out, shins folded
+# in front; back straight, head a little bowed, hands resting together in the lap (a calm seal).
+# meditate_sit (sitting down) -> meditate (a long loop of slow breaths, re-sent by the server every
+# 4 breaths so it never ends) -> meditate_rise (standing back up). See senjutsu/Meditation.
+SEATED = P(torso=(2, 0, 0, 0), head=(8, 0, 0),
+           right_arm=(-28, -32, 0, 62), left_arm=(-28, 32, 0, 62),
+           right_leg=(-82, 38, 0, 150), left_leg=(-82, -38, 0, 150),
+           body=dict(pos=(0, -10.5, 0)))
+INHALE = SEATED.add(torso=(-3, 0, 0, -1), head=(-2, 0, 0), right_arm=(-2, 0, 0, -3), left_arm=(-2, 0, 0, -3),
+                    body=dict(pos=(0, 0.35, 0)))
+BREATH = 80  # ticks per breath: 4 s, slow and calm
+sit = Anim("meditate_sit", 16)
+sit.key(0, NEUTRAL)
+sit.key(7, NEUTRAL(torso=(18, 0, 0, 8), right_arm=(-40, -20, 0, 50), left_arm=(-40, 20, 0, 50),
+                   right_leg=(-60, 20, 0, 110), left_leg=(-60, -20, 0, 110), body=dict(pos=(0, -6, 0))), "easeInQuad")
+sit.key(16, SEATED, "easeOutQuad")
+add(sit)
+meditate = Anim("meditate", BREATH * 5, loop=True)
+for i in range(5):
+    meditate.key(i * BREATH, SEATED)
+    meditate.key(i * BREATH + BREATH * 0.45, INHALE)  # in through the nose, a little faster than out
+meditate.key(BREATH * 5, SEATED)
+add(meditate)
+rise = Anim("meditate_rise", 12)
+rise.key(0, SEATED)
+rise.key(6, NEUTRAL(torso=(20, 0, 0, 8), right_leg=(-50, 15, 0, 95), left_leg=(-50, -15, 0, 95), body=dict(pos=(0, -5, 0))),
+         "easeOutQuad")
+rise.key(12, NEUTRAL, "easeInOutSine")
+add(rise)
+
 
 if __name__ == "__main__":
     for anim in ANIMS:
