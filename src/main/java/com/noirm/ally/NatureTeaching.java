@@ -248,7 +248,7 @@ public final class NatureTeaching {
 
     /** Whether the leader is meditating (their own meditation, from the senjutsu system). */
     static boolean leaderMeditating(Player leader) {
-        return false; // wired to the player's meditation once it lands
+        return leader != null && com.noirm.senjutsu.Meditation.isMeditating(leader);
     }
 
     private static float teacherAffinity(Player teacher, Nature nature) {

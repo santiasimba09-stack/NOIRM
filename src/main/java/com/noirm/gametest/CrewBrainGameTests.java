@@ -182,7 +182,7 @@ public final class CrewBrainGameTests {
         helper.succeed();
     }
 
-    /** A jutsu asked for before its nature is learned the moment the nature lesson ends. */
+    /** Meditating together speeds a lesson up; a jutsu asked for before its nature is learned the moment the nature lesson ends. */
     @GameTest(template = "empty", batch = "noirm_crew_pending")
     public static void pendingJutsuAreLearnedWithTheirNature(GameTestHelper helper) {
         TestKit.floor(helper);
@@ -193,6 +193,13 @@ public final class CrewBrainGameTests {
         helper.assertTrue(NatureTeaching.start(leader, ally, Nature.WIND), "the wind lesson starts");
         ally.allyState().pendingJutsu().add(bullets);
         ally.setOrder(Order.MEDITATE);
+        // Meditating with them doubles the pace.
+        leader.setOnGround(true);
+        helper.assertTrue(com.noirm.senjutsu.Meditation.start(leader), "you sit down to meditate");
+        NatureTeaching.study(ally, leader, 10f);
+        helper.assertTrue(Math.abs(ally.allyState().lessonSeconds() - 10f * NatureTeaching.MEDITATE_TOGETHER_BONUS) < 1e-3,
+                "meditating together: " + ally.allyState().lessonSeconds());
+        com.noirm.senjutsu.Meditation.stop(leader);
         ally.allyState().setLessonSeconds(NatureTeaching.secondsNeeded(Nature.WIND));
         helper.assertTrue(NatureTeaching.study(ally, leader, 1f), "wind learned");
         helper.assertTrue(ally.knownJutsu().contains(bullets), "and the jutsu waiting on it");
