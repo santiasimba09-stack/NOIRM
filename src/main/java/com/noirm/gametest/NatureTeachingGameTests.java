@@ -34,37 +34,39 @@ public final class NatureTeachingGameTests {
 
     private NatureTeachingGameTests() {}
 
-    /** The lesson moves only under Train/Meditate with you near, or fighting together; mastery speeds it up. */
+    /** The lesson moves whenever you're near: full pace under Train/Meditate, half otherwise; fighting and mastery speed it up. */
     @GameTest(template = "empty", batch = BATCH)
     public static void lessonsNeedTheRightOrderAndYouNearby(GameTestHelper helper) {
         Player teacher = teacher(helper, Nature.WATER, Nature.WIND);
         SparringNinja ally = ally(helper, teacher);
         helper.assertTrue(NatureTeaching.start(teacher, ally, Nature.WIND), "you can teach a nature you own that they lack");
         helper.assertTrue(ally.allyState().lesson() == Nature.WIND, "the lesson is on");
-        // Following: nothing.
+        // Following: half pace.
+        float casual = 10f * NatureTeaching.CASUAL_RATE;
         NatureTeaching.study(ally, teacher, 10f);
-        helper.assertTrue(ally.allyState().lessonSeconds() == 0f, "following you teaches nothing");
+        near(helper, casual, ally.allyState().lessonSeconds(), "following you teaches at half pace");
         // Meditating near you: one second per second.
         ally.setOrder(Order.MEDITATE);
         NatureTeaching.study(ally, teacher, 10f);
-        near(helper, 10f, ally.allyState().lessonSeconds(), "meditating near you: 10 s of study");
+        near(helper, casual + 10f, ally.allyState().lessonSeconds(), "meditating near you: 10 s of study");
         ally.setOrder(Order.TRAIN);
         NatureTeaching.study(ally, teacher, 10f);
-        near(helper, 20f, ally.allyState().lessonSeconds(), "training counts too");
+        float sofar = casual + 20f;
+        near(helper, sofar, ally.allyState().lessonSeconds(), "training counts too");
         // Too far away: paused.
         Vec3 home = teacher.position();
         teacher.setPos(home.add(NatureTeaching.TEACH_RANGE + 10, 0, 0));
         NatureTeaching.study(ally, teacher, 10f);
-        near(helper, 20f, ally.allyState().lessonSeconds(), "out of range: paused");
+        near(helper, sofar, ally.allyState().lessonSeconds(), "out of range: paused");
         teacher.setPos(home);
-        // Fighting side by side counts under any order, and faster.
+        // Fighting side by side is faster, under any order.
         ally.setOrder(Order.FOLLOW);
         SparringNinja enemy = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 0.5f, 1f, 0.5f);
         enemy.joinClan(TestClans.PLAIN);
         enemy.sealBeast(0);
         ally.setTarget(enemy);
         NatureTeaching.study(ally, teacher, 10f);
-        near(helper, 20f + 10f * NatureTeaching.FIGHT_BONUS, ally.allyState().lessonSeconds(), "fighting together is faster");
+        near(helper, sofar + casual * NatureTeaching.FIGHT_BONUS, ally.allyState().lessonSeconds(), "fighting together is faster");
         ally.setTarget(null);
         // Having mastered the nature yourself is faster too.
         ally.setOrder(Order.MEDITATE);
@@ -106,7 +108,7 @@ public final class NatureTeachingGameTests {
         clear(helper);
     }
 
-    /** Combined natures need both parts first; you must own what you teach; one lesson at a time. */
+    /** Combined natures need both parts (or have them queued first); you must own what you teach; more lessons wait in a queue. */
     @GameTest(template = "empty", batch = BATCH)
     public static void combinedNaturesNeedBothParts(GameTestHelper helper) {
         Player teacher = teacher(helper, Nature.WATER, Nature.EARTH, Nature.WOOD, Nature.FIRE);
@@ -117,12 +119,17 @@ public final class NatureTeachingGameTests {
         helper.assertTrue("screen.noirm.ally.nature.why.you_lack".equals(NatureTeaching.blocker(teacher, ally, Nature.LIGHTNING)),
                 "you can't teach what you don't have");
         helper.assertTrue(NatureTeaching.start(teacher, ally, Nature.EARTH), "earth first");
-        helper.assertTrue("screen.noirm.ally.nature.why.busy".equals(NatureTeaching.blocker(teacher, ally, Nature.FIRE)), "one lesson at a time");
+        helper.assertTrue(NatureTeaching.start(teacher, ally, Nature.FIRE), "fire waits in the queue");
+        helper.assertTrue(NatureTeaching.start(teacher, ally, Nature.WOOD), "wood can be queued once earth is in hand");
+        helper.assertFalse(NatureTeaching.start(teacher, ally, Nature.FIRE), "not queued twice");
+        helper.assertTrue(ally.allyState().lesson() == Nature.EARTH && ally.allyState().queue().equals(java.util.List.of(Nature.FIRE, Nature.WOOD)),
+                "earth now, then fire and wood: " + ally.allyState().queue());
+        NatureTeaching.dequeue(ally, Nature.FIRE);
+        helper.assertTrue(ally.allyState().queue().equals(java.util.List.of(Nature.WOOD)), "fire taken out of the queue");
         ally.allyState().setLessonSeconds(NatureTeaching.secondsNeeded(Nature.EARTH));
         helper.assertTrue(NatureTeaching.study(ally, teacher, 1f), "earth learned");
-        helper.assertTrue(NatureTeaching.blocker(teacher, ally, Nature.WOOD).isEmpty(), "now wood is teachable");
+        helper.assertTrue(ally.allyState().lesson() == Nature.WOOD && ally.allyState().queue().isEmpty(), "wood starts by itself");
         helper.assertTrue(NatureTeaching.secondsNeeded(Nature.WOOD) > NatureTeaching.secondsNeeded(Nature.EARTH), "and takes longer");
-        helper.assertTrue(NatureTeaching.start(teacher, ally, Nature.WOOD), "start wood");
         ally.allyState().setLessonSeconds(NatureTeaching.secondsNeeded(Nature.WOOD));
         helper.assertTrue(NatureTeaching.study(ally, teacher, 1f), "wood learned");
         near(helper, Clan.TRAINED_AFFINITY, ally.jutsuAffinity(Nature.WOOD), "at their weaker part's strength (trained earth)");
@@ -169,7 +176,8 @@ public final class NatureTeachingGameTests {
         status[Nature.WIND.ordinal()] = AllyPackets.NATURE_LEARNING;
         affinity[Nature.WATER.ordinal()] = 1f;
         AllyPackets.Extra extra = new AllyPackets.Extra("Uchiha", 40f, 100f, "weapon_sword", 2, 1, status, affinity,
-                new AllyPackets.Lesson(Nature.WIND.ordinal(), 50f, 3600f, 1.5f, AllyPackets.PACE_NEAR | AllyPackets.PACE_STUDYING));
+                new AllyPackets.Lesson(Nature.WIND.ordinal(), 50f, 3600f, 1.5f, AllyPackets.PACE_NEAR | AllyPackets.PACE_STUDYING),
+                3, 2, new byte[]{(byte) Nature.FIRE.ordinal(), (byte) Nature.EARTH.ordinal()}, 2, 42.5f, 17);
         AllyPackets.Info info = new AllyPackets.Info(7, 30f, 40f, new float[]{1, 2, 3, 4}, new float[]{0.1f, 0.2f, 0.3f, 0.4f}, 3,
                 "basic", List.of("basic", "brawler"), "generic:1", List.of(Noirm.id("futon/air_palm")),
                 List.of(new AllyPackets.Teachable(Noirm.id("katon/great_fireball"), "B", "screen.noirm.ally.teach.nature")),
@@ -185,6 +193,10 @@ public final class NatureTeachingGameTests {
                 && !back.extra().lesson().has(AllyPackets.PACE_FIGHTING), "the lesson");
         near(helper, 1.5f, back.extra().lesson().rate(), "its pace");
         helper.assertTrue(back.mastery().equals(List.of(2)) && back.order() == 3 && back.trait().equals("LOYAL"), "the rest");
+        helper.assertTrue(back.extra().occupation() == 3 && back.extra().behaviour() == 2 && back.extra().queue().length == 2
+                && back.extra().queue()[1] == Nature.EARTH.ordinal() && back.extra().pendingJutsu() == 2 && back.extra().carried() == 17,
+                "job, behaviour, queue, pending jutsu and loot");
+        near(helper, 42.5f, back.extra().natureEnergy(), "nature energy");
         helper.succeed();
     }
 

@@ -95,7 +95,7 @@ public final class PowerPackets {
         }
     }
 
-    public enum Toggle { SHARINGAN, CLOAK }
+    public enum Toggle { SHARINGAN, CLOAK, MEDITATE }
 
     /** Sharingan or chakra-cloak key. */
     public record TogglePower(Toggle which) {
@@ -113,6 +113,7 @@ public final class PowerPackets {
                 switch (which) {
                     case SHARINGAN -> Sharingan.toggle(player);
                     case CLOAK -> BijuSystem.toggleCloak(player);
+                    case MEDITATE -> com.noirm.senjutsu.Meditation.toggle(player);
                 }
             }
             context.get().setPacketHandled(true);
@@ -147,7 +148,8 @@ public final class PowerPackets {
                              int cloakTails, int unlockedTails, int bond,
                              int sharinganPressure, int sharinganDrillXp,
                              int mangekyoFlags, int mangekyoPattern, int mangekyoDonorPattern,
-                             int mangekyoLeft, int mangekyoRight, float mangekyoStrain, int susanooStage) {
+                             int mangekyoLeft, int mangekyoRight, float mangekyoStrain, int susanooStage,
+                             boolean meditating, float natureEnergy) {
         /** {@link #mangekyoFlags} bits. */
         public static final int MS = 1, MS_ETERNAL = 2, MS_TRANSPLANTED = 4, MS_BLIND = 8;
 
@@ -209,7 +211,8 @@ public final class PowerPackets {
                             | (eyes.isBlind() ? MS_BLIND : 0),
                     eyes.pattern(), eyes.donorPattern(),
                     eyes.left() == null ? -1 : eyes.left().ordinal(), eyes.right() == null ? -1 : eyes.right().ordinal(),
-                    eyes.strain(), com.noirm.dojutsu.Susanoo.stage(player));
+                    eyes.strain(), com.noirm.dojutsu.Susanoo.stage(player),
+                    data.senjutsu().isMeditating(), data.senjutsu().natureEnergy());
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -249,6 +252,8 @@ public final class PowerPackets {
             buf.writeByte(mangekyoRight);
             buf.writeFloat(mangekyoStrain);
             buf.writeByte(susanooStage);
+            buf.writeBoolean(meditating);
+            buf.writeFloat(natureEnergy);
         }
 
         public static SyncPowers decode(FriendlyByteBuf buf) {
@@ -262,7 +267,8 @@ public final class PowerPackets {
                     buf.readByte(), buf.readByte(), buf.readVarInt(), buf.readVarInt(),
                     buf.readByte(), buf.readByte(), buf.readVarInt() - 100,
                     buf.readVarInt() - 1, buf.readVarInt(),
-                    buf.readVarInt(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readFloat(), buf.readByte());
+                    buf.readVarInt(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readFloat(), buf.readByte(),
+                    buf.readBoolean(), buf.readFloat());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

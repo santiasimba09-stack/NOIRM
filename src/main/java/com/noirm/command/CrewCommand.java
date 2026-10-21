@@ -57,6 +57,23 @@ public final class CrewCommand {
                 .then(Commands.literal("jutsu").then(Commands.argument("use", StringArgumentType.word())
                         .suggests((ctx, b) -> SharedSuggestionProvider.suggest(names(Tactics.JutsuUse.values()), b))
                         .executes(ctx -> jutsuUse(ctx.getSource(), StringArgumentType.getString(ctx, "use")))))
+                .then(Commands.literal("role").then(Commands.argument("job", StringArgumentType.word())
+                        .suggests((ctx, b) -> SharedSuggestionProvider.suggest(names(com.noirm.ally.Occupation.values()), b))
+                        .executes(ctx -> role(ctx.getSource(), StringArgumentType.getString(ctx, "job")))))
+                .then(Commands.literal("behaviour").then(Commands.argument("behaviour", StringArgumentType.word())
+                        .suggests((ctx, b) -> SharedSuggestionProvider.suggest(names(com.noirm.ally.Behaviour.values()), b))
+                        .executes(ctx -> behaviour(ctx.getSource(), StringArgumentType.getString(ctx, "behaviour")))))
+                .then(Commands.literal("come").executes(ctx -> come(ctx.getSource(), false)))
+                .then(Commands.literal("fallback").executes(ctx -> come(ctx.getSource(), true)))
+                .then(Commands.literal("attack").executes(ctx -> attack(ctx.getSource())))
+                .then(Commands.literal("lesson").then(Commands.argument("nature", StringArgumentType.word()).suggests(JutsuExtraCommand.NATURES)
+                        .executes(ctx -> lesson(ctx.getSource(), StringArgumentType.getString(ctx, "nature")))))
+                .then(Commands.literal("teachjutsu")
+                        .then(Commands.literal("all").executes(ctx -> teachJutsu(ctx.getSource(), null)))
+                        .then(Commands.argument("jutsu", net.minecraft.commands.arguments.ResourceLocationArgument.id())
+                                .suggests((ctx, b) -> SharedSuggestionProvider.suggestResource(Cmd.data(ctx.getSource()).jutsu().known(), b))
+                                .executes(ctx -> teachJutsu(ctx.getSource(),
+                                        net.minecraft.commands.arguments.ResourceLocationArgument.getId(ctx, "jutsu")))))
                 .then(Commands.literal("recruit").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> recruit(ctx.getSource())))
                 .then(Commands.literal("summon").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> summon(ctx.getSource())))
                 .then(Commands.literal("heal").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> heal(ctx.getSource())))
@@ -81,23 +98,9 @@ public final class CrewCommand {
         }
     }
 
-    /** The crew mates loaded in the player's world (unloaded ones can't be reached). */
+    /** The crew mates loaded on the server (unloaded ones can't be reached). */
     static List<SparringNinja> members(ServerPlayer player) {
-        List<SparringNinja> found = new ArrayList<>();
-        ShinobiData data = com.noirm.player.ShinobiCapability.get(player).orElse(null);
-        if (data == null) {
-            return found;
-        }
-        for (UUID id : data.crew()) {
-            for (ServerLevel level : player.server.getAllLevels()) {
-                Entity entity = level.getEntity(id);
-                if (entity instanceof SparringNinja ninja && ninja.isAlive()) {
-                    found.add(ninja);
-                    break;
-                }
-            }
-        }
-        return found;
+        return com.noirm.ally.CrewPackets.loaded(player);
     }
 
     /** Runs {@code action} on every crew mate and says how many it reached. */
@@ -125,6 +128,10 @@ public final class CrewCommand {
                     .append(Component.translatable("command.noirm.crew.line", Math.round(ninja.respect()),
                             Component.translatable(ninja.order().key()),
                             Math.round(ninja.distanceTo(player))).withStyle(ChatFormatting.GRAY));
+            if (ninja.allyState().occupation() != com.noirm.ally.Occupation.NONE) {
+                text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(Component.translatable(ninja.allyState().occupation().key()).withStyle(ChatFormatting.GOLD));
+            }
             Nature lesson = ninja.allyState().lesson();
             if (lesson != null) {
                 text.append(Component.translatable("command.noirm.crew.lesson", Component.translatable(lesson.translationKey()))
@@ -144,7 +151,9 @@ public final class CrewCommand {
         if (order == null) {
             return Cmd.fail(source, "command.noirm.crew.bad_value", name);
         }
-        return each(source, "command.noirm.crew.ordered", ninja -> ninja.setOrder(order), Component.translatable(order.key()));
+        ServerPlayer player = Cmd.player(source);
+        return each(source, "command.noirm.crew.ordered", ninja -> com.noirm.ally.CrewBrain.giveOrder(ninja, order, player),
+                Component.translatable(order.key()));
     }
 
     static int range(CommandSourceStack source, String name) throws CommandSyntaxException {
@@ -161,6 +170,72 @@ public final class CrewCommand {
             return Cmd.fail(source, "command.noirm.crew.bad_value", name);
         }
         return each(source, "command.noirm.crew.tactics", ninja -> ninja.allyState().setJutsuUse(use), name.toLowerCase(Locale.ROOT));
+    }
+
+    static int role(CommandSourceStack source, String name) throws CommandSyntaxException {
+        com.noirm.ally.Occupation job = parse(com.noirm.ally.Occupation.class, name);
+        if (job == null) {
+            return Cmd.fail(source, "command.noirm.crew.bad_value", name);
+        }
+        return each(source, "command.noirm.crew.role", ninja -> ninja.allyState().setOccupation(job), Component.translatable(job.key()));
+    }
+
+    static int behaviour(CommandSourceStack source, String name) throws CommandSyntaxException {
+        com.noirm.ally.Behaviour behaviour = parse(com.noirm.ally.Behaviour.class, name);
+        if (behaviour == null) {
+            return Cmd.fail(source, "command.noirm.crew.bad_value", name);
+        }
+        return each(source, "command.noirm.crew.behaviour", ninja -> ninja.allyState().setBehaviour(behaviour),
+                Component.translatable(behaviour.key()));
+    }
+
+    /** "Come here" (or "fall back": the same, and no new fights for a few seconds). */
+    static int come(CommandSourceStack source, boolean fallBack) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        return each(source, fallBack ? "command.noirm.crew.fell_back" : "command.noirm.crew.coming", ninja -> {
+            if (fallBack) {
+                com.noirm.ally.CrewBrain.fallBack(ninja, player);
+            } else {
+                com.noirm.ally.CrewBrain.come(ninja, player);
+            }
+        });
+    }
+
+    /** Everyone goes for what you're looking at. */
+    static int attack(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        net.minecraft.world.entity.LivingEntity target = Cmd.lookedAt(player, net.minecraft.world.entity.LivingEntity.class, 40);
+        if (target == null || Crew.sameSide(player, target)) {
+            return Cmd.fail(source, "command.noirm.crew.no_enemy");
+        }
+        return each(source, "command.noirm.crew.attacking", ninja -> com.noirm.ally.CrewBrain.attack(ninja, target), target.getDisplayName());
+    }
+
+    /** Starts (or queues) teaching everyone a nature of yours. */
+    static int lesson(CommandSourceStack source, String name) throws CommandSyntaxException {
+        Nature nature = JutsuExtraCommand.nature(name);
+        if (nature == null) {
+            return Cmd.fail(source, "command.noirm.nature.unknown", name);
+        }
+        ServerPlayer player = Cmd.player(source);
+        int started = 0;
+        for (SparringNinja ninja : members(player)) {
+            if (com.noirm.ally.NatureTeaching.start(player, ninja, nature)) {
+                started++;
+            }
+        }
+        return Cmd.ok(source, "command.noirm.crew.lesson_started", started, Component.translatable(nature.translationKey()));
+    }
+
+    /** Teaches everyone a jutsu of yours (or all you can), queuing its nature first where needed. */
+    static int teachJutsu(CommandSourceStack source, net.minecraft.resources.ResourceLocation id) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        int count = 0;
+        for (SparringNinja ninja : members(player)) {
+            count += id == null ? com.noirm.ally.AllyPackets.teachAll(player, ninja)
+                    : com.noirm.ally.AllyPackets.teachOrQueue(player, ninja, id) ? 1 : 0;
+        }
+        return Cmd.ok(source, "command.noirm.crew.taught_jutsu", count);
     }
 
     static int recruit(CommandSourceStack source) throws CommandSyntaxException {

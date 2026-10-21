@@ -329,7 +329,7 @@ public final class HumanoidAnimator {
             PlayerAction action = PLAYER_ACTIONS.get(player.getId());
             boolean local = com.noirm.client.ClientPlayerState.isLocal(player);
             boolean fighting = local ? com.noirm.client.ClientPlayerState.combatMode()
-                    : action != null && player.level().getGameTime() - action.startedAt < 80;
+                    : action != null && player.level().getGameTime() - action.startedAt < 80 && !action.id.startsWith("noirm:meditate");
             ResourceLocation stance = null;
             if (fighting) {
                 stance = WeaponStances.stanceFor(player.getMainHandItem());
@@ -371,6 +371,15 @@ public final class HumanoidAnimator {
         if (!state.seqKnown) {
             state.seqKnown = true;
             state.seq = in.seq();
+            // …except a long one still running (meditation): join it where it is.
+            PlayerAction running = entity instanceof Player player ? PLAYER_ACTIONS.get(player.getId()) : null;
+            if (running != null && running.ticks > 40) {
+                long elapsed = entity.level().getGameTime() - running.startedAt;
+                KeyframeAnimation animation = NpcAnimations.get(ResourceLocation.tryParse(running.id));
+                if (animation != null && elapsed >= 0 && elapsed < running.ticks) {
+                    state.current = new Playing(animation, clock - elapsed, running.ticks);
+                }
+            }
         } else if (in.seq() != state.seq) {
             state.seq = in.seq();
             KeyframeAnimation animation = NpcAnimations.get(ResourceLocation.tryParse(in.action()));

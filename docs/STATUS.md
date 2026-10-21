@@ -34,7 +34,15 @@ The villages (v0.7.0):
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of v0.9.1 (the command overhaul: `/noirm help`, see `docs/COMMANDS.md`).
+**Crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
+
+| Piece | State |
+|---|---|
+| **Crew overhaul:** follow fix, Guard/Patrol posts, Come/Fall back, jobs (bodyguard, vanguard, scout, medic, gatherer), behaviours (aggressive, defensive, passive), lesson queue, "Teach all", jutsu that wait for their nature, K crew-orders screen, Job tab | ✅ tested; checked in client (`r11-crew-*`, `r11-ally-*`) |
+| **Player meditation** (N / `/noirm meditate`): sits, faster chakra and stamina, trains Reserves, fills **nature energy** (0–100) for Sage Mode later; meditating near a learning crew mate doubles their pace | ✅ tested; checked in client (`r11-meditate-*`) |
+| **CTL/WIL stats, PER formula, perception focus, just-frame parry** (Phase 1 #1–2) | helper working |
+| **Automated casting engine:** seal phase, 80% movement, interruption and fizzle, elemental clashes (Phase 1 #4) | helper working |
+| **Character creation HUD** (Phase 1 #3) | waiting on the owner (it replaces the random first-join clan and needs art) |
 
 ## Next steps (in order)
 
@@ -66,7 +74,8 @@ Nothing. Waiting on the owner's playtest of v0.9.1 (the command overhaul: `/noir
 | `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
 | `com.noirm.weapon` | Ninja weapons (`NinjaWeapons` registry, `ThrowingWeaponItem`, `StaffItem`, `ChakraBladeItem`, `ExplosiveTagItem`, `ThrownWeapon`, `Throwing`, `Moveset` + `WeaponMoves`, `NinjaArsenal`); see `docs/WEAPONS.md` |
 | `com.noirm.chakra` + `com.noirm.mixin` | Water walking (`WaterWalking`, `WaterWalker`; `BlockStateBaseMixin` gives the water surface a skin; config `noirm.mixins.json`) |
-| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `AllyFood` (feeding), `Trait`, `Order`, `AllyMenu` + `AllyPackets` (the ally screen) |
+| `com.noirm.ally` | `Crew` (yield, recruit, sides, crew rules), `CrewBrain` (the crew mate's mind every tick: targets by behaviour/job/order, following, posts, duties; tuning constants at the top), `AllyMind` (respect, morale, retreat, support), `AllyTraining` (stat XP), `AllyFood` (feeding), `NatureTeaching` (lessons, queue), `Trait`, `Order`, `Occupation`, `Behaviour`, `AllyState` (saved crew data), `AllyMenu` + `AllyPackets` (the ally screen), `CrewPackets` (crew-wide orders, K screen) |
+| `com.noirm.senjutsu` | `Meditation` (rules and constants; `isMeditating`, `natureEnergy`), `MeditationData` (saved), `MeditationEvents` (ticking, what ends it) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
@@ -144,8 +153,13 @@ Nothing. Waiting on the owner's playtest of v0.9.1 (the command overhaul: `/noir
   from it (`tools/docs/gen_commands.py`).
 - **Masters (round 6):** a master is a JSON file in `data/noirm/masters/`; Might Guy is the first.
   Passing his spar grants the Strong Fist even below taijutsu 18. The Eight Gates burn health.
-- **Allies learn natures (round 6):** you must own the nature; about 3 in-game days under the
-  Train/Meditate order near you, faster when fighting together or if you mastered it.
+- **Allies learn natures (crew overhaul):** you must own the nature; 2 in-game days of full-pace
+  study near you (Train/Meditate), half pace under other orders; faster fighting together,
+  meditating together (×2) or if you mastered it. More lessons wait in a queue.
+- **Crew mates (crew overhaul):** one mind per tick (`CrewBrain`); a training dummy is never a
+  target outside Train; far behind or stuck, they jump to your side.
+- **Blueprint (owner):** keep what we have; build Phase 1 where it fits; ask before rebuilding a
+  system (see `docs/BLUEPRINT.md`).
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 - **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
   step so trees are cleared. Residents never start fights with players; attacking one alarms the
@@ -163,7 +177,9 @@ Nothing. Waiting on the owner's playtest of v0.9.1 (the command overhaul: `/noir
   on death? Is 8% of 3-tomoe Uchiha ninjas having one right?
 - **Might Guy:** is the test (6 clean hits or a guard break in 90 s) fair? Gate health drain? Guy
   appears in every Leaf village: fine, or only one per world?
-- **Ally teaching:** is ~3 in-game days per nature right?
+- **Ally teaching:** is ~2 in-game days per nature (half pace when not training) right?
+- **Meditation:** it trains Reserves (capped at 30 like other drills); the blueprint says "no
+  passive grinding". Keep it? Should nature energy be lost on death?
 - **Gear:** do the new clothes look right on the body (hats, kimono hems, cloaks only reach the waist)?
 - **Weapons:** damage and throw cooldowns; should shields fully block guarded hits (players too)?
 
