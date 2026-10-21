@@ -115,7 +115,7 @@ public final class PerceptionFocus {
             // A grey-blue wash drains some colour from the whole view…
             graphics.fill(0, 0, width, height, (Math.round(85 * s) << 24) | COLD_IRON);
             // …and cold edges: the vanilla vignette darkens by its colour, red most, blue least.
-            // Two passes, the second pulled in a little, so the edges close in.
+            // Two full-screen passes: the edges close in without a visible seam.
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -123,9 +123,7 @@ public final class PerceptionFocus {
                     GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(0.8f * s, 0.65f * s, 0.45f * s, 1f);
             graphics.blit(VIGNETTE, 0, 0, -90, 0f, 0f, width, height, width, height);
-            int inset = Math.round(width * 0.06f * s);
-            int insetY = inset * height / Math.max(1, width);
-            graphics.blit(VIGNETTE, inset, insetY, -90, 0f, 0f, width - 2 * inset, height - 2 * insetY, width, height);
+            graphics.blit(VIGNETTE, 0, 0, -90, 0f, 0f, width, height, width, height);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             RenderSystem.defaultBlendFunc();
             RenderSystem.depthMask(true);
