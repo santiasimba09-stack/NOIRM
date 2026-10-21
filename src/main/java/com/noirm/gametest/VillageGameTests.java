@@ -257,6 +257,8 @@ public final class VillageGameTests {
         SparringNinja ninja = NoirmEntities.SPARRING_NINJA.get().create(level);
         ninja.moveTo(from.getX() + 0.5, from.getY(), from.getZ() + 0.5, 0, 0);
         ninja.setNoAi(false);
+        ninja.joinClan(TestClans.PLAIN); // a fixed clan and no beast: random rolls made this flaky
+        ninja.sealBeast(0);
         level.addFreshEntity(ninja);
         // Only the jump is under test: without goals nothing steers it mid-air (wandering made this flaky).
         ninja.goalSelector.removeAllGoals(goal -> true);
