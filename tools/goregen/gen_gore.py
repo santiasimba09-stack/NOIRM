@@ -35,10 +35,10 @@ SIDES = ("front", "back", "right", "left")
 
 # Where each kind of mark tends to land (part weights) and how many new marks each stage adds.
 KINDS = {
-    "bruise": {"weights": {"head": 3, "body": 4, "rarm": 3, "larm": 3, "rleg": 1.5, "lleg": 1.5}, "new": (6, 8, 10)},
-    "dirt": {"weights": {"head": 1, "body": 2, "rarm": 1.5, "larm": 1.5, "rleg": 5, "lleg": 5}, "new": (10, 12, 14)},
-    "soot": {"weights": {"head": 3, "body": 4, "rarm": 2.5, "larm": 2.5, "rleg": 2, "lleg": 2}, "new": (5, 7, 9)},
-    "cut": {"weights": {"head": 1.5, "body": 3, "rarm": 3.5, "larm": 3.5, "rleg": 2, "lleg": 2}, "new": (4, 5, 7)},
+    "bruise": {"weights": {"head": 3, "body": 4, "rarm": 3, "larm": 3, "rleg": 1.5, "lleg": 1.5}, "new": (12, 12, 14)},
+    "dirt": {"weights": {"head": 1, "body": 2, "rarm": 1.5, "larm": 1.5, "rleg": 5, "lleg": 5}, "new": (18, 16, 18)},
+    "soot": {"weights": {"head": 3, "body": 4, "rarm": 2.5, "larm": 2.5, "rleg": 2, "lleg": 2}, "new": (10, 10, 12)},
+    "cut": {"weights": {"head": 1.5, "body": 3, "rarm": 3.5, "larm": 3.5, "rleg": 2, "lleg": 2}, "new": (8, 7, 9)},
 }
 STAGES = 3
 
@@ -89,7 +89,7 @@ def bruise(cv, m, grow):
                 continue
             t = d / max(r, 0.01)
             c = mix(core, mid, min(1, t * 1.6)) if t < 0.65 else mix(mid, edge, (t - 0.65) / 0.35)
-            a = int((175 - 80 * t) * (0.75 + 0.25 * grow))
+            a = int((215 - 70 * t) * (0.8 + 0.2 * grow))
             put(cv, m["rect"], m["x"] + dx, m["y"] + dy, c + (a,))
 
 
@@ -105,7 +105,7 @@ def dirt(cv, m, grow):
             if n < 0.22 + 0.25 * (d / r) - 0.08 * grow:
                 continue
             c = tones[int(n * 97) % len(tones)]
-            a = int(110 + 90 * n * (0.7 + 0.3 * grow))
+            a = int(140 + 90 * n * (0.8 + 0.2 * grow))
             put(cv, m["rect"], m["x"] + dx, m["y"] + dy, c + (min(220, a),))
 
 
@@ -120,7 +120,7 @@ def soot(cv, m, grow):
             t = d / r
             n = noise(m["x"] + dx, m["y"] + dy, m["seed"])
             c = mix(dark, char, t) if n > 0.2 else ash
-            a = int((215 - 130 * t) * (0.7 + 0.3 * grow))
+            a = int((235 - 110 * t) * (0.8 + 0.2 * grow))
             put(cv, m["rect"], m["x"] + dx, m["y"] + dy, c + (max(60, a),))
 
 

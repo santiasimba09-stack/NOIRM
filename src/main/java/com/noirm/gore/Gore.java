@@ -59,14 +59,14 @@ import net.minecraftforge.fml.common.Mod;
 public final class Gore {
     // ---------------------------------------------------------------- tuning
 
-    /** Marks gained per hit: this × damage ÷ max health (so losing half your health = full marks). */
-    public static final float GAIN_PER_HEALTH = 2.0f;
+    /** Marks gained per hit: this × damage ÷ max health (so losing 40% of your health = full marks). */
+    public static final float GAIN_PER_HEALTH = 2.5f;
     /** Even a scratch leaves a little. */
     public static final float MIN_GAIN = 0.04f;
     /** Marks fade by this much per second on their own (a full mark takes ~2.5 minutes). */
     public static final float FADE_PER_SECOND = 0.0067f;
-    /** …and by this × each share of max health healed (healing half your health clears half). */
-    public static final float HEAL_FADE = 1.0f;
+    /** …and by this × each share of max health healed (healing all your health clears half). */
+    public static final float HEAL_FADE = 0.5f;
     /** How fast each kind fades compared to the others: bruise, dirt, soot, cut. */
     static final float[] FADE_RATE = {1.0f, 1.4f, 1.2f, 0.7f};
     /** The fade runs every this many ticks. */
