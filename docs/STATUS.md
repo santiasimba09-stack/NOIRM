@@ -34,7 +34,8 @@ The villages (v0.7.0):
 
 ## In progress
 
-Waiting on the owner: v0.10.0 playtest and the blueprint questions below.
+Blueprint Phase 2 (owner's answers): **character creation**, **movement feel** (inertia, gravity,
+no melee while sealing), **gore**. Helpers building them in parallel.
 
 **Done in v0.10.0: crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
 
@@ -162,6 +163,11 @@ Waiting on the owner: v0.10.0 playtest and the blueprint questions below.
   target outside Train; far behind or stuck, they jump to your side.
 - **Blueprint (owner):** keep what we have; build Phase 1 where it fits; ask before rebuilding a
   system (see `docs/BLUEPRINT.md`).
+- **Blueprint answers (owner, after v0.10.0):** the **character creation screen replaces the random
+  first-join clan** (build it, with placeholder art); **movement** gets the blueprint's inertia and
+  heavier gravity, but kept light so combat stays smooth; **gore: yes**; perception focus and the
+  just-frame parry stay **heavy attacks only** (the counter window is untested by the owner yet);
+  meditation keeps training Reserves; **no melee while forming seals**.
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 - **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
   step so trees are cleared. Residents never start fights with players; attacking one alarms the
@@ -172,10 +178,8 @@ Waiting on the owner: v0.10.0 playtest and the blueprint questions below.
 
 ## Open questions for the owner
 
-- **Blueprint, systems it would rebuild (asked, waiting):** character creation (replaces the random
-  first-join clan; face/physique need art), movement inertia and gravity, gore, a real world slowdown.
-- **Perception focus / just-frame:** heavy attacks only, or light ones too? Is the 10-tick counter window right?
-- **Casting:** should melee be blocked while forming seals? Should combined natures join the clash wheel?
+- **Just-frame parry:** once you've tried it, is the 10-tick (0.5 s) counter window right?
+- **Casting:** should combined natures (ice, lava, storm…) join the clash wheel?
 
 - **Animations:** which moves still feel weak? First person: are the arms the right size and place?
   Should the ninja run happen on every sprint, or only above a certain speed stat?
