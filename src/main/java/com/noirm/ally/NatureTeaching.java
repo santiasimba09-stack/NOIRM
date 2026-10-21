@@ -17,20 +17,25 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Teaching a crew mate one of your chakra natures. It takes time: the lesson only moves while
- * they're under the <b>Train</b> or <b>Meditate</b> order with you nearby, or while you fight
- * side by side (any order). Fighting together and having mastered the nature yourself both
- * speed it up. A basic nature takes three Minecraft days of good study, a combined one longer;
- * with every bonus, a basic nature takes about a day and a third.
+ * Teaching a crew mate one of your chakra natures. It takes time, but it moves whenever you're
+ * near each other: at full pace under the <b>Train</b> or <b>Meditate</b> order, at half pace
+ * under any other order, faster when you fight side by side, when you've mastered the nature,
+ * and when you meditate together. A basic nature takes two Minecraft days of full-pace study, a
+ * combined one longer.
  *
- * <p>Rules: you must own the nature, they must lack it, and a combined nature (Wood = Earth +
- * Water…) needs both its parts first, like for players. One lesson at a time. When it's done
- * they gain the nature ({@link Clan#TRAINED_AFFINITY} for a basic one; a combined one at their
- * weakest part's strength) and its starting jutsu.
+ * <p>Rules: you must own the nature and they must lack it. A combined nature (Wood = Earth +
+ * Water…) needs its parts first, but they can be queued ahead of it. One lesson at a time; more
+ * wait in a queue and start by themselves. When a lesson ends they gain the nature
+ * ({@link Clan#TRAINED_AFFINITY} for a basic one; a combined one at their weakest part's
+ * strength), its starting jutsu, and any jutsu you asked them to learn that needed it.
  */
 public final class NatureTeaching {
-    /** Seconds of good study for a basic nature: 3 Minecraft days (a day is 1,200 seconds). */
-    public static final float BASIC_SECONDS = 3600f;
+    /** Seconds of full-pace study for a basic nature: 2 Minecraft days (a day is 1,200 seconds). */
+    public static final float BASIC_SECONDS = 2400f;
+    /** Pace under orders other than Train and Meditate. */
+    public static final float CASUAL_RATE = 0.5f;
+    /** Meditating near them (with them) doubles the pace. */
+    public static final float MEDITATE_TOGETHER_BONUS = 2f;
     /** A two-part nature takes this much longer, a three-part one (Dust) more still. */
     public static final float COMBINED_FACTOR = 1.25f;
     public static final float TRIPLE_FACTOR = 1.5f;
@@ -66,31 +71,91 @@ public final class NatureTeaching {
                 return "screen.noirm.ally.nature.why.parts";
             }
         }
-        Nature current = ally.allyState().lesson();
-        if (current != null && current != nature) {
-            return "screen.noirm.ally.nature.why.busy";
+        return "";
+    }
+
+    /** {@link #blocker}, but a combined nature's parts may also be in the lesson or the queue ahead of it. */
+    static String queueBlocker(Player teacher, SparringNinja ally, Nature nature) {
+        String why = blocker(teacher, ally, nature);
+        if (!why.equals("screen.noirm.ally.nature.why.parts")) {
+            return why;
+        }
+        AllyState state = ally.allyState();
+        for (Nature part : nature.components()) {
+            if (ally.jutsuAffinity(part) <= 0f && state.lesson() != part && !state.queue().contains(part)) {
+                return why;
+            }
         }
         return "";
     }
 
-    /** Starts a lesson. Returns false (and changes nothing) if a rule blocks it. */
+    /**
+     * Starts a lesson, or queues it behind the current one. Returns false (and changes nothing)
+     * if a rule blocks it or it's already in hand.
+     */
     public static boolean start(Player teacher, SparringNinja ally, Nature nature) {
-        if (!blocker(teacher, ally, nature).isEmpty() || ally.allyState().lesson() == nature) {
+        AllyState state = ally.allyState();
+        if (state.lesson() == nature || state.queue().contains(nature)) {
             return false;
         }
-        ally.allyState().setLesson(nature);
-        teacher.displayClientMessage(Component.translatable("message.noirm.ally.nature.started", ally.getDisplayName(), name(nature)), true);
+        if (state.lesson() == null) {
+            if (!blocker(teacher, ally, nature).isEmpty()) {
+                return false;
+            }
+            state.setLesson(nature);
+            teacher.displayClientMessage(Component.translatable("message.noirm.ally.nature.started", ally.getDisplayName(), name(nature)), true);
+            return true;
+        }
+        if (!queueBlocker(teacher, ally, nature).isEmpty()) {
+            return false;
+        }
+        state.queue().add(nature);
+        teacher.displayClientMessage(Component.translatable("message.noirm.ally.nature.queued", ally.getDisplayName(), name(nature),
+                state.queue().size()), true);
         return true;
     }
 
-    /** Stops the lesson; its progress is lost. */
+    /** Takes a nature out of the queue (and the jutsu waiting on it). */
+    public static void dequeue(SparringNinja ally, Nature nature) {
+        ally.allyState().queue().remove(nature);
+        dropPending(ally, nature);
+    }
+
+    /** Stops the lesson (its progress is lost) and starts the next one in the queue. */
     public static void stop(SparringNinja ally) {
+        Nature dropped = ally.allyState().lesson();
         ally.allyState().setLesson(null);
+        if (dropped != null && ally.jutsuAffinity(dropped) <= 0f) {
+            dropPending(ally, dropped);
+        }
+        next(ally, null);
+    }
+
+    /** Starts the first queued nature that can be taught now (dropping ones they already have). */
+    static void next(SparringNinja ally, Player teacher) {
+        AllyState state = ally.allyState();
+        while (state.lesson() == null && !state.queue().isEmpty()) {
+            Nature candidate = state.queue().remove(0);
+            if (ally.jutsuAffinity(candidate) > 0f) {
+                continue;
+            }
+            state.setLesson(candidate);
+            if (teacher != null) {
+                teacher.displayClientMessage(Component.translatable("message.noirm.ally.nature.started", ally.getDisplayName(), name(candidate)), true);
+            }
+        }
+    }
+
+    private static void dropPending(SparringNinja ally, Nature nature) {
+        ally.allyState().pendingJutsu().removeIf(id -> {
+            var def = JutsuData.get(id);
+            return def == null || def.nature().orElse(null) == nature;
+        });
     }
 
     /** What's helping or holding the lesson back right now, and the resulting speed (0 = paused). */
-    public record Pace(boolean studying, boolean near, boolean fighting, boolean mastered, boolean teacherHas, float rate) {
-        public static final Pace NONE = new Pace(false, false, false, false, false, 0f);
+    public record Pace(boolean studying, boolean near, boolean fighting, boolean mastered, boolean teacherHas, boolean together, float rate) {
+        public static final Pace NONE = new Pace(false, false, false, false, false, false, 0f);
     }
 
     public static Pace pace(SparringNinja ally, Player leader) {
@@ -105,11 +170,13 @@ public final class NatureTeaching {
         boolean mastered = ShinobiCapability.get(leader)
                 .map(data -> NatureSystem.bestMastery(data).getOrDefault(nature, 0) >= MASTERED_STARS).orElse(false);
         boolean teacherHas = teacherAffinity(leader, nature) > 0f;
+        boolean together = near && leaderMeditating(leader);
         float rate = 0f;
-        if ((studying || fighting) && near && teacherHas) {
-            rate = (fighting ? FIGHT_BONUS : 1f) * (mastered ? MASTERED_BONUS : 1f);
+        if (near && teacherHas) {
+            rate = (studying ? 1f : CASUAL_RATE) * (fighting ? FIGHT_BONUS : 1f) * (mastered ? MASTERED_BONUS : 1f)
+                    * (together ? MEDITATE_TOGETHER_BONUS : 1f);
         }
-        return new Pace(studying, near, fighting, mastered, teacherHas, rate);
+        return new Pace(studying, near, fighting, mastered, teacherHas, together, rate);
     }
 
     /** Every tick for a crew mate with their leader around (from {@code SparringNinja.tickCrew}). */
@@ -154,7 +221,22 @@ public final class NatureTeaching {
         for (ResourceLocation id : JutsuData.startersFor(nature)) {
             ally.teach(id);
         }
-        stop(ally);
+        // Jutsu you asked them to learn that were waiting on this nature.
+        for (ResourceLocation id : java.util.List.copyOf(ally.allyState().pendingJutsu())) {
+            var def = JutsuData.get(id);
+            if (def != null && def.nature().orElse(null) == nature) {
+                ally.allyState().pendingJutsu().remove(id);
+                if (AllyPackets.blockerFor(ally, def).isEmpty()) {
+                    ally.teach(id);
+                    if (leader != null) {
+                        leader.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
+                                Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+                    }
+                }
+            }
+        }
+        ally.allyState().setLesson(null);
+        next(ally, leader);
         AllyMind.respect(ally, RESPECT_ON_LEARN, null);
         if (leader != null) {
             leader.sendSystemMessage(Component.translatable("message.noirm.ally.nature.learned", ally.getDisplayName(), name(nature))
@@ -162,6 +244,11 @@ public final class NatureTeaching {
         }
         ally.level().playSound(null, ally.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.NEUTRAL, 0.7f, 1.2f);
         Vfx.aura(ally.level(), ally.position(), ally.getBbWidth(), ally.getBbHeight(), Vfx.palette(nature), 30);
+    }
+
+    /** Whether the leader is meditating (their own meditation, from the senjutsu system). */
+    static boolean leaderMeditating(Player leader) {
+        return false; // wired to the player's meditation once it lands
     }
 
     private static float teacherAffinity(Player teacher, Nature nature) {

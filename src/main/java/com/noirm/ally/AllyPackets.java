@@ -32,25 +32,27 @@ public final class AllyPackets {
 
     /** How a nature looks from the ally screen's Natures tab (one per {@link com.noirm.clan.Nature}). */
     public static final int NATURE_OWNED = 0, NATURE_LEARNING = 1, NATURE_TEACHABLE = 2, NATURE_NEEDS_PARTS = 3,
-            NATURE_YOU_LACK = 4, NATURE_BUSY = 5;
+            NATURE_YOU_LACK = 4, NATURE_BUSY = 5, NATURE_QUEUED = 6;
     /** Lesson pace flags (bits of {@link Lesson#flags}). */
-    public static final int PACE_STUDYING = 1, PACE_NEAR = 2, PACE_FIGHTING = 4, PACE_MASTERED = 8, PACE_TEACHER_HAS = 16;
+    public static final int PACE_STUDYING = 1, PACE_NEAR = 2, PACE_FIGHTING = 4, PACE_MASTERED = 8, PACE_TEACHER_HAS = 16, PACE_TOGETHER = 32;
 
     /**
      * The extra half of the screen's data (round 6): clan, chakra, the unarmed style and the
      * weapon's moveset, tactics, natures and the nature lesson.
      */
     public record Extra(String clan, float chakra, float maxChakra, String weaponStyle, int range, int jutsuUse,
-                        byte[] natureStatus, float[] natureAffinity, Lesson lesson) {
+                        byte[] natureStatus, float[] natureAffinity, Lesson lesson, int occupation, int behaviour,
+                        byte[] queue, int pendingJutsu, float natureEnergy, int carried) {
         static Extra of(ServerPlayer player, SparringNinja ally) {
             com.noirm.clan.Nature[] all = com.noirm.clan.Nature.values();
             byte[] status = new byte[all.length];
             float[] affinity = new float[all.length];
             com.noirm.clan.Nature current = ally.allyState().lesson();
+            AllyState state = ally.allyState();
             for (com.noirm.clan.Nature nature : all) {
                 affinity[nature.ordinal()] = ally.jutsuAffinity(nature);
-                String why = NatureTeaching.blocker(player, ally, nature);
-                status[nature.ordinal()] = (byte) (nature == current ? NATURE_LEARNING : switch (why) {
+                String why = current == null ? NatureTeaching.blocker(player, ally, nature) : NatureTeaching.queueBlocker(player, ally, nature);
+                status[nature.ordinal()] = (byte) (nature == current ? NATURE_LEARNING : state.queue().contains(nature) ? NATURE_QUEUED : switch (why) {
                     case "" -> NATURE_TEACHABLE;
                     case "screen.noirm.ally.nature.why.owned" -> NATURE_OWNED;
                     case "screen.noirm.ally.nature.why.parts" -> NATURE_NEEDS_PARTS;
@@ -60,14 +62,20 @@ public final class AllyPackets {
             }
             NatureTeaching.Pace pace = NatureTeaching.pace(ally, player);
             int flags = (pace.studying() ? PACE_STUDYING : 0) | (pace.near() ? PACE_NEAR : 0) | (pace.fighting() ? PACE_FIGHTING : 0)
-                    | (pace.mastered() ? PACE_MASTERED : 0) | (pace.teacherHas() ? PACE_TEACHER_HAS : 0);
+                    | (pace.mastered() ? PACE_MASTERED : 0) | (pace.teacherHas() ? PACE_TEACHER_HAS : 0) | (pace.together() ? PACE_TOGETHER : 0);
             Lesson lesson = current == null ? Lesson.NONE
                     : new Lesson(current.ordinal(), ally.allyState().lessonSeconds(), NatureTeaching.secondsNeeded(current), pace.rate(), flags);
             String clan = player.getServer() == null ? "" : com.noirm.clan.WorldClans.get(player.getServer()).find(ally.clanId())
                     .map(com.noirm.clan.Clan::name).orElse("");
             ResourceLocation weapon = com.noirm.weapon.WeaponMoves.styleFor(ally.getMainHandItem());
+            byte[] queue = new byte[state.queue().size()];
+            for (int i = 0; i < queue.length; i++) {
+                queue[i] = (byte) state.queue().get(i).ordinal();
+            }
+            int carried = state.carried().stream().mapToInt(net.minecraft.world.item.ItemStack::getCount).sum();
             return new Extra(clan, ally.chakra(), ally.maxChakra(), weapon == null ? "" : weapon.getPath(),
-                    ally.allyState().range().ordinal(), ally.allyState().jutsuUse().ordinal(), status, affinity, lesson);
+                    state.range().ordinal(), state.jutsuUse().ordinal(), status, affinity, lesson, state.occupation().ordinal(),
+                    state.behaviour().ordinal(), queue, state.pendingJutsu().size(), state.natureEnergy(), carried);
         }
 
         void encode(FriendlyByteBuf buf) {
@@ -87,6 +95,12 @@ public final class AllyPackets {
             buf.writeFloat(lesson.needed());
             buf.writeFloat(lesson.rate());
             buf.writeVarInt(lesson.flags());
+            buf.writeVarInt(occupation);
+            buf.writeVarInt(behaviour);
+            buf.writeByteArray(queue);
+            buf.writeVarInt(pendingJutsu);
+            buf.writeFloat(natureEnergy);
+            buf.writeVarInt(carried);
         }
 
         static Extra decode(FriendlyByteBuf buf) {
@@ -102,7 +116,8 @@ public final class AllyPackets {
                 affinity[i] = buf.readFloat();
             }
             Lesson lesson = new Lesson(buf.readVarInt() - 1, buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readVarInt());
-            return new Extra(clan, chakra, max, weapon, range, use, status, affinity, lesson);
+            return new Extra(clan, chakra, max, weapon, range, use, status, affinity, lesson, buf.readVarInt(), buf.readVarInt(),
+                    buf.readByteArray(64), buf.readVarInt(), buf.readFloat(), buf.readVarInt());
         }
     }
 
@@ -143,7 +158,7 @@ public final class AllyPackets {
                     if (def == null) {
                         continue;
                     }
-                    teachable.add(new Teachable(id, def.rank(), blocker(ally, def)));
+                    teachable.add(new Teachable(id, def.rank(), teachBlocker(player, ally, id, def)));
                 }
             });
             // Ones they can learn right now first, then the rest (each alphabetically).
@@ -217,6 +232,75 @@ public final class AllyPackets {
         return blocker(ally, def);
     }
 
+    /** A jutsu they can learn once you've taught them its nature (the button teaches both). */
+    public static final String VIA_NATURE = "screen.noirm.ally.teach.via_nature";
+    public static final String PENDING = "screen.noirm.ally.teach.pending";
+
+    /** What the Teach button does for this jutsu: "" teaches it now, {@link #VIA_NATURE} queues its nature first, else why not. */
+    static String teachBlocker(ServerPlayer player, SparringNinja ally, ResourceLocation id, JutsuDefinition def) {
+        if (ally.allyState().pendingJutsu().contains(id)) {
+            return PENDING;
+        }
+        String why = blocker(ally, def);
+        if (why.equals("screen.noirm.ally.teach.nature") && def.nature().isPresent()) {
+            com.noirm.clan.Nature nature = def.nature().get();
+            AllyState state = ally.allyState();
+            boolean coming = state.lesson() == nature || state.queue().contains(nature);
+            String natureWhy = state.lesson() == null ? NatureTeaching.blocker(player, ally, nature) : NatureTeaching.queueBlocker(player, ally, nature);
+            if (coming || natureWhy.isEmpty()) {
+                return VIA_NATURE;
+            }
+        }
+        return why;
+    }
+
+    /**
+     * Teaches {@code id} if they can learn it now; if they lack its nature but you can teach it,
+     * starts (or queues) that nature's lesson and keeps the jutsu for when it's done. Returns true
+     * if something happened.
+     */
+    public static boolean teachOrQueue(ServerPlayer player, SparringNinja ally, ResourceLocation id) {
+        JutsuDefinition def = JutsuData.get(id);
+        boolean knows = ShinobiCapability.get(player).map(d -> d.jutsu().knows(id)).orElse(false);
+        if (def == null || !knows || ally.knownJutsu().contains(id)) {
+            return false;
+        }
+        String why = teachBlocker(player, ally, id, def);
+        if (why.isEmpty()) {
+            ally.teach(id);
+            AllyMind.respect(ally, 5f, "message.noirm.ally.grateful");
+            player.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
+                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+            return true;
+        }
+        if (why.equals(VIA_NATURE)) {
+            com.noirm.clan.Nature nature = def.nature().orElseThrow();
+            AllyState state = ally.allyState();
+            if (state.lesson() != nature && !state.queue().contains(nature)) {
+                NatureTeaching.start(player, ally, nature);
+            }
+            if (!state.pendingJutsu().contains(id)) {
+                state.pendingJutsu().add(id);
+            }
+            player.displayClientMessage(Component.translatable("message.noirm.ally.teach.after_nature", ally.getDisplayName(),
+                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id)), Component.translatable(nature.translationKey())), true);
+            return true;
+        }
+        return false;
+    }
+
+    /** Teaches everything you can teach them now (and queues natures for the rest that need one). Returns how many. */
+    public static int teachAll(ServerPlayer player, SparringNinja ally) {
+        int count = 0;
+        List<ResourceLocation> yours = ShinobiCapability.get(player).map(d -> List.copyOf(d.jutsu().known())).orElse(List.of());
+        for (ResourceLocation id : yours.stream().sorted().toList()) {
+            if (!ally.knownJutsu().contains(id) && teachOrQueue(player, ally, id)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     static String blocker(SparringNinja ally, JutsuDefinition def) {
         if (com.noirm.master.MasterData.taughtByMaster(def)) {
             return "screen.noirm.ally.teach.master"; // the Gates and their techniques: only a master teaches those
@@ -233,7 +317,8 @@ public final class AllyPackets {
         return "";
     }
 
-    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP, NATURE_TEACH, NATURE_STOP, RANGE, JUTSU_USE }
+    public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP, NATURE_TEACH, NATURE_STOP, RANGE, JUTSU_USE,
+        OCCUPATION, BEHAVIOUR, TEACH_ALL, NATURE_DEQUEUE, COME, FALL_BACK }
 
     public record Command(int entityId, Action action, String arg) {
         public void encode(FriendlyByteBuf buf) {
@@ -270,7 +355,7 @@ public final class AllyPackets {
                     return;
                 }
                 try {
-                    ally.setOrder(Order.valueOf(arg));
+                    CrewBrain.giveOrder(ally, Order.valueOf(arg), player);
                 } catch (IllegalArgumentException ignored) {
                     // unknown order: nothing
                 }
@@ -295,15 +380,36 @@ public final class AllyPackets {
             }
             case TEACH -> {
                 ResourceLocation id = ResourceLocation.tryParse(arg);
-                JutsuDefinition def = id == null ? null : JutsuData.get(id);
-                boolean knows = ShinobiCapability.get(player).map(d -> id != null && d.jutsu().knows(id)).orElse(false);
-                if (def != null && knows && blocker(ally, def).isEmpty()) {
-                    ally.teach(id);
-                    AllyMind.respect(ally, 5f, "message.noirm.ally.grateful");
-                    player.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
-                            Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+                if (id != null) {
+                    teachOrQueue(player, ally, id);
                 }
             }
+            case TEACH_ALL -> {
+                int count = teachAll(player, ally);
+                player.displayClientMessage(Component.translatable("message.noirm.ally.teach.all", ally.getDisplayName(), count), true);
+            }
+            case NATURE_DEQUEUE -> {
+                com.noirm.clan.Nature nature = AllyState.nature(arg);
+                if (nature != null) {
+                    NatureTeaching.dequeue(ally, nature);
+                }
+            }
+            case OCCUPATION -> {
+                for (Occupation job : Occupation.values()) {
+                    if (job.name().equals(arg)) {
+                        ally.allyState().setOccupation(job);
+                    }
+                }
+            }
+            case BEHAVIOUR -> {
+                for (Behaviour behaviour : Behaviour.values()) {
+                    if (behaviour.name().equals(arg)) {
+                        ally.allyState().setBehaviour(behaviour);
+                    }
+                }
+            }
+            case COME -> CrewBrain.come(ally, player);
+            case FALL_BACK -> CrewBrain.fallBack(ally, player);
             case NATURE_TEACH -> {
                 com.noirm.clan.Nature nature = AllyState.nature(arg);
                 if (nature != null) {

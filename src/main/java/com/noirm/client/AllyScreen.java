@@ -3,7 +3,10 @@ package com.noirm.client;
 import com.noirm.Noirm;
 import com.noirm.ally.AllyMenu;
 import com.noirm.ally.AllyPackets;
+import com.noirm.ally.Behaviour;
+import com.noirm.ally.CrewBrain;
 import com.noirm.ally.NatureTeaching;
+import com.noirm.ally.Occupation;
 import com.noirm.ally.Order;
 import com.noirm.ally.Tactics;
 import com.noirm.clan.Nature;
@@ -45,7 +48,8 @@ import java.util.Map;
  *   <li><b>Gear</b>: what they wear and hold next to your inventory, their moveset and outfit.</li>
  *   <li><b>Jutsu</b>: their loadout, what they know (with mastery) and what you could teach them.</li>
  *   <li><b>Natures</b>: their nature tree; teach them one of yours over time (see {@code NatureTeaching}).</li>
- *   <li><b>Orders</b>: follow / wait / train / meditate, distance and jutsu tactics, fighting style.</li>
+ *   <li><b>Orders</b>: follow / wait / guard / patrol / train / meditate, come and fall back, behaviour, distance and jutsu tactics.</li>
+ *   <li><b>Job</b>: their occupation on the crew (bodyguard, scout, medic…), fighting style, nature energy and what they carry.</li>
  * </ul>
  * Text is laid out from measured widths and cut with "…" where it would run over.
  */
@@ -69,7 +73,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     private static final int[] STAT_COLORS = {0xFFE07040, 0xFF40C8E0, 0xFFE04060, 0xFF4080F0};
 
     private enum Tab {
-        OVERVIEW(0xFFE8C060), GEAR(0xFF7FB2D9), JUTSU(0xFFE0566A), NATURES(0xFF6FD3A0), ORDERS(0xFFB28CF0);
+        OVERVIEW(0xFFE8C060), GEAR(0xFF7FB2D9), JUTSU(0xFFE0566A), NATURES(0xFF6FD3A0), ORDERS(0xFFB28CF0), JOB(0xFFD9A066);
 
         final int accent;
 
@@ -163,6 +167,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             case JUTSU -> drawJutsu(g, mouseX, mouseY);
             case NATURES -> drawNatures(g, mouseX, mouseY, partialTick);
             case ORDERS -> drawOrders(g, mouseX, mouseY);
+            case JOB -> drawJob(g, mouseX, mouseY);
         }
     }
 
@@ -319,6 +324,10 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         y += 12;
         Order order = Order.values()[Mth.clamp(info.order(), 0, Order.values().length - 1)];
         Component doing = Component.translatable(order.key() + ".doing");
+        int job = Mth.clamp(info.extra().occupation(), 0, Occupation.values().length - 1);
+        if (job > 0) {
+            doing = Component.translatable("screen.noirm.ally.doing_job", doing, Component.translatable(Occupation.values()[job].key()));
+        }
         g.drawString(font, fit(doing.getString(), w), x, y, Tab.ORDERS.accent, false);
         y += 11;
         AllyPackets.Lesson lesson = info.extra().lesson();
@@ -502,8 +511,16 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         int tx0 = x0 + half + 6;
         box(g, tx0, ly, half, bottom - ly);
         Component teachTitle = Component.translatable("screen.noirm.ally.teach_from_you");
-        g.drawString(font, fit(teachTitle.getString(), half - 22), tx0 + 5, ly + 4, Tab.JUTSU.accent, false);
         int qx = tx0 + half - 14;
+        // "Teach all": everything they can learn now, and the natures the rest need.
+        Component allLabel = Component.translatable("screen.noirm.ally.teach_all");
+        int aw = font.width(allLabel) + 8;
+        int ax = qx - 3 - aw;
+        boolean anyTeachable = info.teachable().stream().anyMatch(t -> t.blocker().isEmpty() || t.blocker().equals(AllyPackets.VIA_NATURE));
+        pill(g, ax, ly + 2, aw, 12, allLabel, GREEN, anyTeachable, false, mouseX, mouseY);
+        hits.add(new Hit(ax, ly + 2, aw, 12, anyTeachable ? () -> send(AllyPackets.Action.TEACH_ALL, "") : null,
+                List.of(Component.translatable("screen.noirm.ally.teach_all.tip"))));
+        g.drawString(font, fit(teachTitle.getString(), ax - (tx0 + 5) - 4), tx0 + 5, ly + 4, Tab.JUTSU.accent, false);
         g.fill(qx, ly + 3, qx + 10, ly + 13, 0xFF2E2936);
         g.drawCenteredString(font, "?", qx + 5, ly + 4, GOLD);
         hits.add(new Hit(qx, ly + 3, 10, 10, null, List.of(Component.translatable("screen.noirm.ally.teach.rules.title").withStyle(s -> s.withColor(GOLD)),
@@ -520,7 +537,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             int ry = listY + r * teachRowH;
             int rx = tx0 + 3;
             int rw = half - 6 - (teachRows < teachable.size() ? 4 : 0);
-            boolean ok = t.blocker().isEmpty();
+            boolean viaNature = t.blocker().equals(AllyPackets.VIA_NATURE);
+            boolean ok = t.blocker().isEmpty() || viaNature;
             boolean hover = in(mouseX, mouseY, rx, ry, rw, teachRowH - 1);
             g.fill(rx, ry, rx + rw, ry + teachRowH - 1, hover ? CARD_HOVER : CARD);
             natureBadge(g, rx + 2, ry + 2, t.id());
@@ -534,10 +552,13 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             int nameX = rx + 15 + rankW + 4;
             g.drawString(font, fit(jutsuName(t.id()), (ok ? bx : rx + rw) - nameX - 3), nameX, ry + 3, ok ? PAPER : DIM, false);
             if (ok) {
-                pill(g, bx, ry + 2, bw, 14, button, GREEN, true, false, mouseX, mouseY);
+                pill(g, bx, ry + 2, bw, 14, button, viaNature ? GOLD : GREEN, true, false, mouseX, mouseY);
                 hits.add(new Hit(bx, ry + 2, bw, 14, () -> send(AllyPackets.Action.TEACH, t.id().toString()),
-                        List.of(Component.translatable("screen.noirm.ally.teach.tip"))));
-                g.drawString(font, fit(Component.translatable("screen.noirm.ally.teach.ok").getString(), bx - (rx + 15) - 3), rx + 15, ry + 11, 0xFF5E9A6C, false);
+                        List.of(Component.translatable(viaNature ? "screen.noirm.ally.teach.via_nature.tip" : "screen.noirm.ally.teach.tip"))));
+                g.drawString(font, fit(Component.translatable(viaNature ? AllyPackets.VIA_NATURE : "screen.noirm.ally.teach.ok").getString(),
+                        bx - (rx + 15) - 3), rx + 15, ry + 11, viaNature ? 0xFFB89A50 : 0xFF5E9A6C, false);
+            } else if (t.blocker().equals(AllyPackets.PENDING)) {
+                g.drawString(font, fit("⧗ " + Component.translatable(t.blocker()).getString(), rw - 17), rx + 15, ry + 11, 0xFFB89A50, false);
             } else {
                 g.drawString(font, fit("✕ " + Component.translatable(t.blocker()).getString(), rw - 17), rx + 15, ry + 11, 0xFFB07070, false);
             }
@@ -678,6 +699,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
                 case AllyPackets.NATURE_LEARNING -> lerp(darken(color, 0.4f), color, pulse);
                 case AllyPackets.NATURE_TEACHABLE -> lerp(0xFF8A7A3E, GOLD, pulse);
                 case AllyPackets.NATURE_BUSY -> 0xFF6E6240; // teachable once the current lesson ends
+                case AllyPackets.NATURE_QUEUED -> lerp(0xFF6E6240, 0xFFB8A060, pulse * 0.5f);
                 default -> 0xFF47434E;
             };
             boolean chosen = nature == selected;
@@ -692,6 +714,9 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
                 g.drawString(font, "+", px + r - 2, py - r - 3, GOLD, false);
             } else if (s == AllyPackets.NATURE_LEARNING) {
                 g.drawString(font, "…", px + r - 3, py - r - 3, color, false);
+            } else if (s == AllyPackets.NATURE_QUEUED) {
+                int place = queuePlace(nature);
+                g.drawString(font, "#" + place, px + r - 3, py - r - 3, 0xFFB8A060, false);
             }
             if (Math.abs(mouseX - px) <= r && Math.abs(mouseY - py) <= r) {
                 hovered = nature;
@@ -703,7 +728,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         int sx = tx + tw + 6;
         int sw = leftPos + W - 8 - sx;
         box(g, sx, y0, sw, th);
-        int lessonTop = bottom - 102;
+        int lessonTop = bottom - 112;
         Nature shown = hovered != null ? hovered : selected;
         int y = y0 + 5;
         int x = sx + 6;
@@ -727,9 +752,11 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             case AllyPackets.NATURE_TEACHABLE -> "teachable";
             case AllyPackets.NATURE_NEEDS_PARTS -> "parts";
             case AllyPackets.NATURE_BUSY -> "busy";
+            case AllyPackets.NATURE_QUEUED -> "queued";
             default -> "you_lack";
         };
-        int statusColor = s == AllyPackets.NATURE_OWNED ? GREEN : s == AllyPackets.NATURE_TEACHABLE || s == AllyPackets.NATURE_LEARNING ? GOLD : 0xFFB07070;
+        int statusColor = s == AllyPackets.NATURE_OWNED ? GREEN : s == AllyPackets.NATURE_TEACHABLE || s == AllyPackets.NATURE_LEARNING
+                || s == AllyPackets.NATURE_QUEUED ? GOLD : 0xFFB07070;
         if (s == AllyPackets.NATURE_OWNED) {
             float affinity = nature.ordinal() < info.extra().natureAffinity().length ? info.extra().natureAffinity()[nature.ordinal()] : 0f;
             String strength = affinity >= 1.5f ? "primary" : affinity >= 1f ? "secondary" : "trained";
@@ -749,9 +776,16 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
                 y += 10;
             }
         }
+        if (s == AllyPackets.NATURE_QUEUED && y + 14 <= maxY) {
+            Component remove = Component.translatable("screen.noirm.ally.nature.dequeue");
+            pill(g, x, y + 1, w, 14, remove, RED, true, false, mouseX, mouseY);
+            hits.add(new Hit(x, y + 1, w, 14, () -> send(AllyPackets.Action.NATURE_DEQUEUE, nature.getSerializedName()), null));
+            y += 17;
+        }
         if (s == AllyPackets.NATURE_TEACHABLE && y + 14 <= maxY) {
             float days = NatureTeaching.secondsNeeded(nature) / 1200f;
-            Component start = Component.translatable("screen.noirm.ally.nature.start");
+            boolean busy = info.extra().lesson().nature() >= 0;
+            Component start = Component.translatable(busy ? "screen.noirm.ally.nature.queue" : "screen.noirm.ally.nature.start");
             pill(g, x, y + 1, w, 14, start, GOLD, true, false, mouseX, mouseY);
             hits.add(new Hit(x, y + 1, w, 14, () -> send(AllyPackets.Action.NATURE_TEACH, nature.getSerializedName()),
                     List.of(Component.translatable("screen.noirm.ally.nature.start.tip", String.format(Locale.ROOT, "%.1f", days)))));
@@ -784,18 +818,31 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             when = eta((lesson.needed() - lesson.seconds()) / lesson.rate());
             whenColor = PAPER;
         } else {
-            String why = !lesson.has(AllyPackets.PACE_TEACHER_HAS) ? "teacher" : !lesson.has(AllyPackets.PACE_NEAR) ? "far" : "order";
+            String why = !lesson.has(AllyPackets.PACE_TEACHER_HAS) ? "teacher" : "far";
             when = Component.translatable("screen.noirm.ally.lesson.paused." + why, (int) NatureTeaching.TEACH_RANGE);
             whenColor = 0xFFE0A050;
         }
         int stopY = bottom - 14;
-        y = wrap(g, when, x, y, w, stopY - 41, whenColor) + 1;
+        int queueY = stopY - 11;
+        y = wrap(g, when, x, y, w, queueY - 41, whenColor) + 1;
         // What's helping.
-        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_STUDYING), Component.translatable("screen.noirm.ally.lesson.f.order"), stopY);
-        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_NEAR), Component.translatable("screen.noirm.ally.lesson.f.near", (int) NatureTeaching.TEACH_RANGE), stopY);
-        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_FIGHTING), Component.translatable("screen.noirm.ally.lesson.f.fight", "×" + NatureTeaching.FIGHT_BONUS), stopY);
-        factor(g, x, y, w, lesson.has(AllyPackets.PACE_MASTERED), Component.translatable("screen.noirm.ally.lesson.f.mastered",
-                NatureTeaching.MASTERED_STARS, "×" + NatureTeaching.MASTERED_BONUS), stopY);
+        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_STUDYING), Component.translatable("screen.noirm.ally.lesson.f.order"), queueY);
+        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_FIGHTING), Component.translatable("screen.noirm.ally.lesson.f.fight", "×" + NatureTeaching.FIGHT_BONUS), queueY);
+        y = factor(g, x, y, w, lesson.has(AllyPackets.PACE_MASTERED), Component.translatable("screen.noirm.ally.lesson.f.mastered",
+                NatureTeaching.MASTERED_STARS, "×" + NatureTeaching.MASTERED_BONUS), queueY);
+        factor(g, x, y, w, lesson.has(AllyPackets.PACE_TOGETHER), Component.translatable("screen.noirm.ally.lesson.f.together",
+                "×" + NatureTeaching.MEDITATE_TOGETHER_BONUS), queueY);
+        // What's next.
+        byte[] queue = info.extra().queue();
+        if (queue.length > 0) {
+            StringBuilder names = new StringBuilder();
+            for (byte n : queue) {
+                if (n >= 0 && n < Nature.values().length) {
+                    names.append(names.length() > 0 ? ", " : "").append(Component.translatable(Nature.values()[n].translationKey()).getString());
+                }
+            }
+            g.drawString(font, fit(Component.translatable("screen.noirm.ally.lesson.next", names.toString()).getString(), w), x, queueY, DIM, false);
+        }
         Component stop = Component.translatable("screen.noirm.ally.lesson.stop");
         pill(g, x, stopY, w, 13, stop, RED, true, false, mouseX, mouseY);
         hits.add(new Hit(x, stopY, w, 13, () -> send(AllyPackets.Action.NATURE_STOP, ""), List.of(Component.translatable("screen.noirm.ally.lesson.stop.tip"))));
@@ -834,50 +881,81 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         return x + 9 + font.width(label) + 8;
     }
 
+    private int queuePlace(Nature nature) {
+        byte[] queue = info.extra().queue();
+        for (int i = 0; i < queue.length; i++) {
+            if (queue[i] == nature.ordinal()) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
     private static int statusOf(byte[] status, Nature nature) {
         return nature.ordinal() < status.length ? status[nature.ordinal()] : AllyPackets.NATURE_YOU_LACK;
     }
 
     // ---------------------------------------------------------------- Orders
 
+    private static final String[] ORDER_GLYPHS = {"➜", "■", "⚔", "☯", "◆", "↻"};
+    private static final String[] JOB_GLYPHS = {"·", "◆", "⚔", "◎", "✚", "✿"};
+
     private void drawOrders(GuiGraphics g, int mouseX, int mouseY) {
         int x0 = leftPos + 8;
         int y = topPos + 46;
         int full = W - 16;
         int accent = Tab.ORDERS.accent;
-        section(g, x0, y, full, Component.translatable("screen.noirm.ally.orders"));
-        y += 12;
-        Order[] orders = Order.values();
-        int gap = 6;
-        int cw = (full - gap * (orders.length - 1)) / orders.length;
-        int ch = 52;
-        String[] glyphs = {"➜", "■", "⚔", "☯"};
-        for (Order order : orders) {
-            int cx = x0 + order.ordinal() * (cw + gap);
+        // Come / Fall back sit at the right of the section line.
+        Component come = Component.translatable("screen.noirm.ally.come");
+        Component back = Component.translatable("screen.noirm.ally.fall_back");
+        int bw = font.width(back) + 12;
+        int cw0 = font.width(come) + 12;
+        int bx = x0 + full - bw;
+        int cx0 = bx - 4 - cw0;
+        section(g, x0, y, cx0 - x0 - 6, Component.translatable("screen.noirm.ally.orders"));
+        pill(g, cx0, y - 3, cw0, 13, come, accent, true, false, mouseX, mouseY);
+        hits.add(new Hit(cx0, y - 3, cw0, 13, () -> send(AllyPackets.Action.COME, ""), List.of(come,
+                Component.translatable("screen.noirm.ally.come.tip").withStyle(s -> s.withColor(DIM)))));
+        pill(g, bx, y - 3, bw, 13, back, accent, true, false, mouseX, mouseY);
+        hits.add(new Hit(bx, y - 3, bw, 13, () -> send(AllyPackets.Action.FALL_BACK, ""), List.of(back,
+                Component.translatable("screen.noirm.ally.fall_back.tip", CrewBrain.FALL_BACK_TICKS / 20).withStyle(s -> s.withColor(DIM)))));
+        y += 13;
+        Order[] orders = Order.SHOWN;
+        int perRow = 3;
+        int gap = 4;
+        int cw = (full - gap * (perRow - 1)) / perRow;
+        int ch = 30;
+        for (int i = 0; i < orders.length; i++) {
+            Order order = orders[i];
+            int cx = x0 + (i % perRow) * (cw + gap);
+            int cy = y + (i / perRow) * (ch + gap);
             boolean active = info.order() == order.ordinal();
-            boolean hover = in(mouseX, mouseY, cx, y, cw, ch);
-            g.fill(cx, y, cx + cw, y + ch, active ? darken(accent, 0.3f) : hover ? CARD_HOVER : CARD);
-            g.renderOutline(cx, y, cw, ch, active ? accent : hover ? FRAME : RULE);
-            if (active) {
-                g.fill(cx + 1, y + ch - 3, cx + cw - 1, y + ch - 1, accent);
+            card(g, mouseX, mouseY, cx, cy, cw, ch, ORDER_GLYPHS[order.ordinal() % ORDER_GLYPHS.length], Component.translatable(order.key()),
+                    Component.translatable(order.key() + ".desc"), active, accent);
+            List<Component> tip = new ArrayList<>(List.of(Component.translatable(order.key()),
+                    Component.translatable(order.key() + ".desc").withStyle(s -> s.withColor(DIM))));
+            if (order.usesPost()) {
+                tip.add(Component.translatable("screen.noirm.ally.order.post_tip").withStyle(s -> s.withColor(FAINT)));
             }
-            String glyph = glyphs[order.ordinal() % glyphs.length];
-            g.drawString(font, glyph, cx + 5, y + 5, active ? accent : DIM, false);
-            int titleX = cx + 7 + font.width(glyph);
-            g.drawString(font, fit(Component.translatable(order.key()).getString(), cx + cw - 4 - titleX), titleX, y + 5, active ? PAPER : 0xFFCFC6D6, false);
-            wrap(g, Component.translatable(order.key() + ".desc"), cx + 5, y + 17, cw - 9, y + ch - 4, active ? 0xFFD8CCE8 : FAINT);
-            hits.add(new Hit(cx, y, cw, ch, () -> send(AllyPackets.Action.ORDER, order.name()),
-                    List.of(Component.translatable(order.key()), Component.translatable(order.key() + ".desc").withStyle(s -> s.withColor(DIM)))));
+            hits.add(new Hit(cx, cy, cw, ch, () -> send(AllyPackets.Action.ORDER, order.name()), tip));
         }
-        y += ch + 8;
+        y += ((orders.length + perRow - 1) / perRow) * (ch + gap) + 4;
         section(g, x0, y, full, Component.translatable("screen.noirm.ally.tactics"));
         y += 13;
+        Component behaviourLabel = Component.translatable("screen.noirm.ally.behaviour");
         Component rangeLabel = Component.translatable("screen.noirm.ally.range");
         Component jutsuLabel = Component.translatable("screen.noirm.ally.jutsu_use");
-        Component styleLabel = Component.translatable("screen.noirm.ally.style");
-        int labelW = Math.min(90, Math.max(font.width(rangeLabel), Math.max(font.width(jutsuLabel), font.width(styleLabel))) + 8);
+        int labelW = Math.min(90, Math.max(font.width(behaviourLabel), Math.max(font.width(rangeLabel), font.width(jutsuLabel))) + 8);
         int segX = x0 + 4 + labelW;
         int segW = x0 + full - segX;
+        g.drawString(font, fit(behaviourLabel.getString(), labelW - 4), x0 + 4, y + 3, DIM, false);
+        Behaviour[] behaviours = Behaviour.values();
+        for (int i = 0; i < behaviours.length; i++) {
+            Behaviour behaviour = behaviours[i];
+            segment(g, mouseX, mouseY, segX, y, segW, i, behaviours.length, Component.translatable(behaviour.key()), info.extra().behaviour() == i,
+                    () -> send(AllyPackets.Action.BEHAVIOUR, behaviour.name()), Component.translatable(behaviour.key() + ".desc"));
+        }
+        y += 18;
         g.drawString(font, fit(rangeLabel.getString(), labelW - 4), x0 + 4, y + 3, DIM, false);
         Tactics.Range[] ranges = Tactics.Range.values();
         for (int i = 0; i < ranges.length; i++) {
@@ -894,12 +972,54 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
                     () -> send(AllyPackets.Action.JUTSU_USE, use.name()), Component.translatable(use.key() + ".desc"));
         }
         y += 18;
-        // What the current tactics mean, in a line.
-        Component meaning = Component.translatable(Tactics.Range.values()[info.extra().range()].key() + ".desc");
-        g.drawString(font, fit(meaning.getString(), full - 8), x0 + 4, y, FAINT, false);
-        y += 13;
+        // What the current behaviour means, in a line.
+        int b = Mth.clamp(info.extra().behaviour(), 0, behaviours.length - 1);
+        g.drawString(font, fit(Component.translatable(behaviours[b].key() + ".desc").getString(), full - 8), x0 + 4, y, FAINT, false);
+    }
+
+    /** A clickable card: glyph, title and a wrapped description, lit when active. */
+    private void card(GuiGraphics g, int mouseX, int mouseY, int cx, int cy, int cw, int ch, String glyph, Component title, Component desc,
+                      boolean active, int accent) {
+        boolean hover = in(mouseX, mouseY, cx, cy, cw, ch);
+        g.fill(cx, cy, cx + cw, cy + ch, active ? darken(accent, 0.3f) : hover ? CARD_HOVER : CARD);
+        g.renderOutline(cx, cy, cw, ch, active ? accent : hover ? FRAME : RULE);
+        if (active) {
+            g.fill(cx + 1, cy + ch - 2, cx + cw - 1, cy + ch - 1, accent);
+        }
+        g.drawString(font, glyph, cx + 4, cy + 4, active ? accent : DIM, false);
+        int titleX = cx + 6 + font.width(glyph);
+        g.drawString(font, fit(title.getString(), cx + cw - 4 - titleX), titleX, cy + 4, active ? PAPER : 0xFFCFC6D6, false);
+        g.drawString(font, fit(desc.getString(), cw - 8), cx + 4, cy + 16, active ? 0xFFE0D4C0 : FAINT, false);
+    }
+
+    // ---------------------------------------------------------------- Job
+
+    private void drawJob(GuiGraphics g, int mouseX, int mouseY) {
+        int x0 = leftPos + 8;
+        int y = topPos + 46;
+        int full = W - 16;
+        int accent = Tab.JOB.accent;
+        section(g, x0, y, full, Component.translatable("screen.noirm.ally.job"));
+        y += 12;
+        Occupation[] jobs = Occupation.values();
+        int perRow = 3;
+        int gap = 4;
+        int cw = (full - gap * (perRow - 1)) / perRow;
+        int ch = 30;
+        for (int i = 0; i < jobs.length; i++) {
+            Occupation job = jobs[i];
+            int cx = x0 + (i % perRow) * (cw + gap);
+            int cy = y + (i / perRow) * (ch + gap);
+            boolean active = info.extra().occupation() == i;
+            card(g, mouseX, mouseY, cx, cy, cw, ch, JOB_GLYPHS[i % JOB_GLYPHS.length], Component.translatable(job.key()),
+                    Component.translatable(job.key() + ".desc"), active, accent);
+            hits.add(new Hit(cx, cy, cw, ch, () -> send(AllyPackets.Action.OCCUPATION, job.name()), List.of(Component.translatable(job.key()),
+                    Component.translatable(job.key() + ".desc").withStyle(s -> s.withColor(DIM)))));
+        }
+        y += ((jobs.length + perRow - 1) / perRow) * (ch + gap) + 4;
         // Fighting style (their own; a weapon in hand brings its moveset instead).
-        g.drawString(font, fit(styleLabel.getString(), labelW - 4), x0 + 4, y + 3, DIM, false);
+        section(g, x0, y, full, Component.translatable("screen.noirm.ally.style"));
+        y += 12;
         List<String> styles = info.styles();
         int index = styles.indexOf(info.style());
         Runnable prev = null;
@@ -910,11 +1030,24 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             prev = () -> send(AllyPackets.Action.STYLE, p);
             next = () -> send(AllyPackets.Action.STYLE, n);
         }
-        chooser(g, mouseX, mouseY, segX, y, segW, null, Component.translatable("style.noirm." + info.style()), prev, next, accent);
-        y += 16;
+        int half = (full - 8) / 2;
+        chooser(g, mouseX, mouseY, x0, y, half, null, Component.translatable("style.noirm." + info.style()), prev, next, accent);
         if (!info.extra().weaponStyle().isEmpty()) {
             Component note = Component.translatable("screen.noirm.ally.moveset.weapon", Component.translatable("style.noirm." + info.extra().weaponStyle()));
-            g.drawString(font, fit(note.getString(), segW), segX, y, Tab.JUTSU.accent, false);
+            g.drawString(font, fit(note.getString(), half), x0 + half + 8, y + 3, Tab.JUTSU.accent, false);
+        }
+        y += 20;
+        // Nature energy (gathered while meditating, for sage mode later) and what they carry.
+        section(g, x0, y, full, Component.translatable("screen.noirm.ally.reserves"));
+        y += 12;
+        resource(g, x0, y, half, "screen.noirm.ally.nature_energy", info.extra().natureEnergy(), CrewBrain.MAX_NATURE_ENERGY, 0xFF7FD36A);
+        hits.add(new Hit(x0, y, half, 16, null, List.of(Component.translatable("screen.noirm.ally.nature_energy"),
+                Component.translatable("screen.noirm.ally.nature_energy.tip").withStyle(s -> s.withColor(DIM)))));
+        Component carried = Component.translatable("screen.noirm.ally.carried", info.extra().carried(), CrewBrain.GATHER_STACKS);
+        g.drawString(font, fit(carried.getString(), half), x0 + half + 8, y, info.extra().carried() > 0 ? PAPER : DIM, false);
+        if (info.extra().pendingJutsu() > 0) {
+            Component pending = Component.translatable("screen.noirm.ally.pending_count", info.extra().pendingJutsu());
+            g.drawString(font, fit(pending.getString(), half), x0 + half + 8, y + 10, GOLD, false);
         }
     }
 
