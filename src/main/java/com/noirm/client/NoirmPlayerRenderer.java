@@ -33,7 +33,8 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
                 new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), context.getModelManager()));
         addLayer(new SharinganEyesLayer<>(this));
         addLayer(new WeaponTrails.Layer<>(this)); // blade arcs through the air
-        addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot and cuts
+        addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot, cuts and blood
+        addLayer(new GoreArmorLayer<>(this)); // and on worn clothes
         addLayer(new HairVolumeLayer(this)); // character creation: fuller hair
     }
 

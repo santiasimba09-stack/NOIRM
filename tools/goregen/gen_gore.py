@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Gore textures for NOIRM (blueprint section 7), v2: damage marks, blood, ground decals, wounds.
 
+Style: docs/ART_STYLE.md, "raw and tough". Ink first: hard edges, two or three flat tones, gritty
+grain at the output resolution, flung specks and dry-brush streaks instead of soft gradients.
+Blood is deep red with near-black clots (the client darkens it further as it dries).
+
 Drawn at SCALE x the Minecraft layout (the owner's art direction: 4x, so 256x256 for the 64x64
 skin layout and 256x128 for the 64x32 armor layout). Every brush works in layout pixels and is
 sampled per output pixel, so the marks keep their shape at any SCALE (try --scale 1 or 8).
@@ -9,22 +13,21 @@ Body marks (player-skin layout, painted on the skin's OUTER layer regions: hat, 
 sleeves, pants), three nested stages per kind: stage 2 holds every mark of stage 1 (a little
 bigger) plus new ones. client/GoreMarksLayer draws the stage reached and fades in the next.
 
-    bruise  plum and blue blotches with yellow-green edges (fists, blunt hits)
-    dirt    brown speckled grime, mostly low on the legs (falls, knockdowns, earth)
-    soot    charcoal smudges (fire, blasts, lightning)
-    cut     dark-red slashes that weep a little (blades, kunai, wind)
-    blood   splatters with drips running down from them (drawn bright red; the client tints it
-            darker as it dries)
+    bruise  dark plum blotches with ragged olive edges (fists, blunt hits)
+    dirt    gritty grime and dragged streaks, mostly low on the legs (falls, knockdowns, earth)
+    soot    ink-black burns breaking into grain, ash flecks and scorch scratches (fire, blasts)
+    cut     black gashes with a red lip that weep and drip (blades, kunai, wind)
+    blood   torn splatters with clots, flung specks and drips running down
 
 Clothing marks (armor layout, 64x32 at 1x): the same marks, minus bruises, on the head, body,
-arm and leg rects, so worn gear gets dirty, burnt, torn and bloody too (client/GoreArmorLayer).
+arm and leg rects, so worn gear gets dirty, burnt, torn and bloody too (client/GoreArmorLayer;
+the client only draws them where the piece itself has cloth or metal).
 
-Ground decals (blood_decals.png, 4x2 cells of 16x16 at 1x): six splat shapes and two pools,
-drawn bright red (tinted darker as they dry). Particles: blood_drop_0..2. Wound cap: wound.png.
+Ground decals (blood_decals.png, 4x2 cells of 16x16 at 1x): six splat shapes and two pools.
+Particles: blood_drop_0..2. Wound cap: wound.png.
 
-Palette from the blueprint's "ash, iron and chakra": soot #17191D, charcoal #292D33, ash #565B60.
-All art is drawn by the code below (no franchise or NYDO assets). Standard library only.
-Run from the repo root:  python3 tools/goregen/gen_gore.py [--scale 4]
+All art is drawn by the code below (no franchise or NYDO assets, no reference images).
+Standard library only. Run from the repo root:  python3 tools/goregen/gen_gore.py [--scale 4]
 """
 import argparse
 import math
@@ -57,6 +60,11 @@ KINDS = {
 ARMOR_KINDS = ("dirt", "soot", "cut", "blood")
 STAGES = 3
 
+INK = hx("120A0B")         # near-black
+BLOOD_DEEP = hx("7C070C")  # deep red
+BLOOD_RED = hx("A50D14")   # the lit red of a wet splash
+BLOOD_CLOT = hx("2E0306")  # red-black
+
 
 # --------------------------------------------------------------------------- helpers
 
@@ -70,6 +78,20 @@ def smooth(x, y, seed):
     c = noise(x0, y0 + 1, seed)
     d = noise(x0 + 1, y0 + 1, seed)
     return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty
+
+
+def grain(px, py, seed):
+    """Per output pixel: 0-1 grit that makes flat ink look printed and rough."""
+    return noise(px, py, seed)
+
+
+def ragged(fx, fy, cx, cy, r, seed, rough=0.55, freq=2.4):
+    """Distance from (cx, cy) as a share of a torn edge of about r: below 1 is inside."""
+    dx, dy = fx - cx, fy - cy
+    ang = math.atan2(dy, dx)
+    # sample the edge noise around a circle so it wraps without a seam
+    edge = r * (1 - rough / 2 + rough * smooth(math.cos(ang) * freq + 10, math.sin(ang) * freq + 10, seed))
+    return math.hypot(dx, dy) / max(edge, 1e-3)
 
 
 class Face:
@@ -120,119 +142,144 @@ def place(rng, kind):
             "angle": rng.random() * math.pi, "len": rng.uniform(3, 6.5), "drips": rng.randint(0, 3)}
 
 
-# --------------------------------------------------------------------------- brushes
-# Each brush draws mark m on face f; grow (0.2-1) is how far it has spread by this stage.
-
-def bruise(f, m, grow):
-    r = 1.9 + 1.4 * grow + (m["seed"] % 3) * 0.35
-    core, mid, edge = hx("3E1E3E"), hx("553F72"), hx("72763A")
-    for px, py, fx, fy in f.area(m["x"], m["y"], r + 1):
-        d = math.hypot(fx - m["x"], (fy - m["y"]) * 1.1) + (smooth(fx * 1.3, fy * 1.3, m["seed"]) - 0.5) * 1.2
-        if d > r:
-            continue
-        t = d / r
-        c = mix(core, mid, min(1, t * 1.6)) if t < 0.65 else mix(mid, edge, (t - 0.65) / 0.35)
-        a = int((240 - 80 * t) * (0.82 + 0.18 * grow))
-        f.put(px, py, c + (a,))
-
-
-def dirt(f, m, grow):
-    r = 2.4 + 1.6 * grow
-    tones = (hx("54402A"), hx("3A2C1E"), hx("6A563A"), hx("46382A"))
-    for px, py, fx, fy in f.area(m["x"], m["y"], r):
-        d = math.hypot((fx - m["x"]) * 0.8, fy - m["y"])
-        if d > r:
-            continue
-        n = noise(px, py, m["seed"])  # grit at the output resolution
-        blot = smooth(fx * 1.7, fy * 1.7, m["seed"] + 9)
-        if n * 0.6 + blot * 0.6 < 0.3 + 0.35 * (d / r) - 0.1 * grow:
-            continue
-        c = tones[int(n * 97) % len(tones)]
-        a = int(150 + 95 * blot * (0.8 + 0.2 * grow))
-        f.put(px, py, c + (min(235, a),))
-
-
-def soot(f, m, grow):
-    r = 2.6 + 1.6 * grow
-    dark, char, ash = hx("141518"), hx("26292E"), hx("565B60")
-    for px, py, fx, fy in f.area(m["x"], m["y"], r + 1.5):
-        d = math.hypot(fx - m["x"], (fy - m["y"]) * 0.9) + (smooth(fx * 1.2, fy * 1.2, m["seed"] + 3) - 0.5) * 2.0
-        if d > r:
-            continue
-        t = d / r
-        c = mix(dark, char, t) if noise(px, py, m["seed"]) > 0.15 else ash
-        a = int((248 - 110 * t) * (0.82 + 0.18 * grow))
-        f.put(px, py, c + (max(70, a),))
-
-
 def segment_distance(fx, fy, ax, ay, bx, by):
     vx, vy = bx - ax, by - ay
     t = max(0.0, min(1.0, ((fx - ax) * vx + (fy - ay) * vy) / max(1e-6, vx * vx + vy * vy)))
     return math.hypot(fx - (ax + vx * t), fy - (ay + vy * t)), t
 
 
-def cut(f, m, grow):
-    length = m["len"] * (0.8 + 0.3 * grow)
-    ddx, ddy = math.cos(m["angle"]), math.sin(m["angle"])
-    ax, ay = m["x"] - ddx * length / 2, m["y"] - ddy * length / 2
-    bx, by = m["x"] + ddx * length / 2, m["y"] + ddy * length / 2
-    core, dark, lip, seep = hx("5A070A"), hx("3A0406"), hx("B04044"), hx("8E1216")
-    width = 0.32 + 0.16 * grow
-    for px, py, fx, fy in f.area(m["x"], m["y"], length / 2 + 1.5):
-        d, t = segment_distance(fx, fy, ax, ay, bx, by)
-        taper = 1 - abs(t - 0.5) * 1.4  # thin at the ends
-        w = width * max(0.25, taper)
-        if d < w:
-            f.put(px, py, (core if d < w * 0.6 else dark) + (245,))
-        elif d < w + 0.35 and grow > 0.3:
-            f.put(px, py, lip + (int(120 * (1 - (d - w) / 0.35)),))  # torn edge
-        elif d < w + 0.9 * grow:
-            f.put(px, py, seep + (int(70 * (1 - (d - w) / (0.9 * grow))),))  # blood seeping out
-    if grow > 0.6:  # an old cut has bled a little
-        drip(f, m["x"], m["y"] + 0.2, 1.5 + 2 * grow, 0.3, m["seed"] + 1, hx("7E0E12"))
+def specks(f, cx, cy, r, count, rng, colour, size=(0.12, 0.35), reach=(1.05, 2.1)):
+    """Flung droplets around a blot (some stretched away from it, like a splash)."""
+    for _ in range(count):
+        a = rng.random() * math.tau
+        dist = r * rng.uniform(*reach)
+        sx, sy = cx + math.cos(a) * dist, cy + math.sin(a) * dist
+        sr = rng.uniform(*size)
+        tail = rng.random() < 0.35
+        for px, py, fx, fy in f.area(sx, sy, sr * (2.6 if tail else 1) + 0.2):
+            dx, dy = fx - sx, fy - sy
+            if tail:
+                along = dx * math.cos(a) + dy * math.sin(a)
+                across = -dx * math.sin(a) + dy * math.cos(a)
+                inside = (along / (sr * 2.4)) ** 2 + (across / (sr * 0.7)) ** 2 < 1
+            else:
+                inside = math.hypot(dx, dy) < sr
+            if inside:
+                f.put(px, py, colour + (255,))
 
 
-def drip(f, x, y, length, width, seed, colour):
-    """A run of blood down the face from (x, y): it wanders a little and ends in a bead."""
+# --------------------------------------------------------------------------- brushes
+# Each brush draws mark m on face f; grow (0.25-1) is how far it has spread by this stage.
+
+def bruise(f, m, grow):
+    r = 1.9 + 1.5 * grow + (m["seed"] % 3) * 0.35
+    core, mid, edge = hx("1E0E20"), hx("40284E"), hx("4E5028")
+    for px, py, fx, fy in f.area(m["x"], m["y"], r * 1.4):
+        t = ragged(fx, fy, m["x"], m["y"], r, m["seed"], 0.7, 1.8)
+        if t > 1:
+            continue
+        g = grain(px, py, m["seed"])
+        if t > 0.75 and g < 0.45:
+            continue  # a rough, broken edge
+        c = core if t < 0.45 else mid if t < 0.78 else edge
+        f.put(px, py, c + (int(220 + 30 * grow) if g > 0.12 else 170,))
+
+
+def dirt(f, m, grow):
+    r = 2.4 + 1.7 * grow
+    tones = (hx("3A2A1A"), hx("21180F"), hx("4E3C26"))
+    for px, py, fx, fy in f.area(m["x"], m["y"], r * 1.3):
+        t = ragged(fx, fy, m["x"], m["y"], r, m["seed"], 0.8, 2.0)
+        if t > 1:
+            continue
+        g = grain(px, py, m["seed"])
+        if g < 0.25 + 0.5 * t - 0.15 * grow:
+            continue  # grit, denser in the middle
+        f.put(px, py, tones[int(g * 7) % 3] + (230,))
+    rng = random.Random(m["seed"])  # dry-brush streaks: dirt dragged down the cloth
+    for _ in range(int(1 + 2 * grow)):
+        sx = m["x"] + rng.uniform(-r, r) * 0.7
+        length = rng.uniform(1.0, 2.5) * (1 + grow)
+        for px, py, fx, fy in f.area(sx, m["y"] + length / 2, length / 2 + 0.3):
+            if abs(fx - sx) < 0.18 and m["y"] <= fy <= m["y"] + length and grain(px, py, m["seed"] + 5) > 0.35:
+                f.put(px, py, tones[1] + (220,))
+
+
+def soot(f, m, grow):
+    r = 2.6 + 1.7 * grow
+    for px, py, fx, fy in f.area(m["x"], m["y"], r * 1.5):
+        t = ragged(fx, fy, m["x"], m["y"], r, m["seed"] + 3, 0.9, 2.2)
+        if t > 1.15:
+            continue
+        g = grain(px, py, m["seed"])
+        if t > 0.7 and g < (t - 0.7) * 2.2:
+            continue  # burnt edges break up into grain
+        c = INK if t < 0.6 or g > 0.85 else hx("2A2C30")
+        if g < 0.04:
+            c = hx("6A6E72")  # flecks of ash
+        f.put(px, py, c + (250 if t < 0.6 else 215,))
+    rng = random.Random(m["seed"] + 1)  # scorch scratches
+    for _ in range(int(2 + 3 * grow)):
+        a = rng.uniform(-0.6, 0.6) - math.pi / 2
+        length = rng.uniform(1.0, 2.8)
+        ax, ay = m["x"] + rng.uniform(-r, r) * 0.6, m["y"] + rng.uniform(-r, r) * 0.6
+        bx, by = ax + math.cos(a) * length, ay + math.sin(a) * length
+        for px, py, fx, fy in f.area((ax + bx) / 2, (ay + by) / 2, length / 2 + 0.3):
+            if segment_distance(fx, fy, ax, ay, bx, by)[0] < 0.12:
+                f.put(px, py, INK + (255,))
+
+
+def drip(f, x, y, length, width, seed):
+    """A run of blood down the face from (x, y): wanders a little, thins, ends in a dark bead."""
     for px, py, fx, fy in f.area(x, y + length / 2, length / 2 + width + 1.2):
         if fy < y:
             continue
         along = fy - y
-        cx = x + (smooth(0.0, along * 0.6, seed) - 0.5) * 0.9
-        thin = width * (1 - 0.35 * along / max(length, 0.1))
+        cx = x + (smooth(0.0, along * 0.6, seed) - 0.5) * 0.8
+        thin = width * (1 - 0.45 * along / max(length, 0.1))
         if along <= length and abs(fx - cx) < thin:
-            f.put(px, py, colour + (235,))
-        elif abs(along - length) < width * 1.6 and math.hypot(fx - cx, (along - length) * 1.1) < width * 1.5:
-            f.put(px, py, mix(colour, hx("4E0608"), 0.4) + (240,))  # the bead at the end
+            f.put(px, py, (BLOOD_DEEP if abs(fx - cx) < thin * 0.55 else BLOOD_CLOT) + (255,))
+        elif math.hypot(fx - cx, (along - length) * 1.1) < width * 1.35:
+            f.put(px, py, BLOOD_CLOT + (255,))  # the bead at the end
 
 
-def blood(f, m, grow, side=True):
-    """A splatter: an irregular blot, satellite droplets, and drips running down (side faces)."""
-    r = 1.1 + 1.6 * grow + (m["seed"] % 4) * 0.2
-    bright, deep = hx("B3171C"), hx("6E080C")
-    for px, py, fx, fy in f.area(m["x"], m["y"], r + 1.5):
-        dx, dy = fx - m["x"], fy - m["y"]
-        ang = math.atan2(dy, dx)
-        edge = r * (0.7 + 0.6 * smooth(ang * 2.2 + 10, m["seed"] % 97, m["seed"]))
-        d = math.hypot(dx, dy)
-        if d > edge:
+def cut(f, m, grow):
+    """An ink slash: a black gash with a red-black lip, blood smeared along it, weeping down."""
+    length = m["len"] * (0.8 + 0.3 * grow)
+    ddx, ddy = math.cos(m["angle"]), math.sin(m["angle"])
+    ax, ay = m["x"] - ddx * length / 2, m["y"] - ddy * length / 2
+    bx, by = m["x"] + ddx * length / 2, m["y"] + ddy * length / 2
+    width = 0.3 + 0.18 * grow
+    for px, py, fx, fy in f.area(m["x"], m["y"], length / 2 + 1.2):
+        d, t = segment_distance(fx, fy, ax, ay, bx, by)
+        w = width * max(0.15, 1 - abs(t - 0.5) * 1.6)  # knife-thin at the ends
+        if d < w * 0.55:
+            f.put(px, py, INK + (255,))
+        elif d < w:
+            f.put(px, py, BLOOD_CLOT + (255,))
+        elif d < w + 0.3 + 0.4 * grow and grain(px, py, m["seed"]) > 0.45:
+            f.put(px, py, BLOOD_DEEP + (235,))
+    if grow > 0.4:
+        drip(f, m["x"], m["y"], 1.5 + 3 * grow, 0.26, m["seed"] + 1)
+
+
+def blood(f, m, grow):
+    """A splatter: a torn blot (deep red, near-black clots), flung specks, drips running down."""
+    r = 1.1 + 1.7 * grow + (m["seed"] % 4) * 0.2
+    for px, py, fx, fy in f.area(m["x"], m["y"], r * 1.4):
+        t = ragged(fx, fy, m["x"], m["y"], r, m["seed"], 0.75, 2.8)
+        if t > 1:
             continue
-        t = d / edge
-        f.put(px, py, mix(deep, bright, min(1, t * 1.3)) + (int(250 - 40 * t),))
+        g = grain(px, py, m["seed"])
+        clot = smooth(fx * 1.6, fy * 1.6, m["seed"] + 7) > 0.68
+        c = BLOOD_CLOT if clot or t > 0.86 else (BLOOD_RED if g > 0.93 else BLOOD_DEEP)
+        f.put(px, py, c + (255,))
     rng = random.Random(m["seed"])
-    for _ in range(int(3 + 5 * grow)):  # flung droplets around the blot
-        a = rng.random() * math.tau
-        dist = r * rng.uniform(1.1, 2.0)
-        sx, sy = m["x"] + math.cos(a) * dist, m["y"] + math.sin(a) * dist
-        sr = rng.uniform(0.18, 0.45)
-        for px, py, fx, fy in f.area(sx, sy, sr):
-            if math.hypot(fx - sx, fy - sy) < sr:
-                f.put(px, py, bright + (240,))
-    if side:
-        for i in range(m["drips"] + (1 if grow > 0.7 else 0)):
-            off = (rng.random() - 0.5) * r * 1.2
-            drip(f, m["x"] + off, m["y"] + r * 0.5, rng.uniform(1.5, 3.0) + 4.5 * grow * rng.random(),
-                 rng.uniform(0.22, 0.42), m["seed"] + 17 * i, mix(deep, bright, 0.55))
+    specks(f, m["x"], m["y"], r, int(5 + 8 * grow), rng, BLOOD_DEEP)
+    for i in range(m["drips"] + (1 if grow > 0.7 else 0)):
+        off = (rng.random() - 0.5) * r * 1.2
+        drip(f, m["x"] + off, m["y"] + r * 0.4, rng.uniform(1.5, 3.0) + 5 * grow * rng.random(),
+             rng.uniform(0.2, 0.4), m["seed"] + 17 * i)
 
 
 BRUSHES = {"bruise": bruise, "dirt": dirt, "soot": soot, "cut": cut, "blood": blood}
@@ -268,70 +315,68 @@ def build(kind, armor):
 
 
 def decals():
-    """Ground blood: 4x2 cells of 16x16 layout pixels. 0-5 splats, 6-7 pools."""
+    """Ground blood: 4x2 cells of 16x16 layout pixels. 0-5 splats, 6-7 pools. The quad turns
+    freely, so everything stays inside the circle the cell's corners never clip."""
     cv = Canvas(64 * S, 32 * S)
-    bright, deep, sheen = hx("A8141A"), hx("62070B"), hx("D04A4E")
     for cell in range(8):
         f = Face(cv, ((cell % 4) * 16, (cell // 4) * 16, 16, 16))
         rng = random.Random(100 + cell)
         seed = rng.randrange(1 << 20)
         pool = cell >= 6
-        # Keep a margin so nothing touches the cell edge (the quad is rotated freely).
-        r = 5.2 if pool else rng.uniform(2.6, 4.0)
-        stretch = 1.0 if pool else rng.uniform(1.0, 1.6)  # an elongated spray from a slanted hit
+        r = 5.0 if pool else rng.uniform(2.3, 3.6)
+        stretch = 1.0 if pool else rng.uniform(1.0, 1.7)  # an elongated splash from a slanted hit
         for px, py, fx, fy in f.area(8, 8, 8):
-            dx, dy = (fx - 8) / stretch, fy - 8
-            ang = math.atan2(dy, dx)
-            wobble = 0.65 + 0.7 * smooth(ang * (1.6 if pool else 2.6) + 20, cell * 3.1, seed)
-            d = math.hypot(dx, dy)
-            edge = r * wobble
-            if d > edge:
+            t = ragged(8 + (fx - 8) / stretch, fy, 8, 8, r, seed, 0.6 if pool else 0.8, 1.7 if pool else 3.0)
+            if t > 1:
                 continue
-            t = d / edge
-            c = mix(deep, bright, min(1, t * 1.2)) if pool else mix(bright, deep, t * 0.6)
-            a = 235 if pool else int(245 - 40 * t)
-            if pool and t > 0.86:
-                c = mix(c, deep, 0.6)  # a darker rim where it starts to dry
-            if pool and 0.2 < t < 0.5 and smooth(fx * 1.5, fy * 1.5, seed + 4) > 0.78:
-                c = mix(c, sheen, 0.5)  # a wet sheen
-            f.put(px, py, c + (a,))
-        for _ in range(rng.randint(5, 9) if not pool else rng.randint(3, 6)):
+            g = grain(px, py, seed)
+            clot = smooth(fx * 1.1, fy * 1.1, seed + 7) > (0.62 if pool else 0.7)
+            if pool:
+                c = BLOOD_CLOT if t > 0.82 or clot else BLOOD_DEEP
+                if 0.25 < t < 0.55 and smooth(fx * 1.4, fy * 1.4, seed + 4) > 0.8 and g > 0.3:
+                    c = BLOOD_RED  # a wet glint
+            else:
+                c = BLOOD_CLOT if clot or t > 0.85 else (BLOOD_RED if g > 0.9 else BLOOD_DEEP)
+            f.put(px, py, c + (255,))
+        for _ in range(rng.randint(10, 18) if not pool else rng.randint(5, 9)):
             a = rng.random() * math.tau
-            dist = r * rng.uniform(1.1, 1.65)
+            dist = r * rng.uniform(1.1, 1.75)
             sx, sy = 8 + math.cos(a) * dist * stretch, 8 + math.sin(a) * dist
-            sr = rng.uniform(0.3, 0.8)
-            if math.hypot(sx - 8, sy - 8) + sr > 7.4:
+            sr = rng.uniform(0.15, 0.6)
+            if math.hypot(sx - 8, sy - 8) + sr > 7.5:
                 continue
             for px, py, fx, fy in f.area(sx, sy, sr):
                 if math.hypot(fx - sx, fy - sy) < sr:
-                    f.put(px, py, bright + (240,))
+                    f.put(px, py, (BLOOD_DEEP if sr > 0.3 else BLOOD_CLOT) + (255,))
     cv.save(os.path.join(OUT, "blood_decals.png"))
 
 
 def particles():
-    """Falling blood droplets: 4x4 layout pixels each."""
+    """Falling blood droplets: 4x4 layout pixels each, a deep red bead with a dark rim."""
     for i in range(3):
         cv = Canvas(4 * S, 4 * S)
         f = Face(cv, (0, 0, 4, 4))
         r = (1.0, 1.35, 1.7)[i]
         for px, py, fx, fy in f.area(2, 2, 2):
-            d = math.hypot(fx - 2, (fy - 2) * (0.85 if i == 2 else 1.0))
+            d = math.hypot(fx - 2, (fy - 2) * (0.8 if i == 2 else 1.0))
             if d < r:
-                f.put(px, py, mix(hx("C21E24"), hx("6A080C"), d / r) + (255,))
+                f.put(px, py, (BLOOD_RED if d < r * 0.35 else BLOOD_DEEP if d < r * 0.75 else BLOOD_CLOT) + (255,))
         cv.save(os.path.join(PARTICLES, "blood_drop_%d.png" % i))
 
 
 def wound():
+    """The raw cut at a stump: a red-black rim, torn flesh, a bone-white core."""
     cv = Canvas(16 * S, 16 * S)
     f = Face(cv, (0, 0, 16, 16))
-    rim, flesh, deep, bone = hx("5A0A0C"), hx("9A2A2C"), hx("6E1416"), hx("D8CCB4")
+    flesh, bone = hx("8A1A1E"), hx("D8CCB4")
     for px, py, fx, fy in f.area(8, 8, 8):
-        d = math.hypot(fx - 8, fy - 8) / 8
+        t = ragged(fx, fy, 8, 8, 8.5, 5, 0.25, 2.0)
         n = smooth(fx * 1.4, fy * 1.4, 5)
-        if d > 0.85:
-            c = mix(rim, deep, n * 0.5)
-        elif d > 0.32:
-            c = mix(flesh, deep, n * 0.7)
+        g = grain(px, py, 5)
+        if t > 0.8:
+            c = BLOOD_CLOT if g > 0.2 else INK
+        elif t > 0.3:
+            c = BLOOD_DEEP if n < 0.55 else (flesh if g > 0.3 else BLOOD_CLOT)
         else:
             c = bone if n > 0.3 else mix(bone, flesh, 0.5)
         f.put(px, py, c + (255,))
