@@ -90,8 +90,8 @@ def layers(f, looks):
     if wraps & 2:
         out.append(("arm_wraps", None))
     out.append(("sandals", None))
+    out.append(("iris_" + f["eyes"], f["eye_color"]))  # the iris sits under the eye (lids, lashes, shine)
     out.append(("eyes_" + f["eyes"], None))
-    out.append(("iris_" + f["eyes"], f["eye_color"]))
     out.append(("brows_" + f["brows"], f["hair_color"]))
     out.append(("hair_" + f["hair_style"], f["hair_color"]))
     if f["accessory"] != "none":
@@ -100,17 +100,36 @@ def layers(f, looks):
     return out
 
 
-def compose(f, looks, parts_dir):
-    cv = Canvas(64, 64)
+def compose_array(f, looks, parts_dir):
+    """The composed skin as an RGBA numpy array, at the parts' resolution (256x256 for 4x parts)."""
+    import numpy as np
+    out = None
     for name, colour in layers(f, looks):
         src = part(parts_dir, name)
         if src is None:
             continue
-        c = hx(colour) if colour else None
-        for y in range(64):
-            for x in range(64):
-                p = src.px[y][x]
-                if p[3] == 0:
-                    continue
-                cv.blend(x, y, tint(c, p) if c else p)
+        p = np.array(src.px, np.float32)  # rows of (r, g, b, a)
+        if out is None:
+            out = np.zeros_like(p)
+        if colour:
+            c = np.array(hx(colour), np.float32)
+            k = (p[..., 0:1] - 128) / 40.0
+            rgb = np.where(k >= 0, np.minimum(255, np.floor(c * (1 + 0.13 * k) + 14 * k)),
+                           np.maximum(0, np.floor(c * (1 + 0.2 * k))))
+        else:
+            rgb = p[..., :3]
+        sa = p[..., 3:4] / 255.0
+        da = out[..., 3:4] / 255.0
+        oa = sa + da * (1 - sa)
+        safe = np.where(oa > 0, oa, 1)
+        out[..., :3] = np.where(oa > 0, (rgb * sa + out[..., :3] * da * (1 - sa)) / safe, out[..., :3])
+        out[..., 3:4] = oa * 255
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def compose(f, looks, parts_dir):
+    """The composed skin as a pixlib Canvas (same size as the parts)."""
+    arr = compose_array(f, looks, parts_dir)
+    cv = Canvas(arr.shape[1], arr.shape[0])
+    cv.px = [[tuple(int(v) for v in px) for px in row] for row in arr]
     return cv

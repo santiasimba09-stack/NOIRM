@@ -229,10 +229,132 @@ public final class CreatorGameTests {
     public static void creationIsOnByDefault(GameTestHelper helper) {
         helper.assertTrue(CharacterCreator.enabled(helper.getLevel().getServer()), "noirmCharacterCreation defaults to true");
         for (PlayerLook.Slot slot : PlayerLook.Slot.values()) {
-            helper.assertTrue(slot.size() >= 2 && slot.size() <= 127, slot.key() + " has options");
+            // top, bottom and feet are retired (clothes are gear now) and keep a single "nothing" option
+            boolean retired = slot == PlayerLook.Slot.TOP || slot == PlayerLook.Slot.BOTTOM || slot == PlayerLook.Slot.FEET;
+            helper.assertTrue(slot.size() >= (retired ? 1 : 2) && slot.size() <= 127, slot.key() + " has options");
         }
         List<String> hair = List.of("spiky", "long", "none");
         hair.forEach(h -> helper.assertTrue(PlayerLook.Slot.HAIR.indexOf(h) >= 0, "hair option " + h));
         helper.succeed();
+    }
+
+    /** New characters start in just their underwear: no top, no bottom, bare feet (clothes are gear). */
+    @GameTest(template = "empty", batch = "noirm_creator")
+    public static void newCharactersStartInUnderwear(GameTestHelper helper) {
+        RandomSource random = RandomSource.create(5);
+        java.util.List<PlayerLook> looks = new java.util.ArrayList<>();
+        looks.add(new PlayerLook());
+        for (int i = 0; i < 60; i++) {
+            looks.add(PlayerLook.random(random));
+        }
+        FakePlayer player = newcomer(helper);
+        ShinobiData data = data(player);
+        CharacterCreator.beginFirstJoin(player, data);
+        helper.assertTrue(data.creator().hasLook(), "a newcomer gets a starting look");
+        looks.add(data.creator().look());
+        for (PlayerLook look : looks) {
+            helper.assertTrue(look.id(PlayerLook.Slot.TOP).equals("none") && look.id(PlayerLook.Slot.BOTTOM).equals("none")
+                    && look.id(PlayerLook.Slot.FEET).equals("bare"), "no clothes on a new look: " + look);
+        }
+        helper.succeed();
+    }
+
+    /** A look saved before characters started in underwear (with base clothes) loads without them, the rest kept. */
+    @GameTest(template = "empty", batch = "noirm_creator")
+    public static void oldLooksWithClothesLoadInUnderwear(GameTestHelper helper) {
+        net.minecraft.nbt.CompoundTag tag = new PlayerLook().save();
+        tag.putString("top", "turtleneck");
+        tag.putString("bottom", "long");
+        tag.putString("feet", "sandals");
+        tag.putString("eyes", "sharp");
+        tag.putString("hair", "spiky");
+        tag.putString("underwear", "fundoshi");
+        tag.putInt("top_color", 0x3E7A2E);
+        PlayerLook look = PlayerLook.load(tag);
+        helper.assertTrue(look.id(PlayerLook.Slot.TOP).equals("none"), "the old top is dropped");
+        helper.assertTrue(look.id(PlayerLook.Slot.BOTTOM).equals("none"), "the old pants are dropped");
+        helper.assertTrue(look.id(PlayerLook.Slot.FEET).equals("bare"), "the old sandals are dropped");
+        helper.assertTrue(look.id(PlayerLook.Slot.EYES).equals("sharp") && look.id(PlayerLook.Slot.HAIR).equals("spiky")
+                && look.id(PlayerLook.Slot.UNDERWEAR).equals("fundoshi"), "everything else is kept");
+        helper.succeed();
+    }
+
+    /**
+     * Every part a player look or an NPC look can name exists as an HD image (256x256, the 64x64 skin
+     * layout at 4x), and so do the eye glow layers drawn over those faces.
+     */
+    @GameTest(template = "empty", batch = "noirm_creator")
+    public static void everySkinPartIsHd(GameTestHelper helper) {
+        java.util.Set<String> paths = new java.util.TreeSet<>();
+        String player = "textures/entity/player_parts/";
+        String ninja = "textures/entity/ninja/parts/";
+        paths.add(player + "skin_base");
+        for (PlayerLook.Slot slot : PlayerLook.Slot.values()) {
+            for (int i = 0; i < slot.size(); i++) {
+                String id = slot.option(i);
+                switch (slot) {
+                    case JAW, NOSE, MOUTH -> paths.add(player + slot.key() + "_" + id);
+                    case MUSCLE -> { if (!id.equals("none")) paths.add(player + "muscle_" + id); }
+                    case WEATHERING -> { if (!id.equals("none")) paths.add(player + "weather_" + id); }
+                    case SCAR -> {
+                        if (id.equals("eye") || id.equals("nose")) paths.add(ninja + "mark_scar_" + id);
+                        else if (!id.equals("none")) paths.add(player + "scar_" + id);
+                    }
+                    case MARKING -> { if (!id.equals("none")) paths.add(ninja + "mark_" + id); }
+                    case UNDERWEAR -> paths.add(player + "under_" + id);
+                    case EYES -> { paths.add(ninja + "eyes_" + id); paths.add(ninja + "iris_" + id); }
+                    case BROWS -> paths.add(ninja + "brows_" + id);
+                    case HAIR -> { if (!id.equals("none")) paths.add(ninja + "hair_" + id); }
+                    case HAIR_LENGTH -> { if (!id.equals("as_styled")) paths.add(player + "hairlen_" + id); }
+                    default -> { }
+                }
+            }
+        }
+        paths.add(ninja + "leg_wraps");
+        paths.add(ninja + "arm_wraps");
+        paths.add(ninja + "sandals");
+        paths.add(ninja + "skin");
+        try (java.io.InputStream in = CreatorGameTests.class.getResourceAsStream("/assets/noirm/" + ninja + "looks.json")) {
+            helper.assertTrue(in != null, "looks.json is there");
+            com.google.gson.JsonObject clans = com.google.gson.JsonParser.parseReader(
+                    new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("clans");
+            String[][] fields = {{"hair_style", "hair_"}, {"eyes", "eyes_"}, {"eyes", "iris_"}, {"brows", "brows_"},
+                    {"shirt", "shirt_"}, {"pants", "pants_"}, {"mark", "mark_"}, {"accessory", "acc_"}};
+            for (String clan : clans.keySet()) {
+                com.google.gson.JsonObject table = clans.getAsJsonObject(clan);
+                for (String[] field : fields) {
+                    for (com.google.gson.JsonElement entry : table.getAsJsonArray(field[0])) {
+                        String id = entry.getAsJsonArray().get(0).getAsString();
+                        if (!id.equals("none")) {
+                            paths.add(ninja + field[1] + id);
+                        }
+                    }
+                }
+            }
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
+        paths.add("textures/entity/sharingan_eyes");
+        paths.add("textures/entity/byakugan_eyes");
+        for (String path : paths) {
+            int[] size = pngSize("/assets/noirm/" + path + ".png");
+            helper.assertTrue(size != null, "the part " + path + " exists");
+            helper.assertTrue(size[0] == 256 && size[1] == 256, path + " is 256x256 (HD), not " + size[0] + "x" + size[1]);
+        }
+        helper.succeed();
+    }
+
+    /** A PNG's width and height from its header, or null if the file is missing. */
+    private static int[] pngSize(String resource) {
+        try (java.io.InputStream in = CreatorGameTests.class.getResourceAsStream(resource)) {
+            if (in == null) {
+                return null;
+            }
+            byte[] head = in.readNBytes(24);
+            java.nio.ByteBuffer b = java.nio.ByteBuffer.wrap(head);
+            return new int[]{b.getInt(16), b.getInt(20)};
+        } catch (java.io.IOException e) {
+            return null;
+        }
     }
 }

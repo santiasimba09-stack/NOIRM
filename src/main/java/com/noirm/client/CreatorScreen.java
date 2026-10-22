@@ -30,7 +30,8 @@ import java.util.function.Consumer;
  * soot and charcoal panels framed in cold iron, ash drifting up the screen.
  *
  * <p>On the left, your character in 3D: drag to turn, scroll to zoom (each tab also eases the
- * camera toward what it edits). On the right, five tabs: Face, Body, Hair, Clothes and Genetics.
+ * camera toward what it edits). On the right, four tabs: Face, Body, Hair and Genetics. New
+ * characters wear only their underwear (picked on Body): clothes are gear worn later.
  * Colours are picked from swatches and fine-tuned with hue / saturation / brightness bars.
  * Everything you change is a draft shown only on your screen until you confirm; the server
  * decides the genetics (clan rolls) and saves the look.
@@ -53,7 +54,7 @@ public class CreatorScreen extends Screen {
     private static final int LABEL_W = 66;
 
     private enum Tab {
-        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), CLOTHES("clothes", 1f), GENETICS("genetics", 1f);
+        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), GENETICS("genetics", 1f);
 
         final String key;
         final float zoom;
@@ -181,7 +182,6 @@ public class CreatorScreen extends Screen {
             case FACE -> drawFace(g, cy, mouseX, mouseY);
             case BODY -> drawBody(g, cy, mouseX, mouseY);
             case HAIR -> drawHair(g, cy, mouseX, mouseY);
-            case CLOTHES -> drawClothes(g, cy, mouseX, mouseY);
             case GENETICS -> drawGenetics(g, cy, mouseX, mouseY);
         }
         drawFooter(g, mouseX, mouseY);
@@ -315,7 +315,6 @@ public class CreatorScreen extends Screen {
             case FACE -> Tone.EYE;
             case BODY -> Tone.SKIN;
             case HAIR -> Tone.HAIR;
-            case CLOTHES -> Tone.TOP;
             case GENETICS -> activeTone;
         };
     }
@@ -338,8 +337,17 @@ public class CreatorScreen extends Screen {
         y = option(g, y, Slot.MARKING, mx, my);
         y = option(g, y, Slot.UNDERWEAR, mx, my);
         y = color(g, y, Tone.UNDERWEAR, mx, my);
+        y = option(g, y, Slot.WRAPS, mx, my);
         y = heightRow(g, y, mx, my);
         fineTune(g, y + 4, mx, my);
+        y += 4 + 11 + 3 * 11 + 6; // below the fine-tune bars
+        for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.underwear_note"), pw - 16)) {
+            if (y + 9 > vy + vh - 4) {
+                break; // no room left on a small screen
+            }
+            g.drawString(font, line, px + 8, y, FAINT, false);
+            y += 10;
+        }
     }
 
     private void drawHair(GuiGraphics g, int y, int mx, int my) {
@@ -348,21 +356,6 @@ public class CreatorScreen extends Screen {
         y = option(g, y, Slot.HAIR_VOLUME, mx, my);
         y = color(g, y, Tone.HAIR, mx, my);
         fineTune(g, y + 4, mx, my);
-    }
-
-    private void drawClothes(GuiGraphics g, int y, int mx, int my) {
-        y = option(g, y, Slot.TOP, mx, my);
-        y = color(g, y, Tone.TOP, mx, my);
-        y = option(g, y, Slot.BOTTOM, mx, my);
-        y = color(g, y, Tone.BOTTOM, mx, my);
-        y = option(g, y, Slot.FEET, mx, my);
-        y = option(g, y, Slot.WRAPS, mx, my);
-        y += 2;
-        for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.clothes_note"), pw - 16)) {
-            g.drawString(font, line, px + 8, y, FAINT, false);
-            y += 10;
-        }
-        fineTune(g, y + 2, mx, my);
     }
 
     /** "Label   <  value  >": click the arrows (or scroll over the row) to change it. */

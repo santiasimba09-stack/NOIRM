@@ -1,6 +1,5 @@
 package com.noirm.client;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.noirm.Noirm;
 import com.noirm.creator.PlayerLook;
 import com.noirm.creator.PlayerLook.Slot;
@@ -8,31 +7,27 @@ import com.noirm.creator.PlayerLook.Tone;
 import com.noirm.player.ShinobiCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Player;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
- * Player skins built from a {@link PlayerLook}: the part images are stacked into one 64×64 skin
- * (gray parts tinted with the look's colours, coloured parts drawn as they are), the same way
- * {@link NinjaSkins} builds NPC ninjas. Every distinct look becomes one {@link DynamicTexture},
- * cached; the oldest are released once more than {@link #MAX_CACHED} exist (the creation screen
- * makes a new one for each change you try).
+ * Player skins built from a {@link PlayerLook}: the HD part images are stacked into one skin by
+ * {@link SkinComposer} (gray parts tinted with the look's colours, coloured parts drawn as they
+ * are), the same way {@link NinjaSkins} builds NPC ninjas. A look is the body in underwear plus face
+ * and hair: clothes are gear worn on top. Every distinct look becomes one texture, cached; the
+ * oldest are released once more than {@link #MAX_CACHED} exist (the creation screen makes a new one
+ * for each change you try).
  *
  * <p>A mixin on {@code AbstractClientPlayer.getSkinTextureLocation} asks {@link #override} first,
  * so the look shows everywhere the skin does: the body, first-person arms and hands.
  */
 public final class PlayerSkins {
-    private static final int MAX_CACHED = 48;
+    private static final int MAX_CACHED = 32;
     private static final String PLAYER = "textures/entity/player_parts/";
     private static final String NINJA = "textures/entity/ninja/parts/";
 
@@ -40,13 +35,14 @@ public final class PlayerSkins {
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, ResourceLocation> eldest) {
             if (size() > MAX_CACHED) {
-                Minecraft.getInstance().getTextureManager().release(eldest.getValue());
+                if (!eldest.getValue().equals(NinjaSkins.FALLBACK)) {
+                    Minecraft.getInstance().getTextureManager().release(eldest.getValue());
+                }
                 return true;
             }
             return false;
         }
     };
-    private static final Map<String, Optional<NativeImage>> PART_IMAGES = new HashMap<>();
     private static int counter;
 
     private PlayerSkins() {}
@@ -79,9 +75,10 @@ public final class PlayerSkins {
             return id;
         }
         try {
-            NativeImage image = compose(look);
             id = Noirm.id("dynamic/player_look_" + (counter++));
-            Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(image));
+            if (!SkinComposer.compose(id, layers(look))) {
+                id = NinjaSkins.FALLBACK;
+            }
         } catch (Exception e) {
             Noirm.LOGGER.warn("Could not build the player skin {}", key, e);
             id = NinjaSkins.FALLBACK;
@@ -115,12 +112,7 @@ public final class PlayerSkins {
             out.add(Map.entry(NINJA + "mark_" + look.id(Slot.MARKING), -1));
         }
         out.add(Map.entry(PLAYER + "under_" + look.id(Slot.UNDERWEAR), look.color(Tone.UNDERWEAR)));
-        if (!look.id(Slot.BOTTOM).equals("none")) {
-            out.add(Map.entry(NINJA + "pants_" + look.id(Slot.BOTTOM), look.color(Tone.BOTTOM)));
-        }
-        if (!look.id(Slot.TOP).equals("none")) {
-            out.add(Map.entry(NINJA + "shirt_" + look.id(Slot.TOP), look.color(Tone.TOP)));
-        }
+        // No clothes: characters start in their underwear, and clothes are gear worn on top.
         String wraps = look.id(Slot.WRAPS);
         if (wraps.equals("legs") || wraps.equals("both")) {
             out.add(Map.entry(NINJA + "leg_wraps", -1));
@@ -128,11 +120,8 @@ public final class PlayerSkins {
         if (wraps.equals("arms") || wraps.equals("both")) {
             out.add(Map.entry(NINJA + "arm_wraps", -1));
         }
-        if (look.id(Slot.FEET).equals("sandals")) {
-            out.add(Map.entry(NINJA + "sandals", -1));
-        }
+        out.add(Map.entry(NINJA + "iris_" + look.id(Slot.EYES), look.color(Tone.EYE))); // under the eye's lids and shine
         out.add(Map.entry(NINJA + "eyes_" + look.id(Slot.EYES), -1));
-        out.add(Map.entry(NINJA + "iris_" + look.id(Slot.EYES), look.color(Tone.EYE)));
         out.add(Map.entry(NINJA + "brows_" + look.id(Slot.BROWS), hair));
         if (!look.id(Slot.HAIR).equals("none")) {
             out.add(Map.entry(NINJA + "hair_" + look.id(Slot.HAIR), hair));
@@ -141,83 +130,5 @@ public final class PlayerSkins {
             out.add(Map.entry(PLAYER + "hairlen_" + look.id(Slot.HAIR_LENGTH), hair));
         }
         return out;
-    }
-
-    private static NativeImage compose(PlayerLook look) {
-        int[] out = new int[64 * 64];
-        for (Map.Entry<String, Integer> layer : layers(look)) {
-            Optional<NativeImage> part = part(layer.getKey());
-            if (part.isEmpty()) {
-                continue;
-            }
-            NativeImage src = part.get();
-            int w = Math.min(64, src.getWidth());
-            int h = Math.min(64, src.getHeight());
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    int abgr = src.getPixelRGBA(x, y);
-                    int a = abgr >>> 24;
-                    if (a == 0) {
-                        continue;
-                    }
-                    int r = abgr & 0xFF;
-                    int g = (abgr >> 8) & 0xFF;
-                    int b = (abgr >> 16) & 0xFF;
-                    if (layer.getValue() >= 0) {
-                        int c = NinjaSkins.tint(layer.getValue(), r);
-                        r = (c >> 16) & 0xFF;
-                        g = (c >> 8) & 0xFF;
-                        b = c & 0xFF;
-                    }
-                    out[y * 64 + x] = blend(out[y * 64 + x], a, r, g, b);
-                }
-            }
-        }
-        NativeImage image = new NativeImage(64, 64, true);
-        for (int y = 0; y < 64; y++) {
-            for (int x = 0; x < 64; x++) {
-                int argb = out[y * 64 + x];
-                int a = argb >>> 24;
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                image.setPixelRGBA(x, y, (a << 24) | (b << 16) | (g << 8) | r);
-            }
-        }
-        return image;
-    }
-
-    /** Alpha-blends (a, r, g, b) over an ARGB pixel (the same maths as NinjaSkins and pixlib). */
-    private static int blend(int dst, int a, int r, int g, int b) {
-        if (a >= 255) {
-            return 0xFF000000 | (r << 16) | (g << 8) | b;
-        }
-        float sa = a / 255f;
-        float da = (dst >>> 24) / 255f;
-        float outA = sa + da * (1 - sa);
-        if (outA <= 0) {
-            return dst;
-        }
-        int or = (int) ((r * sa + ((dst >> 16) & 0xFF) * da * (1 - sa)) / outA);
-        int og = (int) ((g * sa + ((dst >> 8) & 0xFF) * da * (1 - sa)) / outA);
-        int ob = (int) ((b * sa + (dst & 0xFF) * da * (1 - sa)) / outA);
-        return ((int) (outA * 255) << 24) | (or << 16) | (og << 8) | ob;
-    }
-
-    private static Optional<NativeImage> part(String path) {
-        return PART_IMAGES.computeIfAbsent(path, p -> {
-            ResourceLocation id = Noirm.id(p + ".png");
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(id);
-            if (resource.isEmpty()) {
-                Noirm.LOGGER.warn("Missing player part {}", id);
-                return Optional.empty();
-            }
-            try (InputStream in = resource.get().open()) {
-                return Optional.of(NativeImage.read(in));
-            } catch (Exception e) {
-                Noirm.LOGGER.warn("Could not read player part {}", id, e);
-                return Optional.empty();
-            }
-        });
     }
 }
