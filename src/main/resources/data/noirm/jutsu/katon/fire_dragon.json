@@ -10,7 +10,7 @@
   },
   "params": {
     "damage": 12,
-    "speed": 0.9,
+    "speed": 0.55,
     "radius": 3,
     "knockback": 1.2,
     "posture": 40,

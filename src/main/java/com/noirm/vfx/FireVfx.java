@@ -114,13 +114,13 @@ public final class FireVfx {
     /** One tick of a Phoenix Flower bullet: a small flame head and a long tapering tail left behind it. */
     public static void bullet(Level level, Vec3 at, Vec3 motion, float size) {
         RandomSource random = level.random;
-        Vfx.one(level, riding(size * 1.3f, size * 1.1f, 2), at, motion);
-        Vfx.one(level, heat(size * 1.4f, 2), at, motion);
-        // The tail: cells left where the head was, shrinking as they age.
+        Vfx.one(level, riding(size * 0.9f, size * 0.8f, 2), at, motion);
+        Vfx.one(level, heat(size * 1.1f, 2), at, motion);
+        // The tail: a thin streak of small cells left where the head was, shrinking as they age.
         Vec3 step = motion.scale(0.5);
         for (int i = 0; i < 2; i++) {
             Vec3 p = at.subtract(step.scale(i));
-            Vfx.one(level, cell(size * (1.0f - 0.2f * i), 0.02f, 7 + random.nextInt(3), -0.01f), p, motion.scale(0.05));
+            Vfx.one(level, cell(size * (0.6f - 0.15f * i), 0.02f, 6 + random.nextInt(3), -0.01f), p, motion.scale(0.05));
         }
         if (random.nextInt(3) == 0) {
             Vfx.one(level, ember(14), at, new Vec3(random.nextGaussian() * 0.05, 0.04, random.nextGaussian() * 0.05));

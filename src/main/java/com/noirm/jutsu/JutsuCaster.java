@@ -422,7 +422,7 @@ public final class JutsuCaster {
                 com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.glow(palette.core(), palette.mid(), 0.2f + 0.5f * progress, 0.1f, 4), hand, 1, 0, 0);
                 if (casting.def.nature().orElse(null) == com.noirm.clan.Nature.FIRE) {
                     // Fire swells at the mouth: flame cells and a tongue, bigger as it fills.
-                    com.noirm.vfx.FireVfx.fireball(entity.level(), hand, net.minecraft.world.phys.Vec3.ZERO, 0.2f + 0.45f * progress);
+                    com.noirm.vfx.FireVfx.fireball(entity.level(), hand.add(entity.getViewVector(1f).scale(0.6)), net.minecraft.world.phys.Vec3.ZERO, 0.12f + 0.25f * progress);
                 }
                 if (casting.def.behavior().equals("dash_strike")) {
                     // Chidori: "a thousand birds" chirping in the hand.

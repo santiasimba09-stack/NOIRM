@@ -109,6 +109,10 @@ public final class JutsuBehaviors {
             // Several shots fan out across `spread` degrees.
             float offset = count == 1 ? 0f : p.spread() * (i / (float) (count - 1) - 0.5f);
             Vec3 look = ctx.look().yRot(-offset * Mth.DEG_TO_RAD);
+            if (count > 2 && "bullet".equals(p.look())) {
+                // Phoenix Flower: a scatter of bullets, not a flat fan.
+                look = look.add(0, (caster.getRandom().nextFloat() - 0.5f) * 0.3f, 0).normalize();
+            }
             Vec3 start = caster.getEyePosition().add(look.scale(0.9)).add(0, -0.25, 0);
             shot.setOwner(caster);
             shot.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());

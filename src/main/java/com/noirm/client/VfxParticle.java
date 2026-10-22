@@ -185,11 +185,18 @@ public class VfxParticle extends TextureSheetParticle {
         if (live >= MAX_LIVE) {
             return !big || live >= MAX_LIVE + 1000;
         }
+        net.minecraft.client.Camera camera = net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
+        double d2 = camera.getPosition().distanceToSqr(x, y, z);
+        // A big soft sprite born right on the camera only paints the screen one flat colour.
+        if (options.kind() != VfxKind.RING && options.kind() != VfxKind.GROUND_GLOW) {
+            double near = Math.max(options.size(), options.endSize()) * 0.9 + 0.4;
+            if (d2 < near * near) {
+                return true;
+            }
+        }
         if (big) {
             return false;
         }
-        net.minecraft.client.Camera camera = net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
-        double d2 = camera.getPosition().distanceToSqr(x, y, z);
         if (d2 > FAR * FAR) {
             return random.nextInt(10) != 0; // far: one in ten
         }

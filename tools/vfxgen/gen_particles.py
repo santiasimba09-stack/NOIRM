@@ -160,11 +160,11 @@ if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     flames = []
     for i in range(4):
-        save(flame_mass(100 + i), f"flame_{i}")
+        save(flame_mass(100 + i, 128), f"flame_{i}")
         flames.append(f"flame_{i}")
     tongues = []
     for i in range(3):
-        save(tongue(200 + i), f"tongue_{i}")
+        save(tongue(200 + i, 64), f"tongue_{i}")
         tongues.append(f"tongue_{i}")
     zaps = []
     for i in range(3):

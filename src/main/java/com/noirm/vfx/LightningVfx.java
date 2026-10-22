@@ -61,14 +61,14 @@ public final class LightningVfx {
         float w = body.getBbWidth();
         float h = body.getBbHeight();
         double reach = w * 0.9 + 0.25;
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             double a = random.nextDouble() * Math.PI * 2;
             double y0 = random.nextDouble() * h;
             double y1 = Math.max(0, Math.min(h * 1.1, y0 + (random.nextDouble() - 0.5) * h * 0.8));
             Vec3 from = feet.add(Math.cos(a) * reach, y0, Math.sin(a) * reach);
             double b = a + Math.PI * (0.7 + 0.6 * random.nextDouble());
             Vec3 to = feet.add(Math.cos(b) * reach, y1, Math.sin(b) * reach);
-            bolt(level, from, to, BLUE_WHITE, 0.05f + random.nextFloat() * 0.03f, 3, 1, ARC);
+            bolt(level, from, to, BLUE_WHITE, 0.05f + random.nextFloat() * 0.03f, 4, 1, ARC);
         }
         if (tick % 6 == 0) {
             // A long arc climbing the body from the ground: the reference's big swirl.
@@ -78,8 +78,9 @@ public final class LightningVfx {
             bolt(level, from, to, BLUE_WHITE, 0.08f, 4, 2, ARC);
         }
         // The shell: soft blue-white glows hugging the body, flickering.
-        Vfx.burst(level, new VfxOptions(VfxKind.GLOW, 0xDDF2FF, 0x2A6AD0, 0.55f + random.nextFloat() * 0.25f, 0.2f, 4, -0.01f, 0.9f),
-                feet.add(0, h * 0.55, 0), 3, w * 0.45, 0.01);
+        Vfx.burst(level, new VfxOptions(VfxKind.GLOW, 0xDDF2FF, 0x2A6AD0, 0.7f + random.nextFloat() * 0.35f, 0.3f, 5, -0.01f, 0.9f),
+                feet.add(0, h * 0.55, 0), 5, w * 0.5, 0.01);
+        Vfx.burst(level, new VfxOptions(VfxKind.GLOW, 0x6AA8FF, 0x0A1A50, 1.6f, 1.9f, 5, 0f, 0.9f), feet.add(0, h * 0.5, 0), 1, 0.05, 0);
         if (tick % 4 == 0) {
             pool(level, feet, 1.6f + random.nextFloat() * 0.5f, 6);
         }
