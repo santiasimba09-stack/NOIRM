@@ -83,7 +83,7 @@ public class VfxParticle extends TextureSheetParticle {
         this.hasPhysics = options.kind() == VfxKind.SHARD;
         this.spin = switch (options.kind()) {
             case SHARD, ASH -> (random.nextFloat() - 0.5f) * 0.6f;
-            case SMOKE -> (random.nextFloat() - 0.5f) * 0.05f;
+            case SMOKE, SOOT -> (random.nextFloat() - 0.5f) * 0.05f;
             case FLAME -> (random.nextFloat() - 0.5f) * 0.08f; // cells churn slowly
             case TONGUE -> 0f;
             default -> 0f;
@@ -128,7 +128,7 @@ public class VfxParticle extends TextureSheetParticle {
         // Fade in quickly, hold, fade out over the last 40%.
         float fadeIn = Math.min(1f, t * 8f);
         float fadeOut = t < 0.6f ? 1f : 1f - (t - 0.6f) / 0.4f;
-        alpha = Mth.clamp(fadeIn * fadeOut, 0f, 1f) * (options.kind() == VfxKind.SMOKE ? 0.7f : 1f);
+        alpha = Mth.clamp(fadeIn * fadeOut, 0f, 1f) * (options.kind() == VfxKind.SMOKE ? 0.7f : options.kind() == VfxKind.SOOT ? 0.85f : 1f);
     }
 
     @Override

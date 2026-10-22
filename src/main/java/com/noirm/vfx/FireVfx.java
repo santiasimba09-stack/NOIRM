@@ -73,7 +73,7 @@ public final class FireVfx {
     }
 
     public static VfxOptions darkSmoke(float size, int life) {
-        return new VfxOptions(VfxKind.SMOKE, SMOKE_DARK, 0x3A3430, size, size * 2.2f, life, -0.006f, 0.93f);
+        return new VfxOptions(VfxKind.SOOT, SMOKE_DARK, 0x4A4440, size, size * 2.0f, life, -0.006f, 0.93f);
     }
 
     /** A soft hot light behind the cells, so the mass glows. */
@@ -190,6 +190,7 @@ public final class FireVfx {
         RandomSource random = level.random;
         Vfx.burst(level, Vfx.glow(0xFFFFFF, 0xFFD060, r * 2.2f, r * 0.6f, 4), at, 1, 0, 0);
         Vfx.burst(level, heat(r * 1.8f, 10), at, 2, r * 0.15, 0);
+        Vfx.burst(level, cell(r * 1.1f, r * 1.5f, 12, -0.01f), at, 2, r * 0.15, 0.01);
         int cells = (int) (8 + r * 4);
         for (int i = 0; i < cells; i++) {
             Vec3 dir = new Vec3(random.nextGaussian(), Math.abs(random.nextGaussian()) * 0.7, random.nextGaussian()).normalize();
@@ -220,7 +221,7 @@ public final class FireVfx {
         for (int i = 0; i < 8 + (int) (r * 2); i++) {
             double a = random.nextDouble() * Math.PI * 2;
             Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
-            Vfx.one(level, new VfxOptions(VfxKind.SMOKE, DUST, 0x5A5040, r * 0.35f, r * 0.9f, 30 + random.nextInt(15), -0.002f, 0.88f),
+            Vfx.one(level, new VfxOptions(VfxKind.SOOT, DUST, 0x5A5040, r * 0.35f, r * 0.9f, 30 + random.nextInt(15), -0.002f, 0.88f),
                     at.add(out.scale(r * 0.4)).add(0, 0.2, 0), out.scale(0.25 + 0.1 * r));
         }
         Vfx.radial(level, Vfx.shard(0x4A3C30, 0.18f, 30), at.add(0, 0.3, 0), (int) (6 + r * 3), 0.35 + r * 0.06);
@@ -274,7 +275,7 @@ public final class FireVfx {
         Vfx.burst(level, cell(s, s * 1.6f, 10, -0.02f), base.add(0, height * 0.35, 0), 2, thickness * 0.4, 0.04);
         Vfx.one(level, cell(s * 1.2f, s * 1.2f, 8, -0.03f), base.add(0, height * (0.55 + 0.35 * random.nextDouble()), 0), dir.scale(0.12).add(0, 0.05, 0));
         Vfx.one(level, tongue(s * 1.3f, 8), base.add(0, height, 0), dir.scale(0.1).add(0, 0.12, 0));
-        if (random.nextInt(2) == 0) {
+        if (random.nextInt(5) == 0) {
             Vfx.one(level, darkSmoke(s, 26), base.add(0, height + 0.6, 0), dir.scale(0.08).add(0, 0.05, 0));
         }
         if (random.nextInt(3) == 0) {
@@ -302,7 +303,7 @@ public final class FireVfx {
 
     /** One tick of an ash cloud (Burning Ash): thick grey smoke, flakes fluttering, a few live embers in it. */
     public static void ashCloud(Level level, Vec3 center, float radius) {
-        Vfx.burst(level, new VfxOptions(VfxKind.SMOKE, 0x3A3634, 0x22201F, radius * 0.5f, radius * 0.8f, 26, -0.002f, 0.9f), center, 3, radius * 0.45, 0.02);
+        Vfx.burst(level, new VfxOptions(VfxKind.SOOT, 0x4A4644, 0x2A2826, radius * 0.6f, radius * 0.9f, 26, -0.002f, 0.9f), center, 3, radius * 0.45, 0.02);
         Vfx.burst(level, ash(40), center, 6, radius * 0.55, 0.03);
         if (level.random.nextInt(2) == 0) {
             Vfx.burst(level, ember(16), center, 2, radius * 0.5, 0.02);
@@ -313,6 +314,7 @@ public final class FireVfx {
     public static void ashIgnite(Level level, Vec3 center, float radius) {
         RandomSource random = level.random;
         Vfx.burst(level, Vfx.glow(0xFFFFFF, 0xFFE070, radius * 2.4f, radius, 4), center, 1, 0, 0);
+        Vfx.burst(level, cell(radius * 1.2f, radius * 1.6f, 14, -0.01f), center, 3, radius * 0.25, 0.02);
         int cells = (int) (10 + radius * 5);
         for (int i = 0; i < cells; i++) {
             Vec3 off = new Vec3(random.nextGaussian(), random.nextGaussian() * 0.6, random.nextGaussian()).scale(radius * 0.45);

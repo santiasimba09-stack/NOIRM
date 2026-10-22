@@ -23,7 +23,9 @@ public enum VfxKind {
     /** An ash flake that drifts and flutters down. */
     ASH(false),
     /** A soft glow lying flat on the ground: light pooling under lightning and fire. Glows. */
-    GROUND_GLOW(true);
+    GROUND_GLOW(true),
+    /** A soft billowing puff of dark smoke or ash (fire's smoky rims, ash clouds). */
+    SOOT(false);
 
     private final boolean glows;
     private final boolean fullBright;

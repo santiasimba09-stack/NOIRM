@@ -7,6 +7,7 @@ Writes into src/main/resources/assets/noirm/textures/particle/:
   zap_0..2.png     lightning spark bursts: sharp "ice-shard" spikes around a hot centre (drawn white,
                    the game tints them blue)
   ash_0..1.png     ash flakes (grey; the game tints them)
+  soot_0..3.png    soft billowing smoke puffs (light grey with a lit top; the game tints them dark)
 and the matching sprite lists in assets/noirm/particles/.
 
 Run from the repository root: python3 tools/vfxgen/gen_particles.py
@@ -150,6 +151,23 @@ def ash(seed, size=12):
     return img
 
 
+def soot(seed, size=64):
+    """A billowing puff: lumpy round outline, soft inside, lit a little from the top-left."""
+    rng = np.random.default_rng(seed)
+    ys, xs = np.mgrid[0:size, 0:size].astype(float)
+    c = (size - 1) / 2
+    dx, dy = (xs - c) / (size / 2), (ys - c) / (size / 2)
+    r = np.hypot(dx, dy)
+    ang = np.arctan2(dy, dx)
+    edge = 0.8 + 0.08 * np.sin(ang * 4 + rng.random() * 6) + 0.05 * np.sin(ang * 7 + rng.random() * 6)
+    n = value_noise(size, 5, rng) * 0.6 + value_noise(size, 11, rng) * 0.4
+    t = r / edge
+    alpha = np.clip((1.0 - t) / 0.35, 0, 1) * (0.55 + 0.45 * n)
+    light = np.clip(0.55 + 0.35 * (-dx - dy) * 0.5 + 0.25 * (n - 0.5), 0, 1)
+    shade = 150 + 105 * light
+    return np.dstack([shade, shade, shade, alpha * 235])
+
+
 def write_list(kind, names):
     with open(os.path.join(LISTS, kind + ".json"), "w") as f:
         json.dump({"textures": [f"noirm:{n}" for n in names]}, f, indent=2)
@@ -174,6 +192,11 @@ if __name__ == "__main__":
     for i in range(2):
         save(ash(400 + i), f"ash_{i}")
         ashes.append(f"ash_{i}")
+    soots = []
+    for i in range(4):
+        save(soot(500 + i), f"soot_{i}")
+        soots.append(f"soot_{i}")
+    write_list("soot", soots)
     write_list("flame", flames)
     write_list("tongue", tongues)
     write_list("zap", zaps)
