@@ -420,6 +420,10 @@ public final class JutsuCaster {
                 com.noirm.vfx.Vfx.Palette palette = com.noirm.vfx.Vfx.palette(casting.def.nature().orElse(null));
                 com.noirm.vfx.Vfx.gather(entity.level(), hand, palette, 1.2f - 0.6f * progress, 3 + Math.round(progress * 4));
                 com.noirm.vfx.Vfx.burst(entity.level(), com.noirm.vfx.Vfx.glow(palette.core(), palette.mid(), 0.2f + 0.5f * progress, 0.1f, 4), hand, 1, 0, 0);
+                if (casting.def.nature().orElse(null) == com.noirm.clan.Nature.FIRE) {
+                    // Fire swells at the mouth: flame cells and a tongue, bigger as it fills.
+                    com.noirm.vfx.FireVfx.fireball(entity.level(), hand.add(entity.getViewVector(1f).scale(0.6)), net.minecraft.world.phys.Vec3.ZERO, 0.12f + 0.25f * progress);
+                }
                 if (casting.def.behavior().equals("dash_strike")) {
                     // Chidori: "a thousand birds" chirping in the hand.
                     entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
@@ -429,7 +433,8 @@ public final class JutsuCaster {
                     for (int i = 0; i < 1 + Math.round(progress * 2); i++) {
                         net.minecraft.world.phys.Vec3 ground = hand.add((entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress),
                                 -1.2 - entity.getRandom().nextDouble(), (entity.getRandom().nextDouble() - 0.5) * 2.5 * (0.5 + progress));
-                        com.noirm.vfx.Vfx.bolt(entity.level(), hand, ground, com.noirm.vfx.Vfx.LIGHTNING, 0.07f + 0.06f * progress, 4, 2);
+                        com.noirm.vfx.LightningVfx.bolt(entity.level(), hand, ground, com.noirm.vfx.LightningVfx.BLUE_WHITE, 0.07f + 0.06f * progress, 4, 2,
+                                com.noirm.vfx.LightningVfx.FORKY | (progress > 0.6f ? com.noirm.vfx.LightningVfx.IMPACT : 0));
                     }
                 }
             }

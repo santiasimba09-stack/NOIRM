@@ -27,7 +27,8 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
 public final class JutsuAreas {
     /** What happens every {@code interval} ticks inside an area. */
-    public enum Mode { CLOUD, RAIN, AURA }
+    /** BLAZE: burning oil on the ground (Flame Bomb): it burns and sets alight whoever stands in it. */
+    public enum Mode { CLOUD, RAIN, AURA, BLAZE }
 
     /**
      * @param follow  if set, the area moves with this entity (auras)
@@ -77,6 +78,11 @@ public final class JutsuAreas {
             case AURA -> level.sendParticles(area.particle(), at.x, at.y + 1, at.z, 3, Math.max(0.3, r * 0.5), 0.6, Math.max(0.3, r * 0.5), 0.02);
             case CLOUD -> level.sendParticles(area.particle(), at.x, at.y + 0.6, at.z, 6 + (int) (r * 3), r * 0.6, 0.5, r * 0.6, 0.01);
             case RAIN -> { }
+            case BLAZE -> {
+                if (now % 2 == 0) {
+                    com.noirm.vfx.FireVfx.burningGround(level, at, r);
+                }
+            }
         }
         if (area.interval() <= 0 || now % area.interval() != 0) {
             return;
@@ -88,7 +94,8 @@ public final class JutsuAreas {
             for (double y = 0; y < 8; y += 0.5) {
                 level.sendParticles(area.particle(), strike.x, strike.y + y, strike.z, 2, 0.1, 0.1, 0.1, 0);
             }
-            com.noirm.vfx.Vfx.bolt(level, strike.add(0, 14, 0), strike, com.noirm.vfx.Vfx.LIGHTNING, 0.12f, 6, 3);
+            com.noirm.vfx.LightningVfx.bolt(level, strike.add(0, 14, 0), strike, com.noirm.vfx.Vfx.LIGHTNING, 0.12f, 6, 3,
+                    com.noirm.vfx.LightningVfx.FORKY | com.noirm.vfx.LightningVfx.IMPACT);
             level.sendParticles(ParticleTypes.FLASH, strike.x, strike.y + 0.3, strike.z, 1, 0, 0, 0, 0);
             level.playSound(null, strike.x, strike.y, strike.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.5f, 1.6f);
             hitAround(area, strike, 1.6);
@@ -108,6 +115,9 @@ public final class JutsuAreas {
             JutsuEffects.applyEffects(victim, area.effect(), area.effectTicks());
             if (area.stun() > 0) {
                 CombatSystem.stun(victim, area.stun());
+            }
+            if (area.mode() == Mode.BLAZE) {
+                victim.setSecondsOnFire(3);
             }
         }
     }

@@ -17,6 +17,7 @@
     "knockback": 0.1,
     "posture": 10,
     "effect": "slowness:1",
-    "effect_ticks": 40
+    "effect_ticks": 40,
+    "look": "needle"
   }
 }

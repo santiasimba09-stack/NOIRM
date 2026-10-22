@@ -62,6 +62,8 @@ public final class JutsuBehaviors {
             Map.entry("strike", GreatTechniques::strike),
             Map.entry("wave", GreatTechniques::wave),
             Map.entry("nova", GreatTechniques::nova),
+            Map.entry("ash_cloud", FireLightningTechniques::ashCloud),
+            Map.entry("chain", FireLightningTechniques::chain),
             // The Mangekyō Sharingan (dojutsu/MangekyoAbilities, dojutsu/Susanoo)
             Map.entry("amaterasu", com.noirm.dojutsu.MangekyoAbilities::amaterasu),
             Map.entry("tsukuyomi", com.noirm.dojutsu.MangekyoAbilities::tsukuyomi),
@@ -107,11 +109,20 @@ public final class JutsuBehaviors {
             // Several shots fan out across `spread` degrees.
             float offset = count == 1 ? 0f : p.spread() * (i / (float) (count - 1) - 0.5f);
             Vec3 look = ctx.look().yRot(-offset * Mth.DEG_TO_RAD);
+            if (count > 2 && "bullet".equals(p.look())) {
+                // Phoenix Flower: a scatter of bullets, not a flat fan.
+                look = look.add(0, (caster.getRandom().nextFloat() - 0.5f) * 0.3f, 0).normalize();
+            }
             Vec3 start = caster.getEyePosition().add(look.scale(0.9)).add(0, -0.25, 0);
             shot.setOwner(caster);
             shot.moveTo(start.x, start.y, start.z, caster.getYRot(), caster.getXRot());
             shot.configure(nature(ctx), size, damage, p.knockback(), p.posture() * ctx.power(), blast, p.fireSeconds());
             shot.setOnHitEffect(p.effect(), p.effectTicks());
+            JutsuProjectile.Look style = JutsuProjectile.Look.of(p.look());
+            shot.setLook(style);
+            if (style == JutsuProjectile.Look.OIL) {
+                shot.setLingering(Math.max(1.5f, blast * 0.8f), p.duration(), p.damage() * 0.4f * ctx.power());
+            }
             if (p.homing() > 0) {
                 shot.setHoming(p.homing(), lookTarget(caster, 40, 25));
             }
@@ -218,12 +229,15 @@ public final class JutsuBehaviors {
                 break;
             }
         }
-        for (double d = 0; d <= start.distanceTo(end); d += 0.4) {
-            JutsuEffects.particlesAt(level, start.add(direction.scale(d)).add(0, 1, 0), ParticleTypes.ELECTRIC_SPARK, 3, 0.2, 0.05);
+        for (double d = 0; d <= start.distanceTo(end); d += 0.8) {
+            JutsuEffects.particlesAt(level, start.add(direction.scale(d)).add(0, 1, 0), ParticleTypes.ELECTRIC_SPARK, 2, 0.2, 0.05);
         }
         caster.teleportTo(end.x, end.y, end.z);
         com.noirm.vfx.Vfx.line(level, start.add(0, 1, 0), end.add(0, 1, 0), com.noirm.vfx.Vfx.palette(Nature.LIGHTNING), 0.18f);
-        com.noirm.vfx.Vfx.bolt(level, start.add(0, 1, 0), end.add(0, 1, 0), com.noirm.vfx.Vfx.LIGHTNING, 0.09f, 8, 3);
+        com.noirm.vfx.LightningVfx.forked(level, start.add(0, 1, 0), end.add(0, 1, 0), 0.1f, 8);
+        // The hand drags lightning along the ground behind the charge: a forking furrow.
+        com.noirm.vfx.LightningVfx.bolt(level, start.add(0, 0.1, 0), end.add(0, 0.1, 0), com.noirm.vfx.LightningVfx.BLUE_WHITE, 0.07f, 10, 4,
+                com.noirm.vfx.LightningVfx.GROUND | com.noirm.vfx.LightningVfx.FORKY);
         for (double d = 0; d <= start.distanceTo(end); d += 1) {
             com.noirm.world.Destruction.shatterFragile(level, BlockPos.containing(start.add(direction.scale(d))), 1);
         }
@@ -236,8 +250,11 @@ public final class JutsuBehaviors {
             JutsuEffects.hit(caster, victim, (p.damage() + p.chargeDamage() * ctx.charge()) * ctx.power(), p.knockback(),
                     p.posture() * ctx.power(), p.fireSeconds(), direction);
             CombatSystem.stun(victim, p.stun());
-            JutsuEffects.particles(victim, ParticleTypes.ELECTRIC_SPARK, 40, 0.5, 0.3);
-            com.noirm.vfx.Vfx.discharge(level, victim.position().add(0, victim.getBbHeight() * 0.6, 0), 3.5f, 6, com.noirm.vfx.Vfx.LIGHTNING);
+            JutsuEffects.particles(victim, ParticleTypes.ELECTRIC_SPARK, 20, 0.5, 0.3);
+            Vec3 contact = victim.position().add(0, victim.getBbHeight() * 0.6, 0);
+            com.noirm.vfx.LightningVfx.contact(level, contact, 1.4f);
+            com.noirm.vfx.Vfx.discharge(level, contact, 3.5f, 4, com.noirm.vfx.Vfx.LIGHTNING);
+            com.noirm.vfx.LightningVfx.groundForks(level, victim.position(), 3.5f, 5);
         }
         sound(caster, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.7f, 1.6f);
     }
@@ -330,9 +347,13 @@ public final class JutsuBehaviors {
             Vec3 look = ctx.look();
             Vec3 eye = caster.getEyePosition().add(0, -0.25, 0);
             ParticleOptions particle = JutsuProjectile.particle(nature(ctx));
-            com.noirm.vfx.Vfx.cone(ctx.level(), eye, look, p.range(), com.noirm.vfx.Vfx.palette(nature(ctx)), 0.7f);
-            for (double d = 0.8; d <= p.range(); d += 1.2) {
-                JutsuEffects.particlesAt(ctx.level(), eye.add(look.scale(d)), particle, 2, d * 0.12, 0.02);
+            if (nature(ctx) == Nature.FIRE) {
+                com.noirm.vfx.FireVfx.stream(ctx.level(), eye, look, p.range());
+            } else {
+                com.noirm.vfx.Vfx.cone(ctx.level(), eye, look, p.range(), com.noirm.vfx.Vfx.palette(nature(ctx)), 0.7f);
+                for (double d = 0.8; d <= p.range(); d += 1.2) {
+                    JutsuEffects.particlesAt(ctx.level(), eye.add(look.scale(d)), particle, 2, d * 0.12, 0.02);
+                }
             }
             if (tick % 10 == 0 && (nature(ctx) == Nature.FIRE || nature(ctx) == Nature.LAVA)) {
                 com.noirm.world.Destruction.scorch(ctx.level(), eye.add(look.scale(p.range() * 0.8)), 1.5f);

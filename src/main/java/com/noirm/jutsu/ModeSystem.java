@@ -69,6 +69,11 @@ public final class ModeSystem {
                     AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
         Vfx.flash(caster.level(), caster.position().add(0, 1, 0), paletteOf(active), 2.5f);
+        if (ctx.def().nature().orElse(null) == Nature.LIGHTNING) {
+            // Switching on: a burst of bolts racing out along the ground and a crack of light.
+            com.noirm.vfx.LightningVfx.groundForks(caster.level(), caster.position(), 4f, 6);
+            com.noirm.vfx.LightningVfx.contact(caster.level(), caster.position().add(0, 1, 0), 1.6f);
+        }
         if (mode.gate() > 0) {
             // A gate bursts open: a shockwave and a roar of wind around the body.
             Vfx.shockwave(caster.level(), caster.position().add(0, 0.1, 0), paletteOf(active), 2.5f + mode.gate());
@@ -152,15 +157,18 @@ public final class ModeSystem {
         Nature nature = active.def().nature().orElse(null);
         Vfx.Palette palette = paletteOf(active);
         if (entity.tickCount % 2 == 0) {
-            Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), palette, 5 + 2 * mode.gate());
+            if (nature != Nature.LIGHTNING) {
+                Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), palette, 5 + 2 * mode.gate());
+            }
             if (mode.gate() >= 2) {
                 // The higher gates: the body boils off steam.
                 Vfx.burst(entity.level(), Vfx.smoke(palette.mid(), 0.6f, 24), entity.position().add(0, entity.getBbHeight() * 0.6, 0), 2,
                         entity.getBbWidth() * 0.6, 0.03);
             }
             if (nature == Nature.LIGHTNING) {
-                Vfx.arcs(entity.level(), entity, 2, Vfx.LIGHTNING);
-                Vfx.radial(entity.level(), Vfx.spark(0x9AD8FF, 0.18f, 5), entity.position().add(0, entity.getBbHeight() * 0.5, 0), 3, 0.35);
+                // The reference aura: arcs wrapping and climbing the body, a flickering blue-white
+                // shell, light pooling underfoot and sparks snapping off the feet.
+                com.noirm.vfx.LightningVfx.armor(entity.level(), entity, entity.tickCount);
             }
         }
         if (nature == Nature.LIGHTNING && entity.tickCount % 12 == 0) {

@@ -31,6 +31,26 @@ import net.minecraft.world.phys.Vec3;
 public class JutsuProjectile extends Projectile {
     private static final EntityDataAccessor<Byte> NATURE = SynchedEntityData.defineId(JutsuProjectile.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(JutsuProjectile.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Byte> LOOK = SynchedEntityData.defineId(JutsuProjectile.class, EntityDataSerializers.BYTE);
+
+    /**
+     * How a projectile is drawn, from the jutsu's {@code "look"} param: the plain nature orb, the
+     * Great Fireball's bubbling sphere, a Phoenix Flower bullet with its tail, a fire dragon with a
+     * head, a Flame Bomb's burning oil (which also sticks and keeps burning where it lands), a
+     * lightning needle.
+     */
+    public enum Look {
+        ORB, FIREBALL, BULLET, DRAGON, OIL, NEEDLE;
+
+        public static Look of(String name) {
+            for (Look look : values()) {
+                if (look.name().equalsIgnoreCase(name)) {
+                    return look;
+                }
+            }
+            return ORB;
+        }
+    }
     private static final int MAX_LIFE = 80;
     private static final byte BEAST_CHAKRA = -2;
     private static final net.minecraft.core.particles.DustParticleOptions BEAST_DARK =
@@ -51,6 +71,10 @@ public class JutsuProjectile extends Projectile {
     private int effectTicks;
     /** How its last clash with another jutsu ended. */
     private JutsuClash.Outcome clash = JutsuClash.Outcome.NONE;
+    /** Burning oil left where it lands (Flame Bomb): radius, ticks, damage per second. 0 = none. */
+    private float lingerRadius;
+    private int lingerTicks;
+    private float lingerDamage;
 
     public JutsuProjectile(EntityType<? extends JutsuProjectile> type, Level level) {
         super(type, level);
@@ -72,6 +96,22 @@ public class JutsuProjectile extends Projectile {
     public void setHoming(float strength, LivingEntity target) {
         this.homing = strength;
         this.homingTarget = target;
+    }
+
+    public void setLook(Look look) {
+        entityData.set(LOOK, (byte) look.ordinal());
+    }
+
+    public Look look() {
+        byte index = entityData.get(LOOK);
+        return index >= 0 && index < Look.values().length ? Look.values()[index] : Look.ORB;
+    }
+
+    /** Leaves a patch of burning oil of {@code radius} for {@code ticks} where it lands, hurting {@code damagePerSecond}. */
+    public void setLingering(float radius, int ticks, float damagePerSecond) {
+        this.lingerRadius = radius;
+        this.lingerTicks = ticks;
+        this.lingerDamage = damagePerSecond;
     }
 
     public void setOnHitEffect(String effect, int ticks) {
@@ -171,6 +211,7 @@ public class JutsuProjectile extends Projectile {
     protected void defineSynchedData() {
         entityData.define(NATURE, (byte) -1);
         entityData.define(SIZE, 0.5f);
+        entityData.define(LOOK, (byte) 0);
     }
 
     @Override
@@ -259,9 +300,14 @@ public class JutsuProjectile extends Projectile {
                     JutsuEffects.hit(this, victim, damage * (0.5f + 0.5f * falloff), knockback, posture, fireSeconds, push);
                     JutsuEffects.applyEffects(victim, effect, effectTicks);
                 }
-                com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
+                if (nature() == Nature.FIRE && !isBeastChakra()) {
+                    com.noirm.vfx.FireVfx.blast(serverLevel, position(), blastRadius);
+                } else {
+                    com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
+                }
                 if (nature() == Nature.LIGHTNING || nature() == Nature.STORM) {
-                    com.noirm.vfx.Vfx.discharge(serverLevel, position(), blastRadius * 1.3f, 6, com.noirm.vfx.Vfx.LIGHTNING);
+                    com.noirm.vfx.LightningVfx.groundForks(serverLevel, position(), blastRadius * 1.3f, 6);
+                    com.noirm.vfx.LightningVfx.contact(serverLevel, position(), 1f);
                 }
                 float destruction = Math.max(0.5f, damage / 8f);
                 if (isBeastChakra()) {
@@ -271,10 +317,27 @@ public class JutsuProjectile extends Projectile {
                 }
                 serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f + blastRadius * 0.1f, 1.3f - Math.min(0.6f, blastRadius * 0.08f));
             } else {
-                com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
+                if (nature() == Nature.FIRE) {
+                    com.noirm.vfx.FireVfx.blast(serverLevel, position(), Math.max(0.6f, size()));
+                } else if (nature() == Nature.LIGHTNING || nature() == Nature.STORM) {
+                    com.noirm.vfx.LightningVfx.contact(serverLevel, position(), 0.7f + size());
+                    com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), false);
+                } else {
+                    com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
+                }
                 com.noirm.world.Destruction.shatterFragile(serverLevel, blockPosition(), 1);
             }
-            serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 12, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
+            if (lingerTicks > 0 && lingerRadius > 0) {
+                // The oil sticks where it lands and keeps burning.
+                Vec3 ground = com.noirm.jutsu.ElementalBehaviors.ground(serverLevel, position());
+                LivingEntity owner = getOwner() instanceof LivingEntity living ? living : null;
+                JutsuAreas.add(new JutsuAreas.Area(serverLevel, ground, null, owner, JutsuAreas.Mode.BLAZE, lingerRadius,
+                        serverLevel.getGameTime() + lingerTicks, 10, lingerDamage * 0.5f, effect, 30, 0, ParticleTypes.FLAME));
+                com.noirm.world.Destruction.scorch(serverLevel, ground, lingerRadius);
+            }
+            if (nature() != Nature.FIRE) {
+                serverLevel.sendParticles(trailParticle(), getX(), getY(), getZ(), 12, size() * 0.6, size() * 0.6, size() * 0.6, 0.05);
+            }
         }
         discard();
     }
@@ -286,6 +349,27 @@ public class JutsuProjectile extends Projectile {
 
     /** Client side: a glowing orb with a hot core and a smoky tail, plus a touch of its nature. */
     private void trail() {
+        Look look = look();
+        if (nature() == Nature.FIRE && !isBeastChakra()) {
+            switch (look) {
+                case BULLET -> com.noirm.vfx.FireVfx.bullet(level(), position(), getDeltaMovement(), size());
+                case DRAGON -> com.noirm.vfx.FireVfx.dragon(level(), position(), getDeltaMovement(), size() * 0.75f, tickCount);
+                case OIL -> com.noirm.vfx.FireVfx.oilGlob(level(), position(), getDeltaMovement(), size());
+                default -> com.noirm.vfx.FireVfx.fireball(level(), position(), getDeltaMovement(), size() * 0.55f);
+            }
+            return;
+        }
+        if (look == Look.NEEDLE) {
+            // A lightning needle: a thin white-hot streak and a few sparks.
+            Vec3 motion = getDeltaMovement();
+            for (int i = 0; i < 3; i++) {
+                com.noirm.vfx.Vfx.one(level(), com.noirm.vfx.Vfx.glow(0xFFFFFF, 0x5FB4FF, 0.14f, 0.04f, 3), position().subtract(motion.scale(i * 0.3)), Vec3.ZERO);
+            }
+            if (random.nextInt(2) == 0) {
+                com.noirm.vfx.Vfx.one(level(), com.noirm.vfx.Vfx.spark(0x9FD4FF, 0.1f, 5), position(), motion.scale(-0.1));
+            }
+            return;
+        }
         com.noirm.vfx.Vfx.orb(level(), position(), getDeltaMovement(), palette(), size());
         if (random.nextInt(2) == 0) {
             float r = size() * 0.5f;

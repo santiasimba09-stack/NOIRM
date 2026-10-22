@@ -13,16 +13,39 @@ public enum VfxKind {
     /** A flat ring on the ground that spreads out: shockwaves. Glows. */
     RING(true),
     /** A spinning fragment: debris, ice, sand. */
-    SHARD(false);
+    SHARD(false),
+    /** A cellular flame mass (yellow-white veins, orange cells, smoky rim). Full-bright, not additive, so it reads in daylight. */
+    FLAME(false, true),
+    /** A curling flame tongue licking upward. Full-bright, not additive. */
+    TONGUE(false, true),
+    /** A lightning spark burst: sharp shards around a hot centre (contact points). Glows. */
+    ZAP(true),
+    /** An ash flake that drifts and flutters down. */
+    ASH(false),
+    /** A soft glow lying flat on the ground: light pooling under lightning and fire. Glows. */
+    GROUND_GLOW(true),
+    /** A soft billowing puff of dark smoke or ash (fire's smoky rims, ash clouds). */
+    SOOT(false);
 
     private final boolean glows;
+    private final boolean fullBright;
 
     VfxKind(boolean glows) {
+        this(glows, glows);
+    }
+
+    VfxKind(boolean glows, boolean fullBright) {
         this.glows = glows;
+        this.fullBright = fullBright;
     }
 
     public boolean glows() {
         return glows;
+    }
+
+    /** Lit by itself (fire, light) rather than by the world around it. */
+    public boolean fullBright() {
+        return fullBright;
     }
 
     public ParticleType<VfxOptions> type() {

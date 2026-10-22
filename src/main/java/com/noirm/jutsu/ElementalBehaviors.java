@@ -150,8 +150,8 @@ public final class ElementalBehaviors {
             double length = start.distanceTo(end);
             com.noirm.vfx.Vfx.line(level, start.add(dir.scale(0.6)), end, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), 0.22f);
             if (JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.LIGHTNING || JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.STORM) {
-                com.noirm.vfx.Vfx.bolt(level, start.add(dir.scale(0.6)), end, com.noirm.vfx.Vfx.LIGHTNING, 0.14f, 10, 4);
-                com.noirm.vfx.Vfx.discharge(level, end, 3f, 4, com.noirm.vfx.Vfx.LIGHTNING);
+                com.noirm.vfx.LightningVfx.forked(level, start.add(dir.scale(0.6)), end, 0.15f, 10);
+                com.noirm.vfx.LightningVfx.groundForks(level, end, 3f, 4);
             }
             com.noirm.vfx.Vfx.hit(level, end, com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), false);
             for (double d = 0.5; d <= length; d += 0.4) {

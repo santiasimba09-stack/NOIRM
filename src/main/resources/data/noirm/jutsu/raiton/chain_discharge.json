@@ -1,0 +1,20 @@
+{
+  "nature": "lightning",
+  "behavior": "chain",
+  "rank": "A",
+  "chakra_cost": 30,
+  "cooldown": 220,
+  "unlock": {
+    "after": "noirm:raiton/chidori_senbon",
+    "mastery": 2
+  },
+  "params": {
+    "range": 16,
+    "radius": 7,
+    "count": 4,
+    "damage": 9,
+    "stun": 18,
+    "posture": 25,
+    "knockback": 0.3
+  }
+}

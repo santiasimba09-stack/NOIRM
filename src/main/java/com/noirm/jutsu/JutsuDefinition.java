@@ -135,12 +135,16 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
      * @param effect      effects on whoever is hit (or on the caster, for buffs): {@code "slowness:1,weakness:0"}
      * @param effectTicks how long those effects last
      * @param homing      how hard projectiles steer toward their target each tick (0 = straight)
+     * @param look        how a projectile is drawn: {@code fireball}, {@code bullet}, {@code dragon},
+     *                    {@code oil} (also leaves burning oil for {@code duration} ticks), {@code needle};
+     *                    empty = its nature's orb
      */
     public record Params(float damage, float chargeDamage, float speed, float radius, float range, float knockback,
                          float posture, int duration, int stun, int fireSeconds,
-                         int count, float spread, String block, String effect, int effectTicks, float homing) {
-        public static final Params DEFAULT = new Params(0, 0, 1, 1, 6, 0.5f, 0, 20, 0, 0, 1, 0, "", "", 60, 0);
-        public static final Codec<Params> CODEC = RecordCodecBuilder.create(i -> i.group(
+                         int count, float spread, String block, String effect, int effectTicks, float homing, String look) {
+        public static final Params DEFAULT = new Params(0, 0, 1, 1, 6, 0.5f, 0, 20, 0, 0, 1, 0, "", "", 60, 0, "");
+        /** The first sixteen fields (a codec group holds at most sixteen); {@code look} is paired on below. */
+        private static final com.mojang.serialization.MapCodec<Params> BASE = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.FLOAT.optionalFieldOf("damage", 0f).forGetter(Params::damage),
                 Codec.FLOAT.optionalFieldOf("charge_damage", 0f).forGetter(Params::chargeDamage),
                 Codec.FLOAT.optionalFieldOf("speed", 1f).forGetter(Params::speed),
@@ -157,6 +161,16 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
                 Codec.STRING.optionalFieldOf("effect", "").forGetter(Params::effect),
                 Codec.INT.optionalFieldOf("effect_ticks", 60).forGetter(Params::effectTicks),
                 Codec.FLOAT.optionalFieldOf("homing", 0f).forGetter(Params::homing)
-        ).apply(i, Params::new));
+        ).apply(i, (d, cd, sp, ra, rn, kb, po, du, st, fs, co, spr, bl, ef, et, ho) ->
+                new Params(d, cd, sp, ra, rn, kb, po, du, st, fs, co, spr, bl, ef, et, ho, "")));
+
+        public static final Codec<Params> CODEC = Codec.mapPair(BASE, Codec.STRING.optionalFieldOf("look", ""))
+                .xmap(pair -> pair.getFirst().withLook(pair.getSecond()), params -> com.mojang.datafixers.util.Pair.of(params, params.look()))
+                .codec();
+
+        public Params withLook(String newLook) {
+            return new Params(damage, chargeDamage, speed, radius, range, knockback, posture, duration, stun, fireSeconds,
+                    count, spread, block, effect, effectTicks, homing, newLook);
+        }
     }
 }
