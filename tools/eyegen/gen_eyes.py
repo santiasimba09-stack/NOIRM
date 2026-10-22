@@ -3,7 +3,7 @@
     python3 tools/eyegen/gen_eyes.py
 
 Writes:
-  src/main/resources/assets/noirm/textures/entity/mangekyo_patterns.png  (8 cells of 32x32, left to right)
+  src/main/resources/assets/noirm/textures/entity/mangekyo_patterns.png  (8 cells of 128x128, left to right)
   src/main/resources/assets/noirm/textures/item/sharingan_eye.png         (16x16)
   src/main/resources/assets/noirm/textures/item/mangekyo_eyes.png         (16x16)
 
@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "src", "main", "resources", "assets", "noirm", "textures")
 S = 256  # supersampled cell size
+CELL = 128  # atlas cell size (HD 4x; client/MangekyoEffects.CELL must match)
 RED = (205, 18, 26, 255)
 DARK_RED = (120, 6, 12, 255)
 BLACK = (12, 6, 8, 255)
@@ -141,9 +142,9 @@ def cell(fn, size):
 
 
 def atlas():
-    out = Image.new("RGBA", (32 * len(PATTERNS), 32), (0, 0, 0, 0))
+    out = Image.new("RGBA", (CELL * len(PATTERNS), CELL), (0, 0, 0, 0))
     for i, fn in enumerate(PATTERNS):
-        out.paste(cell(fn, 32), (32 * i, 0))
+        out.paste(cell(fn, CELL), (CELL * i, 0))
     out.save(os.path.join(ROOT, "entity", "mangekyo_patterns.png"))
 
 

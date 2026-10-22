@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class MangekyoEffects {
     /** The pattern atlas: {@link Mangekyo#PATTERNS} cells of {@link #CELL}×{@link #CELL}, left to right. */
     public static final ResourceLocation PATTERNS = Noirm.id("textures/entity/mangekyo_patterns.png");
-    public static final int CELL = 32;
+    public static final int CELL = 128;
     private static final ResourceLocation VIGNETTE = new ResourceLocation("textures/misc/vignette.png");
     private static final int REVEAL_TICKS = 80;
 

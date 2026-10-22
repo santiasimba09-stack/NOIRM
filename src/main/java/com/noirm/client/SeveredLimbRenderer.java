@@ -33,6 +33,7 @@ import java.util.UUID;
 public class SeveredLimbRenderer extends EntityRenderer<SeveredLimb> {
     private static final ResourceLocation DEFAULT_NINJA = net.minecraft.resources.ResourceLocation.tryParse("minecraft:textures/entity/player/wide/kai.png");
     private static final RenderType WOUND = RenderType.entityCutoutNoCull(GoreMarksLayer.WOUND);
+    private static final RenderType BLOOD = RenderType.entityTranslucent(com.noirm.Noirm.id("textures/entity/gore/blood_3.png"));
 
     private final BendyModel<LivingEntity> wide = new BendyModel<>(false);
     private final BendyModel<LivingEntity> slim = new BendyModel<>(true);
@@ -144,6 +145,9 @@ public class SeveredLimbRenderer extends EntityRenderer<SeveredLimb> {
 
     @Override
     public void render(SeveredLimb limb, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
+        if (!com.noirm.gore.GoreSettings.any()) {
+            return;
+        }
         Look look = look(limb);
         BendyModel<LivingEntity> model = look.slim ? slim : wide;
         Part part = limb.part();
@@ -171,6 +175,9 @@ public class SeveredLimbRenderer extends EntityRenderer<SeveredLimb> {
         if (part == Part.HEAD) {
             model.hat.copyFrom(model.head);
             model.hat.render(poseStack, consumer, light, overlay, r, g, b, a);
+        }
+        if (dissolve < 0.5f && com.noirm.gore.GoreSettings.full()) {
+            body.render(poseStack, buffers.getBuffer(BLOOD), light, overlay, 0.75f, 0.6f, 0.58f, 1f - 2f * dissolve); // soaked
         }
         if (dissolve < 0.5f) {
             wound(poseStack, buffers.getBuffer(WOUND), light, body, part, look.slim);
