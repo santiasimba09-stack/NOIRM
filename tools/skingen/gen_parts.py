@@ -1,249 +1,299 @@
 #!/usr/bin/env python3
-"""Ninja appearance parts for NOIRM's runtime skin composer.
+"""Ninja appearance parts for NOIRM's runtime skin composer, in HD (hdskin.SCALE x the 64x64 layout).
 
-NPC ninjas no longer have fixed outfit skins. Each one carries an appearance key
+NPC ninjas don't have fixed outfit skins. Each one carries an appearance key
 ("<clan folder>:<hex seed>"); the client (client/NinjaSkins) decodes it with the tables in
-looks.json and stacks these 64x64 part layers into one player skin:
+looks.json and stacks these part layers into one player skin:
 
-    skin -> mark -> shirt -> pants -> wraps -> sandals -> eyes -> iris -> brows -> hair -> accessory
+    skin -> mark -> shirt -> pants -> wraps -> sandals -> iris -> eyes -> brows -> hair -> accessory
+
+(The iris goes under the eye: the eye part has the whites with a hole for the iris, the lids,
+lashes, pupil and the shine on top.)
 
 Parts drawn in GRAY are tinted at runtime (skin tone, hair, eye, shirt, pants, mask colours;
-see pixlib.gray/tint). Parts drawn in colour (marks, sandals, eye whites, glasses...) are used as is.
-The bases are deliberately clean (skin, a dark undershirt and pants) so the real armour items
-(tools/gear/gen_gear.py) look good on top.
+see hdskin's doc). Parts drawn in colour (marks, sandals, eye whites, glasses...) are used as is.
+The face, skin shading and eye shapes live in anatomy.py, shared with the player's parts.
+
+Also writes the dojutsu glow layers that sit on these faces:
+    textures/entity/sharingan_eyes.png, byakugan_eyes.png
 
 Writes:
     src/main/resources/assets/noirm/textures/entity/ninja/parts/<part>.png
     src/main/resources/assets/noirm/textures/entity/ninja/parts/looks.json
 
-All art is original and drawn by the code below. Standard library only.
+All art is original and drawn by the code below (numpy + Pillow).
 Run from the repo root:  python3 tools/skingen/gen_parts.py
 """
 import json
+import math
 import os
 import sys
 
+import numpy as np
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pixlib import (Canvas, SKIN_PARTS, hx, tone, mix, noise, paint, paint_k,  # noqa: E402
-                    mirror_side)
+import anatomy as A  # noqa: E402
+from hdskin import (Part, paint, tone, rgb_of, sstep, ell, ell_d, gauss, box_cov, bezier, stroke,  # noqa: E402
+                    vnoise, fbm, grain, tri, sample_grid, hx, SCALE)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT_DIR = os.path.join(ROOT, "src/main/resources/assets/noirm/textures/entity/ninja/parts")
+ENTITY_DIR = os.path.join(ROOT, "src/main/resources/assets/noirm/textures/entity")
 
-P = SKIN_PARTS
 ARMS = ("rarm", "larm")
 LEGS = ("rleg", "lleg")
-
-
-def new():
-    return Canvas(64, 64)
 
 
 # ---------------------------------------------------------------------------
 # Skin (tinted by skin tone)
 # ---------------------------------------------------------------------------
 
-def part_skin():
-    cv = new()
-
-    def head(face, x, y, W, H):
-        if face == "front":
-            k = 0.0
-            if x in (0, 7):
-                k -= 0.35
-            if y == 7:
-                k -= 0.3
-            if y == 3 and x in (1, 2, 5, 6):
-                k -= 0.15  # brow ridge
-            if y == 5 and x == 4:
-                k -= 0.55  # nose shadow
-            if y == 5 and x == 3:
-                k += 0.15
-            if y == 6 and x in (3, 4):
-                k -= 0.95  # mouth
-            if y == 5 and x in (1, 6):
-                k += 0.1
-            return k
-        if face in ("right", "left"):
-            mx = mirror_side(face, x, W)
-            if mx in (3, 4) and y in (3, 4, 5):
-                return -1.0 if (mx == 3 and y == 4) else -0.35  # ear
-            return -0.45 if y == 7 else 0.0
-        if face == "bottom":
-            return -0.9
-        if face == "back":
-            return -0.3
-        return 0.2
-
-    def body(face, x, y, W, H):
-        k = 0.0
-        if face == "front":
-            if y in (2, 3) and x in (1, 2, 5, 6):
-                k += 0.15
-            if y == 4 and x in (1, 2, 5, 6):
-                k -= 0.25  # chest line
-            if x in (3, 4) and 5 <= y <= 9:
-                k -= 0.12 if (y % 2) else 0.0
-            if y == 8 and x == 4:
-                k -= 0.6
-        if face == "back" and x in (3, 4):
-            k -= 0.15
-        if face == "bottom":
-            k -= 0.6
-        return k
-
-    def arm(face, x, y, W, H):
-        k = 0.0
-        if y == 5:
-            k -= 0.15  # elbow
-        if y >= 10:
-            k += 0.05
-            if face == "front" and y == 11 and x in (1, 2):
-                k -= 0.35  # fingers
-        if face == "bottom":
-            k -= 0.5
-        return k
-
-    def leg(face, x, y, W, H):
-        k = 0.0
-        if y == 4 and face == "front":
-            k += 0.12  # knee
-        if face == "front" and y == 11 and x in (1, 2):
-            k -= 0.4  # toes
-        if face == "bottom":
-            k -= 0.8
-        return k
-
-    paint_k(cv, P["head"], head)
-    paint_k(cv, P["body"], body)
+def part_skin(nose=True, mouth=True):
+    p = Part()
+    paint(p, "head", lambda f: (A.head_skin(f, nose, mouth), 1.0))
+    paint(p, "body", lambda f: (A.body_skin(f), 1.0))
     for a in ARMS:
-        paint_k(cv, P[a], arm)
-    for l in LEGS:
-        paint_k(cv, P[l], leg)
-    return cv
+        paint(p, a, lambda f: (A.arm_skin(f), 1.0))
+    for leg in LEGS:
+        paint(p, leg, lambda f: (A.leg_skin(f), 1.0))
+    return p
+
+
+# ---------------------------------------------------------------------------
+# Cloth helpers (tint layers)
+# ---------------------------------------------------------------------------
+
+def weave(f, seed, k0=-0.05):
+    """Base cloth: a fine weave, a little mottling."""
+    g = grain(f, seed)
+    wv = 0.05 * np.sin(f.X * SCALE * math.pi) * np.sin(f.Y * SCALE * math.pi)
+    return k0 + (g - 0.5) * 0.08 + wv + (fbm(f.X * 0.8, f.Y * 0.8, seed + 3) - 0.5) * 0.18
+
+
+def crease(f, x0, y0, x1, y1, width=0.22, strength=0.4):
+    """A fold: a shadow line with a lit ridge just beside it, fading at both ends."""
+    dx, dy = x1 - x0, y1 - y0
+    ll = math.hypot(dx, dy) or 1e-6
+    nx, ny = -dy / ll, dx / ll
+    t = np.clip(((f.X - x0) * dx + (f.Y - y0) * dy) / (ll * ll), 0, 1)
+    d = (f.X - x0) * nx + (f.Y - y0) * ny
+    fade = np.clip(np.sin(t * math.pi), 0, 1) ** 0.7
+    shadow = np.exp(-(d / width) ** 2)
+    ridge = np.exp(-((d - width * 1.6) / (width * 1.2)) ** 2)
+    return strength * fade * (0.55 * ridge - shadow)
+
+
+def seam(f, pts, strength=0.3, stitches=True):
+    """A sewn seam: a dark line with small lighter stitches beside it."""
+    k = -strength * stroke(f, pts, 0.08)
+    if stitches:
+        p = np.asarray(pts, np.float32)
+        d = np.sqrt(((p[1:] - p[:-1]) ** 2).sum(1)).sum()
+        n = max(2, int(d / 0.45))
+        for i in range(n):
+            t = (i + 0.5) / n
+            idx = min(int(t * (len(p) - 1)), len(p) - 2)
+            u = t * (len(p) - 1) - idx
+            x, y = p[idx] * (1 - u) + p[idx + 1] * u
+            k += 0.25 * strength * ell(f, x + 0.12, y, 0.1, 0.05)
+    return k
+
+
+def hem(f, y, up=True, strength=0.35):
+    """A hem band ending at row y (a rolled edge with stitching)."""
+    band = sstep(y - 0.55, y - 0.4, f.Y) if up else sstep(y + 0.55, y + 0.4, f.Y)
+    k = 0.18 * band
+    k += -strength * np.exp(-((f.Y - (y - 0.5 if up else y + 0.5)) / 0.07) ** 2)
+    k += -0.25 * np.exp(-((f.Y - (y - 0.05 if up else y + 0.05)) / 0.08) ** 2)
+    stitch = (tri(f.X / 0.35) > 0.5) * np.exp(-((f.Y - (y - 0.28 if up else y + 0.28)) / 0.04) ** 2)
+    return k + 0.22 * stitch
+
+
+def edge_alpha(f, y_end):
+    """Coverage that ends at row y_end (antialiased)."""
+    return np.clip((y_end - f.Y) * SCALE + 0.5, 0, 1)
 
 
 # ---------------------------------------------------------------------------
 # Undershirts (tinted by shirt colour): dark and plain, so armour sits well on top
 # ---------------------------------------------------------------------------
 
-WRAP = [  # crossed collar: L = lapel (lighter), s = skin showing at the neck
-    "sLs..sLs",
-    ".Ls..sL.",
-    "..Ls.L..",
-    "...LL...",
-    "....L...",
-]
+SLEEVES = {"mesh": 11.0, "tee": 4.6, "longsleeve": 10.4, "sleeveless": 0, "wrap": 9.0, "turtleneck": 10.4}
+
+
+def mesh_net(f, k_thread=0.15):
+    """A diamond net: lit threads, see-through holes."""
+    a = tri((f.X + f.Y) / 0.7)
+    b = tri((f.X - f.Y) / 0.7)
+    thread = np.clip((np.maximum(a, b) - 0.72) * 6, 0, 1)
+    knot = np.clip((np.minimum(a, b) - 0.75) * 8, 0, 1)
+    k = np.where(thread > 0, k_thread + 0.2 * knot, -0.45)
+    alpha = 0.5 + 0.5 * thread
+    return k, alpha
 
 
 def part_shirt(style):
-    cv = new()
-    sleeve_len = {"mesh": 12, "tee": 5, "longsleeve": 11, "sleeveless": 0, "wrap": 9, "turtleneck": 11}[style]
+    p = Part()
+    sleeve = SLEEVES[style]
 
-    def cloth(face, x, y, salt):
-        n = noise(x, y, salt)
-        k = -0.05
-        if n < 0.08:
-            k -= 0.3
-        elif n > 0.95:
-            k += 0.2
-        return k
-
-    def mesh(x, y):
-        """Mesh: lighter diagonal threads, see-through holes between them."""
-        if (x + y) % 4 == 0 or (x - y) % 4 == 0:
-            return 0.2
-        return (-0.35, 215)
-
-    def body(face, x, y, W, H):
-        if y >= 10:
-            return None  # the pants' waist covers rows 10-11
-        if face in ("top", "bottom"):
-            return 0.1 if face == "top" else None
+    def body(f):
+        X, Y = f.X, f.Y
+        if f.name == "bottom":
+            return None
+        alpha = edge_alpha(f, 10.0)                  # the pants' waist covers rows 10-12
+        if f.name == "top":
+            k = weave(f, 5, 0.1) + seam(f, [(0.3, 2.0), (7.7, 2.0)], 0.2, False)
+            if style in ("tee", "longsleeve", "mesh", "sleeveless"):
+                alpha = 1 - ell(f, 4, 4.0, 1.7, 1.7)  # the neck hole
+            return k, alpha
         if style == "mesh":
-            if face == "front" and y == 0 and x in (3, 4):
-                return None
-            return mesh(x, y)
-        if style == "wrap" and face == "front" and y < len(WRAP):
-            ch = WRAP[y][x]
-            if ch == "s":
-                return None
-            if ch == "L":
-                return 0.55 if y < 2 else 0.4
-        if style == "tee" and face == "front" and y == 0 and x in (3, 4):
-            return None
-        if style == "turtleneck" and y == 0:
-            return 0.35
-        if style == "sleeveless" and face in ("right", "left") and y < 3:
-            return None
-        k = cloth(face, x, y, 11)
-        if y == 9:
-            k -= 0.25  # tucked in
-        if face == "front" and y == 0 and style in ("tee", "longsleeve"):
-            k += 0.3  # neckline
-        return k
+            k, a = mesh_net(f)
+            k = k + crease(f, 1.0, 9.6, 7.0, 9.6, 0.25, 0.3) if f.name in ("front", "back") else k
+            if f.name == "front":
+                a = a * (1 - ell(f, 4, 0.0, 1.2, 0.7))
+            return k, a * alpha
+        k = weave(f, 11)
+        k += -0.25 * sstep(8.9, 10.0, Y)                  # tucked in: shadow at the belt
+        if f.name in ("front", "back"):
+            k += A.round_edges(f, 0.16, 0.6)
+            k += crease(f, 0.4, 1.8, 2.6, 3.4, 0.22, 0.35) + crease(f, 7.6, 1.8, 5.4, 3.4, 0.22, 0.35)  # from the armpits
+            k += crease(f, 1.4, 8.6, 3.2, 9.6, 0.2, 0.4) + crease(f, 6.6, 8.6, 4.8, 9.6, 0.2, 0.4)    # bunching at the tuck
+            k += crease(f, 3.5, 8.9, 4.4, 9.8, 0.16, 0.3)
+            k += 0.1 * gauss(f, 4, 2.6, 2.4, 1.2) if f.name == "front" else 0
+        if f.side:
+            k += seam(f, [(2.0, 0.2), (2.0, 9.6)], 0.25)
+            k += crease(f, 0.5, 1.0, 3.2, 3.0, 0.2, 0.3)
+            if style == "sleeveless":
+                hole = ell(f, 2.0, 0.0, 1.9, 3.0)
+                k += 0.3 * np.clip(1 - np.abs(ell_d(f, 2.0, 0.0, 1.9, 3.0) - 1.08) * 10, 0, 1)  # bound edge
+                alpha = alpha * (1 - hole)
+        if f.name == "front":
+            if style == "tee" or style == "longsleeve":
+                hole = ell(f, 4, 0.0, 1.35 if style == "tee" else 1.05, 0.85 if style == "tee" else 0.6)
+                d = ell_d(f, 4, 0.0, 1.35 if style == "tee" else 1.05, 0.85 if style == "tee" else 0.6)
+                k += 0.32 * np.clip(1 - np.abs(d - 1.18) * 5, 0, 1)          # ribbed neckline
+                alpha = alpha * (1 - hole)
+            if style == "sleeveless":
+                hole = ell(f, 4, 0.0, 1.5, 1.1)
+                d = ell_d(f, 4, 0.0, 1.5, 1.1)
+                k += 0.3 * np.clip(1 - np.abs(d - 1.15) * 5, 0, 1)
+                alpha = alpha * (1 - hole)
+            if style == "wrap":
+                # crossed collar: the left lapel over the right, skin in the V
+                v_open = np.clip((np.abs(X - 4) * 1.15 - (Y - 0.2) * 0.95) * SCALE * 0.5 + 0.5, 0, 1) * (Y < 4.3)
+                lap_r = np.clip(1 - np.abs((X - 4) * 1.0 - (Y - 0.2) * 0.87 - 0.55) / 0.55, 0, 1) * (X >= 3.4) * (Y < 5.8)
+                lap_l = np.clip(1 - np.abs(-(X - 4) * 1.0 - (Y - 0.2) * 0.87 - 0.55) / 0.55, 0, 1) * (X <= 4.6) * (Y < 5.8)
+                lap = np.maximum(lap_r * (X > 4) + lap_r * (X <= 4) * 0, lap_l)
+                k = np.where(lap > 0.05, 0.45 + 0.12 * lap - 0.05 * (Y > 4), k)
+                k += -0.4 * np.exp(-((np.abs(X - 4) * 1.0 - (Y - 0.2) * 0.87 - 1.12) / 0.08) ** 2) * (Y < 5.6)
+                k += crease(f, 4.4, 5.4, 6.6, 7.6, 0.22, 0.4)        # the fold under the overlap
+                alpha = alpha * (1 - v_open * (lap < 0.05))
+        if style == "turtleneck":
+            band = sstep(1.35, 1.2, Y)
+            k = np.where(band > 0.5, 0.3 + 0.18 * np.sin(Y * 9.0) - 0.12 * tri(X / 0.5), k)
+            k += -0.3 * np.exp(-((Y - 1.3) / 0.08) ** 2)
+        return k, alpha
 
-    def arm(face, x, y, W, H):
-        if y >= sleeve_len:
+    def arm(f):
+        if sleeve <= 0 or f.name == "bottom":
             return None
-        if face == "bottom":
-            return None
-        if face == "top":
-            return 0.1
+        X, Y = f.X, f.Y
+        alpha = edge_alpha(f, sleeve)
+        if f.name == "top":
+            return weave(f, 13, 0.1), 1.0
         if style == "mesh":
-            return mesh(x, y)
-        k = cloth(face, x, y, 13)
-        if y == sleeve_len - 1:
-            k += 0.3 if style != "wrap" else -0.4  # cuff / hem
-        return k
+            k, a = mesh_net(f)
+            return k, a * alpha
+        k = weave(f, 13) + A.round_edges(f, 0.14)
+        k += 0.12 * gauss(f, 2, 0.8, 1.6, 0.9)
+        if f.name == "front":
+            k += crease(f, 0.8, 1.0, 3.0, 2.2, 0.2, 0.3)     # pull at the shoulder
+        if sleeve > 6.5:
+            # folds bunch at the elbow (the model bends at row 6) and above the cuff
+            k += crease(f, 0.3, 5.3, 3.6, 6.1, 0.2, 0.45) + crease(f, 0.4, 6.4, 3.4, 5.9, 0.18, 0.35)
+            k += crease(f, 0.6, 7.6, 3.2, 7.2, 0.18, 0.3)
+            if sleeve > 9.8:
+                k += crease(f, 0.3, sleeve - 1.1, 3.7, sleeve - 0.8, 0.16, 0.3)
+        if f.side:
+            k += seam(f, [(0.4, 0.2), (0.4, sleeve - 0.2)], 0.2, False)
+        if style == "wrap":
+            k += hem(f, sleeve, True, 0.5) - 0.15
+        else:
+            k += hem(f, sleeve, True, 0.35) + 0.1 * sstep(sleeve - 0.5, sleeve - 0.4, Y)
+        return k, alpha
 
-    paint_k(cv, P["body"], body)
-    if sleeve_len:
-        for a in ARMS:
-            paint_k(cv, P[a], arm)
-    return cv
+    paint(p, "body", body)
+    for a in ARMS:
+        paint(p, a, arm)
+    return p
 
 
 # ---------------------------------------------------------------------------
 # Pants (tinted by pants colour)
 # ---------------------------------------------------------------------------
 
+PANTS = {"long": 10.0, "capri": 8.2, "shorts": 4.8}
+
+
 def part_pants(style):
-    cv = new()
-    bottom = {"long": 10, "capri": 8, "shorts": 5}[style]
+    p = Part()
+    bottom = PANTS[style]
 
-    def waist(face, x, y, W, H):
-        if face in ("top", "bottom"):
+    def waist(f):
+        if f.name in ("top", "bottom"):
             return None
-        if y == 10:
-            return -0.9  # belt
-        if y == 11:
-            return -0.1 if not (face == "front" and x in (3, 4)) else -0.35
-        return None
+        X, Y = f.X, f.Y
+        alpha = sstep(9.9, 10.0, Y)
+        # the sash: a darker band, wrinkled, tied at the front
+        sash = (Y < 11.05)
+        k = np.where(sash, -0.85 + 0.15 * np.sin(X * 7.0 + Y * 3) * 0.5 + (grain(f, 61) - 0.5) * 0.1,
+                     weave(f, 63) - 0.1)
+        k += -0.35 * np.exp(-((Y - 11.05) / 0.08) ** 2) + 0.15 * np.exp(-((Y - 10.1) / 0.1) ** 2)
+        if f.name == "front":
+            knot = ell(f, 5.2, 10.5, 0.5, 0.45)
+            k = np.where(knot > 0.3, -0.55 + 0.3 * gauss(f, 5.1, 10.35, 0.25, 0.2), k)
+            k += -0.3 * stroke(f, [(5.4, 10.9), (5.8, 11.9)], 0.3, 0.15) * 0 + crease(f, 4.0, 11.2, 4.0, 12.0, 0.12, 0.4)
+            k += crease(f, 1.0, 11.4, 3.0, 11.9, 0.15, 0.3) + crease(f, 7.0, 11.4, 5.0, 11.9, 0.15, 0.3)
+        if f.side:
+            k += seam(f, [(2.0, 11.1), (2.0, 12.0)], 0.2, False)
+        return k, alpha
 
-    def leg(face, x, y, W, H):
-        if face == "top":
-            return 0.0
-        if face == "bottom" or y >= bottom:
+    def leg(f):
+        X, Y = f.X, f.Y
+        if f.name == "top":
+            return weave(f, 41), 1.0
+        if f.name == "bottom":
             return None
-        k = 0.0
-        n = noise(x, y, 41)
-        if n < 0.08:
-            k -= 0.3
-        if face == "front" and y in (4, 5) and x in (1, 2):
-            k -= 0.3 if y == 5 else 0.15  # knee fold
-        if face in ("right", "left") and x == (0 if face == "right" else 3):
-            k -= 0.2  # seam
-        if y == bottom - 1:
-            k -= 0.3 if style == "long" else -0.25  # cuff
-        if y == 0:
-            k -= 0.15
-        return k
+        alpha = edge_alpha(f, bottom)
+        k = weave(f, 41) + A.round_edges(f, 0.14)
+        if f.name == "front":
+            k += 0.1 * gauss(f, 2, 2.4, 1.3, 1.8)
+            k += crease(f, 0.5, 0.4, 2.0, 1.4, 0.2, 0.3)       # pull from the hip
+            if bottom > 6.5:
+                k += crease(f, 0.4, 5.4, 3.6, 5.9, 0.18, 0.45) + crease(f, 0.6, 6.5, 3.4, 6.1, 0.16, 0.35)  # knee
+                k += 0.12 * ell(f, 2, 6.0, 0.9, 0.5)
+        if f.name == "back":
+            k += crease(f, 0.4, 0.8, 3.6, 0.6, 0.18, 0.3)
+            if bottom > 6.5:
+                k += crease(f, 0.5, 5.8, 3.5, 6.2, 0.16, 0.45)
+        if f.side:
+            k += seam(f, [(2.0 if f.name == "right" else 2.0, 0.0), (2.0, bottom - 0.1)], 0.22, False)
+        if style == "long":
+            # gathered at the ankle (tied over the shin), puffing out above it
+            k += 0.15 * gauss(f, 2, bottom - 1.2, 3, 0.4) + crease(f, 0.3, bottom - 1.0, 3.7, bottom - 0.7, 0.14, 0.4)
+            band = sstep(bottom - 0.65, bottom - 0.55, Y)
+            k = np.where(band > 0.5, -0.5 + 0.2 * tri((X + Y) / 0.5), k)
+        elif style == "capri":
+            k += crease(f, 0.3, bottom - 1.2, 3.7, bottom - 0.9, 0.16, 0.35)
+            k += hem(f, bottom, True, 0.4)
+        else:
+            k += hem(f, bottom, True, 0.35)
+        return k, alpha
 
-    paint_k(cv, P["body"], waist)
-    for l in LEGS:
-        paint_k(cv, P[l], leg)
-    return cv
+    paint(p, "body", waist)
+    for leg_box in LEGS:
+        paint(p, leg_box, leg)
+    return p
 
 
 # ---------------------------------------------------------------------------
@@ -253,148 +303,245 @@ def part_pants(style):
 WRAP_CLOTH = hx("#ddd7c9")
 
 
-def wrap_px(x, y):
-    if (x + 2 * y) % 5 == 0:
-        return tone(WRAP_CLOTH, -0.7)
-    return tone(WRAP_CLOTH, 0.2 if y % 2 == 0 else -0.25)
+def wrap_rgb(f, y0, y1, seed):
+    """Bandage strips wound diagonally between rows y0 and y1."""
+    X, Y = f.X, f.Y
+    step = 0.62
+    u = (Y + X * 0.28) / step
+    q = u - np.floor(u)
+    k = 0.15 - 0.55 * sstep(0.7, 1.0, q) - 0.25 * sstep(0.25, 0.0, q)  # each strip: lit, shaded under the next
+    k += (grain(f, seed) - 0.5) * 0.25 + (fbm(X * 2, Y * 2, seed) - 0.5) * 0.35
+    k += -0.6 * (fbm(X * 1.5, Y * 1.5, seed + 9) > 0.68)               # grime
+    rgb = tone(WRAP_CLOTH, k)
+    alpha = np.clip((Y - y0) * SCALE + 0.5, 0, 1) * np.clip((y1 - Y) * SCALE + 0.5, 0, 1)
+    # frayed ends
+    alpha = alpha * (1 - (np.abs(Y - y1) < 0.2) * (grain(f, seed + 1) > 0.6))
+    return rgb, alpha
 
 
-def part_leg_wraps():
-    cv = new()
-    for l in LEGS:
-        paint(cv, P[l], lambda f, x, y, W, H: wrap_px(x, y) if 6 <= y <= 9 and f not in ("top", "bottom") else None)
-    return cv
-
-
-def part_arm_wraps():
-    cv = new()
-    for a in ARMS:
-        paint(cv, P[a], lambda f, x, y, W, H: wrap_px(x, y) if 7 <= y <= 10 and f not in ("top", "bottom") else None)
-    return cv
+def part_wraps(boxes, y0, y1):
+    p = Part(tint=False)
+    for b in boxes:
+        paint(p, b, lambda f: None if f.name in ("top", "bottom") else wrap_rgb(f, y0, y1, 71))
+    return p
 
 
 SANDAL = hx("#2b3043")
+SOLE = hx("#5a4a3a")
 
 
 def part_sandals():
-    cv = new()
+    p = Part(tint=False)
 
-    def leg(face, x, y, W, H):
-        if face == "bottom":
-            return tone(SANDAL, -0.6)
-        if face == "top":
+    def leg(f):
+        X, Y = f.X, f.Y
+        shape = X.shape
+        if f.name == "top":
             return None
-        if face == "front":
-            if y == 10:
-                return tone(SANDAL, 0.3)
-            return None  # toes show
-        if face == "back":
-            if y >= 9:
-                return tone(SANDAL, 0.0 if y < 11 else -0.4)
-            return None
-        mx = mirror_side(face, x, W)
-        if y == 11:
-            return tone(SANDAL, -0.4)
-        if y == 10 and mx <= 2:
-            return tone(SANDAL, 0.1)
-        if y == 9 and mx <= 1:
-            return tone(SANDAL, 0.2)  # ankle strap
-        return None
+        if f.name == "bottom":
+            k = -0.3 + (grain(f, 81) - 0.5) * 0.3 + 0.15 * tri(Y / 0.5)
+            return tone(SOLE, k), 1.0
+        sole = sstep(11.45, 11.55, Y)
+        sole_rgb = tone(SOLE, -0.2 - 0.3 * sstep(11.6, 12, Y) + 0.3 * np.exp(-((Y - 11.55) / 0.06) ** 2))
+        strap_k = 0.1 + (grain(f, 83) - 0.5) * 0.15
+        a = np.zeros(shape, np.float32)
+        k = np.full(shape, 0.0, np.float32)
+        if f.name == "front":
+            strap = np.clip(1 - np.abs(Y - 10.55) / 0.3, 0, 1)  # across the toes
+            a = np.maximum(a, np.clip(strap * 3, 0, 1))
+            k = np.where(strap > 0, strap_k + 0.3 * (Y < 10.45) - 0.3 * (Y > 10.7), k)
+        elif f.name == "back":
+            heel = sstep(9.3, 9.45, Y)
+            a = np.maximum(a, heel)
+            k = strap_k - 0.2 + 0.25 * np.exp(-((Y - 9.45) / 0.08) ** 2) + crease(f, 0.5, 10.6, 3.5, 10.6, 0.14, 0.4)
+        else:
+            mx = f.MX
+            heel = (mx < 1.8) * sstep(9.3, 9.45, Y)
+            strap = np.clip(1 - np.abs(Y - (9.6 + (mx - 1.0) * 0.55)) / 0.22, 0, 1) * (mx < 3.6)  # ankle strap
+            a = np.maximum(heel, np.clip(strap * 3, 0, 1))
+            k = np.where(heel > 0, strap_k - 0.15, strap_k + 0.2 * strap)
+            k += 0.3 * ell(f, 1.0, 9.65, 0.14, 0.14)  # a rivet
+        rgb = tone(SANDAL, k)
+        rgb = np.where(sole[..., None] > 0.5, sole_rgb, rgb)
+        return rgb, np.maximum(a, sole)
 
-    for l in LEGS:
-        paint(cv, P[l], leg)
-    return cv
+    for leg_box in LEGS:
+        paint(p, leg_box, leg)
+    return p
 
 
 # ---------------------------------------------------------------------------
-# Eyes: whites (fixed colour) + iris (tinted by eye colour). Row 4 of the face, like the
-# Sharingan / Byakugan glow layers (texture x 9-10 and 13-14, y 12).
+# Eyes: the iris (tinted by eye colour) sits under the eye part (whites with a hole for the iris,
+# lids, lashes, pupil and shine). Shapes and centres come from anatomy.EYE_SHAPES / EYE_XS.
 # ---------------------------------------------------------------------------
 
-WHITE = hx("#f1efe9")
-LASH = hx("#2a1e1c")
-
-
-def face_part(fn):
-    """A part drawn only on the front of the head (base layer)."""
-    cv = new()
-    paint(cv, P["head"], lambda f, x, y, W, H: fn(x, y) if f == "front" else None)
-    return cv
-
-
-def face_part_k(fn):
-    cv = new()
-    paint_k(cv, P["head"], lambda f, x, y, W, H: fn(x, y) if f == "front" else None)
-    return cv
-
+WHITE = hx("#f3f1ec")
+LASH = hx("#22181a")
+LID = hx("#6a4438")
 
 EYE_STYLES = ("round", "sharp", "wide", "narrow", "pale")
 
 
+def head_front(part, fn):
+    paint(part, "head", lambda f: fn(f) if f.name == "front" else None, light=False)
+
+
+def hat_paint(part, fn, light=True):
+    paint(part, "hat", fn, light=light)
+
+
+def iris_k(f, cx, s, pale):
+    ix, iy = A.iris_centre(cx, s)
+    r = s["iris"]
+    d = ell_d(f, ix, iy, r, r)
+    ang = np.arctan2(f.Y - iy, f.X - ix)
+    k = 0.35 * (f.Y - iy) / r                                     # lit from below (light in the eye)
+    k += -0.75 * sstep(0.2, -0.9, (f.Y - iy) / r)                 # the upper lid's shadow
+    k += -0.9 * sstep(0.72, 0.98, d)                              # dark ring
+    k += 0.12 * np.sin(ang * 14 + d * 3) * sstep(0.3, 0.7, d)     # fibres
+    if pale:
+        k = 0.45 + 0.25 * (f.Y - iy) / r - 0.55 * sstep(0.82, 1.0, d) - 0.3 * sstep(0.1, -0.9, (f.Y - iy) / r)
+    return k, ell(f, ix, iy, r, r)
+
+
+def part_iris(style):
+    s = A.EYE_SHAPES[style]
+    p = Part()
+
+    def fn(f):
+        k = f.zeros()
+        a = f.zeros()
+        for cx in A.EYE_XS:
+            kk, cov = iris_k(f, cx, s, style == "pale")
+            inside = A.eye_inside(f, cx, s)
+            k = np.where(cov > 0, kk, k)
+            a = np.maximum(a, cov * inside)
+        return k, a
+    head_front(p, fn)
+    return p
+
+
 def part_eyes(style):
-    def whites(x, y):
-        if style == "pale":
-            if y == 4 and x in (1, 6):
-                return hx("#f3eff8")
-            return None
-        if style == "narrow":
-            if y == 4 and x in (1, 6):
-                return tone(LASH, 0.6)
-            return None
-        if y == 4 and x in (1, 6):
-            return WHITE
-        if style == "wide" and y == 5 and x in (1, 6):
-            return tone(WHITE, -0.8)
-        if style == "sharp" and y == 3 and x in (2, 5):
-            return LASH
-        return None
+    s = A.EYE_SHAPES[style]
+    pale = style == "pale"
+    p = Part(tint=False)
 
-    def iris(x, y):
-        if y == 4 and x in (2, 5):
-            return 0.25 if style in ("pale", "wide") else 0.0
-        if style == "wide" and y == 5 and x in (2, 5):
-            return -1.4
-        if style == "pale" and y == 5 and x in (1, 2, 5, 6):
-            return (-0.5, 200) if x in (2, 5) else (-0.9, 160)
-        return None
-
-    return face_part(whites), face_part_k(iris)
+    def fn(f):
+        rgb = np.zeros(f.X.shape + (3,), np.float32)
+        a = f.zeros()
+        X, Y = f.X, f.Y
+        for cx in A.EYE_XS:
+            top, bottom, across = A.eye_lids(f, cx, s)
+            inside = A.eye_inside(f, cx, s)
+            ix, iy = A.iris_centre(cx, s)
+            r = s["iris"]
+            iris = ell(f, ix, iy, r, r)
+            o = A.outward(X, cx)
+            # whites: shaded under the upper lid and towards the corners
+            wk = -0.9 * sstep(0.45, 0.0, Y - top) - 0.35 * sstep(0.5, 1.0, np.abs(X - cx) / s["hw"])
+            white = tone(WHITE, wk) * np.array([1.0, 0.99, 1.02], np.float32)
+            wa = inside * (1 - iris)
+            rgb = rgb * (1 - wa[..., None]) + white * wa[..., None]
+            a = np.maximum(a, wa)
+            # pupil and shine on the iris
+            if not pale:
+                pup = ell(f, ix, iy + 0.02, r * 0.38, r * 0.42) * inside
+                rgb = rgb * (1 - pup[..., None]) + np.array(hx("#0c0a0d"), np.float32) * pup[..., None]
+                a = np.maximum(a, pup)
+            shine = np.maximum(ell(f, ix - 0.22 * np.sign(cx - 4 + 1e-3) * 0 + 0.2, iy - 0.25, 0.17, 0.15),
+                               0.6 * ell(f, ix - 0.25, iy + 0.28, 0.08, 0.07)) * inside
+            if pale:
+                shine = shine * 0.7
+            rgb = rgb * (1 - shine[..., None]) + np.array([255, 255, 255], np.float32) * shine[..., None]
+            a = np.maximum(a, shine)
+            # upper lash line: thick, thickest at the outer corner, with a flick
+            xs = np.linspace(cx - s["hw"], cx + s["hw"], 28)
+            fx = type("FX", (), {})()
+            fx.X = xs
+            # sample the lid curve along x
+            t = np.clip(np.abs(xs - cx) / s["hw"], 0, 1)
+            sh = np.sqrt(np.clip(1 - t ** 2, 0, 1))
+            oo = np.where(cx < 4, -(xs - cx), xs - cx)
+            ty = A.EYE_Y - s["up"] * sh ** 0.85 - s["tilt"] * oo
+            pts = list(zip(xs, ty - 0.02))
+            if cx > 4:
+                pts = pts[::-1]  # draw from the inner corner outwards
+            # inner corner -> outer corner, thin -> thick
+            lash = stroke(f, pts, s["lash"] * 0.45, s["lash"] * 1.25)
+            ox, oy = pts[-1]
+            dirx = -1 if cx < 4 else 1
+            wing = stroke(f, [(ox, oy), (ox + dirx * s["wing"] * 1.1, oy - s["wing"] * 0.9)], s["lash"] * 0.9, 0.04)
+            lash = np.maximum(lash, wing)
+            # a few lashes on the outer half
+            for i in range(3):
+                bx = cx + dirx * (0.35 + 0.28 * i)
+                bt = np.clip(abs(bx - cx) / s["hw"], 0, 1)
+                by = A.EYE_Y - s["up"] * math.sqrt(max(0, 1 - bt ** 2)) ** 0.85 - s["tilt"] * abs(bx - cx)
+                lash = np.maximum(lash, stroke(f, [(bx, by), (bx + dirx * 0.22, by - 0.22)], 0.07, 0.02))
+            rgb = rgb * (1 - lash[..., None]) + np.array(LASH, np.float32) * lash[..., None]
+            a = np.maximum(a, lash)
+            # the lower lid: a soft thin line, darker at the outer end
+            bt = np.clip(np.abs(xs - cx) / s["hw"], 0, 1)
+            by = A.EYE_Y + s["down"] * np.sqrt(np.clip(1 - bt ** 2, 0, 1)) ** 1.1 - s["tilt"] * oo * 0.6
+            lower = stroke(f, list(zip(xs, by + 0.04)), 0.07) * (0.35 + 0.4 * sstep(0, 1, o / s["hw"]))
+            rgb = rgb * (1 - lower[..., None]) + np.array(LID, np.float32) * lower[..., None]
+            a = np.maximum(a, lower)
+            if style == "wide":
+                for i in range(2):
+                    bx = cx + dirx * (0.5 + 0.3 * i)
+                    yy = A.EYE_Y + s["down"] * 0.8
+                    ll = stroke(f, [(bx, yy), (bx + dirx * 0.12, yy + 0.18)], 0.06, 0.02) * 0.8
+                    rgb = rgb * (1 - ll[..., None]) + np.array(LASH, np.float32) * ll[..., None]
+                    a = np.maximum(a, ll)
+            # the eyelid crease above
+            crease_y = ty - 0.32 - 0.05 * sh
+            cr = stroke(f, list(zip(xs[3:-2], crease_y[3:-2])), 0.06) * 0.35
+            rgb = rgb * (1 - cr[..., None]) + np.array(LID, np.float32) * cr[..., None]
+            a = np.maximum(a, cr)
+        return rgb, a
+    head_front(p, fn)
+    return p
 
 
 BROW_STYLES = ("thin", "thick", "fierce", "soft")
 
+BROW_SHAPES = {
+    # (inner end, middle, outer end) as (x offset outward from the eye centre, y), widths
+    "thin":   (((-1.0, 3.62), (0.0, 3.32), (1.15, 3.5)), 0.2, 0.08),
+    "thick":  (((-1.1, 3.5), (0.0, 3.3), (1.15, 3.42)), 0.42, 0.26),
+    "fierce": (((-1.05, 3.78), (0.1, 3.38), (1.2, 3.18)), 0.36, 0.12),
+    "soft":   (((-0.95, 3.5), (0.0, 3.18), (1.05, 3.45)), 0.24, 0.1),
+}
+
 
 def part_brows(style):
-    def fn(x, y):
-        if style == "thin":
-            if y == 3 and x in (1, 2, 5, 6):
-                return -0.6 if x in (2, 5) else -0.2
-        elif style == "thick":
-            if y == 3 and x in (0, 1, 2, 5, 6, 7):
-                return -1.0
-            if y == 2 and x in (1, 2, 5, 6):
-                return -0.6
-        elif style == "fierce":
-            if y == 3 and x in (2, 5):
-                return -1.0
-            if y == 3 and x in (1, 6):
-                return -0.4
-            if y == 2 and x in (0, 7):
-                return -0.6
-        elif style == "soft":
-            if y == 3 and x in (1, 6):
-                return -0.5
-            if y == 2 and x in (2, 5):
-                return -0.3
-        return None
-    return face_part_k(fn)
+    pts, w_in, w_out = BROW_SHAPES[style]
+    p = Part()
+
+    def fn(f):
+        k = f.zeros()
+        a = f.zeros()
+        for cx in A.EYE_XS:
+            sgn = -1 if cx < 4 else 1
+            ctrl = [(cx + sgn * x, y) for x, y in pts]
+            cov = stroke(f, bezier(ctrl[0], ctrl[1], ctrl[2], 24), w_in, w_out)
+            hairs = 0.25 * np.sin((f.X * sgn * 1.0 + f.Y * 2.2) * 9.0) + (grain(f, 91) - 0.5) * 0.3
+            kk = -0.7 + hairs - 0.25 * sstep(0.5, 1, (f.X - cx) * -sgn)  # darker at the inner end
+            if style == "soft":
+                kk = kk + 0.35
+            k = np.where(cov > a, kk, k)
+            a = np.maximum(a, cov)
+        return k, a
+    head_front(p, fn)
+    return p
 
 
 # ---------------------------------------------------------------------------
-# Hair (tinted by hair colour). ASCII maps: . none, H highlight, h hair, d shade, x deep shade.
-# Side maps are for the right face: column 0 = back of the head, column 7 = the face side.
-# base_* go on the head itself, the others on the outer (hat) layer for volume.
-# jacket_back: rows of hair hanging down the back (outer body layer).
+# Hair (tinted by hair colour). The ASCII maps below are each style's design at the old
+# 8 x 8 resolution: . none, H highlight, h hair, d shade, x deep shade. Side maps are for the
+# right face: column 0 = back of the head, column 7 = the face side. base_* go on the head
+# itself, the others on the outer (hat) layer for volume; jacket_back hangs down the back.
+# They are drawn smoothly: blended outlines cut into locks with pointed tips, strands, a sheen.
 # ---------------------------------------------------------------------------
 
 E = "........"
@@ -500,70 +647,97 @@ HAIR = {
     },
 }
 
-HAIR_K = {"H": 0.9, "h": 0.0, "d": -0.9, "x": -1.8}
+HAIR_K = {"H": 0.45, "h": 0.0, "d": -0.7, "x": -1.4, ".": -0.4}
+
+# Lock width (model px) and how pointed the tips are (0 = a blunt cut) per style.
+HAIR_LOCKS = {
+    "spiky": (0.9, 0.55), "messy": (0.75, 0.45), "short": (0.7, 0.3), "ponytail": (0.8, 0.3),
+    "long": (0.8, 0.3), "swept": (1.0, 0.4), "bowl": (1.0, 0.05), "buzz": (0.5, 0.15),
+    "topknot": (0.8, 0.3), "duck": (0.85, 0.45), "bun": (0.8, 0.3), "hime": (1.0, 0.05),
+}
+
+
+def hair_field(f, rows, salt, lock_w, sharp, layer):
+    """(k, alpha) for one face from an 8-row ASCII map."""
+    cov_grid = [[0.0 if ch == "." else 1.0 for ch in row] for row in rows]
+    tone_grid = [[HAIR_K[ch] for ch in row] for row in rows]
+    W, H = f.W, f.H
+    X = f.MX if f.side else f.X
+    Y = f.Y
+    phase = (salt % 7) * 0.13
+    cov = sample_grid(cov_grid, X, Y, W, H)
+    # locks: the outline's threshold rises and falls across the face, so edges become tips
+    tooth = tri(X / lock_w + phase + 0.15 * vnoise(Y * 0.8, X * 0.3, salt))
+    thr = 0.5 + sharp * (tooth - 0.5) * 1.6
+    alpha = np.clip((cov - thr) * 7 + 0.5, 0, 1)
+    base = sample_grid(tone_grid, X, Y, W, H)
+    # strands: fine streaks along the hair's fall, darker gaps between locks
+    streak = vnoise(X * 5.5 + 0.6 * Y, Y * 0.35, salt + 1) - 0.5
+    fine = grain(f, salt + 2) - 0.5
+    gap = tri(X / lock_w + phase)
+    k = base * 0.8 + streak * 0.55 + fine * 0.12 - 0.45 * sstep(0.35, 0.0, gap) * sstep(0.8, 2.5, Y)
+    # anime sheen: a broken band of light across the upper hair
+    yb = 1.5 + 0.35 * np.sin(X * 1.7 + salt)
+    band = np.exp(-((Y - yb) / 0.32) ** 2) * (vnoise(X * 4.5, Y, salt + 5) > 0.42)
+    k += 0.95 * band
+    # darker towards the tips and under the outer layer
+    k += -0.5 * sstep(0.85, 0.5, cov) - (0.25 if layer == "base" else 0.0)
+    return k, alpha
 
 
 def part_hair(name, salt):
     style = HAIR[name]
-    cv = new()
+    lock_w, sharp = HAIR_LOCKS[name]
+    p = Part()
 
-    def k_of(ch, x, y, s):
-        k = HAIR_K[ch]
-        if ch == "h" and noise(x, y, salt * 13 + s) < 0.18:
-            k -= 0.45
-        return k
-
-    def base(face, x, y, W, H):
-        if face == "top":
-            return k_of("h", x, y, 1)
-        if face == "bottom":
+    def base(f):
+        if f.name == "bottom":
             return None
-        if face == "front":
-            ch = style["base_front"][y][x]
-        elif face in ("right", "left"):
-            ch = style["base_side"][y][mirror_side(face, x, W)]
-        else:
-            ch = style["base_back"][y][x]
-        return None if ch == "." else k_of(ch, x, y, 2)
+        if f.name == "top":
+            k = (vnoise(np.arctan2(f.Y - 5, f.X - 4) * 3, 0.0 * f.X, salt) - 0.5) * 0.5 + (grain(f, salt) - 0.5) * 0.1
+            return k - 0.1, 1.0
+        rows = style["base_front"] if f.name == "front" else style["base_side"] if f.side else style["base_back"]
+        return hair_field(f, rows, salt + (3 if f.side else 0), lock_w, sharp, "base")
 
-    def hat(face, x, y, W, H):
-        if face == "bottom":
+    def hat(f):
+        if f.name == "bottom":
             return None
-        if face == "top":
+        if f.name == "top":
             if style.get("no_hat_top"):
                 return None
+            X, Y = f.X, f.Y
+            ang = np.arctan2(Y - 5.2, X - 4)
+            r = np.hypot(X - 4, Y - 5.2)
+            k = (vnoise(ang * 5, r * 0.6, salt) - 0.5) * 0.8 + 0.25 + (grain(f, salt + 4) - 0.5) * 0.1
+            k += 0.6 * np.exp(-((r - 2.4) / 0.5) ** 2) * (vnoise(ang * 7, 0 * r, salt + 2) > 0.45)  # crown shine
+            k += -0.6 * sstep(1.0, 0.0, r)                       # the whorl at the crown
             if style.get("top_knot"):
-                if 2 <= x <= 5 and 1 <= y <= 4:
-                    return 1.0 if (x, y) in ((3, 2), (4, 2)) else (-0.8 if x in (2, 5) or y in (1, 4) else 0.3)
-            r = noise(x, y, salt + 9)
-            return 0.9 if r > 0.8 else (-0.6 if noise(x, y, salt + 3) < 0.2 else 0.35)
-        if face == "front":
-            ch = style["front"][y][x]
-        elif face in ("right", "left"):
-            ch = style["side"][y][mirror_side(face, x, W)]
-        else:
-            ch = style["back"][y][x]
-        return None if ch == "." else k_of(ch, x, y, 5 if face == "front" else 6)
+                knot = ell(f, 4, 3.2, 1.25, 1.25)
+                kd = ell_d(f, 4, 3.2, 1.25, 1.25)
+                k = np.where(knot > 0.5, 0.2 + 0.8 * sstep(0.9, 0.1, kd) - 0.9 * sstep(0.75, 1.0, kd)
+                             + 0.3 * np.sin(np.arctan2(Y - 3.2, X - 4) * 6), k)
+            return k, 1.0
+        rows = style["front"] if f.name == "front" else style["side"] if f.side else style["back"]
+        return hair_field(f, rows, salt + (5 if f.side else 7), lock_w, sharp, "hat")
 
-    paint_k(cv, P["head"], base)
-    paint_k(cv, P["hat"], hat)
+    paint(p, "head", base)
+    paint(p, "hat", hat)
     rows = style.get("jacket_back", [])
     if rows:
-        def jb(face, x, y, W, H):
-            if face == "back" and y < len(rows) and rows[y][x] != ".":
-                return k_of(rows[y][x], x, y, 7)
-            return None
-        paint_k(cv, P["jacket"], jb)
-    return cv
+        full = rows + ["........"] * (12 - len(rows))
+
+        def jb(f):
+            if f.name != "back":
+                return None
+            # the map's rows are model pixels here (12 rows on the body)
+            return hair_field(f, full, salt + 9, lock_w * 0.9, max(sharp, 0.35), "hat")
+        paint(p, "jacket", jb)
+    return p
 
 
 # ---------------------------------------------------------------------------
 # Face marks (fixed colours; on the face itself)
 # ---------------------------------------------------------------------------
-
-def rgba(c, a):
-    return tuple(c) + (a,)
-
 
 MARKS = {}
 
@@ -575,188 +749,333 @@ def mark(name):
     return deco
 
 
+def mirrored(f, fn):
+    """Draws fn(f, X) on the texture-left cheek and mirrored on the right; returns coverage."""
+    a = fn(f, f.X)
+    b = fn(f, 8 - f.X)
+    return np.maximum(a, b)
+
+
+def colour_layer(f, cov, c, k=None):
+    rgb = tone(c, k if k is not None else f.zeros())
+    return rgb, cov
+
+
 @mark("whiskers")
-def _whiskers(x, y):
-    if (x, y) in ((0, 5), (1, 5), (0, 6), (1, 6), (6, 5), (7, 5), (6, 6), (7, 6)) and (x + y) % 2 == 1:
-        return rgba(hx("#3b2a24"), 170)
-    if (x, y) in ((1, 5), (6, 5)):
-        return rgba(hx("#3b2a24"), 120)
-    return None
+def _whiskers(f):
+    def one(f, X):
+        cov = f.zeros()
+        for i, y in enumerate((5.45, 5.9, 6.35)):
+            cov = np.maximum(cov, stroke(f, bezier((0.25, y - 0.12 + i * 0.05), (0.95, y), (1.75, y + 0.02 - i * 0.04), 12),
+                                         0.13, 0.05, X=X))
+        return cov
+    return colour_layer(f, mirrored(f, one) * 0.85, hx("#3b2a24"))
 
 
 @mark("fangs")
-def _fangs(x, y):
-    red = hx("#b3262a")
-    if (x, y) in ((1, 5), (6, 5)):
-        return red
-    if (x, y) in ((1, 6), (6, 6)):
-        return tone(red, -0.7)
-    if (x, y) in ((0, 5), (7, 5)):
-        return tone(red, -0.3)
-    return None
+def _fangs(f):
+    def one(f, X):
+        return stroke(f, [(1.05, 5.15), (1.45, 6.85)], 0.55, 0.02, X=X)
+    cov = mirrored(f, one)
+    return colour_layer(f, cov, hx("#b3262a"), -0.4 * sstep(5.2, 6.8, f.Y))
 
 
 @mark("swirls")
-def _swirls(x, y):
-    red = hx("#c0392b")
-    if (x, y) in ((0, 5), (1, 5), (1, 6), (7, 5), (6, 5), (6, 6)):
-        return red
-    if (x, y) in ((0, 6), (7, 6)):
-        return tone(red, -0.8)
-    return None
+def _swirls(f):
+    def one(f, X):
+        t = np.linspace(0, 2.6 * math.pi, 40)
+        r = 0.08 + 0.13 * t
+        pts = list(zip(1.2 + r * np.cos(t), 5.9 + r * np.sin(t) * 0.9))
+        return stroke(f, pts, 0.12, 0.2, X=X)
+    return colour_layer(f, mirrored(f, one), hx("#c0392b"))
 
 
 @mark("scar_eye")
-def _scar_eye(x, y):
-    if x == 6 and y in (2, 3, 5, 6):
-        return rgba(hx("#9a5a4e"), 230)
-    return None
+def _scar_eye(f):
+    cov = stroke(f, [(5.25, 2.5), (5.55, 4.4), (5.85, 6.5)], 0.18, 0.1) * 0.9
+    stitches = f.zeros()
+    for y in (3.0, 3.6, 5.3, 5.9):
+        x = 5.25 + (y - 2.5) * 0.15
+        stitches = np.maximum(stitches, stroke(f, [(x - 0.22, y - 0.05), (x + 0.22, y + 0.05)], 0.06))
+    rgb = tone(hx("#9a5a4e"), 0.4 * gauss(f, 5.4, 4.4, 0.06, 3))
+    rgb = np.where(stitches[..., None] > 0.3, tone(hx("#5a342e"), f.zeros()), rgb)
+    return rgb, np.maximum(cov, stitches * 0.8)
 
 
 @mark("scar_nose")
-def _scar_nose(x, y):
-    if y == 5 and 2 <= x <= 5:
-        return rgba(hx("#a0604f"), 220 if x in (3, 4) else 160)
-    return None
+def _scar_nose(f):
+    cov = stroke(f, [(2.3, 5.25), (4.0, 5.0), (5.7, 5.2)], 0.12, 0.22) * 0.85
+    return colour_layer(f, cov, hx("#a0604f"), 0.3 * np.exp(-((f.Y - 5.05) / 0.05) ** 2))
 
 
 @mark("tear_lines")
-def _tear(x, y):
-    if x in (2, 5) and y in (5, 6):
-        return rgba(hx("#4a3a3a"), 150 if y == 5 else 100)
-    return None
+def _tear(f):
+    def one(f, X):
+        return stroke(f, bezier((2.95, 5.15), (2.9, 6.0), (2.75, 7.0), 12), 0.12, 0.04, X=X)
+    return colour_layer(f, mirrored(f, one) * 0.6, hx("#4a3a3a"))
 
 
 @mark("diamond")
-def _diamond(x, y):
-    if (x, y) in ((3, 1), (4, 1)):
-        return hx("#7b3fa0")
-    if (x, y) in ((3, 2), (4, 2)):
-        return hx("#5a2a7a")
-    return None
+def _diamond(f):
+    d = np.abs(f.X - 4) / 0.42 + np.abs(f.Y - 1.75) / 0.6
+    cov = np.clip((1 - d) * 0.42 * SCALE + 0.5, 0, 1)
+    return colour_layer(f, cov, hx("#7b3fa0"), -0.5 * (f.Y > 1.75))
 
 
 @mark("war_paint")
-def _war(x, y):
-    if y == 3 and x in (0, 1, 6, 7):
-        return hx("#6a2f8a")
-    if y == 5 and x in (0, 7):
-        return hx("#6a2f8a")
-    return None
+def _war(f):
+    def one(f, X):
+        a = stroke(f, [(0.0, 3.55), (1.35, 3.35)], 0.32, 0.12, X=X)
+        b = stroke(f, [(0.0, 5.75), (1.1, 5.55)], 0.28, 0.08, X=X)
+        return np.maximum(a, b)
+    return colour_layer(f, mirrored(f, one) * 0.92, hx("#6a2f8a"), (grain(f, 3) - 0.5) * 0.4)
 
 
 @mark("freckles")
-def _freckles(x, y):
-    if (x, y) in ((1, 5), (2, 6), (5, 5), (6, 6), (0, 6), (7, 5)):
-        return rgba(hx("#7a4a30"), 110)
-    return None
+def _freckles(f):
+    cov = f.zeros()
+    pts = [(1.2, 5.3), (1.7, 5.6), (1.0, 5.85), (1.55, 6.05), (2.1, 5.35), (3.3, 5.1), (4.7, 5.1),
+           (6.8, 5.3), (6.3, 5.6), (7.0, 5.85), (6.45, 6.05), (5.9, 5.35), (2.6, 5.75), (5.4, 5.75)]
+    for x, y in pts:
+        cov = np.maximum(cov, ell(f, x, y, 0.08, 0.07))
+    return colour_layer(f, cov * 0.55, hx("#7a4a30"))
 
 
 @mark("stripes")
-def _stripes(x, y):
-    if x in (0, 7) and y in (4, 5, 6):
-        return hx("#2f4f8a") if y != 5 else hx("#3f63a8")
-    return None
+def _stripes(f):
+    def one(f, X):
+        a = stroke(f, [(0.35, 4.6), (0.6, 6.9)], 0.3, 0.08, X=X)
+        b = stroke(f, [(0.95, 5.0), (1.1, 6.6)], 0.22, 0.05, X=X)
+        return np.maximum(a, b)
+    return colour_layer(f, mirrored(f, one), hx("#2f4f8a"), 0.3 * sstep(4.6, 5.4, f.Y) - 0.3 * sstep(5.5, 6.9, f.Y))
+
+
+def part_mark(name):
+    p = Part(tint=False)
+    head_front(p, MARKS[name])
+    return p
 
 
 # ---------------------------------------------------------------------------
 # Accessories (outer head layer). "mask" is tinted, the rest are fixed colours.
 # ---------------------------------------------------------------------------
 
+MASK_TOP = 5.05
+
+
 def part_mask():
-    cv = new()
+    p = Part()
 
-    def fn(face, x, y, W, H):
-        if face in ("top", "bottom"):
+    def fn(f):
+        if f.name in ("top", "bottom"):
             return None
-        if face == "front" and y >= 5:
-            if y == 5:
-                return 0.6 if x in (3, 4) else (0.15 if 0 < x < 7 else -0.4)  # nose ridge
-            return -0.15 if 0 < x < 7 else -0.5
-        if face in ("right", "left") and y >= 5:
-            mx = mirror_side(face, x, W)
-            return -0.25 if mx > 2 else -0.6
-        if face == "back" and y >= 5:
-            return -0.5
-        return None
+        X, Y = f.X, f.Y
+        k = weave(f, 101, -0.1)
+        if f.name == "front":
+            top = MASK_TOP + 0.12 * np.abs(X - 4) ** 1.3 * 0.25
+            a = np.clip((Y - top) * SCALE + 0.5, 0, 1)
+            k += 0.5 * gauss(f, 4, 5.6, 0.32, 0.6) - 0.3 * gauss(f, 4.55, 5.9, 0.25, 0.5)  # over the nose
+            k += crease(f, 2.2, 6.2, 3.6, 7.4, 0.18, 0.4) + crease(f, 5.8, 6.2, 4.4, 7.4, 0.18, 0.4)
+            k += crease(f, 3.4, 6.9, 4.6, 6.9, 0.14, 0.25)
+            k += A.round_edges(f, 0.25)
+            k += 0.25 * np.exp(-((Y - top - 0.15) / 0.12) ** 2) - 0.3 * np.exp(-((Y - top - 0.38) / 0.06) ** 2)  # hem
+            return k, a
+        if f.side:
+            top = MASK_TOP + 0.1 * (8 - f.MX) * 0.1
+            a = np.clip((Y - top) * SCALE + 0.5, 0, 1)
+            k += -0.15 - 0.3 * sstep(3.5, 0, f.MX) + crease(f, 1.0, 6.0, 3.5, 7.0, 0.18, 0.3)
+            k += 0.25 * np.exp(-((Y - top - 0.15) / 0.12) ** 2) - 0.3 * np.exp(-((Y - top - 0.38) / 0.06) ** 2)
+            return k, a
+        a = np.clip((Y - MASK_TOP) * SCALE + 0.5, 0, 1)
+        return k - 0.35 + seam(f, [(4, MASK_TOP), (4, 8)], 0.3), a
 
-    paint_k(cv, P["hat"], fn)
-    return cv
+    hat_paint(p, fn)
+    return p
 
 
-def hat_part(fn):
-    cv = new()
-    paint(cv, P["hat"], fn)
-    return cv
+METAL = hx("#55585e")
 
 
 def part_glasses():
-    lens, frame = hx("#20242c"), hx("#55585e")
+    p = Part(tint=False)
 
-    def fn(face, x, y, W, H):
-        if face == "front" and y == 4:
-            if x in (1, 2, 5, 6):
-                return hx("#c8d4e0") if x in (1, 5) else lens  # glint
-            if x in (3, 4):
-                return frame
-            return frame
-        if face in ("right", "left") and y == 4 and mirror_side(face, x, W) >= 3:
-            return frame
+    def fn(f):
+        if f.name == "front":
+            rgb = np.zeros(f.X.shape + (3,), np.float32)
+            a = f.zeros()
+            for cx in A.EYE_XS:
+                d = ell_d(f, cx, A.EYE_Y, 1.0, 0.9)
+                lens = ell(f, cx, A.EYE_Y, 1.0, 0.9)
+                glint = stroke(f, [(cx - 0.55, A.EYE_Y - 0.1), (cx - 0.15, A.EYE_Y - 0.55)], 0.16) * lens
+                lens_rgb = np.array(hx("#9fb4c8"), np.float32)
+                rgb = np.where(lens[..., None] > 0, lens_rgb, rgb)
+                a = np.maximum(a, lens * 0.28)
+                rgb = rgb * (1 - glint[..., None]) + 255 * glint[..., None]
+                a = np.maximum(a, glint * 0.85)
+                rim = np.clip(1 - np.abs(d - 1.0) * 1.0 * SCALE * 0.9 / 1.0 * 1.6, 0, 1)
+                rgb = rgb * (1 - rim[..., None]) + tone(METAL, 0.4 * (f.Y < A.EYE_Y))[...] * rim[..., None]
+                a = np.maximum(a, rim)
+            bridge = stroke(f, bezier((3.5, A.EYE_Y - 0.3), (4, A.EYE_Y - 0.5), (4.5, A.EYE_Y - 0.3)), 0.12)
+            rgb = rgb * (1 - bridge[..., None]) + np.array(METAL, np.float32) * bridge[..., None]
+            a = np.maximum(a, bridge)
+            for x0, x1 in ((0.0, 1.5), (6.5, 8.0)):
+                arm = stroke(f, [(x0, A.EYE_Y - 0.35), (x1, A.EYE_Y - 0.35)], 0.12)
+                rgb = rgb * (1 - arm[..., None]) + np.array(METAL, np.float32) * arm[..., None]
+                a = np.maximum(a, arm)
+            return rgb, a
+        if f.side:
+            arm = stroke(f, [(f.W, A.EYE_Y - 0.35), (2.8, A.EYE_Y - 0.25), (2.3, A.EYE_Y + 0.4)], 0.13)
+            return rgb_of(METAL, f.X.shape), arm
         return None
-    return hat_part(fn)
+    hat_paint(p, fn, light=True)
+    return p
 
 
 def part_shades():
+    p = Part(tint=False)
     dark = hx("#17181c")
 
-    def fn(face, x, y, W, H):
-        if face == "front" and y == 4:
-            return hx("#3a4a5a") if x in (1, 5) else dark
-        if face == "front" and y == 3 and 1 <= x <= 6:
-            return tone(dark, 0.4)
-        if face in ("right", "left") and y == 4 and mirror_side(face, x, W) >= 2:
-            return dark
+    def fn(f):
+        if f.name == "front":
+            a = f.zeros()
+            k = f.zeros()
+            for cx in A.EYE_XS:
+                cov = box_cov(f, cx - 1.15, A.EYE_Y - 0.6, cx + 1.15, A.EYE_Y + 0.55) * ell(f, cx, A.EYE_Y - 0.1, 1.45, 0.9)
+                a = np.maximum(a, cov)
+                k = np.where(cov > 0, 0.6 * sstep(A.EYE_Y + 0.5, A.EYE_Y - 0.6, f.Y) - 0.2, k)
+                k += 1.6 * stroke(f, [(cx - 0.7, A.EYE_Y - 0.25), (cx - 0.3, A.EYE_Y - 0.45)], 0.12) * cov
+            bar = stroke(f, [(0.0, A.EYE_Y - 0.62), (8.0, A.EYE_Y - 0.62)], 0.18)
+            a = np.maximum(a, bar)
+            k = np.where(bar > 0.5, 0.5, k)
+            return tone(dark, k), a
+        if f.side:
+            arm = stroke(f, [(f.W, A.EYE_Y - 0.55), (2.5, A.EYE_Y - 0.4)], 0.18)
+            return rgb_of(dark, f.X.shape), arm
         return None
-    return hat_part(fn)
+    hat_paint(p, fn)
+    return p
 
 
 def part_head_bandage():
-    def fn(face, x, y, W, H):
-        if face in ("top", "bottom"):
+    p = Part(tint=False)
+
+    def fn(f):
+        if f.name in ("top", "bottom"):
             return None
-        if y in (1, 2):
-            return wrap_px(x, y + (1 if face == "back" else 0))
-        if face == "back" and x in (3, 4) and y in (3, 4):
-            return tone(WRAP_CLOTH, -0.4 if y == 4 else 0.0)
-        return None
-    return hat_part(fn)
+        y0, y1 = 0.95, 2.55
+        rgb, a = wrap_rgb(f, y0, y1, 111)
+        if f.name == "back":
+            # the knot and two tails
+            knot = ell(f, 4, 2.2, 0.55, 0.45)
+            tails = np.maximum(stroke(f, [(3.9, 2.5), (3.3, 4.6)], 0.45, 0.25), stroke(f, [(4.1, 2.5), (4.8, 4.3)], 0.45, 0.25))
+            extra = np.maximum(knot, tails)
+            krgb = tone(WRAP_CLOTH, -0.25 + 0.3 * gauss(f, 3.9, 2.0, 0.25, 0.2) + (grain(f, 5) - 0.5) * 0.2)
+            rgb = np.where(extra[..., None] > a[..., None], krgb, rgb)
+            a = np.maximum(a, extra)
+        return rgb, a
+    hat_paint(p, fn)
+    return p
 
 
 def part_eyepatch():
+    p = Part(tint=False)
     black = hx("#151518")
 
-    def fn(face, x, y, W, H):
-        if face == "front":
-            if x in (5, 6) and y in (3, 4, 5):
-                return tone(black, 0.4) if (x, y) == (5, 3) else black
-            if (x, y) in ((4, 2), (3, 1), (2, 1), (1, 1), (0, 1), (7, 3)):
-                return black
-        if face in ("right", "left") and y == (3 if face == "left" else 1):
-            return black
-        if face == "back" and y == 2:
-            return black
+    def fn(f):
+        if f.name == "front":
+            cx = A.EYE_XS[1]
+            patch = ell(f, cx, A.EYE_Y + 0.05, 1.05, 0.92)
+            strap = np.maximum(stroke(f, [(cx - 0.6, A.EYE_Y - 0.6), (2.0, 2.0), (0.0, 1.2)], 0.22),
+                               stroke(f, [(cx + 0.8, A.EYE_Y - 0.2), (8.0, A.EYE_Y - 0.4)], 0.22))
+            k = 0.35 * gauss(f, cx - 0.3, A.EYE_Y - 0.3, 0.4, 0.3) - 0.3 * sstep(0.7, 1.0, ell_d(f, cx, A.EYE_Y + 0.05, 1.05, 0.92))
+            k = np.where(patch > 0, k, 0.15)
+            return tone(black, k), np.maximum(patch, strap)
+        if f.side:
+            y = 1.2 if f.name == "right" else A.EYE_Y - 0.4
+            return rgb_of(tone(black, 0.1), f.X.shape), stroke(f, [(0, y + 0.3), (f.W, y)], 0.22)
+        if f.name == "back":
+            return rgb_of(tone(black, 0.1), f.X.shape), stroke(f, [(0, 1.5), (8, 1.5)], 0.22)
         return None
-    return hat_part(fn)
+    hat_paint(p, fn)
+    return p
 
 
 def part_face_bandage():
-    def fn(face, x, y, W, H):
-        if face == "front" and y == 5 and 1 <= x <= 6:
-            return wrap_px(x, y)
-        if face == "front" and y == 6 and x in (5, 6):
-            return wrap_px(x, y)
-        return None
-    return hat_part(fn)
+    p = Part(tint=False)
+
+    def fn(f):
+        if f.name != "front":
+            return None
+        rgb, a = wrap_rgb(f, 4.85, 5.75, 121)
+        a = a * box_cov(f, 1.0, 4.0, 7.1, 7.0)
+        tab = box_cov(f, 5.2, 5.6, 6.5, 7.0)
+        trgb = tone(WRAP_CLOTH, -0.1 + (grain(f, 7) - 0.5) * 0.2 - 0.35 * np.exp(-((f.Y - 5.75) / 0.06) ** 2))
+        rgb = np.where(tab[..., None] > a[..., None], trgb, rgb)
+        return rgb, np.maximum(a, tab)
+    hat_paint(p, fn)
+    return p
+
+
+# ---------------------------------------------------------------------------
+# Dojutsu glow layers (drawn full-bright over the head; see client/SharinganEyesLayer)
+# ---------------------------------------------------------------------------
+
+def part_sharingan_glow():
+    p = Part(tint=False)
+    red = hx("#d0141e")
+
+    def fn(f):
+        rgb = np.zeros(f.X.shape + (3,), np.float32)
+        a = f.zeros()
+        for cx in A.EYE_XS:
+            ix, iy = cx, A.EYE_Y - 0.04
+            r = 0.68
+            d = ell_d(f, ix, iy, r, r)
+            disc = ell(f, ix, iy, r, r)
+            k = 0.4 * sstep(0.9, 0.2, d) - 0.6 * sstep(0.8, 1.0, d)
+            col = tone(red, k)
+            ring = np.clip(1 - np.abs(d - 0.62) * 14, 0, 1) * 0.6
+            col = col * (1 - ring[..., None]) + np.array(hx("#5a0408"), np.float32) * ring[..., None]
+            blk = ell(f, ix, iy, r * 0.22, r * 0.22)
+            for i in range(3):
+                ang = i * 2 * math.pi / 3 - math.pi / 2
+                tx, ty = ix + r * 0.62 * math.cos(ang), iy + r * 0.62 * math.sin(ang)
+                tom = ell(f, tx, ty, 0.12, 0.12)
+                tail = stroke(f, [(tx, ty), (tx + 0.18 * math.cos(ang + 1.9), ty + 0.18 * math.sin(ang + 1.9)),
+                                  (tx + 0.2 * math.cos(ang + 2.6), ty + 0.2 * math.sin(ang + 2.6))], 0.12, 0.02)
+                blk = np.maximum(blk, np.maximum(tom, tail))
+            col = col * (1 - blk[..., None]) + np.array(hx("#120406"), np.float32) * blk[..., None]
+            rgb = np.where(disc[..., None] > 0, col, rgb)
+            a = np.maximum(a, disc)
+        return rgb, a
+    head_front(p, fn)
+    return p
+
+
+def part_byakugan_glow():
+    p = Part(tint=False)
+    pale = hx("#e9e4f6")
+
+    def fn(f):
+        rgb = rgb_of(pale, f.X.shape).copy()
+        a = f.zeros()
+        for cx in A.EYE_XS:
+            sgn = -1 if cx < 4 else 1
+            disc = ell(f, cx, A.EYE_Y - 0.04, 0.72, 0.72)
+            a = np.maximum(a, disc * 0.95)
+            # bulging veins from the eye towards the temple and down the cheek
+            veins = f.zeros()
+            for ang in (-0.9, -0.45, 0.0, 0.5, 0.95, 2.4, 2.9):
+                ang_o = ang if sgn > 0 else math.pi - ang
+                x0, y0 = cx + 1.05 * math.cos(ang_o), A.EYE_Y + 0.75 * math.sin(ang_o)
+                x1, y1 = cx + 1.75 * math.cos(ang_o + 0.2 * sgn), A.EYE_Y + 1.25 * math.sin(ang_o + 0.2 * sgn)
+                x2, y2 = cx + 2.2 * math.cos(ang_o - 0.15 * sgn), A.EYE_Y + 1.5 * math.sin(ang_o - 0.15 * sgn)
+                veins = np.maximum(veins, stroke(f, [(x0, y0), (x1, y1), (x2, y2)], 0.11, 0.03))
+            a = np.maximum(a, veins * 0.75)
+            rgb = np.where((veins > disc)[..., None], np.array(hx("#c9c0e6"), np.float32), rgb)
+        return rgb, a
+    head_front(p, fn)
+    return p
 
 
 # ---------------------------------------------------------------------------
@@ -899,36 +1218,40 @@ FAMILY = {
 TINTED_ACCESSORIES = ["mask"]
 
 
+
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     parts = {"skin": part_skin(), "sandals": part_sandals(),
-             "leg_wraps": part_leg_wraps(), "arm_wraps": part_arm_wraps()}
-    for s in ("mesh", "tee", "longsleeve", "sleeveless", "wrap", "turtleneck"):
+             "leg_wraps": part_wraps(LEGS, 6.0, 10.1), "arm_wraps": part_wraps(ARMS, 7.0, 10.9)}
+    for s in SLEEVES:
         parts["shirt_" + s] = part_shirt(s)
-    for s in ("long", "capri", "shorts"):
+    for s in PANTS:
         parts["pants_" + s] = part_pants(s)
     for s in EYE_STYLES:
-        parts["eyes_" + s], parts["iris_" + s] = part_eyes(s)
+        parts["eyes_" + s] = part_eyes(s)
+        parts["iris_" + s] = part_iris(s)
     for s in BROW_STYLES:
         parts["brows_" + s] = part_brows(s)
     for i, name in enumerate(HAIR):
         parts["hair_" + name] = part_hair(name, 17 + i * 7)
-    for name, fn in MARKS.items():
-        parts["mark_" + name] = face_part(fn)
+    for name in MARKS:
+        parts["mark_" + name] = part_mark(name)
     parts["acc_mask"] = part_mask()
     parts["acc_glasses"] = part_glasses()
     parts["acc_shades"] = part_shades()
     parts["acc_head_bandage"] = part_head_bandage()
     parts["acc_eyepatch"] = part_eyepatch()
     parts["acc_face_bandage"] = part_face_bandage()
-    for name, cv in parts.items():
-        cv.save(os.path.join(OUT_DIR, name + ".png"))
+    for name, part in parts.items():
+        part.save(os.path.join(OUT_DIR, name + ".png"))
+    part_sharingan_glow().save(os.path.join(ENTITY_DIR, "sharingan_eyes.png"))
+    part_byakugan_glow().save(os.path.join(ENTITY_DIR, "byakugan_eyes.png"))
     looks = {"_comment": "Generated by tools/skingen/gen_parts.py: appearance tables per clan folder (weights are relative).",
              "clans": CLANS, "family": FAMILY, "tinted_accessories": TINTED_ACCESSORIES}
     with open(os.path.join(OUT_DIR, "looks.json"), "w") as f:
         json.dump(looks, f, indent=1)
         f.write("\n")
-    print("wrote %d parts to %s" % (len(parts), os.path.relpath(OUT_DIR, ROOT)))
+    print("wrote %d parts (%dx%d) to %s" % (len(parts), 64 * SCALE, 64 * SCALE, os.path.relpath(OUT_DIR, ROOT)))
 
 
 if __name__ == "__main__":
