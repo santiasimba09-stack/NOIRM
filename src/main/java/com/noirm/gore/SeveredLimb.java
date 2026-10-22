@@ -24,18 +24,23 @@ import java.util.ArrayDeque;
 
 /**
  * A severed arm, leg or head (see {@link Gore}): a light ragdoll that tumbles, bounces and
- * settles, wearing the victim's skin and the matching armor piece. After {@link #LIFE_TICKS} it
+ * settles, wearing the victim's skin and the matching armor piece. It spurts blood from the cut
+ * for a moment ({@link #SPURT_TICKS}) and leaves a pool where it lands. After {@link #LIFE_TICKS} it
  * burns away in blue chakra flame ({@link #DISSOLVE_TICKS}) and crumbles into ash. Never saved
  * with the world; at most {@link #MAX_LIMBS} at once (the oldest goes first); clients only get
  * it within 32 blocks (the tracking range) and only draw it within {@link #RENDER_DISTANCE}.
  */
 public class SeveredLimb extends Entity {
-    /** Seconds a limb lies there before it starts to burn away: 5 s. */
-    public static final int LIFE_TICKS = 100;
+    /** How long a limb lies there before it starts to burn away: 15 s. */
+    public static final int LIFE_TICKS = 300;
+    /** Blood pumps from the cut for this long. */
+    public static final int SPURT_TICKS = 40;
+    /** The pool it leaves where it lands (half-width, blocks). */
+    public static final float POOL_SIZE = 0.45f;
     /** How long the chakra flame takes to eat it. */
     public static final int DISSOLVE_TICKS = 30;
     /** The most limbs alive at once (the oldest goes first). */
-    public static final int MAX_LIMBS = 12;
+    public static final int MAX_LIMBS = 16;
     /** Not drawn (or ticked for effects) beyond this many blocks. */
     public static final double RENDER_DISTANCE = 32;
     static final double GRAVITY = 0.045;
@@ -79,6 +84,8 @@ public class SeveredLimb extends Entity {
     private float rollSpeed;
     /** Client: what the renderer worked out once (skin, armor textures). */
     public Object renderCache;
+    /** Client: it has left its pool on the ground. */
+    private boolean pooled;
 
     public SeveredLimb(EntityType<? extends SeveredLimb> type, Level level) {
         super(type, level);
@@ -183,6 +190,7 @@ public class SeveredLimb extends Entity {
         }
         if (level().isClientSide()) {
             tumble();
+            bleed();
             if (tickCount >= LIFE_TICKS) {
                 flame();
             }
@@ -212,6 +220,24 @@ public class SeveredLimb extends Entity {
         }
         pitch += (restPitch - pitch) * 0.35f + pitchSpeed;
         roll += (restRoll - roll) * 0.35f + rollSpeed;
+    }
+
+    /** Client: blood spurting from the cut for a moment, and a pool where it comes to rest. */
+    private void bleed() {
+        if (!GoreSettings.any()) {
+            return;
+        }
+        if (tickCount < SPURT_TICKS && (tickCount & 1) == 0) {
+            float strength = 1f - (float) tickCount / SPURT_TICKS;
+            level().addParticle(GoreParticles.BLOOD_DROP.get(), getX(), getY() + 0.15, getZ(), (random.nextFloat() - 0.5f) * 0.12,
+                    0.06 + 0.12 * strength * random.nextFloat(), (random.nextFloat() - 0.5f) * 0.12);
+        }
+        if (!pooled && onGround() && tickCount > 4) {
+            pooled = true;
+            if (GoreSettings.full()) {
+                BloodSplats.CLIENT.add(level(), getX(), getY(), getZ(), POOL_SIZE, true, random);
+            }
+        }
     }
 
     /** Client: blue chakra flame licking up from the limb while it dissolves. */

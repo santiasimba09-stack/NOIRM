@@ -33,6 +33,7 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
         addLayer(new net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer<>(this,
                 new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), // bends with the body
                 context.getModelManager()));
+        addLayer(new GoreArmorLayer<>(this)); // dirt, soot, cuts and blood on their clothes
     }
 
     @Override
