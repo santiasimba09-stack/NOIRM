@@ -34,7 +34,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import anatomy as A  # noqa: E402
 from hdskin import (Part, paint, tone, rgb_of, sstep, ell, ell_d, gauss, box_cov, bezier, stroke,  # noqa: E402
-                    vnoise, fbm, grain, tri, sample_grid, hx, ink, grit, SCALE)
+                    vnoise, fbm, grain, tri, sample_grid, hx, ink, grit, hash01, SCALE)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT_DIR = os.path.join(ROOT, "src/main/resources/assets/noirm/textures/entity/ninja/parts")
@@ -50,12 +50,12 @@ LEGS = ("rleg", "lleg")
 
 def part_skin(nose=True, mouth=True):
     p = Part()
-    paint(p, "head", lambda f: (A.head_skin(f, nose, mouth), 1.0))
-    paint(p, "body", lambda f: (A.body_skin(f), 1.0))
+    paint(p, "head", lambda f: (A.head_skin(f, nose, mouth), 1.0), light=False)
+    paint(p, "body", lambda f: (A.body_skin(f), 1.0), light=False)
     for a in ARMS:
-        paint(p, a, lambda f: (A.arm_skin(f), 1.0))
+        paint(p, a, lambda f: (A.arm_skin(f), 1.0), light=False)
     for leg in LEGS:
-        paint(p, leg, lambda f: (A.leg_skin(f), 1.0))
+        paint(p, leg, lambda f: (A.leg_skin(f), 1.0), light=False)
     return p
 
 
@@ -116,12 +116,32 @@ def inked(fn, seed, gain=1.4, dirt=0.0):
         if res is None:
             return None
         k, a = res
-        k = ink(f, k, seed, gain=gain, rough=0.08, keep=0.3) + grit(f, seed + 1, 0.07)
+        k = cloth_ink(f, k, seed)
         if dirt:
             grime = fbm(f.X * 1.6, f.Y * 1.6, seed + 2)
             k = k - dirt * sstep(0.45, 0.75, grime + 0.05 * f.Y) * sstep(4, 12, f.Y)
         return k, a
     return wrapped
+
+
+CLOTH_TONES = (0.55, 0.0, -0.75, -1.6, -2.7)
+
+
+def cloth_ink(f, k, seed):
+    """Cloth in ink: the design's folds and seams (k) on top of the body's form light, cut into a few
+    flat tones with crisp edges (the same light as the skin, so cloth and body read as one figure)."""
+    if f.name in ("front", "back", "right", "left"):
+        light = A.lit(f, None, None, A.ROUNDNESS[A.kind(f.box)])
+        v = k * 1.15 + (light - 0.62) * 1.5
+    else:
+        v = k * 1.15 + (0.25 if f.name == "top" else -1.2)
+    v = v + 0.04 * (fbm(f.X * 2, f.Y * 2, seed) - 0.5)
+    out = np.full_like(v, CLOTH_TONES[4])
+    out = np.where(v > -1.25, CLOTH_TONES[3], out)
+    out = np.where(v > -0.5, CLOTH_TONES[2], out)
+    out = np.where(v > -0.08, CLOTH_TONES[1], out)
+    out = np.where(v > 0.42, CLOTH_TONES[0], out)
+    return out
 
 
 def edge_alpha(f, y_end):
@@ -390,9 +410,11 @@ def part_sandals():
 # lids, lashes, pupil and shine). Shapes and centres come from anatomy.EYE_SHAPES / EYE_XS.
 # ---------------------------------------------------------------------------
 
-WHITE = hx("#f3f1ec")
-LASH = hx("#22181a")
-LID = hx("#6a4438")
+WHITE = hx("#ddd6cc")
+WHITE_SHADE = hx("#958a84")
+PUPIL = hx("#0b080b")
+LASH = hx("#120c0e")
+LID = hx("#4a2a24")
 
 EYE_STYLES = ("round", "sharp", "wide", "narrow", "pale")
 
@@ -405,18 +427,36 @@ def hat_paint(part, fn, light=True):
     paint(part, "hat", fn, light=light)
 
 
+def lid_points(cx, s, which, n=32, x0=None, x1=None):
+    """Points along the upper or lower lid, from the inner corner to the outer corner."""
+    x0 = cx - s["hw"] if x0 is None else x0
+    x1 = cx + s["hw"] if x1 is None else x1
+    xs = np.linspace(x0, x1, n)
+    top, bottom = A.lid_curves(xs, cx, s)
+    ys = top if which == "top" else bottom
+    pts = list(zip(xs, ys))
+    if cx < 4:
+        pts = pts[::-1]
+    return pts
+
+
 def iris_k(f, cx, s, pale):
+    """The iris in the eye colour: dark under the lid, a lit crescent below, a dark rim (crisp tones)."""
     ix, iy = A.iris_centre(cx, s)
     r = s["iris"]
-    d = ell_d(f, ix, iy, r, r)
-    ang = np.arctan2(f.Y - iy, f.X - ix)
-    k = 0.35 * (f.Y - iy) / r                                     # lit from below (light in the eye)
-    k += -0.75 * sstep(0.2, -0.9, (f.Y - iy) / r)                 # the upper lid's shadow
-    k += -0.9 * sstep(0.72, 0.98, d)                              # dark ring
-    k += 0.12 * np.sin(ang * 14 + d * 3) * sstep(0.3, 0.7, d)     # fibres
+    rx, ry = A.iris_radii(s)
+    d = ell_d(f, ix, iy, rx, ry)
+    v = (f.Y - iy) / ry                                           # -1 top .. +1 bottom
+    k = np.full_like(f.X, 0.0)
     if pale:
-        k = 0.45 + 0.25 * (f.Y - iy) / r - 0.55 * sstep(0.82, 1.0, d) - 0.3 * sstep(0.1, -0.9, (f.Y - iy) / r)
-    return k, ell(f, ix, iy, r, r)
+        k = np.full_like(f.X, 1.1)
+        k = np.where(v < -0.3, 0.3, k)
+        k = np.where(d > 0.78, -0.4, k)
+        return k, A.crisp(ell(f, ix, iy, rx, ry))
+    k = np.where(v < -0.15, -1.3, k)                              # the upper lid's shadow
+    k = np.where((v > 0.25) & (d < 0.82), 0.75, k)                # light glowing in the lower iris
+    k = np.where(d > 0.8, -2.3, k)                                # the dark rim
+    return k, A.crisp(ell(f, ix, iy, rx, ry))
 
 
 def part_iris(style):
@@ -436,7 +476,15 @@ def part_iris(style):
     return p
 
 
+def _over(rgb, a, cov, colour):
+    cov = np.asarray(cov, np.float32)
+    rgb = rgb * (1 - cov[..., None]) + np.asarray(colour, np.float32) * cov[..., None]
+    return rgb, np.maximum(a, cov)
+
+
 def part_eyes(style):
+    """Everything of the eye but the iris colour: the white (a sliver at the corners), the pupil, one
+    highlight, a bold upper lid with a flick at the outer corner, a thin lower lid."""
     s = A.EYE_SHAPES[style]
     pale = style == "pale"
     p = Part(tint=False)
@@ -446,73 +494,51 @@ def part_eyes(style):
         a = f.zeros()
         X, Y = f.X, f.Y
         for cx in A.EYE_XS:
-            top, bottom, across = A.eye_lids(f, cx, s)
+            top, bottom, _ = A.eye_lids(f, cx, s)
             inside = A.eye_inside(f, cx, s)
             ix, iy = A.iris_centre(cx, s)
             r = s["iris"]
-            iris = ell(f, ix, iy, r, r)
-            o = A.outward(X, cx)
-            # whites: shaded under the upper lid and towards the corners
-            wk = -0.9 * sstep(0.45, 0.0, Y - top) - 0.35 * sstep(0.5, 1.0, np.abs(X - cx) / s["hw"])
-            white = tone(WHITE, wk) * np.array([1.0, 0.99, 1.02], np.float32)
-            wa = inside * (1 - iris)
-            rgb = rgb * (1 - wa[..., None]) + white * wa[..., None]
-            a = np.maximum(a, wa)
-            # pupil and shine on the iris
-            if not pale:
-                pup = ell(f, ix, iy + 0.02, r * 0.38, r * 0.42) * inside
-                rgb = rgb * (1 - pup[..., None]) + np.array(hx("#0c0a0d"), np.float32) * pup[..., None]
-                a = np.maximum(a, pup)
-            shine = np.maximum(ell(f, ix - 0.22 * np.sign(cx - 4 + 1e-3) * 0 + 0.2, iy - 0.25, 0.17, 0.15),
-                               0.6 * ell(f, ix - 0.25, iy + 0.28, 0.08, 0.07)) * inside
-            if pale:
-                shine = shine * 0.7
-            rgb = rgb * (1 - shine[..., None]) + np.array([255, 255, 255], np.float32) * shine[..., None]
-            a = np.maximum(a, shine)
-            # upper lash line: thick, thickest at the outer corner, with a flick
-            xs = np.linspace(cx - s["hw"], cx + s["hw"], 28)
-            fx = type("FX", (), {})()
-            fx.X = xs
-            # sample the lid curve along x
-            t = np.clip(np.abs(xs - cx) / s["hw"], 0, 1)
-            sh = np.sqrt(np.clip(1 - t ** 2, 0, 1))
-            oo = np.where(cx < 4, -(xs - cx), xs - cx)
-            ty = A.EYE_Y - s["up"] * sh ** 0.85 - s["tilt"] * oo
-            pts = list(zip(xs, ty - 0.02))
-            if cx > 4:
-                pts = pts[::-1]  # draw from the inner corner outwards
-            # inner corner -> outer corner, thin -> thick
-            lash = stroke(f, pts, s["lash"] * 0.45, s["lash"] * 1.25)
-            ox, oy = pts[-1]
+            rx, ry = A.iris_radii(s)
+            iris = A.crisp(ell(f, ix, iy, rx, ry))
+            core = A.crisp(ell(f, ix, iy, rx - 0.14, ry - 0.14))
             dirx = -1 if cx < 4 else 1
-            wing = stroke(f, [(ox, oy), (ox + dirx * s["wing"] * 1.1, oy - s["wing"] * 0.9)], s["lash"] * 0.9, 0.04)
-            lash = np.maximum(lash, wing)
-            # a few lashes on the outer half
-            for i in range(3):
-                bx = cx + dirx * (0.35 + 0.28 * i)
-                bt = np.clip(abs(bx - cx) / s["hw"], 0, 1)
-                by = A.EYE_Y - s["up"] * math.sqrt(max(0, 1 - bt ** 2)) ** 0.85 - s["tilt"] * abs(bx - cx)
-                lash = np.maximum(lash, stroke(f, [(bx, by), (bx + dirx * 0.22, by - 0.22)], 0.07, 0.02))
-            rgb = rgb * (1 - lash[..., None]) + np.array(LASH, np.float32) * lash[..., None]
-            a = np.maximum(a, lash)
-            # the lower lid: a soft thin line, darker at the outer end
-            bt = np.clip(np.abs(xs - cx) / s["hw"], 0, 1)
-            by = A.EYE_Y + s["down"] * np.sqrt(np.clip(1 - bt ** 2, 0, 1)) ** 1.1 - s["tilt"] * oo * 0.6
-            lower = stroke(f, list(zip(xs, by + 0.04)), 0.07) * (0.35 + 0.4 * sstep(0, 1, o / s["hw"]))
-            rgb = rgb * (1 - lower[..., None]) + np.array(LID, np.float32) * lower[..., None]
-            a = np.maximum(a, lower)
-            if style == "wide":
-                for i in range(2):
-                    bx = cx + dirx * (0.5 + 0.3 * i)
-                    yy = A.EYE_Y + s["down"] * 0.8
-                    ll = stroke(f, [(bx, yy), (bx + dirx * 0.12, yy + 0.18)], 0.06, 0.02) * 0.8
-                    rgb = rgb * (1 - ll[..., None]) + np.array(LASH, np.float32) * ll[..., None]
-                    a = np.maximum(a, ll)
-            # the eyelid crease above
-            crease_y = ty - 0.32 - 0.05 * sh
-            cr = stroke(f, list(zip(xs[3:-2], crease_y[3:-2])), 0.06) * 0.35
-            rgb = rgb * (1 - cr[..., None]) + np.array(LID, np.float32) * cr[..., None]
-            a = np.maximum(a, cr)
+            # the white: only where the iris isn't; shaded under the lid
+            white = inside * (1 - iris)
+            wcol = np.where((Y - top < 0.34)[..., None], np.array(WHITE_SHADE, np.float32), np.array(WHITE, np.float32))
+            rgb, a = _over(rgb, a, white, wcol)
+            if not pale:
+                pup = A.crisp(ell(f, ix, iy + 0.04, rx * 0.4, ry * 0.5)) * inside
+                rgb, a = _over(rgb, a, pup, PUPIL)
+            # one highlight, towards the light (the character's right = texture left), and a tiny second
+            shine = A.crisp(box_cov(f, ix - 0.4, iy - 0.42, ix - 0.04, iy - 0.06)) * inside * core
+            shine2 = A.crisp(box_cov(f, ix + 0.16, iy + 0.2, ix + 0.4, iy + 0.44)) * inside * core
+            rgb, a = _over(rgb, a, shine, (255, 255, 255))
+            rgb, a = _over(rgb, a, shine2 * (0 if pale else 1), (235, 235, 240))
+            # upper lid: thin at the inner corner, bold at the outer, then a flick out and down
+            up = lid_points(cx, s, "top")
+            lid = A.crisp(stroke(f, [(x, y - 0.06) for x, y in up], s["lash"] * 0.5, s["lash"]))
+            ox, oy = up[-1]
+            wing = A.crisp(stroke(f, [(ox - dirx * 0.1, oy), (ox + dirx * s["wing"], oy + 0.12 + s["wing"] * 0.15)],
+                                  s["lash"] * 0.9, 0.12))
+            lid = np.maximum(lid, wing)
+            # the inner corner: a short dark tick pointing down towards the nose
+            ix0, iy0 = up[0]
+            tick = A.crisp(stroke(f, [(ix0, iy0), (ix0 - dirx * 0.12, iy0 + 0.35)], 0.22, 0.12))
+            lid = np.maximum(lid, tick)
+            rgb, a = _over(rgb, a, lid, LASH)
+            # lower lid: the outer half only, not meeting the upper lid (an open, anime corner)
+            lo = lid_points(cx, s, "bottom", x0=cx - s["hw"] * 0.7 if cx > 4 else cx - s["hw"] * 0.85,
+                            x1=cx + s["hw"] * 0.85 if cx > 4 else cx + s["hw"] * 0.7)
+            n = len(lo)
+            lo = lo[n // 3:]
+            lower = A.crisp(stroke(f, [(x, y + 0.1) for x, y in lo], 0.14, 0.24))
+            rgb, a = _over(rgb, a, lower, LID)
+            if style in ("round", "wide", "pale"):
+                # the lid crease above the outer half
+                cr = lid_points(cx, s, "top", n=16)
+                cr = [(x + dirx * 0.05, y - 0.42) for x, y in cr[len(cr) // 3:-2]]
+                crease_line = A.crisp(stroke(f, cr, 0.12, 0.14))
+                rgb, a = _over(rgb, a, crease_line * (a < 0.5), LID)
         return rgb, a
     head_front(p, fn)
     return p
@@ -521,11 +547,11 @@ def part_eyes(style):
 BROW_STYLES = ("thin", "thick", "fierce", "soft")
 
 BROW_SHAPES = {
-    # (inner end, middle, outer end) as (x offset outward from the eye centre, y), widths
-    "thin":   (((-1.0, 3.62), (0.0, 3.32), (1.15, 3.5)), 0.24, 0.09),
-    "thick":  (((-1.1, 3.5), (0.0, 3.3), (1.15, 3.42)), 0.42, 0.26),
-    "fierce": (((-1.05, 3.78), (0.1, 3.38), (1.2, 3.18)), 0.36, 0.12),
-    "soft":   (((-0.95, 3.5), (0.0, 3.18), (1.05, 3.45)), 0.24, 0.1),
+    # (inner end, middle, outer end) as (x offset outward from the eye centre, y), widths inner -> outer
+    "thin":   (((-1.05, 3.5), (0.05, 3.18), (1.25, 3.38)), 0.34, 0.14),
+    "thick":  (((-1.1, 3.45), (0.05, 3.12), (1.25, 3.32)), 0.62, 0.36),
+    "fierce": (((-1.05, 3.72), (0.15, 3.2), (1.3, 3.02)), 0.56, 0.2),
+    "soft":   (((-1.0, 3.42), (0.05, 3.1), (1.15, 3.36)), 0.36, 0.18),
 }
 
 
@@ -539,11 +565,13 @@ def part_brows(style):
         for cx in A.EYE_XS:
             sgn = -1 if cx < 4 else 1
             ctrl = [(cx + sgn * x, y) for x, y in pts]
-            cov = stroke(f, bezier(ctrl[0], ctrl[1], ctrl[2], 24), w_in, w_out)
-            hairs = 0.25 * np.sin((f.X * sgn * 1.0 + f.Y * 2.2) * 9.0) + (grain(f, 91) - 0.5) * 0.3
-            kk = -0.7 + hairs - 0.25 * sstep(0.5, 1, (f.X - cx) * -sgn)  # darker at the inner end
+            cov = A.crisp(stroke(f, bezier(ctrl[0], ctrl[1], ctrl[2], 24), w_in, w_out))
+            # a lit upper edge, a dark body; strands at the inner end
+            above = A.crisp(stroke(f, bezier((ctrl[0][0], ctrl[0][1] - 0.12), (ctrl[1][0], ctrl[1][1] - 0.12),
+                                            (ctrl[2][0], ctrl[2][1] - 0.08), 24), w_in * 0.45, w_out * 0.3))
+            kk = np.where(above > 0, -0.55, -1.5)
             if style == "soft":
-                kk = kk + 0.35
+                kk = kk + 0.5
             k = np.where(cov > a, kk, k)
             a = np.maximum(a, cov)
         return k, a
@@ -672,33 +700,57 @@ HAIR_LOCKS = {
 }
 
 
+LOCK_SCALE = 1.7     # locks are chunky: about 6 HD pixels wide at SCALE 4
+HAIR_TONES = (-2.1, -1.2, -0.45, 0.2, 0.95)   # deep (between locks), dark, mid, light, sheen
+
+
+def lock_shade(f, X, Y, lock_w, salt, y_band=1.5, sheen=True, depth=0.0):
+    """Chunky locks: each lock is a round strand of hair lit from the left, with a dark gap at its right
+    edge, a little longer or shorter than its neighbours, and a broken sheen band across the top.
+    Returns (k cut into HAIR_TONES, per-lock length offset)."""
+    wob = 0.18 * np.sin(Y * 1.3 + salt) + 0.12 * np.sin(Y * 0.55 + salt * 0.7)
+    u = X / lock_w + wob
+    li = np.floor(u)
+    q = u - li                                            # 0 at the lock's lit edge, 1 at its dark edge
+    rnd = hash01(li, np.zeros_like(li), salt)
+    rnd2 = hash01(li, np.ones_like(li), salt + 3)
+    v = 0.55 - 1.1 * q + (rnd - 0.5) * 0.5 - depth       # round: lit left, falling into shadow
+    v = v - 0.9 * sstep(0.7, 0.92, q)                    # the gap between locks
+    # a thin strand line splitting wide locks
+    v = np.where((np.abs(q - 0.5) < 0.05) & (rnd2 > 0.7) & (Y > 1.6), v - 0.9, v)
+    if sheen:
+        yb = y_band + 0.35 * np.sin(li * 1.7 + salt) + 0.25 * (rnd2 - 0.5)
+        band = (np.abs(Y - yb) < 0.2 + 0.12 * (q < 0.35)) & (q > 0.08) & (q < 0.6) & (rnd > 0.22)
+        v = np.where(band, 2.0, v)
+    k = np.full_like(v, HAIR_TONES[0])
+    k = np.where(v > -0.75, HAIR_TONES[1], k)
+    k = np.where(v > -0.2, HAIR_TONES[2], k)
+    k = np.where(v > 0.3, HAIR_TONES[3], k)
+    k = np.where(v > 1.5, HAIR_TONES[4], k)
+    return k, rnd
+
+
 def hair_field(f, rows, salt, lock_w, sharp, layer):
-    """(k, alpha) for one face from an 8-row ASCII map."""
+    """(k, alpha) for one face from an 8-row ASCII map: its silhouette cut into pointed locks."""
     cov_grid = [[0.0 if ch == "." else 1.0 for ch in row] for row in rows]
     tone_grid = [[HAIR_K[ch] for ch in row] for row in rows]
     W, H = f.W, f.H
     X = f.MX if f.side else f.X
     Y = f.Y
-    phase = (salt % 7) * 0.13
     cov = sample_grid(cov_grid, X, Y, W, H)
-    # locks: the outline's threshold rises and falls across the face, so edges become tips
-    tooth = tri(X / lock_w + phase + 0.15 * vnoise(Y * 0.8, X * 0.3, salt))
-    thr = 0.5 + sharp * (tooth - 0.5) * 1.6
-    alpha = np.clip((cov - thr) * 7 + 0.5, 0, 1)
+    lock_w = lock_w * LOCK_SCALE
+    k, rnd = lock_shade(f, X, Y, lock_w, salt, depth=0.35 if layer == "base" else 0.0)
+    # tips: each lock ends in a point; neighbours a little longer or shorter
+    phase = (salt % 7) * 0.13
+    u = X / lock_w + 0.18 * np.sin(Y * 1.3 + salt) + 0.12 * np.sin(Y * 0.55 + salt * 0.7)
+    tooth = tri(u + 0.5)
+    thr = 0.5 + sharp * ((tooth - 0.5) * 1.5 + (rnd - 0.5) * 0.5)
+    alpha = A.crisp(np.clip((cov - thr) * 7 + 0.5, 0, 1)) * (cov > 0.3)
+    # darker towards the tips and where the map asks for shade
     base = sample_grid(tone_grid, X, Y, W, H)
-    # strands: fine streaks along the hair's fall, darker gaps between locks
-    streak = vnoise(X * 5.5 + 0.6 * Y, Y * 0.35, salt + 1) - 0.5
-    fine = grain(f, salt + 2) - 0.5
-    gap = tri(X / lock_w + phase)
-    k = base * 0.8 + streak * 0.55 + fine * 0.12 - 0.45 * sstep(0.35, 0.0, gap) * sstep(0.8, 2.5, Y)
-    # anime sheen: a broken band of light across the upper hair
-    yb = 1.5 + 0.35 * np.sin(X * 1.7 + salt)
-    band = np.exp(-((Y - yb) / 0.32) ** 2) * (vnoise(X * 4.5, Y, salt + 5) > 0.42)
-    k += 0.95 * band
-    # darker towards the tips and under the outer layer
-    k += -0.5 * sstep(0.85, 0.5, cov) - (0.25 if layer == "base" else 0.0)
-    # in ink: dark crevices between locks, hard white-ish sheen
-    k = ink(f, k, salt + 11, gain=1.2, rough=0.06, light=(0.4, 0.75), keep=0.35)
+    k = k + np.minimum(base, 0) * 0.9
+    k = np.where(cov < 0.75, np.minimum(k, HAIR_TONES[1]), k)
+    k = np.where(cov < 0.6, HAIR_TONES[0] * 0.8, k)
     return k, alpha
 
 
@@ -707,12 +759,24 @@ def part_hair(name, salt):
     lock_w, sharp = HAIR_LOCKS[name]
     p = Part()
 
+    def crown(f, knot=False):
+        X, Y = f.X, f.Y
+        ang = np.arctan2(Y - 5.2, X - 4)
+        r = np.hypot(X - 4, Y - 5.2)
+        k, _ = lock_shade(f, ang * 2.6, r * 1.0, 1.0, salt + 13, y_band=2.6, depth=-0.1)
+        k = np.where(r < 0.6, HAIR_TONES[1], k)                     # the whorl
+        if knot:
+            kd = ell_d(f, 4, 3.2, 1.25, 1.25)
+            kk, _ = lock_shade(f, np.arctan2(Y - 3.2, X - 4) * 2.0, kd * 3, 1.0, salt + 17, y_band=1.2)
+            k = np.where(kd < 1.0, kk, k)
+            k = np.where(np.abs(kd - 1.0) < 0.1, HAIR_TONES[0], k)
+        return k
+
     def base(f):
         if f.name == "bottom":
             return None
         if f.name == "top":
-            k = (vnoise(np.arctan2(f.Y - 5, f.X - 4) * 3, 0.0 * f.X, salt) - 0.5) * 0.5 + (grain(f, salt) - 0.5) * 0.1
-            return k - 0.1, 1.0
+            return crown(f) - 0.4, 1.0
         rows = style["base_front"] if f.name == "front" else style["base_side"] if f.side else style["base_back"]
         return hair_field(f, rows, salt + (3 if f.side else 0), lock_w, sharp, "base")
 
@@ -722,18 +786,7 @@ def part_hair(name, salt):
         if f.name == "top":
             if style.get("no_hat_top"):
                 return None
-            X, Y = f.X, f.Y
-            ang = np.arctan2(Y - 5.2, X - 4)
-            r = np.hypot(X - 4, Y - 5.2)
-            k = (vnoise(ang * 5, r * 0.6, salt) - 0.5) * 0.8 + 0.25 + (grain(f, salt + 4) - 0.5) * 0.1
-            k += 0.6 * np.exp(-((r - 2.4) / 0.5) ** 2) * (vnoise(ang * 7, 0 * r, salt + 2) > 0.45)  # crown shine
-            k += -0.6 * sstep(1.0, 0.0, r)                       # the whorl at the crown
-            if style.get("top_knot"):
-                knot = ell(f, 4, 3.2, 1.25, 1.25)
-                kd = ell_d(f, 4, 3.2, 1.25, 1.25)
-                k = np.where(knot > 0.5, 0.2 + 0.8 * sstep(0.9, 0.1, kd) - 0.9 * sstep(0.75, 1.0, kd)
-                             + 0.3 * np.sin(np.arctan2(Y - 3.2, X - 4) * 6), k)
-            return k, 1.0
+            return crown(f, style.get("top_knot", False)), 1.0
         rows = style["front"] if f.name == "front" else style["side"] if f.side else style["back"]
         return hair_field(f, rows, salt + (5 if f.side else 7), lock_w, sharp, "hat")
 
@@ -1046,9 +1099,10 @@ def part_sharingan_glow():
         a = f.zeros()
         for cx in A.EYE_XS:
             ix, iy = cx, A.EYE_Y - 0.04
-            r = 0.68
-            d = ell_d(f, ix, iy, r, r)
-            disc = ell(f, ix, iy, r, r)
+            r = 0.64
+            d = ell_d(f, ix, iy, r, r * 1.1)
+            # the iris's oval, kept inside the widest eye opening so the glow sits on the eye, not the lids
+            disc = A.crisp(ell(f, ix, iy, r, r * 1.1)) * A.eye_inside(f, cx, A.EYE_SHAPES["wide"])
             k = 0.4 * sstep(0.9, 0.2, d) - 0.6 * sstep(0.8, 1.0, d)
             col = tone(red, k)
             ring = np.clip(1 - np.abs(d - 0.62) * 14, 0, 1) * 0.6
@@ -1078,7 +1132,7 @@ def part_byakugan_glow():
         a = f.zeros()
         for cx in A.EYE_XS:
             sgn = -1 if cx < 4 else 1
-            disc = ell(f, cx, A.EYE_Y - 0.04, 0.72, 0.72)
+            disc = A.crisp(ell(f, cx, A.EYE_Y - 0.04, 0.66, 0.74)) * A.eye_inside(f, cx, A.EYE_SHAPES["wide"])
             a = np.maximum(a, disc * 0.95)
             # bulging veins from the eye towards the temple and down the cheek
             veins = f.zeros()

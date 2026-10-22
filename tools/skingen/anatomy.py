@@ -1,15 +1,23 @@
-"""The shared HD body and face for NOIRM's skins: one place for where things are on the face and
-how skin is shaded, used by gen_parts.py (NPC ninjas) and gen_player_parts.py (the player).
+"""The shared HD body and face for NOIRM's skins: where things are on the face and how skin is
+shaded, used by gen_parts.py (NPC ninjas) and gen_player_parts.py (the player).
 
-Style: a slightly stylised anime ninja. Soft, broad shading (a light from the front and above),
-a few clear anatomy lines (collarbones, chest, abs, knees), big readable eyes.
+How the skin is lit (docs/ART_STYLE.md, "raw and tough"):
+
+1. Form. Each box is treated as a rounded column (a superellipse cross-section), so the light flows
+   around the corners: one lit side, one shadow side, no dark stripe at every cube edge.
+2. Anatomy as relief. Muscles are bumps in a height field (pads); the same light falls on them,
+   so every muscle gets a lit top-left and a shadowed bottom-right, the way an artist carves them.
+3. Ink. The light is cut into a few flat tones (highlight, light, half, shadow), with slightly
+   ragged edges, and deliberate dark grooves are inked where muscles meet (centre line, ab grid,
+   under the chest, the V at the hips, the knees). Grit only lives in the shadows.
 
 Positions are in model pixels on each face (the head's front is 8 x 8). The eye centres match the
 Mangekyou overlay in client/SharinganEyesLayer (EYE_X 1.5 px either side of the middle, 4.5 px down).
 """
 import numpy as np
 
-from hdskin import (ink, grit, F, ell, ell_d, gauss, sstep, stroke, bezier, grain, fbm, vnoise, box_cov, SCALE)  # noqa: F401
+from hdskin import (ink, grit, F, ell, ell_d, gauss, sstep, stroke, bezier, grain, fbm, vnoise, box_cov,  # noqa: F401
+                    SCALE, P, hash01)
 
 # ---------------------------------------------------------------------------
 # Face geometry (head front, 8 x 8)
@@ -18,16 +26,16 @@ from hdskin import (ink, grit, F, ell, ell_d, gauss, sstep, stroke, bezier, grai
 EYE_Y = 4.5
 EYE_XS = (2.5, 5.5)       # texture-left eye, texture-right eye
 NOSE_TIP_Y = 5.75
-MOUTH_Y = 6.55
+MOUTH_Y = 6.6
 
 # Eye shapes: half width, lid heights above/below the centre, tilt (outer corner up), iris radius,
-# lash thickness, extra flick at the outer corner.
+# lid line thickness, the flick at the outer corner, how far the iris rides up under the lid.
 EYE_SHAPES = {
-    "round":  dict(hw=1.05, up=0.74, down=0.52, tilt=0.06, iris=0.64, lash=0.20, wing=0.10),
-    "sharp":  dict(hw=1.12, up=0.50, down=0.34, tilt=0.24, iris=0.54, lash=0.24, wing=0.30),
-    "wide":   dict(hw=1.10, up=0.86, down=0.66, tilt=0.00, iris=0.70, lash=0.18, wing=0.06),
-    "narrow": dict(hw=1.08, up=0.30, down=0.22, tilt=0.12, iris=0.52, lash=0.22, wing=0.14),
-    "pale":   dict(hw=1.05, up=0.72, down=0.54, tilt=0.04, iris=0.68, lash=0.18, wing=0.08),
+    "round":  dict(hw=1.0, up=0.62, down=0.5, tilt=0.06, iris=0.6, lash=0.36, wing=0.3, lift=0.0),
+    "sharp":  dict(hw=1.08, up=0.46, down=0.34, tilt=0.2, iris=0.56, lash=0.4, wing=0.46, lift=0.08),
+    "wide":   dict(hw=1.0, up=0.72, down=0.58, tilt=0.0, iris=0.6, lash=0.32, wing=0.22, lift=0.0),
+    "narrow": dict(hw=1.04, up=0.34, down=0.26, tilt=0.1, iris=0.54, lash=0.4, wing=0.36, lift=0.1),
+    "pale":   dict(hw=1.0, up=0.6, down=0.5, tilt=0.04, iris=0.6, lash=0.34, wing=0.26, lift=0.0),
 }
 
 
@@ -36,28 +44,45 @@ def outward(x, cx):
     return np.where(cx < 4, -(x - cx), (x - cx))
 
 
+def lid_curves(x, cx, s):
+    """(top lid y, bottom lid y) at x for the eye centred at cx: an almond, the upper lid arched."""
+    dx = x - cx
+    o = outward(x, cx)
+    t = np.clip(np.abs(dx) / s["hw"], 0, 1)
+    arch = np.sqrt(np.clip(1 - t ** 2, 0, 1))
+    # the upper lid peaks a little towards the inner side, the lower lid sits flatter
+    skew = 1 + 0.18 * np.clip(-o / s["hw"], -1, 1)
+    top = EYE_Y - s["up"] * arch ** 0.7 * skew - s["tilt"] * o
+    bottom = EYE_Y + s["down"] * arch ** 1.3 - s["tilt"] * o * 0.5
+    return top, bottom
+
+
 def eye_lids(f, cx, s):
     """(top lid y, bottom lid y, inside 0..1 across x) for one eye at centre cx."""
-    dx = f.X - cx
-    o = outward(f.X, cx)
-    t = np.clip(np.abs(dx) / s["hw"], 0, 1)
-    shape = np.sqrt(np.clip(1 - t ** 2, 0, 1))
-    top = EYE_Y - s["up"] * shape ** 0.85 - s["tilt"] * o
-    bottom = EYE_Y + s["down"] * shape ** 1.1 - s["tilt"] * o * 0.6
-    # the inner corner sits a touch lower (a tear duct)
-    inner = np.clip(-o / s["hw"], 0, 1)
-    bottom = bottom + 0.05 * inner
-    across = np.clip((s["hw"] - np.abs(dx)) * SCALE + 0.5, 0, 1)
+    top, bottom = lid_curves(f.X, cx, s)
+    across = np.clip((s["hw"] - np.abs(f.X - cx)) * SCALE + 0.5, 0, 1)
     return top, bottom, across
 
 
 def eye_inside(f, cx, s):
     top, bottom, across = eye_lids(f, cx, s)
-    return np.clip((f.Y - top) * SCALE + 0.5, 0, 1) * np.clip((bottom - f.Y) * SCALE + 0.5, 0, 1) * across
+    inside = np.clip((f.Y - top) * SCALE + 0.5, 0, 1) * np.clip((bottom - f.Y) * SCALE + 0.5, 0, 1) * across
+    return crisp(inside)
 
 
 def iris_centre(cx, s):
-    return cx, EYE_Y - 0.04 - (0.08 if s["up"] < 0.4 else 0.0)
+    # pushed slightly towards the nose's side? no: centred, riding up under the upper lid
+    return cx, EYE_Y - 0.02 - s.get("lift", 0.0)
+
+
+def iris_radii(s):
+    """The iris is a tall oval: it fills the eye's height (the lids clip it), little white shows."""
+    return s["iris"] * 0.95, s["iris"] * 1.15
+
+
+def crisp(cov, at=0.5):
+    """Pixel-art coverage: in or out, no blur (deliberate clusters instead of soft edges)."""
+    return (np.asarray(cov) >= at).astype(np.float32)
 
 
 # ---------------------------------------------------------------------------
@@ -72,279 +97,508 @@ def delta(dk, dark=-1.3, light=1.1):
     return k, a
 
 
-# ---------------------------------------------------------------------------
-# Skin shading per box (k fields, tinted by skin tone)
-# ---------------------------------------------------------------------------
+def round_edges(f, strength=0.14, start=0.55):
+    """Darkens towards the left and right edges of a face (used by cloth, not by skin)."""
+    c = np.abs(f.X - f.W / 2) / (f.W / 2)
+    return -strength * sstep(start, 1.0, c)
+
 
 def texture(f, seed, amount=0.05):
     return (grain(f, seed) - 0.5) * amount + (fbm(f.X * 1.3, f.Y * 1.3, seed + 7) - 0.5) * amount * 1.5
 
 
-def round_edges(f, strength=0.14, start=0.55):
-    """Darkens towards the left and right edges of a face, so boxes read as rounded limbs."""
-    c = np.abs(f.X - f.W / 2) / (f.W / 2)
-    return -strength * sstep(start, 1.0, c)
+# ---------------------------------------------------------------------------
+# Light and form
+# ---------------------------------------------------------------------------
+
+def _unit(*v):
+    v = np.asarray(v, np.float32)
+    return v / np.linalg.norm(v)
 
 
-def _head_soft(f, nose=True, mouth=True):
-    """The head: face planes, eye sockets, cheekbones, ears; NPCs also get a nose and mouth."""
-    X, Y = f.X, f.Y
-    k = texture(f, 3)
+# x: towards the character's left, y: up, z: forwards. The key light comes from the front, above
+# and the character's right (the viewer's left); a second light from behind and above on the other
+# side, so the back (seen as often as the front in third person) is carved just as well.
+KEY = _unit(-0.35, 0.55, 0.76)
+RIM = _unit(0.4, 0.55, -0.72)
+
+# The tones skin is cut into (shading steps k; 0 = the chosen skin colour).
+TONE_HI, TONE_LIGHT, TONE_HALF, TONE_SHADOW, TONE_DEEP = 0.45, 0.0, -0.75, -1.75, -3.3
+
+RELIEF = {"head": 1.7, "body": 1.9, "arm": 1.3, "leg": 1.2}   # how strongly the relief bends the light
+
+ROUNDNESS = {"head": 5.0, "body": 3.0, "arm": 2.4, "leg": 2.5}
+
+
+def kind(box):
+    return {"head": "head", "body": "body", "rarm": "arm", "larm": "arm", "rleg": "leg", "lleg": "leg"}.get(box, box)
+
+
+def section(f):
+    """Where each pixel of a side face sits on the box's cross-section: (x, z, half width, half depth).
+    x grows towards the character's left, z towards the front."""
+    _, _, w, _, d = P[f.box]
+    a, b = w / 2.0, d / 2.0
+    X = f.X
+    one = np.ones_like(X)
     if f.name == "front":
-        ax = np.abs(X - 4)
-        k += -0.42 * sstep(2.6, 4.0, ax)                       # the face turns away at the sides
-        k += 0.16 * gauss(f, 4, 1.7, 2.4, 1.1)                  # forehead
-        for cx in EYE_XS:
-            k += -0.3 * gauss(f, cx, 4.4, 1.15, 0.5)             # eye sockets: dark, intense eyes
-            k += 0.10 * gauss(f, cx, 3.45, 1.0, 0.22)            # brow ridge
-            side = -1 if cx < 4 else 1
-            k += 0.16 * gauss(f, cx + 0.35 * side, 5.45, 0.75, 0.32)  # cheekbones
-            k += -0.14 * gauss(f, 4 + 3.0 * side, 6.4, 0.55, 0.75)    # under the cheekbones
-        k += -0.20 * gauss(f, 4, 4.7, 0.25, 0.5) * 0.0          # (bridge handled by the nose)
-        k += -0.45 * sstep(7.15, 8.0, Y) * (0.6 + 0.4 * sstep(0.5, 3.5, ax))  # under the jaw
-        k += -0.18 * gauss(f, 4, 7.25, 0.9, 0.22)               # under the lower lip
-        k += 0.10 * gauss(f, 4, 7.55, 0.8, 0.3)                 # chin
-        if nose:
-            k += nose_shading(f, "straight")
-        if mouth:
-            k += mouth_shading(f, "neutral")
+        return X - a, b * one, a, b
+    if f.name == "back":
+        return a - X, -b * one, a, b
+    if f.name == "right":
+        return -a * one, X - b, a, b
+    if f.name == "left":
+        return a * one, b - X, a, b
+    return None
+
+
+def tangent_x(f):
+    """The world direction of the face's +X axis."""
+    return {"front": (1, 0, 0), "back": (-1, 0, 0), "right": (0, 0, 1), "left": (0, 0, -1)}[f.name]
+
+
+def form_normal(f, p):
+    """The rounded-column normal (nx, ny, nz) of a side face."""
+    cx, cz, a, b = section(f)
+    gx = np.sign(cx) * np.abs(cx / a) ** (p - 1) / a
+    gz = np.sign(cz) * np.abs(cz / b) ** (p - 1) / b
+    n = np.sqrt(gx * gx + gz * gz) + 1e-6
+    return gx / n, np.zeros_like(gx), gz / n
+
+
+def lit(f, h=None, tilt=None, p=3.0, rim=0.97, relief=1.7):
+    """Light (about -1..1) on a side face with an optional height field h (model px) bent over it."""
+    nx, ny, nz = form_normal(f, p)
+    if tilt is not None:
+        ny = ny + tilt
+    if h is not None:
+        gy, gx = np.gradient(h * relief, 1.0 / SCALE)
+        tx = tangent_x(f)
+        nx = nx - gx * tx[0]
+        nz = nz - gx * tx[2]
+        ny = ny + gy
+    n = np.sqrt(nx * nx + ny * ny + nz * nz) + 1e-6
+    nx, ny, nz = nx / n, ny / n, nz / n
+    key = nx * KEY[0] + ny * KEY[1] + nz * KEY[2]
+    back = nx * RIM[0] + ny * RIM[1] + nz * RIM[2]
+    return np.maximum(key, rim * back - 0.04)
+
+
+def cut(f, light, seed, levels=(0.93, 0.62, 0.25), rough=0.04):
+    """Cuts light into the flat skin tones, with slightly ragged (dry-brush) edges."""
+    j = rough * (fbm(f.X * 2.0, f.Y * 2.0, seed) - 0.5) * 2.0
+    v = light + j
+    hi, li, half = levels
+    k = np.full_like(v, TONE_SHADOW)
+    k = np.where(v > half, TONE_HALF, k)
+    k = np.where(v > li, TONE_LIGHT, k)
+    k = np.where(v > hi, TONE_HI, k)
+    return k
+
+
+def pad(f, cx, cy, rx, ry, height, X=None):
+    """A muscle: a rounded plateau in the height field."""
+    d = ell_d(f, cx, cy, rx, ry, X=X)
+    return height * sstep(1.0, 0.2, d)
+
+
+def groove(f, pts, w0, w1=None, X=None):
+    """A carved groove along a polyline, tapered from w0 to w1: 1 = shadow, 2 = its deep ink core
+    (only where the groove is wide enough to carry one)."""
+    w1 = w0 if w1 is None else w1
+    out = crisp(stroke(f, pts, w0, w1, X=X))
+    if max(w0, w1) >= 0.3:
+        core = crisp(stroke(f, pts, max(w0 - 0.24, 0.0), max(w1 - 0.24, 0.0), X=X))
+        out = out + core
+    return out
+
+
+def shadow_grit(f, k, seed, amount=0.6):
+    """Raw texture only in the shadows: sparse dark specks and short hatch strokes, none in the light."""
+    g = grain(f, seed)
+    in_shadow = k <= TONE_SHADOW + 0.01
+    in_half = (k > TONE_SHADOW + 0.01) & (k <= TONE_HALF + 0.01)
+    speck = (g < 0.05 * amount) & in_shadow
+    # hatching: short diagonal strokes on a coarse grid, breaking up the half-tone near the shadow
+    u = (f.X + f.Y) * SCALE / 3.0
+    line = (np.abs(u - np.round(u)) < 0.18)
+    seg = vnoise(f.X * 3.0, f.Y * 3.0, seed + 5) > 0.72
+    hatch = line & seg & in_half
+    out = k.copy()
+    out = np.where(hatch & (amount > 1), TONE_SHADOW, out)
+    out = np.where(speck & (amount > 0.5), TONE_DEEP, out)
+    return out
+
+
+def lateral(f):
+    """On front/back faces of a limb: 0 at the outer side, W at the inner side (towards the body's middle)."""
+    right_limb = f.box in ("rarm", "rleg")
+    if f.name == "front":
+        return f.X if right_limb else f.W - f.X
+    if f.name == "back":
+        return f.W - f.X if right_limb else f.X
+    return f.X
+
+
+def is_outer(f):
+    """Side faces: whether this is the limb's outer face."""
+    return (f.box in ("rarm", "rleg")) == (f.name == "right")
+
+
+# ---------------------------------------------------------------------------
+# The torso
+# ---------------------------------------------------------------------------
+
+def torso(f, s):
+    """(height field, ink grooves, vertical tilt) for the torso at muscle level s (0 = soft)."""
+    X, Y = f.X, f.Y
+    h = np.zeros_like(X)
+    g = np.zeros_like(X)
+    tilt = 0.5 * sstep(1.3, 0.0, Y)                                  # shoulders face up
+    if f.name == "front":
+        for sx in (-1, 1):
+            h += pad(f, 4 + 1.95 * sx, 2.45, 1.95, 1.4, 0.55 * s + 0.15)       # pecs
+            h += pad(f, 4 + 3.45 * sx, 6.4, 0.75, 2.3, 0.3 * s)                 # obliques
+            for i in range(3):
+                h += pad(f, 4 + 3.45 * sx, 4.3 + 0.62 * i, 0.4, 0.26, 0.18 * s)  # serratus
+            for row, cy in enumerate((5.0, 6.3, 7.6)):
+                h += pad(f, 4 + 0.92 * sx, cy, 0.8, 0.58, (0.32 - 0.04 * row) * s)  # the six-pack
+        h += pad(f, 4, 9.6, 1.6, 1.0, 0.18 * s)                                  # lower belly
+        if s > 0:
+            w = 0.22 + 0.12 * s
+            for sx in (-1, 1):
+                # under the chest: thick at the outer end, a hard cast shadow
+                g = np.maximum(g, groove(f, bezier((4 + 0.15 * sx, 3.75), (4 + 1.9 * sx, 4.35), (4 + 3.55 * sx, 3.15), 20),
+                                         w * 1.1, w * 2.6))
+                # the V at the hips
+                g = np.maximum(g, groove(f, bezier((4 + 3.25 * sx, 8.3), (4 + 2.6 * sx, 10.3), (4 + 1.15 * sx, 11.9), 16),
+                                         w * 1.4, w * 0.5))
+                # serratus teeth
+                for i in range(3):
+                    y = 4.55 + 0.62 * i
+                    g = np.maximum(g, groove(f, [(4 + 3.95 * sx, y - 0.1), (4 + 3.15 * sx, y + 0.18)], w * 0.9, 0.04))
+                # collarbones (a short line under the bone)
+                g = np.maximum(g, groove(f, bezier((4 + 0.7 * sx, 1.05), (4 + 1.9 * sx, 1.2), (4 + 3.1 * sx, 0.85), 12),
+                                         w * 0.5, 0.04))
+            g = np.maximum(g, groove(f, [(4, 1.6), (4, 3.6)], w * 0.8))                     # sternum
+            g = np.maximum(g, groove(f, [(4, 4.2), (4, 8.6)], w * 1.0, w * 0.7))           # centre line
+            for y in (5.65, 6.95, 8.2):                                                    # the ab grid
+                g = np.maximum(g, groove(f, bezier((3.0, y + 0.1), (4, y - 0.04), (5.0, y + 0.1), 10), w * 0.85, w * 0.85))
+            g = np.maximum(g, crisp(ell(f, 4, 8.8, 0.16, 0.22)))                            # navel
+    elif f.name == "back":
+        m = 0.3 + 0.7 * s
+        h += -0.25 * np.exp(-((X - 4) / 0.3) ** 2) * sstep(0.5, 2.0, Y)                  # the spine's valley
+        for sx in (-1, 1):
+            h += dome(f, 4 + 1.5 * sx, 0.9, 1.7, 1.3, 0.55 * m)                           # traps
+            h += dome(f, 4 + 2.15 * sx, 3.2, 1.5, 1.5, 0.75 * m)                          # shoulder blades
+            h += dome(f, 4 + 2.8 * sx, 6.4, 1.2, 2.5, 0.65 * m)                           # lats
+            h += dome(f, 4 + 0.85 * sx, 9.6, 0.65, 2.3, 0.6 * m)                          # erectors
+        if s > 0:
+            w = 0.22 + 0.12 * s
+            g = np.maximum(g, groove(f, [(4, 1.2), (4, 11.6)], w * 0.9, w * 1.2))
+            for sx in (-1, 1):
+                g = np.maximum(g, groove(f, bezier((4 + 0.8 * sx, 2.0), (4 + 0.9 * sx, 3.9), (4 + 2.8 * sx, 4.6), 14),
+                                         w * 0.6, w * 1.6))                               # under the blades
+                g = np.maximum(g, groove(f, bezier((4 + 3.85 * sx, 4.3), (4 + 2.7 * sx, 7.4), (4 + 1.25 * sx, 9.0), 16),
+                                         w * 1.6, w * 0.4))                               # the lats' edge
+                g = np.maximum(g, groove(f, [(4 + 1.3 * sx, 10.4), (4 + 1.3 * sx, 10.6)], w * 1.2))  # dimples
+    elif f.side:
+        mx = f.MX
+        h += pad(f, 2.0, 5.6, 1.4, 2.6, 0.25 * s, X=mx)
+        if s > 0:
+            w = 0.18 + 0.1 * s
+            for i in range(3):
+                g = np.maximum(g, groove(f, [(0.8, 4.1 + 0.6 * i), (3.3, 4.45 + 0.6 * i)], w, 0.03, X=mx))
+    return h, g, tilt
+
+
+# ---------------------------------------------------------------------------
+# Arms (the model bends at row 6) and legs (knee at row 6)
+# ---------------------------------------------------------------------------
+
+def dome(f, cx, cy, rx, ry, height, X=None):
+    """A rounded muscle belly: brightest at the top-light side, a crescent of shadow underneath."""
+    d = ell_d(f, cx, cy, rx, ry, X=X)
+    return height * np.clip(1 - d * d, 0, 1) ** 0.75
+
+
+def arm(f, s):
+    X, Y = f.X, f.Y
+    h = np.zeros_like(X)
+    g = np.zeros_like(X)
+    tilt = 0.8 * sstep(1.0, 0.0, Y)                                   # the top of the shoulder
+    lx = lateral(f) if not f.side else f.MX
+    w = 0.2 + 0.12 * s
+    m = 0.3 + 0.7 * s
+    # every face: the deltoid cap
+    h += dome(f, 2.0, 1.0, 2.6, 2.1, 0.75 * m, X=lx)
+    if f.name == "front":
+        h += dome(f, 2.35, 4.1, 1.35, 1.6, 0.7 * m, X=lx)             # biceps
+        h += dome(f, 1.45, 7.2, 1.45, 1.9, 0.55 * m, X=lx)            # forearm
+        h += dome(f, 2.0, 9.3, 1.8, 0.8, -0.2, X=lx)                  # the wrist narrows
+        if s > 0:
+            g = np.maximum(g, groove(f, bezier((3.9, 2.0), (1.5, 2.55), (0.2, 3.45), 12), w * 0.7, w * 1.1, X=lx))
+            g = np.maximum(g, groove(f, bezier((1.7, 6.0), (2.6, 6.3), (3.6, 5.85), 10), w * 1.1, w * 0.5, X=lx))
+    elif f.name == "back":
+        h += dome(f, 1.4, 3.7, 1.0, 1.7, 0.6 * m, X=lx) + dome(f, 2.8, 4.0, 0.95, 1.4, 0.55 * m, X=lx)   # triceps
+        h += dome(f, 2.0, 6.1, 0.6, 0.5, 0.35)                                                        # elbow point
+        h += dome(f, 2.0, 7.6, 1.5, 1.9, 0.4 * m, X=lx)
+        if s > 0:
+            g = np.maximum(g, groove(f, bezier((0.1, 2.3), (2.0, 2.85), (3.9, 2.3), 12), w * 0.9, w * 0.9, X=lx))
+            g = np.maximum(g, groove(f, [(2.05, 3.1), (2.05, 5.0)], w * 0.7, 0.05, X=lx))
+    else:
+        h += dome(f, 2.2, 4.1, 1.3, 1.6, 0.5 * m, X=lx)
+        h += dome(f, 1.7, 7.4, 1.4, 1.8, 0.4 * m, X=lx)
+        if s > 0 and is_outer(f):
+            g = np.maximum(g, groove(f, bezier((0.2, 2.4), (2.0, 3.6), (3.9, 2.4), 12), w * 0.8, w * 0.8, X=lx))
+    # the hand (rows 10-12): knuckles and fingers on the front, tendons on the back, thumb on the inside
+    if f.name == "front":
+        for x in (0.5, 1.5, 2.5, 3.5):
+            h += dome(f, x, 10.45, 0.5, 0.35, 0.25)
+        for x in (1.0, 2.0, 3.0):
+            g = np.maximum(g, groove(f, [(x, 10.95), (x, 12.0)], 0.2))
+        g = np.maximum(g, groove(f, [(0.0, 9.95), (4.0, 9.95)], 0.14))
+    elif f.name == "back":
+        for x in (1.0, 2.0, 3.0):
+            g = np.maximum(g, groove(f, [(x, 11.3), (x, 12.0)], 0.18))
+    elif not is_outer(f):
+        g = np.maximum(g, groove(f, bezier((0.6, 10.4), (2.0, 11.5), (3.4, 10.9), 10), 0.2))
+    return h, g, tilt
+
+
+def leg(f, s):
+    X, Y = f.X, f.Y
+    h = np.zeros_like(X)
+    g = np.zeros_like(X)
+    lx = lateral(f) if not f.side else f.MX
+    w = 0.2 + 0.12 * s
+    m = 0.3 + 0.7 * s
+    tilt = None
+    if f.name == "front":
+        h += dome(f, 1.15, 3.0, 1.35, 2.8, 0.6 * m, X=lx)            # outer quad
+        h += dome(f, 2.55, 2.4, 1.05, 2.3, 0.55 * m, X=lx)           # rectus
+        h += dome(f, 3.15, 4.9, 0.9, 1.0, 0.6 * m, X=lx)             # the teardrop above the knee
+        h += dome(f, 2.0, 6.35, 0.85, 0.7, 0.45)                     # kneecap
+        h += dome(f, 1.4, 8.3, 1.0, 2.0, 0.4 * m, X=lx)              # shin muscle (outer)
+        if s > 0:
+            g = np.maximum(g, groove(f, bezier((2.0, 0.8), (1.85, 3.4), (2.45, 4.8), 12), w * 0.6, w * 0.9, X=lx))
+            g = np.maximum(g, groove(f, bezier((1.2, 7.05), (2.0, 7.35), (2.8, 7.05), 10), w * 1.0, w * 0.7, X=lx))
+    elif f.name == "back":
+        h += dome(f, 2.0, 2.6, 1.8, 2.6, 0.45 * m, X=lx)             # hamstrings
+        h += dome(f, 1.3, 7.3, 0.95, 1.5, 0.7 * m, X=lx) + dome(f, 2.75, 7.6, 0.9, 1.4, 0.7 * m, X=lx)  # calf
+        if s > 0:
+            g = np.maximum(g, groove(f, bezier((0.9, 5.7), (2.0, 6.05), (3.1, 5.7), 10), w * 0.5, w * 0.5, X=lx))
+            g = np.maximum(g, groove(f, [(2.05, 7.6), (2.0, 9.0)], w * 0.6, 0.05, X=lx))
+    else:
+        h += dome(f, 2.0, 2.9, 1.7, 2.6, 0.45 * m, X=lx)
+        h += dome(f, 1.35, 7.5, 1.1, 1.6, 0.45 * m, X=lx)
+        h += dome(f, 1.9, 10.3, 0.4, 0.35, 0.2, X=lx)                # ankle bone
+    # the foot (rows 10.2-12): toes on the front
+    if f.name == "front":
+        for x in (0.95, 1.8, 2.6, 3.3):
+            g = np.maximum(g, groove(f, [(x, 11.05), (x, 12.0)], 0.18))
+        g = np.maximum(g, groove(f, bezier((0.0, 10.6), (2.0, 10.45), (4.0, 10.6), 10), 0.14))
+    return h, g, tilt
+
+
+def shade_body(f, s, seed):
+    """The inked skin of the torso, arms or legs at muscle level s (0 = soft, ~1 = defined)."""
+    kd = kind(f.box)
+    if f.name == "top":
+        return np.full_like(f.X, TONE_LIGHT if kd != "body" else TONE_HALF)
+    if f.name == "bottom":
+        k = np.full_like(f.X, TONE_SHADOW)
+        if kd == "arm":   # the fingertips
+            for x in (1.0, 2.0, 3.0):
+                k = np.where(groove(f, [(x, 0.3), (x, 3.7)], 0.1) > 0, TONE_DEEP, k)
         return k
+    fn = {"body": torso, "arm": arm, "leg": leg}[kd]
+    h, g, tilt = fn(f, s)
+    light = lit(f, h, tilt, ROUNDNESS[kd], relief=RELIEF[kd])
+    k = cut(f, light, seed)
+    # occlusion: where the arms meet the torso, the torso's bottom in the hips' shadow
+    if kd == "body" and f.side:
+        k = np.where((f.Y < 3.2) & (k > TONE_HALF), TONE_HALF, k)
+    return ink_grooves(k, g)
+
+
+def ink_grooves(k, g):
+    """Grooves: the shadow tone, with a deep ink core in the wide ones."""
+    k = np.where(g >= 1, np.minimum(k, TONE_SHADOW), k)
+    return np.where(g >= 2, TONE_DEEP, k)
+
+
+# ---------------------------------------------------------------------------
+# The head
+# ---------------------------------------------------------------------------
+
+def face_relief(f, nose="none", mouth="none", jaw="none"):
+    """The head front's relief: brow ridge over deep eye sockets, forehead, chin."""
+    X, Y = f.X, f.Y
+    h = np.zeros_like(X)
+    g = np.zeros_like(X)
+    for cx in EYE_XS:
+        h += pad(f, cx, 3.25, 1.5, 0.55, 0.35)
+        h += -0.35 * sstep(1.0, 0.3, ell_d(f, cx, 4.45, 1.45, 0.75))
+    h += pad(f, 4, 1.6, 3.6, 1.6, 0.2)                                             # forehead
+    h += pad(f, 4, 7.45, 1.0, 0.45, 0.2)                                          # chin
+    return h, g
+
+
+def _wedge(f, x_top, y_top, x_bot, y_bot, w_top, w_bot):
+    """A crisp tapered shape between two points (a shadow plane)."""
+    return crisp(stroke(f, [(x_top, y_top), (x_bot, y_bot)], w_top, w_bot))
+
+
+def nose_fill(f, style, k):
+    """The nose as flat ink shapes: a shadow plane on the side away from the light, a cast shadow under
+    it, nostrils, a lit tip. Light comes from the texture's left."""
+    if style == "none":
+        return k
+    shade = np.zeros_like(f.X)
+    under = np.zeros_like(f.X)
+    deep = np.zeros_like(f.X)
+    lit_ = np.zeros_like(f.X)
+    if style == "straight":
+        shade = _wedge(f, 4.12, 4.55, 4.3, 5.55, 0.18, 0.42)
+        under = crisp(ell(f, 4.1, 5.98, 0.5, 0.13))
+        deep = crisp(ell(f, 3.78, 5.92, 0.13, 0.08)) + crisp(ell(f, 4.36, 5.92, 0.15, 0.09))
+        lit_ = crisp(ell(f, 3.9, 5.5, 0.17, 0.17))
+    elif style == "button":
+        shade = crisp(ell(f, 4.32, 5.55, 0.22, 0.3))
+        under = crisp(ell(f, 4.08, 5.92, 0.42, 0.11))
+        deep = crisp(ell(f, 3.8, 5.86, 0.11, 0.07)) + crisp(ell(f, 4.3, 5.86, 0.12, 0.07))
+        lit_ = crisp(ell(f, 3.92, 5.48, 0.2, 0.18))
+    elif style == "broad":
+        shade = _wedge(f, 4.15, 4.7, 4.45, 5.6, 0.2, 0.5)
+        under = crisp(ell(f, 4.05, 6.0, 0.75, 0.14))
+        deep = crisp(ell(f, 3.6, 5.92, 0.18, 0.1)) + crisp(ell(f, 4.45, 5.92, 0.2, 0.1))
+        deep += crisp(stroke(f, [(4.75, 5.45), (4.8, 5.85)], 0.12))                      # the nostril wing
+        lit_ = crisp(ell(f, 3.88, 5.48, 0.22, 0.17))
+    elif style == "hooked":
+        shade = _wedge(f, 4.12, 4.4, 4.32, 5.75, 0.18, 0.44)
+        under = crisp(ell(f, 4.1, 6.12, 0.5, 0.13))
+        deep = crisp(stroke(f, [(3.7, 6.05), (4.5, 6.02)], 0.14))
+        lit_ = crisp(ell(f, 3.9, 4.95, 0.13, 0.22)) + crisp(ell(f, 3.92, 5.7, 0.16, 0.14))  # the bump and the tip
+    elif style == "flat":
+        shade = crisp(ell(f, 4.35, 5.45, 0.2, 0.25))
+        under = crisp(ell(f, 4.05, 5.88, 0.6, 0.11))
+        deep = crisp(ell(f, 3.62, 5.82, 0.15, 0.08)) + crisp(ell(f, 4.42, 5.82, 0.15, 0.08))
+    k = np.where(shade > 0, np.minimum(k, TONE_HALF), k)
+    k = np.where(under > 0, np.minimum(k, TONE_SHADOW), k)
+    k = np.where(lit_ > 0, TONE_HI, k)
+    k = np.where(deep > 0, TONE_DEEP, k)
+    return k
+
+
+def mouth_fill(f, style, k):
+    """The mouth: a bold line (darkest in the middle), the lower lip's shadow, corners."""
+    if style == "none":
+        return k
+    y = MOUTH_Y
+    line = np.zeros_like(f.X)
+    soft = np.zeros_like(f.X)
+    if style == "neutral":
+        line = crisp(stroke(f, bezier((3.2, y), (4, y + 0.06), (4.8, y), 12), 0.16, 0.16))
+        line += crisp(stroke(f, [(3.55, y + 0.02), (4.45, y + 0.02)], 0.28))
+    elif style == "smile":
+        line = crisp(stroke(f, bezier((3.0, y - 0.28), (4, y + 0.32), (5.0, y - 0.28), 14), 0.2, 0.2))
+        for sx in (-1, 1):
+            soft += crisp(stroke(f, [(4 + 1.22 * sx, y - 0.5), (4 + 1.12 * sx, y - 0.15)], 0.14, 0.08))
+    elif style == "frown":
+        line = crisp(stroke(f, bezier((3.15, y + 0.22), (4, y - 0.16), (4.85, y + 0.22), 12), 0.2, 0.2))
+        for sx in (-1, 1):
+            soft += crisp(stroke(f, [(4 + 0.92 * sx, y + 0.3), (4 + 1.02 * sx, y + 0.7)], 0.14, 0.06))
+    elif style == "wide":
+        line = crisp(stroke(f, bezier((2.7, y - 0.08), (4, y + 0.14), (5.3, y - 0.08), 14), 0.2, 0.2))
+        line += crisp(stroke(f, [(3.4, y + 0.06), (4.6, y + 0.06)], 0.28))
+    elif style == "thin":
+        line = crisp(stroke(f, [(3.45, y), (4.55, y)], 0.16))
+    # the lower lip: a short shadow under its middle
+    lip = crisp(ell(f, 4.05, y + 0.48, 0.42, 0.1)) if style != "thin" else np.zeros_like(f.X)
+    k = np.where(soft > 0, np.minimum(k, TONE_SHADOW), k)
+    k = np.where(lip > 0, np.minimum(k, TONE_HALF), k)
+    return np.where(line > 0, TONE_DEEP, k)
+
+
+def jaw_fill(f, name, k):
+    """The jaw's shape on the face: the lower corners turn away into shadow (flat tone shapes)."""
+    if name == "none":
+        return k
+    X, Y = f.X, f.Y
+    ax = np.abs(X - 4)
+    if name == "soft":
+        away = (Y - 6.4) * 1.1 > (3.3 - ax) * 1.3
+    elif name == "square":
+        away = ((Y > 7.45) & (ax > 1.5)) | ((ax > 3.55) & (Y > 6.2))
+    elif name == "sharp":
+        away = (Y - 5.7) > (3.75 - ax) * 0.95
+    else:  # round
+        away = ell_d(f, 4, 4.4, 4.15, 3.45) > 1.0
+    # the shadow side of the face (the character's left = texture right) goes darker
+    tone_away = np.where(X > 4, TONE_SHADOW, TONE_HALF)
+    k = np.where(away, np.minimum(k, tone_away), k)
+    return k
+
+
+JAW_SIDE = {"none": 0.0, "soft": 0.4, "square": 0.6, "sharp": 0.75, "round": 0.3}
+
+
+def head_tones(f, nose="none", mouth="none", jaw="none", seed=5):
+    """The inked head. The front is lit flat-ish (an anime face), with carved shadow shapes."""
+    X, Y = f.X, f.Y
+    if f.name == "top":
+        return np.full_like(X, TONE_LIGHT)
+    if f.name == "bottom":
+        return np.full_like(X, TONE_SHADOW)
+    if f.name == "front":
+        h, g = face_relief(f, nose, mouth, jaw)
+        light = lit(f, h, None, ROUNDNESS["head"])
+        k = cut(f, light, seed, levels=(9.0, 0.3, 0.02), rough=0.025)
+        k = jaw_fill(f, jaw, k)
+        k = nose_fill(f, nose, k)
+        k = mouth_fill(f, mouth, k)
+        # under the jaw: a hard shadow band
+        k = np.where(Y > 7.7, np.minimum(k, TONE_HALF), k)
+        k = np.where(g > 0, TONE_DEEP, k)
+        return k
+    # side and back faces: the head as a rounded block, an ear, the jaw line
+    h = np.zeros_like(X)
+    g = np.zeros_like(X)
     if f.side:
         mx = f.MX
-        k += -0.1 + 0.08 * sstep(4, 8, mx)                      # cheek side
-        ear = ell_d(f, 3.55, 4.75, 0.66, 1.0)
-        inner = ell_d(f, 3.72, 4.85, 0.36, 0.6)
-        k += np.where(ear < 1, 0.12 - 0.7 * sstep(1.0, 0.6, inner) * (inner < 1), 0)       # rim and the hollow
-        k += -0.5 * np.clip(1 - np.abs(ear - 1.0) * 6, 0, 1)                                  # its outline
-        # the jaw line: from under the ear to the chin
-        jaw_y = 6.1 + (mx - 3.6) * 0.38
-        k += -0.30 * sstep(jaw_y - 0.1, jaw_y + 0.5, Y) * (mx > 3.0)
-        k += -0.40 * sstep(7.2, 8, Y)
-        return k
-    if f.name == "back":
-        return k - 0.28 - 0.25 * sstep(6.5, 8, Y)
-    if f.name == "top":
-        return k + 0.18
-    return k - 0.9                                               # under the chin
-
-
-def nose_shading(f, style):
-    """A shading change (dk) for the nose on the head front."""
-    X, Y = f.X, f.Y
-    dk = np.zeros_like(X)
-    if style == "straight":
-        dk += 0.22 * stroke(f, [(3.88, 4.45), (3.86, 5.45)], 0.18, 0.28)        # bridge
-        dk += -0.28 * stroke(f, [(4.32, 4.6), (4.38, 5.55)], 0.16, 0.34)        # shade side
-        dk += 0.20 * ell(f, 3.95, 5.5, 0.22, 0.16)                              # tip
-        dk += -0.45 * (ell(f, 3.68, 5.86, 0.13, 0.07) + ell(f, 4.32, 5.86, 0.13, 0.07))
-        dk += -0.32 * gauss(f, 4, 5.98, 0.42, 0.08)                             # under the nose
-    elif style == "button":
-        dk += 0.22 * ell(f, 3.95, 5.5, 0.26, 0.2)
-        dk += -0.2 * gauss(f, 4.3, 5.35, 0.18, 0.3)
-        dk += -0.38 * (ell(f, 3.75, 5.8, 0.1, 0.06) + ell(f, 4.25, 5.8, 0.1, 0.06))
-        dk += -0.22 * gauss(f, 4, 5.92, 0.32, 0.07)
-    elif style == "broad":
-        dk += 0.16 * stroke(f, [(3.9, 4.6), (3.88, 5.35)], 0.26, 0.4)
-        dk += -0.22 * stroke(f, [(4.42, 4.7), (4.55, 5.5)], 0.2, 0.4)
-        dk += 0.18 * ell(f, 3.95, 5.5, 0.36, 0.2)
-        for sx in (-1, 1):
-            dk += -0.30 * gauss(f, 4 + 0.68 * sx, 5.62, 0.16, 0.18)             # nostril wings
-            dk += -0.42 * ell(f, 4 + 0.4 * sx, 5.86, 0.17, 0.08)
-        dk += -0.3 * gauss(f, 4, 6.0, 0.6, 0.09)
-    elif style == "hooked":
-        dk += 0.32 * stroke(f, [(3.9, 4.4), (3.82, 4.95), (3.9, 5.5)], 0.2, 0.26)  # the hump
-        dk += -0.34 * stroke(f, [(4.3, 4.5), (4.42, 5.6)], 0.18, 0.36)
-        dk += 0.16 * ell(f, 3.98, 5.62, 0.2, 0.16)
-        dk += -0.5 * gauss(f, 4.05, 5.92, 0.3, 0.1)                             # tip hangs down
-        dk += -0.42 * (ell(f, 3.68, 5.95, 0.12, 0.06) + ell(f, 4.32, 5.95, 0.12, 0.06))
-    elif style == "flat":
-        dk += 0.1 * ell(f, 3.95, 5.45, 0.4, 0.22)
-        dk += -0.16 * gauss(f, 4.4, 5.3, 0.22, 0.35)
-        dk += -0.3 * (ell(f, 3.62, 5.8, 0.15, 0.07) + ell(f, 4.38, 5.8, 0.15, 0.07))
-        dk += -0.18 * gauss(f, 4, 5.92, 0.55, 0.08)
-    return dk
-
-
-def mouth_shading(f, style):
-    X, Y = f.X, f.Y
-    dk = np.zeros_like(X)
-    y = MOUTH_Y
-    if style == "neutral":
-        line = stroke(f, bezier((3.2, y), (4, y + 0.06), (4.8, y)), 0.14, 0.14)
-        dk += -0.9 * line
-        dk += -0.18 * gauss(f, 4, y - 0.2, 0.55, 0.1)            # upper lip
-        dk += 0.18 * gauss(f, 4, y + 0.28, 0.45, 0.12)           # lower lip catches light
-        dk += -0.22 * gauss(f, 4, 6.1, 0.12, 0.14)               # philtrum
-    elif style == "smile":
-        line = stroke(f, bezier((3.05, y - 0.22), (4, y + 0.28), (4.95, y - 0.22)), 0.12, 0.12)
-        dk += -0.9 * line
-        dk += 0.2 * gauss(f, 4, y + 0.42, 0.4, 0.1)
-        for sx in (-1, 1):
-            dk += -0.25 * gauss(f, 4 + 1.15 * sx, y - 0.28, 0.12, 0.16)   # dimples / cheek lift
-            dk += 0.12 * gauss(f, 4 + 1.5 * sx, y - 0.7, 0.4, 0.25)
-        dk += -0.2 * gauss(f, 4, 6.1, 0.12, 0.14)
-    elif style == "frown":
-        line = stroke(f, bezier((3.15, y + 0.2), (4, y - 0.12), (4.85, y + 0.2)), 0.13, 0.13)
-        dk += -0.85 * line
-        for sx in (-1, 1):
-            dk += -0.3 * stroke(f, [(4 + 0.88 * sx, y + 0.22), (4 + 1.0 * sx, y + 0.55)], 0.1, 0.03)
-        dk += 0.15 * gauss(f, 4, y + 0.3, 0.4, 0.1)
-        dk += -0.2 * gauss(f, 4, 6.1, 0.12, 0.14)
-    elif style == "wide":
-        line = stroke(f, bezier((2.7, y - 0.05), (4, y + 0.12), (5.3, y - 0.05)), 0.15, 0.15)
-        dk += -0.9 * line
-        dk += -0.2 * gauss(f, 4, y - 0.22, 0.85, 0.1)
-        dk += 0.2 * gauss(f, 4, y + 0.32, 0.75, 0.13)
-        dk += -0.2 * gauss(f, 4, 6.1, 0.12, 0.14)
-    elif style == "thin":
-        line = stroke(f, [(3.4, y), (4.6, y)], 0.1, 0.1)
-        dk += -0.6 * line
-        dk += 0.1 * gauss(f, 4, y + 0.22, 0.4, 0.08)
-    return dk
-
-
-def _body_soft(f):
-    """The torso: collarbones, chest, a light six-pack, navel, shoulder blades and spine."""
-    X, Y = f.X, f.Y
-    k = texture(f, 11)
-    if f.name == "front":
-        k += round_edges(f, 0.3, 0.55)
-        k += -0.12 * sstep(8.5, 12, Y)
-        for sx in (-1, 1):
-            # collarbones: a highlight with a soft shadow under it
-            k += 0.16 * stroke(f, bezier((4 + 0.35 * sx, 0.7), (4 + 1.6 * sx, 1.0), (4 + 3.4 * sx, 0.75)), 0.22, 0.14)
-            k += -0.12 * stroke(f, bezier((4 + 0.6 * sx, 1.2), (4 + 1.8 * sx, 1.45), (4 + 3.2 * sx, 1.2)), 0.3, 0.2)
-            # chest: lit on top, a crease under it
-            k += 0.16 * gauss(f, 4 + 1.9 * sx, 2.4, 1.3, 0.8)
-            k += -0.48 * stroke(f, bezier((4 + 0.3 * sx, 3.8), (4 + 2.0 * sx, 4.45), (4 + 3.6 * sx, 3.3)), 0.6, 0.2)
-            # obliques and the V at the hips
-            k += -0.22 * stroke(f, [(4 + 3.3 * sx, 6.0), (4 + 2.8 * sx, 9.0), (4 + 1.0 * sx, 11.6)], 0.4, 0.2)
-        k += -0.08 * gauss(f, 4, 0.35, 0.45, 0.25)              # the notch at the neck
-        k += -0.16 * stroke(f, [(4, 1.6), (4, 3.8)], 0.22)       # sternum
-        k += -0.2 * stroke(f, [(4, 4.4), (4, 8.2)], 0.16)        # line down the abs
-        for row, (y0, y1) in enumerate(((4.55, 5.65), (5.85, 6.95), (7.15, 8.2))):
-            for sx in (-1, 1):
-                k += 0.13 * ell(f, 4 + 0.95 * sx, (y0 + y1) / 2 - 0.08, 0.75, (y1 - y0) / 2 * 0.95)  # ab blocks, lit on top
-            k += -0.14 * stroke(f, [(2.9, y1 + 0.1), (5.1, y1 + 0.1)], 0.16)
-        for sx in (-1, 1):
-            for i in range(3):  # serratus: short ribs of muscle under the arms
-                y = 4.4 + 0.55 * i
-                k += -0.16 * stroke(f, [(4 + 3.85 * sx, y), (4 + 3.2 * sx, y + 0.3)], 0.14, 0.04)
-        k += -0.6 * ell(f, 4, 8.55, 0.17, 0.2) + 0.1 * gauss(f, 4, 8.8, 0.25, 0.1)  # navel
-        return k
-    if f.name == "back":
-        k += round_edges(f, 0.2, 0.6) - 0.06
-        k += -0.3 * gauss(f, 4, 6, 0.2, 4.5)                    # spine
-        for sx in (-1, 1):
-            k += 0.16 * gauss(f, 4 + 1.9 * sx, 2.7, 1.1, 1.1)   # shoulder blades
-            k += -0.3 * stroke(f, bezier((4 + 0.8 * sx, 1.6), (4 + 0.9 * sx, 3.6), (4 + 2.6 * sx, 4.6)), 0.3, 0.1)
-            k += -0.18 * stroke(f, bezier((4 + 3.6 * sx, 4.0), (4 + 2.6 * sx, 6.5), (4 + 1.0 * sx, 8.5)), 0.4, 0.1)  # lats
-            k += -0.1 * gauss(f, 4 + 1.3 * sx, 10.4, 0.25, 0.25)  # lower back dimples
-        return k
+        h += pad(f, 3.5, 4.8, 0.75, 1.1, 0.35, X=mx)                                  # the ear
+        g = np.maximum(g, crisp(ell(f, 3.7, 5.0, 0.16, 0.34, X=mx)))                    # the ear's hollow
+        js = JAW_SIDE.get(jaw, 0.0)
+        jaw_y = 6.3 + (mx - 3.6) * (0.45 if jaw == "sharp" else 0.32)
+        h += -js * sstep(jaw_y - 0.1, jaw_y + 0.3, Y) * sstep(4.6, 5.4, mx)
+        h += 0.25 * sstep(1.0, 0.3, ell_d(f, 6.6, 5.3, 1.1, 0.8, X=mx))              # cheekbone
+    light = lit(f, h, None, ROUNDNESS["head"])
+    k = cut(f, light, seed, levels=(0.9, 0.3, 0.02), rough=0.03)
     if f.side:
-        k += -0.08 + round_edges(f, 0.1)
-        k += -0.1 * gauss(f, 2, 3.0, 1.0, 1.4)                  # armpit
-        return k
-    if f.name == "top":
-        return k + 0.15
-    return k - 0.6
-
-
-def _arm_soft(f):
-    """An arm: shoulder, biceps, elbow (the model bends at row 6), forearm and a hand."""
-    X, Y = f.X, f.Y
-    k = texture(f, 23)
-    if f.name == "top":
-        return k + 0.25
-    if f.name == "bottom":
-        # the end of the hand: palm and folded fingers
-        k += -0.35
-        for x in (1.0, 2.0, 3.0):
-            k += -0.25 * stroke(f, [(x, 0.4), (x, 3.6)], 0.1)
-        return k
-    k += round_edges(f, 0.3, 0.45)
-    k += 0.14 * gauss(f, 2, 0.9, 1.6, 1.0)                      # deltoid
-    k += -0.26 * stroke(f, bezier((0.0, 2.3), (2, 3.0), (4.0, 2.3)), 0.2, 0.2)  # under the deltoid
-    if f.side:
-        k += -0.2 * stroke(f, [(2.0, 2.9), (2.1, 5.3)], 0.16, 0.06)   # between biceps and triceps
-    if f.name == "front":
-        k += -0.26 * stroke(f, [(1.55, 6.9), (2.0, 8.0), (2.45, 9.5)], 0.08, 0.06)  # a vein down the forearm
-        k += -0.18 * stroke(f, [(2.0, 8.0), (2.9, 8.8)], 0.06, 0.03)
-        k += 0.12 * gauss(f, 2, 3.7, 1.0, 1.2)                  # biceps
-        k += -0.24 * stroke(f, bezier((1.0, 5.95), (2, 6.15), (3.0, 5.95)), 0.16, 0.16)  # inner elbow
-    if f.name == "back":
-        k += 0.08 * gauss(f, 2, 3.4, 1.1, 1.3)                  # triceps
-        k += 0.16 * ell(f, 2, 6.05, 0.5, 0.35) - 0.1 * gauss(f, 2, 6.6, 0.6, 0.15)  # elbow point
-    k += 0.08 * gauss(f, 2, 7.6, 1.1, 1.3)                      # forearm
-    k += -0.12 * gauss(f, 2, 9.75, 2.5, 0.2)                    # wrist
-    # the hand (rows 10-12)
-    hand = sstep(9.85, 10.0, Y)
-    if f.name == "front":
-        for x in (0.5, 1.5, 2.5, 3.5):
-            k += hand * (0.14 * ell(f, x, 10.35, 0.34, 0.2))     # knuckles
-        for x in (1.0, 2.0, 3.0):
-            k += hand * (-0.3 * stroke(f, [(x, 10.55), (x, 12.0)], 0.1))  # between the fingers
-        k += hand * (-0.18 * sstep(11.6, 12.0, Y))
-        for x in (0.5, 1.5, 2.5, 3.5):
-            k += hand * (0.1 * ell(f, x, 11.65, 0.22, 0.18))     # nails
-    if f.name == "back":
-        k += hand * 0.06
-        for x in (1.0, 2.0, 3.0):
-            k += hand * (-0.12 * stroke(f, [(x, 10.4), (x, 11.6)], 0.08))  # tendons
-    if f.side:
-        k += hand * (-0.16 * stroke(f, bezier((0.6, 10.5), (2.0, 11.4), (3.4, 10.9)), 0.12))  # thumb crease
+        k = np.where((Y > 7.5) & (f.MX > 4.8), np.minimum(k, TONE_HALF), k)        # under the jaw
+    k = np.where(g > 0, TONE_DEEP, k)
     return k
 
 
-def _leg_soft(f):
-    """A leg: thigh, knee (the model bends at row 6), calf, ankle and a bare foot."""
-    X, Y = f.X, f.Y
-    k = texture(f, 37)
-    if f.name == "top":
-        return k
-    if f.name == "bottom":
-        return k - 0.7 + 0.12 * gauss(f, 2, 2, 0.8, 1.2)
-    k += round_edges(f, 0.3, 0.45)
-    if f.name == "front":
-        k += 0.18 * gauss(f, 2.2, 2.4, 1.1, 1.7)                 # thigh
-        k += 0.18 * ell(f, 2, 6.0, 0.85, 0.7) - 0.14 * stroke(f, bezier((1.2, 6.85), (2, 7.05), (2.8, 6.85)), 0.2)  # knee
-        k += 0.07 * stroke(f, [(2.25, 7.4), (2.1, 9.6)], 0.4)    # shin
-        k += -0.2 * stroke(f, [(2.2, 0.5), (1.6, 3.6), (1.2, 5.2)], 0.14, 0.06)  # between the thigh muscles
-        k += 0.12 * ell(f, 1.0, 4.9, 0.55, 0.6)                 # the inner bulge above the knee
-    if f.name == "back":
-        k += -0.24 * stroke(f, bezier((0.9, 5.95), (2, 6.1), (3.1, 5.95)), 0.14)  # back of the knee
-        k += 0.16 * ell(f, 1.3, 7.4, 0.75, 1.3) + 0.16 * ell(f, 2.75, 7.5, 0.7, 1.2)  # calf, two heads
-        k += -0.2 * stroke(f, [(2.0, 6.6), (2.0, 8.4)], 0.12, 0.04)
-        k += -0.12 * gauss(f, 2, 9.0, 1.5, 0.3)
-    if f.side:
-        k += 0.08 * ell(f, 1.9, 10.3, 0.3, 0.25)                # ankle bone
-    # the foot (rows 10.2-12)
-    foot = sstep(10.1, 10.3, Y)
-    if f.name == "front":
-        k += foot * 0.05
-        for x in (0.85, 1.7, 2.45, 3.15):
-            k += foot * (-0.28 * stroke(f, [(x, 10.9), (x, 12.0)], 0.09))  # between the toes
-        for x, w in ((0.42, 0.34), (1.28, 0.3), (2.08, 0.28), (2.8, 0.26), (3.55, 0.24)):
-            k += foot * (0.12 * ell(f, x, 11.35, w, 0.2))        # toenails
-        k += foot * (-0.15 * sstep(11.7, 12.0, Y))
-    return k
+# ---------------------------------------------------------------------------
+# Entry points used by the part generators
+# ---------------------------------------------------------------------------
+
+NPC_MUSCLE = 0.85
 
 
-SKIN_BOXES = {"head": "head", "body": "body", "rarm": "arm", "larm": "arm", "rleg": "leg", "lleg": "leg"}
-
-
-# The skin in ink: the soft fields above, cut into hard light and shadow with gritty edges.
 def head_skin(f, nose=True, mouth=True):
-    return ink(f, _head_soft(f, nose, mouth), 5, gain=1.3, rough=0.06, keep=0.3) + grit(f, 6, 0.04)
+    return head_tones(f, "straight" if nose else "none", "neutral" if mouth else "none", "soft")
 
 
-def body_skin(f):
-    return ink(f, _body_soft(f), 13, gain=2.0, rough=0.07) + grit(f, 14, 0.05)
+def body_skin(f, s=NPC_MUSCLE):
+    return shade_body(f, s, 13)
 
 
-def arm_skin(f):
-    return ink(f, _arm_soft(f), 25, gain=1.8, rough=0.07) + grit(f, 26, 0.05)
+def arm_skin(f, s=NPC_MUSCLE):
+    return shade_body(f, s, 25)
 
 
-def leg_skin(f):
-    return ink(f, _leg_soft(f), 39, gain=1.8, rough=0.07) + grit(f, 40, 0.05)
+def leg_skin(f, s=NPC_MUSCLE):
+    return shade_body(f, s, 39)
