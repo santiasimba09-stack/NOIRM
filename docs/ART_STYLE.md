@@ -15,6 +15,11 @@ trace or sample them).
 - **Palette:** ash blacks and greys, bone/off-white highlights, desaturated skin tones, and **blood
   red** as the accent (seals, trims, blood, eyes). Chakra blue/green only for chakra effects.
 - **Faces:** sharp, intense eyes (dark lids, small bright highlight), strong brows, shadowed jaw.
+  Owner, round 15: big round eyes read "soulless and way too bubbly". Eyes are a narrow slit: a heavy,
+  angled upper lid cutting across the top of a small iris (dark ring, lighter lower half, small pupil,
+  a one-pixel highlight), white showing on the outer side, the inner corner low (a focused tilt), the
+  brow close above casting a shadow on the lid. Dojutsu overlays are drawn per eye style so they sit
+  inside the lids.
 
 ## Clothing
 - Like the clothing references: the outfit reads as **real cloth on a body**: big folds and

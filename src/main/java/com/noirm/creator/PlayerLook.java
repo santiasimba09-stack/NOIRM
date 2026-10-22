@@ -33,7 +33,7 @@ public final class PlayerLook {
         SCAR("scar", "none", "eye", "nose", "cheek", "chest", "arm", "back"),
         WEATHERING("weathering", "none", "light", "worn", "battered"),
         MARKING("marking", "none", "whiskers", "fangs", "swirls", "tear_lines", "diamond", "war_paint", "freckles", "stripes"),
-        UNDERWEAR("underwear", "briefs", "fundoshi", "shorts", "bindings"),
+        UNDERWEAR("underwear", "boxers", "briefs", "fundoshi", "shorts", "bindings"),
         // Characters start in just their underwear: clothes are gear items worn on top. These three
         // slots stay (with one option) so saves and the look packet keep their shape; an old save's
         // "tee" or "sandals" is unknown now and loads as the first option, i.e. nothing.
@@ -86,7 +86,8 @@ public final class PlayerLook {
         EYE("eye", 0x1E1A1F, 0x3A2A22, 0x5A3C24, 0x2E4A6B, 0x3F6E9C, 0x3E6B45, 0x6C7A3A, 0x7A7F86, 0xB9B6C8, 0x8E2B2B, 0xC9A445, 0x4B3A6E),
         HAIR("hair", 0x141418, 0x2A2224, 0x3A2618, 0x5A3A24, 0x8A5A30, 0xC08A48, 0xE6CF8E, 0xD8D4CC, 0x8E9096, 0xB4462E, 0xE07A2E, 0x6B88B8,
                 0x4E6B3A, 0xC86A9E, 0x2B3A6E, 0xF2F0EA),
-        UNDERWEAR("underwear", 0x1C2233, 0x24262E, 0xD9D4C8, 0x3A3F48, 0x5B2B2B, 0x2E3A2A, 0x6B5A3A, 0x2B3A55, 0x101014, 0x8A8F96, 0x4B2E4E, 0xB8A27A),
+        // black first: new characters start in black boxers (owner, round 15)
+        UNDERWEAR("underwear", 0x1A1A1E, 0x1C2233, 0x24262E, 0xD9D4C8, 0x3A3F48, 0x5B2B2B, 0x2E3A2A, 0x6B5A3A, 0x2B3A55, 0x8A8F96, 0x4B2E4E, 0xB8A27A),
         // TOP and BOTTOM: no longer used (clothes are gear), kept so the look packet keeps its shape.
         TOP("top", 0x1C2233, 0x1A1A20, 0x23293D, 0x2E3038, 0x3E7A2E, 0x5B2B2B, 0xD9D4C8, 0x6B5A3A, 0x2B3A55, 0x8A8F96, 0xC2702E, 0x3A2E4E),
         BOTTOM("bottom", 0x24262E, 0x1F2433, 0x2E3038, 0xD9D4C8, 0x3E7A2E, 0x3A2E24, 0x4B4F58, 0x2B3A55, 0x101014, 0x6B5A3A, 0x5B2B2B, 0x8A8F96);
@@ -204,6 +205,9 @@ public final class PlayerLook {
             int[] palette = tone.palette;
             look.setColor(tone, palette[random.nextInt(palette.length)]);
         }
+        // everyone starts (and re-rolls) in the default black boxers; the Body tab changes them
+        look.set(Slot.UNDERWEAR, 0);
+        look.setColor(Tone.UNDERWEAR, Tone.UNDERWEAR.defaultColor());
         look.setHeight(0.95f + random.nextFloat() * 0.1f);
         return look;
     }

@@ -11,8 +11,9 @@ How the skin is lit (docs/ART_STYLE.md, "raw and tough"):
    ragged edges, and deliberate dark grooves are inked where muscles meet (centre line, ab grid,
    under the chest, the V at the hips, the knees). Grit only lives in the shadows.
 
-Positions are in model pixels on each face (the head's front is 8 x 8). The eye centres match the
-Mangekyou overlay in client/SharinganEyesLayer (EYE_X 1.5 px either side of the middle, 4.5 px down).
+Positions are in model pixels on each face (the head's front is 8 x 8). If the eye shapes change,
+rerun gen_parts.py and copy its "mangekyo fit" numbers into client/SharinganEyesLayer.IRIS (the
+Mangekyou disc is fitted to each style's iris there).
 """
 import numpy as np
 
@@ -28,14 +29,38 @@ EYE_XS = (2.5, 5.5)       # texture-left eye, texture-right eye
 NOSE_TIP_Y = 5.75
 MOUTH_Y = 6.6
 
-# Eye shapes: half width, lid heights above/below the centre, tilt (outer corner up), iris radius,
-# lid line thickness, the flick at the outer corner, how far the iris rides up under the lid.
+# Eye shapes (owner, round 15: the old big almond eyes looked "soulless and way too bubbly"; now
+# narrow, sharp, intense). The opening is a slit between two corners: the inner corner sits low (a
+# focused downward tilt towards the nose), the outer one higher. The upper lid rises quickly from
+# the inner corner and runs in a straight, angled line to the outer corner; it is drawn heavy and
+# cuts across the top of the iris. The iris is small and set a little towards the nose, so white
+# shows on the outer side.
+#   ein    inner corner's distance from the eye centre (towards the nose)
+#   eout   outer corner's distance (the eye reaches further out than in: white on the outer side)
+#   inner, outer   corner heights from EYE_Y (+ = lower)
+#   up     the upper lid's rise over the corners' line    peak   where it peaks (0 inner .. 1 outer)
+#   down   the lower lid's sag under that line            iris   iris radius
+#   shift  iris shift towards the nose                    idy    iris centre height from EYE_Y
+#   lash   upper lid thickness (outer end)                wing   the outer flick's length
+#   hood   the brow's shadow over the lid (height)
+# The iris centre sits on an HD pixel's centre (shift, idy multiples of 1/8 at SCALE 4), so the
+# pupil is one pixel wide and the highlight one pixel.
 EYE_SHAPES = {
-    "round":  dict(hw=1.0, up=0.62, down=0.5, tilt=0.06, iris=0.6, lash=0.36, wing=0.3, lift=0.0),
-    "sharp":  dict(hw=1.08, up=0.46, down=0.34, tilt=0.2, iris=0.56, lash=0.4, wing=0.46, lift=0.08),
-    "wide":   dict(hw=1.0, up=0.72, down=0.58, tilt=0.0, iris=0.6, lash=0.32, wing=0.22, lift=0.0),
-    "narrow": dict(hw=1.04, up=0.34, down=0.26, tilt=0.1, iris=0.54, lash=0.4, wing=0.36, lift=0.1),
-    "pale":   dict(hw=1.0, up=0.6, down=0.5, tilt=0.04, iris=0.6, lash=0.34, wing=0.26, lift=0.0),
+    # steady and heavy-lidded (the default): the lid low on the iris, calm and dangerous
+    "round":  dict(ein=1.1, eout=1.3, inner=0.15, outer=-0.1, up=0.62, peak=0.4, down=0.42, iris=0.6,
+                   shift=0.125, idy=-0.125, lash=0.42, wing=0.3, hood=0.5),
+    # sharp: a strong upward sweep to a long outer flick
+    "sharp":  dict(ein=1.1, eout=1.34, inner=0.22, outer=-0.3, up=0.52, peak=0.36, down=0.4, iris=0.56,
+                   shift=0.125, idy=-0.125, lash=0.44, wing=0.5, hood=0.45),
+    # fierce: opened wide in a glare, white around the iris, the brow pressing down
+    "wide":   dict(ein=1.08, eout=1.28, inner=0.12, outer=-0.12, up=0.74, peak=0.4, down=0.72, iris=0.56,
+                   shift=0.125, idy=-0.125, lash=0.38, wing=0.26, hood=0.4),
+    # narrow: a slit, the lid half over the iris (cold, tired)
+    "narrow": dict(ein=1.1, eout=1.32, inner=0.14, outer=-0.12, up=0.44, peak=0.42, down=0.27, iris=0.56,
+                   shift=0.125, idy=0.125, lash=0.46, wing=0.36, hood=0.55),
+    # pale (the Hyuga's white eyes): heavy-lidded, a pale iris without a pupil
+    "pale":   dict(ein=1.1, eout=1.3, inner=0.15, outer=-0.1, up=0.62, peak=0.4, down=0.42, iris=0.6,
+                   shift=0.125, idy=-0.125, lash=0.4, wing=0.3, hood=0.45),
 }
 
 
@@ -44,23 +69,34 @@ def outward(x, cx):
     return np.where(cx < 4, -(x - cx), (x - cx))
 
 
+def across_u(x, cx, s):
+    """0 at the inner corner .. 1 at the outer corner (unclipped)."""
+    return (outward(x, cx) + s["ein"]) / (s["ein"] + s["eout"])
+
+
+def corner_xs(cx, s):
+    """(inner corner x, outer corner x) for the eye centred at cx."""
+    d = 1 if cx < 4 else -1                     # towards the nose
+    return cx + d * s["ein"], cx - d * s["eout"]
+
+
 def lid_curves(x, cx, s):
-    """(top lid y, bottom lid y) at x for the eye centred at cx: an almond, the upper lid arched."""
-    dx = x - cx
-    o = outward(x, cx)
-    t = np.clip(np.abs(dx) / s["hw"], 0, 1)
-    arch = np.sqrt(np.clip(1 - t ** 2, 0, 1))
-    # the upper lid peaks a little towards the inner side, the lower lid sits flatter
-    skew = 1 + 0.18 * np.clip(-o / s["hw"], -1, 1)
-    top = EYE_Y - s["up"] * arch ** 0.7 * skew - s["tilt"] * o
-    bottom = EYE_Y + s["down"] * arch ** 1.3 - s["tilt"] * o * 0.5
+    """(top lid y, bottom lid y) at x for the eye centred at cx: a slit between a low inner corner
+    and a higher outer corner, the upper lid an angled line, the lower lid a shallow curve."""
+    u = np.clip(across_u(x, cx, s), 0, 1)
+    chord = EYE_Y + s["inner"] + (s["outer"] - s["inner"]) * u
+    p = s["peak"]
+    rise = np.where(u < p, (u / p) ** 0.5, ((1 - u) / (1 - p)) ** 0.9)
+    top = chord - s["up"] * rise
+    bottom = chord + s["down"] * np.clip(np.sin(np.pi * u ** 0.85), 0, 1) ** 0.7
     return top, bottom
 
 
 def eye_lids(f, cx, s):
     """(top lid y, bottom lid y, inside 0..1 across x) for one eye at centre cx."""
     top, bottom = lid_curves(f.X, cx, s)
-    across = np.clip((s["hw"] - np.abs(f.X - cx)) * SCALE + 0.5, 0, 1)
+    u = across_u(f.X, cx, s)
+    across = np.clip(np.minimum(u, 1 - u) * (s["ein"] + s["eout"]) * SCALE + 0.5, 0, 1)
     return top, bottom, across
 
 
@@ -71,13 +107,13 @@ def eye_inside(f, cx, s):
 
 
 def iris_centre(cx, s):
-    # pushed slightly towards the nose's side? no: centred, riding up under the upper lid
-    return cx, EYE_Y - 0.02 - s.get("lift", 0.0)
+    """Set a little towards the nose (white shows on the outer side), riding up under the lid."""
+    return cx + (s["shift"] if cx < 4 else -s["shift"]), EYE_Y + s["idy"]
 
 
 def iris_radii(s):
-    """The iris is a tall oval: it fills the eye's height (the lids clip it), little white shows."""
-    return s["iris"] * 0.95, s["iris"] * 1.15
+    """A small, nearly round iris: the heavy upper lid hides its top."""
+    return s["iris"], s["iris"] * 1.04
 
 
 def crisp(cov, at=0.5):

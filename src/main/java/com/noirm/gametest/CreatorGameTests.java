@@ -255,6 +255,9 @@ public final class CreatorGameTests {
         for (PlayerLook look : looks) {
             helper.assertTrue(look.id(PlayerLook.Slot.TOP).equals("none") && look.id(PlayerLook.Slot.BOTTOM).equals("none")
                     && look.id(PlayerLook.Slot.FEET).equals("bare"), "no clothes on a new look: " + look);
+            // the default underwear: black boxers (the owner's pick)
+            helper.assertTrue(look.id(PlayerLook.Slot.UNDERWEAR).equals("boxers"), "new looks wear boxers: " + look);
+            helper.assertTrue(look.color(PlayerLook.Tone.UNDERWEAR) == 0x1A1A1E, "the boxers are black: " + look);
         }
         helper.succeed();
     }
@@ -302,7 +305,13 @@ public final class CreatorGameTests {
                     }
                     case MARKING -> { if (!id.equals("none")) paths.add(ninja + "mark_" + id); }
                     case UNDERWEAR -> paths.add(player + "under_" + id);
-                    case EYES -> { paths.add(ninja + "eyes_" + id); paths.add(ninja + "iris_" + id); }
+                    case EYES -> {
+                        paths.add(ninja + "eyes_" + id);
+                        paths.add(ninja + "iris_" + id);
+                        // the dojutsu overlays are drawn per eye style, to fit its lids
+                        paths.add("textures/entity/sharingan_eyes_" + id);
+                        paths.add("textures/entity/byakugan_eyes_" + id);
+                    }
                     case BROWS -> paths.add(ninja + "brows_" + id);
                     case HAIR -> { if (!id.equals("none")) paths.add(ninja + "hair_" + id); }
                     case HAIR_LENGTH -> { if (!id.equals("as_styled")) paths.add(player + "hairlen_" + id); }
@@ -334,8 +343,6 @@ public final class CreatorGameTests {
         } catch (java.io.IOException e) {
             throw new IllegalStateException(e);
         }
-        paths.add("textures/entity/sharingan_eyes");
-        paths.add("textures/entity/byakugan_eyes");
         for (String path : paths) {
             int[] size = pngSize("/assets/noirm/" + path + ".png");
             helper.assertTrue(size != null, "the part " + path + " exists");
