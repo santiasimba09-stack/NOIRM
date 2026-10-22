@@ -1270,5 +1270,10 @@
   "creator.noirm.option.hair_volume.flat": "Liso",
   "creator.noirm.option.hair_volume.full": "Abundante",
   "creator.noirm.option.hair_volume.thick": "Espeso",
-  "creator.noirm.option.hair_volume.wild": "Salvaje"
+  "creator.noirm.option.hair_volume.wild": "Salvaje",
+  "jutsu.noirm.katon.burning_ash": "Elemento Fuego: Ceniza Ardiente",
+  "jutsu.noirm.katon.majestic_destroyer_flame": "Elemento Fuego: Llama Destructora Majestuosa",
+  "jutsu.noirm.katon.flame_bomb": "Elemento Fuego: Bomba de Llamas",
+  "jutsu.noirm.katon.dragon_flame_caterwaul": "Elemento Fuego: Rugido de los Dragones de Fuego",
+  "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena"
 }

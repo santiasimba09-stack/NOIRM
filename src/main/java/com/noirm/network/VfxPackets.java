@@ -13,7 +13,9 @@ public final class VfxPackets {
 
     /**
      * A lightning bolt from one point to another: {@code color} is its glow, {@code width} the
-     * core's thickness in blocks, {@code life} ticks, {@code branches} how many side forks.
+     * core's thickness in blocks, {@code life} ticks, {@code branches} how many side forks (low
+     * byte) plus style flags in the next byte ({@code BoltRenderer.ARC}, {@code GROUND}, {@code IMPACT},
+     * {@code FORKY}; same wire format, older senders simply set none).
      */
     public record Bolt(double x1, double y1, double z1, double x2, double y2, double z2,
                        int color, float width, int life, int branches) {
@@ -32,7 +34,12 @@ public final class VfxPackets {
 
         public static Bolt decode(FriendlyByteBuf buf) {
             return new Bolt(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
-                    buf.readInt(), Math.min(4f, buf.readFloat()), Math.min(100, buf.readVarInt()), Math.min(8, buf.readVarInt()));
+                    buf.readInt(), Math.min(4f, buf.readFloat()), Math.min(100, buf.readVarInt()), clampBranches(buf.readVarInt()));
+        }
+
+        /** At most 8 forks; the style flags above them pass through. */
+        private static int clampBranches(int raw) {
+            return Math.min(8, raw & 0xFF) | (raw & 0xFF00);
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

@@ -9,12 +9,13 @@
     "mastery": 2
   },
   "params": {
-    "count": 6,
-    "spread": 40,
-    "speed": 1.1,
-    "damage": 3.5,
+    "count": 8,
+    "spread": 50,
+    "speed": 1.2,
+    "damage": 2.6,
     "fire_seconds": 3,
     "posture": 8,
-    "homing": 0.12
+    "homing": 0.1,
+    "look": "bullet"
   }
 }

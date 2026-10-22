@@ -48,6 +48,11 @@ public final class GreatTechniques {
         boolean tick(long now);
     }
 
+    /** Plays something out over the next ticks: {@code step} gets the game time and returns true when done. */
+    static void later(java.util.function.LongPredicate step) {
+        PENDING.add(step::test);
+    }
+
     // ---------------------------------------------------------------- strike (Kirin)
 
     static void strike(JutsuContext ctx) {
@@ -79,17 +84,25 @@ public final class GreatTechniques {
                 if (level.random.nextInt(3) == 0) {
                     Vec3 a = sky.add((level.random.nextDouble() - 0.5) * 8, 0, (level.random.nextDouble() - 0.5) * 8);
                     Vec3 b = sky.add((level.random.nextDouble() - 0.5) * 8, -1, (level.random.nextDouble() - 0.5) * 8);
-                    Vfx.bolt(level, a, b, Vfx.LIGHTNING, 0.1f, 4, 1);
+                    com.noirm.vfx.LightningVfx.bolt(level, a, b, Vfx.LIGHTNING, 0.1f, 4, 2, com.noirm.vfx.LightningVfx.GROUND | com.noirm.vfx.LightningVfx.FORKY);
+                }
+                if (countdown[0] < 8) {
+                    // The air under it starts to glow and crackle: the strike is coming.
+                    com.noirm.vfx.LightningVfx.pool(level, ground, 2.5f + (8 - countdown[0]) * 0.4f, 3);
                 }
                 return false;
             }
             float radius = p.radius() * (float) Math.sqrt(Math.max(0.5f, power));
-            Vfx.bolt(level, ground.add(0, 45, 0), ground, 0x8FCBFF, 0.9f, 14, 6);
+            com.noirm.vfx.LightningVfx.bolt(level, ground.add(0, 45, 0), ground, 0xC8E6FF, 0.9f, 14, 8,
+                    com.noirm.vfx.LightningVfx.FORKY | com.noirm.vfx.LightningVfx.IMPACT);
             for (int i = 0; i < 3; i++) {
                 Vec3 side = ground.add((level.random.nextDouble() - 0.5) * radius, 0, (level.random.nextDouble() - 0.5) * radius);
-                Vfx.bolt(level, ground.add(0, 40, 0), side, Vfx.LIGHTNING, 0.3f, 10, 3);
+                com.noirm.vfx.LightningVfx.bolt(level, ground.add(0, 40, 0), side, Vfx.LIGHTNING, 0.3f, 10, 4,
+                        com.noirm.vfx.LightningVfx.FORKY | com.noirm.vfx.LightningVfx.IMPACT);
             }
-            Vfx.discharge(level, ground.add(0, 0.5, 0), radius * 1.4f, 10, Vfx.LIGHTNING);
+            com.noirm.vfx.LightningVfx.groundForks(level, ground, radius * 1.6f, 9);
+            com.noirm.vfx.LightningVfx.contact(level, ground.add(0, 0.6, 0), 3f);
+            com.noirm.vfx.FireVfx.groundDebris(level, ground, radius * 0.7f);
             Vfx.explosion(level, ground, Vfx.palette(Nature.LIGHTNING), radius);
             Vfx.shockwave(level, ground.add(0, 0.2, 0), Vfx.palette(Nature.LIGHTNING), radius * 1.6f);
             level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 4f, 0.5f);
@@ -133,8 +146,15 @@ public final class GreatTechniques {
             Vec3 front = origin.add(dir.scale(travelled[0]));
             double height = 1.5 + halfWidth * 0.5;
             // The wall itself: a sheet of the nature's particles, thickest at the base.
-            for (double s = -halfWidth; s <= halfWidth; s += 0.8) {
+            double step = nature == Nature.FIRE ? Math.max(1.0, halfWidth / 8) : 0.8;
+            for (double s = -halfWidth; s <= halfWidth; s += step) {
                 Vec3 base = front.add(side.scale(s));
+                if (nature == Nature.FIRE) {
+                    // A towering wall of flame cells and tongues (taller in the middle).
+                    double tall = height * (1.0 - 0.35 * Math.abs(s) / Math.max(1, halfWidth));
+                    com.noirm.vfx.FireVfx.wallSlice(level, base, tall, dir, (float) step);
+                    continue;
+                }
                 Vfx.burst(level, Vfx.glow(palette.core(), palette.mid(), 0.7f, 0.3f, 8), base.add(0, height * level.random.nextDouble(), 0), 1, 0.3, 0.05);
                 Vfx.one(level, Vfx.smoke(palette.edge(), 1.0f, 18), base.add(0, height, 0), dir.scale(0.1).add(0, 0.06, 0));
                 if (nature == Nature.WATER) {
@@ -183,13 +203,15 @@ public final class GreatTechniques {
         Vfx.flash(level, center, palette, radius * 0.8f);
         Vfx.shockwave(level, caster.position().add(0, 0.2, 0), palette, radius);
         if (nature == Nature.LIGHTNING) {
-            Vfx.arcs(level, caster, 8, Vfx.LIGHTNING);
-            Vfx.discharge(level, center, radius, 10, Vfx.LIGHTNING);
+            Vfx.arcs(level, caster, 6, Vfx.LIGHTNING);
+            com.noirm.vfx.LightningVfx.armor(level, caster, 0);
+            com.noirm.vfx.LightningVfx.groundForks(level, caster.position(), radius * 1.5f, 8);
+            Vfx.discharge(level, center, radius, 4, Vfx.LIGHTNING);
         }
         for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(radius),
                 e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && e.distanceTo(caster) <= radius)) {
             if (nature == Nature.LIGHTNING) {
-                Vfx.bolt(level, center, victim.position().add(0, victim.getBbHeight() * 0.5, 0), Vfx.LIGHTNING, 0.08f, 6, 1);
+                com.noirm.vfx.LightningVfx.forked(level, center, victim.position().add(0, victim.getBbHeight() * 0.5, 0), 0.09f, 7);
             }
             JutsuEffects.hit(caster, victim, p.damage() * power, p.knockback(), p.posture() * power, p.fireSeconds(), victim.position().subtract(caster.position()));
             if (p.stun() > 0) {

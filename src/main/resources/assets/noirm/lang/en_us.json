@@ -1270,5 +1270,10 @@
   "creator.noirm.option.hair_volume.flat": "Flat",
   "creator.noirm.option.hair_volume.full": "Full",
   "creator.noirm.option.hair_volume.thick": "Thick",
-  "creator.noirm.option.hair_volume.wild": "Wild"
+  "creator.noirm.option.hair_volume.wild": "Wild",
+  "jutsu.noirm.katon.burning_ash": "Fire Release: Burning Ash",
+  "jutsu.noirm.katon.majestic_destroyer_flame": "Fire Release: Majestic Destroyer Flame",
+  "jutsu.noirm.katon.flame_bomb": "Fire Release: Flame Bomb",
+  "jutsu.noirm.katon.dragon_flame_caterwaul": "Fire Release: Dragon Flame Caterwaul",
+  "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge"
 }

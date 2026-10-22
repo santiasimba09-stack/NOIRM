@@ -15,6 +15,7 @@
     "radius": 4.5,
     "knockback": 1.4,
     "posture": 35,
-    "fire_seconds": 6
+    "fire_seconds": 6,
+    "look": "fireball"
   }
 }
