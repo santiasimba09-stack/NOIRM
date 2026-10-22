@@ -38,3 +38,17 @@ trace or sample them).
   shaped) at contact points; a pale blue glow on everything nearby; heavy contrast with dark shadows.
 - Both: readable at a distance, a strong first frame (impact), then a slower decay; screen shake and
   hit-stop for the big ones.
+
+## Wood Release ideas (owner's references, 2026-10-22; NOT to build yet, "just get the idea")
+The owner's direction for Wood Release (Mokuton) at its most epic, for later:
+- **Wood clones** standing behind the user in a fan, rough grey-brown wood texture, bark grain carved
+  like the user's own face and armor (the user clasping a seal in front).
+- **Wood Dragon:** a long coiling dragon of bark-scaled wood that wraps and binds a target (or a
+  tailed beast), horned head with an open jaw.
+- **Giant wooden statues and golems:** a huge seated/standing wooden figure with countless arms
+  fanning out behind it like a halo (a "thousand hands" scale: towering over tailed beasts and
+  Susanoo), a fist-forest of hands crashing down.
+- **Deep Forest Emergence:** a forest of huge twisting green trunks bursting out of the ground,
+  throwing up dust clouds and rock.
+- Look: raw grey-green wood with deep ink grain, dust and debris on every emergence, overwhelming
+  scale (bigger than anything else we have), slow heavy motion.
