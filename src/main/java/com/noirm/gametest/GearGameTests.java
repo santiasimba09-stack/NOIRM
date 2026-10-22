@@ -141,4 +141,30 @@ public final class GearGameTests {
         helper.assertTrue(NinjaLook.fits(a, "ember_clan") && NinjaLook.fits(b, "ember_clan") && !a.equals(b), "family looks: " + a + ", " + b);
         helper.succeed();
     }
+
+    /** The worn textures are HD (4x: 256x128 for the 64x32 armour layout), one per gear piece. */
+    public static final int GEAR_TEXTURE_SCALE = 4;
+
+    @GameTest(template = "empty", batch = "noirm_gear")
+    public static void gearTexturesAreHd(GameTestHelper helper) {
+        int w = 64 * GEAR_TEXTURE_SCALE;
+        int h = 32 * GEAR_TEXTURE_SCALE;
+        for (RegistryObject<Item> piece : NoirmGear.ALL) {
+            GearItem gear = (GearItem) piece.get();
+            int layer = gear.getType() == ArmorItem.Type.LEGGINGS ? 2 : 1;
+            String path = "/assets/" + Noirm.MOD_ID + "/textures/models/armor/" + gear.texture() + "_layer_" + layer + ".png";
+            try (java.io.InputStream in = GearGameTests.class.getResourceAsStream(path)) {
+                helper.assertTrue(in != null, piece.getId() + ": missing worn texture " + path);
+                byte[] head = in.readNBytes(24);
+                java.nio.ByteBuffer buf = java.nio.ByteBuffer.wrap(head);
+                helper.assertTrue(head.length == 24 && buf.getInt(12) == 0x49484452, path + " is a PNG");
+                int tw = buf.getInt(16);
+                int th = buf.getInt(20);
+                helper.assertTrue(tw == w && th == h, path + " is " + tw + "x" + th + ", expected " + w + "x" + h);
+            } catch (java.io.IOException e) {
+                helper.fail(path + ": " + e);
+            }
+        }
+        helper.succeed();
+    }
 }

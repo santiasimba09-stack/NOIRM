@@ -16,8 +16,9 @@ import java.util.Set;
 /**
  * Armor (and NOIRM gear) shaped like {@link BendyModel}: the sleeves and leggings are cut at the
  * elbow and knee and the chest at the waist, so clothes bend with the body instead of sticking
- * out straight. It reads the standard 64×32 armor texture (the vanilla layout; left limbs mirror
- * the right ones), so every vanilla armor and every NOIRM gear texture fits unchanged.
+ * out straight. It reads the standard 64×32 armor texture layout (left limbs mirror the right ones),
+ * so every vanilla armor and every NOIRM gear texture fits unchanged. UVs are normalised, so a
+ * texture at any multiple of 64×32 works: NOIRM's gear is HD at 4× (256×128, tools/gear/hd.py).
  * {@link BendyModel#copyPropertiesTo} hands it the joint angles along with the part poses.
  */
 public class BendyArmorModel<T extends LivingEntity> extends HumanoidModel<T> {
