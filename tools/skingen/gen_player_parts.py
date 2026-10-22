@@ -219,20 +219,23 @@ def part_scar(name):
 # Underwear (tinted by the underwear colour)
 # ---------------------------------------------------------------------------
 
-UNDER = ("briefs", "fundoshi", "shorts", "bindings")
+UNDER = ("boxers", "briefs", "fundoshi", "shorts", "bindings")    # the first is new characters' default
 
 # Cloth is cut into these tones (k): a lit ridge, the cloth colour, half shade, shadow, a deep crevice.
 CLOTH_TONES = (0.55, 0.0, -0.7, -1.5, -2.7)
+# Boxers are black by default (owner, round 15), and darkening near-black does little: their folds
+# read through lit ridges instead, so their tones sit higher (k > 0 lightens, see hdskin's doc).
+BOXER_TONES = (2.2, 1.1, 0.0, -0.5, -1.4)
 
 
-def cloth_tones(f, h, seed, kd):
-    """Cloth lit like the body under it (the same light and form), cut into CLOTH_TONES."""
+def cloth_tones(f, h, seed, kd, tones=CLOTH_TONES):
+    """Cloth lit like the body under it (the same light and form), cut into tones."""
     light = A.lit(f, h, None, A.ROUNDNESS[kd], relief=2.2)
     v = light + 0.03 * (fbm(f.X * 2, f.Y * 2, seed) - 0.5)
-    k = np.full_like(v, CLOTH_TONES[3])
-    k = np.where(v > 0.25, CLOTH_TONES[2], k)
-    k = np.where(v > 0.6, CLOTH_TONES[1], k)
-    k = np.where(v > 0.9, CLOTH_TONES[0], k)
+    k = np.full_like(v, tones[3])
+    k = np.where(v > 0.25, tones[2], k)
+    k = np.where(v > 0.6, tones[1], k)
+    k = np.where(v > 0.9, tones[0], k)
     return k
 
 
@@ -250,7 +253,95 @@ def band(f, y0, y1):
     return A.crisp(box_cov(f, -1, y0, 99, y1))
 
 
+def part_boxers():
+    """Boxer shorts: from the hips to mid-thigh, loose cloth with a broad ribbed waistband, a fly,
+    side seams, folds pulling to the crotch and bunching at the hems (owner, round 15: "a bit
+    bigger, and black")."""
+    p = Part()
+    T = BOXER_TONES
+    top = 8.45           # the waistband's top edge on the body
+    band_end = 9.5
+    leg_end = 4.9        # on the legs: mid-thigh
+
+    def rough(f, k, seed):
+        # a little grit in the cloth (raw, never airbrushed): a few pixels a step lighter or darker
+        g = grain(f, seed)
+        return np.where(g > 0.93, k + 0.5, np.where(g < 0.05, k - 0.5, k))
+
+    def waist(f):
+        if f.name in ("top", "bottom"):
+            return None
+        X, Y = f.X, f.Y
+        lx = f.MX if f.side else X
+        h = np.zeros_like(X)
+        if f.name == "front":
+            # loose cloth hanging from the band: soft vertical folds, a pull towards the crotch, a pouch
+            h += fold(f, 1.3, 9.7, 1.6, 11.95, 0.45, 0.45) + fold(f, 6.7, 9.7, 6.4, 11.95, 0.45, 0.45)
+            h += fold(f, 2.4, 10.4, 3.4, 11.9, 0.35, 0.3) + fold(f, 5.6, 10.4, 4.6, 11.9, 0.35, 0.3)
+            h += 0.35 * np.clip(1 - ell_d(f, 4.0, 11.4, 1.1, 1.0) ** 2, 0, 1)
+        elif f.name == "back":
+            # the seat: two rounded halves, a centre seam, folds under them
+            h += 0.4 * np.clip(1 - ell_d(f, 2.2, 11.0, 1.9, 1.4) ** 2, 0, 1)
+            h += 0.4 * np.clip(1 - ell_d(f, 5.8, 11.0, 1.9, 1.4) ** 2, 0, 1)
+            h += fold(f, 0.8, 11.5, 3.2, 11.9, 0.25, 0.25) + fold(f, 7.2, 11.5, 4.8, 11.9, 0.25, 0.25)
+        else:
+            h += fold(f, 0.6, 9.9, 1.4, 11.9, 0.35, 0.35) + fold(f, 3.2, 9.9, 2.6, 11.9, 0.35, 0.35)
+        # the cloth gathers under the elastic: short puckers
+        h += 0.22 * np.clip(1 - ((Y - band_end - 0.25) / 0.3) ** 2, 0, 1) * tri(lx / 0.62)
+        k = cloth_tones(f, h, 411, "body", T)
+        a = A.crisp(np.clip((Y - top) * SCALE + 0.5, 0, 1))
+        # the waistband: a broad elastic band, lit top edge, ribbed, a deep shadow under it
+        wb = band(f, top, band_end)
+        rib = tri(lx / 0.5) > 0.82
+        wk = np.where(Y < top + 0.25, T[0] + 0.5, np.where(rib, T[1] - 0.4, T[1] + 0.3))
+        wk = np.where((Y > band_end - 0.25) & (Y < band_end), T[2], wk)
+        k = np.where(wb > 0, wk, k)
+        k = np.where((Y >= band_end) & (Y < band_end + 0.2), T[4], k)
+        if f.name == "front":
+            # the fly: a stitched placket curving down to the crotch, a lit edge beside it
+            fly = A.crisp(stroke(f, bezier((4.35, band_end + 0.1), (4.45, 11.2), (3.6, 11.95), 16), 0.14))
+            edge = A.crisp(stroke(f, bezier((4.6, band_end + 0.1), (4.7, 11.2), (3.85, 11.95), 16), 0.12))
+            k = np.where(edge > 0, T[1], k)
+            k = np.where(fly > 0, T[4], k)
+            # the crotch seam where the legs meet
+            k = np.where(A.crisp(stroke(f, bezier((3.0, 11.95), (4.0, 11.5), (5.0, 11.95), 12), 0.14)) > 0, T[3], k)
+        elif f.name == "back":
+            k = np.where(A.crisp(stroke(f, [(4.0, band_end + 0.1), (4.0, 11.95)], 0.14)) > 0, T[4], k)
+        else:
+            k = np.where(A.crisp(stroke(f, [(2.0, band_end + 0.1), (2.0, 11.95)], 0.12)) > 0, T[3], k)
+        return rough(f, k, 413), a
+
+    def leg(f):
+        X, Y = f.X, f.Y
+        if f.name == "bottom":
+            return None
+        if f.name == "top":
+            return np.full_like(X, T[2]), 1.0
+        lx = A.lateral(f) if not f.side else f.MX
+        a = A.crisp(np.clip((leg_end - Y) * SCALE + 0.5, 0, 1))
+        h = np.zeros_like(X)
+        # loose cloth: long folds hanging down the thigh, bunching a little above the hem
+        h += fold(f, 1.1, -0.3, 0.9, 4.0, 0.45, 0.5, X=lx) + fold(f, 2.9, 0.4, 3.1, 4.3, 0.4, 0.4, X=lx)
+        h += fold(f, 0.2, 3.5, 2.2, 3.85, 0.25, 0.25, X=lx) + fold(f, 3.6, 0.0, 3.3, 1.4, 0.3, 0.3, X=lx)
+        k = cloth_tones(f, h, 417, "leg", T)
+        # the hem: a turned band, lit along its fold, a dark line where it's stitched
+        hem = (Y > leg_end - 0.5) & (Y < leg_end)
+        k = np.where(hem, np.where(Y > leg_end - 0.22, T[1], T[2]), k)
+        k = np.where((Y > leg_end - 0.62) & (Y < leg_end - 0.5), T[4], k)
+        if f.side and A.is_outer(f):
+            # the side seam
+            k = np.where(A.crisp(stroke(f, [(2.0, 0.0), (2.0, leg_end - 0.6)], 0.12)) > 0, T[3], k)
+        return rough(f, k, 419), a
+
+    paint(p, "body", waist, light=False)
+    for leg_box in LEGS:
+        paint(p, leg_box, leg, light=False)
+    return p
+
+
 def part_under(name):
+    if name == "boxers":
+        return part_boxers()
     p = Part()
 
     def waist(f):

@@ -14,8 +14,8 @@ Parts drawn in GRAY are tinted at runtime (skin tone, hair, eye, shirt, pants, m
 see hdskin's doc). Parts drawn in colour (marks, sandals, eye whites, glasses...) are used as is.
 The face, skin shading and eye shapes live in anatomy.py, shared with the player's parts.
 
-Also writes the dojutsu glow layers that sit on these faces:
-    textures/entity/sharingan_eyes.png, byakugan_eyes.png
+Also writes the dojutsu layers that sit on these faces, one per eye style (so they fit the lids):
+    textures/entity/sharingan_eyes_<style>.png, byakugan_eyes_<style>.png
 
 Writes:
     src/main/resources/assets/noirm/textures/entity/ninja/parts/<part>.png
@@ -411,10 +411,12 @@ def part_sandals():
 # ---------------------------------------------------------------------------
 
 WHITE = hx("#ddd6cc")
-WHITE_SHADE = hx("#958a84")
-PUPIL = hx("#0b080b")
-LASH = hx("#120c0e")
-LID = hx("#4a2a24")
+WHITE_SHADE = hx("#8f837d")
+WHITE_INNER = hx("#b89a92")
+PUPIL = hx("#070507")
+LASH = hx("#0e090b")
+LID = hx("#3e211c")
+HOOD = hx("#2a1410")      # the brow's shadow on the upper lid (laid over the skin, partly see-through)
 
 EYE_STYLES = ("round", "sharp", "wide", "narrow", "pale")
 
@@ -429,33 +431,34 @@ def hat_paint(part, fn, light=True):
 
 def lid_points(cx, s, which, n=32, x0=None, x1=None):
     """Points along the upper or lower lid, from the inner corner to the outer corner."""
-    x0 = cx - s["hw"] if x0 is None else x0
-    x1 = cx + s["hw"] if x1 is None else x1
-    xs = np.linspace(x0, x1, n)
+    xin, xout = A.corner_xs(cx, s)
+    xs = np.linspace(xin if x0 is None else x0, xout if x1 is None else x1, n)
     top, bottom = A.lid_curves(xs, cx, s)
     ys = top if which == "top" else bottom
-    pts = list(zip(xs, ys))
-    if cx < 4:
-        pts = pts[::-1]
-    return pts
+    return list(zip(xs, ys))
 
 
 def iris_k(f, cx, s, pale):
-    """The iris in the eye colour: dark under the lid, a lit crescent below, a dark rim (crisp tones)."""
+    """The iris in the eye colour, in crisp tones: the lid's shadow across its top, a dark ring at its
+    edge, a lighter lower half (light coming through it gives the eye depth)."""
     ix, iy = A.iris_centre(cx, s)
-    r = s["iris"]
     rx, ry = A.iris_radii(s)
+    top, _ = A.lid_curves(f.X, cx, s)
     d = ell_d(f, ix, iy, rx, ry)
     v = (f.Y - iy) / ry                                           # -1 top .. +1 bottom
-    k = np.full_like(f.X, 0.0)
+    under_lid = f.Y - top < 0.3                                   # the row right under the heavy lid
     if pale:
-        k = np.full_like(f.X, 1.1)
-        k = np.where(v < -0.3, 0.3, k)
-        k = np.where(d > 0.78, -0.4, k)
+        k = np.full_like(f.X, 1.0)
+        k = np.where(v < 0.0, 0.45, k)
+        k = np.where(under_lid, -0.7, k)
+        k = np.where(d > 0.8, -0.3, k)
         return k, A.crisp(ell(f, ix, iy, rx, ry))
-    k = np.where(v < -0.15, -1.3, k)                              # the upper lid's shadow
-    k = np.where((v > 0.25) & (d < 0.82), 0.75, k)                # light glowing in the lower iris
-    k = np.where(d > 0.8, -2.3, k)                                # the dark rim
+    k = np.full_like(f.X, 0.0)
+    k = np.where(v > 0.15, 1.0, k)                                # the lit lower half
+    k = np.where((v > 0.15) & (d > 0.62), 0.45, k)
+    k = np.where(v < -0.2, -0.8, k)
+    k = np.where(under_lid, -1.7, k)                              # the lid's shadow
+    k = np.where(d > 0.8, -2.3, k)                                # the dark ring
     return k, A.crisp(ell(f, ix, iy, rx, ry))
 
 
@@ -482,9 +485,30 @@ def _over(rgb, a, cov, colour):
     return rgb, np.maximum(a, cov)
 
 
+def upper_lid(f, cx, s):
+    """The upper lid line: heavy, thicker towards the outer corner, then a flick out and down. It
+    overlaps the top of the opening, so it cuts across the iris."""
+    dirx = -1 if cx < 4 else 1
+    up = lid_points(cx, s, "top", n=40)
+    lid = A.crisp(stroke(f, [(x, y - s["lash"] * 0.3) for x, y in up], s["lash"] * 0.4, s["lash"]))
+    ox, oy = up[-1]
+    oy -= s["lash"] * 0.3
+    wing = A.crisp(stroke(f, [(ox - dirx * 0.15, oy), (ox + dirx * s["wing"], oy - 0.02 - s["wing"] * 0.12)],
+                          s["lash"] * 0.85, 0.14))
+    return np.maximum(lid, wing)
+
+
+def visible_iris(f, cx, s):
+    """The iris pixels you can see: inside the opening and not under the upper lid's line."""
+    ix, iy = A.iris_centre(cx, s)
+    rx, ry = A.iris_radii(s)
+    return A.crisp(ell(f, ix, iy, rx, ry)) * A.eye_inside(f, cx, s) * (1 - upper_lid(f, cx, s))
+
+
 def part_eyes(style):
-    """Everything of the eye but the iris colour: the white (a sliver at the corners), the pupil, one
-    highlight, a bold upper lid with a flick at the outer corner, a thin lower lid."""
+    """Everything of the eye but the iris colour: the brow's shadow over the lid, the white (showing
+    on the outer side), a small pupil, one small sharp highlight, a heavy angled upper lid that cuts
+    across the iris with a flick at the outer corner, and a thin lower lid line."""
     s = A.EYE_SHAPES[style]
     pale = style == "pale"
     p = Part(tint=False)
@@ -493,52 +517,43 @@ def part_eyes(style):
         rgb = np.zeros(f.X.shape + (3,), np.float32)
         a = f.zeros()
         X, Y = f.X, f.Y
+        px = 1.0 / SCALE
         for cx in A.EYE_XS:
-            top, bottom, _ = A.eye_lids(f, cx, s)
+            top, bottom, across = A.eye_lids(f, cx, s)
             inside = A.eye_inside(f, cx, s)
             ix, iy = A.iris_centre(cx, s)
-            r = s["iris"]
             rx, ry = A.iris_radii(s)
             iris = A.crisp(ell(f, ix, iy, rx, ry))
-            core = A.crisp(ell(f, ix, iy, rx - 0.14, ry - 0.14))
-            dirx = -1 if cx < 4 else 1
-            # the white: only where the iris isn't; shaded under the lid
+            dirx = -1 if cx < 4 else 1                     # towards this eye's outer corner
+            u = A.across_u(X, cx, s)                       # 0 inner corner .. 1 outer corner
+            lash_y = top - s["lash"] * 0.3                  # the lid line's centre: it overlaps the opening
+            # the brow's shadow on the upper lid: ink laid over the skin in two steps (intensity)
+            span = (u > -0.08) & (u < 1.02)
+            gap = lash_y - Y
+            near = A.crisp(((gap > 0) & (gap < s["hood"] * 0.55) & span).astype(np.float32))
+            far = A.crisp(((gap >= s["hood"] * 0.55) & (gap < s["hood"]) & span & (u > 0.12) & (u < 0.9)).astype(np.float32))
+            shade = near * 0.42 + far * 0.2
+            rgb = np.where((shade > a)[..., None], np.array(HOOD, np.float32), rgb)
+            a = np.maximum(a, shade)
+            # the white: only where the iris isn't; the row under the lid in its shadow, the inner
+            # corner pinker
             white = inside * (1 - iris)
-            wcol = np.where((Y - top < 0.34)[..., None], np.array(WHITE_SHADE, np.float32), np.array(WHITE, np.float32))
+            wcol = np.where((Y - top < 0.3)[..., None], np.array(WHITE_SHADE, np.float32), np.array(WHITE, np.float32))
+            wcol = np.where((u < 0.14)[..., None], np.array(WHITE_INNER, np.float32), wcol)
             rgb, a = _over(rgb, a, white, wcol)
             if not pale:
-                pup = A.crisp(ell(f, ix, iy + 0.04, rx * 0.4, ry * 0.5)) * inside
+                pup = A.crisp(ell(f, ix, iy + 0.06, max(rx * 0.3, px * 0.6), max(ry * 0.4, px))) * inside
                 rgb, a = _over(rgb, a, pup, PUPIL)
-            # one highlight, towards the light (the character's right = texture left), and a tiny second
-            shine = A.crisp(box_cov(f, ix - 0.4, iy - 0.42, ix - 0.04, iy - 0.06)) * inside * core
-            shine2 = A.crisp(box_cov(f, ix + 0.16, iy + 0.2, ix + 0.4, iy + 0.44)) * inside * core
+            # one small, sharp highlight towards the light (the character's right = texture left)
+            hx0, hy0 = ix - rx * 0.42, iy - ry * 0.12
+            shine = A.crisp(box_cov(f, hx0 - px * 0.5, hy0 - px * 0.5, hx0 + px * 0.5, hy0 + px * 0.5)) * inside * iris
             rgb, a = _over(rgb, a, shine, (255, 255, 255))
-            rgb, a = _over(rgb, a, shine2 * (0 if pale else 1), (235, 235, 240))
-            # upper lid: thin at the inner corner, bold at the outer, then a flick out and down
-            up = lid_points(cx, s, "top")
-            lid = A.crisp(stroke(f, [(x, y - 0.06) for x, y in up], s["lash"] * 0.5, s["lash"]))
-            ox, oy = up[-1]
-            wing = A.crisp(stroke(f, [(ox - dirx * 0.1, oy), (ox + dirx * s["wing"], oy + 0.12 + s["wing"] * 0.15)],
-                                  s["lash"] * 0.9, 0.12))
-            lid = np.maximum(lid, wing)
-            # the inner corner: a short dark tick pointing down towards the nose
-            ix0, iy0 = up[0]
-            tick = A.crisp(stroke(f, [(ix0, iy0), (ix0 - dirx * 0.12, iy0 + 0.35)], 0.22, 0.12))
-            lid = np.maximum(lid, tick)
-            rgb, a = _over(rgb, a, lid, LASH)
-            # lower lid: the outer half only, not meeting the upper lid (an open, anime corner)
-            lo = lid_points(cx, s, "bottom", x0=cx - s["hw"] * 0.7 if cx > 4 else cx - s["hw"] * 0.85,
-                            x1=cx + s["hw"] * 0.85 if cx > 4 else cx + s["hw"] * 0.7)
-            n = len(lo)
-            lo = lo[n // 3:]
-            lower = A.crisp(stroke(f, [(x, y + 0.1) for x, y in lo], 0.14, 0.24))
-            rgb, a = _over(rgb, a, lower, LID)
-            if style in ("round", "wide", "pale"):
-                # the lid crease above the outer half
-                cr = lid_points(cx, s, "top", n=16)
-                cr = [(x + dirx * 0.05, y - 0.42) for x, y in cr[len(cr) // 3:-2]]
-                crease_line = A.crisp(stroke(f, cr, 0.12, 0.14))
-                rgb, a = _over(rgb, a, crease_line * (a < 0.5), LID)
+            rgb, a = _over(rgb, a, upper_lid(f, cx, s), LASH)
+            # the lower lid: a thin line under the outer half, not meeting the upper lid
+            lo = lid_points(cx, s, "bottom", n=24)
+            lo = lo[len(lo) // 2:-1]
+            lower = A.crisp(stroke(f, [(x, y + 0.12) for x, y in lo], 0.1, 0.22))
+            rgb, a = _over(rgb, a, lower * (1 - inside) * (a < 0.5), LID)
         return rgb, a
     head_front(p, fn)
     return p
@@ -548,10 +563,10 @@ BROW_STYLES = ("thin", "thick", "fierce", "soft")
 
 BROW_SHAPES = {
     # (inner end, middle, outer end) as (x offset outward from the eye centre, y), widths inner -> outer
-    "thin":   (((-1.05, 3.5), (0.05, 3.18), (1.25, 3.38)), 0.34, 0.14),
-    "thick":  (((-1.1, 3.45), (0.05, 3.12), (1.25, 3.32)), 0.62, 0.36),
-    "fierce": (((-1.05, 3.72), (0.15, 3.2), (1.3, 3.02)), 0.56, 0.2),
-    "soft":   (((-1.0, 3.42), (0.05, 3.1), (1.15, 3.36)), 0.36, 0.18),
+    "thin":   (((-1.05, 3.74), (0.05, 3.3), (1.25, 3.4)), 0.34, 0.14),
+    "thick":  (((-1.1, 3.7), (0.05, 3.24), (1.25, 3.34)), 0.62, 0.36),
+    "fierce": (((-1.05, 3.78), (0.15, 3.24), (1.3, 3.0)), 0.5, 0.2),
+    "soft":   (((-1.0, 3.6), (0.05, 3.22), (1.15, 3.38)), 0.36, 0.18),
 }
 
 
@@ -1087,43 +1102,64 @@ def part_face_bandage():
 
 
 # ---------------------------------------------------------------------------
-# Dojutsu glow layers (drawn full-bright over the head; see client/SharinganEyesLayer)
+# Dojutsu layers, one per eye style (drawn full-bright over the head; see client/SharinganEyesLayer)
 # ---------------------------------------------------------------------------
 
-def part_sharingan_glow():
+DOJUTSU_RED = hx("#c8121c")
+DOJUTSU_RED_LIGHT = hx("#ec3a36")
+DOJUTSU_RED_DARK = hx("#7a0a10")
+DOJUTSU_RING = hx("#3a0508")
+DOJUTSU_BLACK = hx("#0c0204")
+
+
+def _dot(f, x, y):
+    """One HD pixel's worth (a quarter model pixel) centred at (x, y): the Sharingan's marks are
+    designed in quarter pixels around the iris centre, which sits on a pixel centre."""
+    q = 0.125
+    return A.crisp(box_cov(f, x - q, y - q, x + q, y + q))
+
+
+def part_sharingan_eyes(style):
+    """The Sharingan over one eye style (client/SharinganEyesLayer draws it opaque and full-bright
+    over the head): a red iris that fits that style's opening exactly (the lid still cuts across
+    it), a dark ring, a lighter lower half, a black pupil with three tomoe around it and a small
+    highlight. Only the iris pixels you can see are drawn."""
+    s = A.EYE_SHAPES[style]
     p = Part(tint=False)
-    red = hx("#d0141e")
+    q = 0.25
 
     def fn(f):
         rgb = np.zeros(f.X.shape + (3,), np.float32)
         a = f.zeros()
         for cx in A.EYE_XS:
-            ix, iy = cx, A.EYE_Y - 0.04
-            r = 0.64
-            d = ell_d(f, ix, iy, r, r * 1.1)
-            # the iris's oval, kept inside the widest eye opening so the glow sits on the eye, not the lids
-            disc = A.crisp(ell(f, ix, iy, r, r * 1.1)) * A.eye_inside(f, cx, A.EYE_SHAPES["wide"])
-            k = 0.4 * sstep(0.9, 0.2, d) - 0.6 * sstep(0.8, 1.0, d)
-            col = tone(red, k)
-            ring = np.clip(1 - np.abs(d - 0.62) * 14, 0, 1) * 0.6
-            col = col * (1 - ring[..., None]) + np.array(hx("#5a0408"), np.float32) * ring[..., None]
-            blk = ell(f, ix, iy, r * 0.22, r * 0.22)
-            for i in range(3):
-                ang = i * 2 * math.pi / 3 - math.pi / 2
-                tx, ty = ix + r * 0.62 * math.cos(ang), iy + r * 0.62 * math.sin(ang)
-                tom = ell(f, tx, ty, 0.12, 0.12)
-                tail = stroke(f, [(tx, ty), (tx + 0.18 * math.cos(ang + 1.9), ty + 0.18 * math.sin(ang + 1.9)),
-                                  (tx + 0.2 * math.cos(ang + 2.6), ty + 0.2 * math.sin(ang + 2.6))], 0.12, 0.02)
-                blk = np.maximum(blk, np.maximum(tom, tail))
-            col = col * (1 - blk[..., None]) + np.array(hx("#120406"), np.float32) * blk[..., None]
-            rgb = np.where(disc[..., None] > 0, col, rgb)
-            a = np.maximum(a, disc)
+            vis = visible_iris(f, cx, s)
+            ix, iy = A.iris_centre(cx, s)
+            rx, ry = A.iris_radii(s)
+            top, _ = A.lid_curves(f.X, cx, s)
+            d = ell_d(f, ix, iy, rx, ry)
+            v = (f.Y - iy) / ry
+            col = rgb_of(DOJUTSU_RED, f.X.shape).copy()
+            col = np.where((v > 0.15)[..., None], np.array(DOJUTSU_RED_LIGHT, np.float32), col)
+            col = np.where((f.Y - top < 0.3)[..., None], np.array(DOJUTSU_RED_DARK, np.float32), col)
+            col = np.where(((d > 0.8) & (v > 0.3))[..., None], np.array(DOJUTSU_RING, np.float32), col)
+            # the pupil, and three tomoe around it (one above, two below: a turning pinwheel)
+            marks = _dot(f, ix, iy)
+            for dx, dy in ((0, -1), (-1, 1), (1, 1)):
+                marks = np.maximum(marks, _dot(f, ix + dx * q, iy + dy * q))
+            col = np.where((marks > 0)[..., None], np.array(DOJUTSU_BLACK, np.float32), col)
+            shine = _dot(f, ix - q, iy - q)
+            col = np.where((shine > 0)[..., None], np.array((255, 214, 206), np.float32), col)
+            rgb = np.where((vis > 0)[..., None], col, rgb)
+            a = np.maximum(a, vis)
         return rgb, a
     head_front(p, fn)
     return p
 
 
-def part_byakugan_glow():
+def part_byakugan_eyes(style):
+    """The Byakugan over one eye style (drawn additively at full brightness): the iris glows pale
+    inside that style's opening, and thin veins bulge from around the eye to the temple and cheek."""
+    s = A.EYE_SHAPES[style]
     p = Part(tint=False)
     pale = hx("#e9e4f6")
 
@@ -1132,22 +1168,48 @@ def part_byakugan_glow():
         a = f.zeros()
         for cx in A.EYE_XS:
             sgn = -1 if cx < 4 else 1
-            disc = A.crisp(ell(f, cx, A.EYE_Y - 0.04, 0.66, 0.74)) * A.eye_inside(f, cx, A.EYE_SHAPES["wide"])
-            a = np.maximum(a, disc * 0.95)
-            # bulging veins from the eye towards the temple and down the cheek
-            veins = f.zeros()
+            disc = visible_iris(f, cx, s)
+            a = np.maximum(a, disc * 0.6)
             # (drawn additively at full brightness, so the veins are a dim violet, thin and few)
+            veins = f.zeros()
             for ang in (-0.6, 0.0, 0.6, 2.6):
                 ang_o = ang if sgn > 0 else math.pi - ang
-                x0, y0 = cx + 1.05 * math.cos(ang_o), A.EYE_Y + 0.75 * math.sin(ang_o)
-                x1, y1 = cx + 1.75 * math.cos(ang_o + 0.2 * sgn), A.EYE_Y + 1.25 * math.sin(ang_o + 0.2 * sgn)
-                x2, y2 = cx + 2.2 * math.cos(ang_o - 0.15 * sgn), A.EYE_Y + 1.5 * math.sin(ang_o - 0.15 * sgn)
+                x0, y0 = cx + 1.45 * math.cos(ang_o), A.EYE_Y + 0.8 * math.sin(ang_o)
+                x1, y1 = cx + 1.9 * math.cos(ang_o + 0.2 * sgn), A.EYE_Y + 1.25 * math.sin(ang_o + 0.2 * sgn)
+                x2, y2 = cx + 2.3 * math.cos(ang_o - 0.15 * sgn), A.EYE_Y + 1.5 * math.sin(ang_o - 0.15 * sgn)
                 veins = np.maximum(veins, stroke(f, [(x0, y0), (x1, y1), (x2, y2)], 0.08, 0.02))
+            veins = veins * (1 - A.eye_inside(f, cx, s))
             a = np.maximum(a, veins * 0.6)
             rgb = np.where((veins > disc)[..., None], np.array(hx("#4e4866"), np.float32), rgb)
         return rgb, a
     head_front(p, fn)
     return p
+
+
+def write_dojutsu():
+    """textures/entity/sharingan_eyes_<style>.png and byakugan_eyes_<style>.png, one per eye style."""
+    for style in EYE_STYLES:
+        part_sharingan_eyes(style).save(os.path.join(ENTITY_DIR, "sharingan_eyes_%s.png" % style))
+        part_byakugan_eyes(style).save(os.path.join(ENTITY_DIR, "byakugan_eyes_%s.png" % style))
+
+
+def mangekyo_fit():
+    """The numbers client/SharinganEyesLayer needs to fit the Mangekyou pattern into each eye style:
+    the iris centre (model pixels from the head's centre, the texture-right eye), its radius, and
+    the band of it you can see (top and bottom, from the lid lines)."""
+    from hdskin import F as Face
+    out = {}
+    for style in EYE_STYLES:
+        s = A.EYE_SHAPES[style]
+        cx = A.EYE_XS[1]
+        ix, iy = A.iris_centre(cx, s)
+        f = Face("head", "front", (8, 8, 8, 8))
+        vis = visible_iris(f, cx, s)
+        rows = np.nonzero(vis.any(axis=1))[0]
+        top = rows.min() / SCALE
+        bottom = (rows.max() + 1) / SCALE
+        out[style] = (ix - 4, iy - 8, A.iris_radii(s)[0], top - 8, bottom - 8)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -1316,8 +1378,9 @@ def main():
     parts["acc_face_bandage"] = part_face_bandage()
     for name, part in parts.items():
         part.save(os.path.join(OUT_DIR, name + ".png"))
-    part_sharingan_glow().save(os.path.join(ENTITY_DIR, "sharingan_eyes.png"))
-    part_byakugan_glow().save(os.path.join(ENTITY_DIR, "byakugan_eyes.png"))
+    write_dojutsu()
+    for style, fit in mangekyo_fit().items():
+        print("mangekyo fit %-7s x %.4f y %.4f r %.3f visible %.3f .. %.3f" % ((style,) + fit))
     looks = {"_comment": "Generated by tools/skingen/gen_parts.py: appearance tables per clan folder (weights are relative).",
              "clans": CLANS, "family": FAMILY, "tinted_accessories": TINTED_ACCESSORIES}
     with open(os.path.join(OUT_DIR, "looks.json"), "w") as f:
