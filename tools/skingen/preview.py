@@ -90,15 +90,43 @@ def npc_skin(key, looks):
     return L.compose_array(L.decode(key, looks), looks, NINJA).astype(np.float32)
 
 
+def parts_skin(spec):
+    out = None
+    for item in spec.split(","):
+        where, _, rest = item.partition(":")
+        name, _, colour = rest.partition("=")
+        path = os.path.join(NINJA if where == "ninja" else PLAYER, name + ".png")
+        p = np.array(Image.open(path).convert("RGBA"), np.float32)
+        if out is None:
+            out = np.zeros_like(p)
+        if colour:
+            c = np.array(L.hx(colour), np.float32)
+            k = (p[..., 0:1] - 128) / 40.0
+            rgb = np.where(k >= 0, np.minimum(255, c * (1 + 0.13 * k) + 14 * k), np.maximum(0, c * (1 + 0.2 * k)))
+        else:
+            rgb = p[..., :3]
+        sa = p[..., 3:4] / 255.0
+        da = out[..., 3:4] / 255.0
+        oa = sa + da * (1 - sa)
+        safe = np.where(oa > 0, oa, 1)
+        out[..., :3] = np.where(oa > 0, (rgb * sa + out[..., :3] * da * (1 - sa)) / safe, out[..., :3])
+        out[..., 3:4] = oa * 255
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("kind", choices=["npc"])
+    ap.add_argument("kind", choices=["npc", "parts"])
     ap.add_argument("keys", nargs="+")
     ap.add_argument("-o", "--out", required=True)
     ap.add_argument("--zoom", type=int, default=2)
     a = ap.parse_args()
     looks = L.load_looks(NINJA)
-    skins = [npc_skin(k, looks) for k in a.keys]
+    if a.kind == "npc":
+        skins = [npc_skin(k, looks) for k in a.keys]
+    else:
+        # one skin per argument: comma-separated layers, each "ninja:<part>[=#rrggbb]" or "player:<part>[=#rrggbb]"
+        skins = [parts_skin(k) for k in a.keys]
     sheet(skins, a.zoom).save(a.out)
     print("wrote", a.out)
 

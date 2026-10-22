@@ -263,3 +263,28 @@ def sample_grid(grid, X, Y, W, H):
     ty = gy - y0
     return ((g[y0, x0] * (1 - tx) + g[y0, x1] * tx) * (1 - ty)
             + (g[y1, x0] * (1 - tx) + g[y1, x1] * tx) * ty)
+
+
+# ---------------------------------------------------------------------------
+# The ink look (docs/ART_STYLE.md): hard-edged light and shadow with rough, gritty edges
+# ---------------------------------------------------------------------------
+
+def ink(f, k, seed, gain=1.0, rough=0.1, shadow=(-0.26, -1.5), deep=(-0.8, -3.0), light=(0.2, 0.42), keep=0.25):
+    """Turns a soft shading field k into ink: a few flat tones with hard, rough edges.
+
+    shadow / deep / light: (threshold, tone). Grain jitters the thresholds so edges are gritty."""
+    jitter = rough * ((fbm(f.X * 3, f.Y * 3, seed) - 0.5) * 1.4 + (grain(f, seed + 1) - 0.5) * 0.35)
+    s = k * gain + jitter
+    w = 0.03
+    out = np.zeros_like(s)
+    out += light[1] * sstep(light[0] - w, light[0] + w, s)
+    out += shadow[1] * sstep(shadow[0] + w, shadow[0] - w, s)
+    out += (deep[1] - shadow[1]) * sstep(deep[0] + w, deep[0] - w, s)
+    return out + keep * k
+
+
+def grit(f, seed, amount=0.12):
+    """Dry-brush grain: speckles and short streaks."""
+    g = grain(f, seed)
+    streak = vnoise(f.X * 9, f.Y * 1.2, seed + 3)
+    return amount * ((g > 0.93) * 0.8 - (g < 0.06) * 1.0 + (streak - 0.5) * 0.6)

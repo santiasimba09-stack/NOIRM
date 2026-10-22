@@ -9,7 +9,7 @@ Mangekyou overlay in client/SharinganEyesLayer (EYE_X 1.5 px either side of the 
 """
 import numpy as np
 
-from hdskin import (F, ell, ell_d, gauss, sstep, stroke, bezier, grain, fbm, vnoise, box_cov, SCALE)  # noqa: F401
+from hdskin import (ink, grit, F, ell, ell_d, gauss, sstep, stroke, bezier, grain, fbm, vnoise, box_cov, SCALE)  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Face geometry (head front, 8 x 8)
@@ -86,16 +86,16 @@ def round_edges(f, strength=0.14, start=0.55):
     return -strength * sstep(start, 1.0, c)
 
 
-def head_skin(f, nose=True, mouth=True):
+def _head_soft(f, nose=True, mouth=True):
     """The head: face planes, eye sockets, cheekbones, ears; NPCs also get a nose and mouth."""
     X, Y = f.X, f.Y
     k = texture(f, 3)
     if f.name == "front":
         ax = np.abs(X - 4)
-        k += -0.32 * sstep(2.5, 4.0, ax)                       # the face turns away at the sides
+        k += -0.42 * sstep(2.6, 4.0, ax)                       # the face turns away at the sides
         k += 0.16 * gauss(f, 4, 1.7, 2.4, 1.1)                  # forehead
         for cx in EYE_XS:
-            k += -0.24 * gauss(f, cx, 4.45, 1.05, 0.55)          # eye sockets
+            k += -0.3 * gauss(f, cx, 4.4, 1.15, 0.5)             # eye sockets: dark, intense eyes
             k += 0.10 * gauss(f, cx, 3.45, 1.0, 0.22)            # brow ridge
             side = -1 if cx < 4 else 1
             k += 0.16 * gauss(f, cx + 0.35 * side, 5.45, 0.75, 0.32)  # cheekbones
@@ -112,9 +112,10 @@ def head_skin(f, nose=True, mouth=True):
     if f.side:
         mx = f.MX
         k += -0.1 + 0.08 * sstep(4, 8, mx)                      # cheek side
-        ear = ell_d(f, 3.55, 4.75, 0.72, 1.05)
-        k += np.where(ear < 1, 0.10 - 0.55 * sstep(0.75, 0.2, ell_d(f, 3.7, 4.85, 0.42, 0.62)), 0)
-        k += -0.35 * np.clip(1 - np.abs(ear - 1.05) * 4, 0, 1) * (mx < 3.6)   # shadow behind the ear
+        ear = ell_d(f, 3.55, 4.75, 0.66, 1.0)
+        inner = ell_d(f, 3.72, 4.85, 0.36, 0.6)
+        k += np.where(ear < 1, 0.12 - 0.7 * sstep(1.0, 0.6, inner) * (inner < 1), 0)       # rim and the hollow
+        k += -0.5 * np.clip(1 - np.abs(ear - 1.0) * 6, 0, 1)                                  # its outline
         # the jaw line: from under the ear to the chin
         jaw_y = 6.1 + (mx - 3.6) * 0.38
         k += -0.30 * sstep(jaw_y - 0.1, jaw_y + 0.5, Y) * (mx > 3.0)
@@ -202,34 +203,42 @@ def mouth_shading(f, style):
     return dk
 
 
-def body_skin(f):
+def _body_soft(f):
     """The torso: collarbones, chest, a light six-pack, navel, shoulder blades and spine."""
     X, Y = f.X, f.Y
     k = texture(f, 11)
     if f.name == "front":
-        k += round_edges(f, 0.2, 0.6)
+        k += round_edges(f, 0.3, 0.55)
+        k += -0.12 * sstep(8.5, 12, Y)
         for sx in (-1, 1):
             # collarbones: a highlight with a soft shadow under it
             k += 0.16 * stroke(f, bezier((4 + 0.35 * sx, 0.7), (4 + 1.6 * sx, 1.0), (4 + 3.4 * sx, 0.75)), 0.22, 0.14)
             k += -0.12 * stroke(f, bezier((4 + 0.6 * sx, 1.2), (4 + 1.8 * sx, 1.45), (4 + 3.2 * sx, 1.2)), 0.3, 0.2)
             # chest: lit on top, a crease under it
-            k += 0.12 * gauss(f, 4 + 1.9 * sx, 2.5, 1.25, 0.9)
-            k += -0.26 * stroke(f, bezier((4 + 0.3 * sx, 3.75), (4 + 2.0 * sx, 4.35), (4 + 3.6 * sx, 3.2)), 0.32, 0.12)
+            k += 0.16 * gauss(f, 4 + 1.9 * sx, 2.4, 1.3, 0.8)
+            k += -0.48 * stroke(f, bezier((4 + 0.3 * sx, 3.8), (4 + 2.0 * sx, 4.45), (4 + 3.6 * sx, 3.3)), 0.6, 0.2)
             # obliques and the V at the hips
-            k += -0.16 * stroke(f, [(4 + 3.4 * sx, 6.0), (4 + 2.8 * sx, 9.0), (4 + 1.0 * sx, 11.6)], 0.5, 0.25)
+            k += -0.22 * stroke(f, [(4 + 3.3 * sx, 6.0), (4 + 2.8 * sx, 9.0), (4 + 1.0 * sx, 11.6)], 0.4, 0.2)
         k += -0.08 * gauss(f, 4, 0.35, 0.45, 0.25)              # the notch at the neck
-        k += -0.10 * stroke(f, [(4, 1.6), (4, 3.6)], 0.2)        # sternum
-        k += -0.12 * stroke(f, [(4, 4.5), (4, 8.0)], 0.16)       # line down the abs
-        for y in (5.5, 6.85):
-            k += -0.06 * stroke(f, [(2.8, y), (5.2, y)], 0.2)
+        k += -0.16 * stroke(f, [(4, 1.6), (4, 3.8)], 0.22)       # sternum
+        k += -0.2 * stroke(f, [(4, 4.4), (4, 8.2)], 0.16)        # line down the abs
+        for row, (y0, y1) in enumerate(((4.55, 5.65), (5.85, 6.95), (7.15, 8.2))):
+            for sx in (-1, 1):
+                k += 0.13 * ell(f, 4 + 0.95 * sx, (y0 + y1) / 2 - 0.08, 0.75, (y1 - y0) / 2 * 0.95)  # ab blocks, lit on top
+            k += -0.14 * stroke(f, [(2.9, y1 + 0.1), (5.1, y1 + 0.1)], 0.16)
+        for sx in (-1, 1):
+            for i in range(3):  # serratus: short ribs of muscle under the arms
+                y = 4.4 + 0.55 * i
+                k += -0.16 * stroke(f, [(4 + 3.85 * sx, y), (4 + 3.2 * sx, y + 0.3)], 0.14, 0.04)
         k += -0.6 * ell(f, 4, 8.55, 0.17, 0.2) + 0.1 * gauss(f, 4, 8.8, 0.25, 0.1)  # navel
         return k
     if f.name == "back":
         k += round_edges(f, 0.2, 0.6) - 0.06
-        k += -0.2 * gauss(f, 4, 6, 0.22, 4.5)                   # spine
+        k += -0.3 * gauss(f, 4, 6, 0.2, 4.5)                    # spine
         for sx in (-1, 1):
-            k += 0.12 * gauss(f, 4 + 1.9 * sx, 2.9, 1.1, 1.2)   # shoulder blades
-            k += -0.14 * stroke(f, bezier((4 + 1.0 * sx, 4.3), (4 + 2.0 * sx, 4.7), (4 + 3.0 * sx, 3.8)), 0.3, 0.1)
+            k += 0.16 * gauss(f, 4 + 1.9 * sx, 2.7, 1.1, 1.1)   # shoulder blades
+            k += -0.3 * stroke(f, bezier((4 + 0.8 * sx, 1.6), (4 + 0.9 * sx, 3.6), (4 + 2.6 * sx, 4.6)), 0.3, 0.1)
+            k += -0.18 * stroke(f, bezier((4 + 3.6 * sx, 4.0), (4 + 2.6 * sx, 6.5), (4 + 1.0 * sx, 8.5)), 0.4, 0.1)  # lats
             k += -0.1 * gauss(f, 4 + 1.3 * sx, 10.4, 0.25, 0.25)  # lower back dimples
         return k
     if f.side:
@@ -241,7 +250,7 @@ def body_skin(f):
     return k - 0.6
 
 
-def arm_skin(f):
+def _arm_soft(f):
     """An arm: shoulder, biceps, elbow (the model bends at row 6), forearm and a hand."""
     X, Y = f.X, f.Y
     k = texture(f, 23)
@@ -253,10 +262,14 @@ def arm_skin(f):
         for x in (1.0, 2.0, 3.0):
             k += -0.25 * stroke(f, [(x, 0.4), (x, 3.6)], 0.1)
         return k
-    k += round_edges(f, 0.14)
+    k += round_edges(f, 0.3, 0.45)
     k += 0.14 * gauss(f, 2, 0.9, 1.6, 1.0)                      # deltoid
-    k += -0.12 * gauss(f, 2, 2.75, 1.6, 0.22)
+    k += -0.26 * stroke(f, bezier((0.0, 2.3), (2, 3.0), (4.0, 2.3)), 0.2, 0.2)  # under the deltoid
+    if f.side:
+        k += -0.2 * stroke(f, [(2.0, 2.9), (2.1, 5.3)], 0.16, 0.06)   # between biceps and triceps
     if f.name == "front":
+        k += -0.26 * stroke(f, [(1.55, 6.9), (2.0, 8.0), (2.45, 9.5)], 0.08, 0.06)  # a vein down the forearm
+        k += -0.18 * stroke(f, [(2.0, 8.0), (2.9, 8.8)], 0.06, 0.03)
         k += 0.12 * gauss(f, 2, 3.7, 1.0, 1.2)                  # biceps
         k += -0.24 * stroke(f, bezier((1.0, 5.95), (2, 6.15), (3.0, 5.95)), 0.16, 0.16)  # inner elbow
     if f.name == "back":
@@ -283,7 +296,7 @@ def arm_skin(f):
     return k
 
 
-def leg_skin(f):
+def _leg_soft(f):
     """A leg: thigh, knee (the model bends at row 6), calf, ankle and a bare foot."""
     X, Y = f.X, f.Y
     k = texture(f, 37)
@@ -291,14 +304,17 @@ def leg_skin(f):
         return k
     if f.name == "bottom":
         return k - 0.7 + 0.12 * gauss(f, 2, 2, 0.8, 1.2)
-    k += round_edges(f, 0.14)
+    k += round_edges(f, 0.3, 0.45)
     if f.name == "front":
-        k += 0.12 * gauss(f, 2, 2.6, 1.3, 1.8)                  # thigh
+        k += 0.18 * gauss(f, 2.2, 2.4, 1.1, 1.7)                 # thigh
         k += 0.18 * ell(f, 2, 6.0, 0.85, 0.7) - 0.14 * stroke(f, bezier((1.2, 6.85), (2, 7.05), (2.8, 6.85)), 0.2)  # knee
         k += 0.07 * stroke(f, [(2.25, 7.4), (2.1, 9.6)], 0.4)    # shin
+        k += -0.2 * stroke(f, [(2.2, 0.5), (1.6, 3.6), (1.2, 5.2)], 0.14, 0.06)  # between the thigh muscles
+        k += 0.12 * ell(f, 1.0, 4.9, 0.55, 0.6)                 # the inner bulge above the knee
     if f.name == "back":
         k += -0.24 * stroke(f, bezier((0.9, 5.95), (2, 6.1), (3.1, 5.95)), 0.14)  # back of the knee
-        k += 0.14 * gauss(f, 2, 7.5, 1.3, 1.3)                  # calf
+        k += 0.16 * ell(f, 1.3, 7.4, 0.75, 1.3) + 0.16 * ell(f, 2.75, 7.5, 0.7, 1.2)  # calf, two heads
+        k += -0.2 * stroke(f, [(2.0, 6.6), (2.0, 8.4)], 0.12, 0.04)
         k += -0.12 * gauss(f, 2, 9.0, 1.5, 0.3)
     if f.side:
         k += 0.08 * ell(f, 1.9, 10.3, 0.3, 0.25)                # ankle bone
@@ -315,3 +331,20 @@ def leg_skin(f):
 
 
 SKIN_BOXES = {"head": "head", "body": "body", "rarm": "arm", "larm": "arm", "rleg": "leg", "lleg": "leg"}
+
+
+# The skin in ink: the soft fields above, cut into hard light and shadow with gritty edges.
+def head_skin(f, nose=True, mouth=True):
+    return ink(f, _head_soft(f, nose, mouth), 5, gain=1.3, rough=0.06, keep=0.3) + grit(f, 6, 0.04)
+
+
+def body_skin(f):
+    return ink(f, _body_soft(f), 13, gain=2.0, rough=0.07) + grit(f, 14, 0.05)
+
+
+def arm_skin(f):
+    return ink(f, _arm_soft(f), 25, gain=1.8, rough=0.07) + grit(f, 26, 0.05)
+
+
+def leg_skin(f):
+    return ink(f, _leg_soft(f), 39, gain=1.8, rough=0.07) + grit(f, 40, 0.05)

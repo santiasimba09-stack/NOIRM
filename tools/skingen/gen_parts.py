@@ -34,7 +34,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import anatomy as A  # noqa: E402
 from hdskin import (Part, paint, tone, rgb_of, sstep, ell, ell_d, gauss, box_cov, bezier, stroke,  # noqa: E402
-                    vnoise, fbm, grain, tri, sample_grid, hx, SCALE)
+                    vnoise, fbm, grain, tri, sample_grid, hx, ink, grit, SCALE)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT_DIR = os.path.join(ROOT, "src/main/resources/assets/noirm/textures/entity/ninja/parts")
@@ -107,6 +107,21 @@ def hem(f, y, up=True, strength=0.35):
     k += -0.25 * np.exp(-((f.Y - (y - 0.05 if up else y + 0.05)) / 0.08) ** 2)
     stitch = (tri(f.X / 0.35) > 0.5) * np.exp(-((f.Y - (y - 0.28 if up else y + 0.28)) / 0.04) ** 2)
     return k + 0.22 * stitch
+
+
+def inked(fn, seed, gain=1.4, dirt=0.0):
+    """Wraps a cloth painter: its shading cut into ink tones, plus grit and dirt towards the feet."""
+    def wrapped(f):
+        res = fn(f)
+        if res is None:
+            return None
+        k, a = res
+        k = ink(f, k, seed, gain=gain, rough=0.08, keep=0.3) + grit(f, seed + 1, 0.07)
+        if dirt:
+            grime = fbm(f.X * 1.6, f.Y * 1.6, seed + 2)
+            k = k - dirt * sstep(0.45, 0.75, grime + 0.05 * f.Y) * sstep(4, 12, f.Y)
+        return k, a
+    return wrapped
 
 
 def edge_alpha(f, y_end):
@@ -222,9 +237,9 @@ def part_shirt(style):
             k += hem(f, sleeve, True, 0.35) + 0.1 * sstep(sleeve - 0.5, sleeve - 0.4, Y)
         return k, alpha
 
-    paint(p, "body", body)
+    paint(p, "body", inked(body, 201))
     for a in ARMS:
-        paint(p, a, arm)
+        paint(p, a, inked(arm, 203))
     return p
 
 
@@ -290,9 +305,9 @@ def part_pants(style):
             k += hem(f, bottom, True, 0.35)
         return k, alpha
 
-    paint(p, "body", waist)
+    paint(p, "body", inked(waist, 205))
     for leg_box in LEGS:
-        paint(p, leg_box, leg)
+        paint(p, leg_box, inked(leg, 207, dirt=0.6))
     return p
 
 
@@ -507,7 +522,7 @@ BROW_STYLES = ("thin", "thick", "fierce", "soft")
 
 BROW_SHAPES = {
     # (inner end, middle, outer end) as (x offset outward from the eye centre, y), widths
-    "thin":   (((-1.0, 3.62), (0.0, 3.32), (1.15, 3.5)), 0.2, 0.08),
+    "thin":   (((-1.0, 3.62), (0.0, 3.32), (1.15, 3.5)), 0.24, 0.09),
     "thick":  (((-1.1, 3.5), (0.0, 3.3), (1.15, 3.42)), 0.42, 0.26),
     "fierce": (((-1.05, 3.78), (0.1, 3.38), (1.2, 3.18)), 0.36, 0.12),
     "soft":   (((-0.95, 3.5), (0.0, 3.18), (1.05, 3.45)), 0.24, 0.1),
@@ -682,6 +697,8 @@ def hair_field(f, rows, salt, lock_w, sharp, layer):
     k += 0.95 * band
     # darker towards the tips and under the outer layer
     k += -0.5 * sstep(0.85, 0.5, cov) - (0.25 if layer == "base" else 0.0)
+    # in ink: dark crevices between locks, hard white-ish sheen
+    k = ink(f, k, salt + 11, gain=1.2, rough=0.06, light=(0.4, 0.75), keep=0.35)
     return k, alpha
 
 
@@ -1065,14 +1082,15 @@ def part_byakugan_glow():
             a = np.maximum(a, disc * 0.95)
             # bulging veins from the eye towards the temple and down the cheek
             veins = f.zeros()
-            for ang in (-0.9, -0.45, 0.0, 0.5, 0.95, 2.4, 2.9):
+            # (drawn additively at full brightness, so the veins are a dim violet, thin and few)
+            for ang in (-0.6, 0.0, 0.6, 2.6):
                 ang_o = ang if sgn > 0 else math.pi - ang
                 x0, y0 = cx + 1.05 * math.cos(ang_o), A.EYE_Y + 0.75 * math.sin(ang_o)
                 x1, y1 = cx + 1.75 * math.cos(ang_o + 0.2 * sgn), A.EYE_Y + 1.25 * math.sin(ang_o + 0.2 * sgn)
                 x2, y2 = cx + 2.2 * math.cos(ang_o - 0.15 * sgn), A.EYE_Y + 1.5 * math.sin(ang_o - 0.15 * sgn)
-                veins = np.maximum(veins, stroke(f, [(x0, y0), (x1, y1), (x2, y2)], 0.11, 0.03))
-            a = np.maximum(a, veins * 0.75)
-            rgb = np.where((veins > disc)[..., None], np.array(hx("#c9c0e6"), np.float32), rgb)
+                veins = np.maximum(veins, stroke(f, [(x0, y0), (x1, y1), (x2, y2)], 0.08, 0.02))
+            a = np.maximum(a, veins * 0.6)
+            rgb = np.where((veins > disc)[..., None], np.array(hx("#4e4866"), np.float32), rgb)
         return rgb, a
     head_front(p, fn)
     return p
