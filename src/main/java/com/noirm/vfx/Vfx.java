@@ -227,7 +227,7 @@ public final class Vfx {
         }
         radial(level, spark(palette.accent(), 0.28f, 16), at, (int) (14 + r * 8), r * 0.4);
         radial(level, shard(palette.edge(), 0.22f, 34), at, (int) (5 + r * 3), r * 0.28);
-        burst(level, smoke(palette.edge(), r * 0.4f, 60), at.add(0, r * 0.3, 0), (int) (8 + r * 3), r * 0.45, 0.03);
+        burst(level, new VfxOptions(VfxKind.SOOT, palette.edge(), 0x2A2A2E, r * 0.4f, r * 0.9f, 60, -0.004f, 0.92f), at.add(0, r * 0.3, 0), (int) (6 + r * 2), r * 0.45, 0.03);
         burst(level, new VfxOptions(VfxKind.GLOW, palette.accent(), palette.edge(), 0.1f, 0.02f, 45, -0.01f, 0.95f), at, (int) (8 + r * 4), r * 0.55, 0.06);
         if (r >= 2.5f) {
             quake(level, at, Math.min(1.2f, r * 0.15f), r * 6);
