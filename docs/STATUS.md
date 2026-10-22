@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-22 (our own HD art, gore v2, fire and lightning, v0.12.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-22 (eyes, boxers, see-through fire, v0.12.1) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,7 +34,7 @@ The villages (v0.7.0):
 
 ## In progress
 
-Waiting on the owner's playtest of v0.12.0.
+Waiting on the owner's playtest of v0.12.1 (v0.12.0 approved: "everything is peak"; v0.12.1 fixes the eyes, boxers and fire see-through).
 
 | v0.12.0: our own art | State |
 |---|---|
@@ -195,7 +195,7 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
 
 ## Open questions for the owner
 
-- **Art:** skins tough but clean, or rougher (grain back in the shadows)? Pale skin deeper shadows?
+- **Art:** do the new eyes have soul now? Names "Steady"/"Fierce" OK? Byakugan glow softer?
   Gear wear level (dirt/fraying) right, also on clean robes? Folds deep enough? Item icons stay 16×16?
 - **Gore v2:** enough blood? Bigger pools? Drying 45 s / stains 2–3 min right? An in-game gore setting?
 - **Fire/lightning:** fire like the panels? Less smoke? Should lightning really light the area (temporary

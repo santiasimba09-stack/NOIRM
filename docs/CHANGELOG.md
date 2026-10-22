@@ -2,6 +2,19 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-22 — Eyes with soul, black boxers, see-through fire, v0.12.1 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's feedback on v0.12.0 ("everything is peak", except these):
+- **Eyes** were "soulless and way too bubbly": now narrow and intense: a heavy slanted upper lid
+  cutting across a smaller iris (dark ring, lighter lower half, small pupil, one-pixel highlight),
+  white on the outer side, a low inner corner, brows closer with a shadow on the lid. Styles: Steady
+  (default), Sharp, Fierce, Narrow, Pale. Sharingan/Byakugan overlays fitted per eye style (the tomoe
+  now show), the Mangekyō sized to each iris.
+- **Boxers**, bigger (hips to mid-thigh) and **black**, are the new default underwear.
+- **Fire jutsu** no longer hide what's behind them: soft particles (fire blobs, tongues, smoke, ash)
+  don't write depth any more (`VfxParticle.SOFT`).
+- Tests: 267/267 pass.
+
 ## 2026-10-22 — Our own HD art, harsher gore, fire and lightning, v0.12.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 From the owner's art direction ("our own designs, more pixels, start in underwear", "raw and tough",
