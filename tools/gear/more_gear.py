@@ -7,63 +7,83 @@ violet lining), never a symbol from the series; forehead plates carry only our h
 Layers use the vanilla 64x32 armour layout (layer 1 = helmet, chest + arms, boots; layer 2 =
 leggings), so they fit any humanoid armour model.
 """
+import math
 import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "skingen"))
-from pixlib import Canvas, ARMOR_PARTS, hx, tone, noise, paint, mirror_side  # noqa: E402
+from pixlib import Canvas, ARMOR_PARTS, hx, tone, noise, mirror_side  # noqa: E402
+import hd  # noqa: E402
+from hd import (Layer, paint, paint_hd, pal, family, SCALE, in_circle, in_ring, in_rrect, in_poly,  # noqa: E402
+                on_polyline, side, scatter, flower, cross_collar)
+from pixlib import mix  # noqa: E402,F401
 
 A = ARMOR_PARTS
 
 
 def layer():
-    return Canvas(64, 32)
-
-
-def pal(base, hi=None, sh=None, deep=None):
-    b = hx(base)
-    return {"b": b, "h": hx(hi) if hi else tone(b, 1), "s": hx(sh) if sh else tone(b, -1),
-            "d": hx(deep) if deep else tone(b, -2.2)}
+    return Layer()
 
 
 def weave(c, x, y, salt, amount=1.0):
-    n = noise(x, y, salt)
-    if n < 0.09:
-        return tone(c, -0.3 * amount)
-    if n > 0.95:
-        return tone(c, 0.25 * amount)
+    """The cloth's weave is drawn at full resolution by hd.py (material "cloth")."""
     return c
 
 
-STEEL = pal("#a7adb5", "#d8dde2", "#7c828a", "#4e535a")
-GOLD = pal("#c9a03a", "#ecc860", "#94711f", "#5e470f")
+STEEL = pal("#a7adb5", "#d8dde2", "#7c828a", "#4e535a", mat="metal")
+GOLD = pal("#c9a03a", "#ecc860", "#94711f", "#5e470f", mat="metal")
 WRAPC = hx("#ddd7c9")
+family([WRAPC, tone(WRAPC, -0.7), tone(WRAPC, 0.2), tone(WRAPC, -0.25)], "wrap")
 WHITE = pal("#eeeae2", "#fbf9f4", "#cfc9bd", "#9e9788")
 STRAP = hx("#2a2a30")
+family([STRAP, tone(STRAP, 0.5)], "leather")
 HOLE = hx("#0c0c0e")
+family([HOLE], "void")
 
 
 def wraps(x, y):
-    if (x + 2 * y) % 5 == 0:
-        return tone(WRAPC, -0.7)
-    return tone(WRAPC, 0.2 if y % 2 == 0 else -0.25)
+    """Bandage wraps: the overlapping strips are drawn by hd.py (material "wrap")."""
+    return WRAPC
 
 
 # ---------------------------------------------------------------------------
-# Kimono (chest) + kimono hem (leggings): a wrap robe, crossed collar, obi sash, scattered motif
+# Drawn at full resolution (hd.paint_hd): u, v are positions in the 64x32 layout's pixels, as
+# floats. Each distinct colour is one part; hd.py adds material, folds, seams, wear and dirt.
 # ---------------------------------------------------------------------------
 
-# c robe, T collar trim, . open (whatever is under shows)
-KIMONO_FRONT = [
-    "cT....Tc",
-    "ccT..Tcc",
-    "cccTTccc",
-    "ccccTccc",
-    "cccccTcc",
-    "cccccTcc",
-    "cccccTcc",
-]
+def _g():
+    """gen_gear's shared shapes (forehead plate, mask outline, zip), imported when needed."""
+    import gen_gear
+    return gen_gear
+
+
+BLOOD = hx("#8e1c20")  # the accent: cords and stitching
+family([BLOOD], "cloth")
+TIE = hx("#6a5428")
+family([TIE], "rope")
+FUR = hx("#e4e0d6")
+family([FUR, tone(FUR, -0.4)], "fur")
+
+
+def crescent(u, v, cx, cy, r):
+    """Our crescent moon: 'moon', 'rim' (a violet glow just outside it) or None."""
+    inside = in_circle(u, v, cx, cy, r) and not in_circle(u, v, cx + 0.38 * r, cy - 0.2 * r, r * 0.82)
+    if inside:
+        return "moon"
+    if in_circle(u, v, cx, cy, r + 0.2) and not in_circle(u, v, cx + 0.38 * r, cy - 0.2 * r, r * 0.82 - 0.2):
+        return "rim"
+    return None
+
+
+def crease(u, v, pts, width=0.22):
+    """A hand-drawn crease (final phase helper): True on the line."""
+    return on_polyline(u, v, pts, width)
+
+
+# ---------------------------------------------------------------------------
+# Kimono (chest) + kimono hem (leggings): a wrap robe, crossed collar, obi sash, scattered flowers
+# ---------------------------------------------------------------------------
 
 KIMONOS = {
     # name: (robe, collar trim, obi, motif)
@@ -75,74 +95,86 @@ KIMONOS = {
 
 
 def kimono(robe_hex, trim_hex, obi_hex, motif_hex, salt):
-    P, T, O, M = pal(robe_hex), pal(trim_hex), pal(obi_hex), hx(motif_hex)
+    P, T, O = pal(robe_hex), pal(trim_hex), pal(obi_hex)
+    M = hx(motif_hex)
+    family([M, tone(M, -1.2)], "print")
     l1, l2 = layer(), layer()
 
-    def cloth(face, x, y, s):
-        if noise(x, y, s) > 0.9 and (x + y) % 2 == 0:
-            return M  # little scattered flowers
-        c = weave(P["b"], x, y, s + 1)
-        return tone(c, -0.2) if face in ("right", "left") else c
+    def motif(u, v, face_salt):
+        spot = scatter(u, v, salt + face_salt, 2.7, 0.5)
+        if spot:
+            f = flower(u, v, spot[0], spot[1], 0.62)
+            if f == "petal":
+                return M
+            if f == "centre":
+                return tone(M, -1.2)
+        return None
 
-    def body(face, x, y, W, H):
+    fs = {"front": 1, "back": 2, "right": 3, "left": 4, "top": 5}
+
+    def body(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            return P["h"] if 0 < x < W - 1 else T["b"]
-        if y in (7, 8):
-            if face == "back" and y == 7 and x in (2, 3, 4, 5):
-                return O["h"]  # the obi's bow on the back
-            if face == "back" and y == 8 and x in (3, 4):
-                return O["d"]
-            return O["h"] if y == 7 else O["s"]
+            return T["b"] if u < 0.6 or u > W - 0.6 else P["b"]
+        if face == "back":
+            if in_rrect(u, v, 3.4, 6.7, 4.6, 8.9, 0.3):
+                return O["s"]  # the bow's knot
+            if in_poly(u, v, [(3.6, 7.8), (1.3, 6.2), (1.0, 9.4)]) or in_poly(u, v, [(4.4, 7.8), (6.7, 6.2), (7.0, 9.4)]):
+                return O["h"]  # the bow's wings
+        if 6.9 <= v < 8.7:  # obi sash and its cord
+            if 7.65 <= v < 7.95:
+                return T["s"]
+            return O["b"]
+        if face == "back" and 8.7 <= v < 10.3 and (on_polyline(u, v, [(3.6, 8.6), (3.0, 10.2)], 0.7) or
+                                                  on_polyline(u, v, [(4.4, 8.6), (5.1, 10.0)], 0.7)):
+            return O["h"]  # the bow's tails
         if face == "front":
-            if y < len(KIMONO_FRONT):
-                ch = KIMONO_FRONT[y][x]
-                if ch == ".":
-                    return None
-                if ch == "T":
-                    return T["h"] if y == 0 else T["b"]
-            if y >= 9 and x == 5:
-                return P["d"]  # the overlap
-        c = cloth(face, x, y, salt)
-        if y == 11:
-            c = P["s"]
-        return c
+            c = cross_collar(u, v)
+            if c == "open":
+                return None
+            if c == "trim":
+                return T["b"]
+            if c == "edge":
+                return P["d"]
+        if v >= 11.4:
+            return P["s"]
+        return motif(u, v, fs[face]) or P["b"]
 
-    def arm(face, x, y, W, H):
-        if face == "bottom" or y > 9:
+    def arm(face, u, v, W, H):
+        if face == "bottom" or v > 9.6:
             return None
         if face == "top":
-            return P["h"]
-        if y == 9:
+            return P["b"]
+        if v >= 9.0:
             return T["s"]  # the sleeve's lined edge
-        c = cloth(face, x, y, salt + 2)
-        return tone(c, -0.35) if face == "left" else c
+        if face == "left":
+            return tone(P["b"], -0.4)  # the wide sleeve's inside
+        return motif(u, v, 10 + fs[face]) or P["b"]
 
-    paint(l1, A["body"], body)
-    paint(l1, A["arm"], arm)
+    paint_hd(l1, A["body"], body)
+    paint_hd(l1, A["arm"], arm)
 
-    def waist(face, x, y, W, H):
-        if face in ("top", "bottom") or y < 9:
+    def waist(face, u, v, W, H):
+        if face in ("top", "bottom") or v < 9:
             return None
-        if face == "front" and x == 5:
+        if face == "front" and abs(u - 5.2) < 0.13:
             return P["d"]
-        return cloth(face, x, y, salt + 3)
+        return motif(u, v, 20 + fs[face]) or P["b"]
 
-    def hem(face, x, y, W, H):
+    def hem(face, u, v, W, H):
         if face in ("top", "bottom"):
             return None
-        if y == 11:
+        if v >= 11.35:
             return T["s"]
-        if y == 10:
+        if v >= 10.5:
             return P["s"]
-        c = cloth(face, x, y, salt + 4)
-        if face == "front" and x == 3 and y > 0:
-            c = P["d"]  # the robe's edge falls down the front
-        return c
+        if face == "front" and abs(u - 3.0) < 0.13:
+            return P["d"]  # the robe's edge falls down the front
+        return motif(u, v, 30 + fs[face]) or P["b"]
 
-    paint(l2, A["body"], waist)
-    paint(l2, A["leg"], hem)
+    paint_hd(l2, A["body"], waist)
+    paint_hd(l2, A["leg"], hem)
     return l1, l2
 
 
@@ -153,32 +185,37 @@ def kimono(robe_hex, trim_hex, obi_hex, motif_hex, salt):
 def hakama():
     l2 = layer()
     P = pal("#34343e", "#4a4a58", "#25252d", "#18181e")
+    P2 = tone(P["b"], -0.25)
 
-    def waist(face, x, y, W, H):
-        if face in ("top", "bottom") or y < 9:
+    def waist(face, u, v, W, H):
+        if face in ("top", "bottom") or v < 9:
             return None
-        if y == 9:
-            return WHITE["s"] if face != "front" or x not in (3, 4) else WHITE["h"]
-        if face == "front" and y == 10 and x in (3, 4):
-            return WHITE["b"]  # the tie's knot
-        return weave(P["b"], x, y, 81)
+        if face == "front" and (in_poly(u, v, [(4, 9.7), (2.6, 9.0), (2.7, 10.6)]) or
+                                in_poly(u, v, [(4, 9.7), (5.4, 9.0), (5.3, 10.6)])):
+            return WHITE["b"]  # the tie's bow
+        if face == "front" and (on_polyline(u, v, [(3.8, 9.9), (3.4, 11.8)], 0.38) or
+                                on_polyline(u, v, [(4.2, 9.9), (4.7, 11.6)], 0.38)):
+            return WHITE["b"]
+        if v < 9.65:
+            return WHITE["s"]
+        return P["b"]
 
-    def leg(face, x, y, W, H):
+    def leg(face, u, v, W, H):
         if face == "top":
             return P["b"]
         if face == "bottom":
             return None
-        if y == 11:
+        if v >= 11.55:
             return P["d"]
-        c = weave(P["b"], x, y, 82)
-        if face in ("front", "back") and x in (1, 3):
-            c = P["s"] if y > 0 else c  # pleats
-        if face == "front" and x == 0 and y < 3:
-            c = P["h"]
-        return tone(c, -0.15) if face in ("right", "left") else c
+        if face in ("front", "back"):
+            j = math.floor(u / 1.0)
+            if abs(u - round(u)) < 0.07 and 0 < round(u) < 4:
+                return P["d"]  # the pleats' deep folds
+            return P["b"] if j % 2 == 0 else P2
+        return P["b"]
 
-    paint(l2, A["body"], waist)
-    paint(l2, A["leg"], leg)
+    paint_hd(l2, A["body"], waist)
+    paint_hd(l2, A["leg"], leg)
     return l2
 
 
@@ -186,55 +223,56 @@ def hakama():
 # Haori: a short black jacket worn open, white cords, our ring crest
 # ---------------------------------------------------------------------------
 
-def ring_crest(x, y, cx, cy):
-    """A small 4x4 ring: our own crest."""
-    dx, dy = x - cx, y - cy
-    if (dx, dy) in ((1, 0), (2, 0), (0, 1), (3, 1), (0, 2), (3, 2), (1, 3), (2, 3)):
-        return True
-    return False
-
-
 def haori():
     l1 = layer()
     P = pal("#1f2027", "#33343e", "#15161b", "#0c0c10")
+    CREST = hx("#e6e1d6")
+    family([CREST], "print")
 
-    def body(face, x, y, W, H):
+    def ring(u, v, cx, cy, r):
+        return in_ring(u, v, cx, cy, r * 0.55, r)
+
+    def body(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            return P["h"]
+            return P["b"]
         if face == "front":
-            if x in (3, 4):
-                if y == 4:
-                    return WHITE["h"] if x == 3 else WHITE["s"]  # the cords (himo)
-                if y == 5 and x == 3:
-                    return WHITE["s"]
+            if 3.0 <= u <= 5.0:
                 return None  # worn open
-            if x in (2, 5):
-                return P["h"]  # lapels
-            if ring_crest(x, y, 0 if x < 4 else 4, 1) and 1 <= y <= 4 and x not in (3, 4):
-                return WHITE["b"]
-        if face == "back" and ring_crest(x, y, 2, 1):
-            return WHITE["b"]
-        c = weave(P["b"], x, y, 91)
-        if y == 11:
-            c = P["d"]
-        return tone(c, -0.15) if face in ("right", "left") else c
+            if 2.3 <= u < 3.0 or 5.0 < u <= 5.7:
+                return P["h"]  # the collar band
+            if ring(u, v, 1.25, 2.0, 0.72) or ring(u, v, 6.75, 2.0, 0.72):
+                return CREST
+        if face == "back" and ring(u, v, 4.0, 2.4, 1.1):
+            return CREST
+        if v >= 11.3:
+            return P["d"]
+        return P["b"]
 
-    def arm(face, x, y, W, H):
-        if face == "bottom" or y > 8:
+    def body_marks(face, u, v, W, H):
+        if face != "front":
+            return None
+        if in_circle(u, v, 4.0, 4.3, 0.36):
+            return WHITE["h"]  # the cords' knot (himo)
+        if on_polyline(u, v, [(2.9, 3.9), (4.0, 4.3), (5.1, 3.9)], 0.26) or on_polyline(u, v, [(4.0, 4.3), (3.85, 5.8)], 0.22):
+            return WHITE["s"]
+        return None
+
+    def arm(face, u, v, W, H):
+        if face == "bottom" or v > 8.6:
             return None
         if face == "top":
-            return P["h"]
-        if y == 8:
+            return P["b"]
+        if v >= 8.0:
             return P["s"]
-        if face == "right" and (x, y) in ((1, 2), (2, 2), (1, 3), (2, 3)):
-            return WHITE["s"] if (x + y) % 2 else WHITE["b"]  # a small crest on the sleeve
-        c = weave(P["b"], x, y, 92)
-        return tone(c, -0.35) if face == "left" else c
+        if face == "right" and ring(u, v, 2.0, 2.6, 0.62):
+            return CREST
+        return tone(P["b"], -0.3) if face == "left" else P["b"]
 
-    paint(l1, A["body"], body)
-    paint(l1, A["arm"], arm)
+    paint_hd(l1, A["body"], body)
+    l1.overlay(A["body"], body_marks, "final")
+    paint_hd(l1, A["arm"], arm)
     return l1
 
 
@@ -255,82 +293,85 @@ VESTS = {
 
 def vest(base_hex, accent_hex, o):
     B, C = pal(base_hex), pal(accent_hex)
+    B2 = tone(B["b"], -0.25)
+    POUCHC = mix(B["b"], B["h"], 0.35)
     l1 = layer()
+    l1.fold = 0.6  # padded: stiffer than a robe
+    two = o.get("pouches", 1) >= 2
+    pouches = [((0.3, 1.75), (1.95, 3.45), (4.55, 6.05), (6.25, 7.7)), (2.0, 6.3)] if two else \
+        [((0.35, 3.4), (4.6, 7.65)), (5.0, 8.6)]
 
-    def body(face, x, y, W, H):
+    def body(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            if o.get("collar") == "fur":
-                return weave(WHITE["h"], x, y, 101)
-            return B["h"]
-        if y == 0:
-            if o.get("collar") == "fur":
-                return weave(WHITE["b"] if (x + y) % 2 else WHITE["h"], x, y, 102)
-            if o.get("collar") == "pad":
-                return B["d"] if face == "front" and x in (3, 4) else B["h"]
+            return FUR if o.get("collar") == "fur" else B["h"]
+        if v < 1.3 and o.get("collar") == "fur":
+            return FUR if v < 1.0 or noise(int(u * 8), 3, 7) > 0.4 else None
+        if v < 1.3 and o.get("collar") == "pad":
+            return B["d"] if face == "front" and abs(u - 4.0) < 0.6 else B["h"]
         if o.get("strap") and face in ("front", "back"):
-            # a strap from the left shoulder down to the right hip
-            sx = x if face == "front" else W - 1 - x
-            if sx + y in (7, 8) and y <= 8:
-                return C["b"] if sx + y == 7 else C["s"]
+            a, b = ((0.5, 0.0), (7.6, 9.6)) if face == "front" else ((7.5, 0.0), (0.4, 9.6))
+            if on_polyline(u, v, [a, b], 0.95):
+                return C["b"]
         if face == "front":
-            if x == 3:
+            if abs(u - 4.0) <= 0.28:
                 return C["b"]  # the closing edge
-            if x == 4:
-                return B["s"]
-            rows = (2, 6) if o.get("pouches", 1) >= 2 else (5, 8)
-            if rows[0] <= y <= rows[1] and x in (0, 1, 2, 5, 6, 7):
-                if y == rows[0]:
-                    return B["h"]
-                if y == rows[1]:
-                    return C["s"]
-                if x in (1, 6) and o.get("pouches", 1) >= 2:
-                    return B["s"]
-                return B["b"]
-            if y == 9:
+            for x0, x1 in pouches[0]:
+                y0, y1 = pouches[1]
+                if in_rrect(u, v, x0, y0, x1, y1, 0.22):
+                    return B["h"] if v < y0 + (y1 - y0) * 0.3 else POUCHC
+            if 9.0 <= v < 9.5:
                 return C["s"]
         if face == "back":
-            if o.get("back") == "straps" and y in (3, 7):
+            if o.get("back") == "straps" and (2.8 <= v < 3.3 or 6.8 <= v < 7.3):
                 return C["b"]
-            if y == 1:
-                return B["s"]
-        if face in ("right", "left") and y in (1, 2):
+            if v < 2.2:
+                return B2  # the yoke
+        if face in ("right", "left") and v < 2.2:
             return B["d"]
-        c = weave(B["b"], x, y, 103)
-        if o.get("ribs") and x % 2 == 0:
-            c = tone(c, -0.35)
-        if o.get("quilt") and y % 3 == 0:
-            c = tone(c, -0.35)
-        if y == 11:
-            c = C["s"]
-        return c
+        if v >= 11.3:
+            return C["s"]
+        if o.get("ribs") and math.floor(u / 1.0) % 2 == 0:
+            return B2
+        if o.get("quilt") and math.floor(v / 2.0) % 2 == 1:
+            return B2
+        return B["b"]
 
-    def arm(face, x, y, W, H):
+    def body_marks(face, u, v, W, H):
+        if face != "front":
+            return None
+        z = _g().zip_teeth(face, u, v, W, H, top=1.3 if o.get("collar") else 0.3, bottom=11.3)
+        if z:
+            return z
+        for x0, x1 in pouches[0]:
+            y0, y1 = pouches[1]
+            if in_circle(u, v, (x0 + x1) / 2, y0 + (y1 - y0) * 0.24, 0.16):
+                return C["d"]
+        return None
+
+    def arm(face, u, v, W, H):
         if face == "bottom":
             return None
-        if o.get("sleeve") and y <= 6:
+        if o.get("sleeve"):
+            if v > 6.2:
+                return None
             if face == "top":
                 return B["h"]
-            return C["s"] if y == 6 else weave(B["b"], x, y, 104)
+            return C["s"] if v >= 5.6 else B["b"]
         if o.get("pads") or o.get("pad_right"):
-            if y > 2 or face == "left":
+            if v > 2.2 or face == "left":
                 return None
             if face == "top":
                 return C["h"]
-            return C["b"] if y < 2 else C["d"]
-        if face == "left" or y > 1:
+            return C["h"] if v < 1.0 else C["b"]
+        if face == "left" or v > 1.6:
             return None
-        if face == "top":
-            return B["h"]
-        return B["b"] if y == 0 else B["s"]
+        return B["h"] if face == "top" else B["b"]
 
-    paint(l1, A["body"], body)
-    paint(l1, A["arm"], arm)
-    if o.get("pad_right") or o.get("sleeve"):
-        # The armour model draws the same arm picture on both arms; the one-shouldered look is
-        # suggested by the strap, so both arms get it. Nothing else to do.
-        pass
+    paint_hd(l1, A["body"], body)
+    l1.overlay(A["body"], body_marks, "final")
+    paint_hd(l1, A["arm"], arm)
     return l1
 
 
@@ -338,120 +379,122 @@ def vest(base_hex, accent_hex, o):
 # Cloaks: a plain travelling cloak and the rogue cloak (our own crescent-moon pattern)
 # ---------------------------------------------------------------------------
 
-MOON = ["..ss", ".s..", ".s..", "..ss"]  # a crescent, 4x4
-
-
-def moon_at(x, y, spots):
-    for cx, cy in spots:
-        dx, dy = x - cx, y - cy
-        if 0 <= dx < 4 and 0 <= dy < 4 and MOON[dy][dx] == "s":
-            return True
-        # a pale violet rim right of the crescent's horns
-        if 0 <= dx - 1 < 4 and 0 <= dy < 4 and MOON[dy][dx - 1] == "s" and not (0 <= dx < 4 and MOON[dy][dx] == "s"):
-            return None
-    return False
-
-
 def cloak(base_hex, lining_hex, clasp, moons=False):
     P, L = pal(base_hex), pal(lining_hex)
+    family([clasp], "metal")
     SILVER = hx("#c8ccd6")
     RIM = hx("#7d6a9e")
+    family([SILVER], "print")
+    family([RIM], "print")
     l1 = layer()
-    spots = {"front": [(0, 4), (4, 8)], "back": [(1, 2), (4, 6)], "right": [(0, 5)], "left": [(0, 8)]}
-    arm_spots = {"right": [(0, 3)], "front": [(0, 7)], "back": [(0, 7)], "left": []}
+    spots = {"front": [(1.6, 5.6, 1.0), (5.9, 9.6, 0.9)], "back": [(2.6, 3.8, 1.1), (5.6, 8.2, 1.0)],
+             "right": [(1.9, 6.8, 0.85)], "left": [(1.9, 9.6, 0.85)]}
+    arm_spots = {"right": [(2.0, 4.6, 0.8)], "front": [(2.0, 8.4, 0.75)], "back": [(2.0, 8.4, 0.75)]}
 
-    def pattern(face, x, y, table):
+    def pattern(face, u, v, table):
         if not moons:
             return None
-        m = moon_at(x, y, table.get(face, []))
-        if m is True:
-            return SILVER
-        if m is None:
-            return RIM
+        for cx, cy, r in table.get(face, []):
+            m = crescent(u, v, cx, cy, r)
+            if m == "moon":
+                return SILVER
+            if m == "rim":
+                return RIM
         return None
 
-    def body(face, x, y, W, H):
+    def body(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
             return P["h"]
         if face == "front":
-            if y <= 1:
-                if x in (3, 4) and y == 1:
-                    return clasp  # the clasp
+            if in_circle(u, v, 4.0, 1.2, 0.5):
+                return clasp
+            if v < 1.4:
                 return L["s"] if moons else P["h"]  # a high collar
-            if x in (3, 4) and y >= 9:
+            if v >= 8.4 and abs(u - 4.0) < (v - 8.4) * 0.38 + 0.08:
                 return L["b"]  # the cloak parts at the bottom: lining shows
-            if x == 3 and y >= 2:
-                return P["s"]
-        if face == "back" and y <= 2 and not moons:
-            return P["s"] if y < 2 else P["d"]  # a folded hood
-        p = pattern(face, x, y, spots)
+            if abs(u - 4.0) < 0.1:
+                return P["d"]
+        if face == "back" and not moons and v < 2.7:
+            return P["s"] if v < 2.1 else P["d"]  # a folded hood
+        p = pattern(face, u, v, spots)
         if p is not None:
             return p
-        c = weave(P["b"], x, y, 111)
-        if y == 11:
-            c = L["s"] if moons else P["d"]
-        return tone(c, -0.2) if face in ("right", "left") else c
+        if v >= 11.4:
+            return L["s"] if moons else P["d"]
+        return P["b"]
 
-    def arm(face, x, y, W, H):
+    def arm(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
             return P["h"]
         if face == "left":
-            return L["s"] if y > 2 else P["s"]  # the lining inside
-        p = pattern(face, x, y, arm_spots)
+            return L["s"] if v > 2.4 else P["s"]  # the lining inside
+        p = pattern(face, u, v, arm_spots)
         if p is not None:
             return p
-        c = weave(P["b"], x, y, 112)
-        return P["d"] if y == 11 else c
+        return P["d"] if v >= 11.3 else P["b"]
 
-    paint(l1, A["body"], body)
-    paint(l1, A["arm"], arm)
+    paint_hd(l1, A["body"], body)
+    paint_hd(l1, A["arm"], arm)
     return l1
 
 
 # ---------------------------------------------------------------------------
-# Kage robe: long white robe with gold trim and wide sleeves
+# Kage robe: long white robe with gold trim, a red cord and wide sleeves
 # ---------------------------------------------------------------------------
+
+GOLDC = hx("#c49a3c")  # gold thread (cloth, not metal)
+family([GOLDC, tone(GOLDC, -0.6)], "cloth")
+
 
 def kage_robe():
     l1 = layer()
+    SASH = hx("#8c8a92")
+    family([SASH], "cloth")
 
-    def body(face, x, y, W, H):
+    def body(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            return WHITE["h"]
-        if y == 8:
-            return hx("#8c8a92")  # a grey sash
+            return WHITE["b"]
+        if 7.9 <= v < 9.0:
+            return BLOOD if 8.35 <= v < 8.55 else SASH
         if face == "front":
-            if y < len(KIMONO_FRONT):
-                ch = KIMONO_FRONT[y][x]
-                if ch == ".":
-                    return None
-                if ch == "T":
-                    return GOLD["h"] if y == 0 else GOLD["b"]
-            if y >= 9 and x == 5:
-                return GOLD["s"]
-        c = weave(WHITE["b"], x, y, 121, 0.7)
-        if y == 11:
-            c = GOLD["s"]
-        return tone(c, -0.25) if face in ("right", "left") else c
+            c = cross_collar(u, v, 0.85)
+            if c == "open":
+                return None
+            if c == "trim":
+                return GOLDC
+            if c == "edge":
+                return tone(GOLDC, -0.6)
+        if v >= 11.2:
+            return GOLDC
+        return WHITE["b"]
 
-    def arm(face, x, y, W, H):
+    def hem_marks(face, u, v, W, H):
+        if face in ("top", "bottom") or not 11.3 <= v < 11.9:
+            return None
+        t = (u % 0.9) / 0.9
+        if abs(v - 11.6) < 0.25 * (1 - abs(2 * t - 1)) + 0.02:
+            return BLOOD  # a band of small diamonds in the gold hem
+        return None
+
+    def arm(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            return WHITE["h"]
-        if y == 11:
-            return GOLD["b"]
-        c = weave(WHITE["b"], x, y, 122, 0.7)
-        return tone(c, -0.4) if face == "left" else c
+            return WHITE["b"]
+        if v >= 11.2:
+            return GOLDC
+        return tone(WHITE["b"], -0.45) if face == "left" else WHITE["b"]
 
-    paint(l1, A["body"], body)
-    paint(l1, A["arm"], arm)
+    paint_hd(l1, A["body"], body)
+    l1.overlay(A["body"], hem_marks, "final")
+    paint_hd(l1, A["arm"], arm)
+    l1.overlay(A["arm"], hem_marks, "final")
     return l1
 
 
@@ -462,30 +505,39 @@ def kage_robe():
 def arm_guards(steel=True):
     l1 = layer()
 
-    def arm(face, x, y, W, H):
+    def arm(face, u, v, W, H):
         if face == "top":
             return None
         if face == "bottom":
             return WRAPC
         if steel:
-            if y < 5:
+            if v < 5.0:
                 return None
-            if y == 5:
+            if v < 5.5:
                 return STRAP
-            if 6 <= y <= 9 and face != "left":
-                if y == 6:
-                    return STEEL["h"]
-                if y == 9:
-                    return STEEL["d"]
-                if face == "right" and x in (1, 2) and y == 7:
-                    return STEEL["s"]  # a raised ridge
-                return STEEL["b"] if face != "back" else STEEL["s"]
-            return wraps(x, y)
-        if y < 7:
+            if v < 9.6 and face != "left":
+                if 6.4 <= v < 6.75 or 8.5 <= v < 8.85:
+                    return STRAP
+                if face == "right" and 1.6 <= u <= 2.4:
+                    return STEEL["h"]  # a raised ridge
+                return STEEL["b"]
+            return WRAPC
+        if v < 7.0:
             return None
-        return wraps(x, y)
+        return WRAPC
 
-    paint(l1, A["arm"], arm)
+    def marks(face, u, v, W, H):
+        if steel and face in ("front", "back", "right"):
+            for ry in (5.95, 9.2):
+                for rx in (0.6, 3.4):
+                    if in_circle(u, v, rx, ry, 0.15):
+                        return STEEL["d"]
+        if not steel and face == "back" and on_polyline(u, v, [(2.2, 7.2), (2.8, 6.0), (3.3, 5.4)], 0.32):
+            return WRAPC  # the loose end
+        return None
+
+    paint_hd(l1, A["arm"], arm)
+    l1.overlay(A["arm"], marks, "final")
     return l1
 
 
@@ -496,79 +548,97 @@ def arm_guards(steel=True):
 def tabi():
     l1 = layer()
     P = pal("#23273a", "#363c58", "#181b28", "#0e1018")
+    SOLE_C = hx("#c9c4b8")
+    family([SOLE_C], "leather")
 
-    def boot(face, x, y, W, H):
+    def boot(face, u, v, W, H):
         if face == "top":
             return None
         if face == "bottom":
-            return hx("#c9c4b8")
-        if y < 6:
+            return SOLE_C
+        if v < 6.0:
             return None
-        if y == 6:
+        if v < 6.5:
             return P["h"]
-        if face == "front" and y >= 10 and x == 1:
+        if v >= 11.5:
+            return SOLE_C
+        if face == "front" and abs(u - 1.35) < 0.11 and v > 10.2:
             return P["d"]  # the split toe
-        c = weave(P["b"], x, y, 131)
-        if face in ("right", "left") and y == 9 and mirror_side(face, x, W) < 2:
-            c = STEEL["s"]  # the clasps at the ankle
-        return P["s"] if y == 11 else c
+        return P["b"]
 
-    paint(l1, A["leg"], boot)
+    def marks(face, u, v, W, H):
+        if face in ("right", "left") and abs(side(face, u, W) - 0.7) < 0.3:
+            for y in (7.3, 8.3, 9.3):
+                if abs(v - y) < 0.14:
+                    return STEEL["h"]  # the clasps (kohaze)
+        return None
+
+    paint_hd(l1, A["leg"], boot)
+    l1.overlay(A["leg"], marks, "final")
     return l1
 
 
 def waraji():
     l1 = layer()
-    STRAW = pal("#c8a860", "#e0c47c", "#9c7e40", "#6a5428")
+    STRAW_W = pal("#c8a860", "#e0c47c", "#9c7e40", "#6a5428", mat="straw")
 
-    def boot(face, x, y, W, H):
+    def boot(face, u, v, W, H):
         if face == "top":
             return None
         if face == "bottom":
-            return STRAW["b"] if (x + y) % 2 else STRAW["s"]
-        if y < 5:
+            return STRAW_W["b"]
+        if v < 5.0:
             return None
-        if y == 11:
-            return STRAW["s"] if x % 2 else STRAW["b"]
-        if y == 10:
+        if v >= 11.3:
+            return STRAW_W["b"]
+        if v >= 10.2:
             if face == "front":
-                return STRAW["h"] if x in (1, 2) else None  # thong between the toes
-            return STRAW["d"] if face == "back" else None
-        if (x + y) % 3 == 0:
-            return tone(WRAPC, -0.8)  # crossed ties over the leg wraps
-        return wraps(x, y)
+                return STRAW_W["h"] if 1.3 <= u <= 2.7 else None  # thong between the toes
+            return STRAW_W["d"] if face == "back" else None
+        # crossed ties over the leg wraps
+        if on_polyline(u, v, [(0, 5.4), (W, 7.8)], 0.32) or on_polyline(u, v, [(W, 5.4), (0, 7.8)], 0.32) or \
+                on_polyline(u, v, [(0, 7.8), (W, 10.2)], 0.32) or on_polyline(u, v, [(W, 7.8), (0, 10.2)], 0.32):
+            return TIE
+        return WRAPC
 
-    paint(l1, A["leg"], boot)
+    paint_hd(l1, A["leg"], boot)
     return l1
 
 
 def shin_guards():
     l1 = layer()
-    LEATHER = pal("#4a3526", "#634836", "#33241a", "#20160f")
+    LEATHER = pal("#4a3526", "#634836", "#33241a", "#20160f", mat="leather")
 
-    def boot(face, x, y, W, H):
+    def boot(face, u, v, W, H):
         if face == "top":
             return None
         if face == "bottom":
             return LEATHER["d"]
-        if y < 3:
+        if v < 3.0:
             return None
-        if y >= 9:
-            return LEATHER["h"] if y == 9 else LEATHER["b"] if y < 11 else LEATHER["s"]
+        if v >= 9.2:
+            return LEATHER["s"] if v >= 11.4 else LEATHER["b"]
         if face == "front":
-            if y == 3:
-                return STEEL["h"]
-            if x in (0, 3):
-                return STEEL["s"]
-            return STEEL["h"] if (x == 1 and y % 2) else STEEL["b"]
-        mx = mirror_side(face, x, W)
-        if face in ("right", "left") and mx >= 2:
-            return STEEL["s"] if y > 3 else STEEL["b"]
-        if y in (4, 7):
+            if 1.65 <= u <= 2.35:
+                return STEEL["h"]  # the ridge
+            return STEEL["b"]
+        s = side(face, u, W) if face in ("right", "left") else 0
+        if face in ("right", "left") and s >= 2:
+            return STEEL["s"]
+        if 4.0 <= v < 4.45 or 7.0 <= v < 7.45:
             return STRAP  # straps round the back
         return None
 
-    paint(l1, A["leg"], boot)
+    def marks(face, u, v, W, H):
+        if face == "front":
+            for ry in (3.5, 8.6):
+                for rx in (0.55, 3.45):
+                    if in_circle(u, v, rx, ry, 0.15):
+                        return STEEL["d"]
+        return None
+
+    paint_hd(l1, A["leg"], boot)
+    l1.overlay(A["leg"], marks, "final")
     return l1
 
 
@@ -576,7 +646,7 @@ def shin_guards():
 # Masks (helmet). Front maps: w porcelain, s shade, e eye hole, r / k / g markings, . open
 # ---------------------------------------------------------------------------
 
-PORC = pal("#ecebe6", "#ffffff", "#c9c7c0", "#8e8b84")
+PORC = pal("#ecebe6", "#ffffff", "#c9c7c0", "#8e8b84", mat="porcelain")
 
 ANIMAL_MASKS = {
     "mask_wolf": ([
@@ -634,56 +704,78 @@ ANIMAL_MASKS = {
 
 
 def face_mask(rows, colours, base=None):
+    G = _g()
     cv = layer()
     cmap = {k: hx(v) for k, v in colours.items()}
-    base = base or PORC
-    edge = cmap.get("s", base["s"]) if "w" in colours else base["s"]
+    base_c = cmap.get("w", (base or PORC)["b"])
+    if "w" in cmap:
+        family([base_c, tone(base_c, -0.6)], "lacquer")
+    shade = cmap.get("s", PORC["s"])
+    marks = {}
+    for ch, c in cmap.items():
+        if ch not in ("w",) and c != base_c:
+            marks[ch] = c
+            family([c], "print")
+    if "s" not in cmap:
+        marks["s"] = PORC["s"]
+    # the 8x8 map, enlarged with Scale2x so the markings come out smooth
+    grid = [[marks.get(ch) for ch in row] for row in rows]
+    big = hd.upscale(grid, SCALE)
 
-    def head(face, x, y, W, H):
+    def head(face, u, v, W, H):
         if face == "front":
-            ch = rows[y][x]
-            if ch == ".":
-                return None
-            if ch == "e":
+            if almond(u, v, 2.35, 4.25, 0.95, 0.4, 0.18) or almond(u, v, 5.65, 4.25, 0.95, 0.4, -0.18):
                 return HOLE
-            if ch == "w":
-                c = cmap.get("w", base["b"])
-                return tone(c, -0.6) if x in (0, 7) or y == 7 else c
-            if ch == "s" and "s" not in cmap:
-                return base["s"]
-            return cmap.get(ch, base["b"])
+            m = big[min(len(big) - 1, int(v * SCALE))][min(len(big[0]) - 1, int(u * SCALE))]
+            ch = rows[min(7, int(v))][min(7, int(u))]
+            if m is not None and (G.mask_shape(u, v) or ch != "."):
+                return m
+            if not G.mask_shape(u, v):
+                return None
+            return base_c
         if face in ("right", "left"):
-            mx = mirror_side(face, x, W)
-            if mx == 7 and 1 <= y <= 6:
-                return edge  # the mask's edge seen from the side
-            return STRAP if y == 3 else None
+            if side(face, u, W) >= 7.25 and 0.6 <= v <= 7.2:
+                return shade
+            return STRAP if 2.9 <= v < 3.65 else None
         if face == "back":
-            if y == 3:
-                return STRAP
-            if (x, y) in ((3, 4), (4, 4)):
-                return tone(STRAP, 0.5)
+            return G.mask_back(u, v)
         return None
 
-    paint(cv, A["head"], head)
+    paint_hd(cv, A["head"], head)
     return cv
+
+
+def almond(u, v, cx, cy, rx, ry, tilt=0.0):
+    dy = v - cy - tilt * (u - cx)
+    return ((u - cx) / rx) ** 2 + (dy / ry) ** 2 <= 1.0
 
 
 def cloth_mask():
     cv = layer()
     P = pal("#2e3240", "#434858", "#20232e", "#14161d")
 
-    def head(face, x, y, W, H):
-        if face in ("top", "bottom") or y < 5:
+    def head(face, u, v, W, H):
+        if face in ("top", "bottom") or v < 4.9:
             return None
         if face == "front":
-            if y == 5:
-                return P["h"] if x in (3, 4) else P["b"]  # over the bridge of the nose
-            return weave(P["b"], x, y, 141)
-        if face == "back" and y > 6:
-            return None
-        return weave(P["s"] if face == "back" else P["b"], x, y, 142)
+            return P["h"] if v < 5.5 and abs(u - 4.0) < 1.2 else P["b"]  # over the bridge of the nose
+        if face == "back":
+            if v > 6.6:
+                return None
+            return P["s"]
+        return P["b"]
 
-    paint(cv, A["head"], head)
+    def creases(face, u, v, W, H):
+        if face == "front" and (crease(u, v, [(3.0, 5.6), (1.6, 6.6), (0.6, 7.6)]) or
+                                crease(u, v, [(5.0, 5.6), (6.4, 6.6), (7.4, 7.6)]) or
+                                crease(u, v, [(3.2, 6.9), (4.0, 7.1), (4.8, 6.9)], 0.18)):
+            return P["d"]
+        if face == "back" and in_rrect(u, v, 3.3, 4.9, 4.7, 6.3, 0.4):
+            return P["h"]  # the knot
+        return None
+
+    paint_hd(cv, A["head"], head)
+    cv.overlay(A["head"], creases, "final")
     return cv
 
 
@@ -691,73 +783,48 @@ def cloth_mask():
 # Forehead protectors: slashed plate (rogues) and a head wrap with a plate
 # ---------------------------------------------------------------------------
 
-def plate(x, y, slashed=False):
-    """The 6x3 steel plate at front x 1..6, y 1..3 (our hook glyph), or None outside it."""
-    if not (1 <= x <= 6 and 1 <= y <= 3):
-        return None
-    if slashed and (x, y) in ((1, 3), (2, 3), (3, 2), (4, 2), (5, 1), (6, 1)):
-        return STEEL["d"] if (x, y) not in ((3, 2), (4, 2)) else hx("#33363c")  # a cut straight through
-    if (x, y) in ((1, 1), (6, 1), (1, 3), (6, 3)):
-        return STEEL["d"]
-    if (x, y) in ((3, 2), (4, 2), (4, 1)):
-        return STEEL["d"]
-    if y == 1:
-        return STEEL["h"]
-    if y == 3:
-        return STEEL["s"]
-    return STEEL["b"] if x not in (1, 6) else tone(STEEL["b"], -0.4)
-
-
 def slashed_band():
-    cv = layer()
-    cloth = pal("#3a3a42")
-
-    def fn(face, x, y, W, H):
-        if face in ("top", "bottom"):
-            return None
-        if face == "front":
-            p = plate(x, y, slashed=True)
-            if p is not None:
-                return p
-        if y == 2:
-            return weave(cloth["h"] if face != "back" else cloth["b"], x, y, 3)
-        if y == 3:
-            return weave(cloth["s"], x, y, 4)
-        if face == "back":
-            if (x, y) in ((3, 4), (4, 4)):
-                return cloth["b"]
-            if (x, y) in ((3, 5), (4, 6), (3, 7), (4, 5)):
-                return cloth["s"]
-        return None
-
-    paint(cv, A["head"], fn)
-    return cv
+    return _g().headband("#3a3a42", slashed=True)
 
 
 def head_wrap():
+    G = _g()
     cv = layer()
     cloth = pal("#4b4f5e", "#62677a", "#383b47", "#24262e")
 
-    def fn(face, x, y, W, H):
+    def fn(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            return weave(cloth["h"], x, y, 151)
+            return cloth["h"]
         if face == "front":
-            p = plate(x, y)
+            p = G.protector_plate(u, v)
             if p is not None:
                 return p
-            return weave(cloth["b"], x, y, 152) if y <= 3 else None
+            return cloth["b"] if v <= 3.9 else None
         if face == "back":
-            if y <= 6:
-                return weave(cloth["s"], x, y, 153)
-            return cloth["d"] if x in (3, 4) else None  # the tied ends
-        mx = mirror_side(face, x, W)
-        if y <= 3 or (mx < 4 and y <= 6):
-            return weave(cloth["b"], x, y, 154)
+            if v <= 6.4:
+                return cloth["s"]
+            if on_polyline(u, v, [(3.6, 6.2), (3.2, 7.9)], 0.75) or on_polyline(u, v, [(4.4, 6.2), (4.9, 7.7)], 0.7):
+                return cloth["d"]  # the tied ends
+            return None
+        s = side(face, u, W)
+        if v <= 3.9 or (s < 4.5 and v <= 6.4):
+            return cloth["b"]
         return None
 
-    paint(cv, A["head"], fn)
+    def marks(face, u, v, W, H):
+        if face == "front":
+            return G.protector_marks(u, v)
+        if face == "top" and (crease(u, v, [(0.5, 2.0), (4.0, 3.2), (7.5, 1.6)]) or crease(u, v, [(0.8, 5.6), (4.2, 4.8), (7.4, 6.2)])):
+            return cloth["s"]
+        if face == "back" and v < 6.2 and (crease(u, v, [(0.6, 1.0), (2.8, 3.6), (3.6, 6.2)]) or
+                                          crease(u, v, [(7.4, 1.4), (5.2, 3.8), (4.4, 6.2)])):
+            return cloth["d"]
+        return None
+
+    paint_hd(cv, A["head"], fn)
+    cv.overlay(A["head"], marks, "final")
     return cv
 
 
@@ -765,7 +832,8 @@ def head_wrap():
 # Hats (the outer "hat" box sits a little outside the head): straw hat and the Kage hats
 # ---------------------------------------------------------------------------
 
-STRAW = pal("#cdb070", "#e6cc8a", "#a08648", "#6e5a2c")
+STRAW = pal("#cdb070", "#e6cc8a", "#a08648", "#6e5a2c", mat="straw")
+STRAW2 = tone(STRAW["b"], 0.25)
 
 KAGE_HATS = {
     # name: panel colour (matches the village looks' paint)
@@ -781,24 +849,25 @@ KAGE_HATS = {
 def straw_hat():
     cv = layer()
 
-    def hat(face, x, y, W, H):
+    def hat(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            r = max(abs(x - 3.5), abs(y - 3.5))
-            c = STRAW["h"] if r < 1 else STRAW["b"] if r < 2.5 else STRAW["s"]
-            return c if (x + y) % 3 else tone(c, -0.4)  # woven
-        if y > 1:
+            r = math.hypot(u - 4.0, v - 4.0)
+            if r < 0.6:
+                return STRAW["d"]
+            return STRAW["b"] if math.floor(r / 0.8) % 2 == 0 else STRAW2  # woven rings
+        if v > 1.6:
             return None
-        return STRAW["s"] if y == 1 else (STRAW["b"] if x % 2 else STRAW["h"])
+        return STRAW["s"] if v > 1.05 else STRAW["b"]
 
-    def strings(face, x, y, W, H):
-        if face in ("right", "left") and mirror_side(face, x, W) == 4 and 3 <= y <= 7:
-            return hx("#6a5428")  # the chin cord
+    def cord(face, u, v, W, H):
+        if face in ("right", "left") and on_polyline(side(face, u, W), v, [(4.4, 1.0), (4.6, 4.5), (5.4, 7.7)], 0.24):
+            return TIE  # the chin cord
         return None
 
-    paint(cv, A["hat"], hat)
-    paint(cv, A["head"], strings)
+    paint_hd(cv, A["hat"], hat)
+    paint_hd(cv, A["head"], cord)
     return cv
 
 
@@ -806,32 +875,43 @@ def kage_hat(panel_hex):
     cv = layer()
     P = pal(panel_hex)
 
-    def hat(face, x, y, W, H):
+    def hat(face, u, v, W, H):
         if face == "bottom":
             return None
         if face == "top":
-            if x in (0, 7) or y in (0, 7):
+            r = max(abs(u - 4.0), abs(v - 4.0))
+            if r < 0.7:
+                return P["h"]  # the crown's knob
+            if r < 2.4:
+                return P["b"]  # the coloured crown
+            if r > 3.55:
                 return WHITE["s"]
-            if 2 <= x <= 5 and 2 <= y <= 5:
-                return P["h"] if (x + y) % 4 == 0 else P["b"]  # the coloured crown
             return WHITE["b"]
-        if y > 2:
+        if v > 2.6:
             return None
-        if face == "front":
-            if abs(x - 3.5) + y <= 2.5:
-                return P["b"] if y else P["h"]  # a coloured panel at the front
-            return WHITE["h"] if y < 2 else WHITE["s"]
-        return WHITE["b"] if y < 2 else P["s"]
+        if v >= 2.05:
+            return P["s"]  # a coloured band at the brim
+        if face == "front" and abs(u - 4.0) + v * 1.0 <= 2.6:
+            return P["b"]  # a coloured panel at the front
+        return WHITE["b"]
 
-    def veil(face, x, y, W, H):
-        if face == "back" and 1 <= y <= 7:
-            return weave(WHITE["b"], x, y, 161, 0.6) if y < 7 else WHITE["s"]
-        if face in ("right", "left") and mirror_side(face, x, W) < 3 and 1 <= y <= 6:
-            return weave(WHITE["s"], x, y, 162, 0.6)
+    def veil(face, u, v, W, H):
+        if face == "back" and 1.0 <= v <= 7.6:
+            return WHITE["b"] if v < 7.2 else WHITE["s"]
+        if face in ("right", "left") and side(face, u, W) < 3.0 and 1.0 <= v <= 7.0:
+            return WHITE["s"]
         return None
 
-    paint(cv, A["hat"], hat)
-    paint(cv, A["head"], veil)
+    def veil_folds(face, u, v, W, H):
+        if face == "back" and 1.2 <= v <= 7.4:
+            for x in (1.3, 2.9, 4.6, 6.3):
+                if abs(u - (x + 0.25 * math.sin(v * 0.9 + x))) < 0.1 * (v - 1.0) / 6.4 + 0.04:
+                    return tone(WHITE["b"], -0.9)
+        return None
+
+    paint_hd(cv, A["hat"], hat)
+    paint_hd(cv, A["head"], veil)
+    cv.overlay(A["head"], veil_folds, "final")
     return cv
 
 
