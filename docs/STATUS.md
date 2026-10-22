@@ -176,6 +176,12 @@ Waiting on the owner's playtest of v0.11.0.
   heavier gravity, but kept light so combat stays smooth; **gore: yes**; perception focus and the
   just-frame parry stay **heavy attacks only** (the counter window is untested by the owner yet);
   meditation keeps training Reserves; **no melee while forming seals**.
+- **Art direction (owner, after v0.11.0):** our own designs, not plain Minecraft-resolution skins:
+  **HD textures at 4× (256×256 for the 64×64 skin layout)** for players, ninjas and worn gear,
+  drawn by our generator scripts. New characters **start in just underwear** (clothes come from gear).
+- **Owner answers (v0.11.0):** creator rolls (1 + 3 rerolls, keep any) stay; movement is fine;
+  the just-frame counter window (0.5 s) looks good; **gore should be harsher with real blood**: on the
+  ground, on the character and on clothing.
 - Text is in English (`en_us`) and Spanish (`es_es`, `es_mx`).
 - **Villages (round 4):** built procedurally in Java (no NBT files), `top_layer_modification`
   step so trees are cleared. Residents never start fights with players; attacking one alarms the
@@ -186,16 +192,8 @@ Waiting on the owner's playtest of v0.11.0.
 
 ## Open questions for the owner
 
-- **Creator:** 1 free roll + 3 rerolls, keep any you've seen: right? Stats 8–12 and +2 trait bonuses?
-  Roll vitality too? Is the Clothes tab welcome? Should changing your look later be free, or need
-  something (an item, a barber in villages)? Height changes after creation?
-- **Movement:** the slide is subtle (about 0.1 block longer than before): more? Sprint-jump leaps
-  are ~8% shorter with the heavier gravity: boost them? Should ninjas get the heavier gravity too?
-- **Gore:** marks bolder, or over armor too? Faster or slower fading? Should heavy blunt killing
-  blows sever (50% now)? Ever sever limbs on living NPCs? Limbs stay longer than 5 s, bigger blood?
 - **Seals:** show the "hands busy" hint on every blocked press, not just once per cast?
 
-- **Just-frame parry:** once you've tried it, is the 10-tick (0.5 s) counter window right?
 - **Casting:** should combined natures (ice, lava, storm…) join the clash wheel?
 
 - **Animations:** which moves still feel weak? First person: are the arms the right size and place?
