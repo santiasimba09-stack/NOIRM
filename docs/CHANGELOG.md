@@ -2,6 +2,32 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-22 — Our own HD art, harsher gore, fire and lightning, v0.12.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+From the owner's art direction ("our own designs, more pixels, start in underwear", "raw and tough",
+reference images; see `docs/ART_STYLE.md`) and gore feedback ("worse, with blood on the ground, on the
+character, on clothing").
+
+- **HD skins at 4×** (256×256 for the 64×64 layout), all drawn by our generators (`tools/skingen/hdskin.py`,
+  `anatomy.py`): bodies lit as rounded forms with carved muscles, anime eyes (almond shape, bold lid,
+  tall iris, one highlight), clean nose/mouth/jaw shapes, chunky hair locks, real underwear (briefs,
+  shorts, fundoshi, chest bindings). NPC ninjas share the style. Sharingan/Byakugan/Mangekyō redrawn to fit.
+  Skins are composed in game by `client/SkinComposer` (cached per look, uploaded once).
+- **New characters start in just underwear**; the creator's Clothes tab is gone (clothes come from
+  gear). Old looks with base clothes load in underwear.
+- **HD gear at 4×** (all 54 worn textures, 256×128; `tools/gear/hd.py`): folds with dark creases and lit
+  ridges, seams, stitching, trims, frayed hems, dirt toward the feet, scratched metal plates.
+- **Gore v2:** blood on the body (bleeds, splatters, drips, dries in 45 s, washes off in water/rain), on
+  clothing and armor, and **on the ground** (splats, drips, trails from the badly hurt, pools under
+  bodies and limbs; client-side decals, max 256, 2–3 min). Heavy blunt kills sever 85%, blasts 90%;
+  bigger bursts and stump spurts; limbs last 15 s. Client setting `goreLevel` (off/mild/full).
+- **Fire and lightning** redone from the owner's panels: cellular fire blobs, flame tongues, ash, smoke,
+  shockwaves and debris; branching, ground-running lightning with spark bursts; Lightning Armor with
+  crawling bolts. **New jutsu:** Burning Ash, Majestic Destroyer Flame, Flame Bomb, Dragon Flame
+  Caterwaul, Chain Discharge (lightning jumps between up to 4 enemies). A particle budget (4,000) and
+  distance thinning.
+- Network protocol 15. Tests: 267/267 pass twice in a row (16 new); the merged build checked in the real client.
+
 ## 2026-10-22 — Character creation, movement feel, gore, v0.11.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 Built from the owner's answers on the blueprint (character creation: yes; movement: the blueprint's,

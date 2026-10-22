@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-22 (character creation, movement feel, gore, v0.11.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-22 (our own HD art, gore v2, fire and lightning, v0.12.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,13 +34,16 @@ The villages (v0.7.0):
 
 ## In progress
 
-Waiting on the owner's playtest of v0.11.0.
+Waiting on the owner's playtest of v0.12.0.
 
-| Blueprint Phase 2 (v0.11.0) | State |
+| v0.12.0: our own art | State |
 |---|---|
-| **Character creation** (first join; face, body, hair, clothes, height, clan rolls) | ✅ tested; checked in client (`r12-creator-*`) |
-| **Movement feel** (slide, pivot, gravity ×1.2, landing recovery) + **no melee while sealing** | ✅ tested; measured in client |
-| **Gore** (damage marks, severed limbs burning away) | ✅ tested; checked in client (`r12-gore-*`) |
+| **HD skins** (4×, carved anatomy, anime eyes, real underwear) + start in underwear | ✅ tested; checked in client (`r14-skin-*`) |
+| **HD gear** (54 worn textures at 4×) | ✅ tested; checked in client (`r13-gear-*`) |
+| **Gore v2** (blood on body, clothes, ground; harsher severing) | ✅ tested; checked in client (`r13-gore-*`) |
+| **Fire and lightning** redone + 5 new jutsu | ✅ tested; checked in client (`r13-jutsu-*`) |
+
+v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGELOG.md`.
 
 **Done in v0.10.0: crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
 
@@ -191,6 +194,12 @@ Waiting on the owner's playtest of v0.11.0.
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
+
+- **Art:** skins tough but clean, or rougher (grain back in the shadows)? Pale skin deeper shadows?
+  Gear wear level (dirt/fraying) right, also on clean robes? Folds deep enough? Item icons stay 16×16?
+- **Gore v2:** enough blood? Bigger pools? Drying 45 s / stains 2–3 min right? An in-game gore setting?
+- **Fire/lightning:** fire like the panels? Less smoke? Should lightning really light the area (temporary
+  light blocks)? Majestic Destroyer Flame too strong? Unlock chains right?
 
 - **Seals:** show the "hands busy" hint on every blocked press, not just once per cast?
 
