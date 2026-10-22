@@ -57,6 +57,33 @@ public class VfxParticle extends TextureSheetParticle {
     };
 
     /**
+     * Soft see-through particles (fire blobs, flame tongues, smoke, ash): normal blending, but they
+     * never write depth. Vanilla's translucent sheet writes depth, so a big fire blob's faint edges
+     * hid whatever was drawn after it (entities, other effects) behind a blurry "glass" square.
+     */
+    public static final ParticleRenderType SOFT = new ParticleRenderType() {
+        @Override
+        public void begin(BufferBuilder builder, TextureManager textures) {
+            RenderSystem.depthMask(false);
+            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+        }
+
+        @Override
+        public void end(Tesselator tesselator) {
+            tesselator.end();
+            RenderSystem.depthMask(true);
+        }
+
+        @Override
+        public String toString() {
+            return "NOIRM_SOFT";
+        }
+    };
+
+    /**
      * Budget (blueprint §1): NOIRM particles alive at once. Past it, new small ones are skipped;
      * far from the camera most decorative ones are skipped too (level of detail).
      */
@@ -138,7 +165,7 @@ public class VfxParticle extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return options.kind().glows() ? ADDITIVE : ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return options.kind().glows() ? ADDITIVE : SOFT;
     }
 
     @Override
