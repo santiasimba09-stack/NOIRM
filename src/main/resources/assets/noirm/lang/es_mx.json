@@ -1330,5 +1330,16 @@
   "tooltip.noirm.blade.cleave": "Cada golpe empuja al objetivo hacia atrás",
   "tooltip.noirm.blade.flow.lightning": "Flujo de chakra de rayo: si tienes Rayo, la hoja chisporrotea (golpes más fuertes que paralizan, 2 de chakra por golpe)",
   "tooltip.noirm.blade.flow.wind": "Flujo de chakra de viento: si tienes Viento, las garras zumban (más afiladas, sangrado más largo, 1,5 de chakra por golpe)",
-  "kit.noirm.arsenal": "Arsenal (armas nuevas)"
+  "kit.noirm.arsenal": "Arsenal (armas nuevas)",
+  "help.noirm.spawn.encounter": "un grupo salvaje (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), con nivel de peligro opcional",
+  "commands.noirm.encounter.unknown": "Encuentro desconocido: %s",
+  "commands.noirm.encounter.spawned": "Apareció %s (%s ninjas, peligro %s)",
+  "encounter.noirm.wanderer": "un vagabundo solitario",
+  "encounter.noirm.travellers": "dos viajeros",
+  "encounter.noirm.squad": "un escuadrón de la aldea",
+  "encounter.noirm.clan_group": "un grupo de clan",
+  "encounter.noirm.rogue": "un ninja renegado",
+  "encounter.noirm.rogue_band": "una banda de renegados",
+  "encounter.noirm.rogue_strong": "un renegado peligroso",
+  "gamerule.noirmWildNinjas": "NOIRM: con qué frecuencia aparecen ninjas en la naturaleza (porcentaje, 0 = nunca, 100 = normal)"
 }

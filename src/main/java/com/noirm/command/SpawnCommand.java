@@ -41,6 +41,8 @@ import net.minecraftforge.fml.common.Mod;
 public final class SpawnCommand {
     static final SuggestionProvider<CommandSourceStack> CLANS = (ctx, builder) ->
             SharedSuggestionProvider.suggest(WorldClans.get(ctx.getSource().getServer()).allClans().stream().map(Clan::id), builder);
+    static final SuggestionProvider<CommandSourceStack> ENCOUNTERS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(Cmd.shortIds(com.noirm.world.wild.Encounters.all().keySet()), builder);
     static final SuggestionProvider<CommandSourceStack> MASTERS = (ctx, builder) ->
             SharedSuggestionProvider.suggest(Cmd.shortIds(MasterData.all().keySet()), builder);
 
@@ -65,6 +67,11 @@ public final class SpawnCommand {
                                         .executes(ctx -> ninja(ctx.getSource(), "", 0, IntegerArgumentType.getInteger(ctx, "strength"), false))))
                         .then(Commands.literal("ally").then(Commands.argument("clan", StringArgumentType.word()).suggests(CLANS)
                                 .executes(ctx -> ninja(ctx.getSource(), StringArgumentType.getString(ctx, "clan"), 0, 0, true))))
+                        .then(Commands.literal("encounter").then(Commands.argument("type", StringArgumentType.word()).suggests(ENCOUNTERS)
+                                .executes(ctx -> encounter(ctx.getSource(), StringArgumentType.getString(ctx, "type"), 0))
+                                .then(Commands.argument("strength", IntegerArgumentType.integer(1, 10000))
+                                        .executes(ctx -> encounter(ctx.getSource(), StringArgumentType.getString(ctx, "type"),
+                                                IntegerArgumentType.getInteger(ctx, "strength"))))))
                         .then(Commands.literal("dummy").executes(ctx -> dummy(ctx.getSource())))
                         .then(Commands.literal("beast").then(Commands.argument("tails", tails)
                                 .executes(ctx -> beast(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "tails")))))
@@ -110,6 +117,30 @@ public final class SpawnCommand {
         }
         source.sendSuccess(() -> Component.translatable("commands.noirm.ninja.spawned", clan.name()), true);
         return 1;
+    }
+
+    /**
+     * A wild encounter ({@code data/noirm/encounters/}) six blocks in front of you, as strong as the
+     * land there would make it for you (or with {@code strength} as the danger level).
+     */
+    static int encounter(CommandSourceStack source, String name, int strength) {
+        ResourceLocation id = Cmd.id(name);
+        if (id == null || com.noirm.world.wild.Encounters.get(id) == null) {
+            return Cmd.fail(source, "commands.noirm.encounter.unknown", name);
+        }
+        ServerLevel level = source.getLevel();
+        net.minecraft.core.BlockPos spot = net.minecraft.core.BlockPos.containing(Cmd.inFront(source, 6));
+        long played = source.getEntity() instanceof net.minecraft.server.level.ServerPlayer player
+                ? com.noirm.world.wild.WildSpawner.playedTicks(player) : 0;
+        float danger = strength > 0 ? strength : com.noirm.world.wild.WildSpawner.danger(level, spot, played);
+        var group = com.noirm.world.wild.WildSpawner.spawn(level, id, spot, danger, level.getRandom());
+        if (group.isEmpty()) {
+            return 0;
+        }
+        int count = group.size();
+        source.sendSuccess(() -> Component.translatable("commands.noirm.encounter.spawned",
+                Component.translatable(com.noirm.world.wild.Encounters.nameKey(id)), count, Math.round(danger)), true);
+        return count;
     }
 
     static int dummy(CommandSourceStack source) {

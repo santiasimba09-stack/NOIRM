@@ -124,6 +124,7 @@ public final class CommandGuide {
                 .add("ninja", "/noirm spawn ninja <clan> [tails] [strength]", "/noirm spawn ninja uchiha 0 40", true)
                 .add("rogue", "/noirm spawn rogue [strength]", "/noirm spawn rogue 30", true)
                 .add("ally", "/noirm spawn ally <clan>", "/noirm spawn ally hyuga", true)
+                .add("encounter", "/noirm spawn encounter <type> [strength]", "/noirm spawn encounter squad 30", true)
                 .add("dummy", "/noirm spawn dummy", "/noirm spawn dummy", true)
                 .add("beast", "/noirm spawn beast <1-9>", "/noirm spawn beast 2", true)
                 .add("master", "/noirm spawn master <master>", "/noirm spawn master might_guy", true);

@@ -1330,5 +1330,16 @@
   "tooltip.noirm.blade.cleave": "Every hit shoves the target back",
   "tooltip.noirm.blade.flow.lightning": "Lightning chakra flow: if you have Lightning, the blade crackles (harder hits that numb, 2 chakra a hit)",
   "tooltip.noirm.blade.flow.wind": "Wind chakra flow: if you have Wind, the claws hum (sharper, longer bleeding, 1.5 chakra a hit)",
-  "kit.noirm.arsenal": "Arsenal (new blades)"
+  "kit.noirm.arsenal": "Arsenal (new blades)",
+  "help.noirm.spawn.encounter": "a wild group (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), optionally with a danger level",
+  "commands.noirm.encounter.unknown": "Unknown encounter: %s",
+  "commands.noirm.encounter.spawned": "%s turned up (%s ninjas, danger %s)",
+  "encounter.noirm.wanderer": "A lone wanderer",
+  "encounter.noirm.travellers": "Two travellers",
+  "encounter.noirm.squad": "A village squad",
+  "encounter.noirm.clan_group": "A clan group",
+  "encounter.noirm.rogue": "A rogue ninja",
+  "encounter.noirm.rogue_band": "A band of rogues",
+  "encounter.noirm.rogue_strong": "A dangerous rogue",
+  "gamerule.noirmWildNinjas": "NOIRM: how often ninjas turn up in the wild (percent, 0 = never, 100 = normal)"
 }

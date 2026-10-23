@@ -37,6 +37,7 @@ public final class Noirm {
         com.noirm.world.Destruction.registerGameRules();
         com.noirm.movement.MovementFeel.registerGameRules();
         com.noirm.gore.Gore.registerGameRules();
+        com.noirm.world.wild.WildSpawner.registerGameRules();
         com.noirm.gore.GoreParticles.register(modBus); // blood drops and pools
         com.noirm.gore.GoreSettings.register(); // the player's gore level (config/noirm-client.toml)
         com.noirm.creator.CharacterCreator.registerGameRules();
