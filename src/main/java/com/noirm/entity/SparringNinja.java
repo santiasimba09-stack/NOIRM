@@ -178,6 +178,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 Threat.tick(this); // turn on whoever is hurting them most
             }
             tickChakra();
+            com.noirm.world.wild.WildNinjas.tick(this); // wild groups: fight together, leave the wild for a crew
             com.noirm.ally.AllyFood.tickSelfFeed(this);
             syncAnimationState();
         }
@@ -468,6 +469,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (resident && com.noirm.world.village.VillageResidents.isResident(other)) {
             return true; // neighbours don't feud over a stray hit
         }
+        if (com.noirm.world.wild.WildNinjas.sameGroup(this, other)) {
+            return true; // travelling together
+        }
         return super.isAlliedTo(other);
     }
 
@@ -704,6 +708,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         // Residents walk back home after a fight (does nothing for ninjas without a home).
         // Village life: patrols, rooftop running, practice (does nothing for ninjas without a role).
         goalSelector.addGoal(3, new com.noirm.world.village.VillageRoutineGoal(this));
+        goalSelector.addGoal(3, new com.noirm.world.wild.WildTravelGoal(this)); // wild groups travel together (only wild ninjas)
         goalSelector.addGoal(4, new net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal(this, 1.0));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8) {
             @Override
@@ -716,6 +721,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         // A challenge: anyone who enters combat mode nearby gets a fight.
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::wouldChallenge));
+        // Wild rogues attack players; wild squads hunt rogues (only wild ninjas).
+        targetSelector.addGoal(2, new com.noirm.world.wild.WildTargetGoal(this));
         // Village residents keep monsters out of their village.
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.monster.Monster.class, 10, true, false,
                 this::wouldDefendAgainst));
@@ -740,7 +747,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
      */
     public boolean wouldChallenge(LivingEntity target) {
         CombatState state = CombatStates.getIfPresent(target);
-        return leader == null && !resident && !isYielded() && state != null && state.isCombatMode();
+        return leader == null && !resident && !isYielded() && state != null && state.isCombatMode()
+                && com.noirm.world.wild.WildNinjas.mayChallenge(this); // most wild groups leave you be
     }
 
     // ---------------------------------------------------------------- village residents

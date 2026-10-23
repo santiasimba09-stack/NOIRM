@@ -1,0 +1,6 @@
+{
+  "weight": 20, "night_weight": 10,
+  "min_size": 2, "max_size": 2,
+  "leader_strength": 1.0, "member_strength": 0.9,
+  "outfit": "clan"
+}

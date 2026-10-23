@@ -1277,5 +1277,16 @@
   "jutsu.noirm.katon.majestic_destroyer_flame": "Fire Release: Majestic Destroyer Flame",
   "jutsu.noirm.katon.flame_bomb": "Fire Release: Flame Bomb",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Fire Release: Dragon Flame Caterwaul",
-  "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge"
+  "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge",
+  "help.noirm.spawn.encounter": "a wild group (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), optionally with a danger level",
+  "commands.noirm.encounter.unknown": "Unknown encounter: %s",
+  "commands.noirm.encounter.spawned": "%s turned up (%s ninjas, danger %s)",
+  "encounter.noirm.wanderer": "A lone wanderer",
+  "encounter.noirm.travellers": "Two travellers",
+  "encounter.noirm.squad": "A village squad",
+  "encounter.noirm.clan_group": "A clan group",
+  "encounter.noirm.rogue": "A rogue ninja",
+  "encounter.noirm.rogue_band": "A band of rogues",
+  "encounter.noirm.rogue_strong": "A dangerous rogue",
+  "gamerule.noirmWildNinjas": "NOIRM: how often ninjas turn up in the wild (percent, 0 = never, 100 = normal)"
 }

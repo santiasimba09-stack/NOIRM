@@ -1,0 +1,8 @@
+{
+  "weight": 12, "night_weight": 22,
+  "min_size": 1, "max_size": 1,
+  "hostile": true,
+  "leader_strength": 1.0,
+  "outfit": "rogue",
+  "min_distance": 300, "min_played_minutes": 10
+}

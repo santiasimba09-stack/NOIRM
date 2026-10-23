@@ -1277,5 +1277,16 @@
   "jutsu.noirm.katon.majestic_destroyer_flame": "Elemento Fuego: Llama Destructora Majestuosa",
   "jutsu.noirm.katon.flame_bomb": "Elemento Fuego: Bomba de Llamas",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Elemento Fuego: Rugido de los Dragones de Fuego",
-  "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena"
+  "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena",
+  "help.noirm.spawn.encounter": "un grupo salvaje (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), con nivel de peligro opcional",
+  "commands.noirm.encounter.unknown": "Encuentro desconocido: %s",
+  "commands.noirm.encounter.spawned": "Apareció %s (%s ninjas, peligro %s)",
+  "encounter.noirm.wanderer": "un vagabundo solitario",
+  "encounter.noirm.travellers": "dos viajeros",
+  "encounter.noirm.squad": "un escuadrón de la aldea",
+  "encounter.noirm.clan_group": "un grupo de clan",
+  "encounter.noirm.rogue": "un ninja renegado",
+  "encounter.noirm.rogue_band": "una banda de renegados",
+  "encounter.noirm.rogue_strong": "un renegado peligroso",
+  "gamerule.noirmWildNinjas": "NOIRM: con qué frecuencia aparecen ninjas en la naturaleza (porcentaje, 0 = nunca, 100 = normal)"
 }

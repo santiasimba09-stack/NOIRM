@@ -44,6 +44,20 @@ public final class BuiltVillages extends SavedData {
         return null;
     }
 
+    /** The village whose centre is nearest {@code pos} (flat), if within {@code range} blocks; or null. */
+    public Entry nearest(BlockPos pos, int range) {
+        Entry best = null;
+        long bestDistance = (long) range * range;
+        for (Entry entry : entries) {
+            long dx = pos.getX() - entry.centre().getX(), dz = pos.getZ() - entry.centre().getZ();
+            if (dx * dx + dz * dz <= bestDistance) {
+                best = entry;
+                bestDistance = dx * dx + dz * dz;
+            }
+        }
+        return best;
+    }
+
     public static BuiltVillages load(CompoundTag tag) {
         BuiltVillages villages = new BuiltVillages();
         for (Tag t : tag.getList("Villages", Tag.TAG_COMPOUND)) {
