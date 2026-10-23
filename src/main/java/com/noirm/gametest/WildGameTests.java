@@ -115,7 +115,8 @@ public final class WildGameTests {
                         helper.assertTrue(WildNinjas.sameGroup(n, leader) && n.isAlliedTo(leader) && leader.isAlliedTo(n), name + ": group mates are allies");
                     }
                     if ("rogue".equals(type.outfit())) {
-                        helper.assertTrue(wearsChest(n, NoirmGear.ROGUE_CLOAK.get(), NoirmGear.TRAVEL_CLOAK.get()), name + ": rogues wear a cloak");
+                        helper.assertTrue(wearsChest(n, NoirmGear.ROGUE_CLOAK.get(), NoirmGear.TRAVEL_CLOAK.get(), NoirmGear.TATTERED_CLOAK.get(),
+                                NoirmGear.ASSASSIN_SUIT.get(), NoirmGear.BANDOLIER.get()), name + ": rogues wear a cloak (or dress as assassins)");
                     }
                 }
                 if ("village".equals(type.outfit())) {
