@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:leaf_gale",
+  "timing": {
+    "windup": 6,
+    "active": 4,
+    "recovery": 11,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 24,
+    "range": 3.0,
+    "arc": 360,
+    "knockback": 0.4,
+    "hitstun": 16,
+    "hitstop": 4,
+    "shake": 0.6,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:strong_fist/jab",
+    "launcher": "noirm:strong_fist/leaf_rising_wind"
+  }
+}

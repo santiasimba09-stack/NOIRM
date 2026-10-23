@@ -1,0 +1,35 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:kimono_indigo"
+    },
+    {
+      "item": "noirm:kimono_indigo_hem"
+    },
+    {
+      "item": "noirm:tabi"
+    },
+    {
+      "item": "noirm:kimono_crimson"
+    },
+    {
+      "item": "noirm:kimono_crimson_hem"
+    },
+    {
+      "item": "noirm:kimono_sage"
+    },
+    {
+      "item": "noirm:kimono_sage_hem"
+    },
+    {
+      "item": "noirm:kimono_plum"
+    },
+    {
+      "item": "noirm:kimono_plum_hem"
+    },
+    {
+      "item": "noirm:haori"
+    }
+  ]
+}

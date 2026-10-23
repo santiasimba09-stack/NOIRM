@@ -1,0 +1,26 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:half_mask"
+    },
+    {
+      "item": "noirm:assassin_suit"
+    },
+    {
+      "item": "noirm:assassin_pants"
+    },
+    {
+      "item": "noirm:jika_tabi"
+    },
+    {
+      "item": "noirm:tattered_hood"
+    },
+    {
+      "item": "noirm:tattered_cloak"
+    },
+    {
+      "item": "noirm:bandolier"
+    }
+  ]
+}

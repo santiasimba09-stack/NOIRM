@@ -1,0 +1,11 @@
+{
+  "openers": {
+    "light": "noirm:basic/jab",
+    "heavy": "noirm:basic/heavy_kick",
+    "launcher": "noirm:basic/uppercut",
+    "forward_light": "noirm:basic/backfist",
+    "back_light": "noirm:basic/low_sweep",
+    "back_heavy": "noirm:basic/push_kick"
+  },
+  "npc_weight": 2
+}

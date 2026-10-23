@@ -1,0 +1,28 @@
+{
+  "animation": "noirm:clinch_grab",
+  "timing": {
+    "windup": 4,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 0,
+    "range": 1.8,
+    "arc": 70,
+    "knockback": 0,
+    "hitstun": 0,
+    "hitstop": 0,
+    "shake": 0,
+    "clinch": "grab"
+  },
+  "next": {
+    "light": "noirm:clinch/knee",
+    "heavy": "noirm:clinch/headbutt",
+    "forward_heavy": "noirm:clinch/headbutt",
+    "back_light": "noirm:clinch/throw",
+    "back_heavy": "noirm:clinch/throw",
+    "launcher": "noirm:clinch/throw",
+    "grab": "noirm:clinch/throw"
+  }
+}

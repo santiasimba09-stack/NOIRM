@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:kunai_slash",
+  "timing": { "windup": 3, "active": 2, "recovery": 7, "cancel_after": 3 },
+  "hit": { "damage": 3.5, "posture": 10, "range": 2.5, "arc": 110, "knockback": 0.2, "lunge": 0.25, "hitstun": 7, "hitstop": 2, "shake": 0.3 },
+  "next": { "light": "noirm:kunai/finishing_stab", "heavy": "noirm:kunai/finishing_stab" }
+}

@@ -1,0 +1,23 @@
+{
+  "nature": "fire",
+  "cast": "charge",
+  "behavior": "wave",
+  "rank": "S",
+  "chakra_cost": 90,
+  "cooldown": 1000,
+  "min_charge": 14,
+  "max_charge": 50,
+  "unlock": {
+    "after": "noirm:katon/great_fire_annihilation",
+    "mastery": 2
+  },
+  "params": {
+    "range": 26,
+    "radius": 8,
+    "speed": 1.0,
+    "damage": 16,
+    "knockback": 1.4,
+    "posture": 50,
+    "fire_seconds": 10
+  }
+}

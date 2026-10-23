@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:fan/snap",
+    "heavy": "noirm:fan/gust",
+    "launcher": "noirm:fan/rising",
+    "forward_light": "noirm:fan/glide",
+    "forward_heavy": "noirm:fan/glide",
+    "back_heavy": "noirm:fan/flourish"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tanto_stab",
+  "timing": { "windup": 5, "active": 2, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 5.5, "posture": 16, "range": 2.7, "arc": 40, "knockback": 0.4, "lunge": 0.5, "hitstun": 10, "hitstop": 3, "shake": 0.4, "pierce": 0.3 },
+  "next": { "light": "noirm:tanto/slash", "heavy": "noirm:tanto/flurry" }
+}

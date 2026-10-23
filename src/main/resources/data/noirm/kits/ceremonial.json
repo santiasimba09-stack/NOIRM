@@ -1,0 +1,20 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:formal_robe"
+    },
+    {
+      "item": "noirm:formal_robe_hem"
+    },
+    {
+      "item": "noirm:tabi"
+    },
+    {
+      "item": "noirm:battle_kimono"
+    },
+    {
+      "item": "noirm:battle_hakama"
+    }
+  ]
+}

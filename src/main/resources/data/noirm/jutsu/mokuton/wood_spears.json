@@ -1,0 +1,16 @@
+{
+  "nature": "wood",
+  "behavior": "pillar",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 220,
+  "params": {
+    "range": 12,
+    "radius": 2.4,
+    "damage": 9,
+    "knockback": 1.0,
+    "posture": 40,
+    "block": "minecraft:oak_log"
+  }
+}

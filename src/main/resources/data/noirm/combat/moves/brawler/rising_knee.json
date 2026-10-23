@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:knee_strike",
+  "timing": {
+    "windup": 4,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 16,
+    "range": 2.2,
+    "arc": 90,
+    "knockback": 0.2,
+    "lift": 0.35,
+    "lunge": 0.2,
+    "hitstun": 10,
+    "hitstop": 3,
+    "shake": 0.4
+  },
+  "next": {
+    "light": "noirm:brawler/back_elbow",
+    "heavy": "noirm:brawler/hammer_fist"
+  }
+}

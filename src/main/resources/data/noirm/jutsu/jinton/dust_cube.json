@@ -1,0 +1,15 @@
+{
+  "nature": "dust",
+  "behavior": "pillar",
+  "rank": "S",
+  "starter": true,
+  "chakra_cost": 60,
+  "cooldown": 600,
+  "params": {
+    "range": 14,
+    "radius": 2.2,
+    "damage": 12,
+    "knockback": 0.4,
+    "posture": 60
+  }
+}

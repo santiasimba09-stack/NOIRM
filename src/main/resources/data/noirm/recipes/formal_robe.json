@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "B B",
+    "WBW",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:black_wool"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    }
+  },
+  "result": {
+    "item": "noirm:formal_robe"
+  }
+}

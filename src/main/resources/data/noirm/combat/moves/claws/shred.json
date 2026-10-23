@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:claws_shred",
+  "timing": { "windup": 4, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 20, "range": 2.5, "arc": 140, "knockback": 0.6, "lunge": 0.4, "hitstun": 12, "hitstop": 4, "shake": 0.5 },
+  "next": { "light": "noirm:claws/rake" }
+}
