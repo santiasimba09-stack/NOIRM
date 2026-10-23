@@ -29,6 +29,17 @@ public final class GearPerks {
     public static final float HAND_WRAPS_DAMAGE = 1.5f;
     /** Arm guards' attack damage (they armour you more instead). */
     public static final float ARM_GUARDS_DAMAGE = 1f;
+    /** Chest and arm bandages (sarashi): a little harder strikes. */
+    public static final float SARASHI_DAMAGE = 1f;
+
+    /** Samurai-style plate: -3% movement speed per piece (a full set of four: about -12%). */
+    public static final float HEAVY_SLOW = 0.03f;
+    /** Assassin's black: how far monsters can notice you, multiplied once per piece worn (two pieces: ×0.49). */
+    public static final double SHADOW_VISIBILITY = 0.7;
+    /** The medic coat heals this much (half a heart)… */
+    public static final float MEND_HEAL = 1f;
+    /** …every this many ticks (8 s), while you're hurt. */
+    public static final int MEND_TICKS = 160;
 
     private static final UUID SWIFT_ID = UUID.fromString("5d0c8a3e-21b4-4c7f-9e86-3f1a2b4c5d61");
     private static final EquipmentSlot[] ARMOR = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -44,6 +55,32 @@ public final class GearPerks {
             }
         }
         return false;
+    }
+
+    /** How many worn pieces carry this perk. */
+    public static int count(LivingEntity entity, GearPerk perk) {
+        int n = 0;
+        for (EquipmentSlot slot : ARMOR) {
+            ItemStack stack = entity.getItemBySlot(slot);
+            if (stack.getItem() instanceof GearItem gear && gear.perk() == perk) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** The assassin's visibility factor for this entity (1 = seen as usual). */
+    public static double shadowFactor(LivingEntity entity) {
+        return Math.pow(SHADOW_VISIBILITY, count(entity, GearPerk.SHADOW));
+    }
+
+    /** One step of the medic coat's mending: heals a hurt wearer. True if it healed. */
+    public static boolean mend(LivingEntity entity) {
+        if (!entity.isAlive() || entity.getHealth() >= entity.getMaxHealth() || !wears(entity, GearPerk.MENDING)) {
+            return false;
+        }
+        entity.heal(MEND_HEAL);
+        return true;
     }
 
     /** True if a mask hides this entity's name tag. */
@@ -76,6 +113,18 @@ public final class GearPerks {
         LivingEntity entity = event.getEntity();
         if (!entity.level().isClientSide() && (entity.tickCount & 3) == 0) {
             updateSwift(entity);
+        }
+        if (!entity.level().isClientSide() && entity.tickCount % MEND_TICKS == 0) {
+            mend(entity);
+        }
+    }
+
+    /** Assassin's black: harder to notice (mobs target you from less far). */
+    @SubscribeEvent
+    public static void visibility(LivingEvent.LivingVisibilityEvent event) {
+        double f = shadowFactor(event.getEntity());
+        if (f < 1) {
+            event.modifyVisibility(f);
         }
     }
 

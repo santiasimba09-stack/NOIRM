@@ -1317,6 +1317,8 @@ def main():
     preview(tex, item_icons)
     print("preview:", os.path.relpath(PREVIEW, ROOT))
     more(tex)
+    import armor_wave  # the third set (round 16): shinobi basics, heavy armour, rogues, robes
+    armor_wave.main()
 
 
 MORE_PREVIEW = os.path.join(ROOT, "docs/screenshots/gear-more.png")

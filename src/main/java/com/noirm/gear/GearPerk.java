@@ -13,7 +13,13 @@ public enum GearPerk {
     /** Hand wraps and arm guards: harder hits (the piece adds attack damage). */
     FISTS,
     /** Tabi and straw sandals: soft landings ({@link GearPerks#SOFT_STEP_BLOCKS} fewer blocks of fall). */
-    SOFT_STEP;
+    SOFT_STEP,
+    /** Samurai-style plate: each piece slows you a little ({@link GearPerks#HEAVY_SLOW} by default). */
+    HEAVY,
+    /** Assassin's black: monsters notice you from less far ({@link GearPerks#SHADOW_VISIBILITY} per piece). */
+    SHADOW,
+    /** The medic coat: slowly closes your wounds ({@link GearPerks#MEND_HEAL} every {@link GearPerks#MEND_TICKS} ticks). */
+    MENDING;
 
     /** Translation key of its tooltip line, e.g. {@code tooltip.noirm.perk.hide_name}. */
     public String tooltipKey() {

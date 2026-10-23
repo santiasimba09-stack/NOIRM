@@ -348,6 +348,12 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(sell(8, new ItemStack(NoirmGear.FLAK_VEST.get()), 4));
                 offers.add(sell(4, new ItemStack(NoirmGear.SHINOBI_PANTS.get()), 4));
                 offers.add(sell(3, new ItemStack(NoirmGear.SHINOBI_SANDALS.get()), 4));
+                offers.add(sell(7, new ItemStack(NoirmGear.MESH_SHIRT.get()), 4)); // the armor wave (round 16)
+                offers.add(sell(3, new ItemStack(NoirmGear.TRAINING_SHIRT.get()), 4));
+                offers.add(sell(4, new ItemStack(NoirmGear.JIKA_TABI.get()), 4));
+                offers.add(sell(2, new ItemStack(NoirmGear.WRAPPED_SANDALS.get()), 4));
+                offers.add(sell(16, new ItemStack(NoirmGear.SAMURAI_CUIRASS.get()), 2));
+                offers.add(sell(6, new ItemStack(NoirmGear.MEDIC_COAT.get()), 3));
                 offers.add(sell(4, new ItemStack(NoirmItems.TRAINING_DUMMY.get()), 8));
                 offers.add(buy(new ItemStack(Items.IRON_INGOT, 4)));
                 offers.add(buy(new ItemStack(Items.COAL, 12)));
