@@ -1,0 +1,5 @@
+{
+  "animation": "noirm:greatsword_cleave",
+  "timing": { "windup": 11, "active": 3, "recovery": 15, "cancel_after": 9 },
+  "hit": { "damage": 12, "posture": 40, "range": 4.2, "arc": 60, "knockback": 0.5, "hitstun": 24, "hitstop": 8, "shake": 1.0, "knockdown": true }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:fan_flourish",
+  "timing": { "windup": 4, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 4.5, "posture": 18, "range": 2.7, "arc": 360, "knockback": 0.8, "hitstun": 12, "hitstop": 4, "shake": 0.5 },
+  "next": { "light": "noirm:fan/snap" }
+}

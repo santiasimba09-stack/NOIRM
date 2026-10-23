@@ -56,7 +56,8 @@ public final class ClanOutfits {
         }
         Map<EquipmentSlot, Item> outfit = roll(clan.id(), random);
         // Wandering ninjas (not village residents) are often rogues; legendary swordsmen always are.
-        boolean legendary = ninja.getMainHandItem().getItem() instanceof com.noirm.weapon.SpecialWeaponItem;
+        boolean legendary = ninja.getMainHandItem().getItem() instanceof com.noirm.weapon.SpecialWeaponItem
+                || com.noirm.weapon.NinjaArsenal.isRogueBlade(ninja.getMainHandItem().getItem());
         if (!ninja.isResident() && (legendary || random.nextFloat() < ROGUE_CHANCE)) {
             outfit = rogue(outfit, random);
         } else if (!ninja.isResident() && random.nextFloat() < SAMURAI_CHANCE) {
@@ -151,6 +152,9 @@ public final class ClanOutfits {
         }
         ninja.setGearRolled(true);
         wear(ninja, outfit);
+        if (outfit.get(EquipmentSlot.CHEST) == NoirmGear.ANBU_ARMOR.get()) {
+            com.noirm.weapon.NinjaArsenal.armAnbu(ninja, r); // ANBU carry the short tantō
+        }
     }
 
     /** What a village resident of {@code role} ("GUARD", "PATROL", "KAGE") wears; empty for other roles. */

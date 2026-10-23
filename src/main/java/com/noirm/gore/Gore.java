@@ -337,7 +337,7 @@ public final class Gore {
             return true;
         }
         Moveset moveset = WeaponMoves.movesetFor(stack);
-        return moveset == Moveset.SWORD || moveset == Moveset.KUNAI;
+        return moveset != null && moveset.cuts();
     }
 
     private static void add(GoreMarks marks, Mark mark, float amount) {

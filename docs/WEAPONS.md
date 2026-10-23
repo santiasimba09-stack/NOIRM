@@ -80,6 +80,45 @@ time (about 1 rogue in 85), always dresses as a rogue (cloak), and drops it 30% 
 defeated. Any ninja may also carry a kusarigama (1.5%) or a gunbai (1%). Icons:
 `tools/weapongen/gen_weapons.py`.
 
+## More blades (v0.13)
+
+_Code: `weapon/NinjaBlades` (the items), `NinjaBladeItem`, `BladeStats` (reads the numbers),
+`BladeEvents` (traits, bleeding, chakra flow, the tessen's swat; trait numbers at the top).
+**Damage, speed, reach, durability, moveset, trait and chakra flow are data:**
+`data/noirm/weapons/stats.json` (read when the game starts: a change needs a restart). Moves:
+`data/noirm/combat/moves/<moveset>/`. Both are written by `tools/weapongen/gen_moves.py`;
+animations by `tools/weapongen/gen_blade_anims.py` (timed to the moves). Try them: `/noirm kit arsenal`._
+
+Seven weapons, picked so each **feels** different, not just bigger numbers: a very fast one
+(tantō), a strong clean one (katana), a slow crowd-clearer (nodachi), a two-armed blunt one
+(tonfa), a long-reach one (yari), a bleeding one (tekko-kagi) and a defensive one (tessen). A kama
+was left out because the kusarigama already hooks and drags; chakra knuckles were left out because
+the chakra blades already are Asuma's trench knives.
+
+| Weapon | Moveset | Damage | Speed | Reach | Durability | What makes it different | How to get |
+|---|---|---|---|---|---|---|---|
+| **Tantō** (ANBU short blade) | tantō | 4.5 | 2.4 swings/s | — | 300 | the fastest moveset (2-tick wind-ups); **a hit in the back does ×1.6** | iron + black wool; shop (4 emeralds); ANBU patrols (65%) |
+| **Katana** | katana (two hands) | 7 | 1.5 | +0.5 | 600 | big clean cuts; heavy = **iaidō drawing cut** (35% through guard); **lightning flow** | iron ×2, leather, black wool; shop (9) |
+| **Nodachi** (greatsword) | greatsword | 10 | 0.85 | +1 | 700 | 200° sweeps, a 360° spin, an overhead cleave that floors; **every hit shoves** | iron + iron block + stick + wool; rogues carry it (and look like rogues) |
+| **Tonfa** (a pair) | tonfa (both arms) | 4 | 2.3 | — | 400 | alternating left/right blows; **+8 posture a blow** (guards break fast); blunt (no cutting gore) | sticks + iron; shop (4) |
+| **Yari** (spear) | spear | 6 | 1.3 | +1.75 | 350 | thrusts reach **4.8–5.2 blocks**, narrow; heavy = wide shaft sweep | iron, string, stick (diagonal); shop (5) |
+| **Tekko-kagi** (claws) | claws (both hands) | 4 | 2.2 | — | 350 | fast rakes; **bleeding: 1 damage a second for 3 s**; **wind flow** | 3 nuggets, iron, leather |
+| **Tessen** (iron war fan) | fan | 4 | 2.0 | +0.25 | 400 | quick snaps, a spinning flourish, heavy = gust (knockback 1.6); **swung or in guard, it swats arrows and thrown weapons from the front out of the air**; blunt | iron + paper ×2 rows + stick; shop (5) |
+
+**Chakra flow** (two blades): if the wielder has the nature (a player's clan or trained natures, a
+ninja's clan), their chakra runs into the blade. It **glows** (a full-bright layer in the item
+model, in hand and in the hotbar) and every hit costs a little chakra (ninjas pay nothing):
+
+- **Katana + Lightning:** ×1.25 damage and a 5-tick stun, 2 chakra a hit (Sasuke-style).
+- **Tekko-kagi + Wind:** ×1.3 damage and 2 s longer bleeding, 1.5 chakra a hit.
+
+Without the nature, or out of chakra, they're plain steel. (The chakra blades still take
+whatever nature you have; these two take one nature but hit harder with it.)
+
+**Ninjas:** about 1 ninja in 10 now holds one of these (tantō 3%, katana 2%, yari 2%, tonfa 1.5%,
+tekko-kagi 1%, tessen 0.8%; the nodachi 1.2%, wanderers only). They fight with the blade's
+moveset like the player does. ANBU-style patrols usually carry a tantō.
+
 ## In combat mode
 
 Holding a weapon in the main hand swaps your fighting style for the weapon's moveset (your own
@@ -90,6 +129,13 @@ style comes back when you put it away). The weapon's stance replaces the style's
 | **Kunai** | kunai, chakra blades, Thunder Fangs | slash → backhand → slash → finishing stab | stab | rising cut | lunging stab | light: backhand; **heavy (S + right click): throw the kunai** |
 | **Staff** | bō staff, Gale Gunbai, kusarigama | sweep → return sweep → spinning sweep (360°) | thrust (4.2 reach) → overhead smash (knockdown) | rising sweep | lunging thrust | heavy: spinning sweep |
 | **Sword** | ninjatō, every vanilla sword, Crescent Cleaver, Sharkskin Greatsword, Reedcutter | slash → cross → finishing slash | thrust (gets 25% through guard) | rising cut | dash thrust | heavy: finishing slash |
+| **Tantō** | tantō | slash → backhand → cut → spinning flurry | stab (30% through guard) | rising cut | shadow-step stab | light: backhand |
+| **Katana** | katana | slash → cross cut → overhead finisher | iaidō drawing cut | rising cut | dash cut | heavy: overhead finisher |
+| **Greatsword** | nodachi | sweep → return sweep → full spin | overhead cleave (knockdown) | rising sweep | charging cut | heavy: spin |
+| **Tonfa** | tonfa | left → right → left hook → double hammer | spinning strike | uppercut | rush | light: left hook |
+| **Spear** | yari | thrust → thrust → lunging thrust | shaft sweep (180°) | vault | charge | heavy: sweep |
+| **Claws** | tekko-kagi | rake → back rake → rake → shred | maul | rising rake | pounce | light: back rake |
+| **Fan** | tessen | snap → snap back → spinning flourish | gust | rising snap | glide | heavy: flourish |
 
 Shuriken, senbon and the fūma always throw on right click, in combat mode too.
 
@@ -115,9 +161,15 @@ when `mobGriefing` is on too. Craters heal like jutsu craters (`noirmTerrainRege
 
 ## Art
 
-No artist yet: the 16×16 icons are drawn by `tools/weapongen/gen_weapons.py` (original pixel
-art, vanilla-like palette), long weapons along the diagonal like a vanilla sword. Thrown weapons
-are drawn with the same icons (`client/ThrownWeaponRenderer`): kunai and senbon point along their
-flight, stars spin flat. Throw animations: `noirm:throw_kunai`, `noirm:throw_shuriken` (also
-senbon), `noirm:throw_fuma`; movesets use `noirm:kunai_*`, `noirm:staff_*`, `noirm:sword_*` and
-the stances `noirm:stance_kunai|staff|sword`.
+Every weapon texture is **HD (64×64, 4×)** in the ink style of `docs/ART_STYLE.md`, drawn by
+`tools/weapongen/gen_weapons.py` (`--scale` sets the resolution; shapes are described in 16-unit
+icon space): a thick ink silhouette that still reads at 16 px in the hotbar, carved two-tone
+shading with light from the top left, forged steel with a bone-white edge line, a temper line on
+the katana and nodachi, nicks bitten out of edges, scratches and grit, cord-wrapped grips
+(diamond wraps with red or ivory showing through), spiral cloth and leather wraps, lacquer with a
+hard shine, rope and tassels, blood red as the accent. `katana_glow` and `tekko_kagi_glow` are the
+chakra-flow layers. Long weapons lie on the diagonal, tip to the top right, like a vanilla sword;
+thrown weapons are drawn with the same icons (`client/ThrownWeaponRenderer`): kunai and senbon
+point along their flight, stars spin flat. Throw animations: `noirm:throw_kunai`,
+`noirm:throw_shuriken` (also senbon), `noirm:throw_fuma`; movesets use `noirm:<moveset>_*` and the
+stances `noirm:stance_<moveset>`.

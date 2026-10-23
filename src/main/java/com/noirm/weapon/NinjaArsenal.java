@@ -71,7 +71,45 @@ public final class NinjaArsenal {
         if (roll < 0.405f) {
             return SpecialWeapons.GALE_GUNBAI.get();
         }
+        // The v0.13 blades (NinjaBlades): about 1 ninja in 10 carries one.
+        if (roll < 0.435f) {
+            return NinjaBlades.TANTO.get();
+        }
+        if (roll < 0.455f) {
+            return NinjaBlades.KATANA.get();
+        }
+        if (roll < 0.475f) {
+            return NinjaBlades.YARI.get();
+        }
+        if (roll < 0.49f) {
+            return NinjaBlades.TONFA.get();
+        }
+        if (roll < 0.50f) {
+            return NinjaBlades.TEKKO_KAGI.get();
+        }
+        if (roll < 0.508f) {
+            return NinjaBlades.TESSEN.get();
+        }
+        if (roll < 0.52f && rogue) {
+            return NinjaBlades.NODACHI.get(); // big field swords are a wanderer's weapon
+        }
         return null;
+    }
+
+    /** Share of ANBU-style patrols that carry a tantō (the rest keep their kunai or ninjatō). */
+    public static final float ANBU_TANTO_CHANCE = 0.65f;
+
+    /** An ANBU-style patrol's blade: usually the short tantō, swapped in for a kunai or ninjatō. */
+    public static void armAnbu(SparringNinja ninja, RandomSource r) {
+        if (r.nextFloat() < ANBU_TANTO_CHANCE) {
+            give(ninja, EquipmentSlot.MAINHAND, new ItemStack(NinjaBlades.TANTO.get()));
+        }
+    }
+
+    /** Does a wandering ninja holding this look like a rogue swordsman (a legendary blade or a nodachi)? */
+    public static boolean isRogueBlade(Item item) {
+        return item instanceof SpecialWeaponItem && SpecialWeapons.LEGENDARY.stream().anyMatch(l -> l.get() == item)
+                || item == NinjaBlades.NODACHI.get();
     }
 
     /** Guards and patrols: a kunai in hand and shuriken ready. */

@@ -1315,5 +1315,20 @@
   "kit.noirm.assassin": "Assassin",
   "kit.noirm.village_bands": "Village forehead protectors",
   "kit.noirm.medic": "Medic",
-  "kit.noirm.ceremonial": "Ceremonial robes"
+  "kit.noirm.ceremonial": "Ceremonial robes",
+  "item.noirm.tanto": "Tantō",
+  "item.noirm.katana": "Katana",
+  "item.noirm.nodachi": "Nodachi",
+  "item.noirm.tonfa": "Tonfa",
+  "item.noirm.yari": "Yari",
+  "item.noirm.tekko_kagi": "Tekko-kagi",
+  "item.noirm.tessen": "Tessen (Iron War Fan)",
+  "tooltip.noirm.blade.backstab": "A stab in the back cuts far deeper",
+  "tooltip.noirm.blade.crush": "Blunt blows crush the guard",
+  "tooltip.noirm.blade.bleed": "Rakes leave the target bleeding",
+  "tooltip.noirm.blade.deflect": "Swung or raised, it swats arrows and thrown weapons aside",
+  "tooltip.noirm.blade.cleave": "Every hit shoves the target back",
+  "tooltip.noirm.blade.flow.lightning": "Lightning chakra flow: if you have Lightning, the blade crackles (harder hits that numb, 2 chakra a hit)",
+  "tooltip.noirm.blade.flow.wind": "Wind chakra flow: if you have Wind, the claws hum (sharper, longer bleeding, 1.5 chakra a hit)",
+  "kit.noirm.arsenal": "Arsenal (new blades)"
 }
