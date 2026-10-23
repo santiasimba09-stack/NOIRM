@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:claws_rake_back",
+  "timing": { "windup": 2, "active": 2, "recovery": 4, "cancel_after": 2 },
+  "hit": { "damage": 2.5, "posture": 8, "range": 2.4, "arc": 110, "knockback": 0.1, "lunge": 0.25, "hitstun": 5, "hitstop": 1, "shake": 0.2 },
+  "next": { "light": "noirm:claws/rake_3", "heavy": "noirm:claws/maul" }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tanto_cut_3",
+  "timing": { "windup": 2, "active": 2, "recovery": 5, "cancel_after": 2 },
+  "hit": { "damage": 3, "posture": 8, "range": 2.5, "arc": 110, "knockback": 0.2, "lunge": 0.3, "hitstun": 6, "hitstop": 2, "shake": 0.25 },
+  "next": { "light": "noirm:tanto/flurry", "heavy": "noirm:tanto/flurry" }
+}

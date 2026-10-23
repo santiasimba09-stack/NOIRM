@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:claws_pounce",
+  "timing": { "windup": 5, "active": 2, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 16, "range": 3.2, "arc": 80, "knockback": 0.5, "lunge": 1.1, "hitstun": 10, "hitstop": 4, "shake": 0.5 },
+  "next": { "light": "noirm:claws/rake_back" }
+}

@@ -344,6 +344,11 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(sell(3, new ItemStack(com.noirm.weapon.NinjaWeapons.EXPLOSIVE_TAG.get(), 4), 8));
                 offers.add(sell(6, new ItemStack(com.noirm.weapon.NinjaWeapons.NINJATO.get()), 3));
                 offers.add(sell(4, new ItemStack(com.noirm.weapon.NinjaWeapons.BO_STAFF.get()), 3));
+                offers.add(sell(4, new ItemStack(com.noirm.weapon.NinjaBlades.TANTO.get()), 3));
+                offers.add(sell(9, new ItemStack(com.noirm.weapon.NinjaBlades.KATANA.get()), 2));
+                offers.add(sell(5, new ItemStack(com.noirm.weapon.NinjaBlades.YARI.get()), 3));
+                offers.add(sell(4, new ItemStack(com.noirm.weapon.NinjaBlades.TONFA.get()), 3));
+                offers.add(sell(5, new ItemStack(com.noirm.weapon.NinjaBlades.TESSEN.get()), 2));
                 offers.add(sell(5, new ItemStack(NoirmGear.FOREHEAD_PROTECTOR_NAVY.get()), 4));
                 offers.add(sell(8, new ItemStack(NoirmGear.FLAK_VEST.get()), 4));
                 offers.add(sell(4, new ItemStack(NoirmGear.SHINOBI_PANTS.get()), 4));

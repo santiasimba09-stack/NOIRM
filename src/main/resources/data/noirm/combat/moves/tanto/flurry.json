@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tanto_flurry",
+  "timing": { "windup": 4, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 20, "range": 2.6, "arc": 90, "knockback": 0.7, "lunge": 0.5, "hitstun": 12, "hitstop": 4, "shake": 0.5 },
+  "next": { "light": "noirm:tanto/slash" }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:spear_vault",
+  "timing": { "windup": 6, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 16, "range": 4.2, "arc": 90, "knockback": 0.1, "lift": 0.8, "hitstun": 20, "hitstop": 4, "shake": 0.6 },
+  "next": { "light": "noirm:spear/thrust" }
+}

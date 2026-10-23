@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:claws/rake",
+    "heavy": "noirm:claws/maul",
+    "launcher": "noirm:claws/rising",
+    "forward_light": "noirm:claws/pounce",
+    "forward_heavy": "noirm:claws/pounce",
+    "back_light": "noirm:claws/rake_back"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

@@ -14,7 +14,7 @@ public final class WeaponStances {
         return WeaponMoves.stanceFor(stack);
     }
 
-    /** "sword", "kunai", "staff", or null for fists and anything else. */
+    /** The moveset key ("sword", "kunai", "staff", "katana"…), or null for fists and anything else. */
     public static String kind(ItemStack stack) {
         Moveset moveset = WeaponMoves.movesetFor(stack);
         return moveset == null ? null : moveset.name().toLowerCase(java.util.Locale.ROOT);
