@@ -343,7 +343,7 @@ public final class WildNinjas {
         double r2 = radius * radius;
         for (Map.Entry<SparringNinja, Member> entry : MEMBERS.entrySet()) {
             SparringNinja n = entry.getKey();
-            if (n.level() == level && n.isAlive() && n.leaderId() == null && n.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= r2) {
+            if (n.level() == level && n.isAlive() && !n.isRemoved() && n.leaderId() == null && n.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= r2) {
                 groups.add(entry.getValue().group);
                 ninjas++;
             }

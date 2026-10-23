@@ -1278,6 +1278,7 @@
   "jutsu.noirm.katon.flame_bomb": "Elemento Fuego: Bomba de Llamas",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Elemento Fuego: Rugido de los Dragones de Fuego",
   "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena",
+  "message.noirm.ally.self_learned": "%s aprendió %s por su cuenta.",
   "help.noirm.spawn.encounter": "un grupo salvaje (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), con nivel de peligro opcional",
   "commands.noirm.encounter.unknown": "Encuentro desconocido: %s",
   "commands.noirm.encounter.spawned": "Apareció %s (%s ninjas, peligro %s)",

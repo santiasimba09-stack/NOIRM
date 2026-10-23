@@ -213,6 +213,9 @@ public final class AllyGameTests {
     public static void ninjasUseJutsuInFights(GameTestHelper helper) {
         floor(helper);
         SparringNinja caster = fighter(helper, 1.5f, 0.5f, TestClans.FIRE);
+        // Ninjas know a small personal set now: make sure this one has the two jutsu the test is about.
+        caster.teach(Noirm.id("raiton/lightning_armor"));
+        caster.teach(Noirm.id("raiton/chidori_current"));
         SparringNinja target = ninja(helper, 1.5f, 2.5f, TestClans.PLAIN);
         target.setInvulnerable(true);
         caster.setTarget(target);

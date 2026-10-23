@@ -103,6 +103,9 @@ public final class NatureTeachingGameTests {
         near(helper, Clan.TRAINED_AFFINITY, ally.jutsuAffinity(Nature.WIND), "they have wind at trained strength");
         helper.assertTrue(ally.allyState().lesson() == null, "the lesson is over");
         helper.assertTrue(ally.knownJutsu().contains(Noirm.id("futon/air_palm")), "and know its starter jutsu");
+        helper.assertTrue(ally.knownJutsu().stream().filter(id -> com.noirm.jutsu.JutsuData.get(id) != null
+                        && com.noirm.jutsu.JutsuData.get(id).nature().orElse(null) == Nature.WIND).toList()
+                        .equals(com.noirm.jutsu.JutsuData.startersFor(Nature.WIND)), "only its starters, not every wind jutsu");
         helper.assertFalse("screen.noirm.ally.teach.nature".equals(AllyPackets.blockerFor(ally, airPalm)), "wind jutsu can be taught now");
         helper.assertTrue("screen.noirm.ally.nature.why.owned".equals(NatureTeaching.blocker(teacher, ally, Nature.WIND)), "and it can't be taught twice");
         clear(helper);

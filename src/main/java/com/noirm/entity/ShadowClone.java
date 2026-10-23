@@ -43,6 +43,12 @@ public class ShadowClone extends SparringNinja {
         sealBeast(0); // a clone is never a jinchūriki of its own
     }
 
+    /** Clones copy their owner's jutsu instead of rolling a set. */
+    @Override
+    protected boolean rollsPersonalJutsu() {
+        return false;
+    }
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();

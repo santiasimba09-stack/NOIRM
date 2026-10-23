@@ -58,6 +58,12 @@ public class MasterNinja extends SparringNinja {
         setPersistenceRequired();
     }
 
+    /** A master spars with their body, not with a jutsu set. */
+    @Override
+    protected boolean rollsPersonalJutsu() {
+        return false;
+    }
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();

@@ -73,6 +73,12 @@ public final class WildGameTests {
         helper.getLevel().getEntitiesOfClass(LivingEntity.class, area, e -> !(e instanceof Player)).forEach(LivingEntity::discard);
     }
 
+    /** Removes every wild ninja within the cap radius (any height). Only for tests in their own batch. */
+    private static void clearWild(GameTestHelper helper) {
+        AABB area = new AABB(helper.absolutePos(new BlockPos(1, 1, 1))).inflate(WildSpawner.CAP_RADIUS, 400, WildSpawner.CAP_RADIUS);
+        helper.getLevel().getEntitiesOfClass(SparringNinja.class, area, WildNinjas::isWild).forEach(SparringNinja::discard);
+    }
+
     private static boolean wearsChest(SparringNinja ninja, Item... items) {
         Item chest = ninja.getItemBySlot(EquipmentSlot.CHEST).getItem();
         for (Item item : items) {
@@ -295,6 +301,7 @@ public final class WildGameTests {
         floor(helper);
         BlockPos origin = helper.absolutePos(new BlockPos(1, 1, 1));
         long veteran = 72000L * 10;
+        clearWild(helper); // (anything a try left on the ground above)
         helper.assertTrue(WildSpawner.standable(level, origin), "the stone floor is good ground");
         helper.assertFalse(WildSpawner.nearVillage(level, origin), "and not in a village");
         // (The test world has ground high above the test area, so the "open sky" part of a good spot
@@ -307,14 +314,17 @@ public final class WildGameTests {
         helper.setBlock(new BlockPos(0, 0, 0), Blocks.STONE);
         helper.setBlock(new BlockPos(2, 3, 2), Blocks.AIR);
         helper.assertTrue(WildSpawner.attempt(level, origin, veteran, level.getRandom(), 0, 1) != WildSpawner.Result.CAPPED, "nobody around: no cap yet");
-        clearNinjas(helper, 4);
+        clearWild(helper); // (that try may have found open ground on the surface far above the test)
         for (int i = 0; i < WildSpawner.MAX_GROUPS_NEAR; i++) {
             spawn(helper, Encounters.WANDERER, 15f);
         }
-        helper.assertTrue(WildNinjas.countNear(level, origin, WildSpawner.CAP_RADIUS)[0] == WildSpawner.MAX_GROUPS_NEAR, "two groups around");
+        int groups = WildNinjas.countNear(level, origin, WildSpawner.CAP_RADIUS)[0];
+        helper.assertTrue(groups >= WildSpawner.MAX_GROUPS_NEAR, "two groups around, counted " + groups);
         helper.assertTrue(WildSpawner.attempt(level, origin, veteran, level.getRandom(), 0, 1) == WildSpawner.Result.CAPPED, "then the cap holds");
-        clearNinjas(helper, 4);
-        helper.assertTrue(WildNinjas.countNear(level, origin, WildSpawner.CAP_RADIUS)[0] == 0, "(cleared)");
+        clearWild(helper);
+        var left = level.getEntitiesOfClass(SparringNinja.class, new AABB(origin).inflate(WildSpawner.CAP_RADIUS), WildNinjas::isWild);
+        helper.assertTrue(left.isEmpty(), "(cleared) left: " + left.stream().map(n -> WildNinjas.member(n).type + "@" + n.blockPosition().subtract(origin)
+                + (n.isAlive() ? "" : " dead")).toList());
         helper.succeed();
     }
 

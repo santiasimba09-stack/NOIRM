@@ -1278,6 +1278,7 @@
   "jutsu.noirm.katon.flame_bomb": "Fire Release: Flame Bomb",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Fire Release: Dragon Flame Caterwaul",
   "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge",
+  "message.noirm.ally.self_learned": "%s worked out %s on their own.",
   "help.noirm.spawn.encounter": "a wild group (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), optionally with a danger level",
   "commands.noirm.encounter.unknown": "Unknown encounter: %s",
   "commands.noirm.encounter.spawned": "%s turned up (%s ninjas, danger %s)",

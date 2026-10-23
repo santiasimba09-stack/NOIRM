@@ -340,7 +340,10 @@ public final class WildSpawner {
             ninja.setYHeadRot(yaw);
             ninja.setYBodyRot(yaw);
             float strength = danger * (leader ? type.leaderStrength() : type.memberStrength());
-            ninja.setCombatStats(stat(strength, random), stat(strength, random));
+            ninja.setCombatStats(stat(strength, random), stat(strength, random)); // (their jutsu set follows their strength)
+            if (leader && "village".equals(type.outfit())) {
+                ninja.setVillageRole("PATROL"); // a squad leader knows at least a chūnin's jutsu
+            }
             ninja.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null, null);
             Clan clan = shared != null ? shared : clans.rollForNewcomer(random);
             ninja.joinClan(clan); // their clan's natures, jutsu, look and weapons (the usual way)
