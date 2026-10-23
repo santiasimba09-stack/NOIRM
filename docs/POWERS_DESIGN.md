@@ -241,6 +241,19 @@ They roll a clan like players (so they show the world's clans, e.g. "Sparring Ni
 cast their clan's jutsu from range, sometimes escape with Substitution, and Uchiha ninjas fight
 with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninja ~ ~ ~ {Clan:"uchiha"}`.
 
+**Personal jutsu sets** (owner: "not every single jutsu of the natures"). Each ninja knows a small
+set rolled from a seed it saves (`JutsuSeed`/`JutsuSet` in its NBT), sized by strength (average
+of speed and taijutsu): genin (<20) 1–2 up to C, chūnin (20–40) 2–4 up to B, jōnin (40–100) 4–6
+up to A, Kage (100+) 6–8 with S. Trainees stay genin, guards and patrols are at least chūnin, a
+Mangekyō ninja at least jōnin. The set always holds one jutsu of the best nature (its starter if
+one fits), favours clan signatures and kekkei genkai (a signature may be one rank above the cap),
+and has Byakugan techniques only for the Byakugan. Everyone also knows Substitution; the Sharingan
+genjutsu, Mangekyō abilities and the Beast Ball come with the eye/beast. Crew mates keep their
+set, learn more when taught (a nature lesson gives only its starters), and work out one jutsu by
+themselves when one of theirs reaches the mastery level that unlocks the next (the player rule).
+Ninjas saved before this roll a set on load; crew mates keep whatever they had practised or
+equipped. Tuning: constants in `jutsu/NpcJutsuSets`.
+
 ## 8. Training (owner: the dummy, speed and taijutsu growth first)
 
 - **Taijutsu XP:** a landed NOIRM hit gives 2 (heavy +1, blocked ×0.5); a parry gives 6.
@@ -315,6 +328,7 @@ with an active Sharingan (1–3 tomoe). Choose with `/summon noirm:sparring_ninj
 - Jutsu: `data/noirm/jutsu/**.json`; behaviors in `JutsuBehaviors`; formulas in `JutsuCaster`.
 - Sharingan: constants in `Sharingan`. Byakugan: `Byakugan`, `data/noirm/jutsu/byakugan/`.
   Awakening: `AwakeningSystem`. Cloak and jinchūriki chances: `BijuSystem`.
+- NPC jutsu sets: constants in `NpcJutsuSets`.
 - Training: constants in `TrainingSystem`. Beasts: `TailedBeast`, `BeastFightGoal`,
   `data/noirm/combat/moves/beast/`, `data/noirm/jutsu/biju/`.
 

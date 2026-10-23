@@ -173,6 +173,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             tickJinchuriki();
         }
         if (!level().isClientSide()) {
+            settleJutsuSet(); // personal jutsu set (see the section at the end)
             tickCrew();
             if (!isYielded()) {
                 Threat.tick(this); // turn on whoever is hurting them most
@@ -297,6 +298,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         vitality = combatVitality();
         reserves = combatReserves();
         entityData.set(IN_CREW, true);
+        jutsuSettled = true; // a recruit keeps the jutsu they came with
         setTarget(null);
         setPose(net.minecraft.world.entity.Pose.STANDING);
         setPersistenceRequired();
@@ -355,6 +357,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 player.sendSystemMessage(Component.translatable("message.noirm.ally.mastery", getDisplayName(),
                         Component.translatable(Sharingan.jutsuKey(id)), jutsuMastery(id)).withStyle(net.minecraft.ChatFormatting.AQUA));
             }
+            onMasteryLevel(id, jutsuMastery(id)); // they may work out a new jutsu (see the section at the end)
         }
     }
 
@@ -556,22 +559,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (!level().isClientSide() && !(this instanceof ShadowClone)) com.noirm.gear.ClanOutfits.equip(this, clan, getRandom());
         natures.clear();
         natures.putAll(clan.natures());
-        jutsu.clear();
-        for (Nature nature : natures.keySet()) {
-            jutsu.addAll(JutsuData.allFor(nature)); // ninjas have mastered their clan's natures
-        }
         allyState.learned().forEach(natures::putIfAbsent); // natures their leader taught them
-        jutsu.addAll(JutsuData.startersFor(null));
-        taught.stream().filter(id -> JutsuData.get(id) != null && !jutsu.contains(id)).forEach(jutsu::add);
         entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : 0));
-        if (clan.hasSharingan() && entityData.get(SHARINGAN) >= 2 && JutsuData.get(Sharingan.GENJUTSU) != null) {
-            jutsu.add(Sharingan.GENJUTSU);
-        }
-        // Hyūga fight with the Byakugan open and know the Eight Trigrams.
+        // Hyūga fight with the Byakugan open (its techniques can be in their set).
         entityData.set(BYAKUGAN, clan.hasByakugan());
-        if (clan.hasByakugan()) {
-            Byakugan.JUTSU.stream().filter(id -> JutsuData.get(id) != null).forEach(jutsu::add);
-        }
+        rebuildJutsu(); // a personal, limited set: see the section at the end
         if (tails() > 0) {
             sealBeast(tails()); // keeps the Tailed Beast Ball
         }
@@ -683,6 +675,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     public void setMangekyoLook(int look) {
         entityData.set(MANGEKYO, look);
+        rerollJutsuIfUnsettled();
     }
 
     @Override
@@ -765,6 +758,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     public void setVillageRole(String role) {
         villageRole = role == null ? "" : role;
+        rerollJutsuIfUnsettled();
     }
 
     /** The waypoints of this resident's routine (empty for most). */
@@ -868,6 +862,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     public void setCombatStats(float speed, float taijutsu) {
         this.speed = Mth.clamp(speed, 1f, ShinobiData.MAX_STAT);
         this.taijutsu = Mth.clamp(taijutsu, 1f, ShinobiData.MAX_STAT);
+        rerollJutsuIfUnsettled();
         var movement = getAttribute(Attributes.MOVEMENT_SPEED);
         if (movement != null) {
             movement.setBaseValue(0.32 * com.noirm.player.Movement.runMultiplier(this.speed));
@@ -913,6 +908,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             }
         }
         tag.put("Ally", allyState.save());
+        saveJutsuSet(tag);
         if (leader != null) {
             tag.putUUID("Leader", leader);
             tag.putString("Order", order.name());
@@ -1015,14 +1011,17 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         String savedClan = tag.getString("Clan");
         ResourceLocation savedStyle = ResourceLocation.tryParse(tag.getString("Style"));
+        loadJutsuSet(tag);
         if (!savedClan.isEmpty() && level().getServer() != null) {
             WorldClans.get(level().getServer()).find(savedClan).ifPresent(clan -> {
                 joinClan(clan);
                 if (tag.contains("Sharingan")) {
                     entityData.set(SHARINGAN, tag.getByte("Sharingan"));
+                    rebuildJutsu(); // the saved eyes decide the Sharingan genjutsu
                 }
             });
         }
+        jutsuSettled = true; // loaded ninjas keep what they know
         if (!tag.getString("Style").isEmpty() && savedStyle != null) {
             style = savedStyle;
         }
@@ -1069,5 +1068,143 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public boolean canWaterWalk() {
         return isAlive() && !isPassenger() && !isYielded();
+    }
+
+    // ---------------------------------------------------------------- personal jutsu set (jutsu/NpcJutsuSets)
+
+    /** Seeds this ninja's set (0 = not chosen yet: from their UUID). Saved, so the set never changes by itself. */
+    private long jutsuSeed;
+    /** The jutsu they rolled (without the basics, taught jutsu, and eye/beast techniques), and for which clan. */
+    private final List<ResourceLocation> personalJutsu = new ArrayList<>();
+    private String personalClan;
+    /**
+     * Until settled, the set is re-rolled when their stats, role or eyes change (spawners set
+     * those right after creating them). Settles after {@link #JUTSU_SETTLE_TICKS}, on recruiting,
+     * and on loading.
+     */
+    private boolean jutsuSettled;
+    public static final int JUTSU_SETTLE_TICKS = 40;
+
+    /** Masters and shadow clones don't have a set of their own. */
+    protected boolean rollsPersonalJutsu() {
+        return true;
+    }
+
+    public long jutsuSeed() {
+        if (jutsuSeed == 0) {
+            jutsuSeed = getUUID().getMostSignificantBits() ^ getUUID().getLeastSignificantBits();
+            if (jutsuSeed == 0) {
+                jutsuSeed = 1;
+            }
+        }
+        return jutsuSeed;
+    }
+
+    /** Sets the seed and re-rolls the set (tests, commands). */
+    public void setJutsuSeed(long seed) {
+        jutsuSeed = seed == 0 ? 1 : seed;
+        personalClan = null;
+        if (!clanId.isEmpty()) {
+            rebuildJutsu();
+        }
+    }
+
+    /** The jutsu they rolled for themselves (not the basics, taught ones, or eye/beast techniques). */
+    public List<ResourceLocation> personalJutsu() {
+        return java.util.Collections.unmodifiableList(personalJutsu);
+    }
+
+    public boolean jutsuSettled() {
+        return jutsuSettled;
+    }
+
+    private void settleJutsuSet() {
+        if (!jutsuSettled && tickCount >= JUTSU_SETTLE_TICKS) {
+            jutsuSettled = true;
+        }
+    }
+
+    private void rerollJutsuIfUnsettled() {
+        if (!jutsuSettled && !clanId.isEmpty() && rollsPersonalJutsu() && !level().isClientSide()) {
+            personalClan = null;
+            rebuildJutsu();
+        }
+    }
+
+    /** What they know = the basics + their set + what they were taught + what their eyes and beast give. */
+    private void rebuildJutsu() {
+        jutsu.clear();
+        if (!rollsPersonalJutsu()) {
+            return;
+        }
+        if (!clanId.equals(personalClan)) {
+            personalJutsu.clear();
+            personalJutsu.addAll(com.noirm.jutsu.NpcJutsuSets.roll(this, jutsuSeed()));
+            personalClan = clanId;
+        }
+        java.util.function.Consumer<ResourceLocation> add = id -> {
+            if (JutsuData.get(id) != null && !jutsu.contains(id)) {
+                jutsu.add(id);
+            }
+        };
+        com.noirm.jutsu.NpcJutsuSets.ALWAYS_KNOWN.forEach(add);
+        personalJutsu.forEach(add);
+        taught.forEach(add);
+        if (entityData.get(SHARINGAN) >= 2) {
+            add.accept(Sharingan.GENJUTSU); // comes with the eye
+        }
+        if (tails() > 0) {
+            add.accept(BijuSystem.BEAST_BALL); // comes with the beast
+        }
+        loadout.retainAll(jutsu);
+    }
+
+    /** A crew mate's jutsu reached a new mastery level: they may work out the next one by themselves. */
+    private void onMasteryLevel(ResourceLocation id, int level) {
+        ResourceLocation learned = com.noirm.jutsu.NpcJutsuSets.selfLearn(this, id, level);
+        var player = leaderPlayer();
+        if (learned != null && player != null) {
+            player.sendSystemMessage(Component.translatable("message.noirm.ally.self_learned", getDisplayName(),
+                    Component.translatable(Sharingan.jutsuKey(learned))).withStyle(net.minecraft.ChatFormatting.AQUA));
+        }
+    }
+
+    private void saveJutsuSet(CompoundTag tag) {
+        tag.putLong("JutsuSeed", jutsuSeed());
+        if (personalClan != null) {
+            net.minecraft.nbt.ListTag set = new net.minecraft.nbt.ListTag();
+            personalJutsu.forEach(id -> set.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
+            tag.put("JutsuSet", set);
+            tag.putString("JutsuSetClan", personalClan);
+        }
+    }
+
+    /**
+     * Reads the saved set. Ninjas saved before sets existed have none: they roll one now from
+     * their UUID and strength; crew mates keep what they were taught plus whatever they had
+     * equipped or had practised (mastery XP), so nothing they actually used is lost.
+     */
+    private void loadJutsuSet(CompoundTag tag) {
+        if (tag.contains("JutsuSeed")) {
+            jutsuSeed = tag.getLong("JutsuSeed");
+        }
+        personalJutsu.clear();
+        personalClan = null;
+        if (tag.contains("JutsuSet")) {
+            tag.getList("JutsuSet", net.minecraft.nbt.Tag.TAG_STRING).forEach(t -> {
+                ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
+                if (id != null) {
+                    personalJutsu.add(id);
+                }
+            });
+            personalClan = tag.getString("JutsuSetClan");
+        } else if (leader != null) {
+            java.util.stream.Stream.concat(jutsuXp.entrySet().stream().filter(e -> e.getValue() > 0).map(java.util.Map.Entry::getKey),
+                            loadout.stream())
+                    .filter(id -> JutsuData.get(id) != null && !taught.contains(id))
+                    .distinct()
+                    .sorted(java.util.Comparator.comparing(ResourceLocation::toString))
+                    .forEach(taught::add);
+        }
     }
 }

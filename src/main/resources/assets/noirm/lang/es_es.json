@@ -1277,5 +1277,6 @@
   "jutsu.noirm.katon.majestic_destroyer_flame": "Elemento Fuego: Llama Destructora Majestuosa",
   "jutsu.noirm.katon.flame_bomb": "Elemento Fuego: Bomba de Llamas",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Elemento Fuego: Rugido de los Dragones de Fuego",
-  "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena"
+  "jutsu.noirm.raiton.chain_discharge": "Elemento Rayo: Descarga en Cadena",
+  "message.noirm.ally.self_learned": "%s aprendió %s por su cuenta."
 }

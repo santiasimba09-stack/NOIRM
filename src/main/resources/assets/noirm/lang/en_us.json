@@ -1277,5 +1277,6 @@
   "jutsu.noirm.katon.majestic_destroyer_flame": "Fire Release: Majestic Destroyer Flame",
   "jutsu.noirm.katon.flame_bomb": "Fire Release: Flame Bomb",
   "jutsu.noirm.katon.dragon_flame_caterwaul": "Fire Release: Dragon Flame Caterwaul",
-  "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge"
+  "jutsu.noirm.raiton.chain_discharge": "Lightning Release: Chain Discharge",
+  "message.noirm.ally.self_learned": "%s worked out %s on their own."
 }
