@@ -2,6 +2,28 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-23 — Ninjas with their own jutsu, wild ninjas, new blades and armor, v0.13.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's request: "make crew members and ninja NPCs not just have every single jutsu of the natures,
+make ninjas spawn naturally, in groups, solo, etc., and add more weapons and armor with the new standards".
+
+- **Personal jutsu sets** (`jutsu/NpcJutsuSets`): ninjas know 1–2 (genin), 2–4 (chūnin), 4–6 (jōnin) or
+  6–8 (Kage) jutsu by strength and role, rank-capped, always one of their best nature, clan signatures
+  favoured; seeded and saved. Crew mates grow by teaching, a finished nature lesson gives only its
+  starters, and they work out the next jutsu of a chain themselves at mastery milestones.
+- **Wild ninjas** (`world/wild/`, `data/noirm/encounters/`): lone wanderers, travellers, village squads
+  (jōnin leader in formation), clan groups, rogues, rogue bands, a rare dangerous rogue. 40–60 blocks
+  from you on open land, never in villages; danger grows with distance and play time; safe start near
+  spawn; caps and despawn rules. Gamerule `noirmWildNinjas` (%), `/noirm spawn encounter <type>`.
+- **Weapons:** all redrawn at 64×64 in the ink style, plus 7 new ones with their own movesets and 53
+  animations: tantō, katana (lightning flow), nodachi, tonfa, yari, tekko-kagi (bleed; wind flow), tessen
+  (swats projectiles). Stats in `data/noirm/weapons/stats.json`. `/noirm kit arsenal`.
+- **Armor:** 28 new HD pieces: shinobi basics, samurai plate (heavy: slower), assassin (shadow: less
+  noticed), medic coat (mending), village forehead protectors with our own marks, ceremonial robes.
+  Worn by guards, rogues, ronin; sold in shops; kits `shinobi_basics`, `samurai`, `assassin`,
+  `village_bands`, `medic`, `ceremonial`.
+- Tests: 299/299 pass twice in a row (32 new).
+
 ## 2026-10-22 — Eyes with soul, black boxers, see-through fire, v0.12.1 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 The owner's feedback on v0.12.0 ("everything is peak", except these):

@@ -49,6 +49,7 @@ Each milestone ends with something you can play and test.
 | 3.10 | **Crew overhaul + blueprint Phase 1** ✅ (v0.10.0) | Crew jobs, behaviours, Guard/Patrol posts, crew-wide orders (K), a lesson queue and "Teach all"; meditation and nature energy; the owner's blueprint (`BLUEPRINT.md`) Phase 1: CTL/WIL stats, perception focus and the just-frame parry, the casting engine (seal phase, 80% movement, interruption and fizzle, spam fall-off, elemental clashes). Next: the owner decides character creation and the systems the blueprint would rebuild. |
 | 3.11 | **Blueprint Phase 2** ✅ (v0.11.0) | Character creation on first join (looks, height, clan rolls); movement feel (slide, pivot, heavier gravity, landing recovery); no melee while sealing; gore (damage marks, severed limbs that burn away). |
 | 3.12 | **Our own art** ✅ (v0.12.0) | HD 4× skins and gear in our own "raw and tough" style, start in underwear, gore v2 (blood everywhere), fire and lightning redone with 5 new jutsu. Next ideas from the owner: Wood Release at epic scale (`ART_STYLE.md`), detailed tailed beasts. |
+| 3.13 | **A living world of ninjas** ✅ (v0.13.0) | Personal jutsu sets for ninjas and crew, wild ninjas (solo, pairs, squads, rogues), 7 new blades and HD weapon art, 28 new HD armor pieces. |
 | later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
 
 ## Art without an artist

@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-22 (eyes, boxers, see-through fire, v0.12.1) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-22 (own jutsu sets, wild ninjas, blades, armor, v0.13.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,7 +34,14 @@ The villages (v0.7.0):
 
 ## In progress
 
-Waiting on the owner's playtest of v0.12.1 (v0.12.0 approved: "everything is peak"; v0.12.1 fixes the eyes, boxers and fire see-through).
+Waiting on the owner's playtest of v0.13.0.
+
+| v0.13.0 | State |
+|---|---|
+| **Personal jutsu sets** for ninjas and crew (by strength/role) | ✅ tested |
+| **Wild ninjas** (wanderers, travellers, squads, clan groups, rogues) | ✅ tested; checked in client (`r16-encounter-*`) |
+| **Weapons:** HD art + tantō, katana, nodachi, tonfa, yari, tekko-kagi, tessen | ✅ tested; checked in client (`r16-weapons-*`) |
+| **Armor:** 28 new HD pieces (basics, samurai, assassin, medic, village, ceremonial) | ✅ tested; checked in client (`r16-armor-*`) |
 
 | v0.12.0: our own art | State |
 |---|---|
@@ -89,6 +96,7 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
 | `com.noirm.creator` | Character creation: `CharacterCreator` (rules, rolls, holding newcomers), `PlayerLook` (part ids, colours, height), `GeneticRoll`, `CreatorData`, `CreatorPackets`, `CreatorEvents`; client side `CreatorScreen`, `PlayerSkins` (skin from parts), `HairVolumeLayer` |
 | `com.noirm.movement` | `MovementFeel` (slide, pivot, gravity, landing recovery; constants at the top); client side `MovementFeelClient` |
 | `com.noirm.gore` | `Gore` (marks, severing, constants), `GoreMarks`, `GorePackets`, `SeveredLimb`; client side `GoreMarksLayer`, `SeveredLimbRenderer` |
+| `com.noirm.world.wild` | Wild ninjas: `EncounterType`/`Encounters` (data in `data/noirm/encounters/`), `WildSpawner` (when/where, caps, danger), `WildNinjas` (groups, despawn), `WildTravelGoal`, `WildTargetGoal` |
 | `com.noirm.senjutsu` | `Meditation` (rules and constants; `isMeditating`, `natureEnergy`), `MeditationData` (saved), `MeditationEvents` (ticking, what ends it) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
@@ -194,6 +202,14 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
 ## Open questions for the owner
+
+- **Jutsu sets:** strength tiers 20/40/100 right? Weak Hyūga can't know Rotation (A rank): OK? Crew
+  self-learning (one jutsu per mastery milestone) too fast or slow?
+- **Wild ninjas:** about one group every 1.5 minutes, max 2 groups / 8 ninjas near you: busier or quieter?
+  Should squads defend you against rogues that attack you?
+- **Weapons:** the yari and nodachi look short in hand (custom long models later?). More chakra-flow
+  weapons (fire nodachi)? Balance of the nodachi, tantō back-stab, claw bleed.
+- **Armor:** full samurai plate −12% speed right? Assassin shadow only while sneaking? Medics as a village role?
 
 - **Art:** do the new eyes have soul now? Names "Steady"/"Fierce" OK? Byakugan glow softer?
   Gear wear level (dirt/fraying) right, also on clean robes? Folds deep enough? Item icons stay 16×16?
