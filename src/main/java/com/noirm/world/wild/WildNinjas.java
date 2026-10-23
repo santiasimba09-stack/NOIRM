@@ -125,6 +125,7 @@ public final class WildNinjas {
     /** Makes {@code ninja} a wild ninja (before it's added to the world). */
     public static void mark(SparringNinja ninja, Member member) {
         ninja.getPersistentData().put(TAG, member.save());
+        member.lastSeen = ninja.level().getGameTime(); // (just arrived: not "unseen for ages")
         register(ninja, member);
     }
 

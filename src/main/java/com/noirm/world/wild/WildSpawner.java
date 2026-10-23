@@ -73,7 +73,7 @@ public final class WildSpawner {
     // ---------------------------------------------------------------- where
     /** A group turns up this far from the player (blocks). */
     public static final int MIN_DISTANCE = 40;
-    public static final int MAX_DISTANCE = 72;
+    public static final int MAX_DISTANCE = 60;
     /** Tries to find a spot per attempt. */
     public static final int SPOT_TRIES = 8;
     /** Caps around each player. */
@@ -153,9 +153,7 @@ public final class WildSpawner {
             NEXT_TRY.put(player.getUUID(), now + interval(rate));
             if (level.getRandom().nextFloat() < chance(rate)) {
                 Result result = attempt(level, player.blockPosition(), playedTicks(player), level.getRandom(), MIN_DISTANCE, MAX_DISTANCE);
-                if (result == Result.SPAWNED) {
-                    Noirm.LOGGER.debug("Wild ninjas turned up near {}", player.getName().getString());
-                }
+                Noirm.LOGGER.debug("Wild ninja try near {}: {}", player.getName().getString(), result);
             }
         }
     }
@@ -194,7 +192,12 @@ public final class WildSpawner {
         if (id == null) {
             return Result.NO_ENCOUNTER;
         }
-        return spawn(level, id, spot, danger(level, spot, playedTicks), random).isEmpty() ? Result.NO_SPOT : Result.SPAWNED;
+        List<SparringNinja> group = spawn(level, id, spot, danger(level, spot, playedTicks), random);
+        if (group.isEmpty()) {
+            return Result.NO_SPOT;
+        }
+        Noirm.LOGGER.info("Wild ninjas turned up: {} ({} ninjas) at {}", id, group.size(), spot.toShortString());
+        return Result.SPAWNED;
     }
 
     // ---------------------------------------------------------------- danger and picking
