@@ -31,6 +31,11 @@ public class GearItem extends ArmorItem {
             UUID.fromString("7a1e4c2b-90d3-4f5e-8b61-2c9d0e3f4a51"), UUID.fromString("7a1e4c2b-90d3-4f5e-8b61-2c9d0e3f4a52"),
             UUID.fromString("7a1e4c2b-90d3-4f5e-8b61-2c9d0e3f4a53"), UUID.fromString("7a1e4c2b-90d3-4f5e-8b61-2c9d0e3f4a54")};
 
+    /** One id per armour type for the HEAVY perk's slowness. */
+    private static final UUID[] HEAVY_IDS = {
+            UUID.fromString("3c5b9e1d-6a2f-4d70-b8c4-1e2f3a4b5c61"), UUID.fromString("3c5b9e1d-6a2f-4d70-b8c4-1e2f3a4b5c62"),
+            UUID.fromString("3c5b9e1d-6a2f-4d70-b8c4-1e2f3a4b5c63"), UUID.fromString("3c5b9e1d-6a2f-4d70-b8c4-1e2f3a4b5c64")};
+
     private final String texture;
     private final GearPerk perk;
     private final float perkPower;
@@ -40,7 +45,7 @@ public class GearItem extends ArmorItem {
         this(material, type, texture, GearPerk.NONE, 0f, properties);
     }
 
-    /** {@code perkPower}: for FISTS, the attack damage it adds. */
+    /** {@code perkPower}: for FISTS, the attack damage it adds; for HEAVY, the share of speed it takes away. */
     public GearItem(ArmorMaterial material, Type type, String texture, GearPerk perk, float perkPower, Properties properties) {
         super(material, type, properties);
         this.texture = texture;
@@ -70,14 +75,19 @@ public class GearItem extends ArmorItem {
     @SuppressWarnings("deprecation")
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
         Multimap<Attribute, AttributeModifier> base = super.getDefaultAttributeModifiers(slot);
-        if (perk != GearPerk.FISTS || slot != getEquipmentSlot() || perkPower <= 0) {
+        if ((perk != GearPerk.FISTS && perk != GearPerk.HEAVY) || slot != getEquipmentSlot() || perkPower <= 0) {
             return base;
         }
         if (withPerk == null) {
-            withPerk = ImmutableMultimap.<Attribute, AttributeModifier>builder().putAll(base)
-                    .put(Attributes.ATTACK_DAMAGE, new AttributeModifier(FIST_IDS[getType().ordinal()], "Gear fists",
-                            perkPower, AttributeModifier.Operation.ADDITION))
-                    .build();
+            var builder = ImmutableMultimap.<Attribute, AttributeModifier>builder().putAll(base);
+            if (perk == GearPerk.FISTS) {
+                builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(FIST_IDS[getType().ordinal()], "Gear fists",
+                        perkPower, AttributeModifier.Operation.ADDITION));
+            } else {
+                builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(HEAVY_IDS[getType().ordinal()], "Heavy gear",
+                        -perkPower, AttributeModifier.Operation.MULTIPLY_BASE));
+            }
+            withPerk = builder.build();
         }
         return withPerk;
     }

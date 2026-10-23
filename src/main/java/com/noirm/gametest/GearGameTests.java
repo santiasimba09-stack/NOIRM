@@ -149,6 +149,9 @@ public final class GearGameTests {
     public static void gearTexturesAreHd(GameTestHelper helper) {
         int w = 64 * GEAR_TEXTURE_SCALE;
         int h = 32 * GEAR_TEXTURE_SCALE;
+        // The armor wave (round 16) is part of the check: 28 more pieces, all HD.
+        helper.assertTrue(NoirmGear.armorWave().size() >= 28 && NoirmGear.ALL.containsAll(NoirmGear.armorWave()),
+                "the armor wave's pieces are registered: " + NoirmGear.armorWave().size());
         for (RegistryObject<Item> piece : NoirmGear.ALL) {
             GearItem gear = (GearItem) piece.get();
             int layer = gear.getType() == ArmorItem.Type.LEGGINGS ? 2 : 1;

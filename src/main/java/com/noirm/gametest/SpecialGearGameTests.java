@@ -135,10 +135,12 @@ public final class SpecialGearGameTests {
             if (chest == NoirmGear.ROGUE_CLOAK.get()) {
                 rogueCloaks++;
             } else {
-                helper.assertTrue(chest == NoirmGear.TRAVEL_CLOAK.get(), "rogues wear cloaks, got " + chest);
+                helper.assertTrue(chest == NoirmGear.TRAVEL_CLOAK.get() || chest == NoirmGear.TATTERED_CLOAK.get()
+                        || chest == NoirmGear.ASSASSIN_SUIT.get() || chest == NoirmGear.BANDOLIER.get(),
+                        "rogues wear cloaks (or dress as assassins), got " + chest);
             }
         }
-        helper.assertTrue(rogueCloaks > 40, "mostly the rogue cloak: " + rogueCloaks);
+        helper.assertTrue(rogueCloaks > 30, "often the rogue cloak (about 44%): " + rogueCloaks);
         // Legendary blades: only rogues, and rarely.
         int legends = 0;
         for (int i = 0; i < 6000; i++) {

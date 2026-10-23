@@ -98,6 +98,52 @@ public final class NoirmGear {
     public static final RegistryObject<Item> WARAJI = piece("waraji", GearMaterial.WRAPS, ArmorItem.Type.BOOTS, "waraji", GearPerk.SOFT_STEP, 0f);
     public static final RegistryObject<Item> SHIN_GUARDS = piece("shin_guards", GearMaterial.STEEL_GUARD, ArmorItem.Type.BOOTS, "shin_guards");
 
+    // ---- The third set, "armor wave" (round 16; textures: tools/gear/armor_wave.py) ----
+    // Shinobi basics
+    public static final RegistryObject<Item> MESH_SHIRT = piece("mesh_shirt", GearMaterial.MESH, ArmorItem.Type.CHESTPLATE, "mesh_shirt");
+    public static final RegistryObject<Item> TRAINING_SHIRT = piece("training_shirt", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "training_shirt");
+    public static final RegistryObject<Item> HIGH_COLLAR_JACKET = piece("high_collar_jacket", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "high_collar_jacket");
+    public static final RegistryObject<Item> SARASHI_WRAPS = piece("sarashi_wraps", GearMaterial.WRAPS, ArmorItem.Type.CHESTPLATE, "sarashi_wraps", GearPerk.FISTS, GearPerks.SARASHI_DAMAGE);
+    public static final RegistryObject<Item> BANDAGE_LEGGINGS = piece("bandage_leggings", GearMaterial.WRAPS, ArmorItem.Type.LEGGINGS, "bandage_leggings");
+    public static final RegistryObject<Item> JIKA_TABI = piece("jika_tabi", GearMaterial.CLOTH, ArmorItem.Type.BOOTS, "jika_tabi", GearPerk.SOFT_STEP, 0f);
+    public static final RegistryObject<Item> JIKA_TABI_ASH = piece("jika_tabi_ash", GearMaterial.CLOTH, ArmorItem.Type.BOOTS, "jika_tabi_ash", GearPerk.SOFT_STEP, 0f);
+    public static final RegistryObject<Item> WRAPPED_SANDALS = piece("wrapped_sandals", GearMaterial.WRAPS, ArmorItem.Type.BOOTS, "wrapped_sandals", GearPerk.SOFT_STEP, 0f);
+    // Heavy armour (samurai-style): tough, but every piece slows you a little
+    public static final RegistryObject<Item> SAMURAI_CUIRASS = heavy("samurai_cuirass", ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> SODE_PAULDRONS = piece("sode_pauldrons", GearMaterial.SAMURAI, ArmorItem.Type.CHESTPLATE, "sode_pauldrons", GearPerk.HEAVY, GearPerks.HEAVY_SLOW * 0.5f);
+    public static final RegistryObject<Item> KABUTO = heavy("kabuto", ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> KUSAZURI = heavy("kusazuri", ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> SAMURAI_GREAVES = heavy("samurai_greaves", ArmorItem.Type.BOOTS);
+    // Rogues and assassins
+    public static final RegistryObject<Item> TATTERED_HOOD = mask("tattered_hood", GearMaterial.CLOTH);
+    public static final RegistryObject<Item> TATTERED_CLOAK = piece("tattered_cloak", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "tattered_cloak", GearPerk.SWIFT, 0f);
+    public static final RegistryObject<Item> HALF_MASK = mask("half_mask", GearMaterial.STEEL_GUARD);
+    public static final RegistryObject<Item> ASSASSIN_SUIT = piece("assassin_suit", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "assassin_suit", GearPerk.SHADOW, 0f);
+    public static final RegistryObject<Item> ASSASSIN_PANTS = piece("assassin_pants", GearMaterial.PADDED, ArmorItem.Type.LEGGINGS, "assassin_pants", GearPerk.SHADOW, 0f);
+    public static final RegistryObject<Item> BANDOLIER = piece("bandolier", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "bandolier");
+    // Village forehead protectors (our own marks): Mist, Cloud, Stone, Sand looks
+    public static final RegistryObject<Item> FOREHEAD_PROTECTOR_MIST = piece("forehead_protector_mist", GearMaterial.FOREHEAD_PROTECTOR, ArmorItem.Type.HELMET, "forehead_protector_mist");
+    public static final RegistryObject<Item> FOREHEAD_PROTECTOR_CLOUD = piece("forehead_protector_cloud", GearMaterial.FOREHEAD_PROTECTOR, ArmorItem.Type.HELMET, "forehead_protector_cloud");
+    public static final RegistryObject<Item> FOREHEAD_PROTECTOR_STONE = piece("forehead_protector_stone", GearMaterial.FOREHEAD_PROTECTOR, ArmorItem.Type.HELMET, "forehead_protector_stone");
+    public static final RegistryObject<Item> FOREHEAD_PROTECTOR_SAND = piece("forehead_protector_sand", GearMaterial.FOREHEAD_PROTECTOR, ArmorItem.Type.HELMET, "forehead_protector_sand");
+    // Medic
+    public static final RegistryObject<Item> MEDIC_COAT = piece("medic_coat", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "medic_coat", GearPerk.MENDING, 0f);
+    // Ceremonial
+    public static final RegistryObject<Item> FORMAL_ROBE = piece("formal_robe", GearMaterial.ROBE, ArmorItem.Type.CHESTPLATE, "formal_robe");
+    public static final RegistryObject<Item> FORMAL_ROBE_HEM = piece("formal_robe_hem", GearMaterial.ROBE, ArmorItem.Type.LEGGINGS, "formal_robe");
+    public static final RegistryObject<Item> BATTLE_KIMONO = piece("battle_kimono", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "battle_kimono");
+    public static final RegistryObject<Item> BATTLE_HAKAMA = piece("battle_hakama", GearMaterial.PADDED, ArmorItem.Type.LEGGINGS, "battle_kimono");
+
+    /** The armor wave's pieces (round 16), in creative-tab order. */
+    public static List<RegistryObject<Item>> armorWave() {
+        return ALL.subList(ALL.indexOf(MESH_SHIRT), ALL.size());
+    }
+
+    /** The samurai-style set (helmet, chest, legs, feet). */
+    public static List<RegistryObject<Item>> samuraiSet() {
+        return List.of(KABUTO, SAMURAI_CUIRASS, KUSAZURI, SAMURAI_GREAVES);
+    }
+
     /** The animal masks ANBU-style patrols wear (the first one is the original ANBU mask). */
     public static List<RegistryObject<Item>> animalMasks() {
         return List.of(ANBU_MASK, MASK_WOLF, MASK_HAWK, MASK_BOAR, MASK_CRANE);
@@ -117,6 +163,10 @@ public final class NoirmGear {
 
     private static RegistryObject<Item> mask(String id, GearMaterial material) {
         return piece(id, material, ArmorItem.Type.HELMET, id, GearPerk.HIDE_NAME, 0f);
+    }
+
+    private static RegistryObject<Item> heavy(String id, ArmorItem.Type type) {
+        return piece(id, GearMaterial.SAMURAI, type, id, GearPerk.HEAVY, GearPerks.HEAVY_SLOW);
     }
 
     public static void register(IEventBus modBus) {

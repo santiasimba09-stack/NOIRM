@@ -49,7 +49,13 @@ public enum GearMaterial implements ArmorMaterial {
             () -> Ingredient.of(Items.IRON_INGOT)),
     /** The Kage's robe and hat: fine cloth woven with chakra thread, very enchantable. */
     ROBE("robe", 20, new int[]{1, 3, 4, 2}, 25, SoundEvents.ARMOR_EQUIP_LEATHER, 0.5f, 0f,
-            () -> Ingredient.of(Items.WHITE_WOOL));
+            () -> Ingredient.of(Items.WHITE_WOOL)),
+    /** Fine steel mesh under the clothes: a little armour and toughness, almost no weight. */
+    MESH("mesh", 14, new int[]{1, 2, 3, 1}, 12, SoundEvents.ARMOR_EQUIP_CHAIN, 1f, 0f,
+            () -> Ingredient.of(Items.CHAIN)),
+    /** Samurai-style lacquered plate: iron-strong and tough, but heavy (its pieces carry the HEAVY perk). */
+    SAMURAI("samurai", 22, new int[]{2, 5, 6, 3}, 9, SoundEvents.ARMOR_EQUIP_IRON, 1.5f, 0.05f,
+            () -> Ingredient.of(Items.IRON_INGOT));
 
     /** Vanilla's per-piece durability base, {boots, leggings, chest, helmet}. */
     private static final int[] DURABILITY = {13, 15, 16, 11};
