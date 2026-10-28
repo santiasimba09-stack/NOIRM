@@ -92,6 +92,25 @@ public enum PlayerRank {
         return ShinobiCapability.get(player).map(d -> d.career().rank()).orElse(ACADEMY);
     }
 
+    /**
+     * The rank a jutsu of rank letter {@code jutsuRank} needs to be learned (wired into
+     * {@code nature.JutsuLearning.extraRankGate}): B needs chūnin, A jōnin, S ANBU; E–C anyone.
+     */
+    public static PlayerRank forJutsu(String jutsuRank) {
+        return switch (jutsuRank == null ? "" : jutsuRank.toUpperCase(java.util.Locale.ROOT)) {
+            case "B" -> CHUNIN;
+            case "A" -> JONIN;
+            case "S" -> ANBU;
+            default -> ACADEMY;
+        };
+    }
+
+    /** Why {@code player}'s rank is too low for a jutsu of rank {@code jutsuRank} (null if it isn't). */
+    public static Component jutsuGate(Player player, String jutsuRank) {
+        PlayerRank need = forJutsu(jutsuRank);
+        return atLeast(player, need) ? null : Component.translatable("rank.noirm.why.jutsu", jutsuRank, need.title());
+    }
+
     /** Whether {@code player} is {@code rank} or higher: the gate for missions, shop items and masters. */
     public static boolean atLeast(Player player, PlayerRank rank) {
         return of(player).atLeast(rank);

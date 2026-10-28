@@ -132,6 +132,44 @@ walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **
 4. To try every jutsu: `/noirm nature add <nature>` for each nature you want, then
    `/noirm jutsu learn all`, and equip with **J**.
 
+## Player guide: your first natures and jutsu, and how to get more
+
+**What you start with.** Your clan gives you one or two natures (fire, water, wind, earth,
+lightning…) and their first jutsu, plus Substitution and Body Flicker. Press **J** to see them
+and put up to 4 in your loadout. Keys **1–4** cast them in combat mode (**R**).
+
+**More jutsu of natures you have:**
+1. **Use them.** Every cast gives mastery (★). At ★2 a jutsu teaches the next one of its line
+   (the card shows "Master X to ★2").
+2. **Jutsu scrolls** (rank C, B, A, S): found in chests (dungeons, temples, ruins, camps,
+   shipwrecks), dropped now and then by ninjas you beat, and sold in village scroll shops (C and
+   B). Right-click to read one: you learn a jutsu of that rank **of a nature you own**. Bigger
+   ranks need more chakra: B needs Reserves 15, A 25, S 40. If nothing fits yet, you keep it.
+3. **Masters** teach their own techniques after you pass their test (Might Guy: the Eight Gates).
+
+**A new nature (it takes days):**
+1. **Find your hidden affinity.** Craft **Chakra Paper** (2 paper + 1 lapis lazuli = 2) or buy
+   it in a scroll shop. Hold right-click: the paper reacts to your chakra (it **splits** for wind,
+   **burns** for fire, **gets wet** for water, **crinkles** for lightning, **turns to dust** for
+   earth). A second, faint reaction shows your **hidden** nature(s): those train **twice as fast**.
+2. **Do the drill.** Meditate (**N**) in the nature's setting and a bar under the crosshair fills:
+   - Wind: hold a **leaf block** · Fire: next to a **flame** (campfire, lit furnace, candle, fire, lava)
+   - Water: next to **running water** or out in the **rain** · Lightning: next to a **lightning rod**
+     or under the sky in a **thunderstorm** · Earth: on bare **stone** with stone all around (a cave)
+   
+   A drill is **3 in-game days of meditation** (about an hour of play), **1.5 days** for a hidden
+   nature. Progress is kept when you stop.
+3. **Go faster.** Study near a **crew mate** who has the nature (×1.5) or a **master** who has it
+   (×2): they even replace the setting. A **Nature Scroll** (rare: chests, beaten ninjas, one per
+   scroll shop) puts a quarter of the drill behind you (never the very end).
+4. **Done:** the nature is yours at trained strength (weaker than a clan nature) with its first
+   jutsu. Then the mastery chains and jutsu scrolls open its other jutsu, and two natures can mix
+   into a kekkei genkai in **J → Nature Tree**.
+
+`/noirm drills` lists your drills, their progress and what each needs. Testing shortcuts (cheats):
+`/noirm kit scrolls` (paper, every scroll, leaves), `/noirm nature hidden earth`,
+`/noirm nature train wind 90` (then meditate holding a leaf to finish it).
+
 **Stats:** `/noirm stat vitality 30` (more hearts), `/noirm stat reserves 30` (double chakra).
 **Eyes vs mobs:** `/noirm sharingan 3`, **G**, and let a skeleton shoot at you.
 

@@ -72,7 +72,10 @@ public final class CommandGuide {
                 .add("natures", "/noirm nature list", "/noirm nature list", true)
                 .add("nature_add", "/noirm nature add <nature>", "/noirm nature add water", true)
                 .add("nature_remove", "/noirm nature remove <nature>", "/noirm nature remove water", true)
-                .add("nature_all", "/noirm nature all", "/noirm nature all", true);
+                .add("nature_all", "/noirm nature all", "/noirm nature all", true)
+                .add("drills", "/noirm drills", "/noirm drills", false)
+                .add("nature_train", "/noirm nature train <nature> <0-100>", "/noirm nature train wind 90", true)
+                .add("nature_hidden", "/noirm nature hidden <nature>", "/noirm nature hidden earth", true);
         section("jutsu")
                 .add("list", "/noirm jutsu list", "/noirm jutsu list", false)
                 .add("loadout", "/noirm jutsu loadout", "/noirm jutsu loadout", false)

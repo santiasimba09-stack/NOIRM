@@ -1,0 +1,16 @@
+{
+  "wear": false,
+  "items": [
+    { "item": "noirm:chakra_paper", "count": 4 },
+    { "item": "noirm:nature_scroll_fire" },
+    { "item": "noirm:nature_scroll_water" },
+    { "item": "noirm:nature_scroll_wind" },
+    { "item": "noirm:nature_scroll_earth" },
+    { "item": "noirm:nature_scroll_lightning" },
+    { "item": "noirm:jutsu_scroll_c", "count": 2 },
+    { "item": "noirm:jutsu_scroll_b", "count": 2 },
+    { "item": "noirm:jutsu_scroll_a" },
+    { "item": "noirm:jutsu_scroll_s" },
+    { "item": "minecraft:oak_leaves", "count": 4 }
+  ]
+}

@@ -52,6 +52,8 @@ public final class CareerItems {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         modBus.addListener(CareerItems::creativeTabs);
+        // Jutsu scrolls and other learning: B needs chūnin, A jōnin, S ANBU.
+        com.noirm.nature.JutsuLearning.extraRankGate = PlayerRank::jutsuGate;
     }
 
     private static void creativeTabs(BuildCreativeModeTabContentsEvent event) {

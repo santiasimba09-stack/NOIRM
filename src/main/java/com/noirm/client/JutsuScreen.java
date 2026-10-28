@@ -338,6 +338,10 @@ public class JutsuScreen extends Screen {
             y = wrap(g, Component.translatable("screen.noirm.jutsu.details.mastery", stars(known.mastery())), x, y, w, GOLD) + 1;
         } else {
             y = wrap(g, Component.literal("🔒 " + unlockText(info)), x, y, w, 0xFFB07070) + 1;
+            Component scroll = ClientNatureTraining.scrollHint(info); // other routes: jutsu scrolls
+            if (scroll != null) {
+                y = wrap(g, scroll, x, y, w, 0xFFC8A870) + 1;
+            }
         }
         // What the next mastery level unlocks.
         for (JutsuCatalogPacket.Entry other : ClientJutsuCatalog.all()) {
@@ -446,6 +450,13 @@ public class JutsuScreen extends Screen {
             g.drawCenteredString(font, nature.kanji(), Math.round(p[0]), Math.round(p[1]) - 4, textColor);
             if (s == NatureSystem.Status.AVAILABLE) {
                 g.drawCenteredString(font, "+", Math.round(p[0]), Math.round(p[1]) - r - 9, GOLD);
+            } else if (s == NatureSystem.Status.LOCKED && nature.isBasic()) {
+                // A drill under way: its percent; a hidden affinity (shown by a chakra paper): a star.
+                int pct = Math.round(ClientNatureTraining.share(nature) * 100);
+                String mark = (ClientNatureTraining.isHidden(nature) ? "✧" : "") + (pct > 0 ? pct + "%" : "");
+                if (!mark.isEmpty()) {
+                    g.drawCenteredString(font, mark, Math.round(p[0]), Math.round(p[1]) + r + 2, 0xFF000000 | nature.color());
+                }
             }
             if (hover) {
                 treeHovered = nature;
@@ -461,7 +472,9 @@ public class JutsuScreen extends Screen {
         if (shown == null) {
             wrap(g, Component.translatable("screen.noirm.tree.hint"), sx + 5, y, SIDEBAR - 10, DIM);
         } else {
+            g.enableScissor(sx + 1, top + 1, sx + SIDEBAR - 1, top + ch - 14); // long jutsu lists stop above the legend
             y = drawNatureDetails(g, shown, status.get(shown), owned, best, sx + 5, y, SIDEBAR - 10);
+            g.disableScissor();
             if (status.get(shown) == NatureSystem.Status.AVAILABLE && shown == treeSelected) {
                 int bw = SIDEBAR - 10;
                 int by = Math.min(y + 4, top + ch - 20);
@@ -488,7 +501,10 @@ public class JutsuScreen extends Screen {
         y = wrap(g, Component.translatable("screen.noirm.tree.status." + status.name().toLowerCase(Locale.ROOT)), x, y, w, statusColor) + 3;
         if (nature.isBasic()) {
             if (status != NatureSystem.Status.OWNED) {
-                y = wrap(g, Component.translatable("screen.noirm.tree.basic_locked"), x, y, w, DIM) + 3;
+                for (Component line : ClientNatureTraining.drillLines(nature)) { // the drill, its progress, other routes
+                    y = wrap(g, line, x, y, w, DIM) + 1;
+                }
+                y += 2;
             }
         } else if (status != NatureSystem.Status.OWNED) {
             y = wrap(g, Component.translatable("screen.noirm.tree.requires"), x, y, w, 0xFFCCCCCC) + 1;
