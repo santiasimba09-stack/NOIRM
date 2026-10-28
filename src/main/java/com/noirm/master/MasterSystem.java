@@ -68,7 +68,7 @@ public final class MasterSystem {
         if (def == null || data == null) {
             return Component.translatable("screen.noirm.master.why.unknown");
         }
-        if (master.isSparring()) {
+        if (master.isSparring() || com.noirm.senjutsu.SageTrial.trial(master) != null) {
             return Component.translatable("screen.noirm.master.why.busy");
         }
         if (data.getTaijutsu() < def.test().minTaijutsu()) {
@@ -88,6 +88,9 @@ public final class MasterSystem {
             return false;
         }
         MasterDefinition def = master.definition();
+        if (com.noirm.senjutsu.SageTrial.isTrialMaster(master)) {
+            return com.noirm.senjutsu.SageTrial.start(player, master); // a test of stillness, not a spar
+        }
         CombatSystem.setCombatMode(player, true); // a spar is a fight: hands up
         master.beginSpar(player);
         player.sendSystemMessage(Component.translatable("message.noirm.master.spar_start", master.getDisplayName(),
@@ -179,6 +182,9 @@ public final class MasterSystem {
         }
         if (data.getSpeed() < lesson.speed()) {
             return Component.translatable("screen.noirm.master.why.speed", fmt(data.getSpeed()), fmt(lesson.speed()));
+        }
+        if (data.getControl() < lesson.control()) {
+            return Component.translatable("screen.noirm.master.why.control", fmt(data.getControl()), fmt(lesson.control()));
         }
         for (var practice : lesson.mastery().entrySet()) {
             if (data.jutsu().masteryLevel(practice.getKey()) < practice.getValue()) {

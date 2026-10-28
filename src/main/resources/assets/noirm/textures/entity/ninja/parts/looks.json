@@ -1504,6 +1504,104 @@
      1
     ]
    ]
+  },
+  "sage_hermit": {
+   "skin": [
+    [
+     "#a87250",
+     1
+    ]
+   ],
+   "hair_style": [
+    [
+     "long",
+     1
+    ]
+   ],
+   "hair_color": [
+    [
+     "#d6d2c8",
+     1
+    ]
+   ],
+   "eyes": [
+    [
+     "narrow",
+     1
+    ]
+   ],
+   "eye_color": [
+    [
+     "#7a6a2a",
+     1
+    ]
+   ],
+   "brows": [
+    [
+     "thick",
+     1
+    ]
+   ],
+   "shirt": [
+    [
+     "wrap",
+     1
+    ]
+   ],
+   "shirt_color": [
+    [
+     "#3a4a2a",
+     1
+    ]
+   ],
+   "pants": [
+    [
+     "long",
+     1
+    ]
+   ],
+   "pants_color": [
+    [
+     "#3a3d46",
+     1
+    ]
+   ],
+   "wraps": [
+    [
+     3,
+     1
+    ]
+   ],
+   "mark": [
+    [
+     "war_paint",
+     1
+    ]
+   ],
+   "accessory": [
+    [
+     "none",
+     1
+    ]
+   ],
+   "accessory_color": [
+    [
+     "#1f2638",
+     3
+    ],
+    [
+     "#22252b",
+     3
+    ],
+    [
+     "#3a3f48",
+     2
+    ],
+    [
+     "#2c2330",
+     1
+    ]
+   ]
   }
  },
  "family": {

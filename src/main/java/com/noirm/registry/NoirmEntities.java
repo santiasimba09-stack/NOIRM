@@ -87,6 +87,15 @@ public final class NoirmEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Noirm.id("severed_limb").toString()));
 
+    /** A restless spirit the Stone Hermit's test sends at a meditating student (senjutsu). Never saved. */
+    public static final RegistryObject<EntityType<com.noirm.senjutsu.NatureSpirit>> NATURE_SPIRIT = ENTITY_TYPES.register("nature_spirit",
+            () -> EntityType.Builder.<com.noirm.senjutsu.NatureSpirit>of(com.noirm.senjutsu.NatureSpirit::new, MobCategory.MONSTER)
+                    .sized(0.4f, 0.8f)
+                    .noSave()
+                    .fireImmune()
+                    .clientTrackingRange(8)
+                    .build(Noirm.id("nature_spirit").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -101,5 +110,6 @@ public final class NoirmEntities {
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
         event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());
         event.put(VILLAGE_MERCHANT.get(), com.noirm.entity.VillageMerchant.createAttributes().build());
+        event.put(NATURE_SPIRIT.get(), com.noirm.senjutsu.NatureSpirit.createAttributes().build());
     }
 }

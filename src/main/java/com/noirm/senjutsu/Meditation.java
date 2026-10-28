@@ -87,7 +87,7 @@ public final class Meditation {
     public static final net.minecraft.resources.ResourceLocation RISE_ANIMATION = Noirm.id("meditate_rise");
 
     /** Why meditation can't start. */
-    public enum Refusal { NONE, AIR, WATER, RIDING, FIGHTING, DEAD }
+    public enum Refusal { NONE, AIR, WATER, RIDING, FIGHTING, DEAD, STONE }
 
     private Meditation() {}
 
@@ -108,6 +108,9 @@ public final class Meditation {
     public static Refusal canStart(Player player) {
         if (!player.isAlive()) {
             return Refusal.DEAD;
+        }
+        if (Sage.isStatue(player)) {
+            return Refusal.STONE;
         }
         if (player.isPassenger()) {
             return Refusal.RIDING;
@@ -186,7 +189,7 @@ public final class Meditation {
     public static void tick(Player player, ShinobiData data) {
         MeditationData m = data.senjutsu();
         if (!m.isMeditating()) {
-            if (m.natureEnergy() > 0f) {
+            if (m.natureEnergy() > 0f && !m.sage().active()) { // Sage Mode burns it instead (SageMode)
                 m.setNatureEnergy(m.natureEnergy() - NATURE_FADE_PER_TICK);
                 syncEnergy(data);
             }
@@ -209,10 +212,16 @@ public final class Meditation {
         if (ticks == 1 || ticks % NATURE_SCAN_INTERVAL == 0) {
             m.setNatureFactor(natureFactor(player.level(), player.blockPosition()));
         }
-        boolean wasFull = m.natureEnergy() >= NATURE_MAX;
-        m.setNatureEnergy(m.natureEnergy() + gainPerTick(player.level(), m.natureFactor()));
-        if (!wasFull && m.natureEnergy() >= NATURE_MAX) {
-            notify(player, Component.translatable("message.noirm.meditate.full").withStyle(ChatFormatting.GREEN));
+        // The sage path (see Sage): the hermit's lessons draw faster; the body stops at its limit
+        // unless it has been opened to nature and not yet taught balance.
+        float cap = Sage.meditationCap(data);
+        boolean wasFull = m.natureEnergy() >= cap;
+        if (!wasFull) {
+            m.setNatureEnergy(Math.min(cap, m.natureEnergy() + gainPerTick(player.level(), m.natureFactor()) * Sage.gainMultiplier(data)));
+        }
+        if (!wasFull && m.natureEnergy() >= cap) {
+            notify(player, (cap < NATURE_MAX ? Component.translatable("message.noirm.sage.at_limit", Math.round(cap))
+                    : Component.translatable("message.noirm.meditate.full")).withStyle(ChatFormatting.GREEN));
             player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8f, 1.2f);
         }
         syncEnergy(data);

@@ -312,6 +312,10 @@ public final class JutsuCaster {
             ModeSystem.end(player); // switching a mode off is free and ignores its cooldown
             return Result.OK;
         }
+        if (def.behavior().equals("sage_mode") && com.noirm.senjutsu.SageMode.isActive(player)) {
+            com.noirm.senjutsu.SageMode.end(player, false); // so is leaving Sage Mode
+            return Result.OK;
+        }
         if (CASTING.containsKey(player) || !CombatSystem.canAct(player)) {
             return Result.BUSY;
         }
@@ -685,6 +689,7 @@ public final class JutsuCaster {
         } else if (id.equals(com.noirm.biju.BijuSystem.BEAST_BALL) && caster instanceof com.noirm.entity.SparringNinja ninja) {
             power *= beastBallScale(ninja.tails());
         }
+        power *= com.noirm.senjutsu.SageMode.jutsuPowerMultiplier(caster); // nature energy behind every jutsu
         return power;
     }
 

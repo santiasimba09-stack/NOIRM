@@ -136,7 +136,7 @@ public final class PowerHud {
     private static int drawNature(GuiGraphics graphics, Font font, PowerPackets.SyncPowers powers, int y, int tick) {
         float energy = powers.natureEnergy();
         float max = com.noirm.senjutsu.Meditation.NATURE_MAX;
-        if (!powers.meditating() && energy < 0.5f) {
+        if (!powers.meditating() && energy < 0.5f && !SageHud.wantsShowing()) {
             return y;
         }
         boolean full = energy >= max - 0.01f;
@@ -145,7 +145,9 @@ public final class PowerHud {
         int barY = y + font.lineHeight + 1;
         graphics.fill(X - 1, barY - 1, X + 82, barY + 5, 0xA0000000);
         graphics.fill(X, barY, X + Math.round(81 * Math.min(1f, energy / max)), barY + 4, color);
+        SageHud.decorateBar(graphics, X, barY, 81, energy); // the safe limit and the excess
         y += 18;
+        y = SageHud.draw(graphics, font, X, y, tick); // petrification, Sage Mode
         if (powers.meditating()) {
             String dots = ".".repeat(1 + (tick / 15) % 3);
             graphics.drawString(font, Component.translatable("hud.noirm.meditating", dots), X, y, 0xFFA8E890, true);

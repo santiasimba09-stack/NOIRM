@@ -157,12 +157,12 @@ public class MasterScreen extends Screen {
         int h = 34;
         g.fill(x, y, x + w, y + h, CARD);
         g.renderOutline(x, y, w, h, RULE);
-        int buttonW = Math.max(64, font.width(Component.translatable("screen.noirm.master.spar")) + 16);
+        int buttonW = Math.max(64, font.width(own("spar")) + 16);
         int textW = w - buttonW - 18;
-        g.drawString(font, fit(Component.translatable("screen.noirm.master.test").getString(), textW), x + 6, y + 5, GOLD, false);
-        Component rules = Component.translatable("screen.noirm.master.test.rules", info.hits(), info.postureBreaks(), info.seconds());
+        g.drawString(font, fit(own("test").getString(), textW), x + 6, y + 5, GOLD, false);
+        Component rules = own("test.rules", info.hits(), info.postureBreaks(), info.seconds());
         g.drawString(font, fit(rules.getString(), textW), x + 6, y + 18, DIM, false);
-        hits.add(new Hit(x, y, w - buttonW - 10, h, null, List.of(rules, Component.translatable("screen.noirm.master.test.safe"))));
+        hits.add(new Hit(x, y, w - buttonW - 10, h, null, List.of(rules, own("test.safe"))));
         // The button: live if you can spar now; otherwise greyed, with the reason.
         boolean ready = info.sparBlocker().getString().isEmpty();
         int bx = x + w - buttonW - 6;
@@ -170,10 +170,19 @@ public class MasterScreen extends Screen {
         boolean hover = ready && mouseX >= bx && mouseX < bx + buttonW && mouseY >= by && mouseY < by + 16;
         g.fill(bx, by, bx + buttonW, by + 16, ready ? (hover ? 0xFF4A8A3C : 0xFF3A6E2E) : 0xFF2A2630);
         g.renderOutline(bx, by, buttonW, 16, ready ? 0xFF8AD07A : FRAME);
-        g.drawCenteredString(font, Component.translatable("screen.noirm.master.spar"), bx + buttonW / 2, by + 4, ready ? PAPER : FAINT);
+        g.drawCenteredString(font, own("spar"), bx + buttonW / 2, by + 4, ready ? PAPER : FAINT);
         hits.add(new Hit(bx, by, buttonW, 16, ready ? () -> send(MasterPackets.Action.SPAR, "") : null,
-                ready ? List.of(Component.translatable("screen.noirm.master.spar.tip")) : List.of(info.sparBlocker())));
+                ready ? List.of(own("spar.tip")) : List.of(info.sparBlocker())));
         return y + h;
+    }
+
+    /**
+     * A test text: the master's own wording if their lang file has one ({@code <name key>.<suffix>},
+     * e.g. the Stone Hermit's meditation trial), else the spar's ({@code screen.noirm.master.<suffix>}).
+     */
+    private Component own(String suffix, Object... args) {
+        String key = info.nameKey() + "." + suffix;
+        return Component.translatable(net.minecraft.client.resources.language.I18n.exists(key) ? key : "screen.noirm.master." + suffix, args);
     }
 
     private void drawLessons(GuiGraphics g, int x, int y, int w, int bottom, int mouseX, int mouseY) {

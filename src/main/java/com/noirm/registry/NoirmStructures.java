@@ -39,6 +39,13 @@ public final class NoirmStructures {
     public static final RegistryObject<StructurePlacementType<WardPlacement>> WARD_PLACEMENT = PLACEMENTS.register("village_wards",
             () -> () -> WardPlacement.CODEC);
 
+    /** The Stone Hermit's hidden sanctuary (senjutsu, see {@code world.sanctuary}). */
+    public static final RegistryObject<StructureType<com.noirm.world.sanctuary.SanctuaryStructure>> SAGE_SANCTUARY = TYPES.register("sage_sanctuary",
+            () -> () -> com.noirm.world.sanctuary.SanctuaryStructure.CODEC);
+
+    public static final RegistryObject<StructurePieceType> SANCTUARY_PIECE = PIECES.register("sage_sanctuary_piece",
+            () -> (StructurePieceType.ContextlessType) com.noirm.world.sanctuary.SanctuaryPiece::new);
+
     private NoirmStructures() {}
 
     public static void register(IEventBus modBus) {

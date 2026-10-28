@@ -1339,6 +1339,25 @@ CLANS = {
         "accessory": [["none", 1]],
         "accessory_color": ACC_COLORS,
     },
+    # The Stone Hermit (our own sage master, senjutsu): weathered tan skin, long ash-white hair,
+    # narrow moss-amber eyes under heavy brows, red-ochre war paint, a moss-green wrap and slate
+    # trousers under his sage kimono, wrapped arms and legs.
+    "sage_hermit": {
+        "skin": [["#a87250", 1]],
+        "hair_style": [["long", 1]],
+        "hair_color": [["#d6d2c8", 1]],
+        "eyes": [["narrow", 1]],
+        "eye_color": [["#7a6a2a", 1]],
+        "brows": [["thick", 1]],
+        "shirt": [["wrap", 1]],
+        "shirt_color": [["#3a4a2a", 1]],
+        "pants": [["long", 1]],
+        "pants_color": [["#3a3d46", 1]],
+        "wraps": [[3, 1]],
+        "mark": [["war_paint", 1]],
+        "accessory": [["none", 1]],
+        "accessory_color": ACC_COLORS,
+    },
 }
 
 # A generated clan's members share a family look (seed bits 48-63 = the clan): most of them
