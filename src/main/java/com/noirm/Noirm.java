@@ -32,6 +32,7 @@ public final class Noirm {
         com.noirm.weapon.SpecialWeapons.register(modBus);
         com.noirm.weapon.NinjaBlades.register(modBus);
         com.noirm.registry.NoirmStructures.register(modBus);
+        com.noirm.mission.CareerItems.register(modBus); // the mission board, ryo pouches, mission items
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
         com.noirm.world.Destruction.registerGameRules();

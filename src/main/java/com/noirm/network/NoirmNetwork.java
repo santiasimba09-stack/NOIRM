@@ -123,6 +123,7 @@ public final class NoirmNetwork {
                 .encoder(com.noirm.gore.GorePackets.Sync::encode).decoder(com.noirm.gore.GorePackets.Sync::decode)
                 .consumerMainThread(com.noirm.gore.GorePackets.Sync::handle).add();
         id = com.noirm.creator.CreatorPackets.register(CHANNEL, id); // character creation
+        id = com.noirm.mission.CareerPackets.register(CHANNEL, id); // ryo, missions, rank, shops
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

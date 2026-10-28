@@ -103,6 +103,13 @@ public final class ShinobiData {
         return crew;
     }
 
+    /** Your shinobi career: the ryo wallet, rank, rank points, the mission you're on, exams. */
+    private final com.noirm.mission.CareerData career = new com.noirm.mission.CareerData();
+
+    public com.noirm.mission.CareerData career() {
+        return career;
+    }
+
     /** Masters' tests passed, lessons learned and styles granted. */
     public com.noirm.master.MasterProgress masters() {
         return masters;
@@ -337,6 +344,7 @@ public final class ShinobiData {
         tag.put("Masters", masters.save());
         tag.put("Senjutsu", senjutsu.save());
         tag.put("Creator", creator.save());
+        tag.put("Career", career.save());
         return tag;
     }
 
@@ -363,6 +371,7 @@ public final class ShinobiData {
         masters.load(tag.getCompound("Masters"));
         senjutsu.load(tag.getCompound("Senjutsu"));
         creator.load(tag.getCompound("Creator"));
+        career.load(tag.getCompound("Career"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

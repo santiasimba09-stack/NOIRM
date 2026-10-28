@@ -310,9 +310,8 @@ public class VillageMerchant extends AbstractVillager {
             }
             return InteractionResult.sidedSuccess(level().isClientSide());
         }
-        if (!level().isClientSide()) {
-            setTradingPlayer(player);
-            openTradingScreen(player, getDisplayName(), 1);
+        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            com.noirm.mission.CareerPackets.openShop(serverPlayer, this); // the shop in ryo (economy/Shop)
         }
         return InteractionResult.sidedSuccess(level().isClientSide());
     }
