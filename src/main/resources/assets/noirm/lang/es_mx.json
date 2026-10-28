@@ -1532,5 +1532,15 @@
   "command.noirm.rank.ready": "¡Listo!",
   "command.noirm.rank.summary": "Rango: %s · %s/%s puntos de rango · %s ryo · misiones %s",
   "command.noirm.rank.unknown": "No hay ningún rango llamado %s",
-  "command.noirm.rank.set": "Tu rango ahora es %s"
+  "command.noirm.rank.set": "Tu rango ahora es %s",
+  "stat.noirm.durability": "Dureza",
+  "stat.noirm.durability.desc": "Anula una parte de cada golpe (hasta un 60%). Crece recibiendo golpes en combates reales.",
+  "stat.noirm.control": "Control de chakra",
+  "stat.noirm.willpower": "Voluntad",
+  "hud.noirm.training.durability": "Dur %s",
+  "message.noirm.training.durability_up": "¡Tu dureza subió a %s! (los golpes duelen menos)",
+  "command.noirm.stat_dur": "Dureza: %s (anula el %s%% del daño)",
+  "help.noirm.me.stat_dur": "cambia tu dureza (DUR): la parte del daño que aguantas sin sufrir, hasta un 60%",
+  "message.noirm.kill_xp": "Derrotaste a %s: %s",
+  "message.noirm.kill_xp.entry": "+%s %s"
 }

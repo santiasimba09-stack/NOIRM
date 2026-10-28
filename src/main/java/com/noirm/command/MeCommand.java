@@ -93,6 +93,7 @@ public final class MeCommand {
         line(text, Component.translatable("command.noirm.stat", Math.round(data.getSpeed()), Math.round(data.getTaijutsu()),
                 Math.round(Perception.perception(player)), Math.round(data.getVitality()), Math.round(data.getReserves()),
                 Math.round(data.getControl()), Math.round(data.getWillpower())));
+        line(text, NoirmCommand.durabilityLine(data));
         line(text, Component.translatable("command.noirm.me.style", Component.translatable(StyleSystem.translationKey(StyleSystem.styleOf(data)))));
         line(text, EyesCommand.summary(data));
         line(text, data.biju().isJinchuriki()
@@ -132,6 +133,7 @@ public final class MeCommand {
     }
 
     static int max(CommandSourceStack source) throws CommandSyntaxException {
+        Cmd.data(source).setDurability(ShinobiData.MAX_STAT);
         setStats(source, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT, ShinobiData.MAX_STAT,
                 ShinobiData.MAX_STAT, ShinobiData.MAX_STAT);
         return 1;

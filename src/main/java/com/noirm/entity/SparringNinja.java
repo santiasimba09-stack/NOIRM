@@ -101,6 +101,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     /** Below 0: "same as their speed/taijutsu average" (until they train it on their own). */
     private float vitality = -1;
     private float reserves = -1;
+    /** DUR (APX 0.1); below 0: same as their strength, like vitality. */
+    private float durability = -1;
     /** Training XP per stat (crew mates grow; see {@code AllyTraining}). */
     private final float[] statXp = new float[com.noirm.training.TrainingSystem.Stat.values().length];
     private com.noirm.ally.Order order = com.noirm.ally.Order.FOLLOW;
@@ -298,6 +300,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         // From now on they train their own toughness and chakra.
         vitality = combatVitality();
         reserves = combatReserves();
+        durability = combatDurability();
         entityData.set(IN_CREW, true);
         jutsuSettled = true; // a recruit keeps the jutsu they came with
         setTarget(null);
@@ -404,6 +407,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             case TAIJUTSU -> taijutsu;
             case VITALITY -> combatVitality();
             case RESERVES -> combatReserves();
+            case DURABILITY -> combatDurability();
         };
     }
 
@@ -416,6 +420,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
                 setCombatStats(speed, taijutsu);
             }
             case RESERVES -> reserves = Mth.clamp(value, 1f, ShinobiData.MAX_STAT);
+            case DURABILITY -> durability = Mth.clamp(value, 1f, ShinobiData.MAX_STAT);
         }
     }
 
@@ -430,6 +435,15 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public float combatVitality() {
         return vitality >= 0 ? vitality : (speed + taijutsu) / 2f;
+    }
+
+    /** DUR: a ninja's strength (speed and taijutsu average) until they train it in a crew; clones have none. */
+    @Override
+    public float combatDurability() {
+        if (this instanceof ShadowClone) {
+            return ShinobiData.DEFAULT_STAT;
+        }
+        return durability >= 0 ? durability : (speed + taijutsu) / 2f;
     }
 
     @Override
@@ -922,6 +936,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             tag.putString("Order", order.name());
             tag.putFloat("Vitality", vitality);
             tag.putFloat("Reserves", reserves);
+            tag.putFloat("Durability", durability);
             net.minecraft.nbt.CompoundTag xpTag = new net.minecraft.nbt.CompoundTag();
             for (var stat : com.noirm.training.TrainingSystem.Stat.values()) {
                 xpTag.putFloat(stat.key(), xp(stat));
@@ -981,6 +996,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             if (tag.contains("Vitality")) {
                 vitality = tag.getFloat("Vitality");
                 reserves = tag.getFloat("Reserves");
+            }
+            if (tag.contains("Durability")) {
+                durability = tag.getFloat("Durability");
             }
             net.minecraft.nbt.CompoundTag xpTag = tag.getCompound("StatXp");
             for (var stat : com.noirm.training.TrainingSystem.Stat.values()) {

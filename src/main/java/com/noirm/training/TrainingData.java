@@ -27,6 +27,12 @@ public final class TrainingData {
     private int waterTicks;
     /** Whether the player was locked in last tick (WIL XP when it ends; not saved). */
     private boolean wasLockedIn;
+    /** What you've done in the current fight, for kill XP ({@link KillXp}; not saved). */
+    private final FightLog fight = new FightLog();
+
+    public FightLog fight() {
+        return fight;
+    }
 
     public float xp(TrainingSystem.Stat stat) {
         return xp.getOrDefault(stat, 0f);
@@ -126,5 +132,6 @@ public final class TrainingData {
         waterTicks = 0;
         wasLockedIn = false;
         chakraSpent = 0f;
+        fight.reset();
     }
 }

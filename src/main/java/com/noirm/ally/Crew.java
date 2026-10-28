@@ -101,6 +101,7 @@ public final class Crew {
         boolean asks = ninja.getRandom().nextFloat() < ASKS_TO_JOIN;
         victor.sendSystemMessage(Component.translatable(asks ? "message.noirm.crew.asks" : "message.noirm.crew.yields",
                 ninja.getDisplayName()).withStyle(asks ? ChatFormatting.AQUA : ChatFormatting.GRAY));
+        com.noirm.training.KillXp.onDefeated(victor, ninja); // a yield is a win: kill XP (APX 0.1)
     }
 
     /** {@code player} invites a yielded {@code ninja}. */
