@@ -16,6 +16,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -78,10 +79,15 @@ public final class CareerEvents {
                 Exams.fail(player, "exam.noirm.failed.fell");
             }
         }
-        // A defeated rogue carries a little ryo.
-        if (dead instanceof SparringNinja ninja && (killer instanceof Player || ninja.getKillCredit() instanceof Player) && WildNinjas.isRogue(ninja)) {
+    }
+
+    /** A defeated rogue carries a little ryo. */
+    @SubscribeEvent
+    public static void drops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof SparringNinja ninja && !ninja.level().isClientSide() && WildNinjas.isRogue(ninja)
+                && (event.getSource().getEntity() instanceof Player || ninja.getKillCredit() instanceof Player)) {
             int amount = ROGUE_RYO + ninja.getRandom().nextInt(ROGUE_RYO_BONUS + 1) + Math.round(ninja.combatTaijutsu() / 5f);
-            ninja.spawnAtLocation(RyoPouchItem.of(amount));
+            event.getDrops().add(new ItemEntity(ninja.level(), ninja.getX(), ninja.getY() + 0.5, ninja.getZ(), RyoPouchItem.of(amount)));
         }
     }
 

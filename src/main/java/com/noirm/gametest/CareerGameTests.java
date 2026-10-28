@@ -105,7 +105,7 @@ public final class CareerGameTests {
 
     /** Removes everything a career test spawned (rogues, clients, pouches) within {@code radius}. */
     private static void cleanup(GameTestHelper helper, int radius) {
-        AABB area = new AABB(board(helper)).inflate(radius);
+        AABB area = new AABB(board(helper)).inflate(radius, 256, radius);
         helper.getLevel().getEntitiesOfClass(Entity.class, area, e -> !(e instanceof Player)
                 && (e instanceof LivingEntity || e instanceof ItemEntity || e.getTags().contains(Missions.MISSION_TAG))).forEach(Entity::discard);
         helper.succeed();
@@ -263,9 +263,11 @@ public final class CareerGameTests {
         helper.assertTrue(Missions.active(player) == null, "the mission is over");
         helper.assertTrue(Ryo.balance(player) == 120, "paid 120 ryo, got " + Ryo.balance(player));
         helper.assertTrue(career(player).points() == 10 && career(player).completed(MissionTemplate.Letter.D) == 1, "+10 rank points");
-        List<ItemEntity> pouches = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(board(helper)).inflate(64),
+        List<ItemEntity> pouches = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(board(helper)).inflate(64, 256, 64),
                 e -> Ryo.isPouch(e.getItem()));
-        helper.assertTrue(!pouches.isEmpty() && RyoPouchItem.amount(pouches.get(0).getItem()) >= 5, "a beaten rogue dropped a ryo pouch");
+        helper.assertTrue(!pouches.isEmpty() && RyoPouchItem.amount(pouches.get(0).getItem()) >= 5, "a beaten rogue dropped a ryo pouch; items near: "
+                + helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(board(helper)).inflate(64)).stream()
+                .map(e -> e.getItem().toString()).toList() + ", rogues " + rogues.stream().map(r -> r.isAlive() + "@" + r.blockPosition()).toList());
         cleanup(helper, 24);
     }
 
