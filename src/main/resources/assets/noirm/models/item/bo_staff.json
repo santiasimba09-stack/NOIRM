@@ -1,1 +1,113 @@
-{ "parent": "minecraft:item/handheld", "textures": { "layer0": "noirm:item/bo_staff" } }
+{
+  "loader": "forge:separate_transforms",
+  "textures": {
+    "particle": "noirm:item/bo_staff"
+  },
+  "base": {
+    "parent": "minecraft:item/handheld",
+    "loader": "forge:item_layers",
+    "textures": {
+      "layer0": "noirm:item/held/bo_staff"
+    },
+    "display": {
+      "thirdperson_righthand": {
+        "rotation": [
+          0,
+          -90,
+          10
+        ],
+        "translation": [
+          0.0,
+          2.437,
+          0.776
+        ],
+        "scale": [
+          0.2188,
+          1.75,
+          0.9775
+        ]
+      },
+      "thirdperson_lefthand": {
+        "rotation": [
+          0,
+          90,
+          -10
+        ],
+        "translation": [
+          -0.0,
+          2.437,
+          0.776
+        ],
+        "scale": [
+          0.2188,
+          1.75,
+          0.9775
+        ]
+      },
+      "firstperson_righthand": {
+        "rotation": [
+          0.0,
+          -49.0,
+          32.0
+        ],
+        "translation": [
+          0.399,
+          0.916,
+          -1.191
+        ],
+        "scale": [
+          0.1203,
+          0.9625,
+          0.782
+        ]
+      },
+      "firstperson_lefthand": {
+        "rotation": [
+          0.0,
+          49.0,
+          -32.0
+        ],
+        "translation": [
+          -0.399,
+          0.916,
+          -1.191
+        ],
+        "scale": [
+          0.1203,
+          0.9625,
+          0.782
+        ]
+      }
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/bo_staff"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/bo_staff"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/bo_staff"
+      }
+    },
+    "head": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/bo_staff"
+      }
+    }
+  }
+}

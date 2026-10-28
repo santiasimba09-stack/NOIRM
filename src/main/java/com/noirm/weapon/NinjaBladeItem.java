@@ -32,6 +32,8 @@ public class NinjaBladeItem extends SwordItem implements WeaponMoves.Armed {
     private final String id;
     private final BladeStats stats;
     private final Multimap<Attribute, AttributeModifier> modifiers;
+    /** The modifiers while chakra flows into it, when the flow lengthens the reach (else the same). */
+    private final Multimap<Attribute, AttributeModifier> flowModifiers;
 
     public NinjaBladeItem(String id, Properties properties) {
         this(id, BladeStats.get(id), properties);
@@ -44,10 +46,19 @@ public class NinjaBladeItem extends SwordItem implements WeaponMoves.Armed {
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.<Attribute, AttributeModifier>builder()
                 .put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", stats.damage() - 1.0, AttributeModifier.Operation.ADDITION))
                 .put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", stats.speed() - 4.0, AttributeModifier.Operation.ADDITION));
+        ImmutableMultimap<Attribute, AttributeModifier> base = builder.build();
         if (stats.reach() > 0) {
             builder.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(REACH_ID, "Weapon reach", stats.reach(), AttributeModifier.Operation.ADDITION));
         }
         modifiers = builder.build();
+        float flowReach = stats.flow() == null ? 0f : stats.flow().reach();
+        if (flowReach > 0) {
+            flowModifiers = ImmutableMultimap.<Attribute, AttributeModifier>builder().putAll(base)
+                    .put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(REACH_ID, "Weapon reach", stats.reach() + flowReach, AttributeModifier.Operation.ADDITION))
+                    .build();
+        } else {
+            flowModifiers = modifiers;
+        }
     }
 
     /** The blade's id, e.g. {@code katana}. */
@@ -81,6 +92,12 @@ public class NinjaBladeItem extends SwordItem implements WeaponMoves.Armed {
         return slot == EquipmentSlot.MAINHAND ? modifiers : super.getDefaultAttributeModifiers(slot);
     }
 
+    /** While chakra flows into it (the stack's flow tag), a flow that lengthens the reach adds its blocks. */
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        return slot == EquipmentSlot.MAINHAND && isFlowing(stack) ? flowModifiers : super.getAttributeModifiers(slot, stack);
+    }
+
     @Override
     public int getEnchantmentValue() {
         return stats.enchantability();
@@ -98,7 +115,7 @@ public class NinjaBladeItem extends SwordItem implements WeaponMoves.Armed {
             tooltip.add(Component.translatable("tooltip.noirm.blade." + stats.trait().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.GOLD));
         }
         if (stats.flow() != null) {
-            tooltip.add(Component.translatable("tooltip.noirm.blade.flow." + stats.flow().nature().getSerializedName())
+            tooltip.add(Component.translatable("tooltip.noirm.blade.flow." + id)
                     .withStyle(isFlowing(stack) ? ChatFormatting.AQUA : ChatFormatting.GRAY));
         }
     }

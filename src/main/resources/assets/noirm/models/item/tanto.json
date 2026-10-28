@@ -1,1 +1,14 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "noirm:item/tanto"}}
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "noirm:item/tanto"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "noirm:flow": 1
+      },
+      "model": "noirm:item/tanto_flow"
+    }
+  ]
+}

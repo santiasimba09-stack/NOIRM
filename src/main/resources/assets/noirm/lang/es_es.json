@@ -1341,5 +1341,11 @@
   "encounter.noirm.rogue": "un ninja renegado",
   "encounter.noirm.rogue_band": "una banda de renegados",
   "encounter.noirm.rogue_strong": "un renegado peligroso",
-  "gamerule.noirmWildNinjas": "NOIRM: con qué frecuencia aparecen ninjas en la naturaleza (porcentaje, 0 = nunca, 100 = normal)"
+  "gamerule.noirmWildNinjas": "NOIRM: con qué frecuencia aparecen ninjas en la naturaleza (porcentaje, 0 = nunca, 100 = normal)",
+  "tooltip.noirm.blade.flow.katana": "Flujo de chakra de rayo: si tienes Rayo, la hoja chisporrotea (golpes más fuertes que paralizan, 2 de chakra por golpe)",
+  "tooltip.noirm.blade.flow.tekko_kagi": "Flujo de chakra de viento: si tienes Viento, las garras zumban (más afiladas, sangrado más largo, 1,5 de chakra por golpe)",
+  "tooltip.noirm.blade.flow.nodachi": "Flujo de chakra de fuego: si tienes Fuego, la hoja arde (golpes más fuertes que prenden fuego al objetivo y a los enemigos a su lado, 2,5 de chakra por golpe)",
+  "tooltip.noirm.blade.flow.yari": "Flujo de chakra de viento: si tienes Viento, una hoja de viento afila la punta (+1 bloque de alcance, la estocada atraviesa a quien esté detrás, 2 de chakra por golpe)",
+  "tooltip.noirm.blade.flow.tonfa": "Flujo de chakra de tierra: si tienes Tierra, las tonfas pesan como piedra (golpes más fuertes que rompen la guardia y ralentizan, 1,5 de chakra por golpe)",
+  "tooltip.noirm.blade.flow.tanto": "Flujo de chakra de rayo: si tienes Rayo, la hoja brilla blanca (más afilada, una puñalada por la espalda paraliza, 1,5 de chakra por golpe)"
 }

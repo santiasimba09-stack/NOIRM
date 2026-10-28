@@ -167,12 +167,20 @@ style("weapon_fan", {"light": "fan/snap", "heavy": "fan/gust", "launcher": "fan/
 # The blades' own numbers (read by weapon/BladeStats when the game starts). damage: the tooltip's
 # attack damage (a fist is 1); speed: swings a second; reach: extra blocks.
 STATS = {
-    "tanto": {"moveset": "tanto", "damage": 4.5, "speed": 2.4, "reach": 0.0, "durability": 300, "enchantability": 16, "trait": "backstab"},
+    "tanto": {"moveset": "tanto", "damage": 4.5, "speed": 2.4, "reach": 0.0, "durability": 300, "enchantability": 16, "trait": "backstab",
+              # Lightning (White Fang's glowing short blade): a stab in the back paralyses.
+              "flow": {"nature": "lightning", "damage": 1.1, "chakra": 1.5, "backstab_stun": 14}},
     "katana": {"moveset": "katana", "damage": 7.0, "speed": 1.5, "reach": 0.5, "durability": 600, "enchantability": 16, "trait": "none",
                "flow": {"nature": "lightning", "damage": 1.25, "chakra": 2.0, "stun": 5}},
-    "nodachi": {"moveset": "greatsword", "damage": 10.0, "speed": 0.85, "reach": 1.0, "durability": 700, "enchantability": 12, "trait": "cleave"},
-    "tonfa": {"moveset": "tonfa", "damage": 4.0, "speed": 2.3, "reach": 0.0, "durability": 400, "enchantability": 14, "trait": "crush"},
-    "yari": {"moveset": "spear", "damage": 6.0, "speed": 1.3, "reach": 1.75, "durability": 350, "enchantability": 14, "trait": "none"},
+    "nodachi": {"moveset": "greatsword", "damage": 10.0, "speed": 0.85, "reach": 1.0, "durability": 700, "enchantability": 12, "trait": "cleave",
+                # Fire: burning sweeps; the target (and enemies right next to it) catch fire.
+                "flow": {"nature": "fire", "damage": 1.15, "chakra": 2.5, "burn": 4}},
+    "tonfa": {"moveset": "tonfa", "damage": 4.0, "speed": 2.3, "reach": 0.0, "durability": 400, "enchantability": 14, "trait": "crush",
+              # Earth: stone-heavy blows crush the guard harder and slow the target.
+              "flow": {"nature": "earth", "damage": 1.15, "chakra": 1.5, "posture": 8, "slow": 30}},
+    "yari": {"moveset": "spear", "damage": 6.0, "speed": 1.3, "reach": 1.75, "durability": 350, "enchantability": 14, "trait": "none",
+             # Wind: a blade of wind lengthens the reach and pierces through to whoever stands behind.
+             "flow": {"nature": "wind", "damage": 1.15, "chakra": 2.0, "reach": 1.0, "pierce": 2.5}},
     "tekko_kagi": {"moveset": "claws", "damage": 4.0, "speed": 2.2, "reach": 0.0, "durability": 350, "enchantability": 16, "trait": "bleed",
                    "flow": {"nature": "wind", "damage": 1.3, "chakra": 1.5, "bonus": 2}},
     "tessen": {"moveset": "fan", "damage": 4.0, "speed": 2.0, "reach": 0.25, "durability": 400, "enchantability": 18, "trait": "deflect"},

@@ -115,6 +115,29 @@ model, in hand and in the hotbar) and every hit costs a little chakra (ninjas pa
 Without the nature, or out of chakra, they're plain steel. (The chakra blades still take
 whatever nature you have; these two take one nature but hit harder with it.)
 
+**More flows (APX follow-ups, 2026-10-28):** four more blades take a nature, each with its own effect
+(numbers in `stats.json` under `flow`, effect numbers at the top of `BladeEvents`):
+
+- **Nodachi + Fire:** ×1.15 damage and the target burns 4 s; enemies within 1.75 blocks of it catch
+  for 2 s (never the wielder or their side). 2.5 chakra a hit.
+- **Yari + Wind:** ×1.15 damage, **+1 block reach** while flowing, and a **wind lance** carries 2.5
+  blocks past the target, cutting up to 2 enemies standing in line behind it for 60% of the hit.
+  2 chakra a hit.
+- **Tonfa + Earth:** ×1.15 damage, +8 more posture a blow and Slowness II for 1.5 s. 1.5 chakra a hit.
+- **Tantō + Lightning** (the White Fang's glowing blade): ×1.1 damage and a stab **in the back
+  paralyses** (14-tick stun). 1.5 chakra a hit.
+
+Each glows with its own 64×64 layer (`nodachi_glow` flames, `yari_glow` wind, `tonfa_glow` glowing
+cracks in stone, `tanto_glow` white light). Tooltips are per blade: `tooltip.noirm.blade.flow.<id>`.
+
+**Long held models:** the yari (2.2 blocks), nodachi (1.55) and bō staff (1.75) are held at full
+length in first and third person. `tools/weapongen/gen_held.py` draws a straight 16×128 "held"
+texture for each (`textures/item/held/`, same shaders as the icons, plus a glow for the flows) and
+writes the item models: Forge's `separate_transforms` uses the long texture in the hands and the
+usual icon everywhere else (inventory, ground, frames). The hand transforms are computed so the grip
+sits where vanilla holds a sword's handle and the weapon points the same way, so every sword
+animation holds them right. Weapon trails match (spear 1.45, greatsword 1.25 blocks).
+
 **Ninjas:** about 1 ninja in 10 now holds one of these (tantō 3%, katana 2%, yari 2%, tonfa 1.5%,
 tekko-kagi 1%, tessen 0.8%; the nodachi 1.2%, wanderers only). They fight with the blade's
 moveset like the player does. ANBU-style patrols usually carry a tantō.

@@ -17,13 +17,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  *       uniform; the leader in the jōnin vest) or {@code rogue} (a rogue's cloak and slashed headband).</li>
  *   <li>{@code same_clan}: everyone in the group shares one clan.</li>
  *   <li>{@code hunts_rogues}: they go after hostile rogues they see.</li>
+ *   <li>{@code defends_players}: when a rogue attacks a player near them, they join the fight
+ *       against the rogue (see {@link WildDefenders}).</li>
  *   <li>{@code min_distance}: blocks from the world spawn before it can turn up;
  *       {@code min_played_minutes}: how long the player must have played.</li>
  * </ul>
  */
 public record EncounterType(int weight, int nightWeight, int minSize, int maxSize, boolean hostile, float sparChance,
                             float leaderStrength, float memberStrength, String outfit, boolean sameClan, boolean huntsRogues,
-                            int minDistance, int minPlayedMinutes) {
+                            int minDistance, int minPlayedMinutes, boolean defendsPlayers) {
     public static final Codec<EncounterType> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.INT.optionalFieldOf("weight", 10).forGetter(EncounterType::weight),
             Codec.INT.optionalFieldOf("night_weight", -1).forGetter(EncounterType::nightWeight),
@@ -37,7 +39,8 @@ public record EncounterType(int weight, int nightWeight, int minSize, int maxSiz
             Codec.BOOL.optionalFieldOf("same_clan", false).forGetter(EncounterType::sameClan),
             Codec.BOOL.optionalFieldOf("hunts_rogues", false).forGetter(EncounterType::huntsRogues),
             Codec.INT.optionalFieldOf("min_distance", 0).forGetter(EncounterType::minDistance),
-            Codec.INT.optionalFieldOf("min_played_minutes", 0).forGetter(EncounterType::minPlayedMinutes)
+            Codec.INT.optionalFieldOf("min_played_minutes", 0).forGetter(EncounterType::minPlayedMinutes),
+            Codec.BOOL.optionalFieldOf("defends_players", false).forGetter(EncounterType::defendsPlayers)
     ).apply(i, EncounterType::new));
 
     /** The weight by day or at night (night falls back to the day weight). */

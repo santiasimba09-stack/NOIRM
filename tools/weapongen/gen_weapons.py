@@ -15,8 +15,10 @@ Long weapons are drawn along the diagonal, tip to the top right, like a vanilla 
 thrown-weapon renderer relies on that to point kunai and senbon along their flight, and stars are
 drawn centred so they spin flat.
 
-Two extra textures are glow layers for chakra flow (katana: lightning, tekko-kagi: wind): the item
-model draws them full-bright over the weapon while its wielder's chakra flows into it.
+The *_glow textures are layers for chakra flow (katana: lightning, tekko-kagi: wind, nodachi: fire,
+yari: wind, tonfa: earth, tantō: white lightning): the item model draws them full-bright over the
+weapon while its wielder's chakra flows into it. Long weapons also get a straight "held" texture
+and model (tools/weapongen/gen_held.py).
 """
 import math
 import os
@@ -27,12 +29,14 @@ from PIL import Image
 OUT = "src/main/resources/assets/noirm/textures/item"
 S = 4  # pixels per icon unit (set by --scale)
 N = 16 * S
+W = H = N  # the canvas being drawn (pixels): N x N for icons, long and narrow for held models
 
 
 def configure(scale):
-    global S, N
+    global S, N, W, H
     S = scale
     N = 16 * scale
+    W = H = N
 
 
 # ---------------------------------------------------------------- colours
@@ -81,6 +85,9 @@ BRASS = Mat(0xFFE6A0, 0xCCA24C, 0x9A762E, 0x624818, 0x2E220A)
 IVORY = Mat(0xF4EEDC, 0xD8CEB4, 0xB0A48A, 0x7C725E, 0x3E382E)
 LIGHTNING = Mat(0xFFFFFF, 0xC4E6FF, 0x6EAAF0, 0x2E62C8, 0x162E78)
 WIND = Mat(0xF4FFF8, 0xB6F2DA, 0x6ACFAE, 0x2E8E78, 0x14483E)
+FIRE = Mat(0xFFF8D8, 0xFFD24A, 0xFF8A1E, 0xD2381A, 0x6A120A)
+EARTH = Mat(0xFFF0C8, 0xF2C46A, 0xC88A34, 0x8A5A20, 0x46300E)
+WHITE_LIGHT = Mat(0xFFFFFF, 0xF2F8FF, 0xCFE4FA, 0x96B8E6, 0x4E70A8)
 
 
 # ---------------------------------------------------------------- noise
@@ -109,20 +116,20 @@ def gritty(c, x, y, salt, amount=0.07, specks=0.035, speck_col=None):
 
 class Canvas:
     def __init__(self):
-        self.px = [[None] * N for _ in range(N)]
+        self.px = [[None] * W for _ in range(H)]
 
     def put(self, x, y, c):
-        if 0 <= x < N and 0 <= y < N:
+        if 0 <= x < W and 0 <= y < H:
             self.px[y][x] = c
 
     def get(self, x, y):
-        return self.px[y][x] if 0 <= x < N and 0 <= y < N else None
+        return self.px[y][x] if 0 <= x < W and 0 <= y < H else None
 
     def image(self):
-        img = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+        img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         p = img.load()
-        for y in range(N):
-            for x in range(N):
+        for y in range(H):
+            for x in range(W):
                 c = self.px[y][x]
                 if c is not None:
                     p[x, y] = tuple(c) + (255,)
@@ -131,8 +138,8 @@ class Canvas:
 
 def pixels():
     """Every pixel with its centre in icon units."""
-    for y in range(N):
-        for x in range(N):
+    for y in range(H):
+        for x in range(W):
             yield x, y, (x + 0.5) / S, (y + 0.5) / S
 
 
@@ -211,13 +218,13 @@ def outline(cv, width=None, colour=INK):
     src = [row[:] for row in cv.px]
     r2 = width * width + 0.5
     offs = [(dx, dy) for dy in range(-width, width + 1) for dx in range(-width, width + 1) if 0 < dx * dx + dy * dy <= r2]
-    for y in range(N):
-        for x in range(N):
+    for y in range(H):
+        for x in range(W):
             if src[y][x] is not None:
                 continue
             for dx, dy in offs:
                 nx, ny = x + dx, y + dy
-                if 0 <= nx < N and 0 <= ny < N and src[ny][nx] is not None:
+                if 0 <= nx < W and 0 <= ny < H and src[ny][nx] is not None:
                     cv.px[y][x] = colour
                     break
 
@@ -225,11 +232,11 @@ def outline(cv, width=None, colour=INK):
 def contour(cv, colour=INK, inner=None):
     """An inner ink line along the silhouette's lower-right edge (a cast shadow), 1 px."""
     src = [row[:] for row in cv.px]
-    for y in range(N):
-        for x in range(N):
+    for y in range(H):
+        for x in range(W):
             if src[y][x] is None:
                 continue
-            if (x + 1 < N and src[y][x + 1] is None) or (y + 1 < N and src[y + 1][x] is None):
+            if (x + 1 < W and src[y][x + 1] is None) or (y + 1 < H and src[y + 1][x] is None):
                 cv.px[y][x] = mix(src[y][x], colour, 0.55)
 
 
@@ -416,6 +423,35 @@ def glow_blade(mat, salt=21, crackle=True):
     return f
 
 
+def flame_blade(mat=FIRE, salt=27):
+    """A fire glow over a blade: a white-hot core along the edge, orange body, red tongues licking
+    past the steel (the layer is drawn a little wider than the blade)."""
+    def f(c):
+        tongue = 0.72 + 0.2 * math.sin(c.lt * 4.3 + salt) + 0.12 * math.sin(c.lt * 9.7 + salt * 0.7)
+        n = abs(c.n)
+        if n > tongue:
+            return None
+        q = n / max(0.2, tongue)
+        col = mat.hi if q < 0.22 else mat.light if q < 0.5 else mat.mid if q < 0.8 else mat.dark
+        if hsh(c.x // max(1, S // 2), c.y // max(1, S // 2), salt) < 0.06:
+            col = mat.hi  # embers
+        return col
+    return f
+
+
+def stone_cracks(mat=EARTH, salt=29, period=1.4):
+    """An earth glow: only the cracks of a stone skin over the wood, glowing amber (the rest of the
+    layer is left clear, so the weapon shows through)."""
+    def f(c):
+        a = c.lt / period + 0.35 * math.sin(c.s * 3.1 + salt)
+        fa = a - math.floor(a)
+        crack = fa < 0.09 or abs(c.n - 0.45 * math.sin(c.lt * 2.3 + salt)) < 0.11
+        if not crack:
+            return None
+        return mat.hi if abs(c.n) < 0.4 else mat.light
+    return f
+
+
 # ---------------------------------------------------------------- the weapons
 
 DIAG = ((1.6, 14.4), (14.6, 1.4))
@@ -478,9 +514,15 @@ def senbon():
     return cv
 
 
-def tanto():
+def tanto(glow=False):
     cv = Canvas()
     start, end = (2.4, 13.6), (13.4, 2.6)
+    if glow:  # lightning flow: the blade shines white (the White Fang's chakra sabre)
+        along(cv, start, end, [
+            (0.50, 0.86, 1.3, 1.4, glow_blade(WHITE_LIGHT, 66)),
+            (0.86, 1.00, 1.4, 0.15, glow_blade(WHITE_LIGHT, 66)),
+        ])
+        return cv
     along(cv, start, end, [
         (0.00, 0.06, 1.0, 1.0, metal(DSTEEL, 61)),                    # kashira (pommel cap)
         (0.06, 0.40, 0.92, 0.92, wrap_diamond(CLOTH, CLOTH_RED, 62, 1.0)),
@@ -532,9 +574,15 @@ def katana(glow=False):
     return cv
 
 
-def nodachi():
+def nodachi(glow=False):
     cv = Canvas()
     start, end = (0.7, 15.3), (15.5, 0.5)
+    if glow:  # fire flow: flames lick along the blade
+        along(cv, start, end, [
+            (0.44, 0.88, 1.75, 1.6, flame_blade(FIRE, 97)),
+            (0.88, 1.00, 1.6, 0.2, flame_blade(FIRE, 97)),
+        ], curve=-0.4, curve_from=0.42)
+        return cv
     along(cv, start, end, [
         (0.00, 0.04, 1.05, 1.05, metal(DSTEEL, 91)),
         (0.04, 0.33, 0.95, 0.95, wrap_diamond(CLOTH, CLOTH_RED, 92, 1.25)),  # a long two-hand grip
@@ -576,9 +624,15 @@ def bo_staff():
     return cv
 
 
-def yari():
+def yari(glow=False):
     cv = Canvas()
     start, end = (0.5, 15.5), (15.4, 0.6)
+    if glow:  # wind flow: a blade of wind around the head, reaching past the tip
+        along(cv, start, end, [
+            (0.70, 0.80, 0.7, 1.75, glow_blade(WIND, 127)),
+            (0.80, 1.00, 1.75, 0.3, glow_blade(WIND, 127)),
+        ])
+        return cv
     along(cv, start, end, [
         (0.00, 0.05, 0.85, 0.85, metal(DSTEEL, 121)),                 # the butt cap
         (0.05, 0.62, 0.68, 0.68, wood(DARK_WOOD, 122, lacquer=LACQ_RED.light)),
@@ -595,7 +649,7 @@ def yari():
     return cv
 
 
-def tonfa():
+def tonfa(glow=False):
     cv = Canvas()
     # Two tonfa crossed: each a long shaft with a side handle near one end.
     for flip in (False, True):
@@ -604,6 +658,9 @@ def tonfa():
         else:
             start, end, hstart, hend = (1.8, 13.6), (13.4, 2.0), (4.0, 11.4), (6.0, 13.9)
         salt = 131 + flip * 10
+        if glow:  # earth flow: the wood turns to cracked stone, the cracks glowing
+            along(cv, start, end, [(0.06, 0.90, 0.95, 0.95, stone_cracks(EARTH, salt + 5))])
+            continue
         along(cv, start, end, [
             (0.00, 0.06, 1.05, 1.05, metal(DSTEEL, salt)),
             (0.06, 0.90, 0.95, 0.95, wood(DARK_WOOD, salt + 1, lacquer=LACQ_BLACK.hi)),
@@ -614,7 +671,8 @@ def tonfa():
             (0.35, 1.0, 0.65, 0.65, wrap_spiral(CLOTH, salt + 4, 0.5)),
         ])
         contour(cv)
-    outline(cv)
+    if not glow:
+        outline(cv)
     return cv
 
 
@@ -909,11 +967,11 @@ ICONS = {
     "gale_gunbai": gale_gunbai,
     "kusarigama": kusarigama,
     # v0.13 weapons
-    "tanto": tanto,
+    "tanto": lambda: tanto(),
     "katana": lambda: katana(),
-    "nodachi": nodachi,
-    "tonfa": tonfa,
-    "yari": yari,
+    "nodachi": lambda: nodachi(),
+    "tonfa": lambda: tonfa(),
+    "yari": lambda: yari(),
     "tekko_kagi": lambda: tekko_kagi(),
     "tessen": tessen,
 }
@@ -922,6 +980,10 @@ ICONS = {
 GLOWS = {
     "katana_glow": lambda: katana(glow=True),
     "tekko_kagi_glow": lambda: tekko_kagi(glow=True),
+    "nodachi_glow": lambda: nodachi(glow=True),
+    "yari_glow": lambda: yari(glow=True),
+    "tonfa_glow": lambda: tonfa(glow=True),
+    "tanto_glow": lambda: tanto(glow=True),
 }
 
 

@@ -61,10 +61,14 @@ public final class WildSpawner {
     public static final int MAX_RATE = 1000;
 
     // ---------------------------------------------------------------- how often
-    /** Ticks between tries per player at the normal rate (30 s). */
-    public static final int ATTEMPT_TICKS = 20 * 30;
-    /** The chance a try brings a group (normal rate): about one group every minute and a half. */
-    public static final float BASE_CHANCE = 0.35f;
+    /** Ticks between tries per player at the normal rate (60 s). */
+    public static final int ATTEMPT_TICKS = 20 * 60;
+    /**
+     * The chance a try brings a group (normal rate): one try a minute at 25 % is about one group
+     * every 4 minutes on average (owner, after v0.13: "fewer"; it was a try every 30 s at 35 %,
+     * one group every 1.5 minutes). See {@link #averageMinutesBetweenGroups}.
+     */
+    public static final float BASE_CHANCE = 0.25f;
     /** Never try more often than this (high rates). */
     public static final int MIN_ATTEMPT_TICKS = 40;
     /** How often wild ninjas far from everyone are swept away. */
@@ -79,7 +83,7 @@ public final class WildSpawner {
     /** Caps around each player. */
     public static final double CAP_RADIUS = 128;
     public static final int MAX_GROUPS_NEAR = 2;
-    public static final int MAX_NINJAS_NEAR = 8;
+    public static final int MAX_NINJAS_NEAR = 6;
     /** Around the world spawn, nothing turns up until the player has played this long. */
     public static final int SPAWN_SAFE_RADIUS = 160;
     public static final int SAFE_PLAY_MINUTES = 20;
@@ -122,6 +126,16 @@ public final class WildSpawner {
     /** The chance a try brings a group at {@code rate} percent. */
     public static float chance(int rate) {
         return BASE_CHANCE * Math.min(100, rate) / 100f;
+    }
+
+    /**
+     * On average, how many minutes pass between two groups turning up around a player at
+     * {@code rate} percent (ignoring the caps and failed spots): the time between tries divided by
+     * the chance a try works. At the normal rate: 1 minute / 0.25 = 4 minutes.
+     */
+    public static float averageMinutesBetweenGroups(int rate) {
+        float chance = chance(rate);
+        return chance <= 0 ? Float.POSITIVE_INFINITY : interval(rate) / 1200f / chance;
     }
 
     // ---------------------------------------------------------------- ticking

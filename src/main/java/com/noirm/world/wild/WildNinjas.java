@@ -310,6 +310,7 @@ public final class WildNinjas {
         if ((ninja.tickCount + ninja.getId()) % 10 != 0) {
             return;
         }
+        WildDefenders.tick(ninja); // defending a player: stay on the rogue
         Group group = GROUPS.get(member.group);
         if (group == null) {
             return;

@@ -6,7 +6,13 @@
     "reach": 0.0,
     "durability": 300,
     "enchantability": 16,
-    "trait": "backstab"
+    "trait": "backstab",
+    "flow": {
+      "nature": "lightning",
+      "damage": 1.1,
+      "chakra": 1.5,
+      "backstab_stun": 14
+    }
   },
   "katana": {
     "moveset": "katana",
@@ -30,7 +36,13 @@
     "reach": 1.0,
     "durability": 700,
     "enchantability": 12,
-    "trait": "cleave"
+    "trait": "cleave",
+    "flow": {
+      "nature": "fire",
+      "damage": 1.15,
+      "chakra": 2.5,
+      "burn": 4
+    }
   },
   "tonfa": {
     "moveset": "tonfa",
@@ -39,7 +51,14 @@
     "reach": 0.0,
     "durability": 400,
     "enchantability": 14,
-    "trait": "crush"
+    "trait": "crush",
+    "flow": {
+      "nature": "earth",
+      "damage": 1.15,
+      "chakra": 1.5,
+      "posture": 8,
+      "slow": 30
+    }
   },
   "yari": {
     "moveset": "spear",
@@ -48,7 +67,14 @@
     "reach": 1.75,
     "durability": 350,
     "enchantability": 14,
-    "trait": "none"
+    "trait": "none",
+    "flow": {
+      "nature": "wind",
+      "damage": 1.15,
+      "chakra": 2.0,
+      "reach": 1.0,
+      "pierce": 2.5
+    }
   },
   "tekko_kagi": {
     "moveset": "claws",

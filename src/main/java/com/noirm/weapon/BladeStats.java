@@ -51,11 +51,18 @@ public record BladeStats(Moveset moveset, float damage, float speed, double reac
      * A chakra flow: when the wielder has {@code nature}, their chakra runs into the blade (it glows)
      * and every hit costs {@code chakra} (players only; ninjas pay nothing) for a bonus.
      *
-     * @param damage multiplies the hit's damage
-     * @param stun   ticks a hit numbs the target (lightning)
-     * @param bonus  extra effect strength: wind lengthens bleeding by this many seconds
+     * @param damage       multiplies the hit's damage
+     * @param stun         ticks a hit numbs the target (lightning)
+     * @param bonus        extra effect strength: wind lengthens bleeding by this many seconds
+     * @param burn         seconds a hit sets the target alight (fire); enemies right next to it catch too
+     * @param reach        extra vanilla reach (blocks) while the chakra flows (wind)
+     * @param pierce       blocks a wind lance carries on past the target, cutting whoever stands there
+     * @param posture      extra posture damage a hit (earth)
+     * @param slow         ticks of Slowness II a hit leaves (earth)
+     * @param backstabStun ticks a hit in the back numbs the target (on top of {@code stun})
      */
-    public record Flow(Nature nature, float damage, float chakra, int stun, float bonus) {}
+    public record Flow(Nature nature, float damage, float chakra, int stun, float bonus, int burn, float reach, float pierce,
+                       float posture, int slow, int backstabStun) {}
 
     private static Map<String, BladeStats> all;
 
@@ -88,7 +95,9 @@ public record BladeStats(Moveset moveset, float damage, float speed, double reac
                 if (o.has("flow")) {
                     JsonObject f = o.getAsJsonObject("flow");
                     flow = new Flow(Nature.valueOf(f.get("nature").getAsString().toUpperCase(Locale.ROOT)),
-                            num(f, "damage", 1f), num(f, "chakra", 0f), (int) num(f, "stun", 0f), num(f, "bonus", 0f));
+                            num(f, "damage", 1f), num(f, "chakra", 0f), (int) num(f, "stun", 0f), num(f, "bonus", 0f),
+                            (int) num(f, "burn", 0f), num(f, "reach", 0f), num(f, "pierce", 0f), num(f, "posture", 0f),
+                            (int) num(f, "slow", 0f), (int) num(f, "backstab_stun", 0f));
                 }
                 out.put(entry.getKey(), new BladeStats(moveset, num(o, "damage", 1f), num(o, "speed", 1.6f), num(o, "reach", 0f),
                         (int) num(o, "durability", 250f), (int) num(o, "enchantability", 14f),

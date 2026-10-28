@@ -3,5 +3,6 @@
   "min_size": 3, "max_size": 4,
   "leader_strength": 1.35, "member_strength": 0.75,
   "outfit": "village",
-  "hunts_rogues": true
+  "hunts_rogues": true,
+  "defends_players": true
 }

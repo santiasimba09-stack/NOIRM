@@ -56,9 +56,9 @@ public final class WeaponTrails {
             case "staff" -> 1.5f;
             case "tanto" -> 0.6f;
             case "katana" -> 1.15f;
-            case "greatsword" -> 1.5f;
+            case "greatsword" -> 1.25f; // the nodachi's held model: 1.55 long, held 22% up
             case "tonfa" -> 0.45f;
-            case "spear" -> 1.9f;
+            case "spear" -> 1.45f; // the yari's held model: 2.2 long, held 36% up
             case "claws" -> 0.5f;
             case "fan" -> 0.55f;
             default -> 0f;

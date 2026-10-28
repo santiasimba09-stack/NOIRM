@@ -1341,5 +1341,11 @@
   "encounter.noirm.rogue": "A rogue ninja",
   "encounter.noirm.rogue_band": "A band of rogues",
   "encounter.noirm.rogue_strong": "A dangerous rogue",
-  "gamerule.noirmWildNinjas": "NOIRM: how often ninjas turn up in the wild (percent, 0 = never, 100 = normal)"
+  "gamerule.noirmWildNinjas": "NOIRM: how often ninjas turn up in the wild (percent, 0 = never, 100 = normal)",
+  "tooltip.noirm.blade.flow.katana": "Lightning chakra flow: if you have Lightning, the blade crackles (harder hits that numb, 2 chakra a hit)",
+  "tooltip.noirm.blade.flow.tekko_kagi": "Wind chakra flow: if you have Wind, the claws hum (sharper, longer bleeding, 1.5 chakra a hit)",
+  "tooltip.noirm.blade.flow.nodachi": "Fire chakra flow: if you have Fire, the blade burns (harder hits that set the target and enemies beside it alight, 2.5 chakra a hit)",
+  "tooltip.noirm.blade.flow.yari": "Wind chakra flow: if you have Wind, a blade of wind sharpens the tip (+1 block reach, the thrust pierces to whoever stands behind, 2 chakra a hit)",
+  "tooltip.noirm.blade.flow.tonfa": "Earth chakra flow: if you have Earth, the tonfa weigh like stone (harder blows that crush the guard and slow, 1.5 chakra a hit)",
+  "tooltip.noirm.blade.flow.tanto": "Lightning chakra flow: if you have Lightning, the blade shines white (sharper, a stab in the back paralyses, 1.5 chakra a hit)"
 }

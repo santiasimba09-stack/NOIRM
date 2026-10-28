@@ -12,6 +12,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -51,15 +54,24 @@ public final class BladeEvents {
     public static final double DEFLECT_SPEED = 0.25;
     /** How often (ticks) the flow glow is checked. */
     public static final int FLOW_CHECK_TICKS = 10;
+    /** Fire flow (nodachi): enemies this close to the target (blocks) catch fire too, for half as long. */
+    public static final double BURN_SPLASH = 1.75;
+    /** Wind flow (yari): the wind lance cuts whoever stands behind the target for this share of the hit… */
+    public static final float PIERCE_SHARE = 0.6f;
+    /** …up to this many of them, within this far of the lance's line (blocks). */
+    public static final int PIERCE_TARGETS = 2;
+    public static final double PIERCE_WIDTH = 0.9;
 
     /** Who is bleeding, and for how many more ticks (server side). */
     private static final Map<LivingEntity, Integer> BLEEDING = new WeakHashMap<>();
+    /** Set while a wind lance's own cuts are dealt (they don't carry the blade's effects again). */
+    private static boolean piercing;
 
     private BladeEvents() {}
 
     @SubscribeEvent
     public static void hurt(LivingHurtEvent event) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker) || event.getSource().getDirectEntity() != attacker
+        if (piercing || !(event.getSource().getEntity() instanceof LivingEntity attacker) || event.getSource().getDirectEntity() != attacker
                 || attacker.level().isClientSide()) {
             return;
         }
@@ -75,10 +87,25 @@ public final class BladeEvents {
         int bleedBonus = 0;
 
         BladeStats.Flow flow = stats.flow();
+        boolean flowing = false;
         if (flow != null && hasNature(attacker, flow.nature()) && pay(attacker, flow.chakra())) {
+            flowing = true;
             amount *= flow.damage();
             if (flow.stun() > 0) {
                 CombatSystem.stun(target, flow.stun());
+            }
+            if (flow.backstabStun() > 0 && isBehind(attacker, target)) {
+                CombatSystem.stun(target, flow.backstabStun()); // lightning in the back: paralysed
+                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, chest.x, chest.y, chest.z, 24, 0.2, 0.5, 0.2, 0.3);
+            }
+            if (flow.burn() > 0) {
+                burn(level, attacker, target, flow.burn());
+            }
+            if (flow.posture() > 0) {
+                CombatSystem.addPostureDamage(target, flow.posture());
+            }
+            if (flow.slow() > 0) {
+                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, flow.slow(), 1));
             }
             bleedBonus = Math.round(flow.bonus());
             flowParticles(level, flow.nature(), chest);
@@ -106,6 +133,71 @@ public final class BladeEvents {
             default -> { }
         }
         event.setAmount(amount);
+        if (flowing && flow.pierce() > 0) {
+            pierce(level, attacker, target, amount * PIERCE_SHARE, flow.pierce());
+        }
+    }
+
+    // ---------------------------------------------------------------- flow effects
+
+    /** Fire flow: the target burns for {@code seconds}; enemies right next to it catch for half as long. */
+    private static void burn(ServerLevel level, LivingEntity attacker, LivingEntity target, int seconds) {
+        target.setSecondsOnFire(seconds);
+        for (LivingEntity near : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(BURN_SPLASH),
+                e -> e != attacker && e != target && e.isAlive() && foe(attacker, e))) {
+            near.setSecondsOnFire(Math.max(1, seconds / 2));
+            level.sendParticles(ParticleTypes.FLAME, near.getX(), near.getY() + near.getBbHeight() * 0.5, near.getZ(), 6, 0.2, 0.3, 0.2, 0.02);
+        }
+    }
+
+    /**
+     * Wind flow: a lance of wind carries on {@code length} blocks past {@code target} along the
+     * attacker's facing and cuts up to {@link #PIERCE_TARGETS} enemies standing there for
+     * {@code damage}. Returns who it cut.
+     */
+    public static java.util.List<LivingEntity> pierce(ServerLevel level, LivingEntity attacker, LivingEntity target, float damage, double length) {
+        Vec3 dir = target.position().subtract(attacker.position()).multiply(1, 0, 1);
+        if (dir.lengthSqr() < 1.0e-4) {
+            dir = Vec3.directionFromRotation(0, attacker.getYRot());
+        }
+        dir = dir.normalize();
+        Vec3 from = target.position();
+        java.util.List<LivingEntity> cut = new java.util.ArrayList<>();
+        java.util.List<LivingEntity> behind = level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(length + 1),
+                e -> e != attacker && e != target && e.isAlive() && !e.isSpectator() && foe(attacker, e));
+        final Vec3 d = dir;
+        behind.sort(java.util.Comparator.comparingDouble(e -> e.position().subtract(from).dot(d)));
+        for (LivingEntity e : behind) {
+            Vec3 rel = e.position().subtract(from);
+            double along = rel.x * d.x + rel.z * d.z;
+            double side = Math.abs(rel.x * -d.z + rel.z * d.x);
+            if (along <= 0.2 || along > length || side > PIERCE_WIDTH || Math.abs(rel.y) > 1.5) {
+                continue;
+            }
+            DamageSource source = attacker instanceof Player player ? attacker.damageSources().playerAttack(player) : attacker.damageSources().mobAttack(attacker);
+            piercing = true;
+            try {
+                e.invulnerableTime = 0;
+                e.hurt(source, damage);
+            } finally {
+                piercing = false;
+            }
+            cut.add(e);
+            if (cut.size() >= PIERCE_TARGETS) {
+                break;
+            }
+        }
+        Vec3 chest = from.add(0, target.getBbHeight() * 0.6, 0);
+        for (double t = 0.4; t <= length; t += 0.5) {
+            level.sendParticles(ParticleTypes.CLOUD, chest.x + d.x * t, chest.y, chest.z + d.z * t, 1, 0.05, 0.05, 0.05, 0.01);
+        }
+        return cut;
+    }
+
+    /** Someone {@code attacker}'s flow may hurt: not on its side. */
+    private static boolean foe(LivingEntity attacker, LivingEntity other) {
+        return !attacker.isAlliedTo(other) && !other.isAlliedTo(attacker) && !com.noirm.ally.Crew.sameSide(attacker, other)
+                && !(other instanceof Player p && (p.isCreative() || p.isSpectator()));
     }
 
     /** Is {@code attacker} behind {@code target} (the target faces away from them)? */
@@ -220,7 +312,13 @@ public final class BladeEvents {
                 level.sendParticles(ParticleTypes.SWEEP_ATTACK, at.x, at.y, at.z, 1, 0, 0, 0, 0);
                 level.sendParticles(ParticleTypes.CLOUD, at.x, at.y, at.z, 6, 0.25, 0.25, 0.25, 0.06);
             }
-            case FIRE -> level.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 10, 0.25, 0.3, 0.25, 0.03);
+            case FIRE -> {
+                level.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 14, 0.3, 0.35, 0.3, 0.04);
+                level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y, at.z, 3, 0.2, 0.2, 0.2, 0.01);
+                level.playSound(null, at.x, at.y, at.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.35f, 1.3f);
+            }
+            case EARTH -> level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()),
+                    at.x, at.y, at.z, 14, 0.25, 0.3, 0.25, 0.1);
             default -> level.sendParticles(ParticleTypes.CRIT, at.x, at.y, at.z, 8, 0.25, 0.3, 0.25, 0.1);
         }
     }
