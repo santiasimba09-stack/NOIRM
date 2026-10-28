@@ -301,14 +301,18 @@ public final class Legendary {
         // Titles are drawn very large: the short name on top, the epithet and the rest below.
         Component title = (entry != null ? Component.literal(entry.given) : ninja.getDisplayName().copy())
                 .withStyle(s -> s.withColor(NinjaClass.LEGENDARY_COLOR & 0xFFFFFF).withBold(true));
-        Component subtitle = entry != null
-                ? Component.translatable("bingo.noirm.entrance", Component.translatable("bingo.noirm.epithet." + entry.epithet),
-                        NinjaClass.letter(NinjaClass.LEGENDARY_CODE), com.noirm.economy.Ryo.format(entry.bounty)).withStyle(ChatFormatting.GRAY)
-                : Component.translatable("bingo.noirm.entrance.free").withStyle(ChatFormatting.GRAY);
+        Component subtitle = (entry != null ? Component.translatable("bingo.noirm.epithet." + entry.epithet)
+                : Component.translatable("bingo.noirm.entrance.free")).copy().withStyle(ChatFormatting.GRAY);
+        // The class and the bounty go above the hotbar (the subtitle is drawn too big for them).
+        Component details = entry == null ? null : Component.translatable("bingo.noirm.entrance",
+                NinjaClass.letter(NinjaClass.LEGENDARY_CODE), com.noirm.economy.Ryo.format(entry.bounty)).withStyle(ChatFormatting.GOLD);
         if (player instanceof ServerPlayer sp && sp.connection != null) {
             sp.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 25));
             sp.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));
             sp.connection.send(new ClientboundSetTitleTextPacket(title));
+            if (details != null) {
+                sp.displayClientMessage(details, true);
+            }
             sp.playNotifySound(SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 0.6f, 0.55f);
         }
         return true;

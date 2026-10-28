@@ -1818,7 +1818,7 @@
   "bingo.noirm.epithet.smoke_wraith": "the Smoke Wraith",
   "bingo.noirm.epithet.ashen_shadow": "the Ashen Shadow",
   "bingo.noirm.epithet.hollow_sun": "the Hollow Sun",
-  "bingo.noirm.entrance": "%s · Class %s legend · Bounty %s ryo",
+  "bingo.noirm.entrance": "Class %s legend · Bounty %s ryo",
   "bingo.noirm.entrance.free": "Legendary ninja",
   "bingo.noirm.claimed": "Bounty claimed: %s. %s ryo are yours.",
   "bingo.noirm.claimed.other": "%s claimed the bounty on %s.",

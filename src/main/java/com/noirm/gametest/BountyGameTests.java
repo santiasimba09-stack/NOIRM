@@ -214,6 +214,7 @@ public final class BountyGameTests {
         BlockPos area = helper.absolutePos(new BlockPos(1, 1, 1));
         BingoEntry e = book.add(level, RandomSource.create(21), false, null, area);
         BingoEntry y = book.add(level, RandomSource.create(22), false, null, area);
+        BingoEntry y2 = book.add(level, RandomSource.create(23), false, null, area);
         try {
             Player player = helper.makeMockPlayer();
             Ryo.set(player, 0);
@@ -232,6 +233,12 @@ public final class BountyGameTests {
             helper.assertTrue(BingoEvents.onYield(yielder, other) && Ryo.balance(other) == y.bounty, "a yield pays the bounty");
             helper.assertTrue(BingoEvents.entryId(yielder) < 0 && !BingoEvents.onYield(yielder, other), "and only once");
             yielder.discard();
+            // Dying to no one's hand pays nobody: the rogue "survives" and is next seen far away.
+            SparringNinja unlucky = BingoEvents.spawn(level, book, y2, area);
+            unlucky.hurt(unlucky.damageSources().genericKill(), 1000000f);
+            helper.assertTrue(!unlucky.isAlive() && y2.active() && BingoEvents.body(y2) == null, "still at large");
+            helper.assertTrue(Math.sqrt(y2.area.distSqr(area)) > BingoEvents.FLEE_DISTANCE - 2, "and fled far away");
+            helper.assertTrue(BingoEvents.checkNear(level, book, area) == 0, "so they don't walk straight back in");
             // Crew mates' and clones' kills pay their leader.
             SparringNinja mate = ninja(helper, TestClans.PLAIN, 20f);
             mate.joinCrew(player.getUUID());
@@ -248,6 +255,7 @@ public final class BountyGameTests {
         } finally {
             book.remove(e);
             book.remove(y);
+            book.remove(y2);
         }
         clearAround(helper);
     }

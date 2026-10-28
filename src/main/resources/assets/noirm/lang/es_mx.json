@@ -1818,7 +1818,7 @@
   "bingo.noirm.epithet.smoke_wraith": "el Espectro de Humo",
   "bingo.noirm.epithet.ashen_shadow": "la Sombra Cenicienta",
   "bingo.noirm.epithet.hollow_sun": "el Sol Hueco",
-  "bingo.noirm.entrance": "%s · Leyenda de clase %s · Recompensa %s ryo",
+  "bingo.noirm.entrance": "Leyenda de clase %s · Recompensa %s ryo",
   "bingo.noirm.entrance.free": "Ninja legendario",
   "bingo.noirm.claimed": "Recompensa cobrada: %s. %s ryo son tuyos.",
   "bingo.noirm.claimed.other": "%s cobró la recompensa por %s.",

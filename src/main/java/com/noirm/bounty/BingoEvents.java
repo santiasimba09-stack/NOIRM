@@ -64,6 +64,8 @@ public final class BingoEvents {
     public static final double SPAWN_NEAR = 96;
     /** With no player this close, a rogue moves on (the body goes, the page keeps where they were). */
     public static final double DESPAWN_FAR = 160;
+    /** A listed rogue who dies to no one's hand "survives" and is next seen this far away. */
+    public static final int FLEE_DISTANCE = 500;
     /** How often (ticks) the book checks players and bodies. */
     public static final int CHECK_TICKS = 20;
     /** Player-persisted flag: the chūnin gift was given. */
@@ -338,7 +340,11 @@ public final class BingoEvents {
         if (e != null && payee != null) {
             book.claim(e, payee);
         } else if (e != null) {
-            e.entity = null; // fell to something else: rumours say they survived
+            // Fell to something else (a fall, a monster, /kill): rumours say they survived and fled
+            // far away, so they don't walk straight back in.
+            e.entity = null;
+            double a = dead.getRandom().nextDouble() * Math.PI * 2;
+            e.area = e.area.offset((int) (Math.cos(a) * FLEE_DISTANCE), 0, (int) (Math.sin(a) * FLEE_DISTANCE));
             book.setDirty();
         }
     }
