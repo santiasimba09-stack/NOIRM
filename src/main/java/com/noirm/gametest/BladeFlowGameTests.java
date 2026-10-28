@@ -207,7 +207,8 @@ public final class BladeFlowGameTests {
                 JsonObject t = base.getAsJsonObject("display").getAsJsonObject(hand);
                 helper.assertTrue(t != null, id + " has a " + hand + " transform");
                 float length = t.getAsJsonArray("scale").get(1).getAsFloat();
-                helper.assertTrue(length >= 1.2f && length <= 4f, id + " is long in the " + hand + ": " + length);
+                float min = hand.startsWith("third") ? 1.4f : 0.8f; // (first person draws it shorter: it sits under the camera)
+                helper.assertTrue(length >= min && length <= 4f, id + " is long in the " + hand + ": " + length);
             }
             image(helper, "/assets/noirm/textures/item/held/" + id + ".png", 16, 128);
             if (model.has("overrides")) {

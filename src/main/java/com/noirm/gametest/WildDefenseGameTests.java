@@ -67,6 +67,10 @@ public final class WildDefenseGameTests {
         List<SparringNinja> wanderer = spawn(helper, Encounters.WANDERER, new BlockPos(0, 1, 2));
         List<SparringNinja> band = spawn(helper, Encounters.ROGUE_BAND, new BlockPos(2, 1, 2));
         SparringNinja rogue = band.get(0);
+        // Everyone stands still (no fighting among themselves), so only the defence is tested.
+        for (List<SparringNinja> group : List.of(travellers, squad, wanderer, band)) {
+            group.forEach(n -> n.setNoAi(true));
+        }
         helper.assertTrue(travellers.stream().allMatch(n -> n.getTarget() == null), "travellers start out calm");
         helper.assertFalse(WildDefenders.defendsPlayers(wanderer.get(0)) || WildDefenders.defendsPlayers(rogue), "wanderers and rogues don't defend");
         helper.assertTrue(WildDefenders.defendsPlayers(travellers.get(0)) && WildDefenders.defendsPlayers(squad.get(0)), "travellers and squads do");
@@ -88,7 +92,7 @@ public final class WildDefenseGameTests {
         helper.runAfterDelay(12, () -> {
             LivingEntity target = defender.getTarget();
             helper.assertTrue(target != player, "the defender stays off the player");
-            helper.assertTrue(target != null && WildNinjas.isRogue(target), "and back on a rogue, got " + target);
+            helper.assertTrue(target == rogue, "and back on the rogue, got " + target);
             for (List<SparringNinja> group : List.of(travellers, squad, wanderer, band)) {
                 group.forEach(LivingEntity::discard);
             }
