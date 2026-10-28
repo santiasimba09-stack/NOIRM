@@ -190,8 +190,11 @@ public final class CareerGameTests {
         helper.assertTrue(Shop.trade(player, smith, kunai) && Ryo.balance(player) == 920, "kunai bought for 80");
         helper.assertTrue(Shop.count(player, NinjaWeapons.KUNAI.get()) == 4, "four kunai in the bag");
         helper.assertFalse(Shop.trade(player, smith, katana), "an academy student can't buy a katana");
+        helper.assertTrue(com.noirm.nature.JutsuLearning.extraRankGate.apply(player, "B") != null
+                && com.noirm.nature.JutsuLearning.extraRankGate.apply(player, "C") == null, "B jutsu need a rank, C don't");
         career(player).setRank(PlayerRank.CHUNIN);
         helper.assertTrue(Shop.trade(player, smith, katana), "a chūnin can");
+        helper.assertTrue(PlayerRank.jutsuGate(player, "B") == null && PlayerRank.jutsuGate(player, "A") != null, "a chūnin learns B jutsu, not A");
         helper.assertTrue(PlayerRank.atLeast(player, PlayerRank.GENIN) && !PlayerRank.atLeast(player, PlayerRank.JONIN), "atLeast works");
         // Selling: iron, and loot (the katana goes back for a quarter of its price).
         int before = Ryo.balance(player);

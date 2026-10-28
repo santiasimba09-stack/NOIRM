@@ -274,6 +274,7 @@ public final class NatureDrillGameTests {
         helper.assertTrue(JutsuLearning.rankBlocker(player, data, "B") != null, "B needs Reserves");
         helper.assertTrue(JutsuLearning.readScroll(player, data, "B", null) == null, "refused at Reserves 10");
         data.setReserves(JutsuLearning.RESERVES_FOR_RANK[3]);
+        data.career().setRank(com.noirm.mission.PlayerRank.CHUNIN); // B jutsu also need chūnin (player rank gate)
         ResourceLocation b = JutsuLearning.readScroll(player, data, "B", null);
         helper.assertTrue(b != null && "B".equals(com.noirm.jutsu.JutsuData.get(b).rank()), "B learned at Reserves 15: " + b);
         // A named scroll of a nature you lack is refused.
