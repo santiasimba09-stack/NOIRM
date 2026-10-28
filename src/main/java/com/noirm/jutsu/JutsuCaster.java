@@ -581,6 +581,7 @@ public final class JutsuCaster {
 
     private static void afterCast(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
         if (caster instanceof Player player) {
+            com.noirm.training.TrainingSystem.onJutsuCast(player, def.behavior()); // Body Flicker trains speed; kill XP
             ShinobiCapability.get(player).ifPresent(data -> {
                 data.jutsu().setCooldown(id, cooldown(caster, id, def));
                 int before = data.jutsu().masteryLevel(id);

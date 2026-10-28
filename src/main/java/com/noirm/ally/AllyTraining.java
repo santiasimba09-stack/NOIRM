@@ -50,6 +50,9 @@ public final class AllyTraining {
     public static void onDamageTaken(SparringNinja ninja, Entity attacker, float amount) {
         if (grows(ninja) && attacker != null && amount > 0) {
             grant(ninja, Stat.VITALITY, amount * VITALITY_XP_PER_DAMAGE);
+            // DUR (APX 0.1): hits taken in a fight, by the share of their health they were worth.
+            float percent = 100f * amount / Math.max(1f, ninja.getMaxHealth());
+            grant(ninja, Stat.DURABILITY, percent * com.noirm.training.Durability.XP_PER_PERCENT * REAL_FIGHT_BONUS);
         }
     }
 

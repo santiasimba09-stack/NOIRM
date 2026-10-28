@@ -55,6 +55,8 @@ public final class ShinobiData {
     private float control = DEFAULT_STAT;
     /** WIL, willpower: less Mangekyō strain, a steadier hold on a tailed beast. */
     private float willpower = DEFAULT_STAT;
+    /** DUR, durability: negates a share of incoming damage ({@code training.Durability}). */
+    private float durability = DEFAULT_STAT;
     /** True when the client's copy is out of date and needs a sync packet. */
     private boolean dirty = true;
     /** Same, for the powers (clan, jutsu, eyes, awakening, biju) — synced separately, less often. */
@@ -173,6 +175,15 @@ public final class ShinobiData {
 
     public float getWillpower() {
         return willpower;
+    }
+
+    public float getDurability() {
+        return durability;
+    }
+
+    public void setDurability(float value) {
+        durability = Mth.clamp(value, 1f, MAX_STAT);
+        dirty = true;
     }
 
     public void setControl(float value) {
@@ -324,6 +335,7 @@ public final class ShinobiData {
         tag.putFloat("Reserves", reserves);
         tag.putFloat("Control", control);
         tag.putFloat("Willpower", willpower);
+        tag.putFloat("Durability", durability);
         tag.putString("Style", combatStyle);
         net.minecraft.nbt.ListTag crewTag = new net.minecraft.nbt.ListTag();
         crew.forEach(id -> crewTag.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
@@ -351,6 +363,7 @@ public final class ShinobiData {
         reserves = Mth.clamp(tag.contains("Reserves") ? tag.getFloat("Reserves") : DEFAULT_STAT, 1f, MAX_STAT);
         control = Mth.clamp(tag.contains("Control") ? tag.getFloat("Control") : DEFAULT_STAT, 1f, MAX_STAT);
         willpower = Mth.clamp(tag.contains("Willpower") ? tag.getFloat("Willpower") : DEFAULT_STAT, 1f, MAX_STAT);
+        durability = Mth.clamp(tag.contains("Durability") ? tag.getFloat("Durability") : DEFAULT_STAT, 1f, MAX_STAT);
         combatStyle = tag.getString("Style");
         crew.clear();
         tag.getList("Crew", net.minecraft.nbt.Tag.TAG_INT_ARRAY).forEach(t -> crew.add(net.minecraft.nbt.NbtUtils.loadUUID(t)));

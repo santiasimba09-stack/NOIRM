@@ -70,7 +70,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     private static final int GREEN = 0xFF6FD38A;
     private static final int RED = 0xFFE05A5A;
     private static final int SEAL = 0xFFB8322E;
-    private static final int[] STAT_COLORS = {0xFFE07040, 0xFF40C8E0, 0xFFE04060, 0xFF4080F0};
+    private static final int[] STAT_COLORS = {0xFFE07040, 0xFF40C8E0, 0xFFE04060, 0xFF4080F0, 0xFFC8A878};
 
     private enum Tab {
         OVERVIEW(0xFFE8C060), GEAR(0xFF7FB2D9), JUTSU(0xFFE0566A), NATURES(0xFF6FD3A0), ORDERS(0xFFB28CF0), JOB(0xFFD9A066);

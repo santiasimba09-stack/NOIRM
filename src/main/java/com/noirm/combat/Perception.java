@@ -20,9 +20,39 @@ public final class Perception {
 
     private Perception() {}
 
-    /** How well a fighter reads combat: the average of speed and taijutsu, times eyes and states. */
+    /*
+     * Speed → perception (APX 0.1). Movement slows down past speed 35 and stops at 50 (see
+     * player.Movement); the speed it no longer takes goes into perception instead:
+     *
+     *   speed:            10   30   35   40    50    60    100
+     *   speed as seen by
+     *   perception:       10   30   35   43.5  60.5  70.5  110.5
+     *
+     * - up to 35: 1 point per point (as before);
+     * - 35 to 50: 1 + SPEED_PERCEPTION_BONUS (1.7) per point, the share movement doesn't take;
+     * - past 50: SPEED_PERCEPTION_PAST_CAP (1) per point, plus the 25.5 banked from 35–50.
+     */
+    /** Extra perception per speed point between Movement.GENTLE_UNTIL (35) and Movement.MOVEMENT_CAP_AT (50). */
+    public static final float SPEED_PERCEPTION_BONUS = 0.7f;
+    /** Perception per speed point past Movement.MOVEMENT_CAP_AT (50). */
+    public static final float SPEED_PERCEPTION_PAST_CAP = 1f;
+
+    /** How well a fighter reads combat: the average of speed (on the curve above) and taijutsu, times eyes and states. */
     public static float perception(LivingEntity entity) {
-        return (speed(entity) + taijutsu(entity)) / 2f * ocularMultiplier(entity);
+        return (perceptionSpeed(speed(entity)) + taijutsu(entity)) / 2f * ocularMultiplier(entity);
+    }
+
+    /** The speed stat as perception sees it (the curve above). */
+    public static float perceptionSpeed(float speed) {
+        float gentle = com.noirm.player.Movement.GENTLE_UNTIL;
+        float cap = com.noirm.player.Movement.MOVEMENT_CAP_AT;
+        if (speed <= gentle) {
+            return speed;
+        }
+        if (speed <= cap) {
+            return speed + (speed - gentle) * SPEED_PERCEPTION_BONUS;
+        }
+        return cap + (cap - gentle) * SPEED_PERCEPTION_BONUS + (speed - cap) * SPEED_PERCEPTION_PAST_CAP;
     }
 
     /** Raw strength from stats alone (no eyes or states): the average of speed and taijutsu. */

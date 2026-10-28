@@ -46,6 +46,7 @@ public final class CommandGuide {
                 .add("nature", "/noirm me nature <0-100>", "/noirm me nature 50", true)
                 .add("stats", "/noirm me stats <speed> <taijutsu> <vitality> <reserves> [<ctl> <wil>]", "/noirm me stats 30 40 25 20 15 15", true)
                 .add("stat", "/noirm stat <speed|taijutsu|vitality|reserves|ctl|wil> <1-100>", "/noirm stat ctl 50", true)
+                .add("stat_dur", "/noirm stat dur <1-10000>", "/noirm stat dur 60", true)
                 .add("bars", "/noirm stats", "/noirm stats", false)
                 .add("set", "/noirm set <chakra|stamina> <value>", "/noirm set chakra 80", true)
                 .add("max_bar", "/noirm max <chakra|stamina> <value>", "/noirm max chakra 300", true)

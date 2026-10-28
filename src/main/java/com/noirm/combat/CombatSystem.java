@@ -309,7 +309,7 @@ public final class CombatSystem {
         }
         return switch (classify(target, state, attacker)) {
             case DODGED -> {
-                onDodged(target, state);
+                onDodged(target, state, attacker);
                 yield true;
             }
             case PARRIED -> {
@@ -646,7 +646,7 @@ public final class CombatSystem {
         CombatState targetState = CombatStates.get(target);
         Outcome outcome = classify(target, targetState, attacker);
         if (outcome == Outcome.DODGED) {
-            onDodged(target, targetState);
+            onDodged(target, targetState, attacker);
             return;
         }
         // A counter (after a just-frame parry) can't be guarded or parried.
@@ -747,13 +747,15 @@ public final class CombatSystem {
         CombatEffects.hitLanded(attacker, target, move, guarded, targetState);
     }
 
-    private static void onDodged(LivingEntity target, CombatState state) {
+    private static void onDodged(LivingEntity target, CombatState state, Entity attacker) {
         if (!state.perfectDodgeUsed && state.phaseTime < PERFECT_DODGE_TICKS) {
             state.perfectDodgeUsed = true;
             CombatEffects.perfectDodge(target);
-            TrainingSystem.onPerfectDodge(target);
+            TrainingSystem.onAttackDodged(target, attacker, true);
             AwakeningSystem.onClutch(target);
             focus(target);
+        } else {
+            TrainingSystem.onAttackDodged(target, attacker, false); // APX 0.1: dodging real attacks trains speed
         }
     }
 
@@ -808,6 +810,7 @@ public final class CombatSystem {
     /** Applies posture (and stamina, for players) from a blocked hit. May break the guard. */
     private static void absorbGuardedHit(LivingEntity target, CombatState state, float posture, float damage) {
         CombatEffects.guarded(target);
+        TrainingSystem.onGuarded(target); // counts toward kill XP
         if (target instanceof Player player && !player.getAbilities().instabuild) {
             boolean paid = ShinobiCapability.get(player)
                     .map(d -> d.tryConsumeStamina(GUARD_STAMINA_COST + damage * 0.5f)).orElse(true);
