@@ -1,0 +1,7 @@
+{
+  "type": "noirm:sage_sanctuary",
+  "biomes": "#noirm:has_structure/sage_sanctuary",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {}
+}

@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "17";
+    private static final String PROTOCOL_VERSION = "18";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -124,6 +124,7 @@ public final class NoirmNetwork {
                 .consumerMainThread(com.noirm.gore.GorePackets.Sync::handle).add();
         id = com.noirm.creator.CreatorPackets.register(CHANNEL, id); // character creation
         id = com.noirm.nature.NaturePackets.register(CHANNEL, id); // hidden natures and nature drills
+        id = com.noirm.senjutsu.SagePackets.register(CHANNEL, id); // the sage path: marks, stone skin
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */
