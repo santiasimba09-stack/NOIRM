@@ -181,7 +181,7 @@ public final class NatureTeachingGameTests {
         AllyPackets.Extra extra = new AllyPackets.Extra("Uchiha", 40f, 100f, "weapon_sword", 2, 1, status, affinity,
                 new AllyPackets.Lesson(Nature.WIND.ordinal(), 50f, 3600f, 1.5f, AllyPackets.PACE_NEAR | AllyPackets.PACE_STUDYING),
                 3, 2, new byte[]{(byte) Nature.FIRE.ordinal(), (byte) Nature.EARTH.ordinal()}, 2, 42.5f, 17);
-        AllyPackets.Info info = new AllyPackets.Info(7, 30f, 40f, new float[]{1, 2, 3, 4}, new float[]{0.1f, 0.2f, 0.3f, 0.4f}, 3,
+        AllyPackets.Info info = new AllyPackets.Info(7, 30f, 40f, new float[]{1, 2, 3, 4, 5}, new float[]{0.1f, 0.2f, 0.3f, 0.4f, 0.5f}, 3,
                 "basic", List.of("basic", "brawler"), "generic:1", List.of(Noirm.id("futon/air_palm")),
                 List.of(new AllyPackets.Teachable(Noirm.id("katon/great_fireball"), "B", "screen.noirm.ally.teach.nature")),
                 55f, "LOYAL", List.of(Noirm.id("futon/air_palm")), List.of(2), extra);

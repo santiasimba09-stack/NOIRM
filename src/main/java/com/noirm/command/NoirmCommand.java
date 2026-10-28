@@ -51,7 +51,8 @@ public final class NoirmCommand {
                         .then(statArgument("vitality", ShinobiData::setVitality))
                         .then(statArgument("reserves", ShinobiData::setReserves))
                         .then(statArgument("ctl", ShinobiData::setControl))
-                        .then(statArgument("wil", ShinobiData::setWillpower)))
+                        .then(statArgument("wil", ShinobiData::setWillpower))
+                        .then(statArgument("dur", ShinobiData::setDurability)))
                 .then(Commands.literal("refill").requires(s -> s.hasPermission(CHEAT_PERMISSION))
                         .executes(ctx -> {
                             data(ctx.getSource()).refill();
@@ -81,8 +82,15 @@ public final class NoirmCommand {
         source.sendSuccess(() -> Component.translatable("command.noirm.stat",
                 Math.round(data.getSpeed()), Math.round(data.getTaijutsu()), Math.round(Perception.perception(player)),
                 Math.round(data.getVitality()), Math.round(data.getReserves()),
-                Math.round(data.getControl()), Math.round(data.getWillpower())), false);
+                Math.round(data.getControl()), Math.round(data.getWillpower()))
+                .append(" · ").append(durabilityLine(data)), false);
         return 1;
+    }
+
+    /** "Durability: 30 (20% of damage negated)" (APX 0.1). */
+    public static Component durabilityLine(ShinobiData data) {
+        return Component.translatable("command.noirm.stat_dur", Math.round(data.getDurability()),
+                Math.round(com.noirm.training.Durability.negation(data.getDurability()) * 100f));
     }
 
     private static int showStats(CommandSourceStack source) throws CommandSyntaxException {
