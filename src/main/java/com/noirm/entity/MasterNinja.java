@@ -102,7 +102,15 @@ public class MasterNinja extends SparringNinja {
             }
         }
         setGearRolled(true);
-        knownJutsu().clear(); // a master spars with their body, not with jutsu
+        knownJutsu().clear(); // a master spars with their body, not with jutsu...
+        for (ResourceLocation jutsu : def.jutsu()) {
+            if (com.noirm.jutsu.JutsuData.get(jutsu) != null) {
+                knownJutsu().add(jutsu); // ...unless their test is a jutsu duel
+            }
+        }
+        for (com.noirm.clan.Nature nature : def.natures()) {
+            learnNature(nature, 1f); // a teacher for nature drills
+        }
         applyStrength(def, 1f, null);
         setHealth(getMaxHealth());
     }
@@ -206,7 +214,7 @@ public class MasterNinja extends SparringNinja {
         CombatState state = CombatStates.getIfPresent(this);
         boolean clean = state == null || CombatSystem.classify(this, state, source.getEntity()) == CombatSystem.Outcome.HIT;
         boolean hurt = super.hurt(source, amount);
-        if (hurt && clean && fromPartner && partner != null) {
+        if (hurt && clean && fromPartner && partner != null && MasterSystem.countsAsHit(definition(), source)) {
             cleanHits++;
             MasterDefinition def = definition();
             if (def != null && def.test().hits() > 0 && cleanHits >= def.test().hits()) {

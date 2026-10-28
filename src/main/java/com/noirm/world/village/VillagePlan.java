@@ -190,7 +190,9 @@ public final class VillagePlan {
         /** Village animals: a cat on a porch, chickens in a yard, koi in a pond. */
         CAT, CHICKEN, KOI,
         /** A master who tests and teaches (Might Guy, in the Leaf). */
-        MASTER }
+        MASTER,
+        /** The ninjutsu master (in a capital's Academy) and the medical ninja (in its hospital): see data/noirm/masters/. */
+        SCHOLAR, MEDIC }
 
     /**
      * A resident: where they spawn ({@code x, y, z}), where they belong ({@code homeX/Z},

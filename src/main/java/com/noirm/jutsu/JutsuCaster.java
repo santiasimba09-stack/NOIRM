@@ -336,7 +336,7 @@ public final class JutsuCaster {
         }
         float paid = player.getAbilities().instabuild ? 0f : cost;
         if (def.cast() == CastType.TAP) {
-            int seals = sealPhaseTicks(id, def);
+            int seals = com.noirm.master.MasterPerks.sealTicks(player, sealPhaseTicks(id, def)); // Swift Seals: faster hands
             if (seals == 0) {
                 execute(player, id, def, 1f); // no seals, or a reflex jutsu: at once
             } else {
@@ -348,10 +348,11 @@ public final class JutsuCaster {
         } else {
             JutsuSeals.Sequence seals = def.quick() ? null : JutsuSeals.get(id);
             // Charged and channelled jutsu keep their flow: the seals they form while charging are the seal phase.
-            Casting casting = new Casting(id, def, slot, paid, false, 1f, seals == null ? 0 : seals.ticks());
+            int sealTicks = seals == null ? 0 : com.noirm.master.MasterPerks.sealTicks(player, seals.ticks());
+            Casting casting = new Casting(id, def, slot, paid, false, 1f, sealTicks);
             CASTING.put(player, casting);
             if (seals != null) {
-                startSeals(player, id, casting, seals.ticks()); // this jutsu's own seals
+                startSeals(player, id, casting, sealTicks); // this jutsu's own seals
             } else {
                 castAnimation(player, "cast_seals", def.cast() == CastType.CHARGE ? Math.max(8, def.minCharge()) : 14);
             }
@@ -748,6 +749,7 @@ public final class JutsuCaster {
                 if (data.identity().has(ClanTrait.CHAKRA_FLOW)) {
                     cost *= 0.85f;
                 }
+                cost *= com.noirm.master.MasterPerks.costMultiplier(data); // Chakra Efficiency (a master's lesson)
                 if (data.awakening().natureSurge() && isClanNature(data, def)) {
                     cost = 0f;
                 }

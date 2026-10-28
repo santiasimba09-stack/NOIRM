@@ -35,6 +35,8 @@ public final class Noirm {
         com.noirm.registry.NoirmStructures.register(modBus);
         com.noirm.mission.CareerItems.register(modBus); // the mission board, ryo pouches, mission items
         com.noirm.bounty.BountyItems.register(modBus); // the bingo book
+        com.noirm.medical.MedicalItems.register(modBus); // the antidote
+        com.noirm.guide.GuideItems.register(modBus); // the Shinobi Handbook
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
         com.noirm.world.Destruction.registerGameRules();

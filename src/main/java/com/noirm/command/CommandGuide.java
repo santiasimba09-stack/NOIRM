@@ -174,6 +174,10 @@ public final class CommandGuide {
                 .add("refresh", "/noirm bingo refresh", "/noirm bingo refresh", true)
                 .add("spawn", "/noirm bingo spawn <entry>", "/noirm bingo spawn 1", true)
                 .add("give", "/noirm bingo give", "/noirm bingo give", true);
+        section("guide")
+                .add("book", "/noirm guide", "/noirm guide", false)
+                .add("tips", "/noirm guide tips <on|off>", "/noirm guide tips off", false)
+                .add("reset", "/noirm guide reset", "/noirm guide reset", true);
     }
 
     private CommandGuide() {}

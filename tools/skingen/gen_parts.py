@@ -1358,6 +1358,43 @@ CLANS = {
         "accessory": [["none", 1]],
         "accessory_color": ACC_COLORS,
     },
+    # The ninjutsu master (Rensai, a jonin scholar at the Academy): weathered tan skin, swept
+    # iron-grey hair, narrow slate-blue eyes under fierce brows, a scar across the nose, reading
+    # glasses, a navy long-sleeved shirt and charcoal trousers, wrapped forearms.
+    "ninjutsu_scholar": {
+        "skin": [["#c98e66", 1]],
+        "hair_style": [["swept", 1]],
+        "hair_color": [["#7a7f88", 1]],
+        "eyes": [["narrow", 1]],
+        "eye_color": [["#2d4f6a", 1]],
+        "brows": [["fierce", 1]],
+        "shirt": [["longsleeve", 1]],
+        "shirt_color": [["#1c2233", 1]],
+        "pants": [["long", 1]],
+        "pants_color": [["#24262e", 1]],
+        "wraps": [[2, 1]],
+        "mark": [["scar_nose", 1]],
+        "accessory": [["glasses", 1]],
+        "accessory_color": ACC_COLORS,
+    },
+    # The medical ninja (Tsubaki, at the hospital): fair skin, dark hair in a bun, sharp green eyes,
+    # soft brows, a bone-white long-sleeved shirt and slate trousers under her medic's coat.
+    "medic": {
+        "skin": [["#e8bc98", 1]],
+        "hair_style": [["bun", 1]],
+        "hair_color": [["#2a2522", 1]],
+        "eyes": [["sharp", 1]],
+        "eye_color": [["#3a5a3a", 1]],
+        "brows": [["soft", 1]],
+        "shirt": [["longsleeve", 1]],
+        "shirt_color": [["#d8d2c4", 1]],
+        "pants": [["long", 1]],
+        "pants_color": [["#3a4250", 1]],
+        "wraps": [[0, 1]],
+        "mark": [["none", 1]],
+        "accessory": [["none", 1]],
+        "accessory_color": ACC_COLORS,
+    },
 }
 
 # A generated clan's members share a family look (seed bits 48-63 = the clan): most of them

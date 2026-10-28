@@ -21,13 +21,17 @@ import java.util.Optional;
  * @param test     the spar you must pass before they teach you
  * @param grantsStyle passing the test lets you use their style even below its taijutsu requirement
  * @param lessons  what they teach, in order
- * @param trial    the kind of test: {@code "spar"} (the default), or {@code "meditation"} (sit still by them while
+ * @param trial    the kind of test: {@code "spar"} (the default), {@code "meditation"} (sit still by them while
  *                 spirits try to break your focus, see {@code senjutsu.SageTrial}; {@code test.hits} is then the
- *                 seconds of stillness needed, within {@code test.seconds})
+ *                 seconds of stillness needed, within {@code test.seconds}), {@code "jutsu"} (a jutsu duel: a spar
+ *                 where only jutsu hits count) or {@code "patient"} (keep a wounded patient alive with your chakra
+ *                 for {@code test.seconds}, see {@code medical.MedicTrial})
+ * @param natures  natures they have: meditating by them drills those natures faster ({@code nature.NatureDrills})
+ * @param jutsu    jutsu they use in their test (a jutsu duel); masters without any fight with their body
  */
 public record MasterDefinition(String name, String greeting, Optional<ResourceLocation> style, String look,
                                Map<String, ResourceLocation> gear, Stats stats, Test test, boolean grantsStyle, List<Lesson> lessons,
-                               String trial) {
+                               String trial, List<com.noirm.clan.Nature> natures, List<ResourceLocation> jutsu) {
 
     public static final Codec<MasterDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.fieldOf("name").forGetter(MasterDefinition::name),
@@ -39,7 +43,9 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
             Test.CODEC.optionalFieldOf("test", Test.DEFAULT).forGetter(MasterDefinition::test),
             Codec.BOOL.optionalFieldOf("grants_style", true).forGetter(MasterDefinition::grantsStyle),
             Lesson.CODEC.listOf().optionalFieldOf("lessons", List.of()).forGetter(MasterDefinition::lessons),
-            Codec.STRING.optionalFieldOf("trial", "spar").forGetter(MasterDefinition::trial)
+            Codec.STRING.optionalFieldOf("trial", "spar").forGetter(MasterDefinition::trial),
+            com.noirm.clan.Nature.CODEC.listOf().optionalFieldOf("natures", List.of()).forGetter(MasterDefinition::natures),
+            ResourceLocation.CODEC.listOf().optionalFieldOf("jutsu", List.of()).forGetter(MasterDefinition::jutsu)
     ).apply(i, MasterDefinition::new));
 
     public Optional<Lesson> lesson(String id) {
@@ -77,26 +83,61 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
     }
 
     /**
-     * One lesson: the jutsu it teaches and what you need first.
+     * One lesson: what it teaches and what you need first. A lesson teaches a jutsu ({@code jutsu}),
+     * a <b>perk</b> (a lasting skill, see {@code MasterPerks}: {@code swift_seals}, {@code chakra_efficiency},
+     * {@code nature_insight}, {@code poison_lore}), or is a <b>service</b> the master performs each time you
+     * ask and pay ({@code eye_transplant}).
      *
+     * @param jutsu     the jutsu it teaches (null for a perk or a service)
      * @param taijutsu  taijutsu stat needed
      * @param speed     speed stat needed
      * @param test      whether you must have passed this master's spar
      * @param after     lessons (ids, this master's) you must have learned first
      * @param mastery   practice: jutsu you must have used enough to reach a mastery level (★)
      * @param control   chakra control (CTL) needed
+     * @param perk      the perk it grants, or ""
+     * @param service   the service the master performs, or "" (a service is never "learned": ask again any time)
+     * @param rank      the player rank needed ({@code genin}, {@code chunin}, {@code jonin}…), or "" for none
+     * @param ryo       the price in ryo (paid when you learn it, or each time for a service)
      */
     public record Lesson(String id, ResourceLocation jutsu, float taijutsu, float speed, boolean test, List<String> after,
-                         Map<ResourceLocation, Integer> mastery, float control) {
+                         Map<ResourceLocation, Integer> mastery, float control, String perk, String service, String rank, int ryo) {
         public static final Codec<Lesson> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(Lesson::id),
-                ResourceLocation.CODEC.fieldOf("jutsu").forGetter(Lesson::jutsu),
+                ResourceLocation.CODEC.optionalFieldOf("jutsu").forGetter(l -> Optional.ofNullable(l.jutsu())),
                 Codec.floatRange(0, 10000).optionalFieldOf("taijutsu", 0f).forGetter(Lesson::taijutsu),
                 Codec.floatRange(0, 10000).optionalFieldOf("speed", 0f).forGetter(Lesson::speed),
                 Codec.BOOL.optionalFieldOf("test", true).forGetter(Lesson::test),
                 Codec.STRING.listOf().optionalFieldOf("after", List.of()).forGetter(Lesson::after),
                 Codec.unboundedMap(ResourceLocation.CODEC, Codec.intRange(1, 5)).optionalFieldOf("mastery", Map.of()).forGetter(Lesson::mastery),
-                Codec.floatRange(0, 10000).optionalFieldOf("control", 0f).forGetter(Lesson::control)
-        ).apply(i, Lesson::new));
+                Codec.floatRange(0, 10000).optionalFieldOf("control", 0f).forGetter(Lesson::control),
+                Codec.STRING.optionalFieldOf("perk", "").forGetter(Lesson::perk),
+                Codec.STRING.optionalFieldOf("service", "").forGetter(Lesson::service),
+                Codec.STRING.optionalFieldOf("rank", "").forGetter(Lesson::rank),
+                Codec.intRange(0, 1_000_000).optionalFieldOf("ryo", 0).forGetter(Lesson::ryo)
+        ).apply(i, (id, jutsu, taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo) ->
+                new Lesson(id, jutsu.orElse(null), taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo)));
+
+        /** Whether this lesson teaches a jutsu (not a perk or a service). */
+        public boolean teachesJutsu() {
+            return jutsu != null;
+        }
+
+        public boolean isService() {
+            return !service.isEmpty();
+        }
+
+        /** The rank it needs (null for none, or an unknown name). */
+        public com.noirm.mission.PlayerRank neededRank() {
+            return rank.isEmpty() ? null : com.noirm.mission.PlayerRank.byKey(rank);
+        }
+
+        /** The lang key of what it teaches: the jutsu's name, or {@code perk.noirm.<perk>} / {@code service.noirm.<service>}. */
+        public String titleKey() {
+            if (jutsu != null) {
+                return com.noirm.dojutsu.Sharingan.jutsuKey(jutsu);
+            }
+            return isService() ? "service.noirm." + service : "perk.noirm." + perk;
+        }
     }
 }

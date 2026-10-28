@@ -1929,6 +1929,13 @@ final class VillagePlanner {
             int[] in = inside(academy, 4);
             add(Spawn.at(Role.TEACHER, in[0], 0, in[1], 10));
             add(Spawn.at(Role.TEACHER, school[0], 0, school[1], 8));
+            int[] hall = inside(academy, 10); // deeper in the Academy's middle hall
+            add(Spawn.at(Role.SCHOLAR, hall[0], 0, hall[1], 5));
+        }
+        Lot hospital = plan.first(LotType.HOSPITAL);
+        if (hospital != null) {
+            int[] ward = inside(hospital, 4); // the ground floor, behind the reception desk
+            add(Spawn.at(Role.MEDIC, ward[0], 0, ward[1], 5));
         }
         shopkeepers(28);
         townsfolk(36, 10, school[0], school[1], 4);

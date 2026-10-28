@@ -47,6 +47,12 @@ SEQUENCES = {
     "katon/burning_ash": ["snake", "ram", "boar", "horse", "tiger"],
     "katon/majestic_destroyer_flame": ["snake", "ram", "monkey", "boar", "horse", "tiger"],
     "katon/flame_bomb": ["boar", "dog", "tiger"],
+    # Rensai the Scholar's own jutsu (data/noirm/masters/scholar_rensai.json): short sequences, ours.
+    "katon/ember_net": ["rat", "dog", "tiger"],
+    "suiton/tide_lance": ["ox", "snake", "tiger"],
+    "futon/gale_blades": ["dog", "bird"],
+    "raiton/thunder_snare": ["ram", "monkey", "rat"],
+    "doton/stone_fist": ["boar", "ox", "dog"],
     "katon/dragon_flame_caterwaul": ["snake", "dragon", "hare", "dragon", "tiger"],
     "suiton/water_dragon": ["ox", "monkey", "hare", "rat", "boar", "bird", "ox", "horse", "bird", "tiger"],
     "suiton/great_waterfall": ["tiger", "rat", "dog", "ox", "hare", "tiger"],
