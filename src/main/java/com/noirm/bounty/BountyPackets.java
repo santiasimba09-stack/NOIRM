@@ -144,6 +144,11 @@ public final class BountyPackets {
     /** Natures, eyes, beast, and for a legend what they're known for. */
     public static List<Component> traits(MinecraftServer server, BingoEntry e) {
         List<Component> traits = new ArrayList<>();
+        if (e.legendary) {
+            // First and in red: a legend can drop a beginner in a couple of seconds.
+            traits.add(Component.translatable("bingo.noirm.trait.danger", NinjaClass.letter(NinjaClass.LEGENDARY_CODE))
+                    .withStyle(net.minecraft.ChatFormatting.RED, net.minecraft.ChatFormatting.BOLD));
+        }
         List<Nature> natures = BingoBook.natures(server, e);
         if (!natures.isEmpty()) {
             MutableComponent line = Component.empty();

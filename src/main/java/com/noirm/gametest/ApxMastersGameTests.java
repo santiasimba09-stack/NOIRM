@@ -124,11 +124,24 @@ public final class ApxMastersGameTests {
                     palette + ": Rensai teaches inside the Academy");
             helper.assertTrue(hospital == null || plan.spawns.stream().anyMatch(s -> s.role() == VillagePlan.Role.MEDIC && inside(hospital, s)),
                     palette + ": Tsubaki works inside the hospital");
-            helper.assertTrue(plan.spawns.stream().filter(s -> s.role() == VillagePlan.Role.MEDIC).count() == (hospital == null ? 0 : 1),
-                    palette + ": one medic per hospital");
+            // Every capital has both of them, even one without room for an Academy or a hospital
+            // (then Rensai is in the Kage residence and Tsubaki in a clinic by the plaza).
+            helper.assertTrue(plan.spawns.stream().filter(s -> s.role() == VillagePlan.Role.MEDIC).count() == 1,
+                    palette + ": one medic in every capital");
+            helper.assertTrue(plan.spawns.stream().filter(s -> s.role() == VillagePlan.Role.SCHOLAR).count() == 1,
+                    palette + ": one scholar in every capital");
         }
-        VillagePlan town = VillagePlan.uncached(VillageKind.TOWN, VillagePalette.LEAF, 77L);
-        helper.assertFalse(town.spawns.stream().anyMatch(s -> s.role() == VillagePlan.Role.SCHOLAR), "towns have no Academy master");
+        // A town has one of the two (which one depends on the town).
+        boolean sawScholar = false, sawMedic = false;
+        for (long seed = 0; seed < 512; seed += 64) {
+            VillagePlan town = VillagePlan.uncached(VillageKind.TOWN, VillagePalette.LEAF, seed);
+            long scholars = town.spawns.stream().filter(s -> s.role() == VillagePlan.Role.SCHOLAR).count();
+            long medics = town.spawns.stream().filter(s -> s.role() == VillagePlan.Role.MEDIC).count();
+            helper.assertTrue(scholars + medics == 1, "a town has one master, seed " + seed + ": " + scholars + "+" + medics);
+            sawScholar |= scholars == 1;
+            sawMedic |= medics == 1;
+        }
+        helper.assertTrue(sawScholar && sawMedic, "some towns have Rensai, others Tsubaki");
         helper.succeed();
     }
 

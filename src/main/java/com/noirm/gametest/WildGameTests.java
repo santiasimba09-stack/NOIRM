@@ -190,7 +190,12 @@ public final class WildGameTests {
         helper.assertTrue(three.subtract(leader.position()).dot(forward) < 0, "and the places are behind the leader");
         helper.succeedWhen(() -> {
             for (SparringNinja n : squad) {
-                helper.assertTrue(n.distanceTo(leader) < 6, "everyone gathers round the leader, one is " + n.distanceTo(leader));
+                helper.assertTrue(n.distanceTo(leader) < 6, "everyone gathers round the leader, one is " + n.distanceTo(leader)
+                        + " DIAG " + squad.stream().map(m -> m.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()
+                        + " t=" + (m.getTarget() == null ? "-" : m.getTarget().getType().toShortString() + "@" + m.getTarget().blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString())
+                        + " alive=" + m.isAlive() + " yield=" + m.isYielded()).toList()
+                        + " near=" + helper.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(20), e -> !squad.contains(e))
+                        .stream().map(e -> e.getType().toShortString() + "@" + e.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).toList());
             }
             discard(squad);
             for (int x = -5; x <= 7; x++) {

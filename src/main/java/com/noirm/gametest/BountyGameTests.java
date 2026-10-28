@@ -206,6 +206,45 @@ public final class BountyGameTests {
         clearAround(helper);
     }
 
+    /** Legends are never seen near the world spawn and never come for a player in their first hours. */
+    @GameTest(template = "empty", batch = "noirm_bounty_legend_safe", timeoutTicks = 40)
+    public static void legendsStayAwayFromNewPlayers(GameTestHelper helper) {
+        floor(helper);
+        ServerLevel level = helper.getLevel();
+        BingoBook book = BingoBook.get(level.getServer());
+        BlockPos area = helper.absolutePos(new BlockPos(1, 1, 1));
+        BingoEntry legend = book.add(level, RandomSource.create(31), true, com.noirm.bounty.Legendary.Kind.FIRE, area);
+        BingoEntry rogue = book.add(level, RandomSource.create(32), false, null, area.offset(2, 0, 0));
+        try {
+            BlockPos spawn = level.getSharedSpawnPos();
+            BlockPos nearSpawn = spawn.offset(200, 0, 50);
+            BlockPos pushed = BingoBook.keepAway(level, legend, nearSpawn);
+            double d = Math.hypot(pushed.getX() - spawn.getX(), pushed.getZ() - spawn.getZ());
+            helper.assertTrue(Math.abs(d - BingoBook.LEGEND_SAFE_RADIUS) <= 2, "a legend wandering toward spawn is kept " + BingoBook.LEGEND_SAFE_RADIUS
+                    + " blocks out, got " + d);
+            helper.assertTrue(BingoBook.keepAway(level, rogue, nearSpawn).equals(nearSpawn), "ordinary rogues may come closer");
+            BlockPos far = spawn.offset(3000, 0, 0);
+            helper.assertTrue(BingoBook.keepAway(level, legend, far).equals(far), "far out, nothing changes");
+            // A new player near their area: the ordinary rogue comes, the legend doesn't.
+            helper.assertTrue(BingoEvents.checkNear(level, book, area.offset(10, 0, 0), false) == 1, "only the ordinary rogue comes");
+            helper.assertTrue(BingoEvents.body(legend) == null && BingoEvents.body(rogue) != null, "not the legend");
+            // A seasoned player: the legend comes too.
+            helper.assertTrue(BingoEvents.checkNear(level, book, area.offset(10, 0, 0), true) == 1 && BingoEvents.body(legend) != null,
+                    "for a seasoned player the legend turns up");
+            helper.assertTrue(com.noirm.bounty.BountyPackets.traits(level.getServer(), legend).get(0).getString().contains("S+"),
+                    "and their page opens with the danger line");
+        } finally {
+            for (BingoEntry e : java.util.List.of(legend, rogue)) {
+                SparringNinja body = BingoEvents.body(e);
+                if (body != null) {
+                    body.discard();
+                }
+                book.remove(e);
+            }
+        }
+        clearAround(helper);
+    }
+
     @GameTest(template = "empty", batch = "noirm_bounty_pay")
     public static void bountyIsPaidOnceAndToTheLeader(GameTestHelper helper) {
         floor(helper);

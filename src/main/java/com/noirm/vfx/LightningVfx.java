@@ -108,6 +108,41 @@ public final class LightningVfx {
         pool(level, ground, radius * 1.1f, 10);
     }
 
+    /**
+     * Lightning bindings (Thunder Snare): three rings of short arcs snapped shut around the body
+     * (ankles, waist, shoulders), arcs running between the rings, and a flicker of sparks.
+     * {@code tick} staggers the rings so they crawl.
+     */
+    public static void shackle(Level level, Entity body, int tick) {
+        RandomSource random = level.random;
+        Vec3 feet = body.position();
+        float w = body.getBbWidth();
+        float h = body.getBbHeight();
+        double reach = w * 0.7 + 0.2;
+        double[] heights = {0.15, 0.5, 0.8};
+        for (int ring = 0; ring < heights.length; ring++) {
+            double y = h * heights[ring];
+            double start = (tick * 0.7 + ring * 2.1) % (Math.PI * 2);
+            int segments = 3;
+            for (int k = 0; k < segments; k++) {
+                double a = start + k * Math.PI * 2 / segments;
+                double b = a + Math.PI * 2 / segments;
+                Vec3 from = feet.add(Math.cos(a) * reach, y, Math.sin(a) * reach);
+                Vec3 to = feet.add(Math.cos(b) * reach, y + (random.nextDouble() - 0.5) * 0.15, Math.sin(b) * reach);
+                bolt(level, from, to, k % 2 == 0 ? BLUE_WHITE : BLUE, 0.05f, 4, 1, ARC);
+            }
+        }
+        // An arc tying the rings together, from the ankles up.
+        double a = random.nextDouble() * Math.PI * 2;
+        bolt(level, feet.add(Math.cos(a) * reach, h * 0.1, Math.sin(a) * reach),
+                feet.add(-Math.cos(a) * reach, h * 0.85, -Math.sin(a) * reach), BLUE_WHITE, 0.06f, 4, 2, ARC);
+        Vfx.burst(level, new VfxOptions(VfxKind.SPARK, 0xFFFFFF, BLUE_WHITE, 0.1f, 0.02f, 6, 0.04f, 0.85f),
+                feet.add(0, h * 0.5, 0), 3, w * 0.5, 0.12);
+        if (tick % 6 == 0) {
+            pool(level, feet, 1.2f, 6);
+        }
+    }
+
     /** A forking bolt between two points with a spark burst at the far end (chains, beams, strikes). */
     public static void forked(Level level, Vec3 from, Vec3 to, float width, int life) {
         bolt(level, from, to, BLUE_WHITE, width, life, 4, FORKY | IMPACT);

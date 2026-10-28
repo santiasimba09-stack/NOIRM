@@ -202,7 +202,7 @@ public final class CareerPackets {
         NoirmNetwork.sendToPlayer(player, BoardInfo.of(player, pos));
     }
 
-    public enum Action { ACCEPT, ABANDON, EXAM, CLOSE }
+    public enum Action { ACCEPT, ABANDON, EXAM, CLOSE, BINGO_BOOK }
 
     /** A button on the board screen. */
     public record BoardAction(BlockPos pos, Action action, int index) {
@@ -241,6 +241,7 @@ public final class CareerPackets {
                 case CLOSE -> {
                     return;
                 }
+                case BINGO_BOOK -> com.noirm.bounty.BingoEvents.buyAtBoard(player); // from the board's clerk
             }
             openBoard(player, pos);
         }

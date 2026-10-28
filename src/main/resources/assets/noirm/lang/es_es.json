@@ -1779,7 +1779,7 @@
   "handbook.noirm.sage": "Modo Sabio",
   "handbook.noirm.sage.body": "Meditar te llena poco a poco de energía natural. Un ermitaño en un santuario remoto enseña a usarla (/noirm sage rumour da una pista de dónde).\n\nSu prueba es la quietud: medita junto a su estanque mientras espíritus inquietos intentan romper tu concentración. Después te enseña a reunir energía natural, a purgarla y, por fin, el Modo Sabio: marcas de pigmento alrededor de los ojos y un gran impulso mientras dura la energía.\n\nCuidado: si absorbes más de lo que tu control de chakra soporta, tu cuerpo se convierte en piedra, desde las manos. Suelta el exceso antes de que sea tarde.",
   "handbook.noirm.bingo": "El libro bingo",
-  "handbook.noirm.bingo.body": "Cada ninja tiene una clase de D (débil) a S (letal), que se ve junto a su nombre. Las clases altas son mucho más peligrosas y dan mucha más experiencia.\n\nEl libro bingo recoge a los renegados más peligrosos del mundo, con una recompensa en ryo por cada cabeza. Algunos son leyendas: los reconocerás al verlos.\n\nNo caces por encima de tu clase tú solo.\n\nConsigue uno por 60 ryo en una tienda general o de armas, o agáchate y usa un tablón de misiones. La aldea te da uno al llegar a chūnin. Tu clase no es tu rango: el rango es tu posición en la aldea, la clase es lo fuerte que eres.",
+  "handbook.noirm.bingo.body": "Cada ninja tiene una clase de D (débil) a S (letal), que se ve junto a su nombre. Las clases altas son mucho más peligrosas y dan mucha más experiencia.\n\nEl libro bingo recoge a los renegados más peligrosos del mundo, con una recompensa en ryo por cada cabeza. Algunos son leyendas: los reconocerás al verlos.\n\nNo caces por encima de tu clase tú solo.\n\nConsigue uno por 60 ryo en una tienda general o de armas, o con el botón \"Comprar libro bingo\" de un tablón de misiones. La aldea te da uno al llegar a chūnin. Tu clase no es tu rango: el rango es tu posición en la aldea, la clase es lo fuerte que eres.",
   "handbook.noirm.beasts": "Bestias con cola y ojos",
   "handbook.noirm.beasts.body": "Las bestias con cola recorren el mundo. Derrota a una hasta que quede sometida y usa un Pergamino de Sellado sobre ella; usa el pergamino lleno sobre ti para ser su jinchūriki, o sobre otro. Algunos nacen ya con una bestia dentro. Tu vínculo con ella decide cuántas colas puedes sacar sin peligro.\n\nDōjutsu: los Hyūga nacen con el Byakugan (ver a través de paredes, puntos de chakra). Los Uchiha despiertan el Sharingan al borde de la muerte o ante una gran pérdida; solo crece en combates reales y puede llegar a Mangekyō. Los ojos de un Uchiha caído se pueden trasplantar: hazlo en un hospital, porque operarte tú mismo puede arruinar el ojo.",
   "guide.noirm.welcome": "Tu Manual del Shinobi está en tu inventario. Tiene todo lo que necesitas saber.",
@@ -1818,7 +1818,7 @@
   "bingo.noirm.epithet.smoke_wraith": "el Espectro de Humo",
   "bingo.noirm.epithet.ashen_shadow": "la Sombra Cenicienta",
   "bingo.noirm.epithet.hollow_sun": "el Sol Hueco",
-  "bingo.noirm.entrance": "Leyenda de clase %s · Recompensa %s ryo",
+  "bingo.noirm.entrance": "Peligro: leyenda %s · Recompensa %s ryo",
   "bingo.noirm.entrance.free": "Ninja legendario",
   "bingo.noirm.claimed": "Recompensa cobrada: %s. %s ryo son tuyos.",
   "bingo.noirm.claimed.other": "%s cobró la recompensa por %s.",
@@ -1882,5 +1882,10 @@
   "help.noirm.bingo.list": "las páginas del libro bingo en el chat (recompensas, dónde se los vio)",
   "help.noirm.bingo.refresh": "la actualización de un día, ahora: los renegados se mueven, aparecen nombres nuevos",
   "help.noirm.bingo.spawn": "trae al renegado de una página frente a ti",
-  "help.noirm.bingo.give": "te da un libro bingo"
+  "help.noirm.bingo.give": "te da un libro bingo",
+  "board.noirm.bingo": "Comprar libro bingo (%s ryo)",
+  "board.noirm.bingo.tip": "El encargado del tablón vende libros bingo: renegados peligrosos, sus recompensas y dónde se les vio por última vez. %s ryo.",
+  "board.noirm.bingo.poor": "Un libro bingo cuesta %s ryo: no te alcanza.",
+  "bingo.noirm.trait.danger": "Peligro: %s. Puede matar a un shinobi novato en un par de segundos. No te enfrentes a esta leyenda hasta ser un jōnin curtido.",
+  "bingo.noirm.entrance.warn": "%s es una leyenda (peligro %s). Puede matar a un novato en un par de segundos: huye, salvo que estés preparado."
 }

@@ -1779,7 +1779,7 @@
   "handbook.noirm.sage": "Sage Mode",
   "handbook.noirm.sage.body": "Meditating slowly fills you with nature energy. A hermit in a remote sanctuary teaches how to use it (/noirm sage rumour gives a hint where).\n\nHis test is stillness: meditate by his pool while restless spirits try to break your focus. Then he teaches you to gather nature energy, to purge it, and finally Sage Mode: pigment marks around your eyes and a strong boost while the energy lasts.\n\nCareful: take in more than your chakra control can hold and your body turns to stone, from the hands up. Let the excess go before it's too late.",
   "handbook.noirm.bingo": "The bingo book",
-  "handbook.noirm.bingo.body": "Every ninja has a class from D (weak) to S (deadly), shown with their name. Stronger classes are far more dangerous and give far more XP.\n\nThe bingo book lists the most dangerous rogues in the world, with a bounty in ryo on each head. Some of them are legends: you'll know them when you see them.\n\nDon't hunt above your class alone.\n\nGet one for 60 ryo at a general store or weapon shop, or sneak and use a mission board. The village hands you one when you become chūnin. Your class isn't your rank: rank is your standing in the village, class is how strong you are.",
+  "handbook.noirm.bingo.body": "Every ninja has a class from D (weak) to S (deadly), shown with their name. Stronger classes are far more dangerous and give far more XP.\n\nThe bingo book lists the most dangerous rogues in the world, with a bounty in ryo on each head. Some of them are legends: you'll know them when you see them.\n\nDon't hunt above your class alone.\n\nGet one for 60 ryo at a general store or weapon shop, or with the \"Buy bingo book\" button on a missions board. The village hands you one when you become chūnin. Your class isn't your rank: rank is your standing in the village, class is how strong you are.",
   "handbook.noirm.beasts": "Tailed beasts and eyes",
   "handbook.noirm.beasts.body": "Tailed beasts roam the world. Beat one down until it lies subdued, then use a Sealing Scroll on it; use the full scroll on yourself to become its jinchūriki, or on someone else. Some are born with a beast inside. Your bond with the beast decides how many tails you can draw safely.\n\nDōjutsu: Hyūga are born with the Byakugan (see through walls, chakra points). Uchiha awaken the Sharingan near death or in great loss; it grows only in real fights, and can become the Mangekyō. Eyes taken from a fallen Uchiha can be transplanted: do it at a hospital, because operating on yourself can ruin the eye.",
   "guide.noirm.welcome": "Your Shinobi Handbook is in your bag. It has everything you need to know.",
@@ -1818,7 +1818,7 @@
   "bingo.noirm.epithet.smoke_wraith": "the Smoke Wraith",
   "bingo.noirm.epithet.ashen_shadow": "the Ashen Shadow",
   "bingo.noirm.epithet.hollow_sun": "the Hollow Sun",
-  "bingo.noirm.entrance": "Class %s legend · Bounty %s ryo",
+  "bingo.noirm.entrance": "Danger: %s legend · Bounty %s ryo",
   "bingo.noirm.entrance.free": "Legendary ninja",
   "bingo.noirm.claimed": "Bounty claimed: %s. %s ryo are yours.",
   "bingo.noirm.claimed.other": "%s claimed the bounty on %s.",
@@ -1882,5 +1882,10 @@
   "help.noirm.bingo.list": "the bingo book's pages in chat (bounties, where they were seen)",
   "help.noirm.bingo.refresh": "a day's refresh now: rogues move on, new names appear",
   "help.noirm.bingo.spawn": "brings a page's rogue in front of you",
-  "help.noirm.bingo.give": "gives you a bingo book"
+  "help.noirm.bingo.give": "gives you a bingo book",
+  "board.noirm.bingo": "Buy bingo book (%s ryo)",
+  "board.noirm.bingo.tip": "The board's clerk sells bingo books: dangerous rogues, their bounties and where they were last seen. %s ryo.",
+  "board.noirm.bingo.poor": "A bingo book costs %s ryo: you don't have enough.",
+  "bingo.noirm.trait.danger": "Danger: %s. Can kill a new shinobi in a couple of seconds. Don't face them until you're a seasoned jōnin.",
+  "bingo.noirm.entrance.warn": "%s is a legend (danger %s). They can kill a beginner in a couple of seconds: run, unless you're ready."
 }

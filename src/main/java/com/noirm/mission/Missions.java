@@ -115,6 +115,25 @@ public final class Missions {
         return null;
     }
 
+    /**
+     * Whether something spawned for {@code owner}'s mission or exam still belongs to it: an enemy
+     * still to beat, the client or recipient, the examiner. Leftovers of a mission that ended
+     * (failed or abandoned while they sat in unloaded chunks, or a client replaced after being
+     * lost) don't.
+     */
+    public static boolean stillWanted(Entity entity, Player owner) {
+        CareerData career = career(owner).orElse(null);
+        if (career == null) {
+            return true; // (can't tell: keep it)
+        }
+        UUID id = entity.getUUID();
+        if (entity.getTags().contains(Exams.EXAMINER_TAG)) {
+            return career.exam() != null && id.equals(career.exam().examiner);
+        }
+        Mission m = career.mission();
+        return m != null && (m.foes.contains(id) || id.equals(m.npc));
+    }
+
     static void tagFor(Entity entity, Player owner) {
         entity.addTag(MISSION_TAG);
         entity.addTag(OWNER_PREFIX + owner.getUUID());

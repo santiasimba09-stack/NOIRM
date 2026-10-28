@@ -87,7 +87,12 @@ public final class VillageGameTests {
             AABB box = AABB.of(area);
             // (Other tests' leftovers may wander nearby, so only count residents.)
             var ninjas = level.getEntitiesOfClass(SparringNinja.class, box, SparringNinja::isResident);
-            helper.assertTrue(ninjas.size() >= 3, "ninjas live there, found " + ninjas.size());
+            helper.assertTrue(ninjas.size() >= 3, "ninjas live there, found " + ninjas.size() + " DIAG all="
+                    + level.getEntitiesOfClass(SparringNinja.class, box.inflate(40), e -> true).stream()
+                    .map(n -> n.blockPosition().subtract(origin).toShortString() + (n.isResident() ? "R" : "") + (n.isRemoved() ? "X" : "")).toList()
+                    + " vis=" + java.util.stream.Stream.of(origin.offset(2, 0, VillageBuilder.OUTPOST_WALL - 4), origin.offset(1, 0, 2), origin.offset(-7, 10, -7))
+                    .map(p -> level.isPositionEntityTicking(p) + "/" + level.getChunkSource().isPositionTicking(net.minecraft.world.level.ChunkPos.asLong(p))
+                            + "/" + ((net.minecraft.server.level.ServerLevel) level).areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(p))).toList());
             helper.assertTrue(ninjas.stream().allMatch(n -> n.isPersistenceRequired()), "who never despawn");
             helper.assertTrue(!level.getEntitiesOfClass(VillageMerchant.class, box).isEmpty(), "and a merchant");
         } finally {

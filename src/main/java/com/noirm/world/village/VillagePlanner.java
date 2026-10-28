@@ -579,6 +579,15 @@ final class VillagePlanner {
         shopkeepers(8);
         townsfolk(10, 3, 0, 0, 1);
         animals(3, 3, 0, 48);
+        // A town has one of the village masters passing through: Rensai at the chief's house or
+        // Tsubaki at the inn (by the town's seed; no roll from the shared random, so the other
+        // residents stay as they were).
+        boolean scholar = (plan.seed >>> 7 & 1L) == 0;
+        Lot host = scholar ? chief : plan.first(LotType.INN);
+        if (host != null) {
+            int[] at = inside(host, 2);
+            add(Spawn.at(scholar ? Role.SCHOLAR : Role.MEDIC, at[0], 0, at[1], 4));
+        }
     }
 
     // ================================================================ an outpost
@@ -1940,6 +1949,31 @@ final class VillagePlanner {
         shopkeepers(28);
         townsfolk(36, 10, school[0], school[1], 4);
         animals(8, 4, 4, CAPITAL_RESIDENTS);
+        // No Academy or no hospital (the site had no room): the masters still live here. Rensai
+        // keeps the archives on the Kage residence's ground floor; Tsubaki runs a clinic in the
+        // home nearest the plaza. (Added last, so the other residents keep their rolls.)
+        if (academy == null) {
+            add(Spawn.at(Role.SCHOLAR, px - 3, 0, pz + 2, 4));
+        }
+        if (hospital == null) {
+            Lot clinic = nearest(LotType.HOUSE, px, pz);
+            int[] at = clinic != null ? inside(clinic, 1) : new int[] {px + 3, pz + 2};
+            add(Spawn.at(Role.MEDIC, at[0], 0, at[1], 4));
+        }
+    }
+
+    /** The lot of {@code type} whose centre is nearest (x, z), or null. */
+    private Lot nearest(LotType type, int x, int z) {
+        Lot best = null;
+        double bestD = Double.MAX_VALUE;
+        for (Lot lot : lots(type)) {
+            double d = Math.hypot(lot.cx() - x, lot.cz() - z);
+            if (d < bestD) {
+                bestD = d;
+                best = lot;
+            }
+        }
+        return best;
     }
 
     /** Patrols walking stretches of the wall walk (the ring road in a cliff-walled Sand village), away from the gates and the rock. */

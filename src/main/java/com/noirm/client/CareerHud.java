@@ -33,7 +33,15 @@ public final class CareerHud {
     private static final int RED = 0xFFE05A5A;
     private static final int GREEN = 0xFF6FD38A;
 
+    /** How far down this frame's boss bars reach (they're drawn before this HUD); 0 = none. */
+    private static int bossBottom;
+
     private CareerHud() {}
+
+    /** Where the HUD starts: the top right, or just below the boss bars while any are shown. */
+    private static int top() {
+        return bossBottom > 0 ? Math.max(6, bossBottom + 4) : 6;
+    }
 
     static void render(ForgeGui gui, GuiGraphics g, float partialTick, int width, int height) {
         Minecraft mc = gui.getMinecraft();
@@ -43,7 +51,7 @@ public final class CareerHud {
         }
         Font font = mc.font;
         int right = width - 6;
-        int y = 6;
+        int y = top();
         Component head = Component.translatable("hud.noirm.career", PlayerRank.byOrdinal(data.rank()).title(), Ryo.format(data.ryo()));
         g.drawString(font, head, right - font.width(head), y, GOLD, true);
         // Your class (D–S) in front: how strong you are, next to your rank (your standing).
@@ -145,6 +153,18 @@ public final class CareerHud {
             int x = screen.getGuiLeft() + screen.getXSize() - font.width(text) - 2;
             int y = screen.getGuiTop() - 11;
             event.getGuiGraphics().drawString(font, text, x, y, GOLD, true);
+        }
+
+        /** Notes how far down each boss bar is drawn (the career lines go below them). */
+        @SubscribeEvent
+        public static void careerBossBar(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.BossEventProgress event) {
+            bossBottom = Math.max(bossBottom, event.getY() + 6); // the bar is 5 pixels tall, its name above it
+        }
+
+        /** A new frame: no boss bars drawn yet. */
+        @SubscribeEvent
+        public static void careerFrameStart(net.minecraftforge.client.event.RenderGuiEvent.Pre event) {
+            bossBottom = 0;
         }
 
         @SubscribeEvent

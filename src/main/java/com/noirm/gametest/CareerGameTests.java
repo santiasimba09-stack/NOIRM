@@ -274,6 +274,33 @@ public final class CareerGameTests {
         cleanup(helper, 24);
     }
 
+    /** Hunt rogues that were in unloaded chunks when the mission failed never come back with their chunk. */
+    @GameTest(template = "empty", batch = "noirm_career_leftovers", timeoutTicks = 100)
+    public static void leftoversOfAFailedMissionNeverComeBack(GameTestHelper helper) {
+        floor(helper);
+        ServerLevel level = helper.getLevel();
+        Player player = player(helper);
+        Mission m = start(helper, player, "d_bandit_hunt");
+        m.points.set(0, near(helper, 6, 0));
+        Missions.update(player);
+        List<SparringNinja> rogues = foes(helper, m);
+        helper.assertTrue(!rogues.isEmpty(), "the rogues turn up");
+        SparringNinja away = rogues.get(0);
+        net.minecraft.nbt.CompoundTag saved = new net.minecraft.nbt.CompoundTag();
+        away.save(saved);
+        away.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK); // their chunk unloads
+        Entity back = net.minecraft.world.entity.EntityType.loadEntityRecursive(saved, level, e -> e);
+        level.addLegacyChunkEntities(java.util.stream.Stream.of(back)); // ...and loads again (from disk)
+        helper.assertTrue(level.getEntity(away.getUUID()) == back, "while the mission runs, they come back with their chunk");
+        back.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK); // out of reach again
+        Missions.abandon(player); // the mission fails: what's loaded goes, this one can't be found
+        Entity again = net.minecraft.world.entity.EntityType.loadEntityRecursive(saved, level, e -> e);
+        level.addLegacyChunkEntities(java.util.stream.Stream.of(again));
+        helper.assertTrue(level.getEntity(away.getUUID()) == null, "after it failed, the leftover never comes back");
+        helper.assertTrue(rogues.stream().skip(1).noneMatch(Entity::isAlive), "and the loaded ones went when it failed");
+        cleanup(helper, 24);
+    }
+
     @GameTest(template = "empty", batch = "noirm_career_escort", timeoutTicks = 100)
     public static void escortMissionFollowsArrivesOrFails(GameTestHelper helper) {
         floor(helper);

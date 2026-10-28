@@ -63,6 +63,23 @@ public final class CareerEvents {
         ShinobiCapability.get(event.getEntity()).ifPresent(d -> d.career().markDirty());
     }
 
+    /**
+     * Mission enemies, clients and examiners coming back with their chunk after their mission or
+     * exam ended (it failed while they were out of reach, so they couldn't be cleared then): they
+     * go for good. Only while their owner is online (otherwise there's no way to tell).
+     */
+    @SubscribeEvent
+    public static void leftoverLoads(net.minecraftforge.event.entity.EntityJoinLevelEvent event) {
+        Entity entity = event.getEntity();
+        if (!event.loadedFromDisk() || event.getLevel().isClientSide() || !entity.getTags().contains(Missions.MISSION_TAG)) {
+            return;
+        }
+        Player owner = Missions.owner(entity);
+        if (owner != null && !Missions.stillWanted(entity, owner)) {
+            event.setCanceled(true);
+        }
+    }
+
     @SubscribeEvent
     public static void death(LivingDeathEvent event) {
         Entity dead = event.getEntity();

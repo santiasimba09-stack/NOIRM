@@ -108,8 +108,8 @@ public final class BingoEvents {
     @SubscribeEvent
     public static void levelTick(TickEvent.LevelTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level) || level.dimension() != Level.OVERWORLD
-                || level.getGameTime() % CHECK_TICKS != 7) {
-            return;
+                || level.getGameTime() % CHECK_TICKS != 7 || com.noirm.gametest.TestWorld.isTestServer(level.getServer())) {
+            return; // (the game tests drive the book themselves: no refreshes or sweeps behind their backs)
         }
         BingoBook book = BingoBook.get(level.getServer());
         if (!book.seeded()) {
@@ -127,7 +127,9 @@ public final class BingoEvents {
         }
         for (ServerPlayer player : level.players()) {
             if (!player.isSpectator()) {
-                checkNear(level, book, player.blockPosition());
+                // (legends never come for a player in their first hours)
+                checkNear(level, book, player.blockPosition(),
+                        com.noirm.world.wild.WildSpawner.playedTicks(player) >= BingoBook.LEGEND_NEW_PLAYER_MINUTES * 1200L);
             }
             giftCheck(player);
         }
@@ -139,9 +141,14 @@ public final class BingoEvents {
      * and has no body yet. Returns how many came.
      */
     public static int checkNear(ServerLevel level, BingoBook book, BlockPos pos) {
+        return checkNear(level, book, pos, true);
+    }
+
+    /** As {@link #checkNear(ServerLevel, BingoBook, BlockPos)}; {@code legends}: whether legends may come too. */
+    public static int checkNear(ServerLevel level, BingoBook book, BlockPos pos, boolean legends) {
         int count = 0;
         for (BingoEntry e : book.entries()) {
-            if (!e.active() || body(e) != null) {
+            if (!e.active() || body(e) != null || e.legendary && !legends) {
                 continue;
             }
             double dx = e.area.getX() - pos.getX(), dz = e.area.getZ() - pos.getZ();
@@ -162,7 +169,7 @@ public final class BingoEvents {
             }
             Player nearest = level.getNearestPlayer(n, -1);
             if (nearest == null || nearest.distanceTo(n) > DESPAWN_FAR) {
-                e.area = n.blockPosition();
+                e.area = BingoBook.keepAway(level, e, n.blockPosition());
                 e.entity = null;
                 book.setDirty();
                 BODIES.remove(e.id);
@@ -315,7 +322,7 @@ public final class BingoEvents {
             BODIES.remove(id);
             BingoEntry e = BingoBook.get(event.getLevel().getServer()).find(id);
             if (e != null && e.active() && n.isAlive()) {
-                e.area = n.blockPosition(); // unloaded with its chunk: last seen here
+                e.area = BingoBook.keepAway((ServerLevel) event.getLevel(), e, n.blockPosition()); // unloaded with its chunk: last seen here
                 BingoBook.get(event.getLevel().getServer()).setDirty();
             }
         }
@@ -344,7 +351,8 @@ public final class BingoEvents {
             // far away, so they don't walk straight back in.
             e.entity = null;
             double a = dead.getRandom().nextDouble() * Math.PI * 2;
-            e.area = e.area.offset((int) (Math.cos(a) * FLEE_DISTANCE), 0, (int) (Math.sin(a) * FLEE_DISTANCE));
+            e.area = BingoBook.keepAway((ServerLevel) dead.level(), e,
+                    e.area.offset((int) (Math.cos(a) * FLEE_DISTANCE), 0, (int) (Math.sin(a) * FLEE_DISTANCE)));
             book.setDirty();
         }
     }

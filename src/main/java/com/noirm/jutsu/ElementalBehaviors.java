@@ -46,6 +46,10 @@ public final class ElementalBehaviors {
             return;
         }
         ParticleOptions look = look(ctx);
+        if (JutsuBehaviors.nature(ctx) == com.noirm.clan.Nature.LIGHTNING) {
+            lightningBind(ctx, target);
+            return;
+        }
         com.noirm.vfx.Vfx.gather(ctx.level(), target.position().add(0, target.getBbHeight() / 2, 0), com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)), 2f, 24);
         com.noirm.vfx.Vfx.spiral(ctx.level(), target.position(), com.noirm.vfx.Vfx.palette(JutsuBehaviors.nature(ctx)),
                 target.getBbWidth() * 0.8f + 0.2f, target.getBbHeight() + 0.3f, 2.5f);
@@ -63,6 +67,34 @@ public final class ElementalBehaviors {
         JutsuAreas.add(new JutsuAreas.Area(ctx.level(), target.position(), target, caster, JutsuAreas.Mode.AURA,
                 target.getBbWidth(), ctx.level().getGameTime() + hold, 0, 0, "", 0, 0, look));
         JutsuBehaviors.sound(target, JutsuBehaviors.castSound(JutsuBehaviors.nature(ctx)), 1f, 0.7f);
+    }
+
+    /**
+     * A lightning bind (Thunder Snare): a forking bolt leaps from the caster's hand to the target,
+     * rings of arcs snap shut around them, and while they're held the arcs keep crawling over them.
+     * Same rules as any bind (damage, posture, stun, slowness), its own look.
+     */
+    private static void lightningBind(JutsuContext ctx, LivingEntity target) {
+        JutsuDefinition.Params p = ctx.params();
+        LivingEntity caster = ctx.caster();
+        Vec3 hand = caster.getEyePosition().add(caster.getViewVector(1f).scale(0.6)).add(0, -0.4, 0);
+        Vec3 chest = target.position().add(0, target.getBbHeight() * 0.55, 0);
+        com.noirm.vfx.LightningVfx.forked(ctx.level(), hand, chest, 0.12f, 7);
+        com.noirm.vfx.LightningVfx.shackle(ctx.level(), target, 0);
+        com.noirm.vfx.LightningVfx.contact(ctx.level(), chest, 0.9f);
+        com.noirm.vfx.LightningVfx.groundForks(ctx.level(), target.position(), 1.6f, 4);
+        JutsuEffects.hit(caster, target, p.damage() * ctx.power(), 0, p.posture() * ctx.power(), p.fireSeconds(), Vec3.ZERO);
+        int hold = Math.round(p.stun() * Math.min(1.5f, ctx.power()));
+        CombatSystem.stun(target, hold);
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, hold, 9, false, false));
+        target.setDeltaMovement(Vec3.ZERO);
+        target.hurtMarked = true;
+        JutsuEffects.applyEffects(target, p.effect(), p.effectTicks());
+        JutsuAreas.add(new JutsuAreas.Area(ctx.level(), target.position(), target, caster, JutsuAreas.Mode.SHACKLE,
+                target.getBbWidth(), ctx.level().getGameTime() + hold, 0, 0, "", 0, 0, look(ctx)));
+        JutsuBehaviors.sound(target, JutsuBehaviors.castSound(JutsuBehaviors.nature(ctx)), 1f, 0.7f);
+        ctx.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,
+                net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.8f);
     }
 
     static void pillar(JutsuContext ctx) {
