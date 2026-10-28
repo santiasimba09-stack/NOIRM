@@ -14,6 +14,14 @@ public interface CombatStats {
         return (combatSpeed() + combatTaijutsu()) / 2f;
     }
 
+    /**
+     * DUR (APX 0.1, {@code training.Durability}): the share of damage this fighter negates. By
+     * default 10 (none): only ninjas override it (their strength), not beasts or clones.
+     */
+    default float combatDurability() {
+        return com.noirm.player.ShinobiData.DEFAULT_STAT;
+    }
+
     /** Chakra behind jutsu: by default the average of speed and taijutsu. */
     default float combatReserves() {
         return (combatSpeed() + combatTaijutsu()) / 2f;

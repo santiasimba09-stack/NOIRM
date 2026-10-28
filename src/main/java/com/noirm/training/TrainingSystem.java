@@ -33,7 +33,9 @@ import java.util.UUID;
  */
 public final class TrainingSystem {
     public enum Stat {
-        TAIJUTSU("Taijutsu"), SPEED("Speed"), VITALITY("Vitality"), RESERVES("Reserves");
+        TAIJUTSU("Taijutsu"), SPEED("Speed"), VITALITY("Vitality"), RESERVES("Reserves"),
+        /** DUR (APX 0.1): negates a share of incoming damage; see {@link Durability}. */
+        DURABILITY("Durability");
 
         private final String key;
 
@@ -56,6 +58,18 @@ public final class TrainingSystem {
     public static final float PARRY_XP = 6f;
     public static final float DODGE_XP = 1f;
     public static final float PERFECT_DODGE_XP = 6f;
+    /** Slipping a real opponent's attack with a dodge (not perfect): this × how much they teach (APX 0.1). */
+    public static final float DODGE_REAL_XP = 2f;
+    /** A hit landed within {@link #FAST_STRING_TICKS} of your last one: speed XP × how much the target teaches. */
+    public static final float FAST_STRING_XP = 1f;
+    public static final int FAST_STRING_TICKS = 15;
+    /** Closing in on a fleeing or moving opponent: speed XP per second × how much they teach. */
+    public static final float CHASE_XP = 1.5f;
+    /** Both of you must cover at least this many blocks in that second. */
+    public static final double CHASE_MIN_MOVE = 2.0;
+    public static final double CHASE_MAX_DISTANCE = 24.0;
+    /** Body Flicker: speed XP per cast (in a fight × how much the opponent teaches; alone, a drill). */
+    public static final float FLICKER_XP = 3f;
     /** Running: 1 speed XP every 2 seconds of sprinting. */
     public static final float SPRINT_XP = 1f;
     public static final int SPRINT_INTERVAL = 40;
@@ -97,6 +111,7 @@ public final class TrainingSystem {
             case SPEED -> data.getSpeed();
             case VITALITY -> data.getVitality();
             case RESERVES -> data.getReserves();
+            case DURABILITY -> data.getDurability();
         };
     }
 
@@ -106,6 +121,7 @@ public final class TrainingSystem {
             case SPEED -> data.setSpeed(value);
             case VITALITY -> data.setVitality(value);
             case RESERVES -> data.setReserves(value);
+            case DURABILITY -> data.setDurability(value);
         }
     }
 
@@ -122,6 +138,12 @@ public final class TrainingSystem {
             float xp = (HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f);
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
             Supplementary.onExchange(player, target);
+            ShinobiCapability.get(player).ifPresent(d -> {
+                // A fast string (hit after hit) trains speed too.
+                if (d.training().fight().hit(player, target instanceof TrainingDummy) <= FAST_STRING_TICKS) {
+                    grant(player, Stat.SPEED, FAST_STRING_XP * opponentFactor(player, target, Stat.SPEED));
+                }
+            });
         } else if (attacker instanceof com.noirm.entity.ShadowClone clone) {
             clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f));
         } else if (attacker instanceof com.noirm.entity.SparringNinja ninja) {
@@ -133,6 +155,7 @@ public final class TrainingSystem {
     public static void onParry(LivingEntity defender, Entity attacker) {
         if (defender instanceof Player player && !player.level().isClientSide()) {
             grant(player, Stat.TAIJUTSU, PARRY_XP * opponentFactor(player, attacker, Stat.TAIJUTSU));
+            ShinobiCapability.get(player).ifPresent(d -> d.training().fight().parried(player));
         }
     }
 
@@ -150,6 +173,45 @@ public final class TrainingSystem {
     public static void onPerfectDodge(LivingEntity entity) {
         if (entity instanceof Player player && !player.level().isClientSide()) {
             grant(player, Stat.SPEED, PERFECT_DODGE_XP);
+        }
+    }
+
+    /**
+     * A dodge slipped an attack from {@code attacker} (APX 0.1: speed is trained in combat). A
+     * perfect dodge gives {@link #PERFECT_DODGE_XP}, any other {@link #DODGE_REAL_XP}, both times
+     * how much the attacker teaches (stronger foes more; past the drill cap only real ones).
+     */
+    public static void onAttackDodged(LivingEntity entity, Entity attacker, boolean perfect) {
+        if (!(entity instanceof Player player) || player.level().isClientSide()) {
+            return;
+        }
+        boolean known = attacker != null && attacker != player;
+        if (perfect) {
+            grant(player, Stat.SPEED, PERFECT_DODGE_XP * (known ? opponentFactor(player, attacker, Stat.SPEED) : 1f));
+        } else if (known) {
+            grant(player, Stat.SPEED, DODGE_REAL_XP * opponentFactor(player, attacker, Stat.SPEED));
+        }
+        if (known) {
+            ShinobiCapability.get(player).ifPresent(d -> d.training().fight().dodged(player, perfect));
+        }
+    }
+
+    /** {@code entity} blocked a hit with their guard (counts toward kill XP). */
+    public static void onGuarded(LivingEntity entity) {
+        if (entity instanceof Player player && !player.level().isClientSide()) {
+            ShinobiCapability.get(player).ifPresent(d -> d.training().fight().guarded(player));
+        }
+    }
+
+    /** A jutsu was cast: Body Flicker trains speed; every cast counts toward kill XP. */
+    public static void onJutsuCast(Player player, String behavior) {
+        if (player.level().isClientSide()) {
+            return;
+        }
+        ShinobiCapability.get(player).ifPresent(d -> d.training().fight().jutsu(player));
+        if ("flicker".equals(behavior)) {
+            LivingEntity foe = KillXp.currentFoe(player);
+            grant(player, Stat.SPEED, FLICKER_XP * (foe != null ? opponentFactor(player, foe, Stat.SPEED) : drillFactor(player, Stat.SPEED)));
         }
     }
 
@@ -182,6 +244,7 @@ public final class TrainingSystem {
             grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA);
         }
         Supplementary.tick(player, data);
+        KillXp.tick(player, data);
         applyMovementBonus(player, data.getSpeed());
         applyVitality(player, data.getVitality());
         applyReserves(data);
