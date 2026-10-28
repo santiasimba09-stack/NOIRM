@@ -71,6 +71,10 @@ public final class JutsuBehaviors {
             Map.entry("kotoamatsukami", com.noirm.dojutsu.MangekyoAbilities::kotoamatsukami),
             Map.entry("izanagi", com.noirm.dojutsu.MangekyoAbilities::izanagi),
             Map.entry("susanoo", com.noirm.dojutsu.Susanoo::cast),
+            // Senjutsu (senjutsu/SageMode): the Stone Hermit's lessons
+            Map.entry("sage_mode", com.noirm.senjutsu.SageMode::cast),
+            Map.entry("nature_gathering", com.noirm.senjutsu.SageMode.GATHERING),
+            Map.entry("nature_purge", com.noirm.senjutsu.SageMode::purge),
             Map.entry("lotus", TaijutsuTechniques::lotus),
             Map.entry("flurry", TaijutsuTechniques::flurry));
 

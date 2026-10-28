@@ -1,0 +1,4 @@
+{
+  "cast": "channel", "behavior": "nature_gathering", "rank": "B",
+  "chakra_cost": 0, "cooldown": 40, "max_duration": 200
+}

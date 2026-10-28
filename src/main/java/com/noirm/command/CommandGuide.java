@@ -160,6 +160,14 @@ public final class CommandGuide {
                 .add("rank_set", "/noirm rank set <rank>", "/noirm rank set chunin", true)
                 .add("rank_points", "/noirm rank points <points>", "/noirm rank points 150", true)
                 .add("rank_exam", "/noirm rank exam", "/noirm rank exam", true);
+        section("sage")
+                .add("status", "/noirm sage", "/noirm sage", false)
+                .add("on", "/noirm sage <on|off>", "/noirm sage on", false)
+                .add("rumour", "/noirm sage rumour", "/noirm sage rumour", false)
+                .add("learn", "/noirm sage learn", "/noirm sage learn", true)
+                .add("energy", "/noirm sage energy <0-100>", "/noirm sage energy 60", true)
+                .add("petrify", "/noirm sage petrify <0-99>", "/noirm sage petrify 60", true)
+                .add("sanctuary", "/noirm sage sanctuary", "/noirm sage sanctuary", true);
     }
 
     private CommandGuide() {}

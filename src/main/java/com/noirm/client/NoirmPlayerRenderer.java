@@ -36,6 +36,7 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
         addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot, cuts and blood
         addLayer(new GoreArmorLayer<>(this)); // and on worn clothes
         addLayer(new HairVolumeLayer(this)); // character creation: fuller hair
+        addLayer(new SageLayer<>(this)); // sage marks and eyes, the stone skin of petrification
     }
 
     /** Character creation height (0.85-1.15x); the hitbox follows on both sides ({@code creator.CreatorEvents}). */
