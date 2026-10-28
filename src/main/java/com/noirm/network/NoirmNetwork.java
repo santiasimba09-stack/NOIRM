@@ -123,6 +123,7 @@ public final class NoirmNetwork {
                 .encoder(com.noirm.gore.GorePackets.Sync::encode).decoder(com.noirm.gore.GorePackets.Sync::decode)
                 .consumerMainThread(com.noirm.gore.GorePackets.Sync::handle).add();
         id = com.noirm.creator.CreatorPackets.register(CHANNEL, id); // character creation
+        id = com.noirm.mission.CareerPackets.register(CHANNEL, id); // ryo, missions, rank, shops
         id = com.noirm.nature.NaturePackets.register(CHANNEL, id); // hidden natures and nature drills
         id = com.noirm.senjutsu.SagePackets.register(CHANNEL, id); // the sage path: marks, stone skin
     }

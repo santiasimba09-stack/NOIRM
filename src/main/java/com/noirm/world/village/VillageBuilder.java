@@ -278,6 +278,13 @@ public final class VillageBuilder {
                 case BARRELS -> barrels(prop);
                 case FLOWERS -> flowers(prop);
                 case NOTICE_BOARD, SIGN_BOARD -> noticeBoard(prop);
+                case MISSION_BOARD -> {
+                    // The missions board on a plank post, with a slab roof over it.
+                    c.set(x, 0, z, p.fence);
+                    c.set(x, 1, z, com.noirm.mission.CareerItems.MISSION_BOARD.get().defaultBlockState()
+                            .setValue(com.noirm.mission.MissionBoardBlock.FACING, prop.facing()));
+                    c.set(x, 2, z, slab(p.slab, SlabType.BOTTOM));
+                }
                 case LANTERN_LINE -> lanternLine(prop);
                 case STREET_GATE -> streetGate(prop);
                 case BENCH -> {

@@ -1,0 +1,10 @@
+{
+  "type": "hunt",
+  "rank": "B",
+  "reward": 700,
+  "points": 50,
+  "min_distance": 120,
+  "max_distance": 200,
+  "encounter": "noirm:rogue_band",
+  "strength": 28
+}

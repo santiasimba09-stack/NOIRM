@@ -559,6 +559,7 @@ final class VillagePlanner {
         prop(PropType.WELL, 0, 0, Direction.SOUTH, 0);
         plazaBenches(0, 0, 5);
         prop(PropType.NOTICE_BOARD, 5, -5, Direction.SOUTH, 0);
+        prop(PropType.MISSION_BOARD, -5, -5, Direction.SOUTH, 0); // the missions board on the square
         frontProps(8, 8);
 
         if (chief != null) {
@@ -602,6 +603,7 @@ final class VillagePlanner {
             plan.lots.add(new Lot(type, spots[i][0] - 3, spots[i][1] - 3, spots[i][0] + 3, spots[i][1] + 3, doors[i], 1, style, seed));
         }
         int wall = plan.kind.wall;
+        prop(PropType.MISSION_BOARD, -2, -5, Direction.SOUTH, 0); // the missions board by the campfire
         add(Spawn.at(Role.GUARD, 2, 0, wall - 4, 5));
         add(Spawn.at(Role.NINJA, 1, 0, 2, 11));
         add(Spawn.at(Role.GUARD, -7, 10, -7, 1));
@@ -1799,6 +1801,14 @@ final class VillagePlanner {
             int x = px + s * 11;
             if (plan.paving(x, z) == Paving.PLAZA) {
                 prop(PropType.NOTICE_BOARD, x, z, Direction.SOUTH, 0);
+            }
+        }
+        // The missions board, by the Kage residence (the mission office).
+        for (int dx : new int[] {-16, 16, -7, 7, -20, 20, 0}) {
+            int x = px + dx;
+            if (plan.paving(x, z) == Paving.PLAZA && !hasProp(x, z)) {
+                prop(PropType.MISSION_BOARD, x, z, Direction.SOUTH, 0);
+                break;
             }
         }
     }

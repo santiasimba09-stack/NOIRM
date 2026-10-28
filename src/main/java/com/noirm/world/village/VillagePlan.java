@@ -146,7 +146,9 @@ public final class VillagePlan {
         /** Paper lanterns strung across a festival street at (x, z): along {@code facing}'s axis, {@code style} blocks each way. */
         LANTERN_LINE,
         /** An arched gate over a festival street at (x, z): the street runs along {@code facing}; posts {@code style} blocks each side. */
-        STREET_GATE
+        STREET_GATE,
+        /** The missions board ({@code mission.MissionBoardBlock}) facing {@code facing}, under a little roof. */
+        MISSION_BOARD
     }
 
     /**

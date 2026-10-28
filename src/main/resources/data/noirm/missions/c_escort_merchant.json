@@ -1,0 +1,10 @@
+{
+  "type": "escort",
+  "rank": "C",
+  "reward": 300,
+  "points": 25,
+  "min_distance": 110,
+  "max_distance": 160,
+  "ambush": "noirm:rogue",
+  "strength": 16
+}
