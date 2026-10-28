@@ -59,8 +59,8 @@ public final class JutsuLearning {
 
     /** Whether a scroll could ever teach this jutsu (its kind, not your natures). */
     public static boolean scrollTeachable(ResourceLocation id, JutsuDefinition def) {
-        if (def == null || def.requires().isPresent()) {
-            return false;
+        if (def == null || def.requires().isPresent() || com.noirm.master.MasterData.taughtByMaster(def)) {
+            return false; // a master's own jutsu are only learned from them
         }
         for (String folder : NOT_FROM_SCROLLS) {
             if (id.getPath().startsWith(folder)) {

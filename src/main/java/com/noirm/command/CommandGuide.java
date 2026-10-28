@@ -168,6 +168,10 @@ public final class CommandGuide {
                 .add("energy", "/noirm sage energy <0-100>", "/noirm sage energy 60", true)
                 .add("petrify", "/noirm sage petrify <0-99>", "/noirm sage petrify 60", true)
                 .add("sanctuary", "/noirm sage sanctuary", "/noirm sage sanctuary", true);
+        section("guide")
+                .add("book", "/noirm guide", "/noirm guide", false)
+                .add("tips", "/noirm guide tips <on|off>", "/noirm guide tips off", false)
+                .add("reset", "/noirm guide reset", "/noirm guide reset", true);
     }
 
     private CommandGuide() {}

@@ -215,12 +215,12 @@ public class MasterScreen extends Screen {
         g.fill(x, y, x + 2, y + h, row.status() == MasterPackets.LEARNED ? GREEN : row.status() == MasterPackets.READY ? GOLD : FAINT);
         // Right side first, so the name knows how much room it has.
         int rightW;
-        Component name = Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(row.jutsu()));
+        Component name = row.title();
         List<Component> tip = new ArrayList<>();
         tip.add(name.copy().withStyle(s -> s.withColor(GOLD)));
         tip.add(Component.translatable("screen.noirm.master.needs", row.needs()));
         if (row.status() == MasterPackets.READY) {
-            Component learn = Component.translatable("screen.noirm.master.learn");
+            Component learn = Component.translatable(row.service() ? "screen.noirm.master.ask" : "screen.noirm.master.learn");
             rightW = font.width(learn) + 14;
             int bx = x + w - rightW - 4;
             int by = y + 3;
@@ -243,7 +243,7 @@ public class MasterScreen extends Screen {
             rightW += 4;
         }
         // Left: name with the rank, then what it needs.
-        String rank = row.rank();
+        String rank = row.rank().isEmpty() ? (row.service() ? "+" : "*") : row.rank();
         int rankW = font.width(rank) + 6;
         int nameW = w - rightW - rankW - 14;
         String shown = fit(name.getString(), nameW);

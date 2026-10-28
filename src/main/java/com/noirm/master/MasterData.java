@@ -15,6 +15,9 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
 public final class MasterData {
     public static final ResourceLocation MIGHT_GUY = Noirm.id("might_guy");
+    /** The ninjutsu master (in every capital's Academy) and the medical ninja (in its hospital). */
+    public static final ResourceLocation SCHOLAR = Noirm.id("scholar_rensai");
+    public static final ResourceLocation MEDIC = Noirm.id("medic_tsubaki");
 
     private static Map<ResourceLocation, MasterDefinition> masters = Map.of();
 

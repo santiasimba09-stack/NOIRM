@@ -68,7 +68,7 @@ public final class MasterSystem {
         if (def == null || data == null) {
             return Component.translatable("screen.noirm.master.why.unknown");
         }
-        if (master.isSparring() || com.noirm.senjutsu.SageTrial.trial(master) != null) {
+        if (master.isSparring() || com.noirm.senjutsu.SageTrial.trial(master) != null || com.noirm.medical.MedicTrial.trial(master) != null) {
             return Component.translatable("screen.noirm.master.why.busy");
         }
         if (data.getTaijutsu() < def.test().minTaijutsu()) {
@@ -90,6 +90,9 @@ public final class MasterSystem {
         MasterDefinition def = master.definition();
         if (com.noirm.senjutsu.SageTrial.isTrialMaster(master)) {
             return com.noirm.senjutsu.SageTrial.start(player, master); // a test of stillness, not a spar
+        }
+        if (com.noirm.medical.MedicTrial.isTrialMaster(master)) {
+            return com.noirm.medical.MedicTrial.start(player, master); // keep a patient alive, not a spar
         }
         CombatSystem.setCombatMode(player, true); // a spar is a fight: hands up
         master.beginSpar(player);
@@ -155,6 +158,14 @@ public final class MasterSystem {
         }
     }
 
+    /** The jutsu duel's trial kind. */
+    public static final String JUTSU_TRIAL = "jutsu";
+
+    /** Whether a hit from the student counts toward the test: in a jutsu duel ({@code "trial": "jutsu"}) only jutsu hits do. */
+    public static boolean countsAsHit(MasterDefinition def, net.minecraft.world.damagesource.DamageSource source) {
+        return def == null || !JUTSU_TRIAL.equals(def.trial()) || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC);
+    }
+
     private static float floor(LivingEntity entity, MasterDefinition def) {
         return Math.max(1f, entity.getMaxHealth() * (def == null ? 0.2f : def.test().endHealth()));
     }
@@ -164,7 +175,7 @@ public final class MasterSystem {
     /** Why {@code player} can't learn this lesson yet (null if they can, or already did). */
     public static Component lessonBlocker(ShinobiData data, ResourceLocation masterId, MasterDefinition def, MasterDefinition.Lesson lesson) {
         String key = masterId.toString();
-        if (JutsuData.get(lesson.jutsu()) == null) {
+        if (lesson.teachesJutsu() ? JutsuData.get(lesson.jutsu()) == null : !MasterPerks.known(lesson)) {
             return Component.translatable("screen.noirm.master.why.unknown");
         }
         if (lesson.test() && !data.masters().passed(key)) {
@@ -172,9 +183,20 @@ public final class MasterSystem {
         }
         for (String before : lesson.after()) {
             if (!data.masters().learned(key, before)) {
-                Component name = def.lesson(before).map(l -> (Component) Component.translatable(jutsuKey(l.jutsu())))
+                Component name = def.lesson(before).map(l -> (Component) Component.translatable(l.titleKey()))
                         .orElse(Component.literal(before));
                 return Component.translatable("screen.noirm.master.why.after", name);
+            }
+        }
+        com.noirm.mission.PlayerRank rank = lesson.neededRank();
+        if (rank != null && !data.career().rank().atLeast(rank)) {
+            return Component.translatable("screen.noirm.master.why.rank", rank.title(), data.career().rank().title());
+        }
+        if (lesson.teachesJutsu()) {
+            var nature = JutsuData.get(lesson.jutsu()).nature();
+            if (nature.isPresent() && data.identity().affinity(nature.get()) <= 0f) {
+                return Component.translatable("screen.noirm.master.why.nature",
+                        Component.translatable(nature.get().translationKey()));
             }
         }
         if (data.getTaijutsu() < lesson.taijutsu()) {
@@ -192,10 +214,24 @@ public final class MasterSystem {
                         practice.getValue());
             }
         }
+        Component perk = MasterPerks.blocker(data, lesson);
+        if (perk != null) {
+            return perk;
+        }
+        if (lesson.ryo() > 0 && data.career().ryo() < lesson.ryo()) {
+            return Component.translatable("screen.noirm.master.why.ryo", com.noirm.economy.Ryo.format(lesson.ryo()),
+                    com.noirm.economy.Ryo.format(data.career().ryo()));
+        }
         return null;
     }
 
-    /** {@code player} asks to learn a lesson. Returns whether they learned it. */
+    /** As the other {@code lessonBlocker}, plus what a service needs from the player (an eye to transplant...). */
+    public static Component lessonBlocker(Player player, ShinobiData data, ResourceLocation masterId, MasterDefinition def, MasterDefinition.Lesson lesson) {
+        Component blocker = lessonBlocker(data, masterId, def, lesson);
+        return blocker != null || !lesson.isService() ? blocker : MasterPerks.serviceBlocker(player, data, lesson);
+    }
+
+    /** {@code player} asks to learn a lesson (or for a service). Returns whether they learned it (or it was done). */
     public static boolean learn(Player player, ResourceLocation masterId, String lessonId) {
         MasterDefinition def = MasterData.get(masterId);
         ShinobiData data = ShinobiCapability.get(player).orElse(null);
@@ -203,21 +239,41 @@ public final class MasterSystem {
             return false;
         }
         MasterDefinition.Lesson lesson = def.lesson(lessonId).orElse(null);
-        if (lesson == null || data.masters().learned(masterId.toString(), lessonId)) {
+        if (lesson == null || !lesson.isService() && data.masters().learned(masterId.toString(), lessonId)) {
             return false;
         }
-        Component blocker = lessonBlocker(data, masterId, def, lesson);
+        Component blocker = lessonBlocker(player, data, masterId, def, lesson);
         if (blocker != null) {
             player.displayClientMessage(blocker.copy().withStyle(ChatFormatting.RED), true);
             return false;
         }
+        if (lesson.isService()) {
+            if (!MasterPerks.perform(player, data, def, lesson)) {
+                return false;
+            }
+            com.noirm.economy.Ryo.take(player, lesson.ryo());
+            data.markDirty();
+            data.markPowersDirty();
+            return true;
+        }
+        if (lesson.ryo() > 0 && !com.noirm.economy.Ryo.take(player, lesson.ryo())) {
+            return false;
+        }
         data.masters().learn(masterId.toString(), lessonId);
-        data.jutsu().learn(lesson.jutsu(), false);
-        data.jutsu().equipIfRoom(lesson.jutsu());
+        if (lesson.teachesJutsu()) {
+            data.jutsu().learn(lesson.jutsu(), false);
+            data.jutsu().equipIfRoom(lesson.jutsu());
+        } else {
+            MasterPerks.granted(player, data, lesson);
+        }
         data.markDirty();
         data.markPowersDirty();
         player.sendSystemMessage(Component.translatable("message.noirm.master.learned", Component.translatable(def.name()),
-                Component.translatable(jutsuKey(lesson.jutsu()))).withStyle(ChatFormatting.GREEN));
+                Component.translatable(lesson.titleKey())).withStyle(ChatFormatting.GREEN));
+        if (lesson.ryo() > 0) {
+            player.sendSystemMessage(Component.translatable("message.noirm.master.paid", com.noirm.economy.Ryo.text(lesson.ryo()))
+                    .withStyle(ChatFormatting.GRAY));
+        }
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.7f, 1.4f);
         return true;
     }

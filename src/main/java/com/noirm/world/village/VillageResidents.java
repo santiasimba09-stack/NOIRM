@@ -92,13 +92,15 @@ public final class VillageResidents {
             case CAT -> animal(level, net.minecraft.world.entity.EntityType.CAT, pos, s.radius());
             case CHICKEN -> animal(level, net.minecraft.world.entity.EntityType.CHICKEN, pos, s.radius());
             case KOI -> animal(level, net.minecraft.world.entity.EntityType.TROPICAL_FISH, pos, s.radius());
-            case MASTER -> master(level, pos, home, s.radius());
+            case MASTER -> master(level, pos, home, s.radius(), com.noirm.master.MasterData.MIGHT_GUY);
+            case SCHOLAR -> master(level, pos, home, s.radius(), com.noirm.master.MasterData.SCHOLAR);
+            case MEDIC -> master(level, pos, home, s.radius(), com.noirm.master.MasterData.MEDIC);
         }
     }
 
-    /** Might Guy at the training ground (if his data is loaded): stays near it, never despawns. */
-    private static void master(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius) {
-        if (com.noirm.master.MasterData.get(com.noirm.master.MasterData.MIGHT_GUY) == null) {
+    /** A master at their post (Might Guy at the training ground…), if their data is loaded: stays near it, never despawns. */
+    private static void master(ServerLevelAccessor level, BlockPos pos, BlockPos home, int radius, net.minecraft.resources.ResourceLocation id) {
+        if (com.noirm.master.MasterData.get(id) == null) {
             return;
         }
         com.noirm.entity.MasterNinja master = NoirmEntities.MASTER.get().create(level.getLevel());
@@ -106,7 +108,7 @@ public final class VillageResidents {
             return;
         }
         master.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.getRandom().nextFloat() * 360f, 0f);
-        master.setMaster(com.noirm.master.MasterData.MIGHT_GUY);
+        master.setMaster(id);
         master.restrictTo(home, Math.max(4, radius));
         place(level, master);
     }

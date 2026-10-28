@@ -32,6 +32,56 @@ You can also run it from a terminal in the project folder:
 gradlew.bat runClient      # Windows
 ```
 
+## Your first hour in the game (the Shinobi Handbook)
+
+When you start a new world you first make your character (the creation screen). Right after, a
+**Shinobi Handbook** appears in your bag: hold it and right-click to read it. It's the player's
+guide, in the game, in English and Spanish, with these chapters:
+
+| Chapter | What it explains |
+|---|---|
+| Welcome | how you start (an Academy student in plain clothes) and a good first day |
+| Controls | combat mode, strikes, guard, dodge, grab, jutsu keys, J, N, K... with **your own key bindings** |
+| Stats and training | the seven stats (incl. Durability), the dummy, the 30 cap, kill XP |
+| Natures and drills | chakra paper, hidden natures, the five drills, teachers |
+| Jutsu and scrolls | mastery chains, jutsu scrolls and their rank/chakra needs, nature scrolls |
+| Missions, ryo and rank | the missions board, the ryo wallet, rank points, rank-up exams |
+| Your crew | recruiting, the ally screen, crew orders, respect |
+| Masters | who teaches what, and where to find them |
+| Sage Mode | the Stone Hermit, nature energy, petrification |
+| The bingo book | ninja classes D to S, bounties, legends |
+| Tailed beasts and eyes | sealing beasts, the Byakugan, the Sharingan, eye transplants |
+
+Then a few short **tips** pop up in chat, one at a time, and tick themselves off when you do them:
+open the handbook, try combat mode (**R**) on a training dummy, find a missions board. Click
+**[Skip tips]** (or type `/noirm guide tips off`) to turn them off. Lost your handbook?
+`/noirm guide`, craft one (a book + an ink sac), or crouch and right-click any missions board with
+an empty hand.
+
+## How to test the masters (APX)
+
+There are four masters. Right-click one to talk: the screen shows their test, their lessons, what
+each lesson needs (stats, practice, **rank**, **ryo**) and why it's locked.
+
+| Master | Where | Test | Teaches |
+|---|---|---|---|
+| **Might Guy** | a Leaf capital's training ground | a spar (6 clean hits or a guard break in 90 s) | Strong Fist, the Eight Gates, Front Lotus... |
+| **Rensai the Scholar** (ninjutsu) | every hidden village's **Academy** (the middle hall) | a **jutsu duel**: land 4 jutsu hits in 120 s (punches don't count) | **Swift Seals** (genin, 150 ryo: seals take 60% of the time), **Nature Insight** (genin, 250 ryo: half a nature drill), one jutsu per nature you own (chūnin, 400 ryo each), **Chakra Efficiency** (jōnin, 900 ryo: up to 25% cheaper jutsu with CTL) |
+| **Tsubaki** (medical ninja) | every hidden village's **hospital** (ground floor) | **keep a patient alive** for 40 s: crouch next to them with combat mode off, your chakra flows in | **Healing Palm** (genin, 200 ryo: heal yourself or whoever you look at), **Poison Lore** (genin, 150 ryo: weaker poisons, working antidotes), **Chakra Scalpel** (chūnin, 500 ryo: your strikes cut muscles), **eye transplants** (jōnin, 1,500 ryo each) |
+| **The Stone Hermit** | a remote sanctuary (`/noirm sage rumour`) | meditate by his pool while spirits attack | nature energy, Sage Mode |
+
+Meditating (**N**) next to Rensai drills any of the five natures **twice as fast** (he has them all).
+
+**Eye transplants:** using an eye on yourself still works, but it's risky now (about 1 in 3 the eye
+is ruined, and it hurts and blinds you for a while). Bring the eye to Tsubaki instead.
+
+**Antidotes:** a glass bottle, sweet berries, a brown mushroom and bone meal. Only someone who
+learned Poison Lore mixes a working one; anyone else's comes out "botched".
+
+Quick test (cheats on): `/noirm spawn master scholar_rensai` (or `medic_tsubaki`),
+`/noirm rank set chunin`, `/noirm ryo give 2000`, `/noirm master pass scholar_rensai`, then talk to
+them. `/noirm village capital` builds a whole capital with both of them inside.
+
 ## How to test combat (milestone 2)
 
 1. Run `runClient` and create a world with **cheats on**.
@@ -53,7 +103,8 @@ gradlew.bat runClient      # Windows
 | **Z** | Lock on to the enemy you're looking at |
 | **F5** | Third-person view, to see the animations |
 | **1–4** | Cast the jutsu in your loadout (hold for charge/channel jutsu) |
-| **J** | Jutsu screen (change your loadout) |
+| **N** | Meditate (faster chakra, nature drills, nature energy) |
+| **K** | Crew orders |
 | **B** | Tailed-beast cloak (if you're a jinchūriki) |
 | **G** | Open your eyes: Sharingan or Byakugan (if you have one) |
 | **J** | Jutsu screen: your jutsu by nature, the loadout, and the **Nature Tree** tab |
@@ -79,8 +130,8 @@ Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups g
 
 ## How to test powers (milestone 3)
 
-When you first join a world, chat tells you which clan you were born into, with its natures and
-traits. In combat mode, **keys 1–4** cast the jutsu in your loadout; **J** opens the jutsu
+When you first join a world you make your character; the clan you were born into comes from it,
+with its natures and traits (`/noirm clan` shows them). In combat mode, **keys 1–4** cast the jutsu in your loadout; **J** opens the jutsu
 screen. Shortcuts for testing (cheats on):
 
 | Command | What it does |
@@ -145,7 +196,8 @@ and put up to 4 in your loadout. Keys **1–4** cast them in combat mode (**R**)
    shipwrecks), dropped now and then by ninjas you beat, and sold in village scroll shops (C and
    B). Right-click to read one: you learn a jutsu of that rank **of a nature you own**. Bigger
    ranks need more chakra: B needs Reserves 15, A 25, S 40. If nothing fits yet, you keep it.
-3. **Masters** teach their own techniques after you pass their test (Might Guy: the Eight Gates).
+3. **Masters** teach their own techniques after you pass their test (Might Guy: the Eight Gates;
+   Rensai: one jutsu for each nature you own; Tsubaki: Healing Palm and the Chakra Scalpel).
 
 **A new nature (it takes days):**
 1. **Find your hidden affinity.** Craft **Chakra Paper** (2 paper + 1 lapis lazuli = 2) or buy
@@ -160,7 +212,8 @@ and put up to 4 in your loadout. Keys **1–4** cast them in combat mode (**R**)
    A drill is **3 in-game days of meditation** (about an hour of play), **1.5 days** for a hidden
    nature. Progress is kept when you stop.
 3. **Go faster.** Study near a **crew mate** who has the nature (×1.5) or a **master** who has it
-   (×2): they even replace the setting. A **Nature Scroll** (rare: chests, beaten ninjas, one per
+   (×2, e.g. Rensai in a hidden village's Academy, who has all five): they even replace the setting.
+   His **Nature Insight** lesson puts half a drill behind you at once. A **Nature Scroll** (rare: chests, beaten ninjas, one per
    scroll shop) puts a quarter of the drill behind you (never the very end).
 4. **Done:** the nature is yours at trained strength (weaker than a clan nature) with its first
    jutsu. Then the mastery chains and jutsu scrolls open its other jutsu, and two natures can mix

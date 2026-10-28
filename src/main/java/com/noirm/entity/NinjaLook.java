@@ -32,7 +32,7 @@ public final class NinjaLook {
     /** Clan folders that have their own appearance tables; every other clan uses "generic". */
     public static final List<String> FOLDERS = List.of("uchiha", "senju", "hyuga", "uzumaki", "generic");
     /** Fixed looks (every seed decodes the same), for masters ({@code data/noirm/masters/}). */
-    public static final List<String> FIXED_FOLDERS = List.of("taijutsu_master", "sage_hermit");
+    public static final List<String> FIXED_FOLDERS = List.of("taijutsu_master", "sage_hermit", "ninjutsu_scholar", "medic");
     /** Decoding order: changing it changes every ninja's look. */
     public static final List<String> FIELDS = List.of("skin", "hair_style", "hair_color", "eyes", "eye_color", "brows",
             "shirt", "shirt_color", "pants", "pants_color", "wraps", "mark", "accessory", "accessory_color");

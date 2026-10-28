@@ -76,6 +76,8 @@ public final class JutsuBehaviors {
             Map.entry("nature_gathering", com.noirm.senjutsu.SageMode.GATHERING),
             Map.entry("nature_purge", com.noirm.senjutsu.SageMode::purge),
             Map.entry("lotus", TaijutsuTechniques::lotus),
+            // Medical ninjutsu (medical/ChakraScalpel): the medical ninja's lessons
+            Map.entry("scalpel", com.noirm.medical.ChakraScalpel::cast),
             Map.entry("flurry", TaijutsuTechniques::flurry));
 
     private JutsuBehaviors() {}

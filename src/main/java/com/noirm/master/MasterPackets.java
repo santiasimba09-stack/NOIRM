@@ -40,19 +40,26 @@ public final class MasterPackets {
      * @param status   {@link #LEARNED}, {@link #READY} or {@link #LOCKED}
      * @param blocker  why it's locked (empty if it isn't)
      * @param needs    what it asks for, in one line
+     * @param title    what it teaches: a jutsu's name, a perk or a service
+     * @param rank     the jutsu's rank letter ("" for a perk or a service)
+     * @param ryo      its price
+     * @param service  a service (asked for each time; never "learned")
      */
-    public record LessonRow(String id, ResourceLocation jutsu, String rank, int status, Component blocker, Component needs) {
+    public record LessonRow(String id, Component title, String rank, int status, Component blocker, Component needs, int ryo, boolean service) {
         void encode(FriendlyByteBuf buf) {
             buf.writeUtf(id, 64);
-            buf.writeResourceLocation(jutsu);
+            buf.writeComponent(title);
             buf.writeUtf(rank, 4);
             buf.writeVarInt(status);
             buf.writeComponent(blocker);
             buf.writeComponent(needs);
+            buf.writeVarInt(ryo);
+            buf.writeBoolean(service);
         }
 
         static LessonRow decode(FriendlyByteBuf buf) {
-            return new LessonRow(buf.readUtf(64), buf.readResourceLocation(), buf.readUtf(4), buf.readVarInt(), buf.readComponent(), buf.readComponent());
+            return new LessonRow(buf.readUtf(64), buf.readComponent(), buf.readUtf(4), buf.readVarInt(), buf.readComponent(), buf.readComponent(),
+                    buf.readVarInt(), buf.readBoolean());
         }
     }
 
@@ -72,11 +79,12 @@ public final class MasterPackets {
             List<LessonRow> rows = new ArrayList<>();
             for (MasterDefinition.Lesson lesson : def.lessons()) {
                 JutsuDefinition jutsu = JutsuData.get(lesson.jutsu());
-                boolean learned = data.masters().learned(id.toString(), lesson.id());
-                Component blocker = learned ? null : MasterSystem.lessonBlocker(data, id, def, lesson);
-                rows.add(new LessonRow(lesson.id(), lesson.jutsu(), jutsu == null ? "?" : jutsu.rank(),
+                boolean learned = !lesson.isService() && data.masters().learned(id.toString(), lesson.id());
+                Component blocker = learned ? null : MasterSystem.lessonBlocker(player, data, id, def, lesson);
+                rows.add(new LessonRow(lesson.id(), Component.translatable(lesson.titleKey()),
+                        !lesson.teachesJutsu() ? "" : jutsu == null ? "?" : jutsu.rank(),
                         learned ? LEARNED : blocker == null ? READY : LOCKED,
-                        blocker == null ? Component.empty() : blocker, needs(def, lesson)));
+                        blocker == null ? Component.empty() : blocker, needs(def, lesson), lesson.ryo(), lesson.isService()));
             }
             Component blocker = MasterSystem.sparBlocker(player, master);
             String style = def.style().map(StyleSystem::translationKey).orElse("");
@@ -89,6 +97,12 @@ public final class MasterPackets {
         /** "Taijutsu 20 · after Gate of Opening · Gate of Opening ★1", or "Pass the test". */
         private static Component needs(MasterDefinition def, MasterDefinition.Lesson lesson) {
             List<Component> parts = new ArrayList<>();
+            if (lesson.neededRank() != null) {
+                parts.add(lesson.neededRank().title());
+            }
+            if (lesson.ryo() > 0) {
+                parts.add(com.noirm.economy.Ryo.text(lesson.ryo()));
+            }
             if (lesson.taijutsu() > 0) {
                 parts.add(Component.translatable("screen.noirm.master.need.taijutsu", MasterSystem.fmt(lesson.taijutsu())));
             }
@@ -100,7 +114,7 @@ public final class MasterPackets {
             }
             for (String before : lesson.after()) {
                 def.lesson(before).ifPresent(l -> parts.add(Component.translatable("screen.noirm.master.need.after",
-                        Component.translatable(MasterSystem.jutsuKey(l.jutsu())))));
+                        Component.translatable(l.titleKey()))));
             }
             for (var practice : lesson.mastery().entrySet()) {
                 parts.add(Component.translatable("screen.noirm.master.need.practice",

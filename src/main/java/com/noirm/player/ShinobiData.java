@@ -119,6 +119,13 @@ public final class ShinobiData {
         return career;
     }
 
+    /** The new-player guide: the Shinobi Handbook and the first-steps tips. */
+    private final com.noirm.guide.GuideData guide = new com.noirm.guide.GuideData();
+
+    public com.noirm.guide.GuideData guide() {
+        return guide;
+    }
+
     /** Masters' tests passed, lessons learned and styles granted. */
     public com.noirm.master.MasterProgress masters() {
         return masters;
@@ -365,6 +372,7 @@ public final class ShinobiData {
         tag.put("Creator", creator.save());
         tag.put("Career", career.save());
         tag.put("NatureTraining", natureTraining.save());
+        tag.put("Guide", guide.save());
         return tag;
     }
 
@@ -394,6 +402,7 @@ public final class ShinobiData {
         creator.load(tag.getCompound("Creator"));
         career.load(tag.getCompound("Career"));
         natureTraining.load(tag.getCompound("NatureTraining"));
+        guide.load(tag.getCompound("Guide"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

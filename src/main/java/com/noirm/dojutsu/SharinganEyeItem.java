@@ -20,7 +20,8 @@ import java.util.List;
 /**
  * A Sharingan eye (or a pair of Mangekyō eyes) taken from a fallen Uchiha. Hold use for three
  * seconds to transplant it into yourself (see {@link MangekyoTransplant}); a refused transplant
- * keeps the eye.
+ * keeps the eye. Operating on yourself is risky ({@code medical.EyeSurgery}): the medical ninja in a
+ * capital's hospital does it safely.
  */
 public class SharinganEyeItem extends Item {
     public SharinganEyeItem(Properties properties) {
@@ -38,7 +39,7 @@ public class SharinganEyeItem extends Item {
                 player.displayClientMessage(Component.translatable("message.noirm.transplant." + outcome.key()).withStyle(ChatFormatting.GRAY), true);
                 return InteractionResultHolder.fail(stack);
             }
-            player.displayClientMessage(Component.translatable("message.noirm.transplant.surgery"), true);
+            player.displayClientMessage(Component.translatable("message.noirm.surgery.self_warning"), true);
         } else if (eye == null) {
             return InteractionResultHolder.fail(stack);
         }
@@ -60,9 +61,9 @@ public class SharinganEyeItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide() && entity instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
-            if (data != null && MangekyoTransplant.transplant(player, data, MangekyoTransplant.EyeInfo.of(stack)).success()
-                    && !player.getAbilities().instabuild) {
-                stack.shrink(1);
+            if (data != null) {
+                // Operating on yourself: risky (the medical ninja does it safely, see medical/EyeSurgery).
+                com.noirm.medical.EyeSurgery.selfSurgery(player, data, stack, player.getRandom().nextFloat());
             }
         }
         return stack;
