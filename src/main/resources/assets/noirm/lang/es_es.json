@@ -1406,5 +1406,15 @@
   "hud.noirm.drill.hidden": "· afinidad oculta",
   "hud.noirm.drill.crew": "· te enseña un compañero",
   "hud.noirm.drill.master": "· te enseña un maestro",
-  "kit.noirm.scrolls": "Papel de chakra y pergaminos"
+  "kit.noirm.scrolls": "Papel de chakra y pergaminos",
+  "stat.noirm.durability": "Dureza",
+  "stat.noirm.durability.desc": "Anula una parte de cada golpe (hasta un 60%). Crece recibiendo golpes en combates reales.",
+  "stat.noirm.control": "Control de chakra",
+  "stat.noirm.willpower": "Voluntad",
+  "hud.noirm.training.durability": "Dur %s",
+  "message.noirm.training.durability_up": "¡Tu dureza subió a %s! (los golpes duelen menos)",
+  "command.noirm.stat_dur": "Dureza: %s (anula el %s%% del daño)",
+  "help.noirm.me.stat_dur": "cambia tu dureza (DUR): la parte del daño que aguantas sin sufrir, hasta un 60%",
+  "message.noirm.kill_xp": "Derrotaste a %s: %s",
+  "message.noirm.kill_xp.entry": "+%s %s"
 }

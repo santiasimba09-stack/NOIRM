@@ -1406,5 +1406,15 @@
   "hud.noirm.drill.hidden": "· hidden affinity",
   "hud.noirm.drill.crew": "· crew mate teaching",
   "hud.noirm.drill.master": "· master teaching",
-  "kit.noirm.scrolls": "Chakra paper and scrolls"
+  "kit.noirm.scrolls": "Chakra paper and scrolls",
+  "stat.noirm.durability": "Durability",
+  "stat.noirm.durability.desc": "Negates a share of every hit (up to 60%). Grows from taking hits in real fights.",
+  "stat.noirm.control": "Chakra control",
+  "stat.noirm.willpower": "Willpower",
+  "hud.noirm.training.durability": "Dur %s",
+  "message.noirm.training.durability_up": "Your durability rose to %s! (hits hurt less)",
+  "command.noirm.stat_dur": "Durability: %s (negates %s%% of damage)",
+  "help.noirm.me.stat_dur": "set your durability (DUR): the share of damage you shrug off, up to 60%",
+  "message.noirm.kill_xp": "Defeated %s: %s",
+  "message.noirm.kill_xp.entry": "+%s %s"
 }
