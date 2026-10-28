@@ -123,6 +123,7 @@ public final class NoirmNetwork {
                 .encoder(com.noirm.gore.GorePackets.Sync::encode).decoder(com.noirm.gore.GorePackets.Sync::decode)
                 .consumerMainThread(com.noirm.gore.GorePackets.Sync::handle).add();
         id = com.noirm.creator.CreatorPackets.register(CHANNEL, id); // character creation
+        id = com.noirm.nature.NaturePackets.register(CHANNEL, id); // hidden natures and nature drills
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

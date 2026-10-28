@@ -368,6 +368,12 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(sell(1, new ItemStack(Items.PAPER, 12), 16));
                 offers.add(sell(2, new ItemStack(Items.BOOK, 2), 16));
                 offers.add(sell(1, new ItemStack(Items.INK_SAC, 4), 16));
+                // Natures and jutsu (nature/NatureItems): chakra paper, rank C and B scrolls, and one rare nature scroll per shop.
+                offers.add(sell(1, new ItemStack(com.noirm.nature.NatureItems.CHAKRA_PAPER.get(), 4), 16));
+                offers.add(sell(6, com.noirm.nature.NatureItems.jutsuScroll("C"), 3));
+                offers.add(sell(14, com.noirm.nature.NatureItems.jutsuScroll("B"), 2));
+                offers.add(sell(24, com.noirm.nature.NatureItems.natureScroll(com.noirm.nature.NatureDrills.TRAINABLE.get(
+                        Math.floorMod(getUUID().hashCode(), com.noirm.nature.NatureDrills.TRAINABLE.size()))), 1));
                 offers.add(buy(new ItemStack(Items.PAPER, 20)));
                 offers.add(buy(new ItemStack(Items.FEATHER, 16)));
             }
