@@ -41,7 +41,7 @@ import net.minecraft.world.level.Level;
  * The ordinary people of a ninja village (they don't fight; hurting one brings the village's
  * ninjas, see {@link VillageResidents#raiseAlarm}). Each has a {@link Role}:
  * <ul>
- *   <li><b>Merchants</b> keep a shop and trade for emeralds; what they sell depends on the shop
+ *   <li><b>Merchants</b> keep a shop (priced in ryo, see {@code economy.Shop}); what they sell depends on the shop
  *       ({@link #SHOP_RAMEN ramen stand}, weapons, scrolls, flowers, teahouse or general goods).</li>
  *   <li><b>Villagers</b> spend the day out in the village and go home when it gets dark or rains.</li>
  *   <li><b>Children</b> spend the day at the Academy (or the plaza) and go home at night.</li>
