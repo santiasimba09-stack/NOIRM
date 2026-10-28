@@ -126,6 +126,7 @@ public final class NoirmNetwork {
         id = com.noirm.mission.CareerPackets.register(CHANNEL, id); // ryo, missions, rank, shops
         id = com.noirm.nature.NaturePackets.register(CHANNEL, id); // hidden natures and nature drills
         id = com.noirm.senjutsu.SagePackets.register(CHANNEL, id); // the sage path: marks, stone skin
+        id = com.noirm.bounty.BountyPackets.register(CHANNEL, id); // ninja classes and the bingo book
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

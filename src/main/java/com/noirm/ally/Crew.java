@@ -102,6 +102,7 @@ public final class Crew {
         victor.sendSystemMessage(Component.translatable(asks ? "message.noirm.crew.asks" : "message.noirm.crew.yields",
                 ninja.getDisplayName()).withStyle(asks ? ChatFormatting.AQUA : ChatFormatting.GRAY));
         com.noirm.training.KillXp.onDefeated(victor, ninja); // a yield is a win: kill XP (APX 0.1)
+        com.noirm.bounty.BingoEvents.onYield(ninja, victor); // and a listed rogue's bounty
     }
 
     /** {@code player} invites a yielded {@code ninja}. */

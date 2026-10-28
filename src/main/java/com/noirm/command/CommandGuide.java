@@ -168,6 +168,12 @@ public final class CommandGuide {
                 .add("energy", "/noirm sage energy <0-100>", "/noirm sage energy 60", true)
                 .add("petrify", "/noirm sage petrify <0-99>", "/noirm sage petrify 60", true)
                 .add("sanctuary", "/noirm sage sanctuary", "/noirm sage sanctuary", true);
+        section("bingo")
+                .add("class", "/noirm class [<target>]", "/noirm class @s", false)
+                .add("list", "/noirm bingo [list]", "/noirm bingo list", false)
+                .add("refresh", "/noirm bingo refresh", "/noirm bingo refresh", true)
+                .add("spawn", "/noirm bingo spawn <entry>", "/noirm bingo spawn 1", true)
+                .add("give", "/noirm bingo give", "/noirm bingo give", true);
     }
 
     private CommandGuide() {}

@@ -322,8 +322,12 @@ public final class StatsApxGameTests {
         data.training().fight().hit(player, false);
         Map<String, Float> big = KillXp.onDefeated(player, strong);
         SparringNinja weak = ninja(helper, 2.5f);
-        data.setSpeed(40f);
-        data.setTaijutsu(40f);
+        // Kill XP follows the class (bounty/NinjaClass): an A-class player against a D-class ninja.
+        data.setSpeed(60f);
+        data.setTaijutsu(60f);
+        data.setVitality(60f);
+        data.setDurability(60f);
+        data.setReserves(60f);
         data.training().fight().hit(player, false);
         Map<String, Float> small = KillXp.onDefeated(player, weak);
         near(helper, KillXp.KILL_XP * KillXp.MAX_WORTH, big.get(Stat.TAIJUTSU.key()), "a much stronger foe gives the most");

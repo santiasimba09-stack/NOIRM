@@ -88,6 +88,7 @@ public final class MeCommand {
                 Component.literal(identity.clanName()).withStyle(identity.isCanon() ? ChatFormatting.RED : ChatFormatting.GOLD)));
         line(text, Component.translatable("message.noirm.clan.natures", ClanSystem.natures(identity)));
         line(text, CareerCommand.summary(data.career())); // rank, points, ryo, missions done
+        line(text, BountyCommand.meLine(player)); // your class (D–S): your strength, not your rank
         line(text, Component.translatable("command.noirm.me.bars", Math.round(player.getHealth()), Math.round(player.getMaxHealth()),
                 Math.round(data.getChakra()), Math.round(data.getMaxChakra()), Math.round(data.getStamina()), Math.round(data.getMaxStamina())));
         line(text, Component.translatable("command.noirm.stat", Math.round(data.getSpeed()), Math.round(data.getTaijutsu()),

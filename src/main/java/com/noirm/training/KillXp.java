@@ -1,7 +1,6 @@
 package com.noirm.training;
 
 import com.noirm.Noirm;
-import com.noirm.combat.Perception;
 import com.noirm.entity.ShadowClone;
 import com.noirm.entity.SparringNinja;
 import com.noirm.player.ShinobiCapability;
@@ -67,16 +66,13 @@ public final class KillXp {
     // ------------------------------------------------------------ how much a foe is worth
 
     /**
-     * How strong {@code entity} is, for kill XP: their raw strength (the average of speed and
-     * taijutsu, {@link Perception#basePower}). Works for players too, so {@link #worthFactor} is
-     * "their strength ÷ yours".
-     *
-     * <p><b>Ninja classes (D–S):</b> this is the one place to switch to the class. Return a value
-     * on the same scale for both sides (e.g. D 10, C 20, B 40, A 80, S 160) and everything else
-     * (the pool, willpower, the summary) follows.
+     * How much {@code entity} is worth, for kill XP: their <b>class</b> ({@link com.noirm.bounty.NinjaClass}):
+     * D 10, C 20, B 40, A 80, S 160, a legend 320. Works for players too, so {@link #worthFactor}
+     * is "their class's worth ÷ yours": beating someone one class above you gives twice the pool,
+     * two classes above four times (capped at {@link #MAX_WORTH}).
      */
     public static float enemyWorth(LivingEntity entity) {
-        return Perception.basePower(entity);
+        return com.noirm.bounty.NinjaClass.worth(entity);
     }
 
     /** The foe's worth ÷ yours, kept within {@link #MIN_WORTH}–{@link #MAX_WORTH}. */

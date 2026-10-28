@@ -109,6 +109,11 @@ public final class Shop {
                 }
             });
         }
+        if (merchant.shop() == VillageMerchant.SHOP_GENERAL || merchant.shop() == VillageMerchant.SHOP_WEAPONS) {
+            // The bingo book: cheap, for anyone (dangerous rogues and their bounties).
+            rows.add(new Row(new ItemStack(com.noirm.bounty.BountyItems.BINGO_BOOK.get()), com.noirm.bounty.BingoBook.BOOK_PRICE, false,
+                    PlayerRank.ACADEMY));
+        }
         // What they buy: their old list, emeralds, and (weapons and general goods) the loot you carry.
         for (MerchantOffer offer : merchant.getOffers()) {
             ItemStack cost = offer.getBaseCostA();
@@ -148,7 +153,7 @@ public final class Shop {
             return false;
         }
         return item != CareerItems.RYO_POUCH.get() && item != CareerItems.MISSION_PARCEL.get() && item != CareerItems.MISSION_SCROLL.get()
-                && item != CareerItems.MISSION_BOARD_ITEM.get();
+                && item != CareerItems.MISSION_BOARD_ITEM.get() && item != com.noirm.bounty.BountyItems.BINGO_BOOK.get();
     }
 
     /** How many of {@code item} the player carries (main inventory). */

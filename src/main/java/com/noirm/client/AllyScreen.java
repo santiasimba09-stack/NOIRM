@@ -216,7 +216,15 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             }
         }, List.of(Component.translatable("screen.noirm.ally.dismiss.tip"))));
         int nameW = dx - (x + 28) - 8;
-        g.drawString(font, fit(title.getString(), nameW), x + 28, y + 9, GOLD, false);
+        int nameX = x + 28;
+        int classCode = info == null ? -1 : com.noirm.bounty.ClientClasses.get(info.entityId()); // their class, D–S
+        if (classCode >= 0) {
+            Component tag = com.noirm.bounty.NinjaClass.tag(classCode);
+            g.drawString(font, tag, nameX, y + 9, 0xFFFFFFFF, false);
+            nameX += font.width(tag) + 4;
+            nameW -= font.width(tag) + 4;
+        }
+        g.drawString(font, fit(title.getString(), nameW), nameX, y + 9, GOLD, false);
         g.fill(x + 8, y + 24, x + W - 8, y + 25, RULE);
     }
 

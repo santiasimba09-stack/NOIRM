@@ -38,7 +38,11 @@ public class MissionBoardBlock extends HorizontalDirectionalBlock {
     @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND && player instanceof ServerPlayer serverPlayer) {
-            Missions.useBoard(serverPlayer, pos);
+            if (player.isShiftKeyDown()) {
+                com.noirm.bounty.BingoEvents.buyAtBoard(serverPlayer); // sneak: a bingo book from the board's clerk
+            } else {
+                Missions.useBoard(serverPlayer, pos);
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }

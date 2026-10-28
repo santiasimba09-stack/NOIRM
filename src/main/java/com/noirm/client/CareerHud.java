@@ -46,6 +46,12 @@ public final class CareerHud {
         int y = 6;
         Component head = Component.translatable("hud.noirm.career", PlayerRank.byOrdinal(data.rank()).title(), Ryo.format(data.ryo()));
         g.drawString(font, head, right - font.width(head), y, GOLD, true);
+        // Your class (D–S) in front: how strong you are, next to your rank (your standing).
+        int code = com.noirm.bounty.ClientClasses.get(mc.player.getId());
+        if (code >= 0) {
+            Component tag = com.noirm.bounty.NinjaClass.tag(code);
+            g.drawString(font, tag, right - font.width(head) - 4 - font.width(tag), y, 0xFFFFFFFF, true);
+        }
         y += 11;
         if (data.examReady() && !data.onMission() && !data.examFight()) {
             Component ready = Component.translatable("hud.noirm.exam_ready", PlayerRank.byOrdinal(data.rank() + 1).title());
