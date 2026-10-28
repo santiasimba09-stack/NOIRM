@@ -21,9 +21,13 @@ import java.util.Optional;
  * @param test     the spar you must pass before they teach you
  * @param grantsStyle passing the test lets you use their style even below its taijutsu requirement
  * @param lessons  what they teach, in order
+ * @param trial    the kind of test: {@code "spar"} (the default), or {@code "meditation"} (sit still by them while
+ *                 spirits try to break your focus, see {@code senjutsu.SageTrial}; {@code test.hits} is then the
+ *                 seconds of stillness needed, within {@code test.seconds})
  */
 public record MasterDefinition(String name, String greeting, Optional<ResourceLocation> style, String look,
-                               Map<String, ResourceLocation> gear, Stats stats, Test test, boolean grantsStyle, List<Lesson> lessons) {
+                               Map<String, ResourceLocation> gear, Stats stats, Test test, boolean grantsStyle, List<Lesson> lessons,
+                               String trial) {
 
     public static final Codec<MasterDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.fieldOf("name").forGetter(MasterDefinition::name),
@@ -34,7 +38,8 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
             Stats.CODEC.optionalFieldOf("stats", Stats.DEFAULT).forGetter(MasterDefinition::stats),
             Test.CODEC.optionalFieldOf("test", Test.DEFAULT).forGetter(MasterDefinition::test),
             Codec.BOOL.optionalFieldOf("grants_style", true).forGetter(MasterDefinition::grantsStyle),
-            Lesson.CODEC.listOf().optionalFieldOf("lessons", List.of()).forGetter(MasterDefinition::lessons)
+            Lesson.CODEC.listOf().optionalFieldOf("lessons", List.of()).forGetter(MasterDefinition::lessons),
+            Codec.STRING.optionalFieldOf("trial", "spar").forGetter(MasterDefinition::trial)
     ).apply(i, MasterDefinition::new));
 
     public Optional<Lesson> lesson(String id) {
@@ -79,9 +84,10 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
      * @param test      whether you must have passed this master's spar
      * @param after     lessons (ids, this master's) you must have learned first
      * @param mastery   practice: jutsu you must have used enough to reach a mastery level (★)
+     * @param control   chakra control (CTL) needed
      */
     public record Lesson(String id, ResourceLocation jutsu, float taijutsu, float speed, boolean test, List<String> after,
-                         Map<ResourceLocation, Integer> mastery) {
+                         Map<ResourceLocation, Integer> mastery, float control) {
         public static final Codec<Lesson> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(Lesson::id),
                 ResourceLocation.CODEC.fieldOf("jutsu").forGetter(Lesson::jutsu),
@@ -89,7 +95,8 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
                 Codec.floatRange(0, 10000).optionalFieldOf("speed", 0f).forGetter(Lesson::speed),
                 Codec.BOOL.optionalFieldOf("test", true).forGetter(Lesson::test),
                 Codec.STRING.listOf().optionalFieldOf("after", List.of()).forGetter(Lesson::after),
-                Codec.unboundedMap(ResourceLocation.CODEC, Codec.intRange(1, 5)).optionalFieldOf("mastery", Map.of()).forGetter(Lesson::mastery)
+                Codec.unboundedMap(ResourceLocation.CODEC, Codec.intRange(1, 5)).optionalFieldOf("mastery", Map.of()).forGetter(Lesson::mastery),
+                Codec.floatRange(0, 10000).optionalFieldOf("control", 0f).forGetter(Lesson::control)
         ).apply(i, Lesson::new));
     }
 }

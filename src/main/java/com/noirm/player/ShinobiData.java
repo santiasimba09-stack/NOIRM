@@ -73,6 +73,8 @@ public final class ShinobiData {
     private final com.noirm.senjutsu.MeditationData senjutsu = new com.noirm.senjutsu.MeditationData();
     /** Character creation: your look, the creation screen and its clan rolls. */
     private final com.noirm.creator.CreatorData creator = new com.noirm.creator.CreatorData();
+    /** Hidden natures, the chakra paper and nature drills ({@code nature.NatureDrills}). */
+    private final com.noirm.nature.NatureTraining natureTraining = new com.noirm.nature.NatureTraining();
     /** Your crew mates (ninjas who joined you), by UUID. */
     private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
 
@@ -99,6 +101,11 @@ public final class ShinobiData {
     /** Your look and the character creation state. */
     public com.noirm.creator.CreatorData creator() {
         return creator;
+    }
+
+    /** Hidden natures and nature drills. */
+    public com.noirm.nature.NatureTraining natureTraining() {
+        return natureTraining;
     }
 
     public java.util.List<java.util.UUID> crew() {
@@ -349,6 +356,7 @@ public final class ShinobiData {
         tag.put("Masters", masters.save());
         tag.put("Senjutsu", senjutsu.save());
         tag.put("Creator", creator.save());
+        tag.put("NatureTraining", natureTraining.save());
         return tag;
     }
 
@@ -376,6 +384,7 @@ public final class ShinobiData {
         masters.load(tag.getCompound("Masters"));
         senjutsu.load(tag.getCompound("Senjutsu"));
         creator.load(tag.getCompound("Creator"));
+        natureTraining.load(tag.getCompound("NatureTraining"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

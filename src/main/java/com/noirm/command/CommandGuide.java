@@ -72,7 +72,10 @@ public final class CommandGuide {
                 .add("natures", "/noirm nature list", "/noirm nature list", true)
                 .add("nature_add", "/noirm nature add <nature>", "/noirm nature add water", true)
                 .add("nature_remove", "/noirm nature remove <nature>", "/noirm nature remove water", true)
-                .add("nature_all", "/noirm nature all", "/noirm nature all", true);
+                .add("nature_all", "/noirm nature all", "/noirm nature all", true)
+                .add("drills", "/noirm drills", "/noirm drills", false)
+                .add("nature_train", "/noirm nature train <nature> <0-100>", "/noirm nature train wind 90", true)
+                .add("nature_hidden", "/noirm nature hidden <nature>", "/noirm nature hidden earth", true);
         section("jutsu")
                 .add("list", "/noirm jutsu list", "/noirm jutsu list", false)
                 .add("loadout", "/noirm jutsu loadout", "/noirm jutsu loadout", false)
@@ -144,6 +147,14 @@ public final class CommandGuide {
                 .add("pass", "/noirm master pass <master>", "/noirm master pass might_guy", true)
                 .add("learnall", "/noirm master learnall <master>", "/noirm master learnall might_guy", true)
                 .add("reset", "/noirm master reset", "/noirm master reset", true);
+        section("sage")
+                .add("status", "/noirm sage", "/noirm sage", false)
+                .add("on", "/noirm sage <on|off>", "/noirm sage on", false)
+                .add("rumour", "/noirm sage rumour", "/noirm sage rumour", false)
+                .add("learn", "/noirm sage learn", "/noirm sage learn", true)
+                .add("energy", "/noirm sage energy <0-100>", "/noirm sage energy 60", true)
+                .add("petrify", "/noirm sage petrify <0-99>", "/noirm sage petrify 60", true)
+                .add("sanctuary", "/noirm sage sanctuary", "/noirm sage sanctuary", true);
     }
 
     private CommandGuide() {}

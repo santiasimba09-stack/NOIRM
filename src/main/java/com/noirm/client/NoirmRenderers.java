@@ -33,5 +33,7 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(com.noirm.weapon.NinjaWeapons.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
         // Gore: a severed arm, leg or head in the victim's skin and armor.
         event.registerEntityRenderer(NoirmEntities.SEVERED_LIMB.get(), SeveredLimbRenderer::new);
+        // Senjutsu: the hermit's restless spirits (a vex body for now, trailing grey-green motes).
+        event.registerEntityRenderer(NoirmEntities.NATURE_SPIRIT.get(), net.minecraft.client.renderer.entity.VexRenderer::new);
     }
 }

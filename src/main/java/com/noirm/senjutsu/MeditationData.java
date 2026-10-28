@@ -23,6 +23,12 @@ public final class MeditationData {
     private float natureFactor = 1f;
     /** The nature energy (rounded) the client last heard about. */
     private int syncedEnergy = -1;
+    /** The sage path: petrification, the statue, Sage Mode (saved under "Sage"). */
+    private final SageData sage = new SageData();
+
+    public SageData sage() {
+        return sage;
+    }
 
     public float natureEnergy() {
         return natureEnergy;
@@ -78,6 +84,11 @@ public final class MeditationData {
         lastHurtTime = time;
     }
 
+    /** Game tests: forget the last hit (no longer "in a fight"). */
+    public void setLastHurtTimeForTests(long time) {
+        lastHurtTime = time;
+    }
+
     public float natureFactor() {
         return natureFactor;
     }
@@ -99,11 +110,13 @@ public final class MeditationData {
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("NatureEnergy", natureEnergy);
+        tag.put("Sage", sage.save());
         return tag;
     }
 
     public void load(CompoundTag tag) {
         setNatureEnergy(tag.getFloat("NatureEnergy"));
+        sage.load(tag.getCompound("Sage"));
         meditating = false;
         ticks = 0;
         syncedEnergy = -1;

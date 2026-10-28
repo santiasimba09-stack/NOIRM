@@ -465,7 +465,7 @@ public final class CombatSystem {
         if (move == null) {
             return false;
         }
-        LivingEntity target = findTarget(entity, move.hit().range() + 1.5f);
+        LivingEntity target = findTarget(entity, move.hit().range() + com.noirm.senjutsu.SageMode.reachBonus(entity) + 1.5f);
         float slow = target == null ? 1f : Perception.slowFactor(target, entity);
         float windup = move.timing().windup() * slow;
         // Perception focus: the defender sees this (heavy) attack coming in slow motion.
@@ -616,13 +616,14 @@ public final class CombatSystem {
 
     private static void sweep(LivingEntity attacker, CombatState state) {
         CombatMove.Hit hit = state.move.hit();
-        AABB area = attacker.getBoundingBox().inflate(hit.range() + 1);
+        float range = hit.range() + com.noirm.senjutsu.SageMode.reachBonus(attacker); // Sage Mode's aura reaches a little further
+        AABB area = attacker.getBoundingBox().inflate(range + 1);
         int sweeping = sweepingLevel(attacker);
         float arc = Math.min(360f, hit.arc() + SWEEP_ARC_PER_LEVEL * sweeping);
         int hits = 0;
         for (LivingEntity target : attacker.level().getEntitiesOfClass(LivingEntity.class, area,
                 t -> t != attacker && t.isAlive() && !t.isSpectator() && !attacker.isAlliedTo(t) && !com.noirm.ally.Crew.sameSide(attacker, t)
-                        && !state.hitThisSwing.contains(t.getId()) && inSwing(attacker, t, hit.range(), arc))) {
+                        && !state.hitThisSwing.contains(t.getId()) && inSwing(attacker, t, range, arc))) {
             // The weapon wears once per swing, like vanilla (on the first one hit); the rest is the sweep.
             boolean first = state.hitThisSwing.isEmpty();
             state.hitThisSwing.add(target.getId());

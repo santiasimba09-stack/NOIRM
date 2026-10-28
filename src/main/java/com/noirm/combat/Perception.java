@@ -83,7 +83,7 @@ public final class Perception {
     public static float stateMultiplier(LivingEntity entity) {
         float morale = entity instanceof com.noirm.entity.SparringNinja ninja ? com.noirm.ally.AllyMind.morale(ninja) : 1f;
         return morale * AwakeningSystem.damageMultiplier(entity) * BijuSystem.damageMultiplier(entity)
-                * com.noirm.jutsu.ModeSystem.damageMultiplier(entity);
+                * com.noirm.jutsu.ModeSystem.damageMultiplier(entity) * com.noirm.senjutsu.SageMode.damageMultiplier(entity);
     }
 
     /**
@@ -95,7 +95,8 @@ public final class Perception {
                 && ShinobiCapability.get(player).map(d -> d.identity().has(ClanTrait.KEEN_EYES)).orElse(false) ? 1.1f : 1f;
         return Sharingan.perceptionMultiplier(entity) * keenEyes
                 * com.noirm.jutsu.ModeSystem.perceptionMultiplier(entity)
-                * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity);
+                * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity)
+                * com.noirm.senjutsu.SageMode.perceptionMultiplier(entity);
     }
 
     /**

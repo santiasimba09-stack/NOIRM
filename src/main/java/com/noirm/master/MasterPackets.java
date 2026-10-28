@@ -95,6 +95,9 @@ public final class MasterPackets {
             if (lesson.speed() > 0) {
                 parts.add(Component.translatable("screen.noirm.master.need.speed", MasterSystem.fmt(lesson.speed())));
             }
+            if (lesson.control() > 0) {
+                parts.add(Component.translatable("screen.noirm.master.need.control", MasterSystem.fmt(lesson.control())));
+            }
             for (String before : lesson.after()) {
                 def.lesson(before).ifPresent(l -> parts.add(Component.translatable("screen.noirm.master.need.after",
                         Component.translatable(MasterSystem.jutsuKey(l.jutsu())))));
