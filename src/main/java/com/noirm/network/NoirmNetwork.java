@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "18";
+    private static final String PROTOCOL_VERSION = "19";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
