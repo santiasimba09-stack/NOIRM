@@ -46,3 +46,9 @@ Everything here is decided by the owner (answers of 2026-10-28); ask before chan
 - Wild ninjas: **fewer** (quieter than one group per 1.5 min).
 - Long held models for the yari and nodachi; **more chakra-flow weapons** (e.g. a fire nodachi);
   samurai −12% speed stays; **squads defend you** against rogues attacking you.
+
+## UI redesign (owner, 2026-10-29)
+- "Make it smoother, make it minimalist while keeping the color palette we established, so it
+  doesn't lose too much of the style." Every NOIRM screen and the HUD: fewer boxes and borders, more
+  space, one consistent component set, smooth open/close and hover animations, the same palette
+  (ash/iron blacks and greys, bone white, blood-red accent, chakra blue/green for chakra).
