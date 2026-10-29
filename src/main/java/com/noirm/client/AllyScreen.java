@@ -375,7 +375,15 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         ally.setXRot(0f);
         ally.yHeadRot = ally.getYRot();
         ally.yHeadRotO = ally.getYRot();
+        // No floating name tag over the screen (it showed because you were looking at them).
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        net.minecraft.world.entity.Entity picked = mc.crosshairPickEntity;
+        boolean nameVisible = ally.isCustomNameVisible();
+        mc.crosshairPickEntity = null;
+        ally.setCustomNameVisible(false);
         InventoryScreen.renderEntityInInventory(g, x, y, scale, pose, camera, ally);
+        ally.setCustomNameVisible(nameVisible);
+        mc.crosshairPickEntity = picked;
         ally.yBodyRot = bodyRot;
         ally.setYRot(yRot);
         ally.setXRot(xRot);

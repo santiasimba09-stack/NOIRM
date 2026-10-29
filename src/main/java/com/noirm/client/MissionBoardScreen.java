@@ -151,8 +151,15 @@ public class MissionBoardScreen extends Screen {
     }
 
     private void drawOffers(GuiGraphics g, int x, int y, int w, int bottom, int mouseX, int mouseY) {
-        g.drawString(font, Component.translatable("board.noirm.offers"), x, y, GOLD, false);
-        int listTop = y + 12;
+        g.drawString(font, Component.translatable("board.noirm.offers"), x, y + 4, GOLD, false);
+        // The clerk sells bingo books here too (dangerous rogues and their bounties).
+        int price = com.noirm.bounty.BingoBook.BOOK_PRICE;
+        Component buy = Component.translatable("board.noirm.bingo", Ryo.format(price));
+        int bw = font.width(buy) + 12;
+        button(g, x + w - bw - 4, y, bw, buy, info.ryo() >= price, 0xFF6E2A2A, () -> send(CareerPackets.Action.BINGO_BOOK, 0),
+                List.of(Component.translatable(info.ryo() >= price ? "board.noirm.bingo.tip" : "board.noirm.bingo.poor", Ryo.format(price))),
+                mouseX, mouseY);
+        int listTop = y + 18;
         List<CareerPackets.OfferRow> rows = info.offers();
         if (rows.isEmpty()) {
             g.drawString(font, Component.translatable("board.noirm.none_today"), x + 4, listTop + 4, DIM, false);

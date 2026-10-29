@@ -313,6 +313,9 @@ public final class Legendary {
             if (details != null) {
                 sp.displayClientMessage(details, true);
             }
+            // And a plain warning in chat that stays: this fight is far above a beginner.
+            sp.sendSystemMessage(Component.translatable("bingo.noirm.entrance.warn", title.copy(),
+                    NinjaClass.letter(NinjaClass.LEGENDARY_CODE)).withStyle(ChatFormatting.RED));
             sp.playNotifySound(SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 0.6f, 0.55f);
         }
         return true;

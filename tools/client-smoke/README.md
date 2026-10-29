@@ -12,13 +12,16 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
    python3 -I tools/client-smoke/xinput.py :99 move 640 360 click 3 key F5 key r click 1 click 1
    import -display :99 -window root shot.png
    ```
-   `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`,
+   `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`, `holdclick <button> <seconds>`, `down <keysym>` / `up <keysym>` (hold a key across other commands),
    `move <x> <y>`, `sleep <seconds>`, `type "<text>"`, `combo <held> <key>` (e.g. `combo F3 t` reloads resources). Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
    Cheats are on in the copied world, so you can run commands:
    `key t sleep 0.5 type "/time set night" key Return`. Typing `~` is unreliable on the Xvfb
    keyboard; put positions in `setup.mcfunction` instead. Mouse `move` turns the camera a lot.
 4. Check `client.log` for `Exception` or `ERROR` (the OpenAL/sound errors are expected: no audio
    device). Stop the client by killing its `Xvfb :99` and `java` processes.
+
+`SMOKE_SETUP=path/to/setup.mcfunction` runs your own setup instead (it must end with `tag @s add smoke_setup`),
+for example a bare new player for a playthrough.
 
 Character creation: a newcomer gets the creation screen and is held until it's done. The setup
 finishes it at once (`noirm creator skip`). Start with `SMOKE_CREATOR=1 tools/client-smoke/run.sh`

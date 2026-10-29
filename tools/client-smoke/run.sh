@@ -24,10 +24,12 @@ mkdir -p "$D/data/smoke/functions" "$D/data/minecraft/tags/functions"
 echo '{ "pack": { "pack_format": 15, "description": "NOIRM client smoke test" } }' > "$D/pack.mcmeta"
 echo '{ "values": ["smoke:tick"] }' > "$D/data/minecraft/tags/functions/tick.json"
 echo 'execute as @a[tag=!smoke_setup] at @s run function smoke:setup' > "$D/data/smoke/functions/tick.mcfunction"
-cp tools/client-smoke/setup.mcfunction "$D/data/smoke/functions/setup.mcfunction"
+# SMOKE_SETUP=<file> runs another setup (e.g. a bare new player for a playthrough).
+SETUP="${SMOKE_SETUP:-tools/client-smoke/setup.mcfunction}"
+cp "$SETUP" "$D/data/smoke/functions/setup.mcfunction"
 # A newcomer gets the character creation screen; the setup finishes it (creator skip) unless SMOKE_CREATOR=1.
 if [ "${SMOKE_CREATOR:-0}" = "1" ]; then
-  grep -v '^noirm creator skip' tools/client-smoke/setup.mcfunction > "$D/data/smoke/functions/setup.mcfunction"
+  grep -v '^noirm creator skip' "$SETUP" > "$D/data/smoke/functions/setup.mcfunction"
 fi
 cat > "$RUN/options.txt" <<OPTS
 onboardAccessibility:false

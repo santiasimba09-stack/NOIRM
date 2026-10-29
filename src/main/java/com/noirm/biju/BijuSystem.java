@@ -45,6 +45,21 @@ public final class BijuSystem {
     public static final float BORN_JINCHURIKI_CHANCE = 0.03f;
     /** Chance a sparring ninja is secretly a jinchūriki. */
     public static final float NPC_JINCHURIKI_CHANCE = 0.05f;
+    /**
+     * A ninja this weak (speed and taijutsu) is never a jinchūriki: beating one would set a tailed
+     * beast loose on a beginner (a playtest: a danger-12 rogue next to the world spawn held the
+     * Nine-Tails). Stronger ninjas hold at most one tail per {@link #NPC_STRENGTH_PER_TAIL} of strength.
+     */
+    public static final float NPC_JINCHURIKI_MIN_STRENGTH = 20f;
+    public static final float NPC_STRENGTH_PER_TAIL = 15f;
+
+    /** How many tails a ninja of {@code strength} may hold at most (0 = never a jinchūriki). */
+    public static int npcMaxTails(float strength) {
+        if (strength < NPC_JINCHURIKI_MIN_STRENGTH) {
+            return 0;
+        }
+        return Math.max(1, Math.min(BijuData.MAX_TAILS, (int) (strength / NPC_STRENGTH_PER_TAIL)));
+    }
 
     private static final UUID SPEED_ID = UUID.fromString("3c2f1b0e-9a8d-4c7b-8e6f-5d4c3b2a1908");
 

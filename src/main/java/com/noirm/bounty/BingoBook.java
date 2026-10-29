@@ -50,6 +50,14 @@ public final class BingoBook extends SavedData {
     /** Where ordinary rogues are seen (blocks from the world spawn). */
     public static final int MIN_DISTANCE = 500, MAX_DISTANCE = 2400;
     public static final int LEGEND_MIN_DISTANCE = 1500, LEGEND_MAX_DISTANCE = 3500;
+    /**
+     * Legends are deadly to a beginner (they can drop a new player in under two seconds), so a
+     * legend's last-seen area is never closer than this to the world spawn, however they wander,
+     * chase or flee ({@link #keepAway}), and they never turn up for a player in their first
+     * {@link #LEGEND_NEW_PLAYER_MINUTES} minutes of play.
+     */
+    public static final int LEGEND_SAFE_RADIUS = 1000;
+    public static final int LEGEND_NEW_PLAYER_MINUTES = 120;
     /** One refresh per Minecraft day. */
     public static final int REFRESH_TICKS = 24000;
     public static final int WANDER = 160;
@@ -143,7 +151,7 @@ public final class BingoBook extends SavedData {
         lastRefresh = level.getGameTime();
         for (BingoEntry e : entries) {
             if (e.active() && BingoEvents.body(e) == null) {
-                BlockPos moved = e.area.offset(random.nextInt(WANDER * 2 + 1) - WANDER, 0, random.nextInt(WANDER * 2 + 1) - WANDER);
+                BlockPos moved = keepAway(level, e, e.area.offset(random.nextInt(WANDER * 2 + 1) - WANDER, 0, random.nextInt(WANDER * 2 + 1) - WANDER));
                 if (isLand(level, moved)) {
                     e.area = moved;
                 }
@@ -262,6 +270,29 @@ public final class BingoBook extends SavedData {
             }
         }
         return pos;
+    }
+
+    /**
+     * Where page {@code e} may be last seen, given {@code area}: anywhere for an ordinary rogue; for
+     * a legend, pushed straight out from the world spawn to at least {@link #LEGEND_SAFE_RADIUS}.
+     */
+    public static BlockPos keepAway(ServerLevel level, BingoEntry e, BlockPos area) {
+        if (e == null || !e.legendary) {
+            return area;
+        }
+        BlockPos spawn = level.getSharedSpawnPos();
+        double dx = area.getX() - spawn.getX(), dz = area.getZ() - spawn.getZ();
+        double d = Math.sqrt(dx * dx + dz * dz);
+        if (d >= LEGEND_SAFE_RADIUS) {
+            return area;
+        }
+        if (d < 1) {
+            dx = 1;
+            dz = 0;
+            d = 1;
+        }
+        double k = LEGEND_SAFE_RADIUS / d;
+        return new BlockPos(spawn.getX() + Mth.floor(dx * k), area.getY(), spawn.getZ() + Mth.floor(dz * k));
     }
 
     /** Not ocean or river (works without loading the chunk: the biome comes from the world generator). */

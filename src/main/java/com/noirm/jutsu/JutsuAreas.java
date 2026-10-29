@@ -28,7 +28,8 @@ import java.util.List;
 public final class JutsuAreas {
     /** What happens every {@code interval} ticks inside an area. */
     /** BLAZE: burning oil on the ground (Flame Bomb): it burns and sets alight whoever stands in it. */
-    public enum Mode { CLOUD, RAIN, AURA, BLAZE }
+    /** SHACKLE: lightning arcs binding whoever it follows (Thunder Snare). */
+    public enum Mode { CLOUD, RAIN, AURA, BLAZE, SHACKLE }
 
     /**
      * @param follow  if set, the area moves with this entity (auras)
@@ -78,6 +79,11 @@ public final class JutsuAreas {
             case AURA -> level.sendParticles(area.particle(), at.x, at.y + 1, at.z, 3, Math.max(0.3, r * 0.5), 0.6, Math.max(0.3, r * 0.5), 0.02);
             case CLOUD -> level.sendParticles(area.particle(), at.x, at.y + 0.6, at.z, 6 + (int) (r * 3), r * 0.6, 0.5, r * 0.6, 0.01);
             case RAIN -> { }
+            case SHACKLE -> {
+                if (now % 3 == 0 && area.follow() != null) {
+                    com.noirm.vfx.LightningVfx.shackle(level, area.follow(), (int) now);
+                }
+            }
             case BLAZE -> {
                 if (now % 2 == 0) {
                     com.noirm.vfx.FireVfx.burningGround(level, at, r);

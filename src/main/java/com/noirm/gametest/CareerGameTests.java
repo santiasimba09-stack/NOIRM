@@ -224,7 +224,9 @@ public final class CareerGameTests {
         Player player = player(helper);
         BlockPos board = board(helper);
         List<ResourceLocation> offers = Missions.offers(helper.getLevel(), board);
-        helper.assertTrue(offers.size() == 8, "8 missions on offer, got " + offers.size());
+        helper.assertTrue(offers.size() == 9, "9 missions on offer, got " + offers.size());
+        helper.assertTrue(offers.stream().filter(id -> MissionTemplates.get(id).rank() == MissionTemplate.Letter.D).count() * 10 >= 30,
+                "enough D missions in a day for the genin exam's 30 points");
         helper.assertTrue(offers.equals(Missions.offers(helper.getLevel(), board)), "the same all day");
         helper.assertTrue(offers.stream().noneMatch(id -> MissionTemplates.get(id).exam()), "never an exam mission");
         helper.assertTrue(MissionTemplates.all().size() >= 18, "every mission loaded, got " + MissionTemplates.all().size());
@@ -271,6 +273,33 @@ public final class CareerGameTests {
         helper.assertTrue(!pouches.isEmpty() && RyoPouchItem.amount(pouches.get(0).getItem()) >= 5, "a beaten rogue dropped a ryo pouch; items near: "
                 + helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(board(helper)).inflate(64)).stream()
                 .map(e -> e.getItem().toString()).toList() + ", rogues " + rogues.stream().map(r -> r.isAlive() + "@" + r.blockPosition()).toList());
+        cleanup(helper, 24);
+    }
+
+    /** Hunt rogues that were in unloaded chunks when the mission failed never come back with their chunk. */
+    @GameTest(template = "empty", batch = "noirm_career_leftovers", timeoutTicks = 100)
+    public static void leftoversOfAFailedMissionNeverComeBack(GameTestHelper helper) {
+        floor(helper);
+        ServerLevel level = helper.getLevel();
+        Player player = player(helper);
+        Mission m = start(helper, player, "d_bandit_hunt");
+        m.points.set(0, near(helper, 6, 0));
+        Missions.update(player);
+        List<SparringNinja> rogues = foes(helper, m);
+        helper.assertTrue(!rogues.isEmpty(), "the rogues turn up");
+        SparringNinja away = rogues.get(0);
+        net.minecraft.nbt.CompoundTag saved = new net.minecraft.nbt.CompoundTag();
+        away.save(saved);
+        away.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK); // their chunk unloads
+        Entity back = net.minecraft.world.entity.EntityType.loadEntityRecursive(saved, level, e -> e);
+        level.addLegacyChunkEntities(java.util.stream.Stream.of(back)); // ...and loads again (from disk)
+        helper.assertTrue(level.getEntity(away.getUUID()) == back, "while the mission runs, they come back with their chunk");
+        back.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK); // out of reach again
+        Missions.abandon(player); // the mission fails: what's loaded goes, this one can't be found
+        Entity again = net.minecraft.world.entity.EntityType.loadEntityRecursive(saved, level, e -> e);
+        level.addLegacyChunkEntities(java.util.stream.Stream.of(again));
+        helper.assertTrue(level.getEntity(away.getUUID()) == null, "after it failed, the leftover never comes back");
+        helper.assertTrue(rogues.stream().skip(1).noneMatch(Entity::isAlive), "and the loaded ones went when it failed");
         cleanup(helper, 24);
     }
 

@@ -43,6 +43,12 @@ while args:
         k = args.pop(0); t = float(args.pop(0)); key(k, 1); time.sleep(t); key(k, 0)
     elif cmd == "click":
         b = int(args.pop(0)); button(b, 1); time.sleep(0.06); button(b, 0)
+    elif cmd == "down":  # press a key and keep it held (e.g. down Shift_L click 3 up Shift_L)
+        key(args.pop(0), 1)
+    elif cmd == "up":
+        key(args.pop(0), 0)
+    elif cmd == "holdclick":  # hold a mouse button for some seconds (e.g. holdclick 3 2.5 uses an item)
+        b = int(args.pop(0)); t = float(args.pop(0)); button(b, 1); time.sleep(t); button(b, 0)
     elif cmd == "move":
         xtst.XTestFakeMotionEvent(d, -1, int(args.pop(0)), int(args.pop(0)), 0); x11.XFlush(d)
     elif cmd == "type":

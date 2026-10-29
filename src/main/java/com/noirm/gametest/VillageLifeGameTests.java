@@ -59,6 +59,10 @@ public final class VillageLifeGameTests {
         helper.assertTrue(a.getPassengers().stream().anyMatch(p -> p instanceof Display.TextDisplay && p.getTags().contains("noirm_bubble")),
                 "a speech bubble over the speaker's head");
         helper.assertTrue(b.getPassengers().isEmpty(), "the listener is quiet");
+        Display.TextDisplay bubble = (Display.TextDisplay) a.getPassengers().stream().filter(p -> p instanceof Display.TextDisplay).findFirst().orElseThrow();
+        net.minecraft.nbt.CompoundTag saved = bubble.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+        float scale = saved.getCompound("transformation").getList("scale", net.minecraft.nbt.Tag.TAG_FLOAT).getFloat(0);
+        helper.assertTrue(scale > 0.4f && scale < 0.5f, "the bubble is drawn small, over the head: scale " + scale + " in " + saved.get("transformation"));
         helper.runAfterDelay(40, () -> {
             helper.assertTrue(a.getPassengers().isEmpty(), "the bubble goes away");
             ServerLevel level = helper.getLevel();

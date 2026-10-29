@@ -142,8 +142,9 @@ public final class WildSpawner {
 
     @SubscribeEvent
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level) || level.players().isEmpty()) {
-            return;
+        if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level) || level.players().isEmpty()
+                || com.noirm.gametest.TestWorld.isTestServer(level.getServer())) {
+            return; // (the game tests bring and sweep their own groups)
         }
         long now = level.getGameTime();
         if (now % SWEEP_TICKS == 0) {
