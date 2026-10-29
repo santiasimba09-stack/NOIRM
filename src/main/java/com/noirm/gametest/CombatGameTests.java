@@ -99,7 +99,7 @@ public final class CombatGameTests {
 
     // ------------------------------------------------------------ fights between two ninjas (AI off)
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_combat_jab") // fighters swing: their own batch
     public static void lightAttackLands(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);
@@ -111,7 +111,7 @@ public final class CombatGameTests {
         });
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_combat_jab_push") // fighters swing: their own batch
     public static void jabKeepsTargetInComboRange(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);
@@ -126,7 +126,7 @@ public final class CombatGameTests {
         });
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_combat_buffer") // fighters swing: their own batch
     public static void earlyPressIsBufferedIntoTheCombo(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);
@@ -138,7 +138,7 @@ public final class CombatGameTests {
                 "buffered press should become the hook, current move: " + state.moveId()));
     }
 
-    @GameTest(template = "empty")
+    @GameTest(template = "empty", batch = "noirm_combat_guard") // fighters swing: their own batch
     public static void guardCutsDamageAndBuildsPosture(GameTestHelper helper) {
         SparringNinja attacker = ninja(helper, 1.5f, 0.5f);
         SparringNinja target = ninja(helper, 1.5f, 2.0f);
