@@ -153,6 +153,16 @@ public final class ByakuganGameTests {
 
     @GameTest(template = "empty", batch = SPIN_BATCH + "_palms", timeoutTicks = 120)
     public static void sixtyFourPalmsSealTheTarget(GameTestHelper helper) {
+        // A wider floor than the 3×3 one (put back to air afterwards): each wave nudges the target
+        // back, and off the small floor it fell out of reach before the last waves (whether a
+        // neighbouring test's floor happened to catch it depended on where the test landed).
+        java.util.List<BlockPos> ground = new java.util.ArrayList<>();
+        for (int x = -3; x <= 5; x++) {
+            for (int z = -3; z <= 7; z++) {
+                ground.add(new BlockPos(x, 0, z));
+            }
+        }
+        ground.forEach(pos -> helper.setBlock(pos, Blocks.STONE));
         SparringNinja hyuga = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);
         SparringNinja target = ninja(helper, 1.5f, 2.0f, TestClans.PLAIN);
         face(hyuga, target);
@@ -162,7 +172,9 @@ public final class ByakuganGameTests {
                 return;
             }
             helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the palms should hurt");
-            helper.assertTrue(Byakugan.isSealed(target), "64 palms close enough points to seal");
+            helper.assertTrue(Byakugan.isSealed(target), "64 palms close enough points to seal (closed " + Byakugan.closedPoints(target)
+                    + ", target " + hyuga.distanceTo(target) + " blocks away, height " + (target.getY() - hyuga.getY()) + ")");
+            ground.forEach(pos -> helper.setBlock(pos, Blocks.AIR));
             clearKnockedAway(helper);
         });
     }
