@@ -10,6 +10,12 @@ import com.noirm.ally.Occupation;
 import com.noirm.ally.Order;
 import com.noirm.ally.Tactics;
 import com.noirm.clan.Nature;
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.TabStrip;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.entity.SparringNinja;
 import com.noirm.network.JutsuCatalogPacket;
@@ -41,7 +47,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * A crew mate's screen: a dark ink-and-paper panel with five tabs, everything drawn in code.
+ * A crew mate's screen: one flat ash panel with six text tabs, everything drawn in code with
+ * the NOIRM kit ({@code client.ui}): no frames, thin accents, eased hover, a fade on open/close
+ * and a cross-fade between tabs.
  * <ul>
  *   <li><b>Overview</b>: a turning model (drag it), clan, trait, respect, health, chakra, the four
  *   stats with their training progress, what they're doing.</li>
@@ -53,27 +61,25 @@ import java.util.Map;
  * </ul>
  * Text is laid out from measured widths and cut with "…" where it would run over.
  */
-public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
+public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements NoirmStyled {
     private static final int W = 372;
     private static final int H = 226;
-    // Ink and paper.
-    private static final int INK = 0xF4100E14;
-    private static final int INK_LIGHT = 0xF41A1720;
-    private static final int CARD = 0xFF17141C;
-    private static final int CARD_HOVER = 0xFF221E29;
-    private static final int RULE = 0xFF2E2935;
-    private static final int FRAME = 0xFF3D3645;
-    private static final int PAPER = 0xFFEDE4D3;
-    private static final int DIM = 0xFF8F8796;
-    private static final int FAINT = 0xFF5E5866;
-    private static final int GOLD = 0xFFE8C060;
-    private static final int GREEN = 0xFF6FD38A;
-    private static final int RED = 0xFFE05A5A;
-    private static final int SEAL = 0xFFB8322E;
+    // The NOIRM tokens (client.ui.Theme): ash surfaces, bone text, blood-red seal.
+    private static final int CARD = Theme.RAISED;
+    private static final int CARD_HOVER = Theme.RAISED_HOVER;
+    private static final int RULE = Theme.HAIRLINE;
+    private static final int FRAME = Theme.IRON;
+    private static final int PAPER = Theme.TEXT;
+    private static final int DIM = Theme.TEXT_DIM;
+    private static final int FAINT = Theme.TEXT_FAINT;
+    private static final int GOLD = Theme.GOLD;
+    private static final int GREEN = Theme.GREEN;
+    private static final int RED = Theme.RED;
+    private static final int SEAL = Theme.SEAL;
     private static final int[] STAT_COLORS = {0xFFE07040, 0xFF40C8E0, 0xFFE04060, 0xFF4080F0, 0xFFC8A878};
 
     private enum Tab {
-        OVERVIEW(0xFFE8C060), GEAR(0xFF7FB2D9), JUTSU(0xFFE0566A), NATURES(0xFF6FD3A0), ORDERS(0xFFB28CF0), JOB(0xFFD9A066);
+        OVERVIEW(0xFFE8C060), GEAR(0xFF8FB0CC), JUTSU(0xFFE0566A), NATURES(0xFF6FD3A0), ORDERS(0xFF6FB3E8), JOB(0xFFD9A066);
 
         final int accent;
 
@@ -107,6 +113,11 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     private long lastDrag;
     private long lastFrame;
     private long dismissArmedUntil;
+    private final ScreenMotion motion = new ScreenMotion();
+    private final TabStrip tabStrip = new TabStrip();
+    private final HoverTracker hover = new HoverTracker();
+    private String[] tabLabels;
+    private int[] tabAccents;
 
     public AllyScreen(AllyMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -126,6 +137,26 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     protected void init() {
         super.init();
         menu.slotsShown = tab == Tab.GEAR;
+        Tab[] all = Tab.values();
+        tabLabels = new String[all.length];
+        tabAccents = new int[all.length];
+        for (int i = 0; i < all.length; i++) {
+            tabLabels[i] = Component.translatable(all[i].key()).getString();
+            tabAccents[i] = all[i].accent;
+        }
+        if (!motion.started()) {
+            motion.open();
+        }
+    }
+
+    @Override
+    protected void containerTick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
     }
 
     private void send(AllyPackets.Action action, String arg) {
@@ -133,6 +164,9 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     }
 
     private void setTab(Tab next) {
+        if (next != tab) {
+            motion.tabChanged();
+        }
         tab = next;
         lastTab = next;
         menu.slotsShown = next == Tab.GEAR;
@@ -142,25 +176,27 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
 
     @Override
     protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
-        renderBackground(g);
         hits.clear();
         hovered = null;
         int x = leftPos;
         int y = topPos;
-        // The sheet: dark ink, a soft gradient, a double frame and faint paper lines.
-        g.fill(x - 2, y - 2, x + W + 2, y + H + 2, 0xC0000000);
-        g.fillGradient(x, y, x + W, y + H, INK_LIGHT, INK);
-        for (int ly = y + 30; ly < y + H - 4; ly += 6) {
-            g.fill(x + 3, ly, x + W - 3, ly + 1, 0x06FFFFFF);
-        }
-        g.renderOutline(x, y, W, H, FRAME);
-        g.renderOutline(x + 2, y + 2, W - 4, H - 4, 0xFF221E28);
+        // One flat ash sheet with a single hairline.
+        Ui.panel(g, x, y, W, H);
         drawHeader(g, mouseX, mouseY);
         drawTabs(g, mouseX, mouseY);
         if (info == null) {
-            g.drawCenteredString(font, Component.translatable("screen.noirm.ally.loading"), x + W / 2, y + H / 2, DIM);
+            Ui.textCentered(g, font, Component.translatable("screen.noirm.ally.loading").getString(), x + W / 2, y + H / 2, DIM);
             return;
         }
+        motion.beginContent(g);
+        try {
+            drawTab(g, mouseX, mouseY, partialTick);
+        } finally {
+            motion.endContent(g);
+        }
+    }
+
+    private void drawTab(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         switch (tab) {
             case OVERVIEW -> drawOverview(g, mouseX, mouseY, partialTick);
             case GEAR -> drawGear(g, mouseX, mouseY);
@@ -178,8 +214,14 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
-        if (menu.getCarried().isEmpty()) {
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        try {
+            super.render(g, mouseX, mouseY, partialTick);
+        } finally {
+            motion.end(g);
+        }
+        if (menu.getCarried().isEmpty() && !motion.closing()) {
             for (int i = hits.size() - 1; i >= 0; i--) {
                 Hit hit = hits.get(i);
                 if (hit.tip() != null && !hit.tip().isEmpty() && hit.contains(mouseX, mouseY)) {
@@ -198,17 +240,16 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     private void drawHeader(GuiGraphics g, int mouseX, int mouseY) {
         int x = leftPos;
         int y = topPos;
-        // A red seal with 忍, then the name.
-        g.fill(x + 8, y + 6, x + 22, y + 20, SEAL);
-        g.renderOutline(x + 8, y + 6, 14, 14, 0xFF7A1E1B);
-        g.drawCenteredString(font, "忍", x + 15, y + 9, 0xFFF4E6D0);
+        // A small red seal with 忍, then the name.
+        Ui.roundRect(g, x + 8, y + 7, 13, 13, SEAL);
+        Ui.textCentered(g, font, "忍", x + 15, y + 10, 0xFFF4E6D0);
         // Dismiss (click twice).
         boolean armed = System.currentTimeMillis() < dismissArmedUntil;
         Component dismiss = Component.translatable(armed ? "screen.noirm.ally.dismiss_sure" : "screen.noirm.ally.dismiss");
         int dw = font.width(dismiss) + 12;
         int dx = x + W - 8 - dw;
-        pill(g, dx, y + 6, dw, 14, dismiss, RED, true, armed, mouseX, mouseY);
-        hits.add(new Hit(dx, y + 6, dw, 14, () -> {
+        pill(g, dx, y + 7, dw, 13, dismiss, RED, true, armed, mouseX, mouseY);
+        hits.add(new Hit(dx, y + 7, dw, 13, () -> {
             if (System.currentTimeMillis() < dismissArmedUntil) {
                 send(AllyPackets.Action.DISMISS, "");
             } else {
@@ -220,29 +261,16 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         int classCode = info == null ? -1 : com.noirm.bounty.ClientClasses.get(info.entityId()); // their class, D–S
         if (classCode >= 0) {
             Component tag = com.noirm.bounty.NinjaClass.tag(classCode);
-            g.drawString(font, tag, nameX, y + 9, 0xFFFFFFFF, false);
+            g.drawString(font, tag, nameX, y + 10, 0xFFFFFFFF, false);
             nameX += font.width(tag) + 4;
             nameW -= font.width(tag) + 4;
         }
-        g.drawString(font, fit(title.getString(), nameW), nameX, y + 9, GOLD, false);
-        g.fill(x + 8, y + 24, x + W - 8, y + 25, RULE);
+        g.drawString(font, fit(title.getString(), nameW), nameX, y + 10, PAPER, false);
     }
 
+    /** Text tabs with one underline that slides to the active tab (in its accent colour). */
     private void drawTabs(GuiGraphics g, int mouseX, int mouseY) {
-        Tab[] tabs = Tab.values();
-        int tw = (W - 16) / tabs.length;
-        int y = topPos + 28;
-        for (int i = 0; i < tabs.length; i++) {
-            Tab t = tabs[i];
-            int x = leftPos + 8 + i * tw;
-            boolean active = t == tab;
-            boolean hover = in(mouseX, mouseY, x, y, tw - 2, 14);
-            g.fill(x, y, x + tw - 2, y + 14, active ? darken(t.accent, 0.28f) : hover ? CARD_HOVER : CARD);
-            g.fill(x, y, x + tw - 2, y + (active ? 2 : 1), active ? t.accent : darken(t.accent, 0.5f));
-            String label = fit(Component.translatable(t.key()).getString(), tw - 8);
-            g.drawCenteredString(font, label, x + (tw - 2) / 2, y + 4, active ? PAPER : hover ? 0xFFCFC6D6 : DIM);
-            hits.add(new Hit(x, y, tw - 2, 14, () -> setTab(t), null));
-        }
+        tabStrip.draw(g, font, leftPos + 8, topPos + 27, W - 16, tabLabels, tab.ordinal(), tabAccents, mouseX, mouseY);
     }
 
     // ---------------------------------------------------------------- Overview
@@ -253,8 +281,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         // The model, turning slowly unless you drag it.
         int bw = 108;
         int bh = H - 46 - 8;
-        g.fillGradient(x0, y0, x0 + bw, y0 + bh, 0xFF1E1A26, 0xFF0C0B10);
-        g.renderOutline(x0, y0, bw, bh, RULE);
+        Ui.well(g, x0, y0, bw, bh);
         int cx = x0 + bw / 2;
         int feet = y0 + bh - 18;
         for (int r = 0; r < 4; r++) {
@@ -266,7 +293,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         }
         lastFrame = now;
         renderModel(g, cx, feet, 58, modelYaw);
-        g.drawCenteredString(font, fit(Component.translatable("screen.noirm.ally.drag").getString(), bw - 6), cx, y0 + bh - 11, FAINT);
+        Ui.textCentered(g, font, fit(Component.translatable("screen.noirm.ally.drag").getString(), bw - 6), cx, y0 + bh - 11, FAINT);
 
         int x = x0 + bw + 8;
         int w = leftPos + W - 8 - x;
@@ -275,9 +302,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         Component traitName = Component.translatable("screen.noirm.ally.trait." + info.trait().toLowerCase(Locale.ROOT));
         int chipW = font.width(traitName) + 10;
         int chipX = x + w - chipW;
-        g.fill(chipX, y - 2, chipX + chipW, y + 10, 0xFF2A2433);
-        g.renderOutline(chipX, y - 2, chipW, 12, GOLD);
-        g.drawString(font, traitName, chipX + 5, y, GOLD, false);
+        Ui.chip(g, font, chipX + 2, y - 2, Ui.fit(font, traitName.getString(), chipW - 10), GOLD);
         hits.add(new Hit(chipX, y - 2, chipW, 12, null, List.of(traitName.copy().withStyle(s -> s.withColor(GOLD)),
                 Component.translatable("screen.noirm.ally.trait." + info.trait().toLowerCase(Locale.ROOT) + ".desc"))));
         String clanLabel = Component.translatable("screen.noirm.ally.clan").getString() + " ";
@@ -295,9 +320,9 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         g.drawString(font, fit(moodText.getString(), w - font.width(respectLine) - 8), x + w - Math.min(font.width(moodText), w - font.width(respectLine) - 8),
                 y, moodColor, false);
         y += 10;
-        bar(g, x, y, w, 5, respect / 100f, moodColor);
-        g.fill(x + Math.round(w * 0.2f), y - 1, x + Math.round(w * 0.2f) + 1, y + 6, 0xFF000000);
-        g.fill(x + Math.round(w * 0.7f), y - 1, x + Math.round(w * 0.7f) + 1, y + 6, 0xFF000000);
+        bar(g, x, y, w, 4, respect / 100f, moodColor);
+        g.fill(x + Math.round(w * 0.2f), y - 1, x + Math.round(w * 0.2f) + 1, y + 6, Theme.SURFACE | 0xFF000000);
+        g.fill(x + Math.round(w * 0.7f), y - 1, x + Math.round(w * 0.7f) + 1, y + 6, Theme.SURFACE | 0xFF000000);
         hits.add(new Hit(x, y - 11, w, 17, null, List.of(Component.translatable("screen.noirm.ally.respect.tip"))));
         y += 11;
         // Health and chakra, side by side.
@@ -321,7 +346,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             int barX = x + nameW + 6 + 24;
             String pct = Math.round(info.progress()[i] * 100) + "%";
             int barW = w - (barX - x) - font.width("100%") - 6;
-            bar(g, barX, y + 2, barW, 5, info.progress()[i], STAT_COLORS[i]);
+            bar(g, barX, y + 3, barW, 3, info.progress()[i], STAT_COLORS[i]);
             g.drawString(font, pct, x + w - font.width(pct), y, DIM, false);
             hits.add(new Hit(x, y - 1, w, 11, null, List.of(Component.translatable(statKey(stat) + ".desc"),
                     Component.translatable("screen.noirm.ally.xp_next", pct).withStyle(s -> s.withColor(DIM)))));
@@ -357,7 +382,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         String numbers = Math.round(value) + "/" + Math.round(max);
         g.drawString(font, fit(label.getString(), w - font.width(numbers) - 4), x, y, DIM, false);
         g.drawString(font, numbers, x + w - font.width(numbers), y, PAPER, false);
-        bar(g, x, y + 10, w, 5, value / Math.max(1f, max), color);
+        bar(g, x, y + 10, w, 4, value / Math.max(1f, max), color);
     }
 
     private void renderModel(GuiGraphics g, int x, int y, int scale, float yaw) {
@@ -444,9 +469,13 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         wrap(g, Component.translatable("screen.noirm.ally.gear.help"), rx + 6, hy, rw - 12, bottom - 3, FAINT);
     }
 
+    /** A slot: a sunken square; equipment slots get a hairline of their colour along the bottom. */
     private void slotFrame(GuiGraphics g, int x, int y, int accent) {
-        g.fill(x - 1, y - 1, x + 17, y + 17, accent == 0 ? 0xFF2A2631 : darken(accent, 0.45f));
-        g.fill(x, y, x + 16, y + 16, 0xFF0E0D12);
+        g.fill(x - 1, y - 1, x + 17, y + 17, RULE);
+        g.fill(x, y, x + 16, y + 16, Theme.WELL);
+        if (accent != 0) {
+            g.fill(x - 1, y + 16, x + 17, y + 17, darken(accent, 0.6f));
+        }
     }
 
     // ---------------------------------------------------------------- Jutsu
@@ -464,18 +493,18 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         for (int i = 0; i < SparringNinja.LOADOUT_SLOTS; i++) {
             int cx = cardsX + i * (cw + 4);
             boolean filled = i < info.loadout().size();
-            boolean hover = in(mouseX, mouseY, cx, y0, cw, 20);
-            g.fill(cx, y0, cx + cw, y0 + 20, hover && filled ? CARD_HOVER : CARD);
-            g.renderOutline(cx, y0, cw, 20, filled ? darken(Tab.JUTSU.accent, 0.6f) : RULE);
+            float hv = hover.get(HoverTracker.key(10, i), filled && in(mouseX, mouseY, cx, y0, cw, 20));
             if (filled) {
                 ResourceLocation id = info.loadout().get(i);
                 int color = natureColor(id);
-                g.fill(cx + 1, y0 + 1, cx + 3, y0 + 19, color);
+                Ui.row(g, cx, y0, cw, 20, hv, false, color);
+                g.fill(cx, y0 + 3, cx + 2, y0 + 17, color);
                 g.drawString(font, fit(jutsuName(id), cw - 9), cx + 6, y0 + 6, PAPER, false);
                 hits.add(new Hit(cx, y0, cw, 20, () -> send(AllyPackets.Action.EQUIP, id.toString()),
                         List.of(Component.literal(jutsuName(id)), Component.translatable("screen.noirm.ally.loadout.remove").withStyle(s -> s.withColor(DIM)))));
             } else {
-                g.drawCenteredString(font, fit(Component.translatable("screen.noirm.ally.loadout.empty").getString(), cw - 6), cx + cw / 2, y0 + 6, FAINT);
+                Ui.outline(g, cx, y0, cw, 20, RULE);
+                Ui.textCentered(g, font, fit(Component.translatable("screen.noirm.ally.loadout.empty").getString(), cw - 6), cx + cw / 2, y0 + 6, FAINT);
             }
         }
         if (info.loadout().isEmpty()) {
@@ -503,8 +532,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             boolean canEquip = equipped || info.loadout().size() < SparringNinja.LOADOUT_SLOTS;
             int rx = x0 + 3;
             int rw = half - 6 - (rows < info.known().size() ? 4 : 0);
-            boolean hover = in(mouseX, mouseY, rx, ry, rw, rowH - 1);
-            g.fill(rx, ry, rx + rw, ry + rowH - 1, equipped ? darken(Tab.JUTSU.accent, 0.22f) : hover ? CARD_HOVER : CARD);
+            float hv = hover.get(HoverTracker.key(11, index), in(mouseX, mouseY, rx, ry, rw, rowH - 1));
+            Ui.row(g, rx, ry, rw, rowH - 1, hv, equipped, Tab.JUTSU.accent);
             natureBadge(g, rx + 2, ry + 2, id);
             int stars = index < info.mastery().size() ? info.mastery().get(index) : 0;
             String starText = "★" + stars;
@@ -513,8 +542,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             g.drawString(font, fit(jutsuName(id), starX - (rx + 16) - 4), rx + 16, ry + 3, equipped ? GOLD : PAPER, false);
             g.drawString(font, starText, starX, ry + 3, stars > 0 ? GOLD : FAINT, false);
             int tx = rx + rw - toggleW - 1;
-            g.fill(tx, ry + 1, tx + toggleW, ry + rowH - 2, equipped ? Tab.JUTSU.accent : canEquip ? 0xFF2E2936 : 0xFF1A181E);
-            g.drawCenteredString(font, equipped ? "✔" : "+", tx + toggleW / 2 + 1, ry + 3, equipped ? 0xFF1A0A0E : canEquip ? PAPER : FAINT);
+            Ui.textCentered(g, font, equipped ? "✔" : "+", tx + toggleW / 2 + 1, ry + 3, equipped ? Tab.JUTSU.accent : canEquip ? Theme.mix(DIM, PAPER, hv) : FAINT);
             List<Component> tip = new ArrayList<>(jutsuTip(id));
             tip.add(Component.translatable("screen.noirm.ally.mastery", stars).withStyle(s -> s.withColor(GOLD)));
             tip.add(Component.translatable(equipped ? "screen.noirm.ally.loadout.click_remove"
@@ -537,8 +565,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         hits.add(new Hit(ax, ly + 2, aw, 12, anyTeachable ? () -> send(AllyPackets.Action.TEACH_ALL, "") : null,
                 List.of(Component.translatable("screen.noirm.ally.teach_all.tip"))));
         g.drawString(font, fit(teachTitle.getString(), ax - (tx0 + 5) - 4), tx0 + 5, ly + 4, Tab.JUTSU.accent, false);
-        g.fill(qx, ly + 3, qx + 10, ly + 13, 0xFF2E2936);
-        g.drawCenteredString(font, "?", qx + 5, ly + 4, GOLD);
+        Ui.roundRect(g, qx, ly + 3, 10, 10, Theme.mix(CARD, GOLD, 0.15f));
+        Ui.textCentered(g, font, "?", qx + 5, ly + 4, GOLD);
         hits.add(new Hit(qx, ly + 3, 10, 10, null, List.of(Component.translatable("screen.noirm.ally.teach.rules.title").withStyle(s -> s.withColor(GOLD)),
                 Component.translatable("screen.noirm.ally.teach.rules"))));
         int teachRowH = 20;
@@ -555,13 +583,13 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             int rw = half - 6 - (teachRows < teachable.size() ? 4 : 0);
             boolean viaNature = t.blocker().equals(AllyPackets.VIA_NATURE);
             boolean ok = t.blocker().isEmpty() || viaNature;
-            boolean hover = in(mouseX, mouseY, rx, ry, rw, teachRowH - 1);
-            g.fill(rx, ry, rx + rw, ry + teachRowH - 1, hover ? CARD_HOVER : CARD);
+            float hv = hover.get(HoverTracker.key(12, teachScroll + r), in(mouseX, mouseY, rx, ry, rw, teachRowH - 1));
+            Ui.row(g, rx, ry, rw, teachRowH - 1, hv, false, Tab.JUTSU.accent);
             natureBadge(g, rx + 2, ry + 2, t.id());
             String rank = t.rank();
             int rankW = font.width(rank) + 4;
-            g.fill(rx + 15, ry + 2, rx + 15 + rankW, ry + 11, rankColor(rank));
-            g.drawString(font, rank, rx + 17, ry + 3, 0xFF15121A, false);
+            g.fill(rx + 15, ry + 2, rx + 15 + rankW, ry + 11, Theme.mix(CARD, rankColor(rank), 0.22f));
+            g.drawString(font, rank, rx + 17, ry + 3, rankColor(rank), false);
             Component button = Component.translatable("screen.noirm.ally.teach");
             int bw = font.width(button) + 8;
             int bx = rx + rw - bw - 1;
@@ -603,13 +631,12 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     private void natureBadge(GuiGraphics g, int x, int y, ResourceLocation id) {
         JutsuCatalogPacket.Entry entry = ClientJutsuCatalog.get(id.toString());
         int color = natureColor(id);
-        g.fill(x, y, x + 10, y + 9, darken(color, 0.35f));
-        g.renderOutline(x, y, 10, 9, color);
+        g.fill(x, y, x + 10, y + 9, Theme.mix(CARD, color, 0.22f));
         String glyph = entry != null && entry.nature() >= 0 ? Nature.values()[entry.nature()].kanji().substring(0, 1) : "·";
         g.pose().pushPose();
         g.pose().translate(x + 5, y + 1, 0);
         g.pose().scale(0.8f, 0.8f, 1f);
-        g.drawCenteredString(font, glyph, 0, 0, color);
+        Ui.textCentered(g, font, glyph, 0, 0, color);
         g.pose().popPose();
     }
 
@@ -723,8 +750,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
             if (chosen) {
                 hexagon(g, px, py, r, border);
             }
-            hexagon(g, px, py, r - 2, s == AllyPackets.NATURE_OWNED ? 0xFF2A2630 : 0xFF141217);
-            g.drawCenteredString(font, nature == Nature.YIN_YANG ? "☯" : nature.kanji().substring(0, 1), px, py - 4,
+            hexagon(g, px, py, r - 1, s == AllyPackets.NATURE_OWNED ? Theme.mix(CARD, color, 0.18f) : Theme.WELL);
+            Ui.textCentered(g, font, nature == Nature.YIN_YANG ? "☯" : nature.kanji().substring(0, 1), px, py - 4,
                     s == AllyPackets.NATURE_OWNED || s == AllyPackets.NATURE_LEARNING ? color : s == AllyPackets.NATURE_TEACHABLE ? GOLD : 0xFF5E5866);
             if (s == AllyPackets.NATURE_TEACHABLE) {
                 g.drawString(font, "+", px + r - 2, py - r - 3, GOLD, false);
@@ -754,7 +781,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         } else {
             y = natureDetails(g, shown, statusOf(status, shown), x, y, w, lessonTop - 4, mouseX, mouseY);
         }
-        g.fill(sx + 4, lessonTop - 2, sx + sw - 4, lessonTop - 1, RULE);
+        Ui.hairline(g, sx + 6, lessonTop - 2, sw - 12);
         drawLesson(g, x, lessonTop + 2, w, bottom - 4, mouseX, mouseY);
     }
 
@@ -891,7 +918,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         if (x + 12 > maxX) {
             return x;
         }
-        g.fill(x, y + 1, x + 6, y + 7, color);
+        Ui.roundRect(g, x, y + 2, 5, 5, color);
         String label = fit(text.getString(), maxX - x - 9);
         g.drawString(font, label, x + 9, y, DIM, false);
         return x + 9 + font.width(label) + 8;
@@ -996,16 +1023,18 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
     /** A clickable card: glyph, title and a wrapped description, lit when active. */
     private void card(GuiGraphics g, int mouseX, int mouseY, int cx, int cy, int cw, int ch, String glyph, Component title, Component desc,
                       boolean active, int accent) {
-        boolean hover = in(mouseX, mouseY, cx, cy, cw, ch);
-        g.fill(cx, cy, cx + cw, cy + ch, active ? darken(accent, 0.3f) : hover ? CARD_HOVER : CARD);
-        g.renderOutline(cx, cy, cw, ch, active ? accent : hover ? FRAME : RULE);
+        float hv = hover.get(HoverTracker.key(13, cx, cy), in(mouseX, mouseY, cx, cy, cw, ch));
+        g.fill(cx, cy, cx + cw, cy + ch, active ? Theme.mix(CARD, accent, 0.16f) : Theme.mix(CARD, CARD_HOVER, hv));
         if (active) {
-            g.fill(cx + 1, cy + ch - 2, cx + cw - 1, cy + ch - 1, accent);
+            g.fill(cx, cy + ch - 1, cx + cw, cy + ch, accent);
+        } else if (hv > 0.01f) {
+            int lw = Math.round(cw * hv);
+            g.fill(cx + (cw - lw) / 2, cy + ch - 1, cx + (cw + lw) / 2, cy + ch, darken(accent, 0.6f));
         }
-        g.drawString(font, glyph, cx + 4, cy + 4, active ? accent : DIM, false);
-        int titleX = cx + 6 + font.width(glyph);
-        g.drawString(font, fit(title.getString(), cx + cw - 4 - titleX), titleX, cy + 4, active ? PAPER : 0xFFCFC6D6, false);
-        wrap(g, desc, cx + 4, cy + 15, cw - 8, cy + ch - 2, active ? 0xFFE0D4C0 : FAINT);
+        g.drawString(font, glyph, cx + 5, cy + 5, active ? accent : Theme.mix(FAINT, DIM, hv), false);
+        int titleX = cx + 8 + font.width(glyph);
+        g.drawString(font, fit(title.getString(), cx + cw - 5 - titleX), titleX, cy + 5, active ? PAPER : Theme.mix(DIM, PAPER, 0.5f + hv * 0.5f), false);
+        wrap(g, desc, cx + 5, cy + 16, cw - 10, cy + ch - 2, active ? DIM : FAINT);
     }
 
     // ---------------------------------------------------------------- Job
@@ -1069,14 +1098,10 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
 
     private void segment(GuiGraphics g, int mouseX, int mouseY, int x, int y, int w, int i, int count, Component label, boolean active,
                          Runnable click, Component tip) {
-        int sw = w / count;
-        int sx = x + i * sw;
-        int width = i == count - 1 ? w - sw * (count - 1) : sw - 2;
-        boolean hover = in(mouseX, mouseY, sx, y, width, 14);
-        int accent = Tab.ORDERS.accent;
-        g.fill(sx, y, sx + width, y + 14, active ? darken(accent, 0.35f) : hover ? CARD_HOVER : CARD);
-        g.renderOutline(sx, y, width, 14, active ? accent : RULE);
-        g.drawCenteredString(font, fit(label.getString(), width - 6), sx + width / 2, y + 3, active ? PAPER : DIM);
+        int sx = Ui.segX(x, w, i, count);
+        int width = Ui.segW(w, i, count);
+        float hv = hover.get(HoverTracker.key(14, x + y * 7, i), in(mouseX, mouseY, sx, y, width, 14));
+        Ui.segment(g, font, x, y, w, 14, i, count, label, active, hv, Tab.ORDERS.accent);
         hits.add(new Hit(sx, y, width, 14, click, List.of(label, tip.copy().withStyle(s -> s.withColor(DIM)))));
     }
 
@@ -1093,62 +1118,46 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
         }
         int aw = x + w - ax;
         g.fill(ax, y, ax + aw, y + 14, CARD);
-        g.renderOutline(ax, y, aw, 14, RULE);
         if (prev != null) {
             arrow(g, mouseX, mouseY, ax, y, "◀", prev, accent);
             arrow(g, mouseX, mouseY, ax + aw - 14, y, "▶", next, accent);
         }
-        g.drawCenteredString(font, fit(value.getString(), aw - 32), ax + aw / 2, y + 3, PAPER);
+        Ui.textCentered(g, font, fit(value.getString(), aw - 32), ax + aw / 2, y + 3, PAPER);
     }
 
     private void arrow(GuiGraphics g, int mouseX, int mouseY, int x, int y, String glyph, Runnable click, int accent) {
-        boolean hover = in(mouseX, mouseY, x, y, 14, 14);
-        g.fill(x + 1, y + 1, x + 13, y + 13, hover ? darken(accent, 0.45f) : 0xFF25212C);
-        g.drawCenteredString(font, glyph, x + 7, y + 3, hover ? PAPER : accent);
+        float hv = hover.get(HoverTracker.key(15, x, y), in(mouseX, mouseY, x, y, 14, 14));
+        g.fill(x, y, x + 14, y + 14, Theme.mix(CARD, CARD_HOVER, hv));
+        Ui.textCentered(g, font, glyph, x + 7, y + 3, Theme.mix(darken(accent, 0.75f), PAPER, hv));
         hits.add(new Hit(x, y, 14, 14, click, null));
     }
 
     private void pill(GuiGraphics g, int x, int y, int w, int h, Component text, int accent, boolean enabled, boolean lit, int mouseX, int mouseY) {
-        boolean hover = enabled && in(mouseX, mouseY, x, y, w, h);
-        g.fill(x, y, x + w, y + h, lit ? darken(accent, 0.6f) : hover ? darken(accent, 0.4f) : darken(accent, 0.2f));
-        g.renderOutline(x, y, w, h, enabled ? accent : FAINT);
-        g.drawCenteredString(font, fit(text.getString(), w - 6), x + w / 2, y + (h - 8) / 2, enabled ? PAPER : FAINT);
+        float hv = hover.get(HoverTracker.key(16, x, y), enabled && in(mouseX, mouseY, x, y, w, h));
+        Ui.button(g, font, x, y, w, h, text, hv, enabled, accent, lit);
     }
 
     private void section(GuiGraphics g, int x, int y, int w, Component title) {
-        String text = fit(title.getString(), w - 10);
-        g.drawString(font, text, x, y, tab.accent, false);
-        int lx = x + font.width(text) + 5;
-        if (lx < x + w) {
-            g.fill(lx, y + 4, x + w, y + 5, RULE);
-        }
+        Ui.section(g, font, x, y, w, title, Theme.mix(DIM, tab.accent, 0.45f));
     }
 
+    /** A group: a barely darker area, no frame. */
     private static void box(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, 0x80070609);
-        g.renderOutline(x, y, w, h, RULE);
+        g.fill(x, y, x + w, y + h, 0x50000000);
     }
 
     private static void bar(GuiGraphics g, int x, int y, int w, int h, float fraction, int color) {
         if (w <= 0) {
             return;
         }
-        g.fill(x, y, x + w, y + h, 0xFF24212A);
-        int fill = Math.round(w * Mth.clamp(fraction, 0f, 1f));
-        if (fill > 0) {
-            g.fillGradient(x, y, x + fill, y + h, color, darken(color, 0.65f));
-            g.fill(x, y, x + fill, y + 1, 0x40FFFFFF);
-        }
+        Ui.bar(g, x, y, w, h, fraction, color);
     }
 
     private void scrollbar(GuiGraphics g, int x, int y, int h, int scroll, int rows, int total) {
         if (total <= rows) {
             return;
         }
-        g.fill(x, y, x + 2, y + h, 0xFF24212A);
-        int thumb = Math.max(8, h * rows / total);
-        int top = y + (h - thumb) * scroll / Math.max(1, total - rows);
-        g.fill(x, top, x + 2, top + thumb, Tab.JUTSU.accent);
+        Ui.scrollbar(g, x + 1, y, h, scroll, rows, total, Theme.IRON);
     }
 
     /** Wrapped text that stops before {@code maxY}; returns the y below it. */
@@ -1229,7 +1238,20 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
+            int t = tabStrip.at(mouseX, mouseY);
+            if (t >= 0) {
+                if (t != tab.ordinal()) {
+                    setTab(Tab.values()[t]);
+                    if (minecraft != null) {
+                        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+                    }
+                }
+                return true;
+            }
             for (int i = hits.size() - 1; i >= 0; i--) {
                 Hit hit = hits.get(i);
                 if (hit.click() != null && hit.contains(mouseX, mouseY)) {

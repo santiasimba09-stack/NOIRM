@@ -1887,5 +1887,10 @@
   "board.noirm.bingo.tip": "El encargado del tablón vende libros bingo: renegados peligrosos, sus recompensas y dónde se les vio por última vez. %s ryo.",
   "board.noirm.bingo.poor": "Un libro bingo cuesta %s ryo: no te alcanza.",
   "bingo.noirm.trait.danger": "Peligro %s: mata a un novato en segundos",
-  "bingo.noirm.entrance.warn": "%s es una leyenda (peligro %s). Puede matar a un novato en un par de segundos: huye, salvo que estés preparado."
+  "bingo.noirm.entrance.warn": "%s es una leyenda (peligro %s). Puede matar a un novato en un par de segundos: huye, salvo que estés preparado.",
+  "hud.noirm.ui.chakra": "Chakra",
+  "hud.noirm.ui.stamina": "Resistencia",
+  "hud.noirm.ui.posture": "Postura",
+  "hud.noirm.ui.nature": "Energía natural",
+  "hud.noirm.ui.jutsu_hint": "1–4 lanzar · J editar"
 }
