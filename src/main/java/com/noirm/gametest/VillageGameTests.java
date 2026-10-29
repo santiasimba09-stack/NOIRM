@@ -84,21 +84,27 @@ public final class VillageGameTests {
             expect(helper, level, origin.offset(-7, 4, -5), Blocks.LADDER, "with a ladder");
             expect(helper, level, origin.offset(1, 2, -11), Blocks.TARGET, "a training post");
             expect(helper, level, origin.offset(-4, -1, 10), Blocks.GRASS_BLOCK, "on levelled grass");
-            AABB box = AABB.of(area);
-            // (Other tests' leftovers may wander nearby, so only count residents.)
-            var ninjas = level.getEntitiesOfClass(SparringNinja.class, box, SparringNinja::isResident);
-            helper.assertTrue(ninjas.size() >= 3, "ninjas live there, found " + ninjas.size() + " DIAG all="
-                    + level.getEntitiesOfClass(SparringNinja.class, box.inflate(40), e -> true).stream()
-                    .map(n -> n.blockPosition().subtract(origin).toShortString() + (n.isResident() ? "R" : "") + (n.isRemoved() ? "X" : "")).toList()
-                    + " vis=" + java.util.stream.Stream.of(origin.offset(2, 0, VillageBuilder.OUTPOST_WALL - 4), origin.offset(1, 0, 2), origin.offset(-7, 10, -7))
-                    .map(p -> level.isPositionEntityTicking(p) + "/" + level.getChunkSource().isPositionTicking(net.minecraft.world.level.ChunkPos.asLong(p))
-                            + "/" + ((net.minecraft.server.level.ServerLevel) level).areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(p))).toList());
-            helper.assertTrue(ninjas.stream().allMatch(n -> n.isPersistenceRequired()), "who never despawn");
-            helper.assertTrue(!level.getEntitiesOfClass(VillageMerchant.class, box).isEmpty(), "and a merchant");
-        } finally {
+        } catch (RuntimeException e) {
             snapshot.restore();
+            throw e;
         }
-        helper.succeed();
+        // The people are counted a couple of ticks later: the build may load the chunks next to
+        // the test's own, and a freshly loaded chunk only shows its entities once the server has
+        // caught up on chunk levels (counted at once, a resident there was missed now and then,
+        // depending on where the test landed in the grid, and was then left behind by the cleanup).
+        helper.runAfterDelay(2, () -> {
+            try {
+                AABB box = AABB.of(area);
+                // (Other tests' leftovers may wander nearby, so only count residents.)
+                var ninjas = level.getEntitiesOfClass(SparringNinja.class, box, SparringNinja::isResident);
+                helper.assertTrue(ninjas.size() >= 3, "ninjas live there, found " + ninjas.size());
+                helper.assertTrue(ninjas.stream().allMatch(n -> n.isPersistenceRequired()), "who never despawn");
+                helper.assertTrue(!level.getEntitiesOfClass(VillageMerchant.class, box).isEmpty(), "and a merchant");
+            } finally {
+                snapshot.restore();
+            }
+            helper.succeed();
+        });
     }
 
     @GameTest(template = "empty", batch = "noirm_village_tower", timeoutTicks = 40)

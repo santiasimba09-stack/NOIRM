@@ -12,7 +12,7 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
    python3 -I tools/client-smoke/xinput.py :99 move 640 360 click 3 key F5 key r click 1 click 1
    import -display :99 -window root shot.png
    ```
-   `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`,
+   `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`, `holdclick <button> <seconds>`, `down <keysym>` / `up <keysym>` (hold a key across other commands),
    `move <x> <y>`, `sleep <seconds>`, `type "<text>"`, `combo <held> <key>` (e.g. `combo F3 t` reloads resources). Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
    Cheats are on in the copied world, so you can run commands:
    `key t sleep 0.5 type "/time set night" key Return`. Typing `~` is unreliable on the Xvfb

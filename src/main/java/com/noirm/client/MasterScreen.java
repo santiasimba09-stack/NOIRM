@@ -143,9 +143,17 @@ public class MasterScreen extends Screen {
         // The greeting, wrapped, at most three lines.
         int ty = y + 30;
         if (!info.greetingKey().isEmpty()) {
-            List<FormattedCharSequence> lines = font.split(Component.translatable(info.greetingKey()).withStyle(s -> s.withItalic(true)), W - 20);
-            for (int i = 0; i < Math.min(3, lines.size()); i++) {
-                g.drawString(font, lines.get(i), x + 10, ty, PAPER, false);
+            Component greeting = Component.translatable(info.greetingKey()).withStyle(s -> s.withItalic(true));
+            List<FormattedCharSequence> lines = font.split(greeting, W - 20);
+            boolean cut = lines.size() > 3;
+            if (cut) {
+                // Too long for three lines: the third ends in "…" and the whole greeting is a tooltip.
+                lines = new java.util.ArrayList<>(font.split(greeting, W - 20 - font.width("…")).subList(0, 3));
+                lines.set(2, FormattedCharSequence.composite(lines.get(2), Component.literal("…").getVisualOrderText()));
+                hits.add(new Hit(x + 10, ty, W - 20, 30, null, List.of(greeting)));
+            }
+            for (FormattedCharSequence line : lines) {
+                g.drawString(font, line, x + 10, ty, PAPER, false);
                 ty += 10;
             }
         }

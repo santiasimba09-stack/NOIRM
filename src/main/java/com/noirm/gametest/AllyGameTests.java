@@ -194,7 +194,7 @@ public final class AllyGameTests {
         // and the rogue goes after the player.
         helper.runAfterDelay(3, () -> rogue.hurt(rogue.damageSources().playerAttack(player), 2f));
         helper.runAfterDelay(8, () -> {
-            helper.assertTrue(rogue.getTarget() == player, "first, the rogue turns on the player who hit it DIAG t=" + (rogue.getTarget() == null ? "-" : rogue.getTarget().getType().toShortString()) + " hp=" + rogue.getHealth() + " lastHurtBy=" + rogue.getLastHurtByMob());
+            helper.assertTrue(rogue.getTarget() == player, "first, the rogue turns on the player who hit it");
             ally.setTarget(rogue); // the crew mate joins in
         });
         helper.onEachTick(() -> {

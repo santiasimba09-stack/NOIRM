@@ -167,8 +167,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         if (!level().isClientSide() && !tailsDecided) {
             tailsDecided = true;
-            if (getRandom().nextFloat() < BijuSystem.NPC_JINCHURIKI_CHANCE) {
-                sealBeast(1 + getRandom().nextInt(BijuData.MAX_TAILS));
+            int maxTails = BijuSystem.npcMaxTails(Math.max(combatSpeed(), combatTaijutsu()));
+            if (maxTails > 0 && getRandom().nextFloat() < BijuSystem.NPC_JINCHURIKI_CHANCE) {
+                sealBeast(1 + getRandom().nextInt(maxTails));
             }
         }
         if (!level().isClientSide() && tails() > 0) {

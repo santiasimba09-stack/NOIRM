@@ -1333,7 +1333,7 @@
   "kit.noirm.arsenal": "Arsenal (armas nuevas)",
   "help.noirm.spawn.encounter": "un grupo salvaje (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), con nivel de peligro opcional",
   "commands.noirm.encounter.unknown": "Encuentro desconocido: %s",
-  "commands.noirm.encounter.spawned": "Apareció %s (%s ninjas, peligro %s)",
+  "commands.noirm.encounter.spawned": "Apareció %s (ninjas: %s, peligro %s)",
   "encounter.noirm.wanderer": "un vagabundo solitario",
   "encounter.noirm.travellers": "dos viajeros",
   "encounter.noirm.squad": "un escuadrón de la aldea",
@@ -1606,7 +1606,7 @@
   "message.noirm.training.durability_up": "¡Tu dureza subió a %s! (los golpes duelen menos)",
   "command.noirm.stat_dur": "Dureza: %s (anula el %s%% del daño)",
   "help.noirm.me.stat_dur": "cambia tu dureza (DUR): la parte del daño que aguantas sin sufrir, hasta un 60%",
-  "message.noirm.kill_xp": "Derrotaste a %s: %s",
+  "message.noirm.kill_xp": "Derrotaste a %s · XP de entrenamiento: %s",
   "message.noirm.kill_xp.entry": "+%s %s",
   "rank.noirm.why.jutsu": "Los jutsu de rango %s son para %s o más: sube de rango en un tablón de misiones.",
   "master.noirm.stone_hermit": "Iwao, el Ermitaño de Piedra",
@@ -1886,6 +1886,6 @@
   "board.noirm.bingo": "Comprar libro bingo (%s ryo)",
   "board.noirm.bingo.tip": "El encargado del tablón vende libros bingo: renegados peligrosos, sus recompensas y dónde se les vio por última vez. %s ryo.",
   "board.noirm.bingo.poor": "Un libro bingo cuesta %s ryo: no te alcanza.",
-  "bingo.noirm.trait.danger": "Peligro: %s. Puede matar a un shinobi novato en un par de segundos. No te enfrentes a esta leyenda hasta ser un jōnin curtido.",
+  "bingo.noirm.trait.danger": "Peligro %s: mata a un novato en segundos",
   "bingo.noirm.entrance.warn": "%s es una leyenda (peligro %s). Puede matar a un novato en un par de segundos: huye, salvo que estés preparado."
 }

@@ -224,7 +224,9 @@ public final class CareerGameTests {
         Player player = player(helper);
         BlockPos board = board(helper);
         List<ResourceLocation> offers = Missions.offers(helper.getLevel(), board);
-        helper.assertTrue(offers.size() == 8, "8 missions on offer, got " + offers.size());
+        helper.assertTrue(offers.size() == 9, "9 missions on offer, got " + offers.size());
+        helper.assertTrue(offers.stream().filter(id -> MissionTemplates.get(id).rank() == MissionTemplate.Letter.D).count() * 10 >= 30,
+                "enough D missions in a day for the genin exam's 30 points");
         helper.assertTrue(offers.equals(Missions.offers(helper.getLevel(), board)), "the same all day");
         helper.assertTrue(offers.stream().noneMatch(id -> MissionTemplates.get(id).exam()), "never an exam mission");
         helper.assertTrue(MissionTemplates.all().size() >= 18, "every mission loaded, got " + MissionTemplates.all().size());

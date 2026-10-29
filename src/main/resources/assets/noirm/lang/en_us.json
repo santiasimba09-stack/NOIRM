@@ -1333,7 +1333,7 @@
   "kit.noirm.arsenal": "Arsenal (new blades)",
   "help.noirm.spawn.encounter": "a wild group (wanderer, travellers, squad, clan_group, rogue, rogue_band, rogue_strong), optionally with a danger level",
   "commands.noirm.encounter.unknown": "Unknown encounter: %s",
-  "commands.noirm.encounter.spawned": "%s turned up (%s ninjas, danger %s)",
+  "commands.noirm.encounter.spawned": "%s turned up (ninjas: %s, danger %s)",
   "encounter.noirm.wanderer": "A lone wanderer",
   "encounter.noirm.travellers": "Two travellers",
   "encounter.noirm.squad": "A village squad",
@@ -1606,7 +1606,7 @@
   "message.noirm.training.durability_up": "Your durability rose to %s! (hits hurt less)",
   "command.noirm.stat_dur": "Durability: %s (negates %s%% of damage)",
   "help.noirm.me.stat_dur": "set your durability (DUR): the share of damage you shrug off, up to 60%",
-  "message.noirm.kill_xp": "Defeated %s: %s",
+  "message.noirm.kill_xp": "Defeated %s · training XP: %s",
   "message.noirm.kill_xp.entry": "+%s %s",
   "rank.noirm.why.jutsu": "%s-rank jutsu are for %s and up: rank up at a missions board first.",
   "master.noirm.stone_hermit": "Iwao, the Stone Hermit",
@@ -1886,6 +1886,6 @@
   "board.noirm.bingo": "Buy bingo book (%s ryo)",
   "board.noirm.bingo.tip": "The board's clerk sells bingo books: dangerous rogues, their bounties and where they were last seen. %s ryo.",
   "board.noirm.bingo.poor": "A bingo book costs %s ryo: you don't have enough.",
-  "bingo.noirm.trait.danger": "Danger: %s. Can kill a new shinobi in a couple of seconds. Don't face them until you're a seasoned jōnin.",
+  "bingo.noirm.trait.danger": "Danger %s: kills a beginner in seconds",
   "bingo.noirm.entrance.warn": "%s is a legend (danger %s). They can kill a beginner in a couple of seconds: run, unless you're ready."
 }

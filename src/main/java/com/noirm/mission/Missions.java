@@ -72,8 +72,11 @@ public final class Missions {
     public static final double CLIENT_CATCH_UP = 24;
     /** Ticks before the first wave of a defence, and between waves. */
     public static final int DEFEND_COUNTDOWN = 300, WAVE_GAP = 200;
-    /** How many missions of each rank letter a board offers a day (D, C, B, A, S). */
-    public static final int[] OFFERS_PER_LETTER = {2, 2, 2, 1, 1};
+    /**
+     * How many missions of each rank letter a board offers a day (D, C, B, A, S). Three D: an
+     * Academy student can earn the genin exam's 30 rank points on their first day at one board.
+     */
+    public static final int[] OFFERS_PER_LETTER = {3, 2, 2, 1, 1};
     /** Tags on everything spawned for a mission. */
     public static final String MISSION_TAG = "noirm_mission", OWNER_PREFIX = "noirm_owner:";
 
@@ -378,12 +381,19 @@ public final class Missions {
         BlockPos destination = m.points.get(0);
         Entity found = m.npc == null ? null : level.getEntity(m.npc);
         if (!(found instanceof VillageMerchant client) || !client.isAlive()) {
-            spawnClient(level, player, m); // lost track of them (unloaded): they catch up
+            if (player.onGround() && !player.isInWater()) {
+                spawnClient(level, player, m); // lost track of them (unloaded): they catch up (on solid ground)
+            }
             return;
         }
         double distance = client.distanceTo(player);
         if (distance > CLIENT_CATCH_UP) {
-            client.teleportTo(player.getX(), player.getY(), player.getZ());
+            // They catch up, but only to where you stand on solid ground: never to a spot in mid-air
+            // (a leap, a fall, a teleport) where the drop would kill them.
+            if (player.onGround() && !player.isInWater()) {
+                client.teleportTo(player.getX(), player.getY(), player.getZ());
+                client.resetFallDistance();
+            }
             client.getNavigation().stop();
         } else if (distance > 3) {
             client.getNavigation().moveTo(player, 0.75);
@@ -698,8 +708,9 @@ public final class Missions {
         cleanUp(player, m);
         career.setMission(null);
         MissionTemplate def = m.definition();
-        int lost = def == null || def.exam() ? 0 : def.points() / 2;
-        career.setPoints(career.points() - lost);
+        int before = career.points();
+        career.setPoints(before - (def == null || def.exam() ? 0 : def.points() / 2));
+        int lost = before - career.points(); // (never below 0: say what was really lost)
         player.sendSystemMessage(Component.translatable("mission.noirm.failed", Component.translatable(MissionTemplate.nameKey(m.template)),
                 Component.translatable(reasonKey), lost).withStyle(ChatFormatting.RED));
         player.level().playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 0.8f, 0.8f);

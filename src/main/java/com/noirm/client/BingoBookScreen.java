@@ -170,21 +170,27 @@ public class BingoBookScreen extends Screen {
         ty += 6;
         g.drawString(font, Component.translatable("screen.noirm.bingo.known_for"), tx, ty, GOLD, false);
         ty += 11;
+        // The bounty sits at the bottom; "last seen" just above it; the traits get what's left.
+        int by = y + h - 30;
+        List<FormattedCharSequence> seen = font.split(p.seen(), w - 16);
+        int traitsEnd = by - 8 - 11 - 10 * seen.size() - 4;
         for (Component trait : p.traits()) {
             for (FormattedCharSequence line : font.split(Component.literal("• ").append(trait), w - 16)) {
-                g.drawString(font, line, tx, ty, PAPER, false);
+                if (ty + 9 <= traitsEnd) {
+                    g.drawString(font, line, tx, ty, PAPER, false);
+                }
                 ty += 10;
             }
         }
+        ty = Math.min(ty, traitsEnd);
         ty += 4;
         g.drawString(font, Component.translatable("screen.noirm.bingo.last_seen"), tx, ty, GOLD, false);
         ty += 11;
-        for (FormattedCharSequence line : font.split(p.seen(), w - 16)) {
+        for (FormattedCharSequence line : seen) {
             g.drawString(font, line, tx, ty, PAPER, false);
             ty += 10;
         }
         // The bounty at the bottom, big; or the claimed stamp.
-        int by = y + h - 30;
         g.fill(x + 6, by - 4, x + w - 6, by - 3, legend ? 0xFF6E5520 : RULE);
         g.drawString(font, Component.translatable("screen.noirm.bingo.bounty"), tx, by + 4, DIM, false);
         Component amount = Component.translatable("ryo.noirm.amount", Ryo.format(p.bounty()));
