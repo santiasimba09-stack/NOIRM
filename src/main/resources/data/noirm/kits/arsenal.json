@@ -1,0 +1,26 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:tanto"
+    },
+    {
+      "item": "noirm:katana"
+    },
+    {
+      "item": "noirm:nodachi"
+    },
+    {
+      "item": "noirm:tonfa"
+    },
+    {
+      "item": "noirm:yari"
+    },
+    {
+      "item": "noirm:tekko_kagi"
+    },
+    {
+      "item": "noirm:tessen"
+    }
+  ]
+}

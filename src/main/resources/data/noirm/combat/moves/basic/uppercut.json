@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:rising_uppercut",
+  "timing": { "windup": 6, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 15, "range": 2.5, "arc": 90, "knockback": 0.1, "lift": 0.75, "lunge": 0.2, "hitstun": 20, "hitstop": 4, "shake": 0.7 },
+  "next": { "light": "noirm:basic/jab" }
+}

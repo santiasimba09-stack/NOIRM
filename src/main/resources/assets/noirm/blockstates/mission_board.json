@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "noirm:block/mission_board" },
+    "facing=east": { "model": "noirm:block/mission_board", "y": 90 },
+    "facing=south": { "model": "noirm:block/mission_board", "y": 180 },
+    "facing=west": { "model": "noirm:block/mission_board", "y": 270 }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_navy"
+    },
+    {
+      "item": "noirm:hand_wraps"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:shin_guards"
+    },
+    {
+      "item": "noirm:arm_guards"
+    },
+    {
+      "item": "noirm:flak_vest"
+    },
+    {
+      "item": "noirm:tabi"
+    }
+  ]
+}

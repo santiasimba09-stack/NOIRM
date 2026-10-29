@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:spear_sweep",
+  "timing": { "windup": 7, "active": 3, "recovery": 11, "cancel_after": 7 },
+  "hit": { "damage": 5.5, "posture": 20, "range": 4.4, "arc": 180, "knockback": 0.9, "lunge": 0.1, "hitstun": 10, "hitstop": 4, "shake": 0.6 },
+  "next": { "light": "noirm:spear/thrust", "heavy": "noirm:spear/lunge_thrust" }
+}

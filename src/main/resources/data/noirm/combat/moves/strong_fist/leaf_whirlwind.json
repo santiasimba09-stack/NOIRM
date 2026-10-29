@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:leaf_whirlwind",
+  "timing": {
+    "windup": 7,
+    "active": 4,
+    "recovery": 12,
+    "cancel_after": 7
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 30,
+    "range": 3.2,
+    "arc": 360,
+    "knockback": 1.0,
+    "hitstun": 16,
+    "hitstop": 5,
+    "shake": 0.7
+  },
+  "next": {
+    "light": "noirm:strong_fist/jab",
+    "launcher": "noirm:strong_fist/leaf_rising_wind"
+  }
+}

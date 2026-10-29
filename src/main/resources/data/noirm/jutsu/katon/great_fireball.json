@@ -1,0 +1,21 @@
+{
+  "nature": "fire",
+  "cast": "charge",
+  "behavior": "projectile",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 25,
+  "cooldown": 100,
+  "min_charge": 6,
+  "max_charge": 30,
+  "params": {
+    "damage": 8,
+    "charge_damage": 12,
+    "speed": 0.75,
+    "radius": 4.5,
+    "knockback": 1.4,
+    "posture": 35,
+    "fire_seconds": 6,
+    "look": "fireball"
+  }
+}

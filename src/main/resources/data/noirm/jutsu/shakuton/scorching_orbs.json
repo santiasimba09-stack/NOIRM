@@ -1,0 +1,17 @@
+{
+  "nature": "scorch",
+  "behavior": "projectile",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 200,
+  "params": {
+    "count": 3,
+    "spread": 40,
+    "speed": 0.8,
+    "damage": 6,
+    "radius": 1.0,
+    "fire_seconds": 6,
+    "posture": 20
+  }
+}

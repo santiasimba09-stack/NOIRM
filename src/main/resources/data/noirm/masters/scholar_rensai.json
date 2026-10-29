@@ -1,0 +1,105 @@
+{
+  "name": "master.noirm.scholar_rensai",
+  "greeting": "master.noirm.scholar_rensai.greeting",
+  "look": "ninjutsu_scholar:1",
+  "gear": {
+    "chest": "noirm:jonin_vest",
+    "feet": "noirm:tabi"
+  },
+  "stats": {
+    "speed": 40,
+    "taijutsu": 35,
+    "vitality": 45
+  },
+  "trial": "jutsu",
+  "test": {
+    "hits": 4,
+    "posture_breaks": 0,
+    "seconds": 120,
+    "level": 0.3,
+    "end_health": 0.25
+  },
+  "grants_style": false,
+  "natures": [
+    "fire",
+    "water",
+    "wind",
+    "lightning",
+    "earth"
+  ],
+  "jutsu": [
+    "noirm:suiton/water_bullet",
+    "noirm:futon/air_palm",
+    "noirm:raiton/chidori_senbon"
+  ],
+  "lessons": [
+    {
+      "id": "swift_seals",
+      "perk": "swift_seals",
+      "rank": "genin",
+      "ryo": 150,
+      "control": 12
+    },
+    {
+      "id": "nature_insight",
+      "perk": "nature_insight",
+      "rank": "genin",
+      "ryo": 250
+    },
+    {
+      "id": "ember_net",
+      "jutsu": "noirm:katon/ember_net",
+      "rank": "chunin",
+      "ryo": 400,
+      "after": [
+        "swift_seals"
+      ]
+    },
+    {
+      "id": "tide_lance",
+      "jutsu": "noirm:suiton/tide_lance",
+      "rank": "chunin",
+      "ryo": 400,
+      "after": [
+        "swift_seals"
+      ]
+    },
+    {
+      "id": "gale_blades",
+      "jutsu": "noirm:futon/gale_blades",
+      "rank": "chunin",
+      "ryo": 400,
+      "after": [
+        "swift_seals"
+      ]
+    },
+    {
+      "id": "thunder_snare",
+      "jutsu": "noirm:raiton/thunder_snare",
+      "rank": "chunin",
+      "ryo": 400,
+      "after": [
+        "swift_seals"
+      ]
+    },
+    {
+      "id": "stone_fist",
+      "jutsu": "noirm:doton/stone_fist",
+      "rank": "chunin",
+      "ryo": 400,
+      "after": [
+        "swift_seals"
+      ]
+    },
+    {
+      "id": "chakra_efficiency",
+      "perk": "chakra_efficiency",
+      "rank": "jonin",
+      "ryo": 900,
+      "control": 20,
+      "after": [
+        "swift_seals"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:crescent_cleaver"
+    },
+    {
+      "item": "noirm:sharkskin_greatsword"
+    },
+    {
+      "item": "noirm:thunder_fangs"
+    },
+    {
+      "item": "noirm:reedcutter"
+    }
+  ]
+}

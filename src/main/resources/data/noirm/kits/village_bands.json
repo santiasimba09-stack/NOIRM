@@ -1,0 +1,17 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_cloud"
+    },
+    {
+      "item": "noirm:forehead_protector_mist"
+    },
+    {
+      "item": "noirm:forehead_protector_stone"
+    },
+    {
+      "item": "noirm:forehead_protector_sand"
+    }
+  ]
+}

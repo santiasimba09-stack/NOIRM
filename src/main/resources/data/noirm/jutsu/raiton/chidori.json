@@ -1,0 +1,5 @@
+{
+  "nature": "lightning", "cast": "charge", "behavior": "dash_strike", "rank": "A", "starter": true,
+  "chakra_cost": 30, "cooldown": 160, "min_charge": 10, "max_charge": 30,
+  "params": { "damage": 6, "charge_damage": 10, "range": 8, "knockback": 0.8, "posture": 60, "stun": 30 }
+}

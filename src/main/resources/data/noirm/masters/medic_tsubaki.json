@@ -1,0 +1,60 @@
+{
+  "name": "master.noirm.medic_tsubaki",
+  "greeting": "master.noirm.medic_tsubaki.greeting",
+  "look": "medic:1",
+  "gear": {
+    "chest": "noirm:medic_coat",
+    "legs": "noirm:hakama",
+    "feet": "noirm:tabi"
+  },
+  "stats": {
+    "speed": 35,
+    "taijutsu": 40,
+    "vitality": 55
+  },
+  "trial": "patient",
+  "test": {
+    "hits": 0,
+    "posture_breaks": 0,
+    "seconds": 40
+  },
+  "grants_style": false,
+  "natures": [
+    "water",
+    "earth"
+  ],
+  "lessons": [
+    {
+      "id": "healing_palm",
+      "jutsu": "noirm:medical/healing_palm",
+      "rank": "genin",
+      "ryo": 200,
+      "control": 10
+    },
+    {
+      "id": "poison_lore",
+      "perk": "poison_lore",
+      "rank": "genin",
+      "ryo": 150
+    },
+    {
+      "id": "chakra_scalpel",
+      "jutsu": "noirm:medical/chakra_scalpel",
+      "rank": "chunin",
+      "ryo": 500,
+      "control": 16,
+      "after": [
+        "healing_palm"
+      ],
+      "mastery": {
+        "noirm:medical/healing_palm": 1
+      }
+    },
+    {
+      "id": "eye_transplant",
+      "service": "eye_transplant",
+      "rank": "jonin",
+      "ryo": 1500
+    }
+  ]
+}

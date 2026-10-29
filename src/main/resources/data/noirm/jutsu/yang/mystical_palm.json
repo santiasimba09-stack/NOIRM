@@ -1,0 +1,5 @@
+{
+  "nature": "yang", "cast": "channel", "behavior": "heal", "rank": "A", "starter": true,
+  "chakra_cost": 15, "cooldown": 100, "max_duration": 100,
+  "params": { "damage": 3, "range": 4 }
+}

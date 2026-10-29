@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:trigram_sweep",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 11,
+    "cancel_after": 6
+  },
+  "hit": {
+    "range": 2.8,
+    "arc": 160,
+    "pierce": 0.6,
+    "damage": 3.5,
+    "posture": 26,
+    "knockback": 0.3,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.5,
+    "chakra": 12,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:gentle_fist/palm"
+  }
+}

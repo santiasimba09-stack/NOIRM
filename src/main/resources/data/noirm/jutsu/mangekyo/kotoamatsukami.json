@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "kotoamatsukami", "rank": "S",
+  "requires": { "dojutsu": "mangekyo", "stage": 1 },
+  "chakra_cost": 60, "cooldown": 3600,
+  "params": { "range": 10, "duration": 1200 }
+}

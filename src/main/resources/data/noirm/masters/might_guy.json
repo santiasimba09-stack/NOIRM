@@ -1,0 +1,21 @@
+{
+  "name": "master.noirm.might_guy",
+  "greeting": "master.noirm.might_guy.greeting",
+  "style": "noirm:strong_fist",
+  "look": "taijutsu_master:1",
+  "gear": { "chest": "noirm:flak_vest" },
+  "stats": { "speed": 60, "taijutsu": 70, "vitality": 50 },
+  "test": { "hits": 6, "posture_breaks": 1, "seconds": 90, "level": 0.25, "end_health": 0.2 },
+  "grants_style": true,
+  "lessons": [
+    { "id": "gate_of_opening", "jutsu": "noirm:taijutsu/gate_of_opening", "taijutsu": 15 },
+    { "id": "front_lotus", "jutsu": "noirm:taijutsu/front_lotus", "taijutsu": 20,
+      "after": ["gate_of_opening"], "mastery": { "noirm:taijutsu/gate_of_opening": 1 } },
+    { "id": "gate_of_limit", "jutsu": "noirm:taijutsu/gate_of_limit", "taijutsu": 30, "speed": 20,
+      "after": ["front_lotus"], "mastery": { "noirm:taijutsu/gate_of_opening": 2 } },
+    { "id": "morning_peacock", "jutsu": "noirm:taijutsu/morning_peacock", "taijutsu": 40,
+      "after": ["gate_of_limit"], "mastery": { "noirm:taijutsu/gate_of_limit": 1 } },
+    { "id": "daytime_tiger", "jutsu": "noirm:taijutsu/daytime_tiger", "taijutsu": 50, "speed": 30,
+      "after": ["morning_peacock"], "mastery": { "noirm:taijutsu/morning_peacock": 2 } }
+  ]
+}

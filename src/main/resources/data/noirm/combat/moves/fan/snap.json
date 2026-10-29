@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:fan_snap",
+  "timing": { "windup": 2, "active": 2, "recovery": 5, "cancel_after": 2 },
+  "hit": { "damage": 3, "posture": 10, "range": 2.6, "arc": 100, "knockback": 0.2, "lunge": 0.25, "hitstun": 6, "hitstop": 1, "shake": 0.2 },
+  "next": { "light": "noirm:fan/snap_back", "heavy": "noirm:fan/gust" }
+}

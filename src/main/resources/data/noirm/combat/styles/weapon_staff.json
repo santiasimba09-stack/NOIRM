@@ -1,0 +1,11 @@
+{
+  "openers": {
+    "light": "noirm:staff/sweep",
+    "heavy": "noirm:staff/thrust",
+    "launcher": "noirm:staff/rising_sweep",
+    "forward_heavy": "noirm:staff/lunging_thrust",
+    "back_heavy": "noirm:staff/spin"
+  },
+  "npc_weight": 0,
+  "playable": false
+}
