@@ -358,7 +358,24 @@ public final class CombatSystem {
      * {@code knockback} should apply, so light hits keep the target in range and combos connect.
      */
     public static boolean shouldCancelVanillaKnockback() {
-        return applyingHit;
+        return applyingHit || quietKnockback;
+    }
+
+    /** Set while {@link #withoutVanillaKnockback} runs. */
+    private static boolean quietKnockback;
+
+    /**
+     * Runs {@code hit} (a jutsu's damage) without vanilla's extra push, for techniques that hold
+     * their target in place between blows (64 Palms' waves). Guard, dodge and parry still apply.
+     */
+    public static void withoutVanillaKnockback(Runnable hit) {
+        boolean was = quietKnockback;
+        quietKnockback = true;
+        try {
+            hit.run();
+        } finally {
+            quietKnockback = was;
+        }
     }
 
     /** True while a NOIRM move's hit is being applied (rather than a vanilla attack). */

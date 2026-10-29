@@ -188,7 +188,13 @@ public final class HyugaTechniques {
         boolean last = palms.wave == WAVES.length;
         caster.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, target.getEyePosition());
         Vec3 direction = target.position().subtract(caster.position());
-        JutsuEffects.hit(caster, target, palms.damage, last ? palms.knockback : 0, palms.posture, 0, direction);
+        if (last) {
+            JutsuEffects.hit(caster, target, palms.damage, palms.knockback, palms.posture, 0, direction); // the last palm sends them flying
+        } else {
+            // The waves before it hold them in place: vanilla's push on every hit used to knock the
+            // target out of reach after a few waves, so the technique rarely finished.
+            CombatSystem.withoutVanillaKnockback(() -> JutsuEffects.hit(caster, target, palms.damage, 0, palms.posture, 0, direction));
+        }
         Byakugan.closePoints(caster, target, Math.max(1, count / 4), count * 0.4f);
         if (!last) {
             CombatSystem.stun(target, interval + 6);
