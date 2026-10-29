@@ -1,5 +1,7 @@
 package com.noirm.client;
 
+import com.noirm.client.ui.HudKit;
+import com.noirm.client.ui.Ui;
 import com.noirm.senjutsu.Meditation;
 import com.noirm.senjutsu.SagePackets;
 import net.minecraft.client.gui.Font;
@@ -24,7 +26,7 @@ public final class SageHud {
         return self != null && (self.flags() != 0 || self.petrification() > 0f);
     }
 
-    /** Over the bar ({@code width} pixels from {@code x}, 4 high at {@code barY}): the limit tick and the excess. */
+    /** Over the bar ({@code width} pixels from {@code x}, {@link HudKit#BAR_H} high at {@code barY}): the limit tick and the excess. */
     public static void decorateBar(GuiGraphics g, int x, int barY, int width, float energy) {
         SagePackets.Visuals self = ClientSage.self();
         if (self == null) {
@@ -33,10 +35,10 @@ public final class SageHud {
         float max = Meditation.NATURE_MAX;
         int limitX = x + Math.round(width * Math.min(1f, self.limit() / max));
         if (energy > self.limit()) {
-            g.fill(limitX, barY, x + Math.round(width * Math.min(1f, energy / max)), barY + 4, OVER);
+            g.fill(limitX, barY, x + Math.round(width * Math.min(1f, energy / max)), barY + HudKit.BAR_H, OVER);
         }
         if (self.limit() < max) {
-            g.fill(limitX, barY - 2, limitX + 1, barY + 6, LIMIT_TICK);
+            g.fill(limitX, barY - 2, limitX + 1, barY + HudKit.BAR_H + 2, LIMIT_TICK);
         }
     }
 
@@ -48,21 +50,21 @@ public final class SageHud {
         }
         if (self.statue()) {
             g.drawString(font, Component.translatable("hud.noirm.sage.statue"), x, y, OVER, true);
-            y += 10;
+            y += 11;
         } else if (self.petrification() > 0f) {
             g.drawString(font, Component.translatable("hud.noirm.sage.stone", Math.round(self.petrification())), x, y, STONE, true);
             int barY = y + font.lineHeight + 1;
-            g.fill(x - 1, barY - 1, x + 82, barY + 4, 0xA0000000);
             boolean blink = self.petrification() >= 75f && (tick / 6) % 2 == 0;
-            g.fill(x, barY, x + Math.round(81 * Math.min(1f, self.petrification() / 100f)), barY + 3, blink ? 0xFFE8E2D4 : STONE);
-            y += 16;
+            float stone = Math.min(1f, self.petrification() / 100f);
+            Ui.bar(g, x, barY, 92, HudKit.BAR_H, stone, stone, blink ? 0xFFE8E2D4 : STONE, HudKit.TRACK);
+            y += HudKit.BAR_ROW;
         }
         if (self.sage()) {
             g.drawString(font, Component.translatable("hud.noirm.sage.mode"), x, y, 0xFF8FBF5A, true);
-            y += 10;
+            y += 11;
         } else if ((self.flags() & SagePackets.EXHAUSTED) != 0) {
             g.drawString(font, Component.translatable("hud.noirm.sage.exhausted"), x, y, 0xFF9A968C, true);
-            y += 10;
+            y += 11;
         }
         return y;
     }

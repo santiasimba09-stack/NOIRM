@@ -2,6 +2,12 @@ package com.noirm.client;
 
 import com.noirm.clan.ClanTrait;
 import com.noirm.clan.Nature;
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.TabStrip;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.creator.CreatorData;
 import com.noirm.creator.CreatorPackets;
 import com.noirm.creator.PlayerLook;
@@ -26,8 +32,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * The character creation screen (blueprint §6), in the blueprint's "ash, iron and chakra" style:
- * soot and charcoal panels framed in cold iron, ash drifting up the screen.
+ * The character creation screen (blueprint §6), in the blueprint's "ash, iron and chakra" style,
+ * drawn with the NOIRM kit: flat charcoal panels with one iron hairline, text tabs with a sliding
+ * chakra underline, ash drifting up the screen; it fades in and out.
  *
  * <p>On the left, your character in 3D: drag to turn, scroll to zoom (each tab also eases the
  * camera toward what it edits). On the right, four tabs: Face, Body, Hair and Genetics. New
@@ -36,19 +43,19 @@ import java.util.function.Consumer;
  * Everything you change is a draft shown only on your screen until you confirm; the server
  * decides the genetics (clan rolls) and saves the look.
  */
-public class CreatorScreen extends Screen {
+public class CreatorScreen extends Screen implements NoirmStyled {
     // The blueprint's base palette ("Ash, iron and chakra") plus text and one chakra accent.
-    private static final int SOOT = 0xFF17191D;
-    private static final int CHARCOAL = 0xFF292D33;
-    private static final int IRON = 0xFF606A73;
-    private static final int ASH = 0xFF565B60;
-    private static final int INDIGO = 0xFF1F2430;
-    private static final int PAPER = 0xFFE6E2DA;
+    private static final int SOOT = 0xFF15171B;
+    private static final int CHARCOAL = 0xF01A1C21;
+    private static final int IRON = 0xFF3A4048;
+    private static final int RAISED = 0xFF22252B;
+    private static final int RAISED_HOVER = 0xFF2B2F36;
+    private static final int PAPER = Theme.TEXT;
     private static final int DIM = 0xFF9AA0A6;
     private static final int FAINT = 0xFF6A7077;
-    private static final int CHAKRA = 0xFF6FB3E8;
-    private static final int GOLD = 0xFFE8C060;
-    private static final int RED = 0xFFE05A5A;
+    private static final int CHAKRA = Theme.CHAKRA_LIGHT;
+    private static final int GOLD = Theme.GOLD;
+    private static final int RED = Theme.RED;
 
     private static final int ROW = 13;
     private static final int LABEL_W = 66;
@@ -93,6 +100,10 @@ public class CreatorScreen extends Screen {
     private final List<float[]> ash = new ArrayList<>();
     private long lastFrame;
     private final RandomSource random = RandomSource.create();
+    private final ScreenMotion motion = new ScreenMotion();
+    private final TabStrip tabStrip = new TabStrip();
+    private final HoverTracker hover = new HoverTracker();
+    private String[] tabLabels;
 
     // layout
     private int vx;
@@ -142,8 +153,8 @@ public class CreatorScreen extends Screen {
 
     @Override
     protected void init() {
-        int top = 24;
-        int bottom = height - 30;
+        int top = 32; // title, then the subtitle on its own line (no cut-off at 1280×720)
+        int bottom = height - 24;
         vw = Mth.clamp((int) (width * 0.38f), 120, 220);
         vx = 8;
         vy = top;
@@ -151,10 +162,22 @@ public class CreatorScreen extends Screen {
         px = vx + vw + 8;
         pw = width - px - 8;
         if (ash.isEmpty()) {
-            for (int i = 0; i < 70; i++) {
+            for (int i = 0; i < 60; i++) {
                 ash.add(newAsh(true));
             }
         }
+        tabLabels = new String[Tab.values().length];
+        for (Tab t : Tab.values()) {
+            tabLabels[t.ordinal()] = Component.translatable("creator.noirm.tab." + t.key).getString();
+        }
+        if (!motion.started()) {
+            motion.open();
+        }
+    }
+
+    @Override
+    public void tick() {
+        motion.tick();
     }
 
     // ================================================================ drawing
@@ -168,24 +191,28 @@ public class CreatorScreen extends Screen {
         lastFrame = now;
         zoom += (zoomTarget - zoom) * Math.min(1f, 0.15f * dt);
 
-        g.fillGradient(0, 0, width, height, SOOT, 0xFF0E0F12);
-        for (int ly = 0; ly < height; ly += 4) {
-            g.fill(0, ly, width, ly + 1, 0x08FFFFFF); // brushed metal
-        }
+        g.fill(0, 0, width, height, Theme.fade(SOOT, motion.visibility()));
+        motion.begin(g);
         drawAsh(g, dt, false);
-        drawHeader(g);
+        drawHeader(g, mouseX, mouseY);
         drawViewport(g, mouseX, mouseY);
         panel(g, px, vy, pw, vh);
         drawTabs(g, mouseX, mouseY);
         int cy = vy + 20;
+        motion.beginContent(g);
         switch (tab) {
             case FACE -> drawFace(g, cy, mouseX, mouseY);
             case BODY -> drawBody(g, cy, mouseX, mouseY);
             case HAIR -> drawHair(g, cy, mouseX, mouseY);
             case GENETICS -> drawGenetics(g, cy, mouseX, mouseY);
         }
+        motion.endContent(g);
         drawFooter(g, mouseX, mouseY);
         drawAsh(g, 0f, true); // a few embers in front
+        motion.end(g);
+        if (motion.closing()) {
+            return;
+        }
         for (int i = hits.size() - 1; i >= 0; i--) {
             Hit hit = hits.get(i);
             if (hit.tip() != null && !hit.tip().isEmpty() && hit.contains(mouseX, mouseY)) {
@@ -199,40 +226,41 @@ public class CreatorScreen extends Screen {
         }
     }
 
-    /** A cold-iron framed charcoal panel with rivets. */
+    /** A flat charcoal panel with one iron hairline. */
     private void panel(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, 0xFF0A0B0D);
-        g.fillGradient(x, y, x + w, y + h, CHARCOAL, INDIGO);
+        g.fill(x, y, x + w, y + h, CHARCOAL);
         g.renderOutline(x, y, w, h, IRON);
-        g.renderOutline(x + 2, y + 2, w - 4, h - 4, 0xFF33383F);
-        for (int[] c : new int[][]{{x + 3, y + 3}, {x + w - 5, y + 3}, {x + 3, y + h - 5}, {x + w - 5, y + h - 5}}) {
-            g.fill(c[0], c[1], c[0] + 2, c[1] + 2, ASH);
-            g.fill(c[0], c[1], c[0] + 1, c[1] + 1, 0xFF8A939B);
-        }
     }
 
-    private void drawHeader(GuiGraphics g) {
-        Component bold = title.copy().withStyle(s -> s.withBold(true));
-        g.drawString(font, bold, 10, 8, PAPER, false);
+    /**
+     * The title, and the subtitle on its own line below it (they used to share one line and the
+     * subtitle was cut at 1280×720). If the subtitle still doesn't fit, it's cut and shown whole
+     * as a tooltip.
+     */
+    private void drawHeader(GuiGraphics g, int mouseX, int mouseY) {
+        g.drawString(font, title, 10, 8, PAPER, false);
+        Ui.roundRect(g, 10 + font.width(title) + 5, 11, 3, 3, Theme.SEAL);
         String key = switch (state.modeEnum()) {
             case APPEARANCE -> "creator.noirm.subtitle.appearance";
             case FULL -> "creator.noirm.subtitle.full";
             default -> "creator.noirm.subtitle.first_join";
         };
         Component sub = Component.translatable(key);
-        int tw = font.width(bold) + 18;
-        g.drawString(font, cut(sub, width - tw - 14), tw + 6, 8, DIM, false);
-        g.fill(8, 19, width - 8, 20, 0x60606A73);
+        int max = width - 20;
+        g.drawString(font, cut(sub, max), 10, 19, DIM, false);
+        if (font.width(sub) > max) {
+            hits.add(new Hit(10, 19, max, 9, null, List.of(sub)));
+        }
     }
 
     // ---------------------------------------------------------------- the 3D view
 
     private void drawViewport(GuiGraphics g, int mouseX, int mouseY) {
-        panel(g, vx, vy, vw, vh);
+        g.fill(vx, vy, vx + vw, vy + vh, 0xC00C0D10);
         Player player = Minecraft.getInstance().player;
-        // floor glow
+        // floor glow: a faint chakra light under the feet
         int floorY = vy + vh - 14;
-        g.fillGradient(vx + 3, floorY - 30, vx + vw - 3, vy + vh - 3, 0x00000000, 0x406FB3E8);
+        g.fillGradient(vx + 1, floorY - 30, vx + vw - 1, vy + vh - 1, 0x00000000, 0x286FB3E8);
         if (player != null) {
             float height = draft.height();
             float base = vh * 0.41f; // not divided by height: taller characters look taller
@@ -241,12 +269,13 @@ public class CreatorScreen extends Screen {
             int cx = vx + vw / 2;
             int cyCenter = vy + vh / 2 + 6;
             int feetY = (int) (cyCenter + focus * scale * 0.9375f);
-            g.enableScissor(vx + 3, vy + 3, vx + vw - 3, vy + vh - 3);
+            g.enableScissor(vx + 1, vy + 1, vx + vw - 1, vy + vh - 1);
             renderCharacter(g, cx, feetY, (int) scale, player);
             g.disableScissor();
         }
         Component hint = Component.translatable("creator.noirm.hint.view");
-        g.drawCenteredString(font, cut(hint, vw - 8), vx + vw / 2, vy + vh - 11, FAINT);
+        Component shownHint = cut(hint, vw - 8);
+        g.drawString(font, shownHint, vx + vw / 2 - font.width(shownHint) / 2, vy + vh - 11, FAINT, false);
         String h = String.format("%.2f×", draft.height());
         g.drawString(font, h, vx + vw - 6 - font.width(h), vy + 6, DIM, false);
     }
@@ -289,26 +318,15 @@ public class CreatorScreen extends Screen {
 
     // ---------------------------------------------------------------- tabs
 
+    /** Text tabs with a chakra underline that slides to the active one. */
     private void drawTabs(GuiGraphics g, int mouseX, int mouseY) {
-        int x = px + 4;
-        int y = vy + 4;
-        int w = (pw - 8) / Tab.values().length;
-        for (Tab t : Tab.values()) {
-            boolean on = t == tab;
-            boolean hover = mouseX >= x && mouseX < x + w - 2 && mouseY >= y && mouseY < y + 13;
-            g.fill(x, y, x + w - 2, y + 13, on ? 0xFF3A414A : hover ? 0xFF30363E : 0xFF22262C);
-            if (on) {
-                g.fill(x, y + 12, x + w - 2, y + 13, CHAKRA);
-            }
-            Component label = Component.translatable("creator.noirm.tab." + t.key);
-            g.drawCenteredString(font, cut(label, w - 4), x + (w - 2) / 2, y + 3, on ? PAPER : DIM);
-            Tab target = t;
-            hits.add(new Hit(x, y, w - 2, 13, () -> selectTab(target), null));
-            x += w;
-        }
+        tabStrip.draw(g, font, px + 8, vy + 4, pw - 16, tabLabels, tab.ordinal(), new int[]{CHAKRA}, mouseX, mouseY);
     }
 
     private void selectTab(Tab t) {
+        if (t != tab) {
+            motion.tabChanged();
+        }
         tab = t;
         zoomTarget = t.zoom;
         activeTone = switch (t) {
@@ -340,7 +358,7 @@ public class CreatorScreen extends Screen {
         y = option(g, y, Slot.WRAPS, mx, my);
         y = heightRow(g, y, mx, my);
         fineTune(g, y + 4, mx, my);
-        y += 4 + 11 + 3 * 11 + 6; // below the fine-tune bars
+        y += 4 + 11 + 3 * 10 + 6; // below the fine-tune bars
         for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.underwear_note"), pw - 16)) {
             if (y + 9 > vy + vh - 4) {
                 break; // no room left on a small screen
@@ -363,21 +381,18 @@ public class CreatorScreen extends Screen {
         int x = px + 8;
         int right = px + pw - 8;
         boolean hover = mx >= x && mx < right && my >= y && my < y + ROW - 1;
-        if (hover) {
-            g.fill(x - 2, y, right + 2, y + ROW - 1, 0x18FFFFFF);
-        }
-        g.drawString(font, cut(Component.translatable("creator.noirm.slot." + slot.key()), LABEL_W - 4), x, y + 2, DIM, false);
+        float hv = this.hover.get(HoverTracker.key(1, slot.ordinal()), hover);
+        g.drawString(font, cut(Component.translatable("creator.noirm.slot." + slot.key()), LABEL_W - 4), x, y + 2,
+                Theme.mix(DIM, PAPER, hv * 0.6f), false);
         int bx = x + LABEL_W;
         int bw = right - bx;
-        g.fill(bx, y, bx + bw, y + ROW - 2, 0xFF1A1D22);
-        g.renderOutline(bx, y, bw, ROW - 2, 0xFF3A4048);
+        g.fill(bx, y, bx + bw, y + ROW - 2, Theme.mix(RAISED, RAISED_HOVER, hv));
         int value = draft.get(slot);
-        Component text = Component.translatable(slot.translationKey(value));
-        g.drawCenteredString(font, cut(text, bw - 24), bx + bw / 2, y + 2, PAPER);
-        boolean overLeft = hover && mx < bx + 10;
-        boolean overRight = hover && mx >= bx + bw - 10;
-        g.drawString(font, "<", bx + 3, y + 2, overLeft ? CHAKRA : FAINT, false);
-        g.drawString(font, ">", bx + bw - 8, y + 2, overRight ? CHAKRA : FAINT, false);
+        Component text = cut(Component.translatable(slot.translationKey(value)), bw - 24);
+        g.drawString(font, text, bx + bw / 2 - font.width(text) / 2, y + 2, PAPER, false);
+        boolean overLeft = hover && mx < bx + bw / 2;
+        g.drawString(font, "‹", bx + 4, y + 2, Theme.mix(FAINT, overLeft ? CHAKRA : DIM, hv), false);
+        g.drawString(font, "›", bx + bw - 7, y + 2, Theme.mix(FAINT, !overLeft ? CHAKRA : DIM, hv), false);
         String count = (value + 1) + "/" + slot.size();
         hits.add(new Hit(bx, y, bw / 2, ROW - 2, () -> change(slot, -1),
                 List.of(Component.translatable("creator.noirm.option_tip", count))));
@@ -412,7 +427,7 @@ public class CreatorScreen extends Screen {
                 inPalette = true;
                 g.renderOutline(cx - 1, y, size + 2, size + 2, PAPER);
             } else if (mx >= cx && mx < cx + size && my >= y + 1 && my < y + 1 + size) {
-                g.renderOutline(cx - 1, y, size + 2, size + 2, IRON);
+                g.renderOutline(cx - 1, y, size + 2, size + 2, DIM);
             }
             hits.add(new Hit(cx, y + 1, size, size, () -> {
                 draft.setColor(tone, c);
@@ -424,7 +439,7 @@ public class CreatorScreen extends Screen {
         int cx = sx + Math.min(palette.length, room - 1) * (size + 1) + 2;
         if (cx + size <= px + pw - 6) {
             g.fill(cx, y + 1, cx + size, y + 1 + size, 0xFF000000 | current);
-            g.renderOutline(cx - 1, y, size + 2, size + 2, inPalette ? 0xFF3A4048 : PAPER);
+            g.renderOutline(cx - 1, y, size + 2, size + 2, inPalette ? IRON : PAPER);
             hits.add(new Hit(cx, y + 1, size, size, () -> activeTone = tone,
                     List.of(Component.literal(String.format("#%06X", current)))));
         }
@@ -438,8 +453,8 @@ public class CreatorScreen extends Screen {
         }
         Tone tone = activeTone;
         int x = px + 8;
-        g.drawString(font, cut(Component.translatable("creator.noirm.fine_tune",
-                Component.translatable("creator.noirm.tone." + tone.key())), pw - 16), x, y, FAINT, false);
+        Ui.section(g, font, x, y, pw - 16, Component.translatable("creator.noirm.fine_tune",
+                Component.translatable("creator.noirm.tone." + tone.key())), FAINT);
         y += 11;
         float[] hsv = hsv(draft.color(tone));
         String[] names = {"creator.noirm.hue", "creator.noirm.saturation", "creator.noirm.brightness"};
@@ -454,11 +469,10 @@ public class CreatorScreen extends Screen {
                 c[i] = t;
                 int x0 = bx + bw * s / segments;
                 int x1 = bx + bw * (s + 1) / segments;
-                g.fill(x0, y + 1, x1, y + 7, 0xFF000000 | Mth.hsvToRgb(c[0], c[1], c[2]));
+                g.fill(x0, y + 2, x1, y + 6, 0xFF000000 | Mth.hsvToRgb(c[0], c[1], c[2]));
             }
-            g.renderOutline(bx - 1, y, bw + 2, 8, 0xFF3A4048);
             int knob = bx + (int) (hsv[i] * (bw - 1));
-            g.fill(knob - 1, y - 1, knob + 2, y + 9, PAPER);
+            g.fill(knob - 1, y, knob + 2, y + 8, PAPER);
             int channel = i;
             bars.add(new Bar("hsv" + i, bx, y, bw, 8, v -> {
                 float[] now = hsv(draft.color(tone));
@@ -466,7 +480,7 @@ public class CreatorScreen extends Screen {
                 draft.setColor(tone, Mth.hsvToRgb(now[0], now[1], Math.max(0.02f, now[2])));
                 changed();
             }));
-            y += 11;
+            y += 10;
         }
     }
 
@@ -476,12 +490,9 @@ public class CreatorScreen extends Screen {
         int bx = x + LABEL_W;
         int bw = px + pw - 8 - bx - 30;
         float t = (draft.height() - PlayerLook.MIN_HEIGHT) / (PlayerLook.MAX_HEIGHT - PlayerLook.MIN_HEIGHT);
-        g.fill(bx, y + 4, bx + bw, y + 6, 0xFF3A4048);
-        g.fill(bx, y + 4, bx + (int) (t * bw), y + 6, CHAKRA);
         int mid = bx + bw / 2;
         g.fill(mid, y + 2, mid + 1, y + 8, FAINT);
-        int knob = bx + (int) (t * (bw - 1));
-        g.fill(knob - 2, y + 1, knob + 3, y + 9, PAPER);
+        Ui.slider(g, bx, y + 1, bw, t, CHAKRA, hover.get(HoverTracker.key(2, 0), mx >= bx && mx < bx + bw && my >= y && my < y + ROW - 1));
         g.drawString(font, String.format("%.2f×", draft.height()), bx + bw + 5, y + 2, PAPER, false);
         bars.add(new Bar("height", bx, y + 1, bw, 8, v -> {
             draft.setHeight(Math.round(Mth.lerp(v, PlayerLook.MIN_HEIGHT, PlayerLook.MAX_HEIGHT) * 100f) / 100f);
@@ -533,8 +544,11 @@ public class CreatorScreen extends Screen {
     private void rollCard(GuiGraphics g, int x, int y, int w, CreatorPackets.RollView roll, boolean chosen, int index, int mx, int my) {
         int h = 31;
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
-        g.fill(x, y, x + w, y + h, chosen ? 0xFF2C3440 : hover ? 0xFF262B32 : 0xFF1C1F24);
-        g.renderOutline(x, y, w, h, chosen ? CHAKRA : 0xFF3A4048);
+        float hv = this.hover.get(HoverTracker.key(3, index), hover);
+        g.fill(x, y, x + w, y + h, chosen ? Theme.mix(RAISED, CHAKRA, 0.14f) : Theme.mix(RAISED, RAISED_HOVER, hv));
+        if (chosen) {
+            g.fill(x, y, x + 1, y + h, CHAKRA);
+        }
         MutableComponent name = Component.literal(roll.clanName()).withStyle(s -> s.withBold(true));
         g.drawString(font, cut(name, w - 60), x + 5, y + 3, roll.canon() ? RED : GOLD, false);
         if (chosen) {
@@ -613,8 +627,8 @@ public class CreatorScreen extends Screen {
     // ---------------------------------------------------------------- footer
 
     private void drawFooter(GuiGraphics g, int mx, int my) {
-        int y = height - 24;
-        button(g, vx, y, vw, 16, Component.translatable("creator.noirm.randomize"), true, mx, my, this::randomize, null);
+        int y = height - 20;
+        button(g, vx, y, vw, 15, Component.translatable("creator.noirm.randomize"), true, mx, my, this::randomize, null);
         boolean genetics = state.modeEnum().genetics();
         Component confirm = Component.translatable(state.modeEnum() == CreatorData.Mode.FIRST_JOIN ? "creator.noirm.confirm"
                 : "creator.noirm.confirm.save");
@@ -625,14 +639,26 @@ public class CreatorScreen extends Screen {
             int chosen = Mth.clamp(state.chosen(), 0, state.rolls().size() - 1);
             tip.add(Component.translatable("creator.noirm.confirm_tip", state.rolls().get(chosen).clanName()));
         }
-        button(g, cx, y, cw, 16, confirm, true, mx, my, this::confirm, tip, true);
+        button(g, cx, y, cw, 15, confirm, true, mx, my, this::confirm, tip, true);
         if (!held()) {
             Component cancel = Component.translatable("creator.noirm.cancel");
             int w = font.width(cancel) + 16;
-            button(g, cx - w - 6, y, w, 16, cancel, true, mx, my, this::cancel, null);
+            button(g, cx - w - 6, y, w, 15, cancel, true, mx, my, this::cancel, null);
         } else {
+            // The note wraps onto two lines beside the button instead of being cut.
             Component note = Component.translatable("creator.noirm.held");
-            g.drawString(font, cut(note, cx - px - 8), px, y + 4, FAINT, false);
+            int room = cx - px - 8;
+            List<FormattedCharSequence> lines = font.split(note, Math.max(20, room));
+            if (lines.size() == 1) {
+                g.drawString(font, lines.get(0), px, y + 4, FAINT, false);
+            } else {
+                g.drawString(font, lines.get(0), px, y - 2, FAINT, false);
+                if (lines.size() == 2) {
+                    g.drawString(font, lines.get(1), px, y + 7, FAINT, false);
+                } else {
+                    g.drawString(font, cut(note.copy(), room), px, y + 7, FAINT, false);
+                }
+            }
         }
     }
 
@@ -643,12 +669,8 @@ public class CreatorScreen extends Screen {
 
     private void button(GuiGraphics g, int x, int y, int w, int h, Component label, boolean enabled, int mx, int my, Runnable click,
                         List<Component> tip, boolean primary) {
-        boolean hover = enabled && mx >= x && mx < x + w && my >= y && my < y + h;
-        int top = primary ? (hover ? 0xFF3C6A90 : 0xFF2E5474) : (hover ? 0xFF3A414A : 0xFF2A2F36);
-        int bottom = primary ? 0xFF203A52 : 0xFF1C2026;
-        g.fillGradient(x, y, x + w, y + h, enabled ? top : 0xFF202328, enabled ? bottom : 0xFF1A1C20);
-        g.renderOutline(x, y, w, h, primary ? CHAKRA : IRON);
-        g.drawCenteredString(font, cut(label, w - 6), x + w / 2, y + (h - 8) / 2, enabled ? PAPER : FAINT);
+        boolean over = enabled && mx >= x && mx < x + w && my >= y && my < y + h;
+        Ui.button(g, font, x, y, w, h, label, hover.get(HoverTracker.key(4, x, y), over), enabled, CHAKRA, primary);
         hits.add(new Hit(x, y, w, h, enabled ? click : null, tip));
     }
 
@@ -703,7 +725,19 @@ public class CreatorScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
+            int t = tabStrip.at(mouseX, mouseY);
+            if (t >= 0) {
+                if (t != tab.ordinal()) {
+                    Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                            net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1.2f, 0.25f));
+                    selectTab(Tab.values()[t]);
+                }
+                return true;
+            }
             for (Bar bar : bars) {
                 if (bar.contains(mouseX, mouseY)) {
                     dragBar = bar.id();
@@ -834,7 +868,8 @@ public class CreatorScreen extends Screen {
             send(CreatorPackets.Action.Kind.CANCEL, 0);
             ClientCreator.closed();
         }
-        super.onClose();
+        closing = true; // the cancel (if any) was sent once; the fade then closes the screen
+        motion.close(super::onClose);
     }
 
     // ================================================================ helpers

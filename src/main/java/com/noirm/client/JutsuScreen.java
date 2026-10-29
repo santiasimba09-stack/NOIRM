@@ -2,6 +2,12 @@ package com.noirm.client;
 
 import com.noirm.clan.Nature;
 import com.noirm.clan.NatureSystem;
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.TabStrip;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.dojutsu.Sharingan;
 import com.noirm.jutsu.JutsuBook;
 import com.noirm.network.JutsuCatalogPacket;
@@ -31,19 +37,19 @@ import java.util.Map;
  *       into between them, Dust in the middle. Owned, available (you can unlock it now) or
  *       locked; click one to see what it needs and its jutsu, and unlock it.</li>
  * </ul>
- * All drawn with plain shapes and text (no custom art yet).
+ * Drawn with the NOIRM kit ({@code client.ui}): one flat panel, text tabs with a sliding underline,
+ * cards without frames, a hairline between the content and the side column; it fades in and out.
  */
-public class JutsuScreen extends Screen {
+public class JutsuScreen extends Screen implements NoirmStyled {
     private enum Tab { JUTSU, TREE }
 
-    private static final int BG = 0xF0101014;
-    private static final int PANEL = 0xE01A1A20;
-    private static final int BORDER = 0xFF6B5A2E;
-    private static final int GOLD = 0xFFE0C060;
-    private static final int DIM = 0xFF8A8A8A;
-    private static final int LOCKED = 0xFF4A4A4A;
-    private static final int OWNED_GREEN = 0xFF50D070;
-    private static final int SIDEBAR = 142;
+    private static final int GOLD = Theme.GOLD;
+    private static final int DIM = Theme.TEXT_DIM;
+    private static final int LOCKED = Theme.TEXT_FAINT;
+    private static final int OWNED_GREEN = Theme.GREEN;
+    private static final int NO = 0xFFC07070;
+    private static final int SIDEBAR = 146;
+    private static final int PAD = Theme.S5;
     private static final int FILTER_ALL = -2;
     private static final int FILTER_UNIVERSAL = -1;
 
@@ -54,6 +60,10 @@ public class JutsuScreen extends Screen {
     private String hovered;
     private Nature treeSelected;
     private Nature treeHovered;
+    private final ScreenMotion motion = new ScreenMotion();
+    private final TabStrip tabs = new TabStrip();
+    private final HoverTracker hover = new HoverTracker();
+    private String[] tabLabels;
 
     // layout (set in init)
     private int px;
@@ -76,10 +86,15 @@ public class JutsuScreen extends Screen {
 
     @Override
     protected void init() {
-        pw = Math.min(width - 12, 520);
-        ph = Math.min(height - 12, 300);
+        pw = Math.min(width - 16, 520);
+        ph = Math.min(height - 16, 300);
         px = (width - pw) / 2;
         py = (height - ph) / 2;
+        tabLabels = new String[]{Component.translatable("screen.noirm.jutsu.tab.jutsu").getString(),
+                Component.translatable("screen.noirm.jutsu.tab.tree").getString()};
+        if (!motion.started()) {
+            motion.open();
+        }
     }
 
     @Override
@@ -87,108 +102,125 @@ public class JutsuScreen extends Screen {
         return false;
     }
 
+    @Override
+    public void tick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
+    }
+
     // ================================================================ drawing
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
         hits.clear();
         hovered = null;
         treeHovered = null;
-        box(g, px, py, pw, ph, BG, BORDER);
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        Ui.panel(g, px, py, pw, ph);
         PowerPackets.SyncPowers powers = ClientPowers.get();
-        drawTabs(g, mouseX, mouseY, powers);
+        drawHeader(g, mouseX, mouseY, powers);
         if (powers == null) {
-            g.drawCenteredString(font, Component.translatable("screen.noirm.jutsu.loading"), px + pw / 2, py + ph / 2, DIM);
+            Ui.textCentered(g, font, Component.translatable("screen.noirm.jutsu.loading").getString(), px + pw / 2, py + ph / 2, DIM);
+            motion.end(g);
             return;
         }
-        int contentY = py + 20;
+        int contentY = py + PAD + Theme.ROW + Theme.S4;
+        motion.beginContent(g);
         if (tab == Tab.JUTSU) {
             drawJutsuTab(g, mouseX, mouseY, powers, contentY);
         } else {
             drawTreeTab(g, mouseX, mouseY, powers, contentY, partialTick);
         }
+        motion.endContent(g);
+        motion.end(g);
     }
 
-    private void drawTabs(GuiGraphics g, int mouseX, int mouseY, PowerPackets.SyncPowers powers) {
-        int x = px + 4;
-        for (Tab t : Tab.values()) {
-            Component label = Component.translatable("screen.noirm.jutsu.tab." + t.name().toLowerCase(Locale.ROOT));
-            int w = font.width(label) + 12;
-            boolean active = tab == t;
-            box(g, x, py + 4, w, 13, active ? 0xFF2A2516 : PANEL, active ? GOLD : BORDER);
-            g.drawCenteredString(font, label, x + w / 2, py + 7, active ? GOLD : DIM);
-            hits.add(new Hit(x, py + 4, w, 13, () -> {
-                tab = t;
-                scroll = 0;
-            }, null));
-            x += w + 4;
-        }
+    /** The tabs (the screen's title), the clan on the right, one rule under them. */
+    private void drawHeader(GuiGraphics g, int mouseX, int mouseY, PowerPackets.SyncPowers powers) {
+        int x = px + PAD;
+        int w = pw - PAD * 2;
+        int right = x + w;
         if (powers != null) {
             Component clan = Component.translatable("hud.noirm.clan", powers.clanName());
-            g.drawString(font, clan, px + pw - font.width(clan) - 6, py + 7, powers.canonClan() ? 0xFFE05050 : 0xFFE0B050, false);
+            int cw = Math.min(font.width(clan), w / 3);
+            int color = powers.canonClan() ? Theme.RED : GOLD;
+            Ui.roundRect(g, right - cw - 7, py + PAD + 4, 4, 4, color);
+            g.drawString(font, Ui.fit(font, clan, cw), right - cw, py + PAD + 3, Theme.TEXT_DIM, false);
+            right -= cw + 12;
         }
+        tabs.draw(g, font, x, py + PAD, right - x, tabLabels, tab.ordinal(), new int[]{Theme.SEAL}, mouseX, mouseY);
     }
 
     // ---------------------------------------------------------------- the Jutsu tab
 
     private void drawJutsuTab(GuiGraphics g, int mouseX, int mouseY, PowerPackets.SyncPowers powers, int top) {
         Map<Nature, Float> owned = ownedNatures(powers);
+        int cardsX = px + PAD;
+        int cardsW = pw - SIDEBAR - PAD * 3;
         // Nature filters: All, Universal, then each nature you own or have a jutsu of.
-        int fx = px + 4;
-        fx = filterBox(g, fx, top, "全", FILTER_ALL, 0xFFDDDDDD, "screen.noirm.jutsu.filter.all", mouseX, mouseY);
-        fx = filterBox(g, fx, top, "忍", FILTER_UNIVERSAL, 0xFFBBBBBB, "screen.noirm.jutsu.filter.universal", mouseX, mouseY);
+        int fx = cardsX;
+        fx = filterBox(g, fx, top, "全", FILTER_ALL, Theme.TEXT, "screen.noirm.jutsu.filter.all", mouseX, mouseY);
+        fx = filterBox(g, fx, top, "忍", FILTER_UNIVERSAL, Theme.TEXT_DIM, "screen.noirm.jutsu.filter.universal", mouseX, mouseY);
         for (Nature nature : Nature.values()) {
             boolean show = owned.containsKey(nature) || powers.learned().stream().anyMatch(e -> e.nature() == nature.ordinal());
-            if (show) {
+            if (show && fx + 16 <= cardsX + cardsW) {
                 fx = filterBox(g, fx, top, nature.kanji(), nature.ordinal(), 0xFF000000 | nature.color(), nature.translationKey(), mouseX, mouseY);
             }
         }
 
-        int cardsX = px + 4;
-        int cardsY = top + 18;
-        int cardsW = pw - SIDEBAR - 12;
-        int cardsH = py + ph - 4 - cardsY;
-        box(g, cardsX, cardsY, cardsW, cardsH, PANEL, BORDER);
+        int cardsY = top + 14 + Theme.S4;
+        int cardsH = py + ph - PAD - cardsY;
         List<Card> cards = cards(powers, owned);
-        int cols = Math.max(1, (cardsW - 4) / 124);
-        int cardW = (cardsW - 4) / cols - 4;
+        int gap = Theme.S2;
+        int cols = Math.max(1, (cardsW + gap) / 112);
+        int cardW = (cardsW - gap * (cols - 1) - 4) / cols;
         int cardH = 26;
         int rows = (cards.size() + cols - 1) / cols;
-        int visibleRows = Math.max(1, (cardsH - 4) / (cardH + 4));
+        int visibleRows = Math.max(1, (cardsH + gap) / (cardH + gap));
         scroll = Mth.clamp(scroll, 0, Math.max(0, rows - visibleRows));
-        g.enableScissor(cardsX + 1, cardsY + 1, cardsX + cardsW - 1, cardsY + cardsH - 1);
+        g.enableScissor(cardsX, cardsY, cardsX + cardsW, cardsY + cardsH);
         for (int i = 0; i < cards.size(); i++) {
             int row = i / cols - scroll;
             if (row < 0 || row >= visibleRows) {
                 continue;
             }
-            int x = cardsX + 4 + (i % cols) * (cardW + 4);
-            int y = cardsY + 4 + row * (cardH + 4);
+            int x = cardsX + (i % cols) * (cardW + gap);
+            int y = cardsY + row * (cardH + gap);
             drawCard(g, cards.get(i), x, y, cardW, cardH, mouseX, mouseY);
         }
         g.disableScissor();
         if (cards.isEmpty()) {
-            g.drawCenteredString(font, Component.translatable("screen.noirm.jutsu.none"), cardsX + cardsW / 2, cardsY + cardsH / 2, DIM);
+            Ui.textCentered(g, font, Component.translatable("screen.noirm.jutsu.none").getString(), cardsX + cardsW / 2, cardsY + cardsH / 2 - 4, Theme.TEXT_FAINT);
         }
-        if (rows > visibleRows) {
-            Component more = Component.literal((scroll + 1) + "/" + (rows - visibleRows + 1) + " ⇵");
-            g.drawString(font, more, cardsX + cardsW - font.width(more) - 4, cardsY + cardsH - 10, DIM, false);
-        }
+        Ui.scrollbar(g, cardsX + cardsW - 1, cardsY, visibleRows * (cardH + gap) - gap, scroll, visibleRows, rows, Theme.IRON);
 
-        drawLoadout(g, powers, mouseX, mouseY, px + pw - SIDEBAR - 4, top);
+        drawLoadout(g, powers, mouseX, mouseY, px + pw - SIDEBAR - PAD, top);
     }
 
     private int filterBox(GuiGraphics g, int x, int y, String kanji, int value, int color, String tooltipKey, int mouseX, int mouseY) {
         boolean active = filter == value;
-        boolean hover = mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 14;
-        box(g, x, y, 16, 14, active ? 0xFF2A2516 : PANEL, active ? GOLD : hover ? 0xFF9A8A5E : BORDER);
-        g.drawCenteredString(font, kanji, x + 8, y + 3, color);
+        float hv = hover.get(HoverTracker.key(1, value), mouseX, mouseY, x, y, 16, 14);
+        if (active || hv > 0.01f) {
+            g.fill(x, y, x + 16, y + 14, active ? Theme.mix(Theme.RAISED, color, 0.14f) : Theme.fade(Theme.RAISED_HOVER, hv));
+        }
+        if (active) {
+            g.fill(x + 2, y + 13, x + 14, y + 14, color);
+        }
+        int textColor = active ? color : Theme.mix(Theme.darken(color, 0.55f), color, hv);
+        Ui.textCentered(g, font, kanji, x + 8, y + 3, textColor);
         hits.add(new Hit(x, y, 16, 14, () -> {
-            filter = value;
-            scroll = 0;
+            if (filter != value) {
+                filter = value;
+                scroll = 0;
+                motion.tabChanged();
+            }
         }, null));
-        if (hover) {
+        if (mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 14) {
             setTooltipForNextRenderPass(Component.translatable(tooltipKey));
         }
         return x + 18;
@@ -229,14 +261,21 @@ public class JutsuScreen extends Screen {
     private void drawCard(GuiGraphics g, Card card, int x, int y, int w, int h, int mouseX, int mouseY) {
         JutsuCatalogPacket.Entry info = card.info();
         boolean known = card.known() != null;
-        boolean hover = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
         boolean chosen = info.id().equals(selected);
+        float hv = hover.get(HoverTracker.key(2, info.id().hashCode()), mouseX, mouseY, x, y, w, h);
         int natureColor = info.nature() >= 0 ? 0xFF000000 | Nature.values()[info.nature()].color() : 0xFFCCCCCC;
-        box(g, x, y, w, h, known ? 0xFF22222A : 0xFF18181C, chosen ? GOLD : hover ? 0xFF9A8A5E : known ? 0xFF3A3A44 : 0xFF2A2A2E);
-        g.fill(x + 1, y + 1, x + 3, y + h - 1, known ? natureColor : LOCKED);
+        if (known) {
+            Ui.row(g, x, y, w, h, hv, chosen, chosen ? GOLD : natureColor);
+            if (!chosen) {
+                g.fill(x, y + 3, x + 1, y + h - 3, Theme.mix(Theme.darken(natureColor, 0.7f), natureColor, hv));
+            }
+        } else {
+            g.fill(x, y, x + w, y + h, Theme.mix(Theme.fade(Theme.WELL, 0.6f), Theme.WELL, hv));
+        }
         String name = Component.translatable(Sharingan.jutsuKey(info.id())).getString();
-        g.drawString(font, font.plainSubstrByWidth(name, w - 24), x + 6, y + 4, known ? natureColor : 0xFF707070, false);
-        g.drawString(font, info.rank(), x + w - font.width(info.rank()) - 4, y + 4, known ? GOLD : 0xFF5A5A5A, false);
+        String rank = info.rank();
+        g.drawString(font, Ui.fit(font, name, w - 14 - font.width(rank)), x + 6, y + 4, known ? Theme.mix(natureColor, Theme.TEXT, 0.25f) : LOCKED, false);
+        Ui.textRight(g, font, rank, x + w - 5, y + 4, known ? Theme.darken(GOLD, 0.85f) : Theme.darken(LOCKED, 0.8f));
         String line;
         if (known) {
             line = castSymbol(info.cast()) + " " + Math.round(info.chakraCost()) + "✦  " + stars(card.known().mastery())
@@ -244,8 +283,8 @@ public class JutsuScreen extends Screen {
         } else {
             line = "🔒 " + unlockText(info);
         }
-        g.drawString(font, font.plainSubstrByWidth(line, w - 10), x + 6, y + 15, known ? 0xFFB0B0B0 : 0xFF6A6A6A, false);
-        if (hover) {
+        g.drawString(font, Ui.fit(font, line, w - 11), x + 6, y + 15, known ? DIM : Theme.darken(LOCKED, 0.9f), false);
+        if (Ui.in(mouseX, mouseY, x, y, w, h)) {
             hovered = info.id().toString();
         }
         if (known) {
@@ -254,24 +293,29 @@ public class JutsuScreen extends Screen {
     }
 
     private void drawLoadout(GuiGraphics g, PowerPackets.SyncPowers powers, int mouseX, int mouseY, int x, int top) {
-        box(g, x, top, SIDEBAR, py + ph - 4 - top, PANEL, BORDER);
-        g.drawString(font, Component.translatable("screen.noirm.jutsu.loadout"), x + 5, top + 4, GOLD, false);
-        int y = top + 15;
+        int bottom = py + ph - PAD;
+        Ui.vline(g, x - PAD / 2 - 1, top, bottom - top);
+        int y = Ui.section(g, font, x, top + 3, SIDEBAR, Component.translatable("screen.noirm.jutsu.loadout"), Theme.TEXT_DIM);
         for (int slot = 0; slot < JutsuBook.SLOTS; slot++) {
             int index = slot;
             String id = powers.loadout().get(slot);
             PowerPackets.JutsuEntry entry = ClientPowers.entry(id);
-            boolean hover = mouseX >= x + 4 && mouseX < x + SIDEBAR - 4 && mouseY >= y && mouseY < y + 15;
-            box(g, x + 4, y, SIDEBAR - 8, 15, 0xFF202026, selected != null && hover ? GOLD : hover ? 0xFF9A8A5E : 0xFF3A3A44);
-            g.drawString(font, String.valueOf(slot + 1), x + 8, y + 4, DIM, false);
+            boolean over = Ui.in(mouseX, mouseY, x, y, SIDEBAR, 15);
+            float hv = hover.get(HoverTracker.key(3, slot), over);
+            Ui.row(g, x, y, SIDEBAR, 15, hv, false, selected != null ? GOLD : Theme.IRON);
+            if (selected != null) {
+                // Waiting for a slot: the slots breathe gold.
+                g.fill(x, y + 14, x + SIDEBAR, y + 15, Theme.fade(GOLD, 0.25f + 0.5f * hv));
+            }
+            g.drawString(font, String.valueOf(slot + 1), x + 5, y + 4, Theme.TEXT_FAINT, false);
             Component text = entry == null ? Component.translatable("hud.noirm.jutsu.empty")
                     : Component.translatable(Sharingan.jutsuKey(entry.id()));
-            int color = entry == null ? 0xFF5A5A5A : entry.nature() >= 0 ? 0xFF000000 | Nature.values()[entry.nature()].color() : 0xFFDDDDDD;
-            g.drawString(font, font.plainSubstrByWidth(text.getString(), SIDEBAR - 26), x + 18, y + 4, color, false);
-            if (hover && entry != null) {
+            int color = entry == null ? Theme.TEXT_FAINT : entry.nature() >= 0 ? 0xFF000000 | Nature.values()[entry.nature()].color() : Theme.TEXT;
+            g.drawString(font, Ui.fit(font, text.getString(), SIDEBAR - 22), x + 15, y + 4, color, false);
+            if (over && entry != null) {
                 hovered = entry.id().toString();
             }
-            hits.add(new Hit(x + 4, y, SIDEBAR - 8, 15,
+            hits.add(new Hit(x, y, SIDEBAR, 15,
                     () -> {
                         if (selected != null) {
                             NoirmNetwork.sendToServer(new PowerPackets.EquipJutsu(index, selected.toString()));
@@ -279,18 +323,20 @@ public class JutsuScreen extends Screen {
                         }
                     },
                     () -> NoirmNetwork.sendToServer(new PowerPackets.EquipJutsu(index, ""))));
-            y += 17;
+            y += 16;
         }
         Component hint = selected == null ? Component.translatable("screen.noirm.jutsu.hint")
                 : Component.translatable("screen.noirm.jutsu.selected", Component.translatable(Sharingan.jutsuKey(selected)));
-        y = wrap(g, hint, x + 5, y + 1, SIDEBAR - 10, selected == null ? DIM : 0xFF60D0FF) + 4;
-        g.fill(x + 4, y, x + SIDEBAR - 4, y + 1, BORDER);
+        y = wrap(g, hint, x, y + 3, SIDEBAR, selected == null ? Theme.TEXT_FAINT : Theme.CHAKRA_LIGHT) + Theme.S3;
+        Ui.hairline(g, x, y, SIDEBAR);
         String detailsId = hovered != null ? hovered : selected != null ? selected.toString() : null;
+        g.enableScissor(x, y + 1, x + SIDEBAR, bottom);
         if (detailsId != null) {
-            drawDetails(g, ClientJutsuCatalog.get(detailsId), ClientPowers.entry(detailsId), x + 5, y + 5, SIDEBAR - 10);
+            drawDetails(g, ClientJutsuCatalog.get(detailsId), ClientPowers.entry(detailsId), x, y + Theme.S3, SIDEBAR);
         } else {
-            drawEyes(g, powers, x + 5, y + 5, SIDEBAR - 10);
+            drawEyes(g, powers, x, y + Theme.S3, SIDEBAR);
         }
+        g.disableScissor();
     }
 
     /** The Sharingan's stage and growth (or, still dormant, how close it feels to waking). */
@@ -304,9 +350,8 @@ public class JutsuScreen extends Screen {
             if (progress < 0) {
                 y = wrap(g, Component.translatable("screen.noirm.eyes.mature"), x, y, w, GOLD) + 2;
             } else {
-                y = wrap(g, Component.translatable("screen.noirm.eyes.progress", powers.sharinganXp(), powers.sharinganNextXp()), x, y, w, 0xFFC8C8C8) + 1;
-                g.fill(x, y, x + w, y + 4, 0xFF000000);
-                g.fill(x + 1, y + 1, x + 1 + Math.round((w - 2) * progress), y + 3, 0xFFD02020);
+                y = wrap(g, Component.translatable("screen.noirm.eyes.progress", powers.sharinganXp(), powers.sharinganNextXp()), x, y, w, Theme.TEXT) + 1;
+                Ui.bar(g, x, y + 1, w, 3, progress, 0xFFD02020);
                 y += 7;
                 y = wrap(g, Component.translatable("screen.noirm.eyes.grows"), x, y, w, DIM) + 2;
                 if (powers.sharinganDrillXp() >= Sharingan.DRILL_XP_CAP) {
@@ -316,7 +361,7 @@ public class JutsuScreen extends Screen {
         } else if (powers.sharinganPressure() >= 0) {
             y = wrap(g, Component.translatable("screen.noirm.eyes.dormant"), x, y, w, 0xFF904040) + 1;
             int tier = com.noirm.dojutsu.SharinganAwakening.hintTier(powers.sharinganPressure());
-            y = wrap(g, Component.translatable("screen.noirm.eyes.pressure." + tier), x, y, w, tier >= 3 ? red : 0xFFC8C8C8) + 2;
+            y = wrap(g, Component.translatable("screen.noirm.eyes.pressure." + tier), x, y, w, tier >= 3 ? red : Theme.TEXT) + 2;
             wrap(g, Component.translatable("screen.noirm.eyes.routes"), x, y, w, DIM);
         }
     }
@@ -325,19 +370,19 @@ public class JutsuScreen extends Screen {
         if (info == null) {
             return;
         }
-        int natureColor = info.nature() >= 0 ? 0xFF000000 | Nature.values()[info.nature()].color() : 0xFFDDDDDD;
+        int natureColor = info.nature() >= 0 ? 0xFF000000 | Nature.values()[info.nature()].color() : Theme.TEXT;
         y = wrap(g, Component.translatable(Sharingan.jutsuKey(info.id())), x, y, w, natureColor) + 1;
         Component nature = info.nature() >= 0 ? Component.translatable(Nature.values()[info.nature()].translationKey())
                 : Component.translatable("screen.noirm.jutsu.filter.universal");
-        y = wrap(g, Component.translatable("screen.noirm.jutsu.details.kind", info.rank(), nature), x, y, w, DIM) + 1;
+        y = wrap(g, Component.translatable("screen.noirm.jutsu.details.kind", info.rank(), nature), x, y, w, DIM) + 3;
         y = wrap(g, Component.translatable("screen.noirm.jutsu.cast." + castName(info.cast()))
-                .append(" · ").append(Component.translatable("screen.noirm.jutsu.behavior." + info.behavior())), x, y, w, 0xFFC8C8C8) + 1;
+                .append(" · ").append(Component.translatable("screen.noirm.jutsu.behavior." + info.behavior())), x, y, w, Theme.TEXT) + 1;
         y = wrap(g, Component.translatable("screen.noirm.jutsu.details.cost", Math.round(info.chakraCost()),
-                String.format(Locale.ROOT, "%.1f", info.cooldown() / 20f)), x, y, w, 0xFF7FA8FF) + 1;
+                String.format(Locale.ROOT, "%.1f", info.cooldown() / 20f)), x, y, w, Theme.CHAKRA_LIGHT) + 3;
         if (known != null) {
             y = wrap(g, Component.translatable("screen.noirm.jutsu.details.mastery", stars(known.mastery())), x, y, w, GOLD) + 1;
         } else {
-            y = wrap(g, Component.literal("🔒 " + unlockText(info)), x, y, w, 0xFFB07070) + 1;
+            y = wrap(g, Component.literal("🔒 " + unlockText(info)), x, y, w, NO) + 1;
             Component scroll = ClientNatureTraining.scrollHint(info); // other routes: jutsu scrolls
             if (scroll != null) {
                 y = wrap(g, scroll, x, y, w, 0xFFC8A870) + 1;
@@ -357,11 +402,10 @@ public class JutsuScreen extends Screen {
     private void drawTreeTab(GuiGraphics g, int mouseX, int mouseY, PowerPackets.SyncPowers powers, int top, float partialTick) {
         Map<Nature, Float> owned = ownedNatures(powers);
         Map<Nature, Integer> best = bestMastery(powers);
-        int cx0 = px + 4;
-        int cw = pw - SIDEBAR - 12;
-        int ch = py + ph - 4 - top;
-        box(g, cx0, top, cw, ch, PANEL, BORDER);
-        g.drawString(font, Component.translatable("screen.noirm.tree.title"), cx0 + 5, top + 4, GOLD, false);
+        int cx0 = px + PAD;
+        int cw = pw - SIDEBAR - PAD * 3;
+        int bottom = py + ph - PAD;
+        int ch = bottom - top;
 
         int ownedCount = 0;
         int available = 0;
@@ -375,19 +419,23 @@ public class JutsuScreen extends Screen {
                 available++;
             }
         }
-        Component counter = Component.literal(ownedCount + " / " + Nature.values().length);
-        g.drawString(font, counter, cx0 + cw - font.width(counter) - 5, top + 4, 0xFFCCCCCC, false);
+        String counter = ownedCount + " / " + Nature.values().length;
+        int headRight = cx0 + cw - font.width(counter);
+        g.drawString(font, counter, headRight, top + 3, Theme.TEXT_DIM, false);
         if (available > 0) {
-            Component badge = Component.translatable("screen.noirm.tree.available", available);
-            int bx = cx0 + cw - font.width(counter) - font.width(badge) - 16;
-            box(g, bx - 3, top + 2, font.width(badge) + 6, 11, 0xFF2A2516, GOLD);
-            g.drawString(font, badge, bx, top + 4, GOLD, false);
+            String badge = Component.translatable("screen.noirm.tree.available", available).getString();
+            int bw = font.width(badge) + 6;
+            headRight -= bw + Theme.S3;
+            Ui.chip(g, font, headRight, top + 1, badge, GOLD);
         }
+        Ui.section(g, font, cx0, top + 3, headRight - cx0 - Theme.S3, Component.translatable("screen.noirm.tree.title"), Theme.TEXT_DIM);
 
         // Layout: basics on a pentagon, 2-part natures between their parts, Dust in the middle.
+        int treeTop = top + 14;
+        int treeH = bottom - treeTop;
         float centerX = cx0 + cw / 2f;
-        float centerY = top + 8 + (ch - 8) / 2f;
-        float radius = Math.min(cw, ch - 16) * 0.40f;
+        float centerY = treeTop + (treeH - 10) / 2f;
+        float radius = Math.min(cw, treeH - 24) * 0.40f;
         Map<Nature, float[]> pos = new EnumMap<>(Nature.class);
         Nature[] ring = {Nature.FIRE, Nature.WIND, Nature.LIGHTNING, Nature.EARTH, Nature.WATER};
         for (int i = 0; i < ring.length; i++) {
@@ -395,9 +443,9 @@ public class JutsuScreen extends Screen {
             pos.put(ring[i], new float[]{centerX + (float) Math.cos(angle) * radius, centerY + (float) Math.sin(angle) * radius});
         }
         // Yin and Yang aren't elements: they sit in the bottom corners, Yin–Yang between them.
-        pos.put(Nature.YIN, new float[]{cx0 + 18, top + ch - 18});
-        pos.put(Nature.YANG, new float[]{cx0 + cw - 18, top + ch - 18});
-        pos.put(Nature.YIN_YANG, new float[]{centerX, top + ch - 18});
+        pos.put(Nature.YIN, new float[]{cx0 + 16, bottom - 14});
+        pos.put(Nature.YANG, new float[]{cx0 + cw - 16, bottom - 14});
+        pos.put(Nature.YIN_YANG, new float[]{centerX, bottom - 14});
         for (Nature nature : Nature.combined()) {
             if (!nature.isElemental()) {
                 continue;
@@ -429,7 +477,7 @@ public class JutsuScreen extends Screen {
                 float[] from = pos.get(part);
                 boolean lit = status.get(nature) == NatureSystem.Status.OWNED;
                 boolean ready = status.get(nature) == NatureSystem.Status.AVAILABLE;
-                dotted(g, from[0], from[1], to[0], to[1], lit ? 0xFF000000 | nature.color() : ready ? 0xFF8A7A3E : 0xFF3A3A40);
+                dotted(g, from[0], from[1], to[0], to[1], lit ? Theme.darken(0xFF000000 | nature.color(), 0.8f) : ready ? 0xFF7A6C38 : 0xFF2E2B34);
             }
         }
         float pulse = 0.5f + 0.5f * Mth.sin((minecraft.player == null ? 0 : minecraft.player.tickCount + partialTick) * 0.25f);
@@ -437,59 +485,65 @@ public class JutsuScreen extends Screen {
             float[] p = pos.get(nature);
             int r = nature.isBasic() ? 12 : nature.tier() == 3 ? 11 : 9;
             NatureSystem.Status s = status.get(nature);
+            int color = 0xFF000000 | nature.color();
             int border = switch (s) {
-                case OWNED -> 0xFF000000 | nature.color();
-                case AVAILABLE -> lerpColor(0xFF8A7A3E, GOLD, pulse);
-                case LOCKED -> 0xFF505058;
+                case OWNED -> color;
+                case AVAILABLE -> Theme.mix(0xFF8A7A3E, GOLD, pulse);
+                case LOCKED -> 0xFF3A3640;
             };
-            boolean hover = Math.abs(mouseX - p[0]) <= r && Math.abs(mouseY - p[1]) <= r;
+            boolean over = Math.abs(mouseX - p[0]) <= r && Math.abs(mouseY - p[1]) <= r;
+            float hv = hover.get(HoverTracker.key(4, nature.ordinal()), over);
             boolean chosen = nature == treeSelected;
-            hexagon(g, Math.round(p[0]), Math.round(p[1]), r + (chosen ? 2 : 0), border);
-            hexagon(g, Math.round(p[0]), Math.round(p[1]), r - 2 + (chosen ? 2 : 0), s == NatureSystem.Status.OWNED ? 0xFF2A2A30 : 0xFF16161A);
-            int textColor = s == NatureSystem.Status.LOCKED ? 0xFF6A6A70 : 0xFF000000 | nature.color();
-            g.drawCenteredString(font, nature.kanji(), Math.round(p[0]), Math.round(p[1]) - 4, textColor);
+            int ix = Math.round(p[0]);
+            int iy = Math.round(p[1]);
+            int grow = chosen ? 2 : Math.round(hv);
+            hexagon(g, ix, iy, r + grow, chosen ? Theme.TEXT : Theme.mix(border, Theme.TEXT, hv * 0.35f));
+            hexagon(g, ix, iy, r - 1 + grow, s == NatureSystem.Status.OWNED ? Theme.mix(Theme.RAISED, color, 0.18f) : Theme.WELL);
+            int textColor = s == NatureSystem.Status.LOCKED ? Theme.TEXT_FAINT : color;
+            Ui.textCentered(g, font, nature.kanji(), ix, iy - 4, textColor);
             if (s == NatureSystem.Status.AVAILABLE) {
-                g.drawCenteredString(font, "+", Math.round(p[0]), Math.round(p[1]) - r - 9, GOLD);
+                Ui.textCentered(g, font, "+", ix, iy - r - 9, GOLD);
             } else if (s == NatureSystem.Status.LOCKED && nature.isBasic()) {
                 // A drill under way: its percent; a hidden affinity (shown by a chakra paper): a star.
                 int pct = Math.round(ClientNatureTraining.share(nature) * 100);
                 String mark = (ClientNatureTraining.isHidden(nature) ? "✧" : "") + (pct > 0 ? pct + "%" : "");
                 if (!mark.isEmpty()) {
-                    g.drawCenteredString(font, mark, Math.round(p[0]), Math.round(p[1]) + r + 2, 0xFF000000 | nature.color());
+                    Ui.textCentered(g, font, mark, ix, iy + r + 2, color);
                 }
             }
-            if (hover) {
+            if (over) {
                 treeHovered = nature;
             }
-            hits.add(new Hit(Math.round(p[0]) - r, Math.round(p[1]) - r, r * 2, r * 2, () -> treeSelected = nature, null));
+            hits.add(new Hit(ix - r, iy - r, r * 2, r * 2, () -> treeSelected = nature, null));
         }
 
         // Right: details of the nature under the mouse (or the one clicked).
-        int sx = px + pw - SIDEBAR - 4;
-        box(g, sx, top, SIDEBAR, ch, PANEL, BORDER);
+        int sx = px + pw - SIDEBAR - PAD;
+        Ui.vline(g, sx - PAD / 2 - 1, top, ch);
         Nature shown = treeHovered != null ? treeHovered : treeSelected;
-        int y = top + 5;
+        int y = top + 3;
         if (shown == null) {
-            wrap(g, Component.translatable("screen.noirm.tree.hint"), sx + 5, y, SIDEBAR - 10, DIM);
+            wrap(g, Component.translatable("screen.noirm.tree.hint"), sx, y, SIDEBAR, DIM);
         } else {
-            g.enableScissor(sx + 1, top + 1, sx + SIDEBAR - 1, top + ch - 14); // long jutsu lists stop above the legend
-            y = drawNatureDetails(g, shown, status.get(shown), owned, best, sx + 5, y, SIDEBAR - 10);
+            g.enableScissor(sx, top, sx + SIDEBAR, bottom - 14); // long jutsu lists stop above the legend
+            y = drawNatureDetails(g, shown, status.get(shown), owned, best, sx, y, SIDEBAR);
             g.disableScissor();
             if (status.get(shown) == NatureSystem.Status.AVAILABLE && shown == treeSelected) {
-                int bw = SIDEBAR - 10;
-                int by = Math.min(y + 4, top + ch - 20);
-                boolean hover = mouseX >= sx + 5 && mouseX < sx + 5 + bw && mouseY >= by && mouseY < by + 14;
-                box(g, sx + 5, by, bw, 14, hover ? 0xFF3A3218 : 0xFF2A2516, GOLD);
-                g.drawCenteredString(font, Component.translatable("screen.noirm.tree.unlock"), sx + 5 + bw / 2, by + 3, GOLD);
+                int bw = SIDEBAR;
+                int by = Math.min(y + 4, bottom - 32);
+                boolean over = Ui.in(mouseX, mouseY, sx, by, bw, 15);
+                Ui.button(g, font, sx, by, bw, 15, Component.translatable("screen.noirm.tree.unlock"),
+                        hover.get(HoverTracker.key(5, 0), over), true, GOLD, true);
                 Nature target = shown;
-                hits.add(new Hit(sx + 5, by, bw, 14, () -> NoirmNetwork.sendToServer(new PowerPackets.UnlockNature(target.ordinal())), null));
+                hits.add(new Hit(sx, by, bw, 15, () -> NoirmNetwork.sendToServer(new PowerPackets.UnlockNature(target.ordinal())), null));
             }
         }
         // Legend.
-        int ly = top + ch - 12;
-        legend(g, sx + 5, ly, OWNED_GREEN, "screen.noirm.tree.owned", ownedCount);
-        legend(g, sx + 5 + 46, ly, GOLD, "screen.noirm.tree.available_short", available);
-        legend(g, sx + 5 + 92, ly, 0xFF6A6A70, "screen.noirm.tree.locked", Nature.values().length - ownedCount - available);
+        int ly = bottom - 9;
+        Ui.hairline(g, sx, ly - 4, SIDEBAR);
+        legend(g, sx, ly, OWNED_GREEN, ownedCount);
+        legend(g, sx + 46, ly, GOLD, available);
+        legend(g, sx + 92, ly, Theme.TEXT_FAINT, Nature.values().length - ownedCount - available);
     }
 
     private int drawNatureDetails(GuiGraphics g, Nature nature, NatureSystem.Status status, Map<Nature, Float> owned,
@@ -497,65 +551,80 @@ public class JutsuScreen extends Screen {
         int color = 0xFF000000 | nature.color();
         y = wrap(g, Component.translatable(nature.translationKey()), x, y, w, color) + 1;
         y = wrap(g, Component.literal(nature.japanese() + " · " + nature.kanji()), x, y, w, DIM) + 2;
-        int statusColor = status == NatureSystem.Status.OWNED ? OWNED_GREEN : status == NatureSystem.Status.AVAILABLE ? GOLD : 0xFFB07070;
-        y = wrap(g, Component.translatable("screen.noirm.tree.status." + status.name().toLowerCase(Locale.ROOT)), x, y, w, statusColor) + 3;
+        int statusColor = status == NatureSystem.Status.OWNED ? OWNED_GREEN : status == NatureSystem.Status.AVAILABLE ? GOLD : NO;
+        y = wrap(g, Component.translatable("screen.noirm.tree.status." + status.name().toLowerCase(Locale.ROOT)), x, y, w, statusColor) + 4;
         if (nature.isBasic()) {
             if (status != NatureSystem.Status.OWNED) {
                 for (Component line : ClientNatureTraining.drillLines(nature)) { // the drill, its progress, other routes
                     y = wrap(g, line, x, y, w, DIM) + 1;
                 }
-                y += 2;
+                y += 3;
             }
         } else if (status != NatureSystem.Status.OWNED) {
-            y = wrap(g, Component.translatable("screen.noirm.tree.requires"), x, y, w, 0xFFCCCCCC) + 1;
+            y = wrap(g, Component.translatable("screen.noirm.tree.requires"), x, y, w, Theme.TEXT) + 1;
             for (Nature part : nature.components()) {
                 boolean has = owned.containsKey(part);
                 int mastery = best.getOrDefault(part, 0);
                 boolean mastered = mastery >= NatureSystem.REQUIRED_MASTERY;
                 y = wrap(g, Component.literal((has ? "✔ " : "✘ ")).append(Component.translatable(part.translationKey())),
-                        x + 2, y, w - 2, has ? OWNED_GREEN : 0xFFB07070) + 1;
+                        x + 2, y, w - 2, has ? OWNED_GREEN : NO) + 1;
                 if (has) {
                     y = wrap(g, Component.literal("   " + (mastered ? "✔ " : "✘ ")).append(Component.translatable("screen.noirm.tree.mastery",
-                            NatureSystem.REQUIRED_MASTERY, mastery)), x + 2, y, w - 2, mastered ? OWNED_GREEN : 0xFFB07070) + 1;
+                            NatureSystem.REQUIRED_MASTERY, mastery)), x + 2, y, w - 2, mastered ? OWNED_GREEN : NO) + 1;
                 }
             }
-            y += 2;
+            y += 3;
         }
-        y = wrap(g, Component.translatable("screen.noirm.tree.jutsu"), x, y, w, 0xFFCCCCCC) + 1;
+        y = Ui.section(g, font, x, y, w, Component.translatable("screen.noirm.tree.jutsu"), Theme.TEXT_DIM);
         for (JutsuCatalogPacket.Entry info : ClientJutsuCatalog.all()) {
             if (info.nature() == nature.ordinal()) {
                 boolean knows = ClientPowers.entry(info.id().toString()) != null;
                 y = wrap(g, Component.literal((knows ? "• " : "◦ ")).append(Component.translatable(Sharingan.jutsuKey(info.id()))),
-                        x + 2, y, w - 2, knows ? color : 0xFF707070);
+                        x + 2, y, w - 2, knows ? color : Theme.TEXT_FAINT);
             }
         }
         return y;
     }
 
-    private void legend(GuiGraphics g, int x, int y, int color, String key, int count) {
-        g.fill(x, y + 2, x + 5, y + 7, color);
-        g.drawString(font, Component.literal(String.valueOf(count)), x + 8, y, color, false);
+    private void legend(GuiGraphics g, int x, int y, int color, int count) {
+        Ui.roundRect(g, x, y + 2, 4, 4, color);
+        g.drawString(font, String.valueOf(count), x + 8, y, color, false);
     }
 
     // ================================================================ input
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
+        int t = tabs.at(mouseX, mouseY);
+        if (button == 0 && t >= 0 && t != tab.ordinal()) {
+            tab = Tab.values()[t];
+            scroll = 0;
+            motion.tabChanged();
+            click();
+            return true;
+        }
         for (int i = hits.size() - 1; i >= 0; i--) {
             Hit hit = hits.get(i);
             if (hit.contains(mouseX, mouseY)) {
                 Runnable action = button == 1 ? hit.right() : hit.left();
                 if (action != null) {
                     action.run();
-                    if (minecraft != null) {
-                        minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                                net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
-                    }
+                    click();
                     return true;
                 }
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void click() {
+        if (minecraft != null) {
+            minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                    net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+        }
     }
 
     @Override
@@ -627,11 +696,6 @@ public class JutsuScreen extends Screen {
         return y;
     }
 
-    private static void box(GuiGraphics g, int x, int y, int w, int h, int fill, int border) {
-        g.fill(x, y, x + w, y + h, border);
-        g.fill(x + 1, y + 1, x + w - 1, y + h - 1, fill);
-    }
-
     /** A pointy-top hexagon of "radius" r, drawn row by row. */
     private static void hexagon(GuiGraphics g, int cx, int cy, int r, int color) {
         for (int dy = -r; dy <= r; dy++) {
@@ -648,15 +712,5 @@ public class JutsuScreen extends Screen {
             int y = Math.round(y1 + (y2 - y1) * d / length);
             g.fill(x, y, x + 1, y + 1, color);
         }
-    }
-
-    private static int lerpColor(int a, int b, float t) {
-        int ar = a >> 16 & 0xFF;
-        int ag = a >> 8 & 0xFF;
-        int ab = a & 0xFF;
-        int r = Math.round(ar + ((b >> 16 & 0xFF) - ar) * t);
-        int gr = Math.round(ag + ((b >> 8 & 0xFF) - ag) * t);
-        int bl = Math.round(ab + ((b & 0xFF) - ab) * t);
-        return 0xFF000000 | r << 16 | gr << 8 | bl;
     }
 }

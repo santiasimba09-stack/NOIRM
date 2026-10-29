@@ -82,6 +82,7 @@ public final class ClientNatureTraining {
     // ---------------------------------------------------------------- HUD
 
     private static final int BAR_W = 120;
+    private static final com.noirm.client.ui.Smooth DRILL_BAR = new com.noirm.client.ui.Smooth(com.noirm.client.ui.Anim.BAR_TAU_MS);
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
@@ -105,12 +106,12 @@ public final class ClientNatureTraining {
                 Math.round(share(active) * 100));
         g.drawCenteredString(font, title, cx, y, color);
         int barY = y + 11;
-        g.fill(cx - BAR_W / 2 - 1, barY - 1, cx + BAR_W / 2 + 1, barY + 5, 0xC0000000);
-        g.fill(cx - BAR_W / 2, barY, cx - BAR_W / 2 + Math.round(BAR_W * Math.min(1f, share(active))), barY + 4, color);
+        DRILL_BAR.update(Math.min(1f, share(active)));
+        com.noirm.client.ui.Ui.bar(g, cx - BAR_W / 2, barY, BAR_W, 3, DRILL_BAR.value(), DRILL_BAR.value(), color, com.noirm.client.ui.HudKit.TRACK);
         // A moving glint so the bar reads as "working".
         int glint = (int) ((mc.level == null ? 0 : mc.level.getGameTime()) % 40) * BAR_W / 40;
         if (glint < BAR_W * share(active)) {
-            g.fill(cx - BAR_W / 2 + glint, barY, cx - BAR_W / 2 + glint + 2, barY + 4, 0xC0FFFFFF);
+            g.fill(cx - BAR_W / 2 + glint, barY, cx - BAR_W / 2 + glint + 2, barY + 3, 0x90FFFFFF);
         }
         MutableComponent pace = Component.translatable("hud.noirm.drill.pace", String.format(Locale.ROOT, "%.1f", state.pace()));
         if (isHidden(active)) {

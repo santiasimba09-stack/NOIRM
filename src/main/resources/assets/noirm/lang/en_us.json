@@ -1887,5 +1887,10 @@
   "board.noirm.bingo.tip": "The board's clerk sells bingo books: dangerous rogues, their bounties and where they were last seen. %s ryo.",
   "board.noirm.bingo.poor": "A bingo book costs %s ryo: you don't have enough.",
   "bingo.noirm.trait.danger": "Danger %s: kills a beginner in seconds",
-  "bingo.noirm.entrance.warn": "%s is a legend (danger %s). They can kill a beginner in a couple of seconds: run, unless you're ready."
+  "bingo.noirm.entrance.warn": "%s is a legend (danger %s). They can kill a beginner in a couple of seconds: run, unless you're ready.",
+  "hud.noirm.ui.chakra": "Chakra",
+  "hud.noirm.ui.stamina": "Stamina",
+  "hud.noirm.ui.posture": "Posture",
+  "hud.noirm.ui.nature": "Nature energy",
+  "hud.noirm.ui.jutsu_hint": "1–4 cast · J edit"
 }
