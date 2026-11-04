@@ -111,12 +111,15 @@ public class VfxParticle extends TextureSheetParticle {
         this.spin = switch (options.kind()) {
             case SHARD, ASH -> (random.nextFloat() - 0.5f) * 0.6f;
             case SMOKE, SOOT -> (random.nextFloat() - 0.5f) * 0.05f;
-            case FLAME -> (random.nextFloat() - 0.5f) * 0.08f; // cells churn slowly
+            case FLAME, MAGMA -> (random.nextFloat() - 0.5f) * 0.08f; // cells churn slowly
+            case CRYSTAL -> (random.nextFloat() - 0.5f) * 0.25f;
+            case STEAM -> (random.nextFloat() - 0.5f) * 0.04f;
             case TONGUE -> 0f;
             default -> 0f;
         };
         // Tongues stand upright (a slight lean); everything else starts at a random angle.
-        this.roll = options.kind() == VfxKind.TONGUE ? (random.nextFloat() - 0.5f) * 0.7f : random.nextFloat() * Mth.TWO_PI;
+        this.roll = options.kind() == VfxKind.TONGUE ? (random.nextFloat() - 0.5f) * 0.7f
+                : options.kind() == VfxKind.CRYSTAL ? (random.nextFloat() - 0.5f) * 1.2f : random.nextFloat() * Mth.TWO_PI;
         this.oRoll = roll;
         this.flutter = random.nextFloat() * Mth.TWO_PI;
         pickSprite(sprites);
@@ -155,7 +158,8 @@ public class VfxParticle extends TextureSheetParticle {
         // Fade in quickly, hold, fade out over the last 40%.
         float fadeIn = Math.min(1f, t * 8f);
         float fadeOut = t < 0.6f ? 1f : 1f - (t - 0.6f) / 0.4f;
-        alpha = Mth.clamp(fadeIn * fadeOut, 0f, 1f) * (options.kind() == VfxKind.SMOKE ? 0.7f : options.kind() == VfxKind.SOOT ? 0.85f : 1f);
+        alpha = Mth.clamp(fadeIn * fadeOut, 0f, 1f) * (options.kind() == VfxKind.SMOKE ? 0.7f
+                : options.kind() == VfxKind.SOOT || options.kind() == VfxKind.STEAM ? 0.85f : 1f);
     }
 
     @Override

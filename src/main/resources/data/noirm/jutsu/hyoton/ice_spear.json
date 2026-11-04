@@ -1,0 +1,18 @@
+{
+  "nature": "ice",
+  "behavior": "projectile",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 15,
+  "cooldown": 80,
+  "params": {
+    "count": 1,
+    "speed": 1.9,
+    "damage": 6,
+    "knockback": 0.4,
+    "posture": 15,
+    "effect": "slowness:1",
+    "effect_ticks": 40,
+    "look": "needle"
+  }
+}

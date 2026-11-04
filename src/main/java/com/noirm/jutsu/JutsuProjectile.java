@@ -302,7 +302,7 @@ public class JutsuProjectile extends Projectile {
                 }
                 if (nature() == Nature.FIRE && !isBeastChakra()) {
                     com.noirm.vfx.FireVfx.blast(serverLevel, position(), blastRadius);
-                } else {
+                } else if (isBeastChakra() || !com.noirm.vfx.KekkeiVfxA.impact(serverLevel, nature(), position(), blastRadius)) {
                     com.noirm.vfx.Vfx.explosion(serverLevel, position(), palette(), blastRadius);
                 }
                 if (nature() == Nature.LIGHTNING || nature() == Nature.STORM) {
@@ -322,7 +322,7 @@ public class JutsuProjectile extends Projectile {
                 } else if (nature() == Nature.LIGHTNING || nature() == Nature.STORM) {
                     com.noirm.vfx.LightningVfx.contact(serverLevel, position(), 0.7f + size());
                     com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), false);
-                } else {
+                } else if (!com.noirm.vfx.KekkeiVfxA.impact(serverLevel, nature(), position(), Math.max(0.5f, size()) * 0.9f)) {
                     com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
                 }
                 com.noirm.world.Destruction.shatterFragile(serverLevel, blockPosition(), 1);
@@ -358,6 +358,10 @@ public class JutsuProjectile extends Projectile {
                 default -> com.noirm.vfx.FireVfx.fireball(level(), position(), getDeltaMovement(), size() * 0.55f);
             }
             return;
+        }
+        if (!isBeastChakra() && com.noirm.vfx.KekkeiVfxA.trail(level(), nature(), look.name().toLowerCase(java.util.Locale.ROOT), position(),
+                getDeltaMovement(), size(), tickCount)) {
+            return; // Ice, Lava, Boil, Storm and Explosion draw their own (vfx/KekkeiVfxA)
         }
         if (look == Look.NEEDLE) {
             // A lightning needle: a thin white-hot streak and a few sparks.

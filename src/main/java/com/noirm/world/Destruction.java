@@ -177,6 +177,28 @@ public final class Destruction {
         }
     }
 
+    /**
+     * Turns one block into {@code block} for a while (it heals back like every other change,
+     * {@code regenScale} of the usual time): Lava's molten ground, Ice's mirrors. Only air,
+     * plants and ordinary ground (no fluids, nothing with a block entity, nothing harder than
+     * stone). Returns whether it changed.
+     */
+    public static boolean temporary(ServerLevel level, BlockPos pos, BlockState block, float regenScale) {
+        if (!enabled(level)) {
+            return false;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (state.equals(block) || !state.getFluidState().isEmpty() || state.hasBlockEntity()) {
+            return false;
+        }
+        float hardness = state.getDestroySpeed(level, pos);
+        if (!state.isAir() && !isFragile(state) && (hardness < 0 || hardness > 2f)) {
+            return false;
+        }
+        change(level, pos.immutable(), block, regenScale);
+        return true;
+    }
+
     /** Fragile things around a heavy impact shatter: glass, leaves, plants, snow. */
     public static void shatterFragile(ServerLevel level, BlockPos center, int radius) {
         if (!enabled(level)) {

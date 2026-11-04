@@ -159,6 +159,8 @@ public final class ModeSystem {
         if (entity.tickCount % 2 == 0) {
             if (nature == Nature.YANG) {
                 SpiritTechniques.yangModeAura(entity); // Yang: a solid golden body glow
+            } else if (nature == Nature.LAVA) {
+                com.noirm.vfx.KekkeiVfxA.lavaArmor(entity.level(), entity, entity.tickCount); // magma plates, not a glow
             } else if (nature != Nature.LIGHTNING) {
                 Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), palette, 5 + 2 * mode.gate());
             }
