@@ -11,6 +11,6 @@
     "damage": 9,
     "knockback": 1.0,
     "posture": 40,
-    "block": "minecraft:oak_log"
+    "block": "noirm:mokuton_wood"
   }
 }

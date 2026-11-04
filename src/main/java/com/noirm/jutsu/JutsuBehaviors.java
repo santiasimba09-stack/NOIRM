@@ -64,6 +64,13 @@ public final class JutsuBehaviors {
             Map.entry("nova", GreatTechniques::nova),
             Map.entry("ash_cloud", FireLightningTechniques::ashCloud),
             Map.entry("chain", FireLightningTechniques::chain),
+            // Wood Release (WoodTechniques)
+            Map.entry("wood_roots", WoodTechniques::roots),
+            Map.entry("wood_clone", WoodTechniques::clones),
+            Map.entry("wood_dome", WoodTechniques::dome),
+            Map.entry("wood_dragon", WoodTechniques::dragon),
+            Map.entry("deep_forest", WoodTechniques::forest),
+            Map.entry("wood_colossus", WoodTechniques::colossus),
             // The Mangekyō Sharingan (dojutsu/MangekyoAbilities, dojutsu/Susanoo)
             Map.entry("amaterasu", com.noirm.dojutsu.MangekyoAbilities::amaterasu),
             Map.entry("tsukuyomi", com.noirm.dojutsu.MangekyoAbilities::tsukuyomi),

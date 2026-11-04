@@ -20,6 +20,11 @@ public final class NoirmBlocks {
             () -> new EarthWallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(2f, 6f)
                     .sound(SoundType.PACKED_MUD).noLootTable()));
 
+    /** Grown by Wood Release (Deep Forest trunks, the Wood Dome); regrows away or splinters by itself. */
+    public static final RegistryObject<Block> MOKUTON_WOOD = BLOCKS.register("mokuton_wood",
+            () -> new com.noirm.jutsu.WoodReleaseBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(3f, 8f)
+                    .sound(SoundType.WOOD).noLootTable()));
+
     private NoirmBlocks() {}
 
     public static void register(IEventBus modBus) {

@@ -33,6 +33,10 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(com.noirm.weapon.NinjaWeapons.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
         // Gore: a severed arm, leg or head in the victim's skin and armor.
         event.registerEntityRenderer(NoirmEntities.SEVERED_LIMB.get(), SeveredLimbRenderer::new);
+        // Wood Release: clones of bark, the Wood Dragon and the Thousand-Arm Colossus (drawn as bark boxes).
+        event.registerEntityRenderer(NoirmEntities.WOOD_CLONE.get(), WoodReleaseRenderers.CloneRenderer::new);
+        event.registerEntityRenderer(NoirmEntities.WOOD_DRAGON.get(), WoodReleaseRenderers.DragonRenderer::new);
+        event.registerEntityRenderer(NoirmEntities.WOOD_COLOSSUS.get(), WoodReleaseRenderers.ColossusRenderer::new);
         // Senjutsu: the hermit's restless spirits (a vex body for now, trailing grey-green motes).
         event.registerEntityRenderer(NoirmEntities.NATURE_SPIRIT.get(), net.minecraft.client.renderer.entity.VexRenderer::new);
     }

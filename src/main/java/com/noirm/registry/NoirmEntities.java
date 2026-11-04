@@ -96,6 +96,35 @@ public final class NoirmEntities {
                     .clientTrackingRange(8)
                     .build(Noirm.id("nature_spirit").toString()));
 
+    /** Wood Release: a wood clone (a shadow clone of grown wood). */
+    public static final RegistryObject<EntityType<com.noirm.entity.WoodClone>> WOOD_CLONE = ENTITY_TYPES.register("wood_clone",
+            () -> EntityType.Builder.<com.noirm.entity.WoodClone>of(com.noirm.entity.WoodClone::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f)
+                    .clientTrackingRange(10)
+                    .build(Noirm.id("wood_clone").toString()));
+
+    /** Wood Release: the Wood Dragon (a model drawn along a path; the entity itself never moves). Never saved. */
+    public static final RegistryObject<EntityType<com.noirm.jutsu.WoodDragon>> WOOD_DRAGON = ENTITY_TYPES.register("wood_dragon",
+            () -> EntityType.Builder.<com.noirm.jutsu.WoodDragon>of(com.noirm.jutsu.WoodDragon::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .noSummon()
+                    .noSave()
+                    .fireImmune()
+                    .clientTrackingRange(10)
+                    .updateInterval(20)
+                    .build(Noirm.id("wood_dragon").toString()));
+
+    /** Wood Release: the Thousand-Arm Colossus (one model entity, never blocks). Never saved. */
+    public static final RegistryObject<EntityType<com.noirm.jutsu.WoodColossus>> WOOD_COLOSSUS = ENTITY_TYPES.register("wood_colossus",
+            () -> EntityType.Builder.<com.noirm.jutsu.WoodColossus>of(com.noirm.jutsu.WoodColossus::new, MobCategory.MISC)
+                    .sized(2f, 2f)
+                    .noSummon()
+                    .noSave()
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .updateInterval(20)
+                    .build(Noirm.id("wood_colossus").toString()));
+
     private NoirmEntities() {}
 
     public static void register(IEventBus modBus) {
@@ -106,6 +135,7 @@ public final class NoirmEntities {
     public static void attributes(EntityAttributeCreationEvent event) {
         event.put(SPARRING_NINJA.get(), SparringNinja.createAttributes().build());
         event.put(SHADOW_CLONE.get(), SparringNinja.createAttributes().build());
+        event.put(WOOD_CLONE.get(), SparringNinja.createAttributes().build());
         event.put(MASTER.get(), SparringNinja.createAttributes().build());
         event.put(TRAINING_DUMMY.get(), TrainingDummy.createAttributes().build());
         event.put(TAILED_BEAST.get(), TailedBeast.createAttributes().build());

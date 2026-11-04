@@ -115,12 +115,12 @@ class NinjaFightGoal extends Goal {
     private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
     /** Jutsu behaviors by when they're used. */
     private static final Set<String> RANGED = Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave", "ash_cloud", "chain",
-            "amaterasu", "tsukuyomi", "kotoamatsukami");
+            "wood_roots", "wood_dragon", "deep_forest", "wood_colossus", "amaterasu", "tsukuyomi", "kotoamatsukami");
     private static final Set<String> CLOSE = Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui");
     private static final Set<String> DASH = Set.of("dash_strike");
     private static final Set<String> FLICKER = Set.of("flicker");
-    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "buff", "susanoo");
-    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "susanoo", "izanagi");
+    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "wood_clone", "buff", "susanoo");
+    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "wood_dome", "susanoo", "izanagi");
 
     private final SparringNinja ninja;
     private final Deque<AttackInput> combo = new ArrayDeque<>();
@@ -345,7 +345,7 @@ class NinjaFightGoal extends Goal {
             if ("mode".equals(def.behavior()) && ModeSystem.activeMode(ninja) != null) {
                 return false; // already powered up (casting it again would switch it off)
             }
-            if ("shadow_clone".equals(def.behavior()) && (ninja instanceof ShadowClone || hasClones())) {
+            if (("shadow_clone".equals(def.behavior()) || "wood_clone".equals(def.behavior())) && (ninja instanceof ShadowClone || hasClones())) {
                 return false;
             }
             return JutsuCaster.npcReady(ninja, id) && JutsuCaster.checkRequirements(ninja, id, def) == JutsuCaster.Result.OK

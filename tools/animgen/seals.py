@@ -77,6 +77,13 @@ SEQUENCES = {
     "bakuton/landmine": ["ram"],
     "mokuton/wood_binding": ["boar", "ram", "snake"],
     "mokuton/wood_spears": ["ram", "snake"],
+    # The chakra wave's Wood Release (WoodTechniques): plausible sequences, ours.
+    "mokuton/root_snare": ["snake", "boar"],
+    "mokuton/wood_clone": ["snake", "ram", "clone"],
+    "mokuton/wood_locking_wall": ["dog", "ox", "ram"],
+    "mokuton/wood_dragon": ["snake", "dragon", "boar", "ram"],
+    "mokuton/deep_forest_emergence": ["snake", "dragon", "ram", "boar", "ox", "tiger"],
+    "mokuton/thousand_arm_colossus": ["tiger", "boar", "dragon", "snake", "ox", "ram", "ram"],
     "hyoton/ice_prison": ["ram", "snake"],
     "yoton/melting_apparition": ["horse", "tiger"],
     "futton/skilled_mist": ["ram", "snake", "tiger"],

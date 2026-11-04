@@ -177,6 +177,24 @@ public final class Destruction {
         }
     }
 
+    /**
+     * Grows {@code block} at {@code pos} for a while (Wood Release's Deep Forest): only into air or
+     * a plant, never into an entity, and it regrows away with the terrain ({@code regenScale} of the
+     * regen time). Returns whether it was placed.
+     */
+    public static boolean grow(ServerLevel level, BlockPos pos, BlockState block, float regenScale) {
+        if (!enabled(level)) {
+            return false;
+        }
+        BlockState here = level.getBlockState(pos);
+        if (!(here.isAir() || isFragile(here) && here.getFluidState().isEmpty())
+                || !level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, new net.minecraft.world.phys.AABB(pos)).isEmpty()) {
+            return false;
+        }
+        change(level, pos.immutable(), block, regenScale);
+        return true;
+    }
+
     /** Fragile things around a heavy impact shatter: glass, leaves, plants, snow. */
     public static void shatterFragile(ServerLevel level, BlockPos center, int radius) {
         if (!enabled(level)) {
@@ -339,6 +357,11 @@ public final class Destruction {
         }
         PENDING.clear();
         BY_POS.clear();
+    }
+
+    /** Is the block at {@code pos} waiting to heal (for tests)? */
+    public static boolean willRestore(BlockPos pos) {
+        return BY_POS.containsKey(pos);
     }
 
     /** How many changes are waiting to heal (for tests). */
