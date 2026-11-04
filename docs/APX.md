@@ -1,5 +1,8 @@
 # NOIRM APX 0.1: "fully usable" (owner's brief, 2026-10-28)
 
+**Shipped as v0.14.0 on 2026-11-04.** Everything below is built and tested; what's left are the
+owner's balance answers (open questions in `STATUS.md`).
+
 Goal: a complete, playable progression from a fresh character in underwear to a legendary shinobi.
 Everything here is decided by the owner (answers of 2026-10-28); ask before changing it.
 

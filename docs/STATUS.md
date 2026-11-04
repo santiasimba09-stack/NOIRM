@@ -1,83 +1,40 @@
 # Project status
 
-_Last updated: 2026-10-29 (UI redesign, phase B) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-04 (NOIRM APX 0.1, v0.14.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
-**Playtest round 6 is done (v0.9.0). 199/199 game tests green (twice in a row); checked in the real
-client** (screenshots `docs/screenshots/r9-*.jpg`). Earlier rounds are in `CHANGELOG.md`.
+**NOIRM APX 0.1 (v0.14.0) is out: the game is playable from a fresh character to a legend. 365/365
+game tests are green twice in a row; every piece was checked in the real client.** The owner's
+decisions are in `docs/APX.md`; the history is in `CHANGELOG.md`.
 
-| Round 6 (owner's requests, then my suggestions) | State |
+| APX 0.1 | State |
 |---|---|
-| **Armor fits the jointed body** (`BendyArmorModel`: armor bends at elbows, knees, waist) | ✅ checked in client |
-| **Footwork** (owner: "the weakest spot"): feet stay planted (two-bone leg IK), every strike sinks and drives through the legs | ✅ checked in client |
-| **More gear:** 39 pieces (kimonos, hakama, haori, masks that hide your name, Kage hats and robes, village vests, cloaks, tabi…), perks; guards, ANBU patrols, Kage and rogues dressed by role | ✅ tested; checked in client |
-| **Special weapons:** Crescent Cleaver, Sharkskin Greatsword, Thunder Fangs, Reedcutter (legendary drops), Gale Gunbai, Kusarigama | ✅ tested |
-| **New ally screen** (5 tabs) + **teaching natures over time** + distance/jutsu tactics | ✅ tested; checked in client |
-| **Mangekyō Sharingan:** awakening, unique pattern + 2 abilities + Susanoo, strain → blindness, Eternal Mangekyō, eye transplants, Mangekyō ninjas | ✅ tested; awakening, eyes, Susanoo checked in client |
-| **Might Guy (M4 part 1):** masters as data, spar test, lessons, Eight Gates (Opening, Limit), Front Lotus, Morning Peacock, Daytime Tiger | ✅ tested; checked in client |
-| Weapon trails, hit reactions by damage, hand seals per jutsu (30 canon sequences), 11 new taijutsu moves | ✅ tested; checked in client |
+| **Stats:** gentler speed curve (cap at 50, perception past 35), Durability (up to 60% negation), speed trained in combat, kill XP to the stats you used | ✅ tested |
+| **Natures:** chakra paper (hidden natures), drills, crew and master teachers, nature and jutsu scrolls | ✅ tested; checked in client |
+| **Sage path:** Iwao the Stone Hermit, sanctuary, petrification, Sage Mode | ✅ tested; checked in client |
+| **Ryo, shops, missions board (17 missions D–S), rank Academy → Kage candidate with exams** | ✅ tested; checked in client |
+| **Classes D–S and the bingo book:** bounties, legendary ninjas with auras, entrances and boss bars | ✅ tested; checked in client |
+| **Masters:** Might Guy, Rensai the Scholar, Tsubaki the medic; the Shinobi Handbook | ✅ tested; checked in client |
+| **Follow-ups:** fewer wild ninjas, squads defend you, long held weapons, four new chakra flows | ✅ tested; checked in client |
+| **UI redesign:** one UI kit (`client/ui`, rules in `docs/UI.md`), quiet HUD, every screen flat and animated in the same palette | ✅ checked in client at GUI scale auto and 2 (`ui-before-*` / `ui-after-*`) |
 
-Round 5 (v0.8.0): own animation engine, weapons, allies use what they hold, NPC jutsu, water
-walking (stays free: owner), Sharingan growth (pace confirmed by the owner).
-
-The villages (v0.7.0):
-
-| Area | State |
-|---|---|
-| **Hidden village ~545 blocks**, built from per-chunk "ward" starts sharing one plan | ✅ tested; a world-generated one checked in client (whole across ~1,000 chunks) |
-| **Six looks:** Leaf (fan + river + canon wall), Sand, Snow, **Mist** (islands, canals, mist), **Cloud** (rock spires, domes), **Stone** (tapering towers, rope bridges) | ✅ tested; each built in client |
-| **Looks:** colourways, façades, ring eaves, spires, rooftop clutter, signage, lamps, yards, landmarks | ✅ |
-| **Life:** villagers chat, sit, run home from monsters; residents fight monsters in their patch; animals | ✅ tested |
-| Living with other structures: vanilla villages kept clear, squatter mobs removed, no raider spawns inside | ✅ |
-| Towns (~145 blocks) and outposts | ✅ tested |
+Before APX: v0.13.0 (personal jutsu sets, wild ninjas, blades, armor), v0.12 (our own HD art, gore v2,
+fire and lightning), v0.11 (character creation, movement feel), v0.10 (crew overhaul, blueprint
+Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 
 ## In progress
 
-Waiting on the owner's playtest of v0.13.0 and of the UI redesign.
-
-| UI redesign (owner: "smoother, minimalist, same palette"; rules in `docs/UI.md`) | State |
-|---|---|
-| **Phase A:** the kit (`client/ui`), the HUD, J screen, ally screen, character creation | ✅ checked in client (`ui-after-hud-*`, `ui-after-j-*`, `ui-after-ally-*`, `ui-after-creator-*`) |
-| **Phase B:** shop, missions board, master, bingo book, handbook, crew orders: flat panel and header seal, text tabs with a sliding underline, flat rows and cards, eased hover, open/close/tab fades, "…" with the whole text as a tooltip | ✅ game tests green; checked in client at GUI scale auto and 2 (`ui-before-*` / `ui-after-*`) |
-| Every NOIRM screen and HUD overlay is now on the kit (the full-screen eye/focus effects aren't UI panels and stay as they are) | ✅ |
-
-| v0.13.0 | State |
-|---|---|
-| **Personal jutsu sets** for ninjas and crew (by strength/role) | ✅ tested |
-| **Wild ninjas** (wanderers, travellers, squads, clan groups, rogues) | ✅ tested; checked in client (`r16-encounter-*`) |
-| **Weapons:** HD art + tantō, katana, nodachi, tonfa, yari, tekko-kagi, tessen | ✅ tested; checked in client (`r16-weapons-*`) |
-| **Armor:** 28 new HD pieces (basics, samurai, assassin, medic, village, ceremonial) | ✅ tested; checked in client (`r16-armor-*`) |
-
-| v0.12.0: our own art | State |
-|---|---|
-| **HD skins** (4×, carved anatomy, anime eyes, real underwear) + start in underwear | ✅ tested; checked in client (`r14-skin-*`) |
-| **HD gear** (54 worn textures at 4×) | ✅ tested; checked in client (`r13-gear-*`) |
-| **Gore v2** (blood on body, clothes, ground; harsher severing) | ✅ tested; checked in client (`r13-gore-*`) |
-| **Fire and lightning** redone + 5 new jutsu | ✅ tested; checked in client (`r13-jutsu-*`) |
-
-v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGELOG.md`.
-
-**Done in v0.10.0: crew overhaul + blueprint Phase 1** (the owner's blueprint is summarised in `docs/BLUEPRINT.md`):
-
-| Piece | State |
-|---|---|
-| **Crew overhaul:** follow fix, Guard/Patrol posts, Come/Fall back, jobs (bodyguard, vanguard, scout, medic, gatherer), behaviours (aggressive, defensive, passive), lesson queue, "Teach all", jutsu that wait for their nature, K crew-orders screen, Job tab | ✅ tested; checked in client (`r11-crew-*`, `r11-ally-*`) |
-| **Player meditation** (N / `/noirm meditate`): sits, faster chakra and stamina, trains Reserves, fills **nature energy** (0–100) for Sage Mode later; meditating near a learning crew mate doubles their pace | ✅ tested; checked in client (`r11-meditate-*`) |
-| **CTL/WIL stats, PER formula, perception focus, just-frame parry** (Phase 1 #1–2) | ✅ tested; focus checked in client (`r11-focus-*`) |
-| **Automated casting engine:** seal phase, 80% movement, interruption and fizzle, spam fall-off, elemental clashes (Phase 1 #4) | ✅ tested; seals and fizzle checked in client (`r11-casting-*`) |
-| **Character creation HUD** (Phase 1 #3) | waiting on the owner (it replaces the random first-join clan and needs art) |
+Nothing. Waiting on the owner's playtest of APX 0.1.
 
 ## Next steps (in order)
 
-1. **Owner playtest + feedback:** gear fit, the ally screen, the Mangekyō (see open questions),
-   Might Guy's test and the gates, the new moves and seals.
-2. **Village clans and masters in villages** (villages part 5): the village's own clans in the
-   clan district, Guy at a dojo, the Kage as a teacher, a missions board.
-3. **Training, part 2:** chakra control (tree climbing, water walking as training), nature
-   training for the player.
-4. **More masters** (as JSON): a ninjutsu master, a medical ninja (who could do eye transplants).
-5. **Guy, part 2:** Reverse Lotus, the later gates, animations for the techniques.
+1. **Owner playtest of APX 0.1** and the open questions below (legend difficulty, prices and
+   rewards, drill length, Sage numbers, the HUD's quietness).
+2. **Balance pass** from that feedback (all numbers are constants or JSON).
+3. **Chūnin exam arena** (a built place for the tournament instead of a cleared field).
+4. **Wood Release at epic scale** and detailed tailed beasts (ideas in `ART_STYLE.md`).
+5. **Guy, part 2:** Reverse Lotus, the later gates, technique animations.
 
 ## Code map
 
@@ -93,7 +50,7 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 7), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 22), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
 | `com.noirm.client.ui` | The UI kit every screen and the HUD use (`docs/UI.md`): `Theme` (colours, spacing), `Ui` (panel, header and seal, card, button, toggle, segment, slider, bar, row, chip, scrollbar, text cut with "…"), `TabStrip` (text tabs, sliding underline), `ScreenMotion` (open/close/tab fades), `HoverTracker`, `Smooth`, `Anim`, `HudKit`, `HudLayout`, `NoirmStyled` + `TooltipStyle` (kit tooltips) |
 | `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
@@ -218,6 +175,14 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
   it calls `TestKit.clearStrays` first (a failed earlier test leaves its fighters behind).
 
 ## Open questions for the owner
+
+- **APX 0.1:** legends one-shot beginners: too hard? Legends kept 1,000 blocks from spawn and away
+  for your first 2 hours: right? Shop prices, mission rewards and masters' prices? Nature drills
+  take 3 in-game days: too long? Sage numbers, and should the petrified statue mean death? Kill-XP
+  pool size? NPC Durability equal to their strength? Yin/Yang drills? A real chūnin exam arena?
+  Jutsu knockback? Should becoming a jinchūriki be gated? Art for the missions board?
+- **UI:** is the HUD too quiet now (numbers only while they change, always in combat mode)? The ally
+  Orders tab is chakra blue instead of purple: OK?
 
 - **UI (phase B):** the shop now has a 店 seal like the other screens; masters keep a leaf-green seal.
   OK? Is anything from the old look missed (the green Buy/Sell buttons, the gold titles)?

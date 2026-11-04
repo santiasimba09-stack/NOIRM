@@ -2,6 +2,60 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-04 — NOIRM APX 0.1: a fully playable game, v0.14.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's goal: "fully usable", from a fresh character in underwear to a legendary shinobi.
+Decisions are in `docs/APX.md`. Everything below shipped between v0.13.0 and this release.
+- **Stats:**
+  - Speed moves you gently up to 35, then mostly sharpens perception, and stops adding movement at
+    50 (players, ninjas and crew alike).
+  - A new **Durability** stat negates up to 60% of damage and is trained by taking real hits.
+  - Speed is also trained in combat (dodges, fast strings, chases).
+  - Beating a ninja gives training XP to the stats you used in that fight.
+- **Natures:**
+  - Chakra paper reveals your hidden natures.
+  - Nature drills: meditate in the right setting for 3 in-game days.
+  - Crew mates and masters can teach natures.
+  - Nature scrolls and C/B/A/S jutsu scrolls (rank- and Reserves-gated).
+- **Sage path:** Iwao the Stone Hermit, his sanctuary, nature energy, petrification, and our own
+  Sage Mode with marks and sage eyes.
+- **Ryo, missions and rank:**
+  - **Ryo** wallet and pouches; village shops priced in ryo.
+  - **Missions board** in every village, with 17 missions D–S (hunt, escort, deliver, scout,
+    retrieve, defend).
+  - Player **rank** from Academy to Kage candidate through missions plus exams (genin test, chūnin
+    tournament, jōnin trial).
+- **Ninja classes and the bingo book:**
+  - Every fighter has a class from D to S, shown with their name.
+  - The bingo book lists rogues with ryo bounties.
+  - **Legendary ninjas** (gold pages): an aura, heavy footsteps, an entrance, a boss bar and a
+    signature jutsu. They stay 1,000+ blocks from spawn and keep away from players in their first
+    2 hours.
+- **Masters and guide:**
+  - Rensai the Scholar (seals, nature insight, jutsu) and Tsubaki the medic (Healing Palm, Chakra
+    Scalpel, poison, safe eye transplants) join Might Guy in every capital.
+  - The **Shinobi Handbook** (11 chapters) and first-steps tips.
+- **Follow-ups from v0.13.0:**
+  - fewer wild ninjas (about one group every 4 minutes);
+  - squads defend you from rogues;
+  - long held yari, nodachi and bō;
+  - four new chakra flows (fire nodachi, wind yari, earth tonfa, lightning tantō).
+- **Playthrough fixes:**
+  - no monsters spawn inside villages;
+  - escorted clients no longer fall to their death;
+  - weak ninjas can't be jinchūriki;
+  - 3 D missions a day.
+- **UI redesign** (owner: "smoother, minimalist, same palette"; rules in `docs/UI.md`):
+  - a shared UI kit (`client/ui`) used by every NOIRM screen and the HUD;
+  - a quiet HUD (thin bars, numbers fade in on change, a stats grid in combat mode, clear of boss
+    bars, jutsu rows that fit the screen);
+  - flat panels, text tabs with a sliding underline, fades on open, close and tab, eased hover;
+  - the creator's cut-off title fixed.
+
+  Before/after shots: `docs/screenshots/ui-*`.
+- **Tests:** 365 game tests, green twice in a row. The flaky tests (squads, far-edge worldgen,
+  stray mobs) are fixed at the root (see the phase B entry below). Network protocol 22.
+
 ## 2026-10-29 — UI redesign phase B: the rest of the screens on the kit, three flaky tests fixed (branch `claude/keen-cray-uc2d11`)
 
 The owner's brief, continued: "make it smoother, make it minimalist while keeping the color palette".
