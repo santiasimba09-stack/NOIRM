@@ -213,6 +213,14 @@ public final class CombatSystem {
         stagger(entity, state, ticks);
     }
 
+    /** Ends a stun early (a genjutsu broken by Kai). Does nothing if they aren't staggered. */
+    public static void clearStun(LivingEntity entity) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        if (state != null && state.phase == CombatPhase.STAGGER) {
+            enterPhase(entity, state, CombatPhase.IDLE, 0);
+        }
+    }
+
     /** Knocks a fighter flat (at least {@link #KNOCKDOWN_TICKS} of stun, a thud and dust). Used by jutsu. */
     public static void knockDown(LivingEntity entity, int ticks) {
         stun(entity, Math.max(KNOCKDOWN_TICKS, ticks));

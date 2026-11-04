@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "22";
+    private static final String PROTOCOL_VERSION = "23";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -102,6 +102,9 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(MangekyoPackets.Tsukuyomi.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MangekyoPackets.Tsukuyomi::encode).decoder(MangekyoPackets.Tsukuyomi::decode)
                 .consumerMainThread(MangekyoPackets.Tsukuyomi::handle).add();
+        CHANNEL.messageBuilder(SpiritPackets.Vision.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SpiritPackets.Vision::encode).decoder(SpiritPackets.Vision::decode)
+                .consumerMainThread(SpiritPackets.Vision::handle).add();
         CHANNEL.messageBuilder(com.noirm.master.MasterPackets.Info.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.noirm.master.MasterPackets.Info::encode).decoder(com.noirm.master.MasterPackets.Info::decode)
                 .consumerMainThread(com.noirm.master.MasterPackets.Info::handle).add();

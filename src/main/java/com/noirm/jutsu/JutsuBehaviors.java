@@ -78,6 +78,28 @@ public final class JutsuBehaviors {
             Map.entry("lotus", TaijutsuTechniques::lotus),
             // Medical ninjutsu (medical/ChakraScalpel): the medical ninja's lessons
             Map.entry("scalpel", com.noirm.medical.ChakraScalpel::cast),
+            // Yin, Yang, Yin-Yang (SpiritTechniques) and medical ninjutsu (MedicalTechniques): chakra wave
+            Map.entry("genjutsu_release", SpiritTechniques::release),
+            Map.entry("mirage", SpiritTechniques::mirage),
+            Map.entry("tree_bind", SpiritTechniques::treeBind),
+            Map.entry("shadow_neck_bind", SpiritTechniques.NECK_BIND),
+            Map.entry("shadow_stitch", SpiritTechniques::stitch),
+            Map.entry("regen_burst", SpiritTechniques::regenBurst),
+            Map.entry("giant_fist", SpiritTechniques::giantFist),
+            Map.entry("life_conversion", SpiritTechniques::lifeConversion),
+            Map.entry("reincarnation", SpiritTechniques::reincarnation),
+            Map.entry("renewal", SpiritTechniques::renewal),
+            Map.entry("attraction", SpiritTechniques::attraction),
+            Map.entry("repulsion", SpiritTechniques::repulsion),
+            Map.entry("hawks", SpiritTechniques::hawks),
+            Map.entry("equilibrium", SpiritTechniques::equilibrium),
+            Map.entry("medic_palm", MedicalTechniques.MEDIC_PALM),
+            Map.entry("scalpel_strike", MedicalTechniques::scalpelStrike),
+            Map.entry("poison_mist", MedicalTechniques::poisonMist),
+            Map.entry("extraction", MedicalTechniques::extraction),
+            Map.entry("healing_field", MedicalTechniques::healingField),
+            Map.entry("derangement", MedicalTechniques::derangement),
+            Map.entry("hundred_healings", MedicalTechniques::hundredHealings),
             Map.entry("flurry", TaijutsuTechniques::flurry));
 
     private JutsuBehaviors() {}

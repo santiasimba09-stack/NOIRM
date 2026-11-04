@@ -157,7 +157,9 @@ public final class ModeSystem {
         Nature nature = active.def().nature().orElse(null);
         Vfx.Palette palette = paletteOf(active);
         if (entity.tickCount % 2 == 0) {
-            if (nature != Nature.LIGHTNING) {
+            if (nature == Nature.YANG) {
+                SpiritTechniques.yangModeAura(entity); // Yang: a solid golden body glow
+            } else if (nature != Nature.LIGHTNING) {
                 Vfx.aura(entity.level(), entity.position(), entity.getBbWidth(), entity.getBbHeight(), palette, 5 + 2 * mode.gate());
             }
             if (mode.gate() >= 2) {

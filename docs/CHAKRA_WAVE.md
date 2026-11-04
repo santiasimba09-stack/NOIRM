@@ -61,3 +61,50 @@ Lightning reference panels (mood only, see `ART_STYLE.md`).
   - **each Susanoo user has their own colour**, rolled with their Mangekyō;
   - Sage and the Gates have fixed colours.
 - **Graphics setting:** Low, Medium or High in the mod config, with High as the default.
+
+## Part 1 share: Yin, Yang, Yin-Yang, Medical (done)
+Code: `jutsu/SpiritTechniques` (Yin, Yang, Yin-Yang), `jutsu/MedicalTechniques`, looks in
+`vfx/SpiritVfx`, the player's view in `client/SpiritVision` (packet `SpiritPackets.Vision`, protocol 23).
+Tests: `gametest/SpiritGameTests`.
+
+**Looks:** Yin is solid ink (dark, unlit puffs) with violet light at the rim; Yang is a solid
+golden-white body glow; Yin-Yang keeps white light and black ink apart in swirls (never grey);
+Medical is soft green and slow; poisons are sickly violet with green specks.
+
+**Genjutsu counterplay:** a strong mind (perception, and WIL for players) may resist; an open
+Sharingan sees straight through; **Kai** breaks it, even while stunned, on yourself or a crew mate
+within 5 blocks; a friend's slap or use (right-click), or an NPC crew mate standing beside you for a
+second, wakes you; NPCs try their own Kai. A caught player sees a violet tint, ink at the edges and a
+slight view sway (no blindness).
+
+| Jutsu | Rank | What it does |
+|---|---|---|
+| Genjutsu Release (Kai) `universal/genjutsu_release` | E | Breaks a genjutsu on you or a nearby crew mate; works while stunned. Unlocks from Substitution ★1. |
+| False Surroundings `yin/false_surroundings` | B | The target sees you elsewhere (an ink phantom): their next 3 attacks on you hit a false image; creatures turn on their own kind. |
+| Shadow Neck Bind `yin/shadow_neck_bind` | B | Channel: a shadow runs to the target, holds them, ink hands climb to the throat and choke. |
+| Shadow Stitching `yin/shadow_stitching` | A | Up to 4 shadow tendrils race over the ground and burst up as ink spikes, piercing and pinning. |
+| Tree Binding Death `yin/tree_binding_death` | S | A phantom tree holds the victim 3 s, then your phantom strikes from behind (or at once if you hit them). |
+| Rapid Regeneration `yang/rapid_regeneration` | C | Instant heal plus regeneration, the body glowing gold. |
+| Vitality Mode `yang/yang_vitality` | B | Mode: stronger, tougher, a little faster; solid gold glow. |
+| Super Expansion Fist `yang/super_expansion_fist` | A | The arm swells into a giant gold fist that slams down: crater, shake, hit-stop. |
+| Life Force Conversion `yang/life_force_conversion` | B | Spend up to 8 health for chakra (×3). |
+| One's Own Life Reincarnation `yang/life_reincarnation` | S | Brings back a crew mate who fell nearby (within 5 min), at the cost of 60% of your health, all chakra and 1 min of weakness. Refunded if no one can be saved. |
+| Renewal `yin_yang/renewal` | B | Heal and cleanse every harmful effect. |
+| Attraction `yin_yang/attraction` | B | Pull the target to you and stun them. |
+| Repulsion `yin_yang/repulsion` | A | Throw every enemy around you away and turn projectiles back. |
+| Chakra Hawks `yin_yang/chakra_hawks` | A | Three white-and-black chakra hawks hunt your enemies for 10 s. |
+| Equilibrium Collapse `yin_yang/equilibrium_collapse` | S | A black-and-white sphere pulls everything in for 1.5 s, then bursts: big damage, crater. |
+| Deep Mend `medical/deep_mend` | A | Channel: strong healing on the friend you look at (or you), drawing out a poison each second. Tsubaki, chūnin. |
+| Scalpel Strike `medical/scalpel_strike` | B | A short lunge and a cut under the skin: slows and weakens. |
+| Poison Mist `medical/poison_mist` | B | A violet cloud drifts out and hangs, poisoning enemies inside. |
+| Poison Extraction `medical/poison_extraction` | C | The antidote: draws out every harmful effect from a friend or you, small heal. |
+| Healing Field `medical/healing_field` | A | A green circle for 8 s that heals your side only. |
+| Body Pathway Derangement `medical/body_pathway_derangement` | A | A palm that scrambles movement: a player's keys reverse for up to 4 s (high WIL shortens it, down to 40%); an NPC stumbles and loses its target. |
+| Hundred Healings `medical/hundred_healings` | S | Long charge, then 30 s of self-healing and one snap-back heal when low. Tsubaki, jōnin. |
+
+**NPCs:** Yin/Yang/Yin-Yang ninjas roll these like any jutsu; medical jutsu only go to Yang (Senju)
+ninjas; Kai, Reincarnation and Life Force Conversion never go in an NPC set.
+
+**Screenshots:** `docs/screenshots/cw-yin-1.jpg`, `cw-yin-2.jpg` (Tree Binding Death), `cw-yang-1.jpg` (Super
+Expansion Fist impact), `cw-yin_yang-1.jpg`, `cw-yin_yang-2.jpg` (Equilibrium Collapse gathering, then the
+burst), `cw-medical-1.jpg` (Healing Field).

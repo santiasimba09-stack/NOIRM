@@ -316,7 +316,7 @@ public final class JutsuCaster {
             com.noirm.senjutsu.SageMode.end(player, false); // so is leaving Sage Mode
             return Result.OK;
         }
-        if (CASTING.containsKey(player) || !CombatSystem.canAct(player)) {
+        if (CASTING.containsKey(player) || !CombatSystem.canAct(player) && !"genjutsu_release".equals(def.behavior())) { // Kai works while stunned
             return Result.BUSY;
         }
         Result check = checkRequirements(player, id, def);
