@@ -1,5 +1,10 @@
 package com.noirm.client;
 
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.economy.Ryo;
 import com.noirm.mission.CareerPackets;
 import com.noirm.mission.MissionKind;
@@ -20,22 +25,15 @@ import java.util.List;
 /**
  * The missions board: your rank, points and ryo; the mission you're on (with Abandon); the next
  * rank's exam (with a Start button); and today's missions by rank letter, each with its reward,
- * rank points, time limit and an Accept button (or why it's locked).
+ * rank points, time limit and an Accept button (or why it's locked). Drawn with the NOIRM kit
+ * ({@code client.ui}): one flat panel, flat cards and rows, eased hover, a fade on open and close.
  */
-public class MissionBoardScreen extends Screen {
-    private static final int W = 360;
-    private static final int H = 228;
+public class MissionBoardScreen extends Screen implements NoirmStyled {
+    private static final int MAX_W = 360;
+    private static final int MAX_H = 228;
+    private static final int PAD = Theme.S5;
     private static final int ROW_H = 22;
-    private static final int INK = 0xF4100E14;
-    private static final int INK_LIGHT = 0xF41A1720;
-    private static final int CARD = 0xFF17141C;
-    private static final int FRAME = 0xFF3D3645;
-    private static final int RULE = 0xFF2E2935;
-    private static final int PAPER = 0xFFEDE4D3;
-    private static final int DIM = 0xFF8F8796;
-    private static final int FAINT = 0xFF5E5866;
-    private static final int GOLD = 0xFFE8C060;
-    private static final int GREEN = 0xFF6FD38A;
+    private static final int BUTTON_H = Theme.ROW;
 
     private record Hit(int x, int y, int w, int h, Runnable click, List<Component> tip) {
         boolean contains(double mx, double my) {
@@ -48,6 +46,10 @@ public class MissionBoardScreen extends Screen {
     private int scroll;
     private int left;
     private int top;
+    private int w;
+    private int h;
+    private final ScreenMotion motion = new ScreenMotion();
+    private final HoverTracker hover = new HoverTracker();
 
     public MissionBoardScreen(CareerPackets.BoardInfo info) {
         super(Component.translatable("board.noirm.title"));
@@ -77,8 +79,23 @@ public class MissionBoardScreen extends Screen {
 
     @Override
     protected void init() {
-        left = (width - W) / 2;
-        top = (height - H) / 2;
+        w = Math.min(MAX_W, width - 16);
+        h = Math.min(MAX_H, height - 8);
+        left = (width - w) / 2;
+        top = (height - h) / 2;
+        if (!motion.started()) {
+            motion.open();
+        }
+    }
+
+    @Override
+    public void tick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
     }
 
     private void send(CareerPackets.Action action, int index) {
@@ -87,25 +104,29 @@ public class MissionBoardScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
         hits.clear();
-        int x = left, y = top;
-        g.fill(x - 2, y - 2, x + W + 2, y + H + 2, 0xC0000000);
-        g.fillGradient(x, y, x + W, y + H, INK_LIGHT, INK);
-        g.renderOutline(x, y, W, H, FRAME);
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        Ui.panel(g, left, top, w, h);
+        int x = left + PAD;
+        int iw = w - PAD * 2;
         // Header: a red seal with 任 (mission), the title, then rank · points · ryo.
-        g.fill(x + 8, y + 6, x + 22, y + 20, 0xFF8A2A22);
-        g.drawCenteredString(font, "任", x + 15, y + 9, 0xFFF4E6D0);
-        g.drawString(font, title, x + 28, y + 10, GOLD, false);
         Component standing = Component.translatable("board.noirm.standing", PlayerRank.byOrdinal(info.rank()).title(), info.points(),
                 info.nextPoints() < 0 ? "—" : String.valueOf(info.nextPoints()), Ryo.format(info.ryo()));
-        g.drawString(font, standing, x + W - 8 - font.width(standing), y + 10, PAPER, false);
-        g.fill(x + 6, y + 24, x + W - 6, y + 25, RULE);
-        int cy = y + 30;
-        cy = drawCurrent(g, x + 8, cy, W - 16, mouseX, mouseY);
-        cy = drawExam(g, x + 8, cy + 4, W - 16, mouseX, mouseY);
-        drawOffers(g, x + 8, cy + 6, W - 16, y + H - 6, mouseX, mouseY);
+        Ui.header(g, font, x, top + PAD, iw, "任", Theme.SEAL, title, standing, Theme.TEXT_DIM);
+        int standingW = Ui.headerNoteWidth(font, iw, title, standing);
+        if (standingW < font.width(standing)) {
+            hits.add(new Hit(x + iw - standingW, top + PAD, standingW, 14, null, List.of(standing)));
+        }
+        int cy = top + PAD + Theme.ROW + Theme.S3;
+        cy = drawCurrent(g, x, cy, iw, mouseX, mouseY);
+        cy = drawExam(g, x, cy + Theme.S2, iw, mouseX, mouseY);
+        drawOffers(g, x, cy + Theme.S3, iw, top + h - Theme.S4, mouseX, mouseY);
+        motion.end(g);
         super.render(g, mouseX, mouseY, partialTick);
+        if (motion.closing()) {
+            return;
+        }
         for (int i = hits.size() - 1; i >= 0; i--) {
             Hit hit = hits.get(i);
             if (hit.tip() != null && !hit.tip().isEmpty() && hit.contains(mouseX, mouseY)) {
@@ -119,31 +140,40 @@ public class MissionBoardScreen extends Screen {
 
     private int drawCurrent(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
         int h = 28;
-        g.fill(x, y, x + w, y + h, CARD);
-        g.renderOutline(x, y, w, h, RULE);
         if (!info.onMission()) {
-            g.drawString(font, Component.translatable("board.noirm.no_mission"), x + 6, y + 10, DIM, false);
+            Ui.card(g, x, y, w, h, 0);
+            Ui.text(g, font, Component.translatable("board.noirm.no_mission"), x + Theme.S4, y + 10, w - 16, Theme.TEXT_FAINT);
             return y + h;
         }
+        Ui.card(g, x, y, w, h, info.report() ? Theme.GREEN : Theme.GOLD);
         ResourceLocation id = ResourceLocation.tryParse(info.mission());
         Component name = id == null ? Component.empty() : Component.translatable(MissionTemplate.nameKey(id));
-        int bw = 70;
-        g.drawString(font, fit(Component.translatable("board.noirm.current", name).getString(), w - bw - 16), x + 6, y + 4, GOLD, false);
-        g.drawString(font, fit(info.objective().getString(), w - bw - 16), x + 6, y + 16, info.report() ? GREEN : PAPER, false);
-        button(g, x + w - bw - 4, y + 6, bw, Component.translatable("board.noirm.abandon"), true, 0xFF7A2E2A,
+        Component abandon = Component.translatable("board.noirm.abandon");
+        int bw = Math.max(64, font.width(abandon) + 16);
+        int textW = w - bw - 24;
+        Component current = Component.translatable("board.noirm.current", name);
+        boolean cut = Ui.text(g, font, current, x + Theme.S4, y + 5, textW, Theme.GOLD);
+        cut |= Ui.text(g, font, info.objective(), x + Theme.S4, y + 16, textW, info.report() ? Theme.GREEN : Theme.TEXT);
+        if (cut) {
+            hits.add(new Hit(x, y, textW + 8, h, null, List.of(current, info.objective())));
+        }
+        button(g, 1, x + w - bw - 7, y + (h - BUTTON_H) / 2, bw, abandon, true, Theme.RED, false,
                 () -> send(CareerPackets.Action.ABANDON, 0), List.of(Component.translatable("board.noirm.abandon.tip")), mouseX, mouseY);
         return y + h;
     }
 
     private int drawExam(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
         int h = 22;
-        g.fill(x, y, x + w, y + h, CARD);
-        g.renderOutline(x, y, w, h, RULE);
-        int bw = info.examButton() ? 70 : 0;
-        g.drawString(font, fit(info.examLine().getString(), w - bw - 16), x + 6, y + 7, PAPER, false);
+        boolean ready = info.examWhy().getString().isEmpty();
+        Ui.card(g, x, y, w, h, info.examButton() && ready ? Theme.GOLD : 0);
+        Component start = Component.translatable("board.noirm.exam.start");
+        int bw = info.examButton() ? Math.max(64, font.width(start) + 16) : 0;
+        int textW = w - bw - 24;
+        if (Ui.text(g, font, info.examLine(), x + Theme.S4, y + 7, textW, Theme.TEXT)) {
+            hits.add(new Hit(x, y, textW + 8, h, null, List.of(info.examLine())));
+        }
         if (info.examButton()) {
-            boolean ready = info.examWhy().getString().isEmpty();
-            button(g, x + w - bw - 4, y + 3, bw, Component.translatable("board.noirm.exam.start"), ready, 0xFF3A6E2E,
+            button(g, 2, x + w - bw - 7, y + (h - BUTTON_H) / 2, bw, start, ready, Theme.GOLD, true,
                     () -> send(CareerPackets.Action.EXAM, 0),
                     List.of(ready ? Component.translatable("board.noirm.exam.tip") : info.examWhy()), mouseX, mouseY);
         }
@@ -151,82 +181,76 @@ public class MissionBoardScreen extends Screen {
     }
 
     private void drawOffers(GuiGraphics g, int x, int y, int w, int bottom, int mouseX, int mouseY) {
-        g.drawString(font, Component.translatable("board.noirm.offers"), x, y + 4, GOLD, false);
         // The clerk sells bingo books here too (dangerous rogues and their bounties).
         int price = com.noirm.bounty.BingoBook.BOOK_PRICE;
         Component buy = Component.translatable("board.noirm.bingo", Ryo.format(price));
-        int bw = font.width(buy) + 12;
-        button(g, x + w - bw - 4, y, bw, buy, info.ryo() >= price, 0xFF6E2A2A, () -> send(CareerPackets.Action.BINGO_BOOK, 0),
+        int bw = Math.min(font.width(buy) + 16, w / 2);
+        Ui.section(g, font, x, y + 3, w - bw - Theme.S4, Component.translatable("board.noirm.offers"), Theme.TEXT_DIM);
+        button(g, 3, x + w - bw, y, bw, buy, info.ryo() >= price, Theme.SEAL, false, () -> send(CareerPackets.Action.BINGO_BOOK, 0),
                 List.of(Component.translatable(info.ryo() >= price ? "board.noirm.bingo.tip" : "board.noirm.bingo.poor", Ryo.format(price))),
                 mouseX, mouseY);
-        int listTop = y + 18;
+        int listTop = y + BUTTON_H + Theme.S2;
         List<CareerPackets.OfferRow> rows = info.offers();
         if (rows.isEmpty()) {
-            g.drawString(font, Component.translatable("board.noirm.none_today"), x + 4, listTop + 4, DIM, false);
+            Ui.text(g, font, Component.translatable("board.noirm.none_today"), x + Theme.S2, listTop + 4, w, Theme.TEXT_FAINT);
             return;
         }
         int visible = Math.max(1, (bottom - listTop) / ROW_H);
         scroll = Mth.clamp(scroll, 0, Math.max(0, rows.size() - visible));
+        boolean scrolls = rows.size() > visible;
         for (int i = 0; i < visible && scroll + i < rows.size(); i++) {
-            drawOffer(g, rows.get(scroll + i), x, listTop + i * ROW_H, w - 6, mouseX, mouseY);
+            drawOffer(g, rows.get(scroll + i), x, listTop + i * ROW_H, w - (scrolls ? 5 : 0), mouseX, mouseY);
         }
-        if (rows.size() > visible) {
-            int trackH = visible * ROW_H - 2;
-            int barH = Math.max(10, trackH * visible / rows.size());
-            int barY = listTop + (trackH - barH) * scroll / Math.max(1, rows.size() - visible);
-            g.fill(x + w - 3, listTop, x + w - 1, listTop + trackH, RULE);
-            g.fill(x + w - 3, barY, x + w - 1, barY + barH, DIM);
-        }
+        Ui.scrollbar(g, x + w - 1, listTop, visible * ROW_H - 2, scroll, visible, rows.size(), Theme.IRON);
     }
 
     private void drawOffer(GuiGraphics g, CareerPackets.OfferRow row, int x, int y, int w, int mouseX, int mouseY) {
         MissionTemplate.Letter letter = MissionTemplate.Letter.byOrdinal(row.letter());
         boolean ready = row.status() == CareerPackets.READY;
-        g.fill(x, y, x + w, y + ROW_H - 2, CARD);
-        g.renderOutline(x, y, w, ROW_H - 2, RULE);
-        g.fill(x + 3, y + 3, x + 17, y + ROW_H - 5, letter.color() & 0x60FFFFFF | 0x40000000);
-        g.drawCenteredString(font, letter.name(), x + 10, y + 6, letter.color());
-        int bw = 56;
+        int h = ROW_H - 2;
+        boolean over = !motion.closing() && Ui.in(mouseX, mouseY, x, y, w, h);
+        float hv = hover.get(HoverTracker.key(10, row.index()), over);
+        Ui.row(g, x, y, w, h, hv, false, ready ? Theme.SEAL : Theme.IRON);
+        // The rank letter on a faint tint of its colour.
+        int letterColor = 0xFF000000 | letter.color();
+        g.fill(x + 3, y + 3, x + 17, y + h - 3, Theme.mix(Theme.RAISED, letterColor, ready ? 0.22f : 0.10f));
+        Ui.textCentered(g, font, letter.name(), x + 10, y + 6, ready ? letterColor : Theme.mix(letterColor, Theme.TEXT_FAINT, 0.5f));
+        Component accept = Component.translatable(row.status() == CareerPackets.TAKEN ? "board.noirm.taken" : "board.noirm.accept");
+        int bw = Math.max(56, font.width(accept) + 14);
         Component name = Component.translatable(MissionTemplate.nameKey(row.id()));
         Component kind = Component.translatable("mission.noirm.kind." + MissionKind.byOrdinal(row.kind()).key());
         Component details = row.timeLimit() > 0
                 ? Component.translatable("board.noirm.offer.timed", kind, Ryo.format(row.reward()), row.points(), row.timeLimit() / 60)
                 : Component.translatable("board.noirm.offer", kind, Ryo.format(row.reward()), row.points());
-        int textW = w - bw - 30;
-        g.drawString(font, fit(name.getString(), textW), x + 22, y + 2, ready ? PAPER : DIM, false);
-        g.drawString(font, fit(details.getString(), textW), x + 22, y + 11, ready ? DIM : FAINT, false);
+        int textW = w - bw - 32;
+        Ui.text(g, font, name, x + 22, y + 2, textW, ready ? Theme.mix(Theme.TEXT_DIM, Theme.TEXT, 0.7f + 0.3f * hv) : Theme.TEXT_DIM);
+        Ui.text(g, font, details, x + 22, y + 11, textW, ready ? Theme.TEXT_DIM : Theme.TEXT_FAINT);
         List<Component> tip = new ArrayList<>();
         tip.add(name);
-        tip.add(Component.translatable(MissionTemplate.nameKey(row.id()) + ".desc"));
-        tip.add(details);
-        hits.add(new Hit(x, y, w - bw - 8, ROW_H - 2, null, tip));
-        Component label = Component.translatable(row.status() == CareerPackets.TAKEN ? "board.noirm.taken" : "board.noirm.accept");
-        button(g, x + w - bw - 4, y + 2, bw, label, ready, 0xFF3A6E2E, () -> send(CareerPackets.Action.ACCEPT, row.index()),
+        tip.add(Component.translatable(MissionTemplate.nameKey(row.id()) + ".desc").withStyle(s -> s.withColor(Theme.TEXT_DIM)));
+        tip.add(details.copy().withStyle(s -> s.withColor(Theme.GOLD)));
+        hits.add(new Hit(x, y, w - bw - 8, h, null, tip));
+        button(g, HoverTracker.key(11, row.index()), x + w - bw - 3, y + (h - BUTTON_H) / 2, bw, accept, ready, Theme.SEAL, true,
+                () -> send(CareerPackets.Action.ACCEPT, row.index()),
                 ready ? List.of(Component.translatable("board.noirm.accept.tip")) : List.of(row.why()), mouseX, mouseY);
     }
 
-    private void button(GuiGraphics g, int bx, int by, int bw, Component label, boolean live, int color, Runnable click, List<Component> tip,
-                        int mouseX, int mouseY) {
-        boolean hover = live && mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + 16;
-        g.fill(bx, by, bx + bw, by + 16, live ? (hover ? brighten(color) : color) : 0xFF2A2630);
-        g.renderOutline(bx, by, bw, 16, live ? 0xFF8A8090 : FRAME);
-        g.drawCenteredString(font, label, bx + bw / 2, by + 4, live ? PAPER : FAINT);
-        hits.add(new Hit(bx, by, bw, 16, live ? click : null, tip));
-    }
-
-    private static int brighten(int color) {
-        int r = Math.min(255, ((color >> 16) & 0xFF) + 24), gg = Math.min(255, ((color >> 8) & 0xFF) + 24), b = Math.min(255, (color & 0xFF) + 24);
-        return 0xFF000000 | r << 16 | gg << 8 | b;
-    }
-
-    private String fit(String text, int width) {
-        return font.width(text) <= width ? text : font.plainSubstrByWidth(text, width - font.width("…")) + "…";
+    /** A kit button with its hit box (and tooltip). A dead one shows its tip but does nothing. */
+    private void button(GuiGraphics g, int id, int bx, int by, int bw, Component label, boolean live, int accent, boolean primary,
+                        Runnable click, List<Component> tip, int mouseX, int mouseY) {
+        boolean over = live && !motion.closing() && Ui.in(mouseX, mouseY, bx, by, bw, BUTTON_H);
+        Ui.button(g, font, bx, by, bw, BUTTON_H, label, hover.get(HoverTracker.key(12, id), over), live, accent, primary);
+        hits.add(new Hit(bx, by, bw, BUTTON_H, live ? click : null, tip));
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
-            for (Hit hit : hits) {
+            for (int i = hits.size() - 1; i >= 0; i--) {
+                Hit hit = hits.get(i);
                 if (hit.click() != null && hit.contains(mouseX, mouseY)) {
                     hit.click().run();
                     Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(

@@ -5,6 +5,11 @@ import com.noirm.Noirm;
 import com.noirm.ally.Behaviour;
 import com.noirm.ally.CrewPackets;
 import com.noirm.ally.Order;
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.network.NoirmNetwork;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -29,28 +34,29 @@ import java.util.Locale;
  * The crew order screen (K): one press, one click, and the whole crew obeys. Orders (follow,
  * wait, guard here, patrol here, train, meditate), quick commands (come here, attack what I'm
  * looking at, fall back) and how willing they are to fight. Number keys 1–9 pick the first nine.
- * Each crew mate's own job, tactics and lessons are on their own screen (right-click them).
+ * Each crew mate's own job, tactics and lessons are on their own screen (right-click them). Drawn
+ * with the NOIRM kit ({@code client.ui}): flat buttons with an eased underline, a fade on open/close.
  */
-public class CrewOrdersScreen extends Screen {
+public class CrewOrdersScreen extends Screen implements NoirmStyled {
     public static final KeyMapping KEY = new KeyMapping("key.noirm.crew_orders", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, CombatKeys.CATEGORY);
 
-    private static final int W = 300;
-    private static final int H = 172;
-    private static final int INK = 0xF4100E14;
-    private static final int INK_LIGHT = 0xF41A1720;
-    private static final int CARD = 0xFF17141C;
-    private static final int CARD_HOVER = 0xFF221E29;
-    private static final int RULE = 0xFF2E2935;
-    private static final int FRAME = 0xFF3D3645;
-    private static final int PAPER = 0xFFEDE4D3;
-    private static final int DIM = 0xFF8F8796;
-    private static final int ACCENT = 0xFFB28CF0;
-    private static final int GOLD = 0xFFE8C060;
+    private static final int MAX_W = 300;
+    private static final int PAD = Theme.S5;
+    private static final int BUTTON_H = 18;
+    private static final int ROW_STEP = BUTTON_H + Theme.S2;
 
     private record Button(int x, int y, int w, int h, Component label, Component tip, CrewPackets.Action action, String arg, boolean closes) {}
 
     private final List<Button> buttons = new ArrayList<>();
+    private final ScreenMotion motion = new ScreenMotion();
+    private final HoverTracker hover = new HoverTracker();
+    private int left;
+    private int top;
+    private int w;
+    private int h;
+    private int quickY;
+    private int behaviourY;
 
     public CrewOrdersScreen() {
         super(Component.translatable("screen.noirm.crew_orders"));
@@ -59,77 +65,95 @@ public class CrewOrdersScreen extends Screen {
     @Override
     protected void init() {
         buttons.clear();
-        int x0 = (width - W) / 2 + 8;
-        int y = (height - H) / 2 + 24;
-        int inner = W - 16;
+        w = Math.min(MAX_W, width - 16);
+        // Header, two rows of orders, a section of quick commands, a section of behaviours.
+        h = PAD + Theme.ROW + Theme.S5 + ROW_STEP * 2 + Theme.S4 + 12 + ROW_STEP + Theme.S4 + 12 + BUTTON_H + PAD;
+        left = (width - w) / 2;
+        top = (height - h) / 2;
+        int x0 = left + PAD;
+        int y = top + PAD + Theme.ROW + Theme.S5;
+        int inner = w - PAD * 2;
         // Orders: two rows of three.
         int cw = (inner - 8) / 3;
         Order[] orders = Order.SHOWN;
         for (int i = 0; i < orders.length; i++) {
             Order order = orders[i];
             int bx = x0 + (i % 3) * (cw + 4);
-            int by = y + (i / 3) * 24;
-            buttons.add(new Button(bx, by, cw, 20, Component.literal((buttons.size() + 1) + "  ").append(Component.translatable(order.key())),
+            int by = y + (i / 3) * ROW_STEP;
+            buttons.add(new Button(bx, by, cw, BUTTON_H, Component.literal((buttons.size() + 1) + "  ").append(Component.translatable(order.key())),
                     Component.translatable(order.key() + ".desc"), CrewPackets.Action.ORDER, order.name(), true));
         }
-        y += 54;
+        y += ROW_STEP * 2 + Theme.S4;
+        quickY = y;
+        y += 12;
         String[] quick = {"come", "attack", "fall_back"};
         CrewPackets.Action[] actions = {CrewPackets.Action.COME, CrewPackets.Action.ATTACK, CrewPackets.Action.FALL_BACK};
         for (int i = 0; i < quick.length; i++) {
-            buttons.add(new Button(x0 + i * (cw + 4), y, cw, 20,
+            buttons.add(new Button(x0 + i * (cw + 4), y, cw, BUTTON_H,
                     Component.literal((buttons.size() + 1) + "  ").append(Component.translatable("screen.noirm.crew_orders." + quick[i])),
                     Component.translatable("screen.noirm.crew_orders." + quick[i] + ".desc"), actions[i], "", true));
         }
-        y += 34;
+        y += ROW_STEP + Theme.S4;
+        behaviourY = y;
+        y += 12;
         Behaviour[] behaviours = Behaviour.values();
         for (int i = 0; i < behaviours.length; i++) {
-            buttons.add(new Button(x0 + i * (cw + 4), y, cw, 18, Component.translatable(behaviours[i].key()),
+            buttons.add(new Button(x0 + i * (cw + 4), y, cw, BUTTON_H, Component.translatable(behaviours[i].key()),
                     Component.translatable(behaviours[i].key() + ".desc"), CrewPackets.Action.BEHAVIOUR, behaviours[i].name(), false));
+        }
+        if (!motion.started()) {
+            motion.open();
         }
     }
 
     @Override
+    public void tick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
+    }
+
+    @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
-        int x = (width - W) / 2;
-        int y = (height - H) / 2;
-        g.fill(x - 2, y - 2, x + W + 2, y + H + 2, 0xC0000000);
-        g.fillGradient(x, y, x + W, y + H, INK_LIGHT, INK);
-        g.renderOutline(x, y, W, H, FRAME);
-        g.fill(x + 8, y + 8, x + 18, y + 18, 0xFFB8322E);
-        g.drawCenteredString(font, "令", x + 13, y + 9, PAPER);
-        g.drawString(font, title, x + 24, y + 9, GOLD, false);
-        String hint = Component.translatable("screen.noirm.crew_orders.hint").getString();
-        g.drawString(font, fit(hint, W - 40 - font.width(title)), x + W - 8 - Math.min(font.width(hint), W - 40 - font.width(title)), y + 9, DIM, false);
-        label(g, x + 8, y + 70, Component.translatable("screen.noirm.crew_orders.quick"));
-        label(g, x + 8, y + 104, Component.translatable("screen.noirm.crew_orders.behaviour"));
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        Ui.panel(g, left, top, w, h);
+        int inner = w - PAD * 2;
+        Ui.header(g, font, left + PAD, top + PAD, inner, "令", Theme.SEAL, title,
+                Component.translatable("screen.noirm.crew_orders.hint"), Theme.TEXT_FAINT);
+        Ui.section(g, font, left + PAD, quickY, inner, Component.translatable("screen.noirm.crew_orders.quick"), Theme.TEXT_DIM);
+        Ui.section(g, font, left + PAD, behaviourY, inner, Component.translatable("screen.noirm.crew_orders.behaviour"), Theme.TEXT_DIM);
         Button hovered = null;
-        for (Button b : buttons) {
-            boolean hover = mouseX >= b.x() && mouseX < b.x() + b.w() && mouseY >= b.y() && mouseY < b.y() + b.h();
-            if (hover) {
+        for (int i = 0; i < buttons.size(); i++) {
+            Button b = buttons.get(i);
+            boolean over = !motion.closing() && Ui.in(mouseX, mouseY, b.x(), b.y(), b.w(), b.h());
+            if (over) {
                 hovered = b;
             }
-            g.fill(b.x(), b.y(), b.x() + b.w(), b.y() + b.h(), hover ? CARD_HOVER : CARD);
-            g.renderOutline(b.x(), b.y(), b.w(), b.h(), hover ? ACCENT : RULE);
-            g.drawCenteredString(font, fit(b.label().getString(), b.w() - 6), b.x() + b.w() / 2, b.y() + (b.h() - 8) / 2, hover ? PAPER : 0xFFCFC6D6);
+            Ui.button(g, font, b.x(), b.y(), b.w(), b.h(), b.label(), hover.get(i, over), true, Theme.SEAL, false);
         }
-        if (hovered != null) {
-            g.renderTooltip(font, font.split(hovered.tip(), 200), mouseX, mouseY);
-        }
+        motion.end(g);
         super.render(g, mouseX, mouseY, partialTick);
-    }
-
-    private void label(GuiGraphics g, int x, int y, Component text) {
-        g.drawString(font, text, x, y, ACCENT, false);
-        int lx = x + font.width(text) + 5;
-        g.fill(lx, y + 4, x + W - 16, y + 5, RULE);
-    }
-
-    private String fit(String text, int width) {
-        if (font.width(text) <= width) {
-            return text;
+        if (hovered != null) {
+            List<Component> tip = new ArrayList<>();
+            if (Ui.truncated(font, hovered.label(), hovered.w() - 6)) {
+                tip.add(hovered.label());
+            }
+            tip.add(hovered.tip());
+            List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>();
+            tip.forEach(line -> lines.addAll(font.split(line, 200)));
+            g.renderTooltip(font, lines, mouseX, mouseY);
+        } else if (!motion.closing()) {
+            // The hint in the header is cut with "…" on a narrow panel: the whole of it under the mouse.
+            Component hint = Component.translatable("screen.noirm.crew_orders.hint");
+            int noteW = Ui.headerNoteWidth(font, inner, title, hint);
+            if (noteW < font.width(hint) && Ui.in(mouseX, mouseY, left + PAD + inner - noteW, top + PAD, noteW, Theme.ROW)) {
+                g.renderTooltip(font, font.split(hint, 200), mouseX, mouseY);
+            }
         }
-        return font.plainSubstrByWidth(text, Math.max(0, width - font.width("…"))) + "…";
     }
 
     private void press(Button b) {
@@ -137,13 +161,16 @@ public class CrewOrdersScreen extends Screen {
         if (minecraft != null) {
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
             if (b.closes()) {
-                minecraft.setScreen(null);
+                onClose(); // (fades out, then closes)
             }
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
             for (Button b : buttons) {
                 if (mouseX >= b.x() && mouseX < b.x() + b.w() && mouseY >= b.y() && mouseY < b.y() + b.h()) {
@@ -157,6 +184,9 @@ public class CrewOrdersScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (motion.closing()) {
+            return true;
+        }
         if (keyCode >= GLFW.GLFW_KEY_1 && keyCode <= GLFW.GLFW_KEY_9) {
             int index = keyCode - GLFW.GLFW_KEY_1;
             if (index < buttons.size()) {

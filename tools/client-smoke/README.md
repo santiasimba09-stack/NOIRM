@@ -20,6 +20,16 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
 4. Check `client.log` for `Exception` or `ERROR` (the OpenAL/sound errors are expected: no audio
    device). Stop the client by killing its `Xvfb :99` and `java` processes.
 
+`GUI_SCALE=2 tools/client-smoke/run.sh` starts at that GUI scale (0 = auto, which is 3 at 1280×720), for
+checking that screens fit at other scales.
+
+Opening screens for screenshots: the spawn point moves a little each time, so don't type absolute
+coordinates. In your setup, summon invisible marker armor stands (`Marker:1b`, with a `Rotation`
+that looks at the NPC or block) and get there with `/tp @s @e[tag=<spot>,limit=1]` or
+`/execute at @e[tag=<spot>,limit=1] run tp @s ~ ~ ~ <yaw> <pitch>`. Pick an empty hotbar slot before
+right-clicking an NPC or block (a held item may take the click). An `Escape` with no screen open
+opens the game menu and swallows the next keys.
+
 `SMOKE_SETUP=path/to/setup.mcfunction` runs your own setup instead (it must end with `tag @s add smoke_setup`),
 for example a bare new player for a playthrough.
 

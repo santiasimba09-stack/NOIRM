@@ -105,6 +105,7 @@ public final class FireLightningGameTests {
     /** The oil bursts on the enemy and keeps burning where it landed. */
     @GameTest(template = "empty", batch = "noirm_flame_bomb", timeoutTicks = 80)
     public static void flameBombSticksAndBurns(GameTestHelper helper) {
+        clearStrays(helper); // (no mob left over from earlier tests near the caster: the bomb or a fight could hit it)
         floor(helper);
         pad(helper, 3, 6);
         SparringNinja caster = ninja(helper, 1.5f, 0.5f, TestClans.FIRE);

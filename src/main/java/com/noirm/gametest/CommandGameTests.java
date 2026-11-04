@@ -100,6 +100,7 @@ public final class CommandGameTests {
     /** The main commands change what they say they change. */
     @GameTest(template = "empty", batch = "noirm_commands_run", timeoutTicks = 60)
     public static void commandsDoWhatTheySay(GameTestHelper helper) {
+        clearStrays(helper); // (it counts the ninjas round it: none may be left over from earlier tests)
         floor(helper);
         FakePlayer player = player(helper);
         CommandSourceStack source = source(player);

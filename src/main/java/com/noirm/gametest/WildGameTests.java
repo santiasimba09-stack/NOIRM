@@ -168,12 +168,11 @@ public final class WildGameTests {
     /** Followers walk to their places in the formation around the leader. */
     @GameTest(template = "empty", batch = "noirm_wild_move", timeoutTicks = 260)
     public static void groupsStayTogether(GameTestHelper helper) {
-        // A 13×13 floor (put back to air afterwards).
-        for (int x = -5; x <= 7; x++) {
-            for (int z = -5; z <= 7; z++) {
-                helper.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
-            }
-        }
+        // A 13×13 room: a floor with open air above it (the floor goes back to air afterwards). It
+        // reaches past the space the framework clears, into solid rock: without openFloor a follower
+        // put in a corner could be buried there and never move ("one is 7.07 blocks from the leader").
+        openFloor(helper, -5, -5, 7, 7, 3);
+        clearNinjas(helper, 20); // (nothing left over from earlier tests: a stray rogue would start a fight)
         List<SparringNinja> squad = WildSpawner.spawn(helper.getLevel(), Encounters.SQUAD, helper.absolutePos(new BlockPos(1, 1, 1)), 15f,
                 helper.getLevel().getRandom());
         SparringNinja leader = squad.get(0);

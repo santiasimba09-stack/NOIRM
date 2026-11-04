@@ -97,7 +97,7 @@ public final class ClientNatureTraining {
         if (active == null || state.pace() <= 0f) {
             boolean anyLeft = NatureDrills.TRAINABLE.stream().anyMatch(n -> !ownedNature(powers, n));
             if (anyLeft) {
-                g.drawCenteredString(font, Component.translatable("hud.noirm.drill.none"), cx, y, 0xFF8A8A90);
+                g.drawCenteredString(font, Component.translatable("hud.noirm.drill.none"), cx, y, com.noirm.client.ui.Theme.TEXT_DIM);
             }
             return;
         }
@@ -108,10 +108,18 @@ public final class ClientNatureTraining {
         int barY = y + 11;
         DRILL_BAR.update(Math.min(1f, share(active)));
         com.noirm.client.ui.Ui.bar(g, cx - BAR_W / 2, barY, BAR_W, 3, DRILL_BAR.value(), DRILL_BAR.value(), color, com.noirm.client.ui.HudKit.TRACK);
-        // A moving glint so the bar reads as "working".
-        int glint = (int) ((mc.level == null ? 0 : mc.level.getGameTime()) % 40) * BAR_W / 40;
-        if (glint < BAR_W * share(active)) {
-            g.fill(cx - BAR_W / 2 + glint, barY, cx - BAR_W / 2 + glint + 2, barY + 3, 0x90FFFFFF);
+        // A soft glint gliding along the filled part so the bar reads as "working" (wall-clock time: smooth at any frame rate).
+        int filled = Math.round(BAR_W * DRILL_BAR.value());
+        if (filled > 4) {
+            float t = (com.noirm.client.ui.Anim.now() % 2000L) / 2000f;
+            int glint = Math.round(t * (filled + 8)) - 4;
+            for (int i = -3; i <= 3; i++) {
+                int px = glint + i;
+                if (px >= 0 && px < filled) {
+                    float a = 1f - Math.abs(i) / 4f;
+                    g.fill(cx - BAR_W / 2 + px, barY, cx - BAR_W / 2 + px + 1, barY + 3, com.noirm.client.ui.Theme.alpha(0xFFFFFFFF, 0.5f * a * a));
+                }
+            }
         }
         MutableComponent pace = Component.translatable("hud.noirm.drill.pace", String.format(Locale.ROOT, "%.1f", state.pace()));
         if (isHidden(active)) {
@@ -120,7 +128,7 @@ public final class ClientNatureTraining {
         if (state.teacher() > 0) {
             pace.append(" ").append(Component.translatable(state.teacher() == 2 ? "hud.noirm.drill.master" : "hud.noirm.drill.crew"));
         }
-        g.drawCenteredString(font, pace, cx, barY + 8, 0xFFB8C8D8);
+        g.drawCenteredString(font, pace, cx, barY + 8, com.noirm.client.ui.Theme.TEXT_DIM);
     }
 
     private static boolean ownedNature(PowerPackets.SyncPowers powers, Nature nature) {

@@ -2,6 +2,40 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-10-29 — UI redesign phase B: the rest of the screens on the kit, three flaky tests fixed (branch `claude/keen-cray-uc2d11`)
+
+The owner's brief, continued: "make it smoother, make it minimalist while keeping the color palette".
+- **Six screens moved onto the UI kit** (`client/ui`), every button, click and packet unchanged:
+  shop (店), missions board (任), master (師, leaf green), bingo book (賞), Shinobi Handbook (忍), crew
+  orders (令). One flat ash panel with a header seal; the shop's Buy/Sell are text tabs with a sliding
+  underline; flat rows and cards that lighten under the mouse, with a 1-px bar for their state; kit
+  buttons (red underline for primary actions, gold for "you can do this now"); "…" on anything cut,
+  with the whole text as a tooltip; fades on open, close, tab switch and page turn; kit tooltips.
+  Panels shrink to fit the window and lists show a scrollbar instead of clipping. Checked in the
+  client at GUI scale auto and 2 (`docs/screenshots/ui-before-*` / `ui-after-*`).
+- **Bingo book** keeps its identity: legends get a gold-washed page, a 伝 seal with a slow glow and a
+  gold shimmer passing over their line; the red CLAIMED stamp stays. Arrow keys keep the open page in
+  view; traits that don't fit end in "…" with all of them as a tooltip.
+- **Crew orders** fade out when an order closes them; the cut header hint has a tooltip.
+- Nature-drill HUD: the glint glides by wall-clock time (smooth at any frame rate), kit colours.
+- Kit: `Ui.header` / `Ui.seal` / `Ui.card` / `Ui.headerNoteWidth`; `docs/UI.md` has the recipe for a
+  new screen. `tools/client-smoke/run.sh` takes `GUI_SCALE=<n>`.
+- **Flaky test `groupsstaytogether` fixed at the root.** The game-test world is a normal world and the
+  tests sit ~60 blocks underground. The squad's 13×13 floor reaches past the small space the framework
+  clears, so the corners its followers were put in could be solid deepslate (depending on where the
+  test landed in the grid). A buried follower never moved: "one is 7.07 blocks from the leader". The
+  test now opens its room (`TestKit.openFloor`) and clears stray mobs first: 62/62 over two runs
+  with it repeated 30 more times (before the fix, 4 to 11 of the 30 copies failed per run).
+- **Other flaky tests, same family** (tests sit a few blocks apart and a failed one leaves its
+  fighters behind): `commandsdowhattheysay` counted a ninja left by an earlier test ("got 3"),
+  `amaterasuburnsthroughwater` could set a stray mob on fire instead of its target (Amaterasu takes
+  what's nearest the line of sight within 24 blocks) and `flamebombsticksandburns` could see its
+  caster hit by one: they clear strays first (`TestKit.clearStrays`). `bountyispaidonceandtotheleader`
+  counted every page of the world's bingo book near its spot; it now checks its own page.
+- Tests: 365/365 pass twice in a row. **`worldgenerationbuildsthefaredge`** failed on a fresh world:
+  it counted the wall inside one chunk, and its probe sat on the wall's outer edge at a chunk corner,
+  so only 15 blocks fell inside. It now probes the middle of the wall and counts a 9×9 window round it.
+
 ## 2026-10-23 — Ninjas with their own jutsu, wild ninjas, new blades and armor, v0.13.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 The owner's request: "make crew members and ninja NPCs not just have every single jutsu of the natures,

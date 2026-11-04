@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-22 (own jutsu sets, wild ninjas, blades, armor, v0.13.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-10-29 (UI redesign, phase B) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -34,7 +34,13 @@ The villages (v0.7.0):
 
 ## In progress
 
-Waiting on the owner's playtest of v0.13.0.
+Waiting on the owner's playtest of v0.13.0 and of the UI redesign.
+
+| UI redesign (owner: "smoother, minimalist, same palette"; rules in `docs/UI.md`) | State |
+|---|---|
+| **Phase A:** the kit (`client/ui`), the HUD, J screen, ally screen, character creation | ✅ checked in client (`ui-after-hud-*`, `ui-after-j-*`, `ui-after-ally-*`, `ui-after-creator-*`) |
+| **Phase B:** shop, missions board, master, bingo book, handbook, crew orders: flat panel and header seal, text tabs with a sliding underline, flat rows and cards, eased hover, open/close/tab fades, "…" with the whole text as a tooltip | ✅ game tests green; checked in client at GUI scale auto and 2 (`ui-before-*` / `ui-after-*`) |
+| Every NOIRM screen and HUD overlay is now on the kit (the full-screen eye/focus effects aren't UI panels and stay as they are) | ✅ |
 
 | v0.13.0 | State |
 |---|---|
@@ -89,6 +95,7 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
 | `com.noirm.network` | `NoirmNetwork` (protocol 7), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
+| `com.noirm.client.ui` | The UI kit every screen and the HUD use (`docs/UI.md`): `Theme` (colours, spacing), `Ui` (panel, header and seal, card, button, toggle, segment, slider, bar, row, chip, scrollbar, text cut with "…"), `TabStrip` (text tabs, sliding underline), `ScreenMotion` (open/close/tab fades), `HoverTracker`, `Smooth`, `Anim`, `HudKit`, `HudLayout`, `NoirmStyled` + `TooltipStyle` (kit tooltips) |
 | `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
 | `com.noirm.weapon` | Ninja weapons (`NinjaWeapons` registry, `ThrowingWeaponItem`, `StaffItem`, `ChakraBladeItem`, `ExplosiveTagItem`, `ThrownWeapon`, `Throwing`, `Moveset` + `WeaponMoves`, `NinjaArsenal`); see `docs/WEAPONS.md` |
 | `com.noirm.chakra` + `com.noirm.mixin` | Water walking (`WaterWalking`, `WaterWalker`; `BlockStateBaseMixin` gives the water surface a skin; config `noirm.mixins.json`) |
@@ -201,7 +208,19 @@ v0.11.0 (character creation, movement feel, gore v1) and earlier are in `CHANGEL
   start per chunk (the 8-chunk structure reach can't be raised); spacing 96 / separation 48 chunks.
   Everything from vanilla blocks; the research (`docs/research-villages-v3.txt`) is motifs only.
 
+- **UI:** one kit for every screen (`client/ui`, `docs/UI.md`): flat ash panels, one hairline, bone
+  text, the blood-red seal for primary actions and the active tab, gold only for "you can do this
+  now" and money. Screens keep a colour of their own only where it means something (the masters'
+  leaf green, class and rank letters, a legend's gold). Time-based motion only.
+- **Game tests:** the test world is a normal world and the tests sit about 60 blocks underground, in
+  deepslate. The framework only clears a small space round each 3×3 test, so a floor bigger than that
+  uses `TestKit.openFloor` (stone floor + air above), and a test that counts or fights what's around
+  it calls `TestKit.clearStrays` first (a failed earlier test leaves its fighters behind).
+
 ## Open questions for the owner
+
+- **UI (phase B):** the shop now has a 店 seal like the other screens; masters keep a leaf-green seal.
+  OK? Is anything from the old look missed (the green Buy/Sell buttons, the gold titles)?
 
 - **Jutsu sets:** strength tiers 20/40/100 right? Weak Hyūga can't know Rotation (A rank): OK? Crew
   self-learning (one jutsu per mastery milestone) too fast or slow?

@@ -1,5 +1,11 @@
 package com.noirm.client;
 
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.TabStrip;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.economy.Ryo;
 import com.noirm.mission.CareerPackets;
 import com.noirm.mission.PlayerRank;
@@ -15,30 +21,31 @@ import java.util.List;
 
 /**
  * A village shop in ryo: a Buy tab (price, the rank it needs) and a Sell tab (what they pay, how
- * many you carry), your wallet at the top. Each click buys or sells one line.
+ * many you carry), your wallet at the top. Each click buys or sells one line. Drawn with the NOIRM
+ * kit ({@code client.ui}): one flat panel, text tabs with a sliding underline, flat rows that
+ * lighten under the mouse, a fade on open/close and between tabs.
  */
-public class ShopScreen extends Screen {
-    private static final int W = 300;
-    private static final int H = 212;
+public class ShopScreen extends Screen implements NoirmStyled {
+    private static final int MAX_W = 300;
+    private static final int MAX_H = 212;
+    private static final int PAD = Theme.S5;
     private static final int ROW_H = 20;
-    private static final int INK = 0xF4100E14;
-    private static final int INK_LIGHT = 0xF41A1720;
-    private static final int CARD = 0xFF17141C;
-    private static final int CARD_HOVER = 0xFF221E29;
-    private static final int FRAME = 0xFF3D3645;
-    private static final int RULE = 0xFF2E2935;
-    private static final int PAPER = 0xFFEDE4D3;
-    private static final int DIM = 0xFF8F8796;
-    private static final int GOLD = 0xFFE8C060;
-    private static final int RED = 0xFFE05A5A;
+    private static final int ROW_GAP = 2;
+    private static final int[] TAB_ACCENT = {Theme.SEAL};
 
     private CareerPackets.ShopInfo info;
     private boolean selling;
     private int scroll;
     private int left;
     private int top;
+    private int w;
+    private int h;
     /** Visible rows this frame: (index into info.rows, y). */
     private final List<int[]> visibleRows = new ArrayList<>();
+    private final ScreenMotion motion = new ScreenMotion();
+    private final TabStrip tabs = new TabStrip();
+    private final HoverTracker hover = new HoverTracker();
+    private String[] tabLabels;
 
     public ShopScreen(CareerPackets.ShopInfo info) {
         super(info.name());
@@ -65,8 +72,25 @@ public class ShopScreen extends Screen {
 
     @Override
     protected void init() {
-        left = (width - W) / 2;
-        top = (height - H) / 2;
+        w = Math.min(MAX_W, width - 16);
+        h = Math.min(MAX_H, height - 8);
+        left = (width - w) / 2;
+        top = (height - h) / 2;
+        tabLabels = new String[]{Component.translatable("shop.noirm.tab.buy").getString(),
+                Component.translatable("shop.noirm.tab.sell").getString()};
+        if (!motion.started()) {
+            motion.open();
+        }
+    }
+
+    @Override
+    public void tick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
     }
 
     private List<Integer> shown() {
@@ -79,94 +103,113 @@ public class ShopScreen extends Screen {
         return out;
     }
 
+    private int listTop() {
+        return top + PAD + Theme.ROW + Theme.S1 + Theme.ROW + Theme.S2;
+    }
+
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
         visibleRows.clear();
-        int x = left, y = top;
-        g.fill(x - 2, y - 2, x + W + 2, y + H + 2, 0xC0000000);
-        g.fillGradient(x, y, x + W, y + H, INK_LIGHT, INK);
-        g.renderOutline(x, y, W, H, FRAME);
-        g.drawString(font, title, x + 8, y + 8, GOLD, false);
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        int x = left + PAD;
+        int iw = w - PAD * 2;
+        Ui.panel(g, left, top, w, h);
+        // Header: the shop's name, your wallet on the right.
         Component wallet = Component.translatable("shop.noirm.wallet", Ryo.format(info.ryo()));
-        g.drawString(font, wallet, x + W - 8 - font.width(wallet), y + 8, PAPER, false);
-        // Tabs.
-        tab(g, x + 8, y + 22, Component.translatable("shop.noirm.tab.buy"), !selling, mouseX, mouseY);
-        tab(g, x + 78, y + 22, Component.translatable("shop.noirm.tab.sell"), selling, mouseX, mouseY);
-        g.fill(x + 6, y + 38, x + W - 6, y + 39, RULE);
+        Ui.header(g, font, x, top + PAD, iw, "店", Theme.SEAL, title, wallet, Theme.GOLD);
+        // Buy / Sell.
+        int tabsY = top + PAD + Theme.ROW + Theme.S1;
+        tabs.draw(g, font, x, tabsY, iw, tabLabels, selling ? 1 : 0, TAB_ACCENT, mouseX, mouseY);
+
+        CareerPackets.ShopRowView hovered = null;
+        Component hoveredName = null;
+        motion.beginContent(g);
         List<Integer> rows = shown();
-        int listTop = y + 44;
-        int visible = (y + H - 6 - listTop) / ROW_H;
+        int listTop = listTop();
+        int bottom = top + h - Theme.S4;
+        int visible = Math.max(1, (bottom - listTop + ROW_GAP) / ROW_H);
         scroll = Mth.clamp(scroll, 0, Math.max(0, rows.size() - visible));
         if (rows.isEmpty()) {
-            g.drawString(font, Component.translatable(selling ? "shop.noirm.nothing_to_sell" : "shop.noirm.nothing"), x + 10, listTop + 4, DIM, false);
+            Component none = Component.translatable(selling ? "shop.noirm.nothing_to_sell" : "shop.noirm.nothing");
+            Ui.text(g, font, none, x, listTop + 4, iw, Theme.TEXT_FAINT);
         }
-        CareerPackets.ShopRowView hovered = null;
+        boolean scrolls = rows.size() > visible;
+        int rowW = iw - (scrolls ? 5 : 0);
         for (int i = 0; i < visible && scroll + i < rows.size(); i++) {
             int index = rows.get(scroll + i);
             CareerPackets.ShopRowView row = info.rows().get(index);
             int ry = listTop + i * ROW_H;
-            boolean hover = mouseX >= x + 8 && mouseX < x + W - 8 && mouseY >= ry && mouseY < ry + ROW_H - 2;
-            g.fill(x + 8, ry, x + W - 8, ry + ROW_H - 2, hover ? CARD_HOVER : CARD);
-            g.renderOutline(x + 8, ry, W - 16, ROW_H - 2, RULE);
-            g.renderItem(row.stack(), x + 10, ry + 1);
-            g.renderItemDecorations(font, row.stack(), x + 10, ry + 1);
-            String name = row.stack().getHoverName().getString();
+            int rh = ROW_H - ROW_GAP;
+            boolean over = !motion.closing() && Ui.in(mouseX, mouseY, x, ry, rowW, rh);
+            float hv = hover.get(HoverTracker.key(selling ? 2 : 1, index), over);
             boolean locked = !row.sell() && row.need() > info.rank();
             boolean poor = !row.sell() && row.price() > info.ryo();
             boolean none = row.sell() && row.have() < row.stack().getCount();
+            boolean blocked = locked || poor || none;
+            Ui.row(g, x, ry, rowW, rh, hv, false, blocked ? Theme.RED : Theme.GOLD);
+            g.renderItem(row.stack(), x + 2, ry + 1);
+            g.renderItemDecorations(font, row.stack(), x + 2, ry + 1);
             Component price = Component.translatable(row.sell() ? "shop.noirm.pays" : "shop.noirm.costs", Ryo.format(row.price()));
             int priceW = font.width(price);
-            g.drawString(font, fit(name, W - 60 - priceW), x + 30, ry + 5, locked || none ? DIM : PAPER, false);
-            g.drawString(font, price, x + W - 12 - priceW, ry + 5, locked || poor || none ? RED : GOLD, false);
-            visibleRows.add(new int[] {index, ry});
-            if (hover) {
+            g.drawString(font, price, x + rowW - 6 - priceW, ry + 5, blocked ? Theme.RED : Theme.GOLD, false);
+            Component name = row.stack().getHoverName();
+            int nameColor = locked || none ? Theme.TEXT_FAINT : Theme.mix(Theme.TEXT_DIM, Theme.TEXT, 0.7f + 0.3f * hv);
+            Ui.text(g, font, Component.literal(name.getString()), x + 24, ry + 5, rowW - 24 - priceW - 14, nameColor);
+            visibleRows.add(new int[]{index, ry, rowW});
+            if (over) {
                 hovered = row;
+                hoveredName = name;
             }
         }
+        Ui.scrollbar(g, x + iw - 1, listTop, visible * ROW_H - ROW_GAP, scroll, visible, rows.size(), Theme.IRON);
+        motion.endContent(g);
+        motion.end(g);
         super.render(g, mouseX, mouseY, partialTick);
-        if (hovered != null) {
+        if (hovered != null && !motion.closing()) {
             List<Component> tip = new ArrayList<>();
-            tip.add(hovered.stack().getHoverName());
+            tip.add(hoveredName);
             if (hovered.sell()) {
-                tip.add(Component.translatable("shop.noirm.tip.sell", hovered.stack().getCount(), Ryo.format(hovered.price()), hovered.have()));
+                tip.add(Component.translatable("shop.noirm.tip.sell", hovered.stack().getCount(), Ryo.format(hovered.price()), hovered.have())
+                        .withStyle(s -> s.withColor(Theme.TEXT_DIM)));
             } else {
-                tip.add(Component.translatable("shop.noirm.tip.buy", hovered.stack().getCount(), Ryo.format(hovered.price())));
+                tip.add(Component.translatable("shop.noirm.tip.buy", hovered.stack().getCount(), Ryo.format(hovered.price()))
+                        .withStyle(s -> s.withColor(Theme.TEXT_DIM)));
                 if (hovered.need() > 0) {
-                    tip.add(Component.translatable("shop.noirm.tip.rank", PlayerRank.byOrdinal(hovered.need()).title()));
+                    boolean locked = hovered.need() > info.rank();
+                    tip.add(Component.translatable("shop.noirm.tip.rank", PlayerRank.byOrdinal(hovered.need()).title())
+                            .withStyle(s -> s.withColor(locked ? Theme.RED : Theme.GOLD)));
                 }
             }
             g.renderComponentTooltip(font, tip, mouseX, mouseY);
         }
     }
 
-    private void tab(GuiGraphics g, int tx, int ty, Component label, boolean active, int mouseX, int mouseY) {
-        g.fill(tx, ty, tx + 66, ty + 14, active ? 0xFF3A6E2E : 0xFF2A2630);
-        g.renderOutline(tx, ty, 66, 14, active ? 0xFF8AD07A : FRAME);
-        g.drawCenteredString(font, label, tx + 33, ty + 3, active ? PAPER : DIM);
-    }
-
-    private String fit(String text, int width) {
-        return font.width(text) <= width ? text : font.plainSubstrByWidth(text, width - font.width("…")) + "…";
+    private void click() {
+        if (minecraft != null) {
+            minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                    net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+        }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
-            if (mouseY >= top + 22 && mouseY < top + 36) {
-                if (mouseX >= left + 8 && mouseX < left + 74) {
-                    selling = false;
+            int t = tabs.at(mouseX, mouseY);
+            if (t >= 0) {
+                if ((t == 1) != selling) {
+                    selling = t == 1;
                     scroll = 0;
-                    return true;
+                    motion.tabChanged();
+                    click();
                 }
-                if (mouseX >= left + 78 && mouseX < left + 144) {
-                    selling = true;
-                    scroll = 0;
-                    return true;
-                }
+                return true;
             }
             for (int[] row : visibleRows) {
-                if (mouseX >= left + 8 && mouseX < left + W - 8 && mouseY >= row[1] && mouseY < row[1] + ROW_H - 2) {
+                if (Ui.in(mouseX, mouseY, left + PAD, row[1], row[2], ROW_H - ROW_GAP)) {
                     NoirmNetwork.sendToServer(new CareerPackets.ShopAction(info.entityId(), row[0]));
                     return true;
                 }

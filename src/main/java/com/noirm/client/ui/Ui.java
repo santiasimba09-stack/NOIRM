@@ -136,6 +136,46 @@ public final class Ui {
         return lx + font.width(text);
     }
 
+    /** A screen's seal: a small rounded square in {@code color} with one glyph (忍, 任, 師…) in bone white. 13×13. */
+    public static void seal(GuiGraphics g, Font font, int x, int y, String glyph, int color) {
+        roundRect(g, x, y, 13, 13, color);
+        textCentered(g, font, glyph, x + 7, y + 3, 0xFFF4E6D0);
+    }
+
+    /**
+     * A screen header on one 14-px row: the seal, the title, and an optional note on the right (cut
+     * with "…" so both fit). Returns the note's left edge.
+     */
+    public static int header(GuiGraphics g, Font font, int x, int y, int w, String glyph, int sealColor, Component title, Component note,
+                             int noteColor) {
+        seal(g, font, x, y, glyph, sealColor);
+        int right = x + w;
+        if (note != null) {
+            int nw = headerNoteWidth(font, w, title, note);
+            g.drawString(font, fit(font, note, nw), right - nw, y + 3, noteColor, false);
+            right -= nw + Theme.S4;
+        }
+        text(g, font, title, x + 13 + Theme.S3, y + 3, right - (x + 13 + Theme.S3), Theme.TEXT);
+        return right;
+    }
+
+    /**
+     * How wide {@link #header}'s note is drawn: whatever the title leaves free, but at least half
+     * the row. If it's less than the note's own width, the note was cut (show it whole as a tooltip).
+     */
+    public static int headerNoteWidth(Font font, int w, Component title, Component note) {
+        int free = w - (13 + Theme.S3) - font.width(title) - Theme.S4;
+        return Math.min(font.width(note), Math.max(w / 2, free));
+    }
+
+    /** A flat card: a raised fill and, when {@code accent} isn't 0, a 1-px bar of it on the left. */
+    public static void card(GuiGraphics g, int x, int y, int w, int h, int accent) {
+        g.fill(x, y, x + w, y + h, Theme.RAISED);
+        if (accent != 0) {
+            g.fill(x, y, x + 1, y + h, accent);
+        }
+    }
+
     // ================================================================ controls
 
     /**

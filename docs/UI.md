@@ -2,8 +2,9 @@
 
 The owner's brief (2026-10-29): *smoother, minimalist, same palette.* Every NOIRM screen and the HUD
 uses one small kit in `src/main/java/com/noirm/client/ui/` (client-only). Phase A moved the HUD,
-`JutsuScreen`, `AllyScreen` and `CreatorScreen` onto it. Phase B (Shop, MissionBoard, Master,
-BingoBook, Handbook, CrewOrders) should follow the same rules.
+`JutsuScreen`, `AllyScreen` and `CreatorScreen` onto it. Phase B moved `ShopScreen`,
+`MissionBoardScreen`, `MasterScreen`, `BingoBookScreen`, `HandbookScreen` and `CrewOrdersScreen`, so
+every NOIRM screen is now on the kit. New screens start from one of these (see "A new screen" below).
 
 ## Tokens (`Theme`)
 
@@ -34,6 +35,8 @@ clickable row). Colour maths: `Theme.mix`, `fade`, `alpha`, `darken`.
 | Piece | Call | Look |
 |---|---|---|
 | Panel | `Ui.panel` | flat `SURFACE` + one hairline. No double frames, rivets, gradients or paper lines. |
+| Header | `Ui.header` (+ `Ui.seal`) | one 14-px row: a 13-px seal with one glyph (忍 任 師 賞 店 令), the title in bone, a note on the right that gets whatever the title leaves (at least half; `Ui.headerNoteWidth` says if it was cut, then tooltip it) |
+| Card | `Ui.card` | a flat raised block; an optional 1-px accent bar on the left says its state (gold = you can, green = done) |
 | Section header | `Ui.section` | small UPPER-CASE label + a thin rule to the right |
 | Button | `Ui.button(..., hover, enabled, accent, primary)` | flat; an accent underline grows from the centre on hover; primary = tinted + full underline |
 | Toggle / lit pill | `Ui.toggle` | like a button, tinted while on |
@@ -70,6 +73,10 @@ Screens draw flat (no text shadow). The HUD draws over the world, so it keeps te
 
 ## Layout rules
 
+- **Size the panel to the screen:** `w = min(MAX_W, width - 16)`, `h = min(MAX_H, height - 8)`, and
+  work out list rows from the space left (`visible = (bottom - listTop) / ROW_H`). Then a bigger GUI
+  scale or a small window shows fewer rows and a scrollbar instead of clipping.
+
 - Work at GUI scale *auto* for 1280×720 (426×240 GUI px) and 1920×1080 (480×270). Measure text,
   never assume widths; keep 12 px padding inside panels.
 - **HUD corners:** top-left = vitals (chakra, stamina, posture) and status lines; top-right = career
@@ -79,3 +86,29 @@ Screens draw flat (no text shadow). The HUD draws over the world, so it keeps te
 - **Hide what isn't relevant:** stats only in combat mode or for a moment when one grows; the clan
   for a few seconds after joining; eyes while active or in combat; the cloak while it matters.
 - Fewer boxes: group with whitespace and a hairline, not frames.
+- **Never drop text silently.** A line that's cut ends in "…"; a list that runs out of room ends its
+  last visible line in "…"; either way the whole text is a tooltip under the mouse.
+- **One accent per screen:** `SEAL` red for primary actions and the active tab; `GOLD` only for "you
+  can do this now" (an exam, a lesson to learn) and money; `RED` for "no" and for what costs you.
+  A screen keeps a colour of its own only where it means something (the masters' leaf green, a
+  class or rank letter's colour, a legend's gold).
+
+## A new screen (or moving an old one)
+
+A plain `Screen` (a container screen does the same in `renderBg` / `containerTick`, see `AllyScreen`):
+
+1. `implements NoirmStyled` (kit tooltips). Fields: `ScreenMotion motion`, `HoverTracker hover`, a
+   `TabStrip` if it has tabs.
+2. `init()`: size and place the panel, cache translated tab labels, `if (!motion.started()) motion.open()`.
+   `tick()`: `motion.tick()`. `onClose()`: `motion.close(super::onClose)`; code that closes the screen
+   on purpose (a crew order that closes it) calls `onClose()` too, so it fades out.
+3. `render()`: `motion.scrim` (instead of `renderBackground`), `motion.begin`, the panel and the
+   header, the body between `beginContent` / `endContent`, `motion.end`, then `super.render` and the
+   tooltip **after** `end` (so it isn't faded or shifted).
+4. Input: return early while `motion.closing()` (clicks and keys), so nothing is sent twice. Keep hit
+   boxes in a list filled while drawing; hover amounts come from `hover.get(key, over)` with a key
+   that's stable for the element (a row's id, not its position on screen).
+5. A list-and-detail screen (bingo book, handbook) calls `motion.tabChanged()` when the open entry
+   changes: the detail cross-fades like a tab.
+6. Check it in the smoke client at GUI scale auto (3 at 1280×720) and at 2 (`GUI_SCALE=2
+   tools/client-smoke/run.sh`), and with long text: nothing may run past the panel.

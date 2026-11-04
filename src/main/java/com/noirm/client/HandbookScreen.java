@@ -1,5 +1,10 @@
 package com.noirm.client;
 
+import com.noirm.client.ui.HoverTracker;
+import com.noirm.client.ui.NoirmStyled;
+import com.noirm.client.ui.ScreenMotion;
+import com.noirm.client.ui.Theme;
+import com.noirm.client.ui.Ui;
 import com.noirm.guide.Handbook;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -17,28 +22,18 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * The Shinobi Handbook: chapters down the left (an ink seal marks the open one), the page on the
+ * The Shinobi Handbook: chapters down the left (the open one marked in seal red), the page on the
  * right: its title, a strip of items as the chapter's picture, then the text (scroll with the
  * wheel). The controls chapter also lists your <b>real key bindings</b>, so it stays right if you
- * change them. Same ink look as the master and ally screens. Chapters come from
- * {@link Handbook#CHAPTERS}; the text from {@code handbook.noirm.<chapter>(.body)}.
+ * change them. Drawn with the NOIRM kit ({@code client.ui}); turning a chapter cross-fades the page.
+ * Chapters come from {@link Handbook#CHAPTERS}; the text from {@code handbook.noirm.<chapter>(.body)}.
  */
-public class HandbookScreen extends Screen {
-    private static final int W = 372;
-    private static final int H = 226;
+public class HandbookScreen extends Screen implements NoirmStyled {
+    private static final int MAX_W = 372;
+    private static final int MAX_H = 226;
+    private static final int PAD = Theme.S5;
     private static final int LIST_W = 104;
-    private static final int ROW_H = 17;
-    private static final int INK = 0xF4100E14;
-    private static final int INK_LIGHT = 0xF41A1720;
-    private static final int CARD = 0xFF17141C;
-    private static final int CARD_HOVER = 0xFF221E29;
-    private static final int FRAME = 0xFF3D3645;
-    private static final int RULE = 0xFF2E2935;
-    private static final int PAPER = 0xFFEDE4D3;
-    private static final int DIM = 0xFF8F8796;
-    private static final int GOLD = 0xFFE8C060;
-    private static final int BLOOD = 0xFFA0201C;
-    private static final int KEYCAP = 0xFF2A2630;
+    private static final int ROW_H = 16;
 
     /** A control in the controls chapter: the key (as bound now) and what it does. */
     private record Control(Supplier<KeyMapping> key, String what) {}
@@ -66,7 +61,12 @@ public class HandbookScreen extends Screen {
     private int scroll;
     private int left;
     private int top;
+    private int w;
+    private int h;
     private List<FormattedCharSequence> lines = List.of();
+    private final ScreenMotion motion = new ScreenMotion();
+    private final HoverTracker hover = new HoverTracker();
+    private String tipText;
 
     public HandbookScreen() {
         super(Component.translatable("screen.noirm.handbook"));
@@ -95,21 +95,44 @@ public class HandbookScreen extends Screen {
 
     @Override
     protected void init() {
-        left = (width - W) / 2;
-        top = (height - H) / 2;
+        w = Math.min(MAX_W, width - 16);
+        h = Math.min(MAX_H, height - 8);
+        left = (width - w) / 2;
+        top = (height - h) / 2;
         layout();
+        if (!motion.started()) {
+            motion.open();
+        }
+    }
+
+    @Override
+    public void tick() {
+        motion.tick();
+    }
+
+    @Override
+    public void onClose() {
+        motion.close(super::onClose);
     }
 
     private Handbook.Chapter current() {
         return Handbook.CHAPTERS.get(chapter);
     }
 
+    private int listX() {
+        return left + PAD;
+    }
+
+    private int contentTop() {
+        return top + PAD + Theme.ROW + Theme.S3;
+    }
+
     private int pageX() {
-        return left + LIST_W + 14;
+        return listX() + LIST_W + Theme.S5 + 1;
     }
 
     private int pageW() {
-        return W - LIST_W - 24;
+        return left + w - PAD - pageX();
     }
 
     /** Wraps the chapter's text (paragraphs split by blank lines) to the page width. */
@@ -129,7 +152,11 @@ public class HandbookScreen extends Screen {
     }
 
     private void select(int index) {
-        chapter = Math.floorMod(index, Handbook.CHAPTERS.size());
+        int next = Math.floorMod(index, Handbook.CHAPTERS.size());
+        if (next != chapter) {
+            motion.tabChanged();
+        }
+        chapter = next;
         lastChapter = chapter;
         layout();
     }
@@ -138,52 +165,52 @@ public class HandbookScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
-        int x = left;
-        int y = top;
-        g.fill(x - 2, y - 2, x + W + 2, y + H + 2, 0xC0000000);
-        g.fillGradient(x, y, x + W, y + H, INK_LIGHT, INK);
-        for (int ly = y + 26; ly < y + H - 4; ly += 6) {
-            g.fill(x + 3, ly, x + W - 3, ly + 1, 0x06FFFFFF);
-        }
-        g.renderOutline(x, y, W, H, FRAME);
-        g.renderOutline(x + 2, y + 2, W - 4, H - 4, 0xFF221E28);
-        // The cover line: a blood-red seal with 忍 and the book's name.
-        g.fill(x + 8, y + 6, x + 22, y + 20, BLOOD);
-        g.renderOutline(x + 8, y + 6, 14, 14, 0xFF5A1010);
-        g.drawCenteredString(font, "忍", x + 15, y + 9, 0xFFF4E6D0);
-        g.drawString(font, title, x + 28, y + 10, GOLD, false);
+        tipText = null;
+        motion.scrim(g, width, height);
+        motion.begin(g);
+        Ui.panel(g, left, top, w, h);
+        // The cover line: a blood-red seal with 忍, the book's name and the page number.
         String pageNo = (chapter + 1) + " / " + Handbook.CHAPTERS.size();
-        g.drawString(font, pageNo, x + W - 10 - font.width(pageNo), y + 10, DIM, false);
-        g.fill(x + 6, y + 24, x + W - 6, y + 25, RULE);
-        drawChapters(g, x + 6, y + 30, mouseX, mouseY);
-        g.fill(x + LIST_W + 8, y + 30, x + LIST_W + 9, y + H - 8, RULE);
-        drawPage(g, pageX(), y + 30, pageW(), y + H - 8);
+        Ui.header(g, font, left + PAD, top + PAD, w - PAD * 2, "忍", Theme.SEAL, title, Component.literal(pageNo), Theme.TEXT_FAINT);
+        int bottom = top + h - Theme.S4;
+        drawChapters(g, listX(), contentTop(), bottom, mouseX, mouseY);
+        Ui.vline(g, listX() + LIST_W + Theme.S3, contentTop(), bottom - contentTop());
+        motion.beginContent(g);
+        drawPage(g, pageX(), contentTop(), pageW(), bottom);
+        motion.endContent(g);
+        motion.end(g);
         super.render(g, mouseX, mouseY, partialTick);
+        if (tipText != null && !motion.closing()) {
+            g.renderTooltip(font, font.split(Component.literal(tipText), 200), mouseX, mouseY);
+        }
     }
 
-    private void drawChapters(GuiGraphics g, int x, int y, int mouseX, int mouseY) {
+    private void drawChapters(GuiGraphics g, int x, int y, int bottom, int mouseX, int mouseY) {
         for (int i = 0; i < Handbook.CHAPTERS.size(); i++) {
             int ry = y + i * ROW_H;
-            boolean open = i == chapter;
-            boolean hover = mouseX >= x && mouseX < x + LIST_W && mouseY >= ry && mouseY < ry + ROW_H - 1;
-            g.fill(x, ry, x + LIST_W, ry + ROW_H - 1, open ? 0xFF2A2018 : hover ? CARD_HOVER : CARD);
-            if (open) {
-                g.fill(x, ry, x + 2, ry + ROW_H - 1, BLOOD);
+            if (ry + ROW_H - 1 > bottom) {
+                break;
             }
-            String name = fit(Component.translatable(Handbook.CHAPTERS.get(i).titleKey()).getString(), LIST_W - 10);
-            g.drawString(font, name, x + 6, ry + 4, open ? GOLD : hover ? PAPER : DIM, false);
+            boolean open = i == chapter;
+            boolean over = !motion.closing() && Ui.in(mouseX, mouseY, x, ry, LIST_W, ROW_H - 1);
+            float hv = hover.get(HoverTracker.key(1, i), over);
+            Ui.row(g, x, ry, LIST_W, ROW_H - 1, hv, open, Theme.SEAL);
+            String full = Component.translatable(Handbook.CHAPTERS.get(i).titleKey()).getString();
+            String name = Ui.fit(font, full, LIST_W - 12);
+            g.drawString(font, name, x + Theme.S3, ry + 4, open ? Theme.TEXT : Theme.mix(Theme.TEXT_DIM, Theme.TEXT, hv * 0.6f), false);
+            if (over && !name.equals(full)) {
+                tipText = full;
+            }
         }
     }
 
     private void drawPage(GuiGraphics g, int x, int y, int w, int bottom) {
         Handbook.Chapter c = current();
-        g.drawString(font, Component.translatable(c.titleKey()), x, y, GOLD, false);
-        // The picture: the chapter's items, twice their size, on an ink strip.
+        Ui.text(g, font, Component.translatable(c.titleKey()), x, y, w, Theme.GOLD);
+        // The picture: the chapter's items, twice their size, in a sunken strip.
         int stripY = y + 13;
         int stripH = 38;
-        g.fill(x, stripY, x + w, stripY + stripH, CARD);
-        g.renderOutline(x, stripY, w, stripH, RULE);
+        Ui.well(g, x, stripY, w, stripH);
         List<ItemStack> icons = new ArrayList<>();
         for (var id : c.icons()) {
             Item item = ForgeRegistries.ITEMS.getValue(id);
@@ -201,11 +228,8 @@ public class HandbookScreen extends Screen {
             g.renderItem(icons.get(i), 0, 0);
             g.pose().popPose();
         }
-        // Brush strokes either side of the strip.
-        g.fill(x + 4, stripY + stripH / 2, x + 14, stripY + stripH / 2 + 1, BLOOD);
-        g.fill(x + w - 14, stripY + stripH / 2, x + w - 4, stripY + stripH / 2 + 1, BLOOD);
-        int textTop = stripY + stripH + 6;
-        int lineH = 10;
+        int textTop = stripY + stripH + Theme.S3;
+        int lineH = Theme.LINE;
         List<Object> rows = new ArrayList<>(lines);
         if (c.id().equals("controls")) {
             rows.add(FormattedCharSequence.EMPTY);
@@ -217,38 +241,34 @@ public class HandbookScreen extends Screen {
             int ly = textTop + i * lineH;
             Object row = rows.get(scroll + i);
             if (row instanceof FormattedCharSequence line) {
-                g.drawString(font, line, x + 2, ly, PAPER, false);
+                g.drawString(font, line, x + 2, ly, Theme.mix(Theme.TEXT_DIM, Theme.TEXT, 0.8f), false);
             } else if (row instanceof Control control) {
                 drawControl(g, control, x + 2, ly, w - 10);
             }
         }
-        if (rows.size() > visible) {
-            int trackH = visible * lineH;
-            int barH = Math.max(10, trackH * visible / rows.size());
-            int barY = textTop + (trackH - barH) * scroll / Math.max(1, rows.size() - visible);
-            g.fill(x + w - 3, textTop, x + w - 1, textTop + trackH, RULE);
-            g.fill(x + w - 3, barY, x + w - 1, barY + barH, DIM);
-        }
+        Ui.scrollbar(g, x + w - 1, textTop, visible * lineH, scroll, visible, rows.size(), Theme.IRON);
     }
 
     private void drawControl(GuiGraphics g, Control control, int x, int y, int w) {
         KeyMapping key = control.key().get();
-        String cap = key == null ? "?" : fit(key.getTranslatedKeyMessage().getString(), 70);
+        String cap = key == null ? "?" : Ui.fit(font, key.getTranslatedKeyMessage().getString(), 66);
         int capW = Math.max(14, font.width(cap) + 8);
-        g.fill(x, y - 1, x + capW, y + 9, KEYCAP);
-        g.renderOutline(x, y - 1, capW, 10, FRAME);
-        g.drawCenteredString(font, cap, x + capW / 2, y, GOLD);
-        String what = fit(Component.translatable("handbook.noirm.key." + control.what()).getString(), w - 80);
-        g.drawString(font, what, x + 78, y, PAPER, false);
+        Ui.roundRect(g, x, y - 1, capW, 10, Theme.mix(Theme.RAISED_HOVER, Theme.GOLD, 0.10f));
+        Ui.textCentered(g, font, cap, x + capW / 2, y, Theme.GOLD);
+        String what = Ui.fit(font, Component.translatable("handbook.noirm.key." + control.what()).getString(), w - 80);
+        g.drawString(font, what, x + 78, y, Theme.TEXT, false);
     }
 
     // ================================================================ input
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (motion.closing()) {
+            return true;
+        }
         if (button == 0) {
-            int x = left + 6;
-            int y = top + 30;
+            int x = listX();
+            int y = contentTop();
             if (mouseX >= x && mouseX < x + LIST_W && mouseY >= y) {
                 int i = (int) ((mouseY - y) / ROW_H);
                 if (i >= 0 && i < Handbook.CHAPTERS.size()) {
@@ -281,15 +301,5 @@ public class HandbookScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private String fit(String text, int width) {
-        if (width <= 0) {
-            return "";
-        }
-        if (font.width(text) <= width) {
-            return text;
-        }
-        return font.plainSubstrByWidth(text, Math.max(0, width - font.width("…"))) + "…";
     }
 }

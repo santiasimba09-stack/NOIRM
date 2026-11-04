@@ -191,9 +191,10 @@ public final class VillageWorldgenGameTests {
         helper.assertTrue(located != null && new ChunkPos(located.getFirst()).equals(anchor),
                 "/locate finds the hidden village at " + anchor + ", got " + (located == null ? null : located.getFirst()));
 
-        // A spot on the great wall, 45° south-east of the centre (no gate there), 264 blocks out.
+        // A spot in the middle of the great wall (3 thick, out to 264 blocks), 45° south-east of the
+        // centre (no gate there).
         int w = VillageKind.CAPITAL.wall;
-        int d = (int) Math.round(w / Math.sqrt(2));
+        int d = (int) Math.round((w - 1.5) / Math.sqrt(2));
         BlockPos onWall = new VillageCanvas(level, BoundingBox.infinite(), origin, capital.core().rotation()).world(d, 0, d);
         ChunkPos wallChunk = new ChunkPos(onWall);
         helper.assertTrue(Math.max(Math.abs(wallChunk.x - anchor.x), Math.abs(wallChunk.z - anchor.z)) > 8,
@@ -205,10 +206,14 @@ public final class VillageWorldgenGameTests {
         helper.assertTrue(start != null && start.isValid() && start.getPieces().size() == 1
                         && start.getPieces().get(0) instanceof VillagePiece piece && piece.seed() == capital.core().seed(),
                 "the wall's chunk has its own ward of the village");
-        int wall = 0;
+        // Count the wall in a 9×9 window round that spot. (Counting inside the spot's chunk alone failed
+        // now and then: when the spot sits near a corner of its chunk, the wall runs mostly through the
+        // next chunk and only a clipped corner of it, 15 blocks, was inside.)
         BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
-        for (int x = wallChunk.getMinBlockX(); x <= wallChunk.getMaxBlockX(); x++) {
-            for (int z = wallChunk.getMinBlockZ(); z <= wallChunk.getMaxBlockZ(); z++) {
+        helper.assertFalse(level.getBlockState(at.set(onWall.getX(), origin.getY() + 5, onWall.getZ())).isAir(), "the wall stands at " + onWall);
+        int wall = 0;
+        for (int x = onWall.getX() - 4; x <= onWall.getX() + 4; x++) {
+            for (int z = onWall.getZ() - 4; z <= onWall.getZ() + 4; z++) {
                 if (!level.getBlockState(at.set(x, origin.getY() + 5, z)).isAir()) {
                     wall++;
                 }

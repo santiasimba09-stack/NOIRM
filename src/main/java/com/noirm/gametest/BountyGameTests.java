@@ -277,7 +277,24 @@ public final class BountyGameTests {
             unlucky.hurt(unlucky.damageSources().genericKill(), 1000000f);
             helper.assertTrue(!unlucky.isAlive() && y2.active() && BingoEvents.body(y2) == null, "still at large");
             helper.assertTrue(Math.sqrt(y2.area.distSqr(area)) > BingoEvents.FLEE_DISTANCE - 2, "and fled far away");
-            helper.assertTrue(BingoEvents.checkNear(level, book, area) == 0, "so they don't walk straight back in");
+            // (checkNear looks at every page of the world's book, and other pages, the world's own or
+            // another test's, can lie within reach of this spot: only this page's rogue counts, and any
+            // other rogue it brings in is sent away again.)
+            java.util.Set<Integer> hadBody = new java.util.HashSet<>();
+            for (BingoEntry page : book.entries()) {
+                if (BingoEvents.body(page) != null) {
+                    hadBody.add(page.id);
+                }
+            }
+            BingoEvents.checkNear(level, book, area);
+            helper.assertTrue(BingoEvents.body(y2) == null && y2.active(), "so they don't walk straight back in");
+            for (BingoEntry page : book.entries()) {
+                SparringNinja body = BingoEvents.body(page);
+                if (body != null && !hadBody.contains(page.id)) {
+                    page.entity = null;
+                    body.discard();
+                }
+            }
             // Crew mates' and clones' kills pay their leader.
             SparringNinja mate = ninja(helper, TestClans.PLAIN, 20f);
             mate.joinCrew(player.getUUID());

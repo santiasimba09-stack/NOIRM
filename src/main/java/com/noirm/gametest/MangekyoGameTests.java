@@ -197,6 +197,9 @@ public final class MangekyoGameTests {
 
     @GameTest(template = "empty", batch = "noirm_ms_amaterasu", timeoutTicks = 120)
     public static void amaterasuBurnsThroughWater(GameTestHelper helper) {
+        // Amaterasu takes whatever is nearest the line of sight within 24 blocks: nothing left over
+        // from earlier tests may stand out there, or the flames could land on it instead.
+        TestKit.clearStrays(helper, 26);
         Player player = mangekyoUser(helper, MangekyoAbility.AMATERASU, MangekyoAbility.KAMUI);
         SparringNinja target = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 2.5f, 1f, 1.5f);
         face(player, target);
