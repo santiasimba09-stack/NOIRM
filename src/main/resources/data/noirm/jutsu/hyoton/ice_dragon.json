@@ -1,0 +1,22 @@
+{
+  "nature": "ice",
+  "behavior": "projectile",
+  "rank": "A",
+  "chakra_cost": 40,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:hyoton/ice_needles",
+    "mastery": 2
+  },
+  "params": {
+    "damage": 14,
+    "speed": 0.6,
+    "radius": 3,
+    "knockback": 1.0,
+    "posture": 45,
+    "homing": 0.12,
+    "effect": "slowness:2",
+    "effect_ticks": 80,
+    "look": "dragon"
+  }
+}

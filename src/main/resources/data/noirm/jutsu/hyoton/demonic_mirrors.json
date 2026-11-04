@@ -1,0 +1,22 @@
+{
+  "nature": "ice",
+  "behavior": "ice_mirrors",
+  "rank": "S",
+  "chakra_cost": 85,
+  "cooldown": 900,
+  "unlock": {
+    "after": "noirm:hyoton/ice_prison",
+    "mastery": 3
+  },
+  "params": {
+    "range": 14,
+    "radius": 3.5,
+    "count": 8,
+    "duration": 80,
+    "damage": 2.2,
+    "stun": 4,
+    "posture": 6,
+    "effect": "slowness:1",
+    "effect_ticks": 30
+  }
+}

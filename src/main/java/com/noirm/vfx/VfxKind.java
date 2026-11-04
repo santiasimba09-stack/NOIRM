@@ -25,7 +25,13 @@ public enum VfxKind {
     /** A soft glow lying flat on the ground: light pooling under lightning and fire. Glows. */
     GROUND_GLOW(true),
     /** A soft billowing puff of dark smoke or ash (fire's smoky rims, ash clouds). */
-    SOOT(false);
+    SOOT(false),
+    /** An ice crystal cluster: faceted shards with a glint (Ice release). Drawn in colour, full-bright, not additive. */
+    CRYSTAL(false, true),
+    /** A plate of glowing cellular magma with a black crust (Lava release). Drawn in colour, full-bright, not additive. */
+    MAGMA(false, true),
+    /** A thick billow of white steam (Boil release): denser than smoke. */
+    STEAM(false);
 
     private final boolean glows;
     private final boolean fullBright;

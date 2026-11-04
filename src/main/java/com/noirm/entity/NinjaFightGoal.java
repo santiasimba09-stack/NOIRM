@@ -114,13 +114,25 @@ class NinjaFightGoal extends Goal {
 
     private static final ResourceLocation SUBSTITUTION = com.noirm.Noirm.id("universal/substitution");
     /** Jutsu behaviors by when they're used. */
-    private static final Set<String> RANGED = Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave", "ash_cloud", "chain",
-            "amaterasu", "tsukuyomi", "kotoamatsukami");
-    private static final Set<String> CLOSE = Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui");
+    private static final Set<String> RANGED = union(Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave", "ash_cloud", "chain",
+            "amaterasu", "tsukuyomi", "kotoamatsukami"),
+            com.noirm.jutsu.KekkeiTechniquesA.NPC_RANGED);
+    private static final Set<String> CLOSE = union(Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui"),
+            com.noirm.jutsu.KekkeiTechniquesA.NPC_CLOSE);
     private static final Set<String> DASH = Set.of("dash_strike");
     private static final Set<String> FLICKER = Set.of("flicker");
     private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "buff", "susanoo");
     private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "susanoo", "izanagi");
+
+    /** Two behaviour sets as one (each nature family lists its own, see e.g. KekkeiTechniquesA). */
+    @SafeVarargs
+    private static Set<String> union(Set<String>... sets) {
+        java.util.Set<String> all = new java.util.HashSet<>();
+        for (Set<String> set : sets) {
+            all.addAll(set);
+        }
+        return Set.copyOf(all);
+    }
 
     private final SparringNinja ninja;
     private final Deque<AttackInput> combo = new ArrayDeque<>();

@@ -61,3 +61,44 @@ Lightning reference panels (mood only, see `ART_STYLE.md`).
   - **each Susanoo user has their own colour**, rolled with their Mangekyō;
   - Sage and the Gates have fixed colours.
 - **Graphics setting:** Low, Medium or High in the mod config, with High as the default.
+
+## Jutsu wave, share A: Ice, Lava, Boil, Storm, Explosion (done)
+Twenty new jutsu, four per nature: a C basic (given with the nature), a B tool, an A attack and an
+S signature, each unlocked by mastering the one before it (★2, or ★3 for the S rank). Code:
+`jutsu/KekkeiTechniquesA*` (behaviours), `vfx/KekkeiVfxA` (the look), tests in
+`gametest/KekkeiAGameTests`. Three new particle sprites, drawn by
+`tools/vfxgen/gen_particles_kekkei_a.py`: **crystal** (ice), **magma** (lava), **steam** (boil).
+
+| Nature | Rank | Jutsu | What it does |
+|---|---|---|---|
+| Ice | C | Ice Spear | a fast crystal lance that slows |
+| Ice | B | Freezing Field | frost races out from your feet; whoever it reaches is frozen and ice spikes burst up |
+| Ice | A | Black Ice Dragon | a homing dragon of ice crystals that shatters and freezes the ground |
+| Ice | S | Demonic Mirroring Ice Crystals | a dome of real ice mirrors traps the enemy; senbon fly from mirror to mirror, then a last volley and they all shatter |
+| Lava | C | Magma Bullet | a fast molten bullet that sets alight |
+| Lava | B | Quicklime Congealing | a lobbed glob of quicklime sets round the enemy and holds it |
+| Lava | A | Magma Armour | a mode: tougher, harder hits, and anyone who strikes you is burned |
+| Lava | S | Volcanic Eruption (charge) | the ground ruptures, turns to magma (it heals), and the vent rains lava bombs |
+| Boil | C | Acid Mist | a cone of acid steam that scalds, weakens and eats armour |
+| Boil | B | Scalding Geyser | the ground hisses (a warning), then a boiling jet throws enemies up |
+| Boil | A | Boiling Vapour Armour | an unstoppable charge in a shell of steam that bowls through everyone |
+| Boil | S | Scalding Pressure Dome | a dome of steam builds over the enemy, scalding, then bursts |
+| Storm | C | Black Cloud | a small thundercloud that darkens eyes and snaps bolts down |
+| Storm | B | Light Fang (charge) | a straight blue-black laser that pierces the whole line |
+| Storm | A | Raging Thunder Tide | a wave of charged black water that stuns and carries |
+| Storm | S | Laser Circus: Hundred Bends | one laser per enemy in reach, each bending through the air to its mark |
+| Explosion | C | Clay Swallows | three homing clay birds that pop |
+| Explosion | B | Detonating Fist | a punch that explodes on contact |
+| Explosion | A | Great Clay Effigy | a huge clay figure falls on the target and explodes |
+| Explosion | S | Final Art (long charge) | you become the bomb: the biggest blast in the game, then a heavy backlash (65% of your health, all your chakra, crippled for 15 s). NPCs never use it |
+
+Looks: ice is crystalline and glinting (crystal sprites, white glints, frost light on the ground);
+lava is cellular magma with black crust and black smoke, never a white flash; boil is thick
+white-grey steam; storm is dark clouds and blue-black lasers with a white core; explosion is a white
+flash, then fire, then smoke rings rolling out. Projectiles of these natures (also the older Ice
+Needles, Lava Globs and Explosive Clay) now use these looks.
+Screenshots: `docs/screenshots/cw-ice-*`, `cw-lava-*`, `cw-boil-*`, `cw-storm-*`, `cw-explosion-*`.
+Shared files touched (one-line hooks): `JutsuBehaviors` (registration), `JutsuProjectile` (trail and
+impact looks), `JutsuCaster` (charge-up look), `ModeSystem` (Magma Armour aura), `NinjaFightGoal`
+(NPC use), `Destruction.temporary` (heal-back blocks), `VfxKind`/`VfxParticle` (three sprites),
+`tools/animgen/seals.py` (seals). No packet changes.

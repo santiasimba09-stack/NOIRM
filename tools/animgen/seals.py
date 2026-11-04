@@ -80,6 +80,27 @@ SEQUENCES = {
     "hyoton/ice_prison": ["ram", "snake"],
     "yoton/melting_apparition": ["horse", "tiger"],
     "futton/skilled_mist": ["ram", "snake", "tiger"],
+    # The chakra wave, share A (Ice, Lava, Boil, Storm, Explosion): short sequences, ours unless canon shows one.
+    "hyoton/ice_spear": ["ram", "dragon"],
+    "hyoton/freezing_field": ["ram", "snake", "ox"],
+    "hyoton/ice_dragon": ["dragon", "snake", "ram", "dragon"],
+    "hyoton/demonic_mirrors": ["tiger", "ram", "snake", "dragon", "tiger"],
+    "yoton/magma_bullet": ["horse", "tiger"],
+    "yoton/quicklime_trap": ["boar", "horse", "ox"],
+    "yoton/lava_armor": ["dog", "boar", "horse", "tiger"],
+    "yoton/volcanic_eruption": ["boar", "dog", "horse", "ox", "tiger", "dragon"],
+    "futton/acid_mist": ["snake", "tiger"],
+    "futton/scalding_geyser": ["rat", "boar", "tiger"],
+    "futton/vapour_armor": ["ram", "boar", "ox", "tiger"],
+    "futton/pressure_dome": ["snake", "ram", "boar", "ox", "dragon", "tiger"],
+    "ranton/black_cloud": ["ox", "rat"],
+    "ranton/light_fang": ["ox", "hare", "dragon"],
+    "ranton/thunder_tide": ["ox", "hare", "boar", "rat", "tiger"],
+    "ranton/hundred_bends": ["ox", "hare", "dragon", "monkey", "dog", "tiger"],
+    "bakuton/clay_swallows": ["ram"],
+    "bakuton/detonating_fist": ["ram", "tiger"],
+    "bakuton/clay_effigy": ["ram", "snake", "ram"],
+    "bakuton/final_art": ["ram", "tiger", "snake", "ram"],
 }
 
 LEGS = dict(left_leg=(-8, 0, -4, 14), right_leg=(8, 0, 6, 12))
