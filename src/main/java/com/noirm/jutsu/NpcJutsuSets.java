@@ -185,9 +185,23 @@ public final class NpcJutsuSets {
             // Byakugan techniques with the Byakugan; the Sharingan genjutsu, Mangekyō and Beast Ball come with the eye/beast itself.
             return byakugan && "byakugan".equals(def.requires().get().dojutsu());
         }
+        if (NOT_FOR_NPCS.contains(def.behavior())) {
+            return false;
+        }
+        if (id.getPath().startsWith("medical/")) {
+            return natures.getOrDefault(Nature.YANG, 0f) > 0f; // medical ninjutsu is Yang work: Senju-blooded medics
+        }
         Nature nature = def.nature().orElse(null);
         return nature == null || natures.getOrDefault(nature, 0f) > 0f;
     }
+
+    /** {@link #eligible} without the eyes, for tests. */
+    public static boolean eligibleForTest(ResourceLocation id, JutsuDefinition def, Map<Nature, Float> natures) {
+        return eligible(id, def, natures, false);
+    }
+
+    /** Behaviors an NPC's set never holds (they'd never use them: Kai comes by itself when caught, the rest is the player's). */
+    public static final java.util.Set<String> NOT_FOR_NPCS = java.util.Set.of("genjutsu_release", "reincarnation", "life_conversion");
 
     private static ResourceLocation pick(List<Map.Entry<ResourceLocation, JutsuDefinition>> options, Map<Nature, Float> natures,
                                          List<ResourceLocation> signatures, RandomSource random) {

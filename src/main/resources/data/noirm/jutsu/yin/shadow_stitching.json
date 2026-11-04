@@ -1,0 +1,18 @@
+{
+  "nature": "yin",
+  "behavior": "shadow_stitch",
+  "rank": "A",
+  "chakra_cost": 40,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:yin/shadow_neck_bind",
+    "mastery": 2
+  },
+  "params": {
+    "range": 14,
+    "count": 4,
+    "damage": 9,
+    "posture": 30,
+    "stun": 30
+  }
+}

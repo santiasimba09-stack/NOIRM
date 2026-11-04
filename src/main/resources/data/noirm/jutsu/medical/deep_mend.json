@@ -1,0 +1,12 @@
+{
+  "cast": "channel",
+  "behavior": "medic_palm",
+  "rank": "A",
+  "chakra_cost": 16,
+  "cooldown": 100,
+  "max_duration": 140,
+  "params": {
+    "damage": 6,
+    "range": 5
+  }
+}

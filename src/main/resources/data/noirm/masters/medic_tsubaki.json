@@ -51,6 +51,32 @@
       }
     },
     {
+      "id": "deep_mend",
+      "jutsu": "noirm:medical/deep_mend",
+      "rank": "chunin",
+      "ryo": 700,
+      "control": 18,
+      "after": [
+        "healing_palm"
+      ],
+      "mastery": {
+        "noirm:medical/healing_palm": 2
+      }
+    },
+    {
+      "id": "hundred_healings",
+      "jutsu": "noirm:medical/hundred_healings",
+      "rank": "jonin",
+      "ryo": 2500,
+      "control": 28,
+      "after": [
+        "deep_mend"
+      ],
+      "mastery": {
+        "noirm:medical/deep_mend": 2
+      }
+    },
+    {
       "id": "eye_transplant",
       "service": "eye_transplant",
       "rank": "jonin",

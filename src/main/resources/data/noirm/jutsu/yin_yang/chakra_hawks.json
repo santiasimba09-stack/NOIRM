@@ -1,0 +1,19 @@
+{
+  "nature": "yin_yang",
+  "behavior": "hawks",
+  "rank": "A",
+  "chakra_cost": 50,
+  "cooldown": 600,
+  "unlock": {
+    "after": "noirm:yin_yang/renewal",
+    "mastery": 2
+  },
+  "params": {
+    "count": 3,
+    "duration": 200,
+    "damage": 4,
+    "posture": 8,
+    "speed": 0.5,
+    "range": 16
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "behavior": "poison_mist",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 400,
+  "unlock": {
+    "after": "noirm:medical/chakra_scalpel",
+    "mastery": 1
+  },
+  "params": {
+    "range": 8,
+    "radius": 2.8,
+    "duration": 100,
+    "damage": 1,
+    "effect": "poison:1",
+    "effect_ticks": 80
+  }
+}

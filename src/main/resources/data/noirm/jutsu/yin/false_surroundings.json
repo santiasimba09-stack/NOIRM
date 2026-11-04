@@ -1,0 +1,16 @@
+{
+  "nature": "yin",
+  "behavior": "mirage",
+  "rank": "B",
+  "chakra_cost": 28,
+  "cooldown": 320,
+  "unlock": {
+    "after": "noirm:yin/demonic_illusion",
+    "mastery": 2
+  },
+  "params": {
+    "range": 14,
+    "duration": 120,
+    "count": 3
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "behavior": "extraction",
+  "rank": "C",
+  "chakra_cost": 15,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:medical/healing_palm",
+    "mastery": 1
+  },
+  "params": {
+    "damage": 3,
+    "range": 5
+  }
+}
