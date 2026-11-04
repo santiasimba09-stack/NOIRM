@@ -1,0 +1,20 @@
+{
+  "nature": "magnet",
+  "behavior": "sand_arm",
+  "rank": "B",
+  "chakra_cost": 32,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:jiton/iron_sand_spears",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "radius": 2.2,
+    "duration": 12,
+    "damage": 10,
+    "knockback": 1.0,
+    "posture": 35,
+    "stun": 8
+  }
+}

@@ -78,7 +78,24 @@ public final class JutsuBehaviors {
             Map.entry("lotus", TaijutsuTechniques::lotus),
             // Medical ninjutsu (medical/ChakraScalpel): the medical ninja's lessons
             Map.entry("scalpel", com.noirm.medical.ChakraScalpel::cast),
-            Map.entry("flurry", TaijutsuTechniques::flurry));
+            Map.entry("flurry", TaijutsuTechniques::flurry),
+            // Chakra wave: Scorch, Dust, Magnet (KekkeiTechniquesB) and Wind, Earth (BasicNatureTechniques)
+            Map.entry("heat_orbs", KekkeiTechniquesB::heatOrbs),
+            Map.entry("steam_mummify", KekkeiTechniquesB::steamMummify),
+            Map.entry("ward_shell", KekkeiTechniquesB::wardShell),
+            Map.entry("detach_cube", KekkeiTechniquesB::detachCube),
+            Map.entry("detach_cone", KekkeiTechniquesB::detachCone),
+            Map.entry("magnet_pull", KekkeiTechniquesB::magnetPull),
+            Map.entry("sand_arm", KekkeiTechniquesB::sandArm),
+            Map.entry("needle_rain", KekkeiTechniquesB::needleRain),
+            Map.entry("sand_tide", KekkeiTechniquesB::sandTide),
+            Map.entry("wind_crescent", BasicNatureTechniques::windCrescent),
+            Map.entry("tornado", BasicNatureTechniques::tornado),
+            Map.entry("headhunter", BasicNatureTechniques::headhunter),
+            Map.entry("rock_hounds", BasicNatureTechniques::rockHounds),
+            Map.entry("rampart", BasicNatureTechniques::rampart),
+            Map.entry("weight_rock", BasicNatureTechniques::weightRock),
+            Map.entry("falling_mountain", BasicNatureTechniques::fallingMountain));
 
     private JutsuBehaviors() {}
 

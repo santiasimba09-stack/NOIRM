@@ -1,0 +1,16 @@
+{
+  "nature": "dust",
+  "behavior": "beam",
+  "rank": "D",
+  "starter": true,
+  "chakra_cost": 15,
+  "cooldown": 60,
+  "params": {
+    "range": 16,
+    "count": 1,
+    "damage": 5,
+    "radius": 0,
+    "posture": 12,
+    "knockback": 0.2
+  }
+}

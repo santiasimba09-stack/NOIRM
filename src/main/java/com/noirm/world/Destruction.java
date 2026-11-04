@@ -224,6 +224,26 @@ public final class Destruction {
     }
 
     /**
+     * Dust Release takes one block apart (no chunks, no drops: it is simply gone) if the jutsu's
+     * {@code power} can break it. It heals like every other change. Returns true if it went.
+     */
+    public static boolean erase(ServerLevel level, BlockPos pos, float power) {
+        if (!enabled(level)) {
+            return false;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (state.isAir() || !state.getFluidState().isEmpty() || state.hasBlockEntity()) {
+            return false;
+        }
+        float hardness = state.getDestroySpeed(level, pos);
+        if (hardness < 0 || hardness > maxHardness(power)) {
+            return false;
+        }
+        change(level, pos.immutable(), Blocks.AIR.defaultBlockState(), 1f);
+        return true;
+    }
+
+    /**
      * What a jutsu of {@code nature} does to the ground where it lands: fire burns, explosions
      * blast craters, water douses, ice freezes, wind strips fragile things away.
      */
@@ -339,6 +359,22 @@ public final class Destruction {
         }
         PENDING.clear();
         BY_POS.clear();
+    }
+
+    /** Heals at once every change within {@code radius} of {@code center} (tests clean up after themselves). */
+    public static int healNear(ServerLevel level, Vec3 center, double radius) {
+        int healed = 0;
+        Iterator<Change> it = PENDING.iterator();
+        while (it.hasNext()) {
+            Change change = it.next();
+            if (change.dimension() == level.dimension() && change.pos().distToCenterSqr(center.x, center.y, center.z) <= radius * radius) {
+                restore(level, change);
+                it.remove();
+                BY_POS.remove(change.pos());
+                healed++;
+            }
+        }
+        return healed;
     }
 
     /** How many changes are waiting to heal (for tests). */

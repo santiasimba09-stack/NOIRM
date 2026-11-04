@@ -359,6 +359,9 @@ public class JutsuProjectile extends Projectile {
             }
             return;
         }
+        if (!isBeastChakra() && com.noirm.vfx.ScorchDustMagnetVfx.projectileTrail(level(), nature(), position(), getDeltaMovement(), size(), tickCount)) {
+            return; // Scorch suns, iron sand needles, compressed air, rock
+        }
         if (look == Look.NEEDLE) {
             // A lightning needle: a thin white-hot streak and a few sparks.
             Vec3 motion = getDeltaMovement();

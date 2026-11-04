@@ -42,7 +42,7 @@ public final class Vfx {
         return switch (nature) {
             case FIRE -> new Palette(0xFFFBE0, 0xFF5200, 0x220600, 0xFFD000);
             case WATER -> new Palette(0xF2FFFF, 0x0A7CFF, 0x021A44, 0x7FFFFF);
-            case WIND -> new Palette(0xFFFFFF, 0x4CFFA0, 0x0E4A36, 0xD8FFF0);
+            case WIND -> new Palette(0xFFFFFF, 0xD2DEE2, 0x4A565E, 0xEEFFF8); // pale grey-white air, grey dust (chakra wave)
             case EARTH -> new Palette(0xFFE8B0, 0xC4741E, 0x1E1206, 0xFFB050);
             case LIGHTNING -> new Palette(0xFFFFFF, 0x3FB8FF, 0x060E5A, 0xE0F8FF);
             case WOOD -> new Palette(0xF2FFD0, 0x3FD02A, 0x142808, 0xC8FF60);
