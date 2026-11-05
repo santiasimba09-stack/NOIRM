@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-04 (NOIRM APX 0.1, v0.14.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-05 (chakra wave, part 1: the jutsu wave, v0.15.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -25,16 +25,21 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 
 ## In progress
 
-Nothing. Waiting on the owner's playtest of APX 0.1.
+**The chakra wave** (owner's plan in `docs/CHAKRA_WAVE.md`; three parts in the owner's order):
+
+| Part | State |
+|---|---|
+| **1. The jutsu wave (v0.15.0):** 71 new jutsu: epic Wood Release (6), Ice/Lava/Boil/Storm/Explosion (20), Scorch/Dust/Magnet/Wind/Earth (23), Yin/Yang/Yin-Yang/Medical (22) | ✅ 436 game tests green twice; each share checked in client (`cw-*` screenshots) |
+| **2. Solo transformations + the jutsu workshop:** fuse two natures alone (very hard), shape training and shape + nature fusion, Yin/Yang alone, clearer drills, a workshop to design your own jutsu (can beat canon; big cost, backlash, stat gates), teach crew, write scrolls | next |
+| **3. Solid-flame chakra:** solid shell + rising flame edge for beast cloaks, tails, every Susanoo stage (semi-opaque bone), Sage, the Gates and fitting jutsu; per-user Susanoo colours; Low/Medium/High setting | after part 2 |
 
 ## Next steps (in order)
 
-1. **Owner playtest of APX 0.1** and the open questions below (legend difficulty, prices and
-   rewards, drill length, Sage numbers, the HUD's quietness).
-2. **Balance pass** from that feedback (all numbers are constants or JSON).
-3. **Chūnin exam arena** (a built place for the tournament instead of a cleared field).
-4. **Wood Release at epic scale** and detailed tailed beasts (ideas in `ART_STYLE.md`).
-5. **Guy, part 2:** Reverse Lotus, the later gates, technique animations.
+1. **Owner playtest of v0.15.0** (the new jutsu) and the open questions below.
+2. **Chakra wave part 2:** solo transformations, shape training, the jutsu workshop.
+3. **Chakra wave part 3:** the solid-flame chakra look.
+4. **APX balance pass** from the owner's answers (legend difficulty, prices, drills, Sage numbers).
+5. **Chūnin exam arena**; **Guy, part 2** (Reverse Lotus, later gates).
 
 ## Code map
 
@@ -175,6 +180,14 @@ Nothing. Waiting on the owner's playtest of APX 0.1.
   it calls `TestKit.clearStrays` first (a failed earlier test leaves its fighters behind).
 
 ## Open questions for the owner
+
+- **Jutsu wave (v0.15.0):** Kai unlocks after Substitution ★1 (not a starter): OK? Medical jutsu only
+  for Senju (Yang) NPCs, or all medics? Reincarnation's price (60% health, all chakra, 1 min weak)
+  harsh enough? Final Art never kills its user: should it, like canon? Magma Armour burns every
+  attacker within 4 blocks or only melee? Volcano magma, World Order spikes and Falling Mountain
+  rubble are temporary blocks (stay forever if terrain regen is off): OK? Scorch: dry the ground
+  instead of burning it? The A/S cast ring looks big in first person: smaller for the caster? The
+  Wood colossus is placeholder-simple boxes: right look? Deep Forest trunks last ~45 s: longer?
 
 - **APX 0.1:** legends one-shot beginners: too hard? Legends kept 1,000 blocks from spawn and away
   for your first 2 hours: right? Shop prices, mission rewards and masters' prices? Nature drills

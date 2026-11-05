@@ -148,27 +148,31 @@ public final class WoodReleaseGameTests {
         SparringNinja caster = ninja(helper, 1.5f, 1.5f);
         SparringNinja enemy = ninja(helper, 1.5f, 4.5f);
         enemy.setInvulnerable(false);
-        facePoint(caster, caster.position().add(0, 0, 5)); // facing +z
-        run(caster, "mokuton/wood_clone", 1f);
-        List<WoodClone> clones = clones(helper, caster);
-        helper.assertTrue(clones.size() == 2, "two wood clones: " + clones.size());
-        helper.assertTrue(clones.stream().allMatch(c -> c.getZ() < caster.getZ() - 0.5), "both behind the caster");
-        helper.assertTrue(Math.abs(clones.get(0).getX() - clones.get(1).getX()) > 2, "fanned out to the sides");
-        helper.assertTrue(clones.stream().allMatch(c -> c.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).isEmpty()), "carved, not dressed");
-        WoodClone first = clones.get(0);
-        enemy.setPos(first.getX(), first.getY(), first.getZ() + 1.2);
-        first.hurt(enemy.damageSources().mobAttack(enemy), 1000f);
-        helper.assertTrue(first.isRemoved(), "the clone breaks");
-        helper.assertTrue(CombatSystem.isStaggered(enemy), "and its roots catch whoever broke it");
-        WoodClone second = clones.get(1);
-        Vec3 spot = second.position();
-        Vec3 from = caster.position();
-        Substitution.arm(caster, 20);
-        helper.assertTrue(Substitution.trySubstitute(caster, enemy), "the substitution fires");
-        helper.assertTrue(caster.position().distanceTo(spot) < 0.6, "the caster takes the clone's place: " + caster.position() + " vs " + spot);
-        helper.assertTrue(second.isRemoved() && second.position().distanceTo(from) < 0.6, "the clone took the caster's place, and the hit");
-        cleanUp(helper);
-        clearAround(helper);
+        // Wait for the test world to load the chunks round the fighters (TestWorld forces them at the
+        // end of the tick): a clone that lands across a chunk border is invisible until then.
+        helper.runAfterDelay(2, () -> {
+            facePoint(caster, caster.position().add(0, 0, 5)); // facing +z
+            run(caster, "mokuton/wood_clone", 1f);
+            List<WoodClone> clones = clones(helper, caster);
+            helper.assertTrue(clones.size() == 2, "two wood clones: " + clones.size());
+            helper.assertTrue(clones.stream().allMatch(c -> c.getZ() < caster.getZ() - 0.5), "both behind the caster");
+            helper.assertTrue(Math.abs(clones.get(0).getX() - clones.get(1).getX()) > 2, "fanned out to the sides");
+            helper.assertTrue(clones.stream().allMatch(c -> c.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).isEmpty()), "carved, not dressed");
+            WoodClone first = clones.get(0);
+            enemy.setPos(first.getX(), first.getY(), first.getZ() + 1.2);
+            first.hurt(enemy.damageSources().mobAttack(enemy), 1000f);
+            helper.assertTrue(first.isRemoved(), "the clone breaks");
+            helper.assertTrue(CombatSystem.isStaggered(enemy), "and its roots catch whoever broke it");
+            WoodClone second = clones.get(1);
+            Vec3 spot = second.position();
+            Vec3 from = caster.position();
+            Substitution.arm(caster, 20);
+            helper.assertTrue(Substitution.trySubstitute(caster, enemy), "the substitution fires");
+            helper.assertTrue(caster.position().distanceTo(spot) < 0.6, "the caster takes the clone's place: " + caster.position() + " vs " + spot);
+            helper.assertTrue(second.isRemoved() && second.position().distanceTo(from) < 0.6, "the clone took the caster's place, and the hit");
+            cleanUp(helper);
+            clearAround(helper);
+        });
     }
 
     /** The dome closes over its caster from the ground up, then splinters away by itself. */

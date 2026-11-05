@@ -51,6 +51,7 @@ Each milestone ends with something you can play and test.
 | 3.12 | **Our own art** ✅ (v0.12.0) | HD 4× skins and gear in our own "raw and tough" style, start in underwear, gore v2 (blood everywhere), fire and lightning redone with 5 new jutsu. Next ideas from the owner: Wood Release at epic scale (`ART_STYLE.md`), detailed tailed beasts. |
 | 3.13 | **A living world of ninjas** ✅ (v0.13.0) | Personal jutsu sets for ninjas and crew, wild ninjas (solo, pairs, squads, rogues), 7 new blades and HD weapon art, 28 new HD armor pieces. |
 | APX 0.1 | **A fully playable game** ✅ (v0.14.0) | Gentler speed and a Durability stat, kill XP; every route to natures (chakra paper, drills, teachers, scrolls); our own Sage path; ryo, shops, a missions board and player rank with exams; classes D–S and the bingo book with legendary ninjas; three masters and the Shinobi Handbook; a minimalist UI redesign in the same palette. Decisions in `APX.md`. Next: the owner's playtest and a balance pass. |
+| 3.14 | **Chakra wave** (part 1 ✅, v0.15.0) | 71 new jutsu: epic Wood Release, every combined nature, Yin/Yang/Yin-Yang, Medical, more Wind and Earth. Next: solo transformations and a jutsu workshop (part 2), solid-flame chakra for cloaks, Susanoo, Sage and the Gates (part 3). See `CHAKRA_WAVE.md`. |
 | later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
 
 ## Art without an artist

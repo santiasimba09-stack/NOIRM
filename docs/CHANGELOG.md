@@ -2,6 +2,31 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-05 — The chakra wave, part 1: 71 new jutsu, v0.15.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's plan (`docs/CHAKRA_WAVE.md`): more variety for the natures left apart, in the look of
+their Fire, Lightning and Wood panels. Built by four helpers in parallel, then merged.
+- **Wood Release, epic (6):** Root Snare, Wood Clone (bark clones in your likeness; Substitution
+  swaps you with one), Wood Locking Wall, Wood Dragon (coils round the target, drinks chakra),
+  Deep Forest Emergence (12 huge trunks that regrow away), Thousand-Arm Colossus (a 17-block wooden
+  figure of our own design with a halo of arms; fists rain down). New `noirm:mokuton_wood` block.
+- **Ice, Lava, Boil, Storm, Explosion (20):** Demonic Mirroring Ice Crystals, Black Ice Dragon,
+  Volcanic Eruption (temporary magma), Magma Armour, Scalding Pressure Dome, Light Fang, Laser
+  Circus, Clay Swallows, Great Clay Effigy, Final Art (the biggest blast in the game, heavy
+  backlash)… each nature with its own generated sprites.
+- **Scorch, Dust, Magnet, Wind, Earth (23):** Extreme Steaming Murder, Expanding Detachment Cube,
+  World Order, Giant Arm, Raging Tornado, Vacuum Wave, Headhunter, Rock Hounds, Falling Mountain…;
+  Wind's palette is now pale grey-white.
+- **Yin, Yang, Yin-Yang, Medical (22):** genjutsu with counterplay (Kai, a strong mind, the
+  Sharingan, a friend's slap), Tree Binding Death, Super Expansion Fist, One's Own Life
+  Reincarnation (revives a crew mate), Chakra Hawks, Equilibrium Collapse, Healing Field, Body
+  Pathway Derangement, Hundred Healings. Tsubaki teaches two new lessons. Network protocol 23.
+- Every jutsu has hand seals, names in all three languages, NPC use and its own game tests.
+- **Tests:** 436 game tests, green twice. Fixed while merging: the every-nature-jutsu test's
+  timeout (it casts each jutsu 16 ticks apart), the wood-clone test (it cast before the chunks
+  round the fighters were loaded, so clones across a chunk border were unseen), the
+  legends-stay-away test (its own ground and pages).
+
 ## 2026-11-04 — NOIRM APX 0.1: a fully playable game, v0.14.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 The owner's goal: "fully usable", from a fresh character in underwear to a legendary shinobi.
