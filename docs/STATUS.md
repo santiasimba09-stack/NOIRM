@@ -35,11 +35,15 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 
 ## Next steps (in order)
 
-1. **Owner playtest of v0.15.0** (the new jutsu) and the open questions below.
-2. **Chakra wave part 2:** solo transformations, shape training, the jutsu workshop.
-3. **Chakra wave part 3:** the solid-flame chakra look.
-4. **APX balance pass** from the owner's answers (legend difficulty, prices, drills, Sage numbers).
-5. **Chūnin exam arena**; **Guy, part 2** (Reverse Lotus, later gates).
+The owner's plan for a complete survival game is in `docs/SURVIVAL.md` (single-player first).
+1. **Chakra wave part 2** (the workshop and solo transformations): being built.
+2. **Survival foundations:** a "Path of the Shinobi" advancement tree and a real config file; then
+   a full survival playthrough and balance pass.
+3. **Sound:** our own sounds for jutsu, hits, seals, the UI and ambience.
+4. **Survival staples:** food, pills and tools; crafting and economy (chakra metal, blacksmith, homes).
+5. **Exploration**, then **new paths** (summoning, sealing, puppets, space-time), then **endgame**
+   (Kage, wars, a rogue organisation, beast hunting). Chakra wave part 3 (solid-flame chakra) fits
+   in when the owner wants it.
 
 ## Code map
 
