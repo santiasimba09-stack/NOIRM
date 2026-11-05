@@ -27,7 +27,7 @@ public final class WindEarthVfx {
     public static final int WIND_WHITE = 0xFFFFFF;
     public static final int WIND_PALE = 0xDCE6EA;
     public static final int WIND_GREY = 0x8C989E;
-    public static final int WIND_DUST = 0xA89C88;
+    public static final int WIND_DUST = 0xA6A8A6;
     // Earth
     public static final int ROCK_DARK = 0x2A221C;
     public static final int ROCK = 0x5E5040;
@@ -45,7 +45,7 @@ public final class WindEarthVfx {
 
     /** Dust kicked up off the ground by the wind. */
     public static VfxOptions windDust(float size, int life) {
-        return new VfxOptions(VfxKind.SOOT, WIND_DUST, 0xC8BEAA, size, size * 2f, life, -0.001f, 0.86f);
+        return new VfxOptions(VfxKind.SOOT, WIND_DUST, 0xD4D6D4, size, size * 2f, life, -0.001f, 0.86f);
     }
 
     /**

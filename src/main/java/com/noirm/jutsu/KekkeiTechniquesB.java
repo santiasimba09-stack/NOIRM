@@ -376,7 +376,7 @@ public final class KekkeiTechniquesB {
         float power = ctx.power();
         LivingEntity target = JutsuBehaviors.lookTarget(caster, p.range(), 12);
         Vec3 center = target != null ? chest(target) : ElementalBehaviors.aim(caster, p.range()).add(0, 0.6, 0);
-        float half = Mth.clamp(p.radius() * (float) Math.sqrt(Math.max(0.5f, power)), 0.8f, 4f);
+        float half = Mth.clamp(p.radius() * (float) Math.pow(Math.max(0.5f, power), 0.25), 0.8f, 3f);
         int grow = Math.max(4, p.duration());
         int end = CUBE_GATHER + grow + CUBE_HOLD + CUBE_COLLAPSE;
         Set<LivingEntity> caught = new HashSet<>();
@@ -395,8 +395,6 @@ public final class KekkeiTechniquesB {
                 Vfx.gather(level, center, Vfx.palette(Nature.DUST), half * 1.4f, 14);
                 Vfx.burst(level, Vfx.glow(ScorchDustMagnetVfx.DUST_WHITE, ScorchDustMagnetVfx.DUST_PALE, 0.4f + t * 0.1f, 0.2f, 3), center, 1, 0, 0);
                 if (t == CUBE_GATHER) {
-                    Vector3f full = cubeSize(half * 2);
-                    RockAndCubeDisplays.animate(cube[0], full, RockAndCubeDisplays.centred(full, new Quaternionf()), new Quaternionf(), grow);
                     level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.4f, 1.5f);
                 }
                 return false;
@@ -404,6 +402,9 @@ public final class KekkeiTechniquesB {
             int g = t - CUBE_GATHER;
             if (g <= grow) {
                 double now2 = half * g / (double) grow;
+                // The glass grows a step each tick (one long slide drifts out of step with the edges on a slow client).
+                Vector3f size = cubeSize((float) now2 * 2);
+                RockAndCubeDisplays.animate(cube[0], size, RockAndCubeDisplays.centred(size, new Quaternionf()), new Quaternionf(), 1);
                 ScorchDustMagnetVfx.cube(level, center, now2, 0.14f + 0.06f * (float) (now2 / half), 3);
                 eraseCube(level, center, now2, power * 1.6f);
                 if (g % 3 == 0) {
@@ -418,21 +419,19 @@ public final class KekkeiTechniquesB {
             }
             if (t <= CUBE_GATHER + grow + CUBE_HOLD) {
                 ScorchDustMagnetVfx.cube(level, center, half, 0.22f, 3);
-                if (t == CUBE_GATHER + grow + CUBE_HOLD) {
-                    Vector3f none = cubeSize(0.02f);
-                    RockAndCubeDisplays.animate(cube[0], none, RockAndCubeDisplays.centred(none, new Quaternionf()), new Quaternionf(), CUBE_COLLAPSE);
-                }
                 return false;
             }
             if (t < end) {
                 double shrink = half * (end - t) / (double) CUBE_COLLAPSE;
                 ScorchDustMagnetVfx.cube(level, center, shrink, 0.2f, 3);
+                Vector3f size = cubeSize((float) shrink * 2);
+                RockAndCubeDisplays.animate(cube[0], size, RockAndCubeDisplays.centred(size, new Quaternionf()), new Quaternionf(), 1);
                 return false;
             }
             // The collapse: everything inside comes apart in one white flash.
             RockAndCubeDisplays.remove(cube[0]);
             Vfx.burst(level, Vfx.glow(0xFFFFFF, ScorchDustMagnetVfx.DUST_PALE, half * 3f, half * 0.5f, 5), center, 1, 0, 0);
-            Vfx.burst(level, Vfx.ring(ScorchDustMagnetVfx.DUST_PALE, half * 2.4f, 10), center, 1, 0, 0);
+            Vfx.burst(level, Vfx.ring(ScorchDustMagnetVfx.DUST_PALE, half * 1.4f, 10), center, 1, 0, 0);
             ScorchDustMagnetVfx.motes(level, center, 40, half * 0.7);
             for (LivingEntity victim : inCube(caster, level, center, half + 0.3)) {
                 caught.add(victim);
@@ -740,8 +739,8 @@ public final class KekkeiTechniquesB {
         JutsuDefinition.Params p = ctx.params();
         float power = ctx.power() * (0.6f + 0.4f * ctx.charge());
         Vec3 dir = ctx.flatLook();
-        Vec3 sphere = caster.position().add(dir.scale(2.5)).add(0, 2.2, 0);
-        float radius = Mth.clamp(p.radius() * (float) Math.sqrt(Math.max(0.5f, power)), 1f, 3.5f);
+        Vec3 sphere = caster.position().add(dir.scale(3)).add(0, 3.8, 0); // over the head: the target stays in sight
+        float radius = Mth.clamp(p.radius() * (float) Math.pow(Math.max(0.5f, power), 0.25), 1f, 2.4f);
         int gather = Math.max(6, p.duration());
         int count = Math.max(3, p.count());
         double spread = Math.max(30, p.spread() <= 0 ? 110 : p.spread());
@@ -764,7 +763,7 @@ public final class KekkeiTechniquesB {
                     Vec3 along = off.cross(new Vec3(0, 1, 0)).scale(0.15);
                     ScorchDustMagnetVfx.sandMass(level, sphere.add(off), along, 0.8f);
                 }
-                Vfx.one(level, ScorchDustMagnetVfx.billow(r * 1.4f, 4), sphere, Vec3.ZERO);
+                Vfx.one(level, ScorchDustMagnetVfx.billow(r * 0.9f, 4), sphere, Vec3.ZERO);
                 if (age[0] % 3 == 1) {
                     double a = level.random.nextDouble() * Math.PI * 2;
                     Vec3 ground = caster.position().add(Math.cos(a) * 4, 0.1, Math.sin(a) * 4);
@@ -814,8 +813,8 @@ public final class KekkeiTechniquesB {
                         ScorchDustMagnetVfx.sandImpact(level, chest(victim), 0.8f);
                     }
                 }
-                if ((int) (b.travelled / speed) % 3 == 1) {
-                    Destruction.spikes(level, floor, 0.8f, Blocks.COAL_BLOCK.defaultBlockState(), 1 + Math.round(Math.min(2f, power)));
+                if (b.travelled >= 4 && (int) (b.travelled / speed) % 4 == 1) {
+                    Destruction.spikes(level, floor, 0.5f, Blocks.COAL_BLOCK.defaultBlockState(), 1 + Math.round(Math.min(1f, power)));
                 }
                 b.tip = next;
                 b.travelled += speed;

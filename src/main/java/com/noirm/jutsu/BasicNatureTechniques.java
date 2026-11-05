@@ -99,9 +99,10 @@ public final class BasicNatureTechniques {
             blades.add(new Blade(hands.add(dir.scale(ring ? 0.8 : 1.0)), dir));
         }
         // The swing: a flash of pressure at the hands, a ring round the caster for the big ones.
-        Vfx.burst(level, Vfx.glow(0xFFFFFF, WindEarthVfx.WIND_PALE, ring ? 1.6f : 0.8f, 0.2f, 4), hands, 1, 0, 0);
+        // (Kept small and, for the ring, low: in first person a big flash at the hands whites out the screen.)
+        Vfx.burst(level, Vfx.glow(0xFFFFFF, WindEarthVfx.WIND_PALE, 0.6f, 0.15f, 4), hands.add(ctx.look().scale(0.6)), 1, 0, 0);
         if (ring) {
-            WindEarthVfx.pressureRing(level, hands, new Vec3(0, 1, 0), 1.2, 0.45, 10);
+            WindEarthVfx.pressureRing(level, caster.position().add(0, 0.3, 0), new Vec3(0, 1, 0), 1.4, 0.45, 10);
             WindEarthVfx.dustSkirt(level, caster.position(), 2f, 14);
             Vfx.quake(level, caster.position(), 0.35f, 14);
         } else {
@@ -526,7 +527,7 @@ public final class BasicNatureTechniques {
         float power = ctx.power() * (0.6f + 0.4f * ctx.charge());
         LivingEntity target = JutsuBehaviors.lookTarget(caster, p.range(), 20);
         Vec3 ground = ElementalBehaviors.ground(level, target != null ? target.position() : ElementalBehaviors.aim(caster, p.range()));
-        float radius = Mth.clamp(p.radius() * (float) Math.sqrt(Math.max(0.5f, power)), 2f, 7f);
+        float radius = Mth.clamp(p.radius() * (float) Math.pow(Math.max(0.5f, power), 0.25), 2f, 5f);
         Vec3 sky = ground.add(0, MOUNTAIN_HEIGHT, 0);
         int gather = Math.max(8, p.duration());
         int fallStart = gather + MOUNTAIN_HANG;
@@ -575,7 +576,7 @@ public final class BasicNatureTechniques {
                 }
                 if (t % 4 == 0) {
                     WindEarthVfx.groundBurst(level, ground.add((level.random.nextDouble() - 0.5) * radius * 2, 0, (level.random.nextDouble() - 0.5) * radius * 2), 1f);
-                    Vfx.burst(level, Vfx.ring(0x8A5A30, radius * 1.3f, 10), ground.add(0, 0.06, 0), 1, 0, 0);
+                    Vfx.burst(level, Vfx.ring(0x4A3420, radius * 1.1f, 10), ground.add(0, 0.06, 0), 1, 0, 0);
                 }
                 Vfx.burst(level, WindEarthVfx.earthDust(radius * 0.5f, 20), sky, 2, radius * 0.5, 0.02);
                 return false;
@@ -610,17 +611,17 @@ public final class BasicNatureTechniques {
     }
 
     private static void crash(LivingEntity caster, ServerLevel level, Vec3 ground, float radius, JutsuDefinition.Params p, float power) {
-        WindEarthVfx.groundBurst(level, ground, radius * 1.4f);
+        WindEarthVfx.groundBurst(level, ground, radius);
         com.noirm.vfx.FireVfx.groundDebris(level, ground, radius);
-        Vfx.burst(level, Vfx.glow(0xFFF0D0, 0x8A6A40, radius * 1.6f, radius * 0.5f, 4), ground.add(0, 0.5, 0), 1, 0, 0);
+        Vfx.burst(level, Vfx.glow(0xFFF0D0, 0x8A6A40, radius, radius * 0.4f, 4), ground.add(0, 0.5, 0), 1, 0, 0);
         for (int ring = 0; ring < 3; ring++) {
-            Vfx.burst(level, Vfx.ring(ring == 0 ? 0xE8D0A0 : 0x9A7A50, radius * (1.4f + ring * 0.8f), 10 + ring * 4), ground.add(0, 0.06 + ring * 0.02, 0), 1, 0, 0);
+            Vfx.burst(level, Vfx.ring(ring == 0 ? 0x9A7A50 : 0x5A4430, radius * (1.4f + ring * 0.8f), 10 + ring * 4), ground.add(0, 0.06 + ring * 0.02, 0), 1, 0, 0);
         }
         // A heavy wall of dust rolling out, and hanging there.
-        for (int i = 0; i < 28; i++) {
-            double a = i * Math.PI * 2 / 28;
+        for (int i = 0; i < 16; i++) {
+            double a = i * Math.PI * 2 / 16;
             Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
-            Vfx.one(level, WindEarthVfx.earthDust(radius * 0.35f + 0.5f, 60 + level.random.nextInt(20)), ground.add(out.scale(radius * 0.6)).add(0, 0.6, 0),
+            Vfx.one(level, WindEarthVfx.earthDust(radius * 0.22f + 0.4f, 36 + level.random.nextInt(14)), ground.add(out.scale(radius * 0.6)).add(0, 0.6, 0),
                     out.scale(0.25 + radius * 0.03).add(0, 0.02, 0));
         }
         for (int i = 0; i < 30; i++) {

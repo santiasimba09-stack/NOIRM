@@ -122,12 +122,12 @@ public final class ScorchDustMagnetVfx {
         }
         // Corners flare brightest.
         for (Vec3 corner : c) {
-            Vfx.one(level, Vfx.glow(DUST_WHITE, DUST_PALE, width * 2.2f, width * 0.6f, life + 2), corner, Vec3.ZERO);
+            Vfx.one(level, Vfx.glow(DUST_WHITE, DUST_PALE, width * 1.4f, width * 0.5f, life + 1), corner, Vec3.ZERO);
         }
         RandomSource random = level.random;
-        for (int i = 0; i < 4 + (int) (half * 3); i++) {
+        for (int i = 0; i < 2 + (int) half; i++) {
             Vec3 inside = center.add((random.nextDouble() * 2 - 1) * half, (random.nextDouble() * 2 - 1) * half, (random.nextDouble() * 2 - 1) * half);
-            Vfx.one(level, new VfxOptions(VfxKind.GLOW, 0x5A6A78, 0x101418, (float) half * 0.7f, (float) half * 0.4f, life + 4, 0f, 0.9f), inside, Vec3.ZERO);
+            Vfx.one(level, new VfxOptions(VfxKind.GLOW, 0x323C46, 0x080A0C, (float) half * 0.35f, (float) half * 0.2f, life + 2, 0f, 0.9f), inside, Vec3.ZERO);
         }
     }
 

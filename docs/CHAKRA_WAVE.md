@@ -78,3 +78,6 @@ mountain). Tests: `gametest/ChakraWaveBGameTests`. Wind's palette is now pale gr
 
 Scorch, Dust and Magnet D-rank jutsu are starters for their clans; everything else unlocks by mastery
 from an older jutsu of the same nature. NPC ninjas use all of them (`KekkeiTechniquesB.NPC_RANGED` / `NPC_DEFENSIVE`).
+Screenshots (client smoke, first person unless noted): `docs/screenshots/cw-scorch-steaming-murder-{latched,flare}.jpg`,
+`cw-dust-expanding-cube{,-growing}.jpg`, `cw-magnet-world-order-{gather,burst}.jpg`, `cw-wind-raging-tornado.jpg`,
+`cw-wind-vacuum-wave.jpg` (third person), `cw-earth-falling-mountain-{gather,impact}.jpg`.
