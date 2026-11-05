@@ -198,15 +198,24 @@ public class ShadowClone extends SparringNinja {
             return;
         }
         if (level() instanceof ServerLevel level) {
-            Vec3 at = position().add(0, 1, 0);
-            level.sendParticles(ParticleTypes.POOF, at.x, at.y, at.z, 30, 0.3, 0.6, 0.3, 0.04);
-            Vfx.burst(level, Vfx.smoke(0xE8E8E8, 0.9f, 30), at, 10, 0.4, 0.04);
-            level.playSound(null, getX(), getY(), getZ(), SoundEvents.CHICKEN_EGG, getSoundSource(), 1f, 0.6f);
+            dispelEffects(level, position().add(0, 1, 0));
         }
         if (owner instanceof Player player && storedXp > 0) {
             TrainingSystem.grant(player, Stat.TAIJUTSU, storedXp);
         }
         discard();
+    }
+
+    /** How it goes: a puff of smoke (a wood clone splinters instead). */
+    protected void dispelEffects(ServerLevel level, Vec3 at) {
+        level.sendParticles(ParticleTypes.POOF, at.x, at.y, at.z, 30, 0.3, 0.6, 0.3, 0.04);
+        Vfx.burst(level, Vfx.smoke(0xE8E8E8, 0.9f, 30), at, 10, 0.4, 0.04);
+        level.playSound(null, getX(), getY(), getZ(), SoundEvents.CHICKEN_EGG, getSoundSource(), 1f, 0.6f);
+    }
+
+    /** The owner, if it's loaded (server side). */
+    public LivingEntity ownerEntity() {
+        return owner;
     }
 
     @Override

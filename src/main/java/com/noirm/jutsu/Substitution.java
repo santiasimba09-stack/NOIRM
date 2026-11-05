@@ -42,7 +42,11 @@ public final class Substitution {
         Vec3 from = target.position();
         Vec3 behind = Vec3.directionFromRotation(0, attacker.getYRot()).scale(-2.0);
         Vec3 destination = attacker.position().add(behind.x, 0, behind.z);
-        if (!level.noCollision(target, target.getBoundingBox().move(destination.subtract(from)))) {
+        // A wood clone of yours standing nearby takes your place instead of a log (Wood Clone).
+        com.noirm.entity.WoodClone stand = com.noirm.entity.WoodClone.nearestOf(target, 24);
+        if (stand != null) {
+            destination = stand.position();
+        } else if (!level.noCollision(target, target.getBoundingBox().move(destination.subtract(from)))) {
             destination = from.subtract(Vec3.directionFromRotation(0, target.getYRot()).scale(2.5));
         }
         level.sendParticles(ParticleTypes.POOF, from.x, from.y + 1, from.z, 20, 0.3, 0.5, 0.3, 0.02);
@@ -52,6 +56,9 @@ public final class Substitution {
         target.teleportTo(destination.x, destination.y, destination.z);
         target.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, attacker.getEyePosition());
         level.sendParticles(ParticleTypes.POOF, destination.x, destination.y + 1, destination.z, 12, 0.3, 0.5, 0.3, 0.02);
+        if (stand != null) {
+            stand.standIn(from, attacker);
+        }
         if (attacker instanceof LivingEntity living) {
             CombatSystem.stun(living, ATTACKER_STUN);
         }

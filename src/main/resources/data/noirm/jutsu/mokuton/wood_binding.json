@@ -10,6 +10,6 @@
     "stun": 80,
     "damage": 3,
     "posture": 30,
-    "block": "minecraft:oak_log"
+    "block": "noirm:mokuton_wood"
   }
 }

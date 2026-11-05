@@ -116,15 +116,16 @@ class NinjaFightGoal extends Goal {
     /** Jutsu behaviors by when they're used. */
     private static final Set<String> RANGED = union(Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave", "ash_cloud", "chain",
             "amaterasu", "tsukuyomi", "kotoamatsukami",
-            "mirage", "tree_bind", "shadow_stitch", "attraction", "equilibrium", "poison_mist"),
+            "mirage", "tree_bind", "shadow_stitch", "attraction", "equilibrium", "poison_mist",
+            "wood_roots", "wood_dragon", "deep_forest", "wood_colossus"),
             com.noirm.jutsu.KekkeiTechniquesA.NPC_RANGED);
     private static final Set<String> CLOSE = union(Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui",
             "giant_fist", "repulsion", "derangement", "scalpel_strike"),
             com.noirm.jutsu.KekkeiTechniquesA.NPC_CLOSE);
     private static final Set<String> DASH = Set.of("dash_strike");
     private static final Set<String> FLICKER = Set.of("flicker");
-    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "buff", "susanoo", "hawks", "hundred_healings");
-    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "susanoo", "izanagi", "regen_burst", "renewal", "healing_field");
+    private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "wood_clone", "buff", "susanoo", "hawks", "hundred_healings");
+    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "wood_dome", "susanoo", "izanagi", "regen_burst", "renewal", "healing_field");
 
     /** Two behaviour sets as one (each nature family lists its own, see e.g. KekkeiTechniquesA). */
     @SafeVarargs
@@ -359,7 +360,7 @@ class NinjaFightGoal extends Goal {
             if ("mode".equals(def.behavior()) && ModeSystem.activeMode(ninja) != null) {
                 return false; // already powered up (casting it again would switch it off)
             }
-            if ("shadow_clone".equals(def.behavior()) && (ninja instanceof ShadowClone || hasClones())) {
+            if (("shadow_clone".equals(def.behavior()) || "wood_clone".equals(def.behavior())) && (ninja instanceof ShadowClone || hasClones())) {
                 return false;
             }
             return JutsuCaster.npcReady(ninja, id) && JutsuCaster.checkRequirements(ninja, id, def) == JutsuCaster.Result.OK
