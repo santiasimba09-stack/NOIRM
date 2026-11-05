@@ -141,16 +141,18 @@ public final class WoodReleaseGameTests {
      * Two wood clones step out in a fan behind the caster. Whoever breaks one is caught by its roots;
      * with Substitution ready, the caster trades places with the other.
      */
-    @GameTest(template = "empty", batch = "noirm_wood_clone", timeoutTicks = 60)
+    @GameTest(template = "empty", batch = "noirm_wood_clone", timeoutTicks = 200)
     public static void woodClonesFanOutTrapAndStandIn(GameTestHelper helper) {
         clearStrays(helper);
         openFloor(helper, -2, -4, 4, 6, 3);
         SparringNinja caster = ninja(helper, 1.5f, 1.5f);
         SparringNinja enemy = ninja(helper, 1.5f, 4.5f);
         enemy.setInvulnerable(false);
-        // Wait for the test world to load the chunks round the fighters (TestWorld forces them at the
-        // end of the tick): a clone that lands across a chunk border is invisible until then.
-        helper.runAfterDelay(2, () -> {
+        // The clones step out ~2 blocks behind the caster, which can be the next chunk over: wait until
+        // its entities are loaded and ticking (TestWorld forces it, the load itself takes a few ticks),
+        // or a clone placed there exists but can't be found yet.
+        BlockPos at = caster.blockPosition();
+        whenEntityTicking(helper, List.of(at.offset(-3, 0, -3), at.offset(0, 0, -3), at.offset(3, 0, -3)), () -> {
             facePoint(caster, caster.position().add(0, 0, 5)); // facing +z
             run(caster, "mokuton/wood_clone", 1f);
             List<WoodClone> clones = clones(helper, caster);
@@ -319,6 +321,15 @@ public final class WoodReleaseGameTests {
         ninja.setHealth(ninja.getMaxHealth());
         ninja.setInvulnerable(false);
         return ninja;
+    }
+
+    /** Runs {@code then} once every spot's chunk has its entities loaded and ticking. */
+    private static void whenEntityTicking(GameTestHelper helper, List<BlockPos> spots, Runnable then) {
+        if (spots.stream().allMatch(p -> helper.getLevel().isPositionEntityTicking(p))) {
+            then.run();
+        } else {
+            helper.runAfterDelay(1, () -> whenEntityTicking(helper, spots, then));
+        }
     }
 
     private static List<WoodClone> clones(GameTestHelper helper, LivingEntity owner) {
