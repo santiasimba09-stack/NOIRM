@@ -86,7 +86,7 @@ public final class NatureGameTests {
     }
 
     /** Casts every nature jutsu once (from a ninja with every nature) at a target in front: no errors, and it gets hurt. */
-    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 4000) // ~16 ticks per jutsu: grows with every jutsu wave
+    @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 4800) // 16 ticks a jutsu: room for the chakra wave's new ones
     public static void everyNatureJutsuWorks(GameTestHelper helper) {
         floor(helper);
         List<ResourceLocation> ids = new ArrayList<>();

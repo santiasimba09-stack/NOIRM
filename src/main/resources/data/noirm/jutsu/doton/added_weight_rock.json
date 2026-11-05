@@ -1,0 +1,19 @@
+{
+  "nature": "earth",
+  "behavior": "weight_rock",
+  "rank": "A",
+  "chakra_cost": 38,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:doton/earth_dragon",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "duration": 120,
+    "damage": 4,
+    "posture": 30,
+    "stun": 10,
+    "effect": "slowness:3,mining_fatigue:1"
+  }
+}

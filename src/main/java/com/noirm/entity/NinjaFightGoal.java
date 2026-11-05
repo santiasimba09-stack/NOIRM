@@ -118,14 +118,15 @@ class NinjaFightGoal extends Goal {
             "amaterasu", "tsukuyomi", "kotoamatsukami",
             "mirage", "tree_bind", "shadow_stitch", "attraction", "equilibrium", "poison_mist",
             "wood_roots", "wood_dragon", "deep_forest", "wood_colossus"),
-            com.noirm.jutsu.KekkeiTechniquesA.NPC_RANGED);
+            com.noirm.jutsu.KekkeiTechniquesA.NPC_RANGED, com.noirm.jutsu.KekkeiTechniquesB.NPC_RANGED);
     private static final Set<String> CLOSE = union(Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui",
             "giant_fist", "repulsion", "derangement", "scalpel_strike"),
             com.noirm.jutsu.KekkeiTechniquesA.NPC_CLOSE);
     private static final Set<String> DASH = Set.of("dash_strike");
     private static final Set<String> FLICKER = Set.of("flicker");
     private static final Set<String> OPENERS = Set.of("mode", "shadow_clone", "wood_clone", "buff", "susanoo", "hawks", "hundred_healings");
-    private static final Set<String> DEFENSIVE = Set.of("dome", "wall", "wood_dome", "susanoo", "izanagi", "regen_burst", "renewal", "healing_field");
+    private static final Set<String> DEFENSIVE = union(Set.of("dome", "wall", "wood_dome", "susanoo", "izanagi", "regen_burst", "renewal", "healing_field"),
+            com.noirm.jutsu.KekkeiTechniquesB.NPC_DEFENSIVE);
 
     /** Two behaviour sets as one (each nature family lists its own, see e.g. KekkeiTechniquesA). */
     @SafeVarargs

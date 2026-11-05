@@ -1,0 +1,19 @@
+{
+  "nature": "scorch",
+  "behavior": "ward_shell",
+  "rank": "C",
+  "chakra_cost": 25,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:shakuton/heat_mote",
+    "mastery": 2
+  },
+  "params": {
+    "duration": 120,
+    "radius": 1.6,
+    "damage": 3,
+    "knockback": 0.6,
+    "posture": 10,
+    "effect": "resistance:0"
+  }
+}

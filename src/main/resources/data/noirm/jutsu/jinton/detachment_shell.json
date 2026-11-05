@@ -1,0 +1,19 @@
+{
+  "nature": "dust",
+  "behavior": "ward_shell",
+  "rank": "C",
+  "chakra_cost": 25,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:jinton/detachment_needle",
+    "mastery": 2
+  },
+  "params": {
+    "duration": 120,
+    "radius": 1.5,
+    "damage": 2,
+    "knockback": 0.4,
+    "posture": 8,
+    "effect": "resistance:1"
+  }
+}

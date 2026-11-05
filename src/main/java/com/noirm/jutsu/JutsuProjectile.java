@@ -363,6 +363,9 @@ public class JutsuProjectile extends Projectile {
                 getDeltaMovement(), size(), tickCount)) {
             return; // Ice, Lava, Boil, Storm and Explosion draw their own (vfx/KekkeiVfxA)
         }
+        if (!isBeastChakra() && com.noirm.vfx.ScorchDustMagnetVfx.projectileTrail(level(), nature(), position(), getDeltaMovement(), size(), tickCount)) {
+            return; // Scorch suns, iron sand needles, compressed air, rock
+        }
         if (look == Look.NEEDLE) {
             // A lightning needle: a thin white-hot streak and a few sparks.
             Vec3 motion = getDeltaMovement();

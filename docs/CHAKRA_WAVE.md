@@ -170,3 +170,23 @@ NPC ninjas of Wood use them all (`NinjaFightGoal`: ranged, opener and defensive 
 Screenshots: `docs/screenshots/cw-wood-dragon.jpg`, `cw-wood-deep-forest.jpg`, `cw-wood-colossus.jpg`.
 Open questions for the owner: is the colossus' look right (it's placeholder-simple boxes)? Should
 the forest's trunks stay longer than the terrain regen (about 45 s by default)?
+
+### Wave share: Scorch, Dust, Magnet, Wind, Earth (23 jutsu)
+Code: `jutsu/KekkeiTechniquesB` (Scorch, Dust, Magnet, and the shared `ward_shell`),
+`jutsu/BasicNatureTechniques` (Wind, Earth), the looks in `vfx/ScorchDustMagnetVfx` and `vfx/WindEarthVfx`,
+and `jutsu/RockAndCubeDisplays` (solid shapes made of vanilla block displays: the Dust cube, the falling
+mountain). Tests: `gametest/ChakraWaveBGameTests`. Wind's palette is now pale grey-white, not green.
+
+| Nature | Jutsu (rank, behaviour) |
+|---|---|
+| Scorch | Heat Mote (D, heat_orbs) · Scorching Halo (C, ward_shell) · Swarm of Suns (A, heat_orbs) · Extreme Steaming Murder (S, steam_mummify) |
+| Dust | Detachment Needle (D, beam) · Detachment Shell (C, ward_shell) · Cone-Shaped Detachment (B, detach_cone) · Expanding Detachment Cube (A, detach_cube) |
+| Magnet | Lodestone Pull (D, magnet_pull: metal armour pulls harder) · Iron Sand Shield (C, ward_shell) · Giant Arm (B, sand_arm) · Gathering Needle Rain (A, needle_rain) · World Order (S, sand_tide) |
+| Wind | Wind Blade (D, wind_crescent) · Vacuum Blast (C, projectile) · Gale Wall (B, ward_shell: turns jutsu back) · Vacuum Wave (A, a 360° ring of crescents) · Raging Tornado (S, tornado) |
+| Earth | Headhunter (D) · Rock Hounds (C) · Earth Flow Rampart (B) · Added-Weight Rock (A: you light, the foe heavy) · Falling Mountain (S) |
+
+Scorch, Dust and Magnet D-rank jutsu are starters for their clans; everything else unlocks by mastery
+from an older jutsu of the same nature. NPC ninjas use all of them (`KekkeiTechniquesB.NPC_RANGED` / `NPC_DEFENSIVE`).
+Screenshots (client smoke, first person unless noted): `docs/screenshots/cw-scorch-steaming-murder-{latched,flare}.jpg`,
+`cw-dust-expanding-cube{,-growing}.jpg`, `cw-magnet-world-order-{gather,burst}.jpg`, `cw-wind-raging-tornado.jpg`,
+`cw-wind-vacuum-wave.jpg` (third person), `cw-earth-falling-mountain-{gather,impact}.jpg`.
