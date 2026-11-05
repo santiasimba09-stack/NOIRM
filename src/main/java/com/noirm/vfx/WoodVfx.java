@@ -57,8 +57,8 @@ public final class WoodVfx {
     public static void emerge(Level level, Vec3 at, float radius) {
         float r = Math.max(0.6f, Math.min(radius, 6f));
         RandomSource random = level.random;
-        Vfx.burst(level, Vfx.glow(SAP, SAP_DEEP, r * 1.1f, r * 0.3f, 6), at.add(0, 0.3, 0), 1, 0, 0);
-        Vfx.burst(level, Vfx.ring(SAP_DEEP, r * 2.2f, 10), at.add(0, 0.06, 0), 1, 0, 0);
+        Vfx.burst(level, Vfx.glow(SAP, SAP_DEEP, Math.min(1.6f, r * 0.5f), r * 0.15f, 5), at.add(0, 0.3, 0), 1, 0, 0);
+        Vfx.burst(level, Vfx.ring(DUST, r * 2.2f, 10), at.add(0, 0.06, 0), 1, 0, 0); // a dust-coloured ring: wood isn't glowing chakra
         // Dust: a fast low skirt, then a slow column.
         int skirt = 6 + (int) (r * 3);
         for (int i = 0; i < skirt; i++) {

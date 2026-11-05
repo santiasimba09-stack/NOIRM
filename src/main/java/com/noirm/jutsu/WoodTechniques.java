@@ -57,7 +57,7 @@ public final class WoodTechniques {
     /** Ticks between one trunk bursting out and the next. */
     public static final int TRUNK_STAGGER = 2;
     /** No trunk grows this close to the caster. */
-    public static final double FOREST_CLEAR = 2.8;
+    public static final double FOREST_CLEAR = 5;
 
     private WoodTechniques() {}
 
@@ -194,7 +194,12 @@ public final class WoodTechniques {
         }
         Vec3 toward = target != null ? target.position().subtract(caster.position()).multiply(1, 0, 1) : ctx.flatLook();
         toward = toward.lengthSqr() < 1e-4 ? ctx.flatLook() : toward.normalize();
-        Vec3 at = ElementalBehaviors.ground(level, caster.position().add(toward.scale(2.5)).add(0, 1, 0));
+        // It breaks out of the ground near the target and off to one side, so the caster still sees
+        // what it does (bursting out at the caster's feet, its neck hid the target).
+        Vec3 side = new Vec3(-toward.z, 0, toward.x).scale(level.random.nextBoolean() ? 1.8 : -1.8);
+        Vec3 from = target != null ? target.position().subtract(toward.scale(Math.min(4.5, caster.distanceTo(target) * 0.5))).add(side)
+                : caster.position().add(toward.scale(3)).add(side);
+        Vec3 at = ElementalBehaviors.ground(level, from.add(0, 1, 0));
         Vec3 end = ElementalBehaviors.ground(level, ElementalBehaviors.aim(caster, p.range()));
         dragon.moveTo(at.x, at.y, at.z, 0, 0);
         dragon.launch(caster, target, end, p.duration(), p.damage() * ctx.power(), p.posture() * ctx.power(), ctx.power());
@@ -223,7 +228,7 @@ public final class WoodTechniques {
             double a = random.nextDouble() * Math.PI * 2;
             double d = trunks.isEmpty() ? 0.6 : radius * Math.sqrt(0.08 + 0.92 * random.nextDouble());
             Vec3 at = center.add(Math.cos(a) * d, 0, Math.sin(a) * d);
-            if (at.distanceTo(caster.position()) < FOREST_CLEAR || trunks.stream().anyMatch(t -> t.base().distanceTo(at) < 2.6)) {
+            if (at.distanceTo(caster.position()) < FOREST_CLEAR || trunks.stream().anyMatch(t -> t.base().distanceTo(at) < 3.6)) {
                 continue;
             }
             Vec3 floor = floor(level, at);
@@ -321,10 +326,10 @@ public final class WoodTechniques {
         }
         double f = layer / (double) trunk.height();
         // The trunk winds round a slowly leaning axis and thins toward the top.
-        double sway = 0.9 + f * 0.8;
-        double a = trunk.phase() + layer * 0.32 * trunk.twist();
+        double sway = 0.5 + f * 0.6;
+        double a = trunk.phase() + layer * 0.22 * trunk.twist();
         Vec3 axis = trunk.base().add(trunk.lean().scale(layer)).add(Math.cos(a) * sway, layer, Math.sin(a) * sway);
-        double r = trunk.thickness() * (1 - 0.45 * f);
+        double r = Math.max(0.95, trunk.thickness() * (1 - 0.4 * f)); // never thinner than a cross, so it stays whole
         int placed = 0;
         int span = (int) Math.ceil(r);
         BlockPos middle = BlockPos.containing(axis);
@@ -346,7 +351,7 @@ public final class WoodTechniques {
             Direction.Axis branchAxis = Math.abs(Math.cos(ba)) > Math.abs(Math.sin(ba)) ? Direction.Axis.X : Direction.Axis.Z;
             int length = 3 + (int) (trunk.thickness() * 1.5);
             for (int s = 1; s <= length; s++) {
-                BlockPos pos = BlockPos.containing(axis.add(Math.cos(ba) * (r + s), s * 0.45, Math.sin(ba) * (r + s)));
+                BlockPos pos = BlockPos.containing(axis.add(Math.cos(ba) * (r + s * 0.8), s * 0.3, Math.sin(ba) * (r + s * 0.8)));
                 if (Destruction.grow(level, pos, wood(branchAxis), FOREST_REGEN_SCALE)) {
                     placed++;
                 }

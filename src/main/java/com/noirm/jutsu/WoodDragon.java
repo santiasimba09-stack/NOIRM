@@ -143,9 +143,14 @@ public class WoodDragon extends Entity {
     private List<Vec3> fullPath(Vec3 feet, float width, float height, float age) {
         Vec3 origin = position();
         List<Vec3> pts = new ArrayList<>();
-        Vec3 rise = origin.add(0, 2.5, 0);
+        // Out of the ground at a slant, already leaning toward where it's going.
+        Vec3 goal = feet != null ? feet : end();
+        Vec3 toward = goal.subtract(origin).multiply(1, 0, 1);
+        toward = toward.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : toward.normalize();
+        Vec3 deep = origin.subtract(toward.scale(1.6)).add(0, -2.5, 0);
+        Vec3 rise = origin.add(toward.scale(0.9)).add(0, 2.2, 0);
         for (int i = 0; i <= 6; i++) {
-            pts.add(origin.add(0, -2.5 + 5.0 * i / 6, 0)); // out of the ground
+            pts.add(deep.lerp(rise, i / 6.0));
         }
         if (feet == null) {
             Vec3 end = end();

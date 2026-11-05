@@ -76,8 +76,9 @@ Wood Binding and Deep Forest Spears use too.
 | Wood Locking Wall (`mokuton/wood_locking_wall`) | B, after Wood Binding ★2 | A dome of wood (radius 3.5) closes over you from the ground up, with slits at eye height, and splinters away after 5 s. |
 | Wood Dragon (`mokuton/wood_dragon`) | A, after Wood Binding ★3 | A long bark-scaled dragon with a horned head and an open jaw bursts out of the ground and coils round the target from the feet up, sized to the target (a tailed beast gets a bigger one). It holds the target 3.5 s and drinks 6 chakra a second, half of which flows back to you, then crushes the target. |
 | Deep Forest Emergence (`mokuton/deep_forest_emergence`) | S, after Deep Forest Spears ★3 | The ground heaves, then 12 huge twisting trunks burst out one after another across a radius of 11 or more. They throw up whoever stands on them and tangle everyone in the forest. The trunks are real blocks (at most 1,300) that regrow away with the terrain. |
-| Thousand-Arm Colossus (`mokuton/thousand_arm_colossus`) | S, after Deep Forest ★2 | A 17-block wooden figure (our own design: a hooded stump head, a crown of branches, hands clasped in a seal, a halo of 30 arms) rises behind you. 16 fists crash down round the target, then it sinks away. It's one model entity, not blocks. |
+| Thousand-Arm Colossus (`mokuton/thousand_arm_colossus`) | S, after Deep Forest ★2 | A 17-block wooden figure (our own design: a hooded stump head, a crown of branches, hands clasped in a seal, a halo of 30 arms) rises behind you. 16 fists crash down round the target, then it sinks away. It's one model entity, not blocks. Timing: it rises for 1.5 s, then a fist lands every 0.25 s (the first at 1.9 s, the last at about 5.7 s), and it's gone at about 7.6 s. |
 
 NPC ninjas of Wood use them all (`NinjaFightGoal`: ranged, opener and defensive sets).
+Screenshots: `docs/screenshots/cw-wood-dragon.jpg`, `cw-wood-deep-forest.jpg`, `cw-wood-colossus.jpg`.
 Open questions for the owner: is the colossus' look right (it's placeholder-simple boxes)? Should
 the forest's trunks stay longer than the terrain regen (about 45 s by default)?

@@ -39,7 +39,7 @@ public class WoodColossus extends Entity {
     public static final int RISE = 30;
     public static final int SINK = 30;
     /** Ticks between one fist and the next, and how long a fist's swing lasts (wind-up, slam, rest, back). */
-    public static final int STRIKE_GAP = 4;
+    public static final int STRIKE_GAP = 5;
     public static final int STRIKE_LEN = 16;
     /** The tick within a swing when the fist lands. */
     public static final int STRIKE_LAND = 8;
