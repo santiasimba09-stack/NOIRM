@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05 (chakra wave, part 1: the jutsu wave, v0.15.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-06 (v0.16.0: workshop, advancements, config, sound) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -30,20 +30,25 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 | Part | State |
 |---|---|
 | **1. The jutsu wave (v0.15.0):** 71 new jutsu: epic Wood Release (6), Ice/Lava/Boil/Storm/Explosion (20), Scorch/Dust/Magnet/Wind/Earth (23), Yin/Yang/Yin-Yang/Medical (22) | ✅ 436 game tests green twice; each share checked in client (`cw-*` screenshots) |
-| **2. Solo transformations + the jutsu workshop:** fuse two natures alone (very hard), shape training and shape + nature fusion, Yin/Yang alone, clearer drills, a workshop to design your own jutsu (can beat canon; big cost, backlash, stat gates), teach crew, write scrolls | next |
+| **2. Solo transformations + the jutsu workshop (v0.16.0):** nature fusion trial, 8 chakra shapes and shape + nature fusion, Yin/Yang/Yin-Yang alone, a Training tab, the Workshop tab (your own jutsu: cost, backlash, stat budget, misfires), teaching crew, writing scrolls | ✅ tested; checked in client (`cw2-*`) |
 | **3. Solid-flame chakra:** solid shell + rising flame edge for beast cloaks, tails, every Susanoo stage (semi-opaque bone), Sage, the Gates and fitting jutsu; per-user Susanoo colours; Low/Medium/High setting | after part 2 |
+
+## Survival plan (`docs/SURVIVAL.md`)
+
+| Step | State |
+|---|---|
+| **Path of the Shinobi:** 49 advancements in 9 branches, each saying how to do it; 14 triggers in `progress/` | ✅ v0.16.0, tested; checked in client (`sv-advancements-*`) |
+| **Config file** `config/noirm-common.toml` (`config/NoirmConfig`): difficulty, wild ninjas, legends, terrain, gore, progression speeds; `/noirm config` | ✅ v0.16.0, tested |
+| **Sound:** 54 synthesised sounds (152 variants) for seals, chakra, hits, weapons, every nature, big moments, UI, ambience (`docs/SOUND.md`, `tools/soundgen/`) | ✅ v0.16.0, tested; subtitles checked in client (`sv-sound-*`) |
+| Full survival playthrough + balance pass | next |
+| Survival staples, exploration, new paths, endgame | planned |
 
 ## Next steps (in order)
 
-The owner's plan for a complete survival game is in `docs/SURVIVAL.md` (single-player first).
-1. **Chakra wave part 2** (the workshop and solo transformations): being built.
-2. **Survival foundations:** a "Path of the Shinobi" advancement tree and a real config file; then
-   a full survival playthrough and balance pass.
-3. **Sound:** our own sounds for jutsu, hits, seals, the UI and ambience.
-4. **Survival staples:** food, pills and tools; crafting and economy (chakra metal, blacksmith, homes).
-5. **Exploration**, then **new paths** (summoning, sealing, puppets, space-time), then **endgame**
-   (Kage, wars, a rogue organisation, beast hunting). Chakra wave part 3 (solid-flame chakra) fits
-   in when the owner wants it.
+1. **Owner listens to the sounds** (`docs/sound-samples/`) and tries the workshop and the advancement tab.
+2. **Full survival playthrough** from a fresh world to the late game; fix pacing, difficulty and anything confusing; balance pass.
+3. **Survival staples:** food, pills and tools; crafting and economy.
+4. **Exploration**, then **new paths**, then **endgame** (`docs/SURVIVAL.md`). Chakra wave part 3 (solid-flame chakra) when the owner wants it.
 
 ## Code map
 
@@ -184,6 +189,16 @@ The owner's plan for a complete survival game is in `docs/SURVIVAL.md` (single-p
   it calls `TestKit.clearStrays` first (a failed earlier test leaves its fighters behind).
 
 ## Open questions for the owner
+
+- **v0.16.0:**
+  - **Sound:** do the sounds fit? Likely tweaks are the scorch sizzle, the light hits and UI loudness.
+    Should the HUD's jutsu list move up while subtitles show? Do you want village loops per village
+    and at night? Should the last vanilla sounds go (beast roars, heartbeats, the tag fuse)?
+  - **Workshop:** is fusing right at ★4 + CTL 40, about 3.5 days and a 15% break chance per 5 minutes?
+    Scrolls take paper or a blank scroll, plus an ink sac and chakra. Crew mates learn creations
+    instantly at ★2. The Sharingan can't copy creations. Should ball craters be capped? Rank caps go
+    up to A without shape + nature fusion and S with it.
+  - **Advancements:** do the branch order and the rewards read well?
 
 - **Jutsu wave (v0.15.0):** Kai unlocks after Substitution ★1 (not a starter): OK? Medical jutsu only
   for Senju (Yang) NPCs, or all medics? Reincarnation's price (60% health, all chakra, 1 min weak)
