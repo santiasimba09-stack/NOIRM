@@ -263,3 +263,8 @@ Pick a nature you own, a trained shape, and size / speed / power / range (1–5 
   sheet of paper, an ink sac, and half the jutsu's chakra cost (at least 10). Reading the scroll teaches
   that exact jutsu to anyone who owns its nature and passes the rank gate. NPC ninjas never roll
   creations, and the Sharingan can't copy them.
+
+**Screenshots** (client smoke, 1280×720, GUI scale auto unless noted): `docs/screenshots/cw2-workshop.jpg`,
+`cw2-workshop-creations.jpg`, `cw2-training.jpg`, `cw2-training-shapes.jpg`, `cw2-cast-charge.jpg` and
+`cw2-cast-hit.jpg` (Spiral Gale, a self-made S-rank wind ball), `cw2-scroll.jpg` (a written creation
+scroll), and at GUI scale 2: `cw2-workshop-gui2.jpg`, `cw2-training-gui2.jpg`.

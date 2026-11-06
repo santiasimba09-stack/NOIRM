@@ -236,7 +236,12 @@ public class WorkshopScreen extends Screen implements NoirmStyled {
             if (on) {
                 g.fill(bx, by + 12, bx + bw, by + 13, color);
             }
-            String label = shape.kanji() + " " + Component.translatable(shape.translationKey()).getString();
+            // Kanji and name if they fit, else the name alone, else the kanji alone (the tooltip names it).
+            String name = Component.translatable(shape.translationKey()).getString();
+            String label = shape.kanji() + " " + name;
+            if (font.width(label) > bw - 8) {
+                label = font.width(name) <= bw - 8 ? name : shape.kanji();
+            }
             int textColor = stage == 0 ? Theme.TEXT_FAINT : on ? Theme.TEXT : Theme.mix(Theme.TEXT_DIM, Theme.TEXT, hv);
             g.drawString(font, Ui.fit(font, label, bw - 8), bx + 3, by + 3, textColor, false);
             for (int s = 0; s < stage; s++) { // stage pips
