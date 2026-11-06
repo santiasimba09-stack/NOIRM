@@ -138,7 +138,7 @@ public final class BountyPackets {
     /** A page as {@code reader} sees it. */
     public static Page page(ServerPlayer reader, BingoEntry e) {
         return new Page(e.id, e.name(), e.clanName, e.code(), e.legendary ? e.kind.key() : "", traits(reader.getServer(), e),
-                seen(reader, e), e.bounty, !e.active(), e.claimedBy);
+                seen(reader, e), e.payout(), !e.active(), e.claimedBy);
     }
 
     /** Natures, eyes, beast, and for a legend what they're known for. */

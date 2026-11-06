@@ -48,6 +48,8 @@ public final class Noirm {
         com.noirm.gore.GoreParticles.register(modBus); // blood drops and pools
         com.noirm.gore.GoreSettings.register(); // the player's gore level (config/noirm-client.toml)
         com.noirm.creator.CharacterCreator.registerGameRules();
+        com.noirm.config.NoirmConfig.register(); // survival tuning (config/noirm-common.toml)
+        modBus.addListener(com.noirm.progress.NoirmTriggers::setup); // the advancement triggers
         NoirmNetwork.register();
     }
 

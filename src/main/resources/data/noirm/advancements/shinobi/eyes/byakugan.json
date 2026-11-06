@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:ender_eye"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.eyes.byakugan.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.eyes.byakugan.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/beginnings/character",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:eyes",
+      "conditions": {
+        "key": "byakugan"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

@@ -315,6 +315,7 @@ public final class FusionTrial {
                 Component.translatable(stepKey(done)), next, stages.size()).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.2f);
         effect(player, nature, true);
+        com.noirm.progress.FuseNaturesTrigger.fire(player, nature.name().toLowerCase(java.util.Locale.ROOT)); // "Born of Nothing"
         data.markPowersDirty();
     }
 

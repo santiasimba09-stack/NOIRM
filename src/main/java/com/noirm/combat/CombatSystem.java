@@ -817,6 +817,9 @@ public final class CombatSystem {
         CombatEffects.justFrame(defender, attacker);
         TrainingSystem.onParry(defender, attacker);
         AwakeningSystem.onClutch(defender);
+        if (defender instanceof net.minecraft.world.entity.player.Player player) {
+            com.noirm.progress.CombatFeatTrigger.justFrameParry(player); // "Path of the Shinobi"
+        }
         attackerState.perceivedBy = -1;
         attackerState.counterArmed = false;
         attackerState.counterTicks = 0;

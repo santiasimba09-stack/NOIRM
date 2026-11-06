@@ -372,6 +372,7 @@ public final class Workshop {
         player.sendSystemMessage(Component.translatable("message.noirm.workshop.created", design.name(), s.rank(),
                 Math.round(MISFIRE[0] * 100)).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.8f, 1.1f);
+        com.noirm.progress.CreateJutsuTrigger.fire(player, String.valueOf(s.rank())); // "A Jutsu of Your Own"
         return new Made(design, null);
     }
 

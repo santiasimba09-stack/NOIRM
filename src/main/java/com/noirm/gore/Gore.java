@@ -134,8 +134,14 @@ public final class Gore {
         GORE = GameRules.register("noirmGore", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
     }
 
+    /** Gore here: the config's {@code gore.enabled} (every world) <b>and</b> this world's {@code noirmGore} rule. */
     public static boolean enabled(ServerLevel level) {
-        return GORE == null || level.getGameRules().getBoolean(GORE);
+        return com.noirm.config.NoirmConfig.GORE_ENABLED.get() && com.noirm.config.NoirmConfig.GORE_INTENSITY.get() > 0 && (GORE == null || level.getGameRules().getBoolean(GORE));
+    }
+
+    /** The config's {@code gore.intensity} (1 = normal): how fast marks build up and how often limbs come off. */
+    public static float intensity() {
+        return com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.GORE_INTENSITY);
     }
 
     /** Who gets marks: players and the humanoids we draw with marks (ninjas, villagers). */
@@ -206,7 +212,7 @@ public final class Gore {
         if (ignored(source)) {
             return;
         }
-        float gain = Math.max(MIN_GAIN, GAIN_PER_HEALTH * amount / Math.max(1f, target.getMaxHealth()));
+        float gain = Math.max(MIN_GAIN, GAIN_PER_HEALTH * amount / Math.max(1f, target.getMaxHealth())) * intensity();
         GoreMarks marks = marksFor(target);
         marks.lastHealth = Math.max(0f, target.getHealth() - amount); // what's lost now isn't "healed" later
         boolean heavy = CombatSystem.isApplyingHeavyHit() || amount >= HEAVY_DAMAGE || amount >= HEAVY_SHARE * target.getMaxHealth();
@@ -554,7 +560,7 @@ public final class Gore {
                 default -> SEVER_CHANCE_HEAVY;
             };
             RandomSource random = victim.getRandom();
-            if (random.nextFloat() < chance) {
+            if (random.nextFloat() < Math.min(1f, chance * intensity())) {
                 sever(level, victim, choosePart(victim, marks.pendingFrom, marks.pendingBlow, random), marks.pendingFrom);
             }
         }

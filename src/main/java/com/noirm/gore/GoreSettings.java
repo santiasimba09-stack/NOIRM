@@ -10,8 +10,10 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 /**
  * The player's own gore setting, in {@code config/noirm-client.toml} ({@code goreLevel}): how much
- * of the gore the server sends is shown on this screen. The world's {@code noirmGore} rule
- * (and {@code /noirm world gore on|off}) is the master switch; this only turns it down.
+ * of the gore the server sends is shown on this screen. The master switches are the common config's
+ * {@code gore.enabled} and {@code gore.intensity} ({@link com.noirm.config.NoirmConfig}, for every
+ * world) and the world's {@code noirmGore} rule ({@code /noirm world gore on|off}); this only turns
+ * it down.
  * <ul>
  *   <li>{@code OFF}: nothing (no marks, no blood, no severed limbs drawn).</li>
  *   <li>{@code MILD}: bruises, dirt, soot and cuts; severed limbs; a few blood drops, no stains.</li>
@@ -43,18 +45,19 @@ public final class GoreSettings {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, SPEC, "noirm-client.toml");
     }
 
+    /** The level shown on this screen: this file's {@code goreLevel}, or OFF when the common config turns gore off. */
     public static Level level() {
-        return level;
+        return com.noirm.config.NoirmConfig.GORE_ENABLED.get() ? level : Level.OFF;
     }
 
     /** Anything at all (marks, limbs, drops). */
     public static boolean any() {
-        return level != Level.OFF;
+        return level() != Level.OFF;
     }
 
     /** Blood stains on bodies and clothes, and blood on the ground. */
     public static boolean full() {
-        return level == Level.FULL;
+        return level() == Level.FULL;
     }
 
     /** Sets the level for this session (the file is unchanged); for tests. */

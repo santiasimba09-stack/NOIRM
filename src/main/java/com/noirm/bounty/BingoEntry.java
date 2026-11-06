@@ -41,6 +41,11 @@ public final class BingoEntry {
     /** Last seen around here (y is a guess until they're met). */
     public BlockPos area = BlockPos.ZERO;
     public int bounty;
+
+    /** What claiming this page pays: the bounty after the config's ryo multiplier ({@code progression.ryoRewards}). */
+    public int payout() {
+        return com.noirm.config.NoirmConfig.ryoReward(bounty);
+    }
     public Status status = Status.ACTIVE;
     public String claimedBy = "";
     public long claimedAt;

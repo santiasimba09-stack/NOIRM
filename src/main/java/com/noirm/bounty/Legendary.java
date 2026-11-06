@@ -305,7 +305,7 @@ public final class Legendary {
                 : Component.translatable("bingo.noirm.entrance.free")).copy().withStyle(ChatFormatting.GRAY);
         // The class and the bounty go above the hotbar (the subtitle is drawn too big for them).
         Component details = entry == null ? null : Component.translatable("bingo.noirm.entrance",
-                NinjaClass.letter(NinjaClass.LEGENDARY_CODE), com.noirm.economy.Ryo.format(entry.bounty)).withStyle(ChatFormatting.GOLD);
+                NinjaClass.letter(NinjaClass.LEGENDARY_CODE), com.noirm.economy.Ryo.format(entry.payout())).withStyle(ChatFormatting.GOLD);
         if (player instanceof ServerPlayer sp && sp.connection != null) {
             sp.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 25));
             sp.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));

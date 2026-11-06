@@ -62,8 +62,18 @@ public final class Destruction {
         TERRAIN_REGEN = GameRules.register("noirmTerrainRegen", GameRules.Category.MISC, GameRules.IntegerValue.create(60));
     }
 
+    /**
+     * Whether jutsu may break terrain here: the config's {@code world.terrainDestruction} (every
+     * world) <b>and</b> this world's {@code noirmTerrainDamage} gamerule must both be on.
+     */
     public static boolean enabled(ServerLevel level) {
-        return TERRAIN_DAMAGE == null || level.getGameRules().getBoolean(TERRAIN_DAMAGE);
+        return com.noirm.config.NoirmConfig.TERRAIN_DESTRUCTION.get() && (TERRAIN_DAMAGE == null || level.getGameRules().getBoolean(TERRAIN_DAMAGE));
+    }
+
+    /** Seconds broken terrain takes to grow back: the {@code noirmTerrainRegen} gamerule × the config's {@code world.terrainRegenScale} (0 = never). */
+    public static double regenSeconds(ServerLevel level) {
+        int rule = TERRAIN_REGEN == null ? 60 : level.getGameRules().getInt(TERRAIN_REGEN);
+        return rule <= 0 ? 0 : rule * com.noirm.config.NoirmConfig.TERRAIN_REGEN_SCALE.get();
     }
 
     /** The hardest block a hit of this power can break: dirt and wood at 1, stone at ~1.5, obsidian never. */
@@ -342,7 +352,7 @@ public final class Destruction {
         if (before.hasBlockEntity()) {
             return;
         }
-        int regen = TERRAIN_REGEN == null ? 60 : level.getGameRules().getInt(TERRAIN_REGEN);
+        double regen = regenSeconds(level);
         if (regen > 0) {
             Change existing = BY_POS.get(pos);
             BlockState original = existing != null ? existing.original() : before;

@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond_sword"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.combat.class_a.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.combat.class_a.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/class_b",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:defeat",
+      "conditions": {
+        "event": "defeat",
+        "min": 3
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80,
+    "loot": [
+      "noirm:advancement/ryo_300"
+    ]
+  }
+}

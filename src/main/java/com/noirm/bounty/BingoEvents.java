@@ -129,7 +129,7 @@ public final class BingoEvents {
             if (!player.isSpectator()) {
                 // (legends never come for a player in their first hours)
                 checkNear(level, book, player.blockPosition(),
-                        com.noirm.world.wild.WildSpawner.playedTicks(player) >= BingoBook.LEGEND_NEW_PLAYER_MINUTES * 1200L);
+                        com.noirm.world.wild.WildSpawner.playedTicks(player) >= BingoBook.legendGraceMinutes() * 1200L);
             }
             giftCheck(player);
         }

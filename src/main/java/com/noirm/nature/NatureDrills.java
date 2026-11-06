@@ -136,7 +136,7 @@ public final class NatureDrills {
 
     /** Seconds the drill for {@code nature} takes at a pace of 1. */
     public static float secondsNeeded(Nature nature) {
-        return DRILL_SECONDS;
+        return DRILL_SECONDS * com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.DRILL_TIME); // config: progression.drillTime
     }
 
     /** Whether the player is in the drill's setting right now. */
@@ -323,6 +323,7 @@ public final class NatureDrills {
         player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1.1f);
         Vfx.aura(player.level(), player.position(), player.getBbWidth(), player.getBbHeight(), Vfx.palette(nature), 40);
         drillEffect(player, nature, true);
+        com.noirm.progress.NatureTrigger.drill(player, nature); // "Path of the Shinobi"
     }
 
     /** Sets a drill's progress directly, as a share 0..1 (commands); 1 or more finishes it. */
@@ -437,6 +438,9 @@ public final class NatureDrills {
                     Component.translatable("drill.noirm." + n.getSerializedName())).withStyle(ChatFormatting.AQUA));
         }
         data.markPowersDirty();
+        if (!hidden.isEmpty()) {
+            com.noirm.progress.NatureTrigger.revealed(player); // "Path of the Shinobi"
+        }
         return true;
     }
 

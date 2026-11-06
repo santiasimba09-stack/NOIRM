@@ -688,11 +688,12 @@ public final class Missions {
             Exams.trialDone(player, board);
             return true;
         }
-        Ryo.give(player, def.reward());
+        int reward = com.noirm.config.NoirmConfig.ryoReward(def.reward()); // config: progression.ryoRewards
+        Ryo.give(player, reward);
         career.setPoints(career.points() + def.points());
         career.addCompleted(def.rank());
         player.sendSystemMessage(Component.translatable("mission.noirm.complete", Component.translatable(MissionTemplate.nameKey(m.template)),
-                Ryo.format(def.reward()), def.points()).withStyle(ChatFormatting.GOLD));
+                Ryo.format(reward), def.points()).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.MISSION_COMPLETE.get(), SoundSource.PLAYERS, 0.9f, 1f);
         Exams.afterPoints(player);
         return true;

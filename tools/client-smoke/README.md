@@ -13,7 +13,7 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
    import -display :99 -window root shot.png
    ```
    `xinput.py` commands: `key <keysym>`, `hold <keysym> <seconds>`, `click <button>`, `holdclick <button> <seconds>`, `down <keysym>` / `up <keysym>` (hold a key across other commands),
-   `move <x> <y>`, `sleep <seconds>`, `type "<text>"`, `combo <held> <key>` (e.g. `combo F3 t` reloads resources). Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
+   `move <x> <y>`, `drag <x1> <y1> <x2> <y2>` (left-button drag, e.g. to pan the advancement map), `sleep <seconds>`, `type "<text>"`, `combo <held> <key>` (e.g. `combo F3 t` reloads resources). Keysyms: `r`, `v`, `Alt_L`, `F5`, `z`, …
    Cheats are on in the copied world, so you can run commands:
    `key t sleep 0.5 type "/time set night" key Return`. Typing `~` is unreliable on the Xvfb
    keyboard; put positions in `setup.mcfunction` instead. Mouse `move` turns the camera a lot.
