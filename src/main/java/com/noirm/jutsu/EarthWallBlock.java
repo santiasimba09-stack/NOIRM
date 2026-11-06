@@ -25,7 +25,7 @@ public class EarthWallBlock extends Block {
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5,
                 pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.05);
         if (random.nextInt(3) == 0) {
-            level.playSound(null, pos, SoundEvents.GRAVEL_BREAK, SoundSource.BLOCKS, 0.6f, 0.8f);
+            level.playSound(null, pos, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), SoundSource.BLOCKS, 0.6f, 0.89f);
         }
     }
 }

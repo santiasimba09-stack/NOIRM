@@ -176,7 +176,7 @@ public class JutsuProjectile extends Projectile {
         if (level() instanceof ServerLevel serverLevel) {
             com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
             boolean doused = nature() == Nature.FIRE && by == Nature.WATER;
-            serverLevel.playSound(null, getX(), getY(), getZ(), doused ? SoundEvents.FIRE_EXTINGUISH : SoundEvents.GENERIC_EXTINGUISH_FIRE,
+            serverLevel.playSound(null, getX(), getY(), getZ(), doused ? com.noirm.sound.NoirmSounds.BOIL_STEAM.get() : SoundEvents.GENERIC_EXTINGUISH_FIRE,
                     SoundSource.PLAYERS, 0.9f, doused ? 1f : 1.4f);
             if (doused) {
                 com.noirm.vfx.Vfx.burst(serverLevel, com.noirm.vfx.Vfx.smoke(0xE8EEF2, 0.5f, 40), position(), 10, size() * 0.6, 0.04);
@@ -315,7 +315,8 @@ public class JutsuProjectile extends Projectile {
                 } else {
                     com.noirm.world.Destruction.natureImpact(serverLevel, position(), nature(), blastRadius, destruction);
                 }
-                serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8f + blastRadius * 0.1f, 1.3f - Math.min(0.6f, blastRadius * 0.08f));
+                serverLevel.playSound(null, getX(), getY(), getZ(), com.noirm.sound.NoirmSounds.forNature(isBeastChakra() ? Nature.EXPLOSION : nature(), com.noirm.sound.NoirmSounds.Kind.IMPACT),
+                        SoundSource.PLAYERS, 0.8f + blastRadius * 0.1f, 1.15f - Math.min(0.3f, blastRadius * 0.04f));
             } else {
                 if (nature() == Nature.FIRE) {
                     com.noirm.vfx.FireVfx.blast(serverLevel, position(), Math.max(0.6f, size()));
@@ -326,6 +327,8 @@ public class JutsuProjectile extends Projectile {
                     com.noirm.vfx.Vfx.hit(serverLevel, position(), palette(), size() > 0.6f);
                 }
                 com.noirm.world.Destruction.shatterFragile(serverLevel, blockPosition(), 1);
+                serverLevel.playSound(null, getX(), getY(), getZ(), com.noirm.sound.NoirmSounds.forNature(nature(), com.noirm.sound.NoirmSounds.Kind.IMPACT),
+                        SoundSource.PLAYERS, 0.5f + size() * 0.3f, 1.2f);
             }
             if (lingerTicks > 0 && lingerRadius > 0) {
                 // The oil sticks where it lands and keeps burning.

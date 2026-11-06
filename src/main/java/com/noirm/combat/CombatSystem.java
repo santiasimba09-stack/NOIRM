@@ -659,7 +659,7 @@ public final class CombatSystem {
             Vec3 front = attacker.position().add(Vec3.directionFromRotation(0, attacker.getYHeadRot()).scale(1.2))
                     .add(0, attacker.getBbHeight() * 0.55, 0);
             level.sendParticles(net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK, front.x, front.y, front.z, 1, 0, 0, 0, 0);
-            level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP,
+            level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), com.noirm.sound.NoirmSounds.SWING_HEAVY.get(),
                     attacker.getSoundSource(), 1f, 1f);
         }
     }
@@ -1149,7 +1149,7 @@ public final class CombatSystem {
                     ? net.minecraft.world.entity.EquipmentSlot.OFFHAND : net.minecraft.world.entity.EquipmentSlot.MAINHAND;
             shield.hurtAndBreak(1 + Mth.floor(damage), target, e -> e.broadcastBreakEvent(slot));
         }
-        target.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.SHIELD_BLOCK,
+        target.level().playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.GUARD.get(),
                 target.getSoundSource(), 0.9f, 0.9f + target.getRandom().nextFloat() * 0.2f);
         return true;
     }

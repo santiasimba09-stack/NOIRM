@@ -12,6 +12,8 @@ import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 public final class HoverTracker {
     private final Int2FloatOpenHashMap amount = new Int2FloatOpenHashMap();
     private final Int2LongOpenHashMap last = new Int2LongOpenHashMap();
+    /** Elements the mouse is on right now (to tick once when it arrives). */
+    private final it.unimi.dsi.fastutil.ints.IntOpenHashSet over = new it.unimi.dsi.fastutil.ints.IntOpenHashSet();
 
     /** Advances element {@code id} and returns its hover amount (eased). */
     public float get(int id, boolean hovered) {
@@ -20,6 +22,11 @@ public final class HoverTracker {
         long then = last.containsKey(id) ? last.get(id) : now;
         float dt = Math.min(250f, now - then);
         float target = hovered ? 1f : 0f;
+        if (hovered ? over.add(id) : over.remove(id)) {
+            if (hovered) {
+                UiSounds.hover(); // the mouse just arrived on this element: a tiny tick
+            }
+        }
         a += (target - a) * Anim.approach(dt, Anim.HOVER_TAU_MS);
         if (Math.abs(target - a) < 0.01f) {
             a = target;
@@ -38,6 +45,7 @@ public final class HoverTracker {
     public void clear() {
         amount.clear();
         last.clear();
+        over.clear();
     }
 
     /** Mixes a few ints into one key. */

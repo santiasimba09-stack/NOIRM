@@ -105,8 +105,8 @@ public final class GreatTechniques {
             com.noirm.vfx.FireVfx.groundDebris(level, ground, radius * 0.7f);
             Vfx.explosion(level, ground, Vfx.palette(Nature.LIGHTNING), radius);
             Vfx.shockwave(level, ground.add(0, 0.2, 0), Vfx.palette(Nature.LIGHTNING), radius * 1.6f);
-            level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 4f, 0.5f);
-            level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.GENERIC_EXPLODE, SoundSource.WEATHER, 3f, 0.6f);
+            level.playSound(null, ground.x, ground.y, ground.z, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), SoundSource.WEATHER, 4f, 0.71f);
+            level.playSound(null, ground.x, ground.y, ground.z, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), SoundSource.WEATHER, 3f, 0.77f);
             for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(ground, ground).inflate(radius),
                     e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && e.position().distanceTo(ground) <= radius + e.getBbWidth())) {
                 float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(ground) / (radius + 1));
@@ -181,12 +181,12 @@ public final class GreatTechniques {
                     case WATER -> Destruction.douse(level, front, halfWidth);
                     default -> Destruction.shatterFragile(level, net.minecraft.core.BlockPos.containing(front.add(0, 1, 0)), (int) Math.ceil(halfWidth));
                 }
-                level.playSound(null, front.x, front.y, front.z, nature == Nature.WATER ? SoundEvents.GENERIC_SPLASH
-                        : nature == Nature.FIRE ? SoundEvents.FIRECHARGE_USE : SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 1f, 0.7f);
+                level.playSound(null, front.x, front.y, front.z, nature == Nature.WATER ? com.noirm.sound.NoirmSounds.WATER_SPLASH.get()
+                        : nature == Nature.FIRE ? com.noirm.sound.NoirmSounds.FIRE_BURST.get() : com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 1f, 0.84f);
             }
             return false;
         });
-        JutsuBehaviors.sound(caster, nature == Nature.WATER ? SoundEvents.GENERIC_SPLASH : SoundEvents.BLAZE_SHOOT, 1.5f, 0.5f);
+        JutsuBehaviors.sound(caster, nature == Nature.WATER ? com.noirm.sound.NoirmSounds.WATER_SPLASH.get() : com.noirm.sound.NoirmSounds.FIRE_ROAR.get(), 1.5f, 0.71f);
     }
 
     // ---------------------------------------------------------------- nova (Chidori Current)
@@ -219,7 +219,7 @@ public final class GreatTechniques {
             }
             JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
         }
-        JutsuBehaviors.sound(caster, SoundEvents.LIGHTNING_BOLT_IMPACT, 1f, 1.8f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 1f, 1.34f);
     }
 
     // ---------------------------------------------------------------- ticking

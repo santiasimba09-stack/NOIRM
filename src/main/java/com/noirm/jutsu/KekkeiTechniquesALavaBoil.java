@@ -104,7 +104,7 @@ public final class KekkeiTechniquesALavaBoil {
             target.hurtMarked = true;
             if (age[0] >= LIME_FLIGHT + hold) {
                 Vfx.burst(level, Vfx.shard(KekkeiVfxA.LIME_SHADE, 0.2f, 30), to, 14, 0.5, 0.2);
-                KekkeiTechniquesA.playAt(level, to, SoundEvents.STONE_BREAK, 1f, 1.2f);
+                KekkeiTechniquesA.playAt(level, to, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), 1f, 1.1f);
                 return true;
             }
             return false;
@@ -125,7 +125,7 @@ public final class KekkeiTechniquesALavaBoil {
         KekkeiVfxA.eruption(level, vent, 2f);
         Vfx.burst(level, Vfx.ring(KekkeiVfxA.LAVA_ORANGE, radius * 2f, 14), vent.add(0, 0.1, 0), 1, 0, 0);
         Vfx.quake(level, vent, 1.2f, radius * 6);
-        KekkeiTechniquesA.playAt(level, vent, SoundEvents.GENERIC_EXPLODE, 3f, 0.5f);
+        KekkeiTechniquesA.playAt(level, vent, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), 3f, 0.71f);
         KekkeiTechniquesA.playAt(level, vent, SoundEvents.LAVA_EXTINGUISH, 2f, 0.5f);
         for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, vent, radius)) {
             float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(vent) / (radius + 1));
@@ -149,7 +149,7 @@ public final class KekkeiTechniquesALavaBoil {
                     KekkeiVfxA.moltenGround(level, vent, radius);
                 }
                 if (age[0] % 10 == 0) {
-                    KekkeiTechniquesA.playAt(level, vent, SoundEvents.LAVA_POP, 2f, 0.5f);
+                    KekkeiTechniquesA.playAt(level, vent, com.noirm.sound.NoirmSounds.LAVA_HISS.get(), 2f, 0.71f);
                     Vfx.quake(level, vent, 0.3f, radius * 4);
                 }
                 if (age[0] % BOMB_INTERVAL == 0) {
@@ -204,7 +204,7 @@ public final class KekkeiTechniquesALavaBoil {
                         victim.position().subtract(land));
             }
             Destruction.scorch(level, land, 1.2f);
-            KekkeiTechniquesA.playAt(level, land, SoundEvents.LAVA_POP, 1.5f, 0.7f);
+            KekkeiTechniquesA.playAt(level, land, com.noirm.sound.NoirmSounds.LAVA_HISS.get(), 1.5f, 0.84f);
             return true;
         });
     }
@@ -236,7 +236,7 @@ public final class KekkeiTechniquesALavaBoil {
             }
             return false;
         });
-        KekkeiTechniquesA.playAt(level, from, SoundEvents.FIRE_EXTINGUISH, 1.2f, 0.8f);
+        KekkeiTechniquesA.playAt(level, from, com.noirm.sound.NoirmSounds.BOIL_STEAM.get(), 1.2f, 0.89f);
     }
 
     /** Acid eats into whatever armour a body wears. */
@@ -260,7 +260,7 @@ public final class KekkeiTechniquesALavaBoil {
         float radius = Math.max(1f, p.radius());
         int delay = Math.max(1, p.duration());
         int[] age = {0};
-        KekkeiTechniquesA.playAt(level, at, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 1.5f, 0.8f);
+        KekkeiTechniquesA.playAt(level, at, com.noirm.sound.NoirmSounds.BOIL_STEAM.get(), 1.5f, 0.89f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (age[0] < delay) {
@@ -271,8 +271,8 @@ public final class KekkeiTechniquesALavaBoil {
                 // The jet bursts out: a flash of heat, a column of boiling water and steam.
                 KekkeiVfxA.steamBurst(level, at.add(0, 0.5, 0), radius * 1.2f);
                 Vfx.quake(level, at, 0.5f, 14);
-                KekkeiTechniquesA.playAt(level, at, SoundEvents.GENERIC_EXPLODE, 1f, 1.4f);
-                KekkeiTechniquesA.playAt(level, at, SoundEvents.FIRE_EXTINGUISH, 2f, 0.5f);
+                KekkeiTechniquesA.playAt(level, at, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), 1f, 1.18f);
+                KekkeiTechniquesA.playAt(level, at, com.noirm.sound.NoirmSounds.BOIL_STEAM.get(), 2f, 0.71f);
                 for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, at.add(0, 1, 0), radius + 0.5)) {
                     JutsuEffects.hit(caster, victim, p.damage() * power, 0, p.posture() * power, 0, Vec3.ZERO);
                     JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
@@ -300,7 +300,7 @@ public final class KekkeiTechniquesALavaBoil {
         caster.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration + 10, 1, false, false));
         KekkeiVfxA.steamBurst(level, caster.position().add(0, 1, 0), 1.6f);
         Vfx.quake(level, caster.position(), 0.4f, 12);
-        KekkeiTechniquesA.playAt(level, caster.position(), SoundEvents.FIRE_EXTINGUISH, 1.5f, 0.6f);
+        KekkeiTechniquesA.playAt(level, caster.position(), com.noirm.sound.NoirmSounds.BOIL_STEAM.get(), 1.5f, 0.77f);
         int[] age = {0};
         GreatTechniques.later(now -> {
             age[0]++;
@@ -322,7 +322,7 @@ public final class KekkeiTechniquesALavaBoil {
                 JutsuEffects.hit(caster, victim, p.damage() * power, p.knockback(), p.posture() * power, 0, push);
                 JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
                 KekkeiVfxA.steamBurst(level, victim.position().add(0, 1, 0), 1.2f);
-                KekkeiTechniquesA.playAt(level, victim.position(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.2f, 0.7f);
+                KekkeiTechniquesA.playAt(level, victim.position(), com.noirm.sound.NoirmSounds.HIT_HEAVY.get(), 1.2f, 0.84f);
             }
             if (age[0] >= duration || caster.horizontalCollision) {
                 caster.setDeltaMovement(Vec3.ZERO);
@@ -353,7 +353,7 @@ public final class KekkeiTechniquesALavaBoil {
             float shell = radius * (1.15f - 0.25f * progress); // the pressure squeezes it in
             KekkeiVfxA.pressureDome(level, center, shell, progress, age[0]);
             if (age[0] % DOME_SCALD_INTERVAL == 0) {
-                KekkeiTechniquesA.playAt(level, center, SoundEvents.FIRE_EXTINGUISH, 1.2f, 0.5f + progress * 0.6f);
+                KekkeiTechniquesA.playAt(level, center, com.noirm.sound.NoirmSounds.BOIL_STEAM.get(), 1.2f, 0.5f + progress * 0.6f);
                 for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, center.add(0, 1, 0), shell)) {
                     JutsuEffects.hit(caster, victim, p.damage() * power * DOME_SCALD_SHARE, 0, 0, 0, Vec3.ZERO);
                     victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, DOME_SCALD_INTERVAL + 5, 1, false, false));
@@ -367,7 +367,7 @@ public final class KekkeiTechniquesALavaBoil {
             KekkeiVfxA.steamBurst(level, center.add(0, 0.5, 0), radius);
             KekkeiVfxA.flashCloud(level, center.add(0, radius * 0.4, 0), 0xFFFFFF, KekkeiVfxA.STEAM_HEAT, radius * 1.4f, 6);
             Vfx.quake(level, center, 1.1f, radius * 6);
-            KekkeiTechniquesA.playAt(level, center, SoundEvents.GENERIC_EXPLODE, 2.5f, 0.7f);
+            KekkeiTechniquesA.playAt(level, center, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), 2.5f, 0.84f);
             for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, center.add(0, 1, 0), radius * 1.1f)) {
                 float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(center) / (radius + 1));
                 JutsuEffects.hit(caster, victim, p.damage() * power * (0.5f + 0.5f * falloff), p.knockback(), p.posture() * power, 0,

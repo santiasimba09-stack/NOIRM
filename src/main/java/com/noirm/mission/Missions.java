@@ -693,7 +693,7 @@ public final class Missions {
         career.addCompleted(def.rank());
         player.sendSystemMessage(Component.translatable("mission.noirm.complete", Component.translatable(MissionTemplate.nameKey(m.template)),
                 Ryo.format(def.reward()), def.points()).withStyle(ChatFormatting.GOLD));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8f, 1.1f);
+        player.level().playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.MISSION_COMPLETE.get(), SoundSource.PLAYERS, 0.9f, 1f);
         Exams.afterPoints(player);
         return true;
     }

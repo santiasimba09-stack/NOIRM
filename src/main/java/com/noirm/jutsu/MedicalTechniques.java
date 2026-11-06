@@ -102,7 +102,7 @@ public final class MedicalTechniques {
     static final JutsuBehavior MEDIC_PALM = new JutsuBehavior() {
         @Override
         public void cast(JutsuContext ctx) {
-            JutsuBehaviors.sound(ctx.caster(), SoundEvents.AMETHYST_BLOCK_CHIME, 0.8f, 1.6f);
+            JutsuBehaviors.sound(ctx.caster(), com.noirm.sound.NoirmSounds.MEDICAL_CHIME.get(), 0.8f, 1.26f);
         }
 
         @Override
@@ -156,7 +156,7 @@ public final class MedicalTechniques {
             Vec3 at = front.add(side.scale(i * 0.12)).add(0, -i * 0.06, 0).subtract(dir.scale(Math.abs(i) * 0.04));
             Vfx.one(level, Vfx.glow(SpiritVfx.MEDICAL.core(), SpiritVfx.MEDICAL.mid(), 0.12f, 0.02f, 5), at, side.scale(0.02));
         }
-        JutsuBehaviors.sound(caster, SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1.9f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.SWING_LIGHT.get(), 1f, 1.38f);
         if (victim == null) {
             return;
         }
@@ -168,7 +168,7 @@ public final class MedicalTechniques {
         Vfx.burst(level, Vfx.glow(0xFFFFFF, SpiritVfx.MEDICAL.mid(), 0.5f, 0.1f, 4), contact, 1, 0, 0);
         SpiritTechniques.hitstop(caster, 3);
         SpiritTechniques.hitstop(victim, 3);
-        level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 0.8f, 1.8f);
+        level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), com.noirm.sound.NoirmSounds.HIT_LIGHT.get(), SoundSource.PLAYERS, 0.8f, 1.34f);
     }
 
     // ---------------------------------------------------------------- Poison Mist
@@ -247,7 +247,7 @@ public final class MedicalTechniques {
         int life = Math.max(20, p.duration());
         int[] age = {0};
         SpiritVfx.pulse(level, center, radius);
-        JutsuBehaviors.sound(caster, SoundEvents.BEACON_ACTIVATE, 0.8f, 1.4f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.MEDICAL_CHIME.get(), 0.8f, 1.18f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (age[0] % 2 == 0) {

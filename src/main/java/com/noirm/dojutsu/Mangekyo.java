@@ -280,7 +280,7 @@ public final class Mangekyo {
     /** The big moment: a title, deep sounds, a dark flash in the Susanoo colour and a black ring. */
     static void moment(Player player, Component title, Component subtitle, int color) {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.PLAYERS, 0.9f, 0.6f);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 0.5f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.SHARINGAN.get(), SoundSource.PLAYERS, 1f, 0.71f);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 1.2f, 0.7f);
         if (player.level() instanceof ServerLevel level) {
             Vec3 eyesAt = player.getEyePosition();

@@ -116,7 +116,7 @@ public final class BladeEvents {
                 if (isBehind(attacker, target)) {
                     amount *= BACKSTAB_MULTIPLIER;
                     level.sendParticles(ParticleTypes.CRIT, chest.x, chest.y, chest.z, 12, 0.25, 0.3, 0.25, 0.25);
-                    level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 0.9f, 0.7f);
+                    level.playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.HIT_HEAVY.get(), SoundSource.PLAYERS, 0.9f, 0.84f);
                 }
             }
             case CRUSH -> CombatSystem.addPostureDamage(target, CRUSH_POSTURE);
@@ -338,7 +338,7 @@ public final class BladeEvents {
         projectile.setDeltaMovement(aside.add(0, 0.15, 0));
         projectile.hurtMarked = true;
         event.setImpactResult(ProjectileImpactEvent.ImpactResult.SKIP_ENTITY);
-        defender.level().playSound(null, defender.getX(), defender.getY(), defender.getZ(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.35f, 1.9f);
+        defender.level().playSound(null, defender.getX(), defender.getY(), defender.getZ(), com.noirm.sound.NoirmSounds.BLADE_CLASH.get(), SoundSource.PLAYERS, 0.35f, 1.38f);
         ((ServerLevel) defender.level()).sendParticles(ParticleTypes.CRIT, projectile.getX(), projectile.getY(), projectile.getZ(), 8, 0.1, 0.1, 0.1, 0.2);
     }
 

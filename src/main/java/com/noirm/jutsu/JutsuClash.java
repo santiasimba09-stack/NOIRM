@@ -177,7 +177,7 @@ public final class JutsuClash {
         if (b.nature() != a.nature()) {
             com.noirm.world.Destruction.natureImpact(level, at, b.nature(), radius * 0.5f, destruction);
         }
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f + radius * 0.1f, 0.9f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1f + radius * 0.1f, 0.95f);
         a.clashBurst();
         b.clashBurst();
     }

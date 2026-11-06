@@ -87,7 +87,7 @@ public final class FireLightningTechniques {
     /** The click of teeth, and the whole cloud goes up. */
     private static void ignite(LivingEntity caster, ServerLevel level, Vec3 center, float radius, JutsuDefinition.Params p, float power) {
         level.playSound(null, center.x, center.y, center.z, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.5f, 0.8f);
-        level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.6f, 0.7f);
+        level.playSound(null, center.x, center.y, center.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1.6f, 0.84f);
         FireVfx.ashIgnite(level, center, radius);
         float reach = radius * 1.2f;
         for (LivingEntity victim : inside(caster, level, center, reach)) {
@@ -113,7 +113,7 @@ public final class FireLightningTechniques {
         float power = ctx.power();
         Vec3 hands = caster.getEyePosition().add(ctx.look().scale(0.7)).add(0, -0.4, 0);
         LivingEntity first = JutsuBehaviors.lookTarget(caster, p.range(), 20);
-        JutsuBehaviors.sound(caster, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.9f, 1.5f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 0.9f, 1.22f);
         LightningVfx.contact(level, hands, 0.9f);
         if (first == null) {
             // Nothing to leap to: it cracks into the ground ahead and forks out.
@@ -159,7 +159,7 @@ public final class FireLightningTechniques {
             CombatSystem.stun(target, p.stun());
         }
         JutsuEffects.applyEffects(target, p.effect(), p.effectTicks());
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.5f, 1.8f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), SoundSource.PLAYERS, 0.5f, 1.34f);
         struck.add(target);
         if (struck.size() >= count) {
             return true;

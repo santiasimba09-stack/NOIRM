@@ -159,7 +159,7 @@ public class CrewOrdersScreen extends Screen implements NoirmStyled {
     private void press(Button b) {
         NoirmNetwork.sendToServer(new CrewPackets.Orders(b.action(), b.arg()));
         if (minecraft != null) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+            com.noirm.client.ui.UiSounds.click();
             if (b.closes()) {
                 onClose(); // (fades out, then closes)
             }

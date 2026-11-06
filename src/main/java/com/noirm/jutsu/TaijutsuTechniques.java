@@ -87,7 +87,7 @@ public final class TaijutsuTechniques {
         Vfx.shockwave(level, caster.position(), Vfx.NEUTRAL, 2f);
         Vfx.burst(level, Vfx.smoke(0xD8D0C0, 0.8f, 18), caster.position().add(0, 0.2, 0), 8, 0.5, 0.05);
         Vfx.streak(level, target.position(), target.position().add(0, 3, 0), Vfx.NEUTRAL);
-        JutsuBehaviors.sound(caster, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.2f, 0.7f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.HIT_HEAVY.get(), 1.2f, 0.84f);
         RUNNING.put(caster, new Sequence(ctx, target));
     }
 
@@ -108,7 +108,7 @@ public final class TaijutsuTechniques {
             target.hurtMarked = true;
             caster.setDeltaMovement(0, LOTUS_SLAM_SPEED, 0);
             caster.hurtMarked = true;
-            JutsuBehaviors.sound(caster, SoundEvents.ENDER_DRAGON_FLAP, 1f, 1.4f);
+            JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.WIND_GUST.get(), 1f, 1.18f);
             seq.falling = true;
             return;
         }
@@ -121,7 +121,7 @@ public final class TaijutsuTechniques {
             Vfx.shockwave(level, target.position(), Vfx.NEUTRAL, 3f);
             Vfx.burst(level, Vfx.smoke(0xB8A890, 1.1f, 30), target.position().add(0, 0.2, 0), 14, 0.8, 0.06);
             Vfx.quake(level, target.position(), 0.5f, 14);
-            JutsuBehaviors.sound(target, SoundEvents.GENERIC_EXPLODE, 0.7f, 1.3f);
+            JutsuBehaviors.sound(target, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), 0.7f, 1.14f);
             RUNNING.remove(caster);
         } else {
             Vfx.aura(level, target.position(), target.getBbWidth(), target.getBbHeight(), Vfx.NEUTRAL, 3);
@@ -131,7 +131,7 @@ public final class TaijutsuTechniques {
     // ------------------------------------------------------------ Morning Peacock
 
     static void flurry(JutsuContext ctx) {
-        JutsuBehaviors.sound(ctx.caster(), SoundEvents.BLAZE_SHOOT, 0.8f, 1.6f);
+        JutsuBehaviors.sound(ctx.caster(), com.noirm.sound.NoirmSounds.FIRE_BURST.get(), 0.8f, 1.26f);
         RUNNING.put(ctx.caster(), new Sequence(ctx, null));
     }
 
@@ -160,7 +160,7 @@ public final class TaijutsuTechniques {
                 }
             }
             Vfx.cone(level, eye, look, p.range(), Vfx.palette(Nature.FIRE), 0.5f);
-            JutsuBehaviors.sound(caster, last ? SoundEvents.GENERIC_EXPLODE : SoundEvents.PLAYER_ATTACK_STRONG, last ? 0.6f : 0.5f,
+            JutsuBehaviors.sound(caster, last ? com.noirm.sound.NoirmSounds.BIG_IMPACT.get() : com.noirm.sound.NoirmSounds.HIT_LIGHT.get(), last ? 0.6f : 0.5f,
                     1.2f + caster.getRandom().nextFloat() * 0.4f);
             if (last) {
                 RUNNING.remove(caster);

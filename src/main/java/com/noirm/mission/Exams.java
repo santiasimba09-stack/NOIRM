@@ -298,7 +298,7 @@ public final class Exams {
             sp.connection.send(new ClientboundSetTitleTextPacket(rank.title().copy().withStyle(ChatFormatting.GOLD)));
             sp.connection.send(new ClientboundSetSubtitleTextPacket(Component.translatable("rank.noirm.promoted.sub")));
         }
-        player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
+        player.level().playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.RANK_UP.get(), SoundSource.PLAYERS, 0.8f, 1.0f);
         Item gift = switch (rank) {
             case GENIN -> NoirmGear.FOREHEAD_PROTECTOR_NAVY.get();
             case CHUNIN -> NoirmGear.FLAK_VEST.get();

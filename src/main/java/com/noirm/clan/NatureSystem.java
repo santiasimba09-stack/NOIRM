@@ -78,7 +78,7 @@ public final class NatureSystem {
         grant(data, nature, affinity);
         player.sendSystemMessage(Component.translatable("message.noirm.nature.unlocked",
                 Component.translatable(nature.translationKey()).withStyle(s -> s.withColor(nature.color()))).withStyle(ChatFormatting.GOLD));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.7f, 1.2f);
+        player.level().playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.RANK_UP.get(), SoundSource.PLAYERS, 0.7f, 1.1f);
         return true;
     }
 

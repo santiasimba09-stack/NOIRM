@@ -205,7 +205,7 @@ public final class HyugaTechniques {
         }
         float pitch = Mth.clamp(0.9f + palms.wave * 0.12f, 0.9f, 1.8f);
         caster.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-                last ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1f, pitch);
+                last ? com.noirm.sound.NoirmSounds.HIT_HEAVY.get() : com.noirm.sound.NoirmSounds.HIT_LIGHT.get(), SoundSource.PLAYERS, 1f, pitch);
         if (caster instanceof Player player) {
             player.displayClientMessage(Component.translatable("message.noirm.palms.wave", count), true);
         }

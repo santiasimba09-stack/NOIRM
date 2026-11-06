@@ -88,6 +88,9 @@ public final class JutsuAreas {
                 if (now % 2 == 0) {
                     com.noirm.vfx.FireVfx.burningGround(level, at, r);
                 }
+                if (now % 30 == 0) { // the burning oil crackles
+                    level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.FIRE_CRACKLE.get(), SoundSource.PLAYERS, 0.7f, 0.9f + level.random.nextFloat() * 0.2f);
+                }
             }
         }
         if (area.interval() <= 0 || now % area.interval() != 0) {
@@ -103,7 +106,7 @@ public final class JutsuAreas {
             com.noirm.vfx.LightningVfx.bolt(level, strike.add(0, 14, 0), strike, com.noirm.vfx.Vfx.LIGHTNING, 0.12f, 6, 3,
                     com.noirm.vfx.LightningVfx.FORKY | com.noirm.vfx.LightningVfx.IMPACT);
             level.sendParticles(ParticleTypes.FLASH, strike.x, strike.y + 0.3, strike.z, 1, 0, 0, 0, 0);
-            level.playSound(null, strike.x, strike.y, strike.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.5f, 1.6f);
+            level.playSound(null, strike.x, strike.y, strike.z, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), SoundSource.PLAYERS, 0.5f, 1.26f);
             hitAround(area, strike, 1.6);
         } else if (area.damage() > 0 || !area.effect().isEmpty()) {
             hitAround(area, at, r);

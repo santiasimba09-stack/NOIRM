@@ -172,7 +172,7 @@ public final class SpecialWeaponEvents {
             arrow.yRotO = arrow.getYRot();
         }
         projectile.hurtMarked = true;
-        defender.level().playSound(null, defender.getX(), defender.getY(), defender.getZ(), SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1f, 1.3f);
+        defender.level().playSound(null, defender.getX(), defender.getY(), defender.getZ(), com.noirm.sound.NoirmSounds.GUARD.get(), SoundSource.PLAYERS, 1f, 1.14f);
         ((ServerLevel) defender.level()).sendParticles(ParticleTypes.CLOUD, projectile.getX(), projectile.getY(), projectile.getZ(), 6, 0.1, 0.1, 0.1, 0.05);
     }
 }

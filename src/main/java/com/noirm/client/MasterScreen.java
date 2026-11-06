@@ -280,8 +280,7 @@ public class MasterScreen extends Screen implements NoirmStyled {
             for (int i = hits.size() - 1; i >= 0; i--) {
                 Hit hit = hits.get(i);
                 if (hit.click() != null && hit.contains(mouseX, mouseY)) {
-                    Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                            net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+                    com.noirm.client.ui.UiSounds.click();
                     hit.click().run();
                     return true;
                 }

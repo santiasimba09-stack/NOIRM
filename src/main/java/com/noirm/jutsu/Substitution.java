@@ -52,7 +52,7 @@ public final class Substitution {
         level.sendParticles(ParticleTypes.POOF, from.x, from.y + 1, from.z, 20, 0.3, 0.5, 0.3, 0.02);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LOG.defaultBlockState()),
                 from.x, from.y + 1, from.z, 25, 0.3, 0.5, 0.3, 0.1);
-        level.playSound(null, from.x, from.y, from.z, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 1f, 0.8f);
+        level.playSound(null, from.x, from.y, from.z, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1f, 0.89f);
         target.teleportTo(destination.x, destination.y, destination.z);
         target.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, attacker.getEyePosition());
         level.sendParticles(ParticleTypes.POOF, destination.x, destination.y + 1, destination.z, 12, 0.3, 0.5, 0.3, 0.02);

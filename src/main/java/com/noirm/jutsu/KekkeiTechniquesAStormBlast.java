@@ -93,7 +93,7 @@ public final class KekkeiTechniquesAStormBlast {
                     if (p.stun() > 0) {
                         CombatSystem.stun(struck, p.stun());
                     }
-                    KekkeiTechniquesA.playAt(level, chest, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.6f, 1.7f);
+                    KekkeiTechniquesA.playAt(level, chest, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 0.6f, 1.3f);
                 }
             }
             return age[0] >= duration || !caster.isAlive();
@@ -132,7 +132,7 @@ public final class KekkeiTechniquesAStormBlast {
             return ++age[0] >= 2;
         });
         KekkeiTechniquesA.playAt(level, from, SoundEvents.BEACON_DEACTIVATE, 1.5f, 1.6f);
-        KekkeiTechniquesA.playAt(level, end, SoundEvents.LIGHTNING_BOLT_IMPACT, 1f, 1.4f);
+        KekkeiTechniquesA.playAt(level, end, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 1f, 1.18f);
     }
 
     /** Where a line from {@code from} along {@code dir} meets a wall, up to {@code range}. */
@@ -181,7 +181,7 @@ public final class KekkeiTechniquesAStormBlast {
         double[] travelled = {0};
         KekkeiVfxA.cloud(level, caster.position().add(ctx.flatLook().scale(3)).add(0, 5, 0), 2.5f, true);
         Vfx.quake(level, caster.position(), 0.6f, 16);
-        KekkeiTechniquesA.playAt(level, caster.position(), SoundEvents.GENERIC_SPLASH, 2f, 0.5f);
+        KekkeiTechniquesA.playAt(level, caster.position(), com.noirm.sound.NoirmSounds.WATER_SPLASH.get(), 2f, 0.71f);
         KekkeiTechniquesA.playAt(level, caster.position(), SoundEvents.LIGHTNING_BOLT_THUNDER, 1f, 1.2f);
         GreatTechniques.later(now -> {
             travelled[0] += speed;
@@ -206,7 +206,7 @@ public final class KekkeiTechniquesAStormBlast {
             }
             if (now % 3 == 0) {
                 Destruction.douse(level, front, halfWidth);
-                KekkeiTechniquesA.playAt(level, front, SoundEvents.GENERIC_SPLASH, 1f, 0.7f);
+                KekkeiTechniquesA.playAt(level, front, com.noirm.sound.NoirmSounds.WATER_SPLASH.get(), 1f, 0.84f);
             }
             return false;
         });
@@ -258,7 +258,7 @@ public final class KekkeiTechniquesAStormBlast {
                 }
                 LightningVfx.contact(level, to, 1.2f);
                 LightningVfx.groundForks(level, target.position(), 2f, 4);
-                KekkeiTechniquesA.playAt(level, to, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.8f, 1.6f);
+                KekkeiTechniquesA.playAt(level, to, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 0.8f, 1.26f);
             }
             return next[0] >= queue.size();
         });
@@ -300,8 +300,8 @@ public final class KekkeiTechniquesAStormBlast {
                 : caster.getEyePosition().add(look.scale(1.6)).add(0, -0.4, 0);
         float radius = 1.6f;
         KekkeiVfxA.blast(level, at, radius);
-        KekkeiTechniquesA.playAt(level, at, SoundEvents.GENERIC_EXPLODE, 1.6f, 1.1f);
-        KekkeiTechniquesA.playAt(level, at, SoundEvents.PLAYER_ATTACK_CRIT, 1.2f, 0.6f);
+        KekkeiTechniquesA.playAt(level, at, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), 1.6f, 1.05f);
+        KekkeiTechniquesA.playAt(level, at, com.noirm.sound.NoirmSounds.HIT_HEAVY.get(), 1.2f, 0.77f);
         for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, at, radius + 0.6)) {
             JutsuEffects.hit(caster, victim, p.damage() * power * (victim == target || target == null ? 1f : 0.6f), p.knockback(), p.posture() * power, 0,
                     victim.position().subtract(caster.position()));
@@ -325,7 +325,7 @@ public final class KekkeiTechniquesAStormBlast {
         int fall = Math.max(8, p.duration());
         double height = 16;
         int[] age = {0};
-        KekkeiTechniquesA.playAt(level, caster.position(), SoundEvents.ENDER_DRAGON_FLAP, 1.2f, 1.6f);
+        KekkeiTechniquesA.playAt(level, caster.position(), com.noirm.sound.NoirmSounds.WIND_GUST.get(), 1.2f, 1.26f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (target != null && target.isAlive() && age[0] < fall - 4) {
@@ -342,7 +342,7 @@ public final class KekkeiTechniquesAStormBlast {
                 return false;
             }
             KekkeiVfxA.blast(level, ground.add(0, 1, 0), radius);
-            KekkeiTechniquesA.playAt(level, ground, SoundEvents.GENERIC_EXPLODE, 3f, 0.6f);
+            KekkeiTechniquesA.playAt(level, ground, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), 3f, 0.77f);
             for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, ground.add(0, 1, 0), radius)) {
                 float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(ground) / (radius + 1));
                 JutsuEffects.hit(caster, victim, p.damage() * power * (0.4f + 0.6f * falloff), p.knockback(), p.posture() * power, p.fireSeconds(),
@@ -378,7 +378,7 @@ public final class KekkeiTechniquesAStormBlast {
         KekkeiVfxA.flashCloud(level, center, 0xFFFFFF, 0xFFFFFF, radius * 1.6f, 6);
         KekkeiVfxA.blast(level, center, radius * 0.75f);
         Vfx.quake(level, center, 1.5f, radius * 8);
-        KekkeiTechniquesA.playAt(level, center, SoundEvents.GENERIC_EXPLODE, 6f, 0.4f);
+        KekkeiTechniquesA.playAt(level, center, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), 6f, 0.63f);
         KekkeiTechniquesA.playAt(level, center, SoundEvents.WARDEN_SONIC_BOOM, 3f, 0.6f);
         for (LivingEntity victim : KekkeiTechniquesA.around(caster, level, center, radius)) {
             float falloff = 1f - (float) Math.min(1, victim.position().distanceTo(center) / (radius + 1));

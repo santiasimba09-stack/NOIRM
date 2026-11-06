@@ -17,7 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Tells each player's game which village they're standing in (every two seconds, and only when it
  * changes), so the client can set the air to match: mist in the Mist village, a haze in the Cloud
- * village ({@code com.noirm.client.VillageFog}).
+ * village ({@code com.noirm.client.VillageFog}), and the ambience: a village's wind and distant
+ * life, or the sage sanctuary's drone ({@code com.noirm.client.AmbienceLoops}).
  */
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class VillageAtmosphere {
@@ -33,7 +34,7 @@ public final class VillageAtmosphere {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player) || player.tickCount % 40 != 7) {
             return;
         }
-        int palette = paletteAt(player.serverLevel(), player);
+        int palette = placeAt(player.serverLevel(), player);
         Integer last = LAST.put(player.getUUID(), palette);
         if (last == null || last != palette) {
             NoirmNetwork.sendToPlayer(player, new VillagePackets.Atmosphere(palette));
@@ -56,6 +57,30 @@ public final class VillageAtmosphere {
     @SubscribeEvent
     public static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         LAST.remove(event.getEntity().getUUID());
+    }
+
+    /** Sent instead of a palette when the player is in the Stone Hermit's sanctuary (its own ambience). */
+    public static final int SANCTUARY = 100;
+    /** The sage sanctuaries ({@code data/noirm/tags/worldgen/structure/sage_sanctuaries.json}). */
+    private static final net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> SANCTUARIES =
+            net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, Noirm.id("sage_sanctuaries"));
+
+    /**
+     * What the client should hear and see where the player stands: a village's palette, {@link #SANCTUARY},
+     * or -1. A sanctuary is the world-generated structure, or anywhere near the Stone Hermit (one
+     * built with {@code /noirm sage sanctuary}).
+     */
+    public static int placeAt(ServerLevel level, ServerPlayer player) {
+        int palette = paletteAt(level, player);
+        if (palette >= 0) {
+            return palette;
+        }
+        if (level.structureManager().getStructureWithPieceAt(player.blockPosition(), SANCTUARIES).isValid()
+                || !level.getEntitiesOfClass(com.noirm.entity.MasterNinja.class, player.getBoundingBox().inflate(24),
+                        m -> com.noirm.senjutsu.Sage.HERMIT.equals(m.masterId())).isEmpty()) {
+            return SANCTUARY;
+        }
+        return -1;
     }
 
     /** The look (palette ordinal) of the village piece the player stands in, or -1. */

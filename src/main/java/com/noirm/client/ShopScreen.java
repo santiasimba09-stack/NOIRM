@@ -187,8 +187,7 @@ public class ShopScreen extends Screen implements NoirmStyled {
 
     private void click() {
         if (minecraft != null) {
-            minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                    net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+            com.noirm.client.ui.UiSounds.click();
         }
     }
 

@@ -113,7 +113,7 @@ public final class Sharingan {
         if (active && data.eyes().isByakuganActive()) {
             Byakugan.onOpened(player);
         } else if (active) {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.6f);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.SHARINGAN.get(), SoundSource.PLAYERS, 1f, 0.77f);
         }
         PowerVisuals.broadcast(player);
     }
@@ -236,7 +236,7 @@ public final class Sharingan {
         }
         data.markPowersDirty();
         player.displayClientMessage(Component.translatable(messageKey, eyes.sharinganStage()), false);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 2f, 0.5f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.SHARINGAN.get(), SoundSource.PLAYERS, 2f, 0.71f);
         if (player instanceof ServerPlayer serverPlayer) {
             PowerVisuals.broadcast(serverPlayer);
         }

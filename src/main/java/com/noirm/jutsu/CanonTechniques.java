@@ -82,7 +82,7 @@ public final class CanonTechniques {
         float radius = ctx.params().radius() * (float) Math.sqrt(Math.max(0.5f, ctx.power()));
         DOMES.put(caster, new Dome(caster.level().getGameTime() + ctx.params().duration(), radius));
         Destruction.douse(ctx.level(), caster.position(), radius + 1);
-        caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, 0.6f);
+        caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.WATER_SPLASH.get(), SoundSource.PLAYERS, 1.5f, 0.77f);
     }
 
     /** Is a dome (or similar) stopping attacks on {@code target}? Called before every hit. */
@@ -100,7 +100,7 @@ public final class CanonTechniques {
     static final JutsuBehavior HEAL = new JutsuBehavior() {
         @Override
         public void cast(JutsuContext ctx) {
-            ctx.caster().level().playSound(null, ctx.caster().blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.4f);
+            ctx.caster().level().playSound(null, ctx.caster().blockPosition(), com.noirm.sound.NoirmSounds.MEDICAL_CHIME.get(), SoundSource.PLAYERS, 1f, 1.18f);
         }
 
         @Override
@@ -347,7 +347,7 @@ public final class CanonTechniques {
             Vfx.shockwave(level, target.position(), palette, 3f * grind.power);
             Destruction.crater(level, target.position(), grind.radius, grind.power);
             Destruction.shatterFragile(level, BlockPos.containing(contact), 2);
-            level.playSound(null, target.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 1.4f);
+            level.playSound(null, target.blockPosition(), com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1f, 1.18f);
         }
     }
 

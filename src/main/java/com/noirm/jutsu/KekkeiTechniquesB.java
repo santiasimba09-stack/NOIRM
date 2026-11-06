@@ -133,8 +133,8 @@ public final class KekkeiTechniquesB {
         int[] age = {0};
         int life = Math.max(ORB_BLOOM + 10, p.duration());
         float homing = Math.max(0.08f, p.homing());
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.8f, 1.4f);
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.6f, 0.6f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.SCORCH_SIZZLE.get(), SoundSource.PLAYERS, 0.8f, 1.18f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.FIRE_BURST.get(), SoundSource.PLAYERS, 0.6f, 0.77f);
         GreatTechniques.later(now -> {
             age[0]++;
             boolean anyLeft = false;
@@ -182,7 +182,7 @@ public final class KekkeiTechniquesB {
         JutsuEffects.hit(caster, victim, damage * share, p.knockback(), p.posture() * share, p.fireSeconds(), dir);
         JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
         ScorchDustMagnetVfx.desiccate(victim.level(), victim, 1f);
-        victim.level().playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.8f, 1.3f);
+        victim.level().playSound(null, victim.getX(), victim.getY(), victim.getZ(), com.noirm.sound.NoirmSounds.SCORCH_SIZZLE.get(), SoundSource.PLAYERS, 0.8f, 1.14f);
     }
 
     // ================================================================ Scorch: Extreme Steaming Murder
@@ -202,7 +202,7 @@ public final class KekkeiTechniquesB {
         Vec3[] starts = {hands.add(side.scale(0.8)).add(0, 0.4, 0), hands.add(side.scale(-0.8)).add(0, 0.4, 0), hands.add(0, 1.0, 0)};
         int latched = Math.max(PULSE * 2, p.duration());
         int[] age = {0};
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1f, 0.7f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.SCORCH_SIZZLE.get(), SoundSource.PLAYERS, 1f, 0.84f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (!target.isAlive() || !caster.isAlive() || target.level() != level || target.distanceTo(caster) > p.range() * 2) {
@@ -230,7 +230,7 @@ public final class KekkeiTechniquesB {
                 JutsuEffects.applyEffects(target, p.effect(), p.effectTicks());
                 CombatSystem.stun(target, Math.max(4, p.stun()));
                 ScorchDustMagnetVfx.desiccate(level, target, 1f + held / (float) latched * 2f);
-                level.playSound(null, c.x, c.y, c.z, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1f, 0.8f + held * 0.01f);
+                level.playSound(null, c.x, c.y, c.z, com.noirm.sound.NoirmSounds.SCORCH_SIZZLE.get(), SoundSource.PLAYERS, 1f, 0.8f + held * 0.01f);
             }
             if (held < latched) {
                 return false;
@@ -253,7 +253,7 @@ public final class KekkeiTechniquesB {
             Vfx.quake(level, c, 0.6f, 18);
             hitstop(target, 6);
             hitstop(caster, 4);
-            level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.2f, 1.4f);
+            level.playSound(null, c.x, c.y, c.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1.2f, 1.18f);
             return true;
         });
     }
@@ -395,7 +395,7 @@ public final class KekkeiTechniquesB {
                 Vfx.gather(level, center, Vfx.palette(Nature.DUST), half * 1.4f, 14);
                 Vfx.burst(level, Vfx.glow(ScorchDustMagnetVfx.DUST_WHITE, ScorchDustMagnetVfx.DUST_PALE, 0.4f + t * 0.1f, 0.2f, 3), center, 1, 0, 0);
                 if (t == CUBE_GATHER) {
-                    level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.4f, 1.5f);
+                    level.playSound(null, center.x, center.y, center.z, com.noirm.sound.NoirmSounds.DUST_HUM.get(), SoundSource.PLAYERS, 1.4f, 1.22f);
                 }
                 return false;
             }
@@ -443,7 +443,7 @@ public final class KekkeiTechniquesB {
             }
             Vfx.quake(level, center, 0.5f, half * 6);
             level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.6f, 1.6f);
-            level.playSound(null, center.x, center.y, center.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1f, 0.6f);
+            level.playSound(null, center.x, center.y, center.z, com.noirm.sound.NoirmSounds.ICE_SHATTER.get(), SoundSource.PLAYERS, 1f, 0.77f);
             return true;
         });
     }
@@ -515,7 +515,7 @@ public final class KekkeiTechniquesB {
             }
             return age[0] >= 3;
         });
-        level.playSound(null, apex.x, apex.y, apex.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.2f, 1.9f);
+        level.playSound(null, apex.x, apex.y, apex.z, com.noirm.sound.NoirmSounds.DUST_HUM.get(), SoundSource.PLAYERS, 1.2f, 1.38f);
         level.playSound(null, apex.x, apex.y, apex.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 1f, 0.6f);
     }
 
@@ -573,7 +573,7 @@ public final class KekkeiTechniquesB {
             return ++age[0] >= 8 + metal * 3;
         });
         level.playSound(null, c.x, c.y, c.z, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 1f, 0.6f);
-        JutsuBehaviors.sound(caster, SoundEvents.GRAVEL_BREAK, 0.8f, 0.6f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), 0.8f, 0.77f);
     }
 
     /** Metal a body carries: iron, chain, gold or netherite armour pieces, and a metal weapon in hand. */
@@ -607,7 +607,7 @@ public final class KekkeiTechniquesB {
         int rise = Math.max(6, p.duration());
         float radius = Math.max(1.2f, p.radius());
         int[] age = {0};
-        level.playSound(null, shoulder.x, shoulder.y, shoulder.z, SoundEvents.SAND_BREAK, SoundSource.PLAYERS, 1.4f, 0.5f);
+        level.playSound(null, shoulder.x, shoulder.y, shoulder.z, com.noirm.sound.NoirmSounds.MAGNET_HISS.get(), SoundSource.PLAYERS, 1.4f, 0.71f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (!caster.isAlive()) {
@@ -646,7 +646,7 @@ public final class KekkeiTechniquesB {
             }
             Destruction.crater(level, spot[0], radius * 0.45f, power);
             level.playSound(null, spot[0].x, spot[0].y, spot[0].z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1.2f, 0.5f);
-            level.playSound(null, spot[0].x, spot[0].y, spot[0].z, SoundEvents.SAND_BREAK, SoundSource.PLAYERS, 1.6f, 0.4f);
+            level.playSound(null, spot[0].x, spot[0].y, spot[0].z, com.noirm.sound.NoirmSounds.MAGNET_HISS.get(), SoundSource.PLAYERS, 1.6f, 0.63f);
             return true;
         });
     }
@@ -667,7 +667,7 @@ public final class KekkeiTechniquesB {
         Vec3 hands = caster.getEyePosition().add(ctx.look().scale(0.6)).add(0, -0.3, 0);
         int[] age = {0};
         int[] fallen = {0};
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.SAND_BREAK, SoundSource.PLAYERS, 1.2f, 0.6f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.MAGNET_HISS.get(), SoundSource.PLAYERS, 1.2f, 0.77f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (!caster.isAlive()) {
@@ -748,7 +748,7 @@ public final class KekkeiTechniquesB {
         List<Branch> branches = new ArrayList<>();
         Set<LivingEntity> hit = new HashSet<>();
         int[] age = {0};
-        level.playSound(null, sphere.x, sphere.y, sphere.z, SoundEvents.SAND_BREAK, SoundSource.PLAYERS, 2f, 0.4f);
+        level.playSound(null, sphere.x, sphere.y, sphere.z, com.noirm.sound.NoirmSounds.MAGNET_HISS.get(), SoundSource.PLAYERS, 2f, 0.63f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (!caster.isAlive()) {
@@ -779,7 +779,7 @@ public final class KekkeiTechniquesB {
                     Vfx.burst(level, Vfx.glow(ScorchDustMagnetVfx.GLINT, ScorchDustMagnetVfx.FIELD, radius * 2f, radius * 0.4f, 4), sphere, 1, 0, 0);
                     ScorchDustMagnetVfx.sandImpact(level, sphere, radius);
                     Vfx.quake(level, sphere, 0.6f, 24);
-                    level.playSound(null, sphere.x, sphere.y, sphere.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.4f, 0.5f);
+                    level.playSound(null, sphere.x, sphere.y, sphere.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1.4f, 0.71f);
                 }
                 return false;
             }

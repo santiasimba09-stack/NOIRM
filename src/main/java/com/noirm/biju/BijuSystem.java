@@ -137,6 +137,9 @@ public final class BijuSystem {
         applySpeed(player, biju);
         float pitch = 1.5f - 0.1f * tails;
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 0.5f + 0.1f * tails, pitch);
+        if (tails == 1) { // the cloak first wraps you
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.CLOAK.get(), SoundSource.PLAYERS, 1.2f, 1f);
+        }
         if (player.level() instanceof ServerLevel level) {
             com.noirm.vfx.Vfx.Palette palette = cloakPalette(biju);
             com.noirm.vfx.Vfx.shockwave(level, player.position().add(0, 0.2, 0), palette, 1.5f + 0.5f * tails);
@@ -180,7 +183,7 @@ public final class BijuSystem {
     public static void beastTakesOver(Player player, ShinobiData data, int ticks) {
         startCloak(player, data, 2, ticks);
         player.displayClientMessage(Component.translatable("message.noirm.biju.takeover"), false);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 0.7f, 0.6f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.CLOAK.get(), SoundSource.PLAYERS, 0.7f, 0.77f);
     }
 
     private static void startCloak(Player player, ShinobiData data, int stage, int ticks) {
