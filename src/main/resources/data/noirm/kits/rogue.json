@@ -1,0 +1,23 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:straw_hat"
+    },
+    {
+      "item": "noirm:rogue_cloak"
+    },
+    {
+      "item": "noirm:hakama"
+    },
+    {
+      "item": "noirm:waraji"
+    },
+    {
+      "item": "noirm:forehead_protector_slashed"
+    },
+    {
+      "item": "noirm:oni_mask"
+    }
+  ]
+}

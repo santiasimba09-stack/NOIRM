@@ -1,0 +1,8 @@
+{
+  "type": "noirm:village_ward",
+  "anchors": "noirm:hidden_villages",
+  "biomes": "#noirm:has_structure/hidden_village_ward",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {}
+}

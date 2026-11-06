@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:greatsword/sweep",
+    "heavy": "noirm:greatsword/cleave",
+    "launcher": "noirm:greatsword/rising",
+    "forward_light": "noirm:greatsword/charge",
+    "forward_heavy": "noirm:greatsword/charge",
+    "back_heavy": "noirm:greatsword/spin"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

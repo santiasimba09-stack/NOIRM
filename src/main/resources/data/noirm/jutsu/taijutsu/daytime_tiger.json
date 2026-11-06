@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "projectile", "rank": "S",
+  "requires": { "dojutsu": "gate", "stage": 2 },
+  "chakra_cost": 30, "cooldown": 600,
+  "params": { "damage": 20, "radius": 3.5, "speed": 1.3, "knockback": 3.5, "posture": 80 }
+}

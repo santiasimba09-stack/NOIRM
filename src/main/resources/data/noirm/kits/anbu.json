@@ -1,0 +1,29 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:mask_wolf"
+    },
+    {
+      "item": "noirm:anbu_armor"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:tabi"
+    },
+    {
+      "item": "noirm:ninjato"
+    },
+    {
+      "item": "noirm:mask_hawk"
+    },
+    {
+      "item": "noirm:mask_boar"
+    },
+    {
+      "item": "noirm:mask_crane"
+    }
+  ]
+}

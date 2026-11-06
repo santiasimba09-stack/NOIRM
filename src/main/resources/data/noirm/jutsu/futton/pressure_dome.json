@@ -1,0 +1,21 @@
+{
+  "nature": "boil",
+  "behavior": "pressure_dome",
+  "rank": "S",
+  "chakra_cost": 80,
+  "cooldown": 900,
+  "unlock": {
+    "after": "noirm:futton/skilled_mist",
+    "mastery": 3
+  },
+  "params": {
+    "range": 14,
+    "radius": 5,
+    "duration": 40,
+    "damage": 20,
+    "knockback": 1.2,
+    "posture": 60,
+    "effect": "weakness:1",
+    "effect_ticks": 100
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "nature": "scorch",
+  "behavior": "heat_orbs",
+  "rank": "A",
+  "chakra_cost": 45,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:shakuton/scorching_orbs",
+    "mastery": 2
+  },
+  "params": {
+    "count": 9,
+    "speed": 0.42,
+    "range": 18,
+    "damage": 4.5,
+    "radius": 0.7,
+    "duration": 110,
+    "homing": 0.16,
+    "posture": 12,
+    "knockback": 0.2,
+    "effect": "hunger:2,weakness:0,slowness:0",
+    "effect_ticks": 100
+  }
+}

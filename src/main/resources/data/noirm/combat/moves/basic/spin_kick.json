@@ -1,0 +1,5 @@
+{
+  "animation": "noirm:rotating_kick",
+  "timing": { "windup": 6, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 6, "posture": 18, "range": 3.0, "arc": 160, "knockback": 0.7, "lunge": 0.3, "hitstun": 12, "hitstop": 4, "shake": 0.6 }
+}

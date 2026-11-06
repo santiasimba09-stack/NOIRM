@@ -1,0 +1,20 @@
+{
+  "nature": "storm",
+  "behavior": "storm_tide",
+  "rank": "A",
+  "chakra_cost": 45,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:ranton/thunder_cloud",
+    "mastery": 2
+  },
+  "params": {
+    "range": 16,
+    "radius": 3,
+    "speed": 0.7,
+    "damage": 9,
+    "stun": 18,
+    "knockback": 1.0,
+    "posture": 35
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:staff_sweep",
+  "timing": { "windup": 6, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 4.5, "posture": 15, "range": 3.4, "arc": 120, "knockback": 0.1, "lift": 0.75, "hitstun": 20, "hitstop": 4, "shake": 0.6 },
+  "next": { "light": "noirm:staff/sweep" }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:spear_charge",
+  "timing": { "windup": 6, "active": 2, "recovery": 11, "cancel_after": 6 },
+  "hit": { "damage": 7, "posture": 20, "range": 5.0, "arc": 30, "knockback": 1.0, "lunge": 1.1, "hitstun": 12, "hitstop": 4, "shake": 0.6, "pierce": 0.3 },
+  "next": { "light": "noirm:spear/thrust_2" }
+}

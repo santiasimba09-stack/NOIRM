@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:kunai/slash",
+    "heavy": "noirm:kunai/stab",
+    "launcher": "noirm:kunai/rising_cut",
+    "forward_light": "noirm:kunai/lunging_stab",
+    "forward_heavy": "noirm:kunai/lunging_stab",
+    "back_light": "noirm:kunai/backhand"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

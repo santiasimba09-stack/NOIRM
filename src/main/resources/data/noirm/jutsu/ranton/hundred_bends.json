@@ -1,0 +1,19 @@
+{
+  "nature": "storm",
+  "behavior": "bending_laser",
+  "rank": "S",
+  "chakra_cost": 90,
+  "cooldown": 1000,
+  "unlock": {
+    "after": "noirm:ranton/laser_circus",
+    "mastery": 3
+  },
+  "params": {
+    "range": 24,
+    "count": 8,
+    "damage": 12,
+    "stun": 20,
+    "knockback": 0.5,
+    "posture": 40
+  }
+}

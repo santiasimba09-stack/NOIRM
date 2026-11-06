@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:claws_maul",
+  "timing": { "windup": 5, "active": 2, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 5.5, "posture": 18, "range": 2.5, "arc": 100, "knockback": 0.4, "lunge": 0.4, "hitstun": 11, "hitstop": 3, "shake": 0.5 },
+  "next": { "light": "noirm:claws/rake", "heavy": "noirm:claws/shred" }
+}

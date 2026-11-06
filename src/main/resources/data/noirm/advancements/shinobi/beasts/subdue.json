@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:fire_charge"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beasts.subdue.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beasts.subdue.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/class_b",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:beast",
+      "conditions": {
+        "event": "subdued"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80,
+    "loot": [
+      "noirm:advancement/sealing_scroll"
+    ]
+  }
+}

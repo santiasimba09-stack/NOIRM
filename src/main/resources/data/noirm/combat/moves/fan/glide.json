@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:fan_glide",
+  "timing": { "windup": 4, "active": 2, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 4, "posture": 14, "range": 3.0, "arc": 90, "knockback": 0.6, "lunge": 0.9, "hitstun": 10, "hitstop": 3, "shake": 0.4 },
+  "next": { "light": "noirm:fan/snap_back" }
+}

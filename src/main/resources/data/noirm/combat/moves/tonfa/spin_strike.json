@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tonfa_spin_strike",
+  "timing": { "windup": 5, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5, "posture": 22, "range": 2.6, "arc": 140, "knockback": 0.7, "lunge": 0.3, "hitstun": 10, "hitstop": 4, "shake": 0.5 },
+  "next": { "light": "noirm:tonfa/jab_l", "heavy": "noirm:tonfa/hammer" }
+}

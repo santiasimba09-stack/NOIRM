@@ -1,0 +1,6 @@
+{
+  "cast": "charge", "behavior": "projectile", "rank": "S",
+  "requires": { "dojutsu": "cloak", "stage": 1 },
+  "chakra_cost": 40, "cooldown": 600, "min_charge": 20, "max_charge": 50,
+  "params": { "damage": 6, "charge_damage": 14, "speed": 1.1, "radius": 3.5, "knockback": 2.5, "posture": 60 }
+}

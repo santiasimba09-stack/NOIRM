@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:forehead_protector_navy"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.rank.genin.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.rank.genin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/missions/first",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:rank",
+      "conditions": {
+        "key": "genin"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 30,
+    "loot": [
+      "noirm:advancement/ryo_100"
+    ]
+  }
+}

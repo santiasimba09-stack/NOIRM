@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:tonfa/jab_l",
+    "heavy": "noirm:tonfa/spin_strike",
+    "launcher": "noirm:tonfa/uppercut",
+    "forward_light": "noirm:tonfa/rush",
+    "forward_heavy": "noirm:tonfa/rush",
+    "back_light": "noirm:tonfa/hook_l"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

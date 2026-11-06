@@ -1,0 +1,17 @@
+{
+  "nature": "storm",
+  "behavior": "storm_cloud",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 18,
+  "cooldown": 140,
+  "params": {
+    "range": 10,
+    "radius": 2.5,
+    "duration": 100,
+    "damage": 2.5,
+    "stun": 6,
+    "effect": "darkness:0",
+    "effect_ticks": 40
+  }
+}

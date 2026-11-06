@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:spear/thrust",
+    "heavy": "noirm:spear/sweep",
+    "launcher": "noirm:spear/vault",
+    "forward_light": "noirm:spear/charge",
+    "forward_heavy": "noirm:spear/charge",
+    "back_heavy": "noirm:spear/sweep"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:hammer_fist",
+  "timing": {
+    "windup": 8,
+    "active": 2,
+    "recovery": 13,
+    "cancel_after": 8
+  },
+  "hit": {
+    "damage": 7,
+    "posture": 34,
+    "range": 2.4,
+    "arc": 90,
+    "knockback": 0.5,
+    "lunge": 0.3,
+    "hitstun": 18,
+    "hitstop": 6,
+    "shake": 0.9,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:brawler/elbow"
+  }
+}

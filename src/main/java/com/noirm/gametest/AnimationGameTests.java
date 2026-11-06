@@ -1,0 +1,220 @@
+package com.noirm.gametest;
+
+import static com.noirm.gametest.TestKit.*;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.noirm.Noirm;
+import com.noirm.client.anim.KeyframeAnimation;
+import com.noirm.client.anim.SkeletonPose;
+import com.noirm.client.anim.SkeletonPose.Bone;
+import com.noirm.combat.AttackInput;
+import com.noirm.combat.CombatData;
+import com.noirm.combat.CombatSystem;
+import com.noirm.entity.SparringNinja;
+import com.noirm.registry.NoirmEntities;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+/**
+ * NPC animation: the keyframe files every model plays, and the server telling clients which
+ * animation an NPC is playing. (What it looks like is checked in the real client.)
+ */
+@GameTestHolder(Noirm.MOD_ID)
+@PrefixGameTestTemplate(false)
+public final class AnimationGameTests {
+    private AnimationGameTests() {}
+
+    /** Every file in assets/noirm/player_animation, parsed with the NPC evaluator, by animation name. */
+    private static Map<String, KeyframeAnimation> loadAll(GameTestHelper helper) {
+        Path folder = ModList.get().getModFileById(Noirm.MOD_ID).getFile().findResource("assets", Noirm.MOD_ID, "player_animation");
+        Map<String, KeyframeAnimation> all = new HashMap<>();
+        try (Stream<Path> files = Files.list(folder)) {
+            for (Path file : files.filter(p -> p.toString().endsWith(".json")).toList()) {
+                try (Reader reader = Files.newBufferedReader(file)) {
+                    Map<String, KeyframeAnimation> parsed = KeyframeAnimation.parse(reader);
+                    helper.assertTrue(!parsed.isEmpty(), "No animation in " + file.getFileName());
+                    all.putAll(parsed);
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't read " + folder, e);
+        }
+        return all;
+    }
+
+    /** Every jutsu's seal sequence belongs to a real jutsu, uses known seals, and has its animation, as long as it says. */
+    @GameTest(template = "empty")
+    public static void sealSequencesHaveAnimations(GameTestHelper helper) {
+        Map<String, KeyframeAnimation> all = loadAll(helper);
+        java.util.Set<String> known = java.util.Set.of("rat", "ox", "tiger", "hare", "dragon", "snake", "horse", "ram", "monkey",
+                "bird", "dog", "boar", "clone");
+        helper.assertTrue(com.noirm.jutsu.JutsuSeals.all().size() >= 20, "seal sequences loaded: " + com.noirm.jutsu.JutsuSeals.all().size());
+        com.noirm.jutsu.JutsuSeals.all().forEach((jutsu, seq) -> {
+            helper.assertTrue(com.noirm.jutsu.JutsuData.get(jutsu) != null, "seals for a jutsu that doesn't exist: " + jutsu);
+            helper.assertTrue(known.containsAll(seq.seals()), "unknown seal in " + jutsu + ": " + seq.seals());
+            KeyframeAnimation anim = all.get(seq.animation(jutsu).getPath());
+            helper.assertTrue(anim != null, "no animation " + seq.animation(jutsu));
+            assertNear(helper, seq.ticks(), anim.lengthTicks, "animation length of " + jutsu);
+        });
+        helper.succeed();
+    }
+
+    /** The torso carries the head and arms: turned 90°, the right shoulder swings round with it. */
+    @GameTest(template = "empty")
+    public static void rigCarriesHeadAndArms(GameTestHelper helper) {
+        com.noirm.client.anim.Rig rig = new com.noirm.client.anim.Rig();
+        SkeletonPose pose = new SkeletonPose();
+        rig.bake(pose);
+        assertNear(helper, -5f, rig.rightArm.x, "rest: right shoulder at x = -5");
+        assertNear(helper, 2f, rig.rightArm.y, "rest: shoulder height");
+        pose.set(Bone.TORSO, SkeletonPose.RY, (float) Math.toRadians(90));
+        rig.bake(pose);
+        assertNear(helper, 0f, rig.rightArm.x, "turned: the shoulder leaves the side");
+        assertNear(helper, 5f, rig.rightArm.z, "turned right: the right shoulder goes back");
+        assertNear(helper, (float) Math.toRadians(90), rig.rightArm.yRot, "the arm turns with the torso");
+        assertNear(helper, (float) Math.toRadians(90), rig.head.yRot, "so does the head");
+        assertNear(helper, 12f, rig.rightLeg.y, "the legs stay on the hips");
+        // Leaning forward from the hips moves the head forward, not the feet.
+        pose.clear();
+        pose.set(Bone.TORSO, SkeletonPose.RX, (float) Math.toRadians(30));
+        rig.bake(pose);
+        helper.assertTrue(rig.head.z < -5f, "leaning forward brings the head forward, z = " + rig.head.z);
+        assertNear(helper, 0f, rig.rightLeg.z, "the feet stay put");
+        // Euler round trip through the hierarchy (vanilla's rotation order).
+        org.joml.Quaternionf q = new org.joml.Quaternionf().rotationZYX(0.3f, -0.7f, 1.1f);
+        float[] e = com.noirm.client.anim.Rig.eulerZYX(q, new org.joml.Matrix3f());
+        org.joml.Quaternionf back = new org.joml.Quaternionf().rotationZYX(e[2], e[1], e[0]);
+        helper.assertTrue(Math.abs(Math.abs(q.dot(back)) - 1f) < 1.0e-4f, "Euler angles round-trip");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void everyAnimationFileParsesAndEvaluates(GameTestHelper helper) {
+        Map<String, KeyframeAnimation> all = loadAll(helper);
+        helper.assertTrue(all.size() >= 49, "Expected the 49 animation files, parsed " + all.size());
+        SkeletonPose pose = new SkeletonPose();
+        for (KeyframeAnimation animation : all.values()) {
+            helper.assertTrue(animation.lengthTicks > 0, animation.name + " has no length");
+            helper.assertTrue(animation.keyframeCount() > 0, animation.name + " has no keyframes");
+            float length = animation.lengthTicks;
+            for (float t : new float[]{-5f, 0f, 0.37f, length * 0.25f, length * 0.5f, length * 0.77f, length, length + 7.3f}) {
+                pose.clear();
+                animation.sample(t, pose);
+                helper.assertTrue(pose.isFinite(), animation.name + " gives NaN/infinity at tick " + t);
+            }
+        }
+        // Every animation is ours now (tools/animgen): whole-body, with bends.
+        helper.assertTrue(all.get("elbow_strike").hasBend(Bone.RIGHT_ARM), "elbow_strike should bend the right elbow");
+        helper.assertTrue(all.get("knee_strike").hasBend(Bone.RIGHT_LEG), "knee_strike should bend the right knee");
+        helper.assertTrue(all.get("stance_brawler").hasBend(Bone.TORSO), "the brawler stance should hunch at the waist");
+        // The jab lands on the move's contact tick (windup 3 of 11): lead arm straight out, feet stepping in.
+        KeyframeAnimation jab = all.get("quick_jab");
+        assertNear(helper, 11f, jab.lengthTicks, "quick_jab is as long as the move");
+        pose.clear();
+        jab.sample(3f, pose);
+        assertNear(helper, (float) Math.toRadians(-90), pose.get(Bone.LEFT_ARM, SkeletonPose.RX), "jab: lead arm level at contact");
+        assertNear(helper, (float) Math.toRadians(4), pose.get(Bone.LEFT_ARM, SkeletonPose.BEND), "jab: elbow straight at contact");
+        helper.assertTrue(pose.isSet(Bone.LEFT_LEG, SkeletonPose.RX), "jab: the feet step too");
+        // Bends come out in radians: the elbow strike's folded elbow at contact.
+        KeyframeAnimation elbow = all.get("elbow_strike");
+        pose.clear();
+        elbow.sample(3f, pose);
+        assertNear(helper, (float) Math.toRadians(150), pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), "elbow bend at contact");
+        // Loops wrap: a stance one cycle later is the same pose.
+        KeyframeAnimation stance = all.get("stance_basic");
+        helper.assertTrue(stance.loop, "stances loop");
+        SkeletonPose later = new SkeletonPose();
+        pose.clear();
+        stance.sample(7f, pose);
+        stance.sample(7f + stance.lengthTicks, later);
+        assertNear(helper, pose.get(Bone.RIGHT_ARM, SkeletonPose.RX), later.get(Bone.RIGHT_ARM, SkeletonPose.RX), "loop wraps");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void everyMoveAnimationExists(GameTestHelper helper) {
+        Map<String, KeyframeAnimation> all = loadAll(helper);
+        Path moves = ModList.get().getModFileById(Noirm.MOD_ID).getFile().findResource("data", Noirm.MOD_ID, "combat", "moves");
+        int checked = 0;
+        try (Stream<Path> files = Files.walk(moves)) {
+            for (Path file : files.filter(p -> p.toString().endsWith(".json")).toList()) {
+                try (Reader reader = Files.newBufferedReader(file)) {
+                    JsonObject move = JsonParser.parseReader(reader).getAsJsonObject();
+                    if (move.has("animation")) {
+                        String id = move.get("animation").getAsString();
+                        String name = id.substring(id.indexOf(':') + 1);
+                        helper.assertTrue(all.containsKey(name), file.getFileName() + " plays missing animation " + id);
+                        checked++;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't read " + moves, e);
+        }
+        helper.assertTrue(checked >= 20, "Expected the moves' animations, checked " + checked);
+        for (String roll : List.of("forward_roll", "backward_roll")) {
+            helper.assertTrue(all.containsKey(roll), "Missing roll animation " + roll);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_npc_anim")
+    public static void npcAttackSyncsItsAnimation(GameTestHelper helper) {
+        SparringNinja ninja = ninja(helper, 1.5f, 0.5f);
+        int before = ninja.animationSeq();
+        helper.assertTrue(CombatSystem.requestAttack(ninja, AttackInput.LIGHT), "an idle ninja can jab");
+        var jab = CombatData.move(CombatData.style(CombatData.DEFAULT_STYLE).opener(AttackInput.LIGHT));
+        String expected = jab.animation().orElseThrow().toString();
+        helper.assertTrue(expected.equals(ninja.animationId()), "the NPC should play " + expected + ", plays " + ninja.animationId());
+        helper.assertTrue(ninja.animationSeq() == before + 1, "a new move bumps the animation counter");
+        int length = jab.timing().windup() + jab.timing().active() + jab.timing().recovery();
+        helper.assertTrue(ninja.animationTicks() == length, "the animation lasts the move (" + length + "), got " + ninja.animationTicks());
+        helper.assertTrue(ninja.isFighting(), "mid-move counts as fighting (the stance shows)");
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(CombatData.DEFAULT_STYLE.toString().equals(ninja.syncedStyle()),
+                    "the style should be synced for the stance, got '" + ninja.syncedStyle() + "'");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "empty", batch = "noirm_npc_anim")
+    public static void npcDodgeSyncsARoll(GameTestHelper helper) {
+        SparringNinja ninja = ninja(helper, 1.5f, 1.5f);
+        int before = ninja.animationSeq();
+        helper.assertTrue(CombatSystem.requestDodge(ninja, -1f, 0f), "an idle ninja can dodge");
+        helper.assertTrue(Noirm.id("backward_roll").toString().equals(ninja.animationId()), "a back-step dodge rolls backward, got " + ninja.animationId());
+        helper.assertTrue(ninja.animationSeq() == before + 1, "the roll bumps the animation counter");
+        helper.runAfterDelay(10, () -> {
+            // The dodge throws them back: keep the area clean for other tests.
+            ninja.discard();
+            helper.succeed();
+        });
+    }
+
+    private static SparringNinja ninja(GameTestHelper helper, float x, float z) {
+        floor(helper);
+        SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.setCombatStyle(CombatData.DEFAULT_STYLE);
+        ninja.joinClan(TestClans.PLAIN);
+        return ninja;
+    }
+
+    private static void assertNear(GameTestHelper helper, float expected, float actual, String what) {
+        helper.assertTrue(Math.abs(expected - actual) < 1.0e-3f, what + ": expected " + expected + ", got " + actual);
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:katana_iaido",
+  "timing": { "windup": 8, "active": 2, "recovery": 12, "cancel_after": 7 },
+  "hit": { "damage": 9, "posture": 26, "range": 3.6, "arc": 140, "knockback": 0.6, "lunge": 0.8, "hitstun": 14, "hitstop": 6, "shake": 0.8, "pierce": 0.35 },
+  "next": { "light": "noirm:katana/slash" }
+}

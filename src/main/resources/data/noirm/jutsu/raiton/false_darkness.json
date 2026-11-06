@@ -1,0 +1,18 @@
+{
+  "nature": "lightning",
+  "behavior": "beam",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 220,
+  "unlock": {
+    "after": "noirm:raiton/lightning_armor",
+    "mastery": 2
+  },
+  "params": {
+    "range": 18,
+    "damage": 8,
+    "stun": 20,
+    "posture": 30,
+    "knockback": 0.4
+  }
+}

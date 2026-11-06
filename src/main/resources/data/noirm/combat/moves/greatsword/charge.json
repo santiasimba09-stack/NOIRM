@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:greatsword_charge",
+  "timing": { "windup": 9, "active": 3, "recovery": 13, "cancel_after": 8 },
+  "hit": { "damage": 9, "posture": 26, "range": 4.2, "arc": 100, "knockback": 1.0, "lunge": 1.0, "hitstun": 14, "hitstop": 6, "shake": 0.8 },
+  "next": { "light": "noirm:greatsword/return_sweep" }
+}

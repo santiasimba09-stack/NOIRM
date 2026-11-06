@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:writable_book"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.jutsu.create_own.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.jutsu.create_own.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/jutsu/a_rank",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:create_jutsu"
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

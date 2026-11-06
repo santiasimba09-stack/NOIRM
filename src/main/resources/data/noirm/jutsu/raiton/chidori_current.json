@@ -1,0 +1,18 @@
+{
+  "nature": "lightning",
+  "behavior": "nova",
+  "rank": "A",
+  "chakra_cost": 30,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:raiton/chidori",
+    "mastery": 2
+  },
+  "params": {
+    "radius": 3.5,
+    "damage": 6,
+    "knockback": 0.8,
+    "posture": 40,
+    "stun": 25
+  }
+}

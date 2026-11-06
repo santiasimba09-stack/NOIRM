@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:sword/slash",
+    "heavy": "noirm:sword/thrust",
+    "launcher": "noirm:sword/rising",
+    "forward_light": "noirm:sword/dash_thrust",
+    "forward_heavy": "noirm:sword/dash_thrust",
+    "back_heavy": "noirm:sword/finishing_slash"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

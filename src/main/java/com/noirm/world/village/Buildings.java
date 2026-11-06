@@ -1,0 +1,1238 @@
+package com.noirm.world.village;
+
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.LanternBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallBannerBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.block.state.properties.SlabType;
+
+import java.util.List;
+
+import static com.noirm.world.village.VillagePlan.STOREY;
+
+/**
+ * The village's ordinary buildings, each drawn into a {@link LotFrame} with its front to the
+ * south (+v). Every building has an inside: kitchens, beds, tables, ladders between floors, shop
+ * counters and shelves, so walking into one feels like walking into someone's home.
+ *
+ * <p>Storeys are {@link VillagePlan#STOREY} blocks: walls from {@code 4k} to {@code 4k + 2}, the
+ * next floor (or the roof deck) at {@code 4k + 3}. A flat roof's deck is at {@code 4n - 1}, so a
+ * rooftop runner stands at {@code 4n} ({@link VillagePlan.Lot#roofTop()}).
+ */
+final class Buildings {
+    static final BlockState HANGING_LANTERN = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
+    private static final List<Block> FLOWERS = List.of(Blocks.POTTED_POPPY, Blocks.POTTED_DANDELION, Blocks.POTTED_AZURE_BLUET,
+            Blocks.POTTED_RED_TULIP, Blocks.POTTED_OXEYE_DAISY, Blocks.POTTED_FERN, Blocks.POTTED_CORNFLOWER, Blocks.POTTED_ORANGE_TULIP);
+    private static final List<Block> BEDS = List.of(Blocks.WHITE_BED, Blocks.BLUE_BED, Blocks.RED_BED, Blocks.LIGHT_GRAY_BED,
+            Blocks.CYAN_BED, Blocks.ORANGE_BED, Blocks.GREEN_BED);
+    private static final List<Block> CARPETS = List.of(Blocks.RED_CARPET, Blocks.BLUE_CARPET, Blocks.GREEN_CARPET, Blocks.BROWN_CARPET,
+            Blocks.LIGHT_GRAY_CARPET, Blocks.ORANGE_CARPET);
+
+    private Buildings() {}
+
+    static void draw(LotFrame f) {
+        switch (f.lot.type()) {
+            case HOUSE -> house(f);
+            case ROUND_HOUSE -> roundHouse(f);
+            case APARTMENT -> apartment(f);
+            case ROUND_TOWER -> roundTower(f);
+            case SHOP -> shop(f);
+            case RESTAURANT -> restaurant(f);
+            case STALL -> stall(f, 1, f.d - 4);
+            case RAMEN_SHOP -> ramenShop(f);
+            case WAREHOUSE -> warehouse(f);
+            case GARDEN -> garden(f);
+            case PARK -> park(f);
+            case INN -> inn(f);
+            case CHIEF_HOUSE -> traditionalHouse(f, 1, 1, f.w - 2, f.d - 6, true);
+            case CLAN_HOUSE -> traditionalHouse(f, 1, 1, f.w - 2, f.d - 3, false);
+            case GUARD_POST -> guardPost(f);
+            case WATCHTOWER -> watchtower(f, f.w / 2, f.d / 2);
+            case YARD -> Yards.yard(f);
+            case GIANT_TREE -> Yards.giantTree(f);
+            case CEMETERY -> Yards.cemetery(f);
+            case SPIRE -> RoundBuildings.spire(f);
+            case JONIN_STATION -> RoundBuildings.joninStation(f);
+            case ROCK_SPIRE -> RoundBuildings.rockSpire(f);
+            default -> Landmarks.draw(f);
+        }
+    }
+
+    // ================================================================ homes
+
+    /**
+     * A square house of 1–3 storeys: plastered walls on a timber frame, windows on every side, a
+     * front door with a lantern and a step, a kitchen and table downstairs, bedrooms upstairs, a
+     * ladder between floors. The roof is tiled (pitched) or flat with a rooftop water tank, a
+     * chimney or a little roof garden.
+     */
+    static void house(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 3;
+        if (v2 - v1 < 4) {
+            v2 = f.d - 2;
+        }
+        int floors = Math.max(1, f.lot.floors());
+        Block wall = cw(f).wall();
+        int roofKind = f.lot.style() % 3;
+        boolean chimney = f.rnd.nextInt(3) == 0;
+        shell(f, u1, v1, u2, v2, floors, wall);
+        int mid = (u1 + u2) / 2;
+        frontDoor(f, mid, v2, f.d - 1);
+        facade(f, u1, u2, v2, floors, 1);
+        // Inside: the kitchen and table downstairs; beds upstairs (or in the corner of a cottage).
+        kitchen(f, u1 + 1, v1 + 1, u2 - 2, 0);
+        table(f, u1 + 2, v2 - 2, 0);
+        if (floors == 1) {
+            bed(f, u2 - 1, v2 - 2, 0);
+        }
+        for (int k = 1; k < floors; k++) {
+            int y = k * STOREY;
+            bed(f, u1 + 1, v1 + 2, y);
+            if (u2 - u1 >= 6) {
+                bed(f, u1 + 3, v1 + 2, y);
+            }
+            f.set(u2 - 2, y, v2 - 1, Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.NORTH));
+            f.set(u1 + 1, y, v2 - 1, Blocks.BOOKSHELF);
+            f.set(u1 + 2, y, v2 - 1, f.pick(FLOWERS));
+            rug(f, u1 + 2, v1 + 4, u2 - 2, v2 - 2, y);
+        }
+        ladder(f, u2 - 1, v1 + 1, 0, floors * STOREY - 1, floors);
+        int top = floors * STOREY;
+        switch (roofKind) {
+            case 0 -> pitchedRoof(f, u1, v1, u2, v2, top - 1, wall);
+            default -> {
+                flatRoof(f, u1, v1, u2, v2, top - 1);
+                rooftop(f, u1, v1, u2, v2, top);
+            }
+        }
+        if (chimney) {
+            chimney(f, u1, v1, roofKind == 0 ? top + (v2 - v1) / 2 + 2 : top + 1);
+        }
+        // A balcony over the front door on taller houses.
+        if (floors >= 2 && f.lot.style() % 2 == 0 && v2 + 1 < f.d) {
+            int y = STOREY;
+            f.fill(mid - 1, y - 1, v2 + 1, mid + 1, y - 1, v2 + 1, slab(f.p.slab, SlabType.TOP));
+            f.fill(mid - 1, y, v2 + 1, mid + 1, y, v2 + 1, f.p.fence);
+            f.set(mid, y, v2, Blocks.AIR);
+            f.set(mid, y + 1, v2, Blocks.AIR);
+        }
+        frontYard(f, u1, u2, v2);
+    }
+
+    /** A round house: a plastered drum, windows all round, a flat overhanging roof (domed in the desert). */
+    static void roundHouse(LotFrame f) {
+        int r = Math.max(3, Math.min(f.w, f.d - 1) / 2 - 1);
+        int cu = (f.w - 1) / 2;
+        int cv = (f.d - 2) / 2;
+        int floors = Math.max(1, f.lot.floors());
+        int h = floors * STOREY;
+        Materials.Colourway cw = cw(f);
+        Block wall = cw.wall();
+        Block roof = cw.roofFlat();
+        for (int du = -r - 1; du <= r + 1; du++) {
+            for (int dv = -r - 1; dv <= r + 1; dv++) {
+                int u = cu + du;
+                int v = cv + dv;
+                boolean in = VillageBuilder.inDisk(du, dv, r);
+                boolean ring = in && !VillageBuilder.inDisk(du, dv, r - 1);
+                if (in) {
+                    f.set(u, -1, v, f.p.planks);
+                    if (ring) {
+                        f.fill(u, 0, v, u, h - 1, v, wall);
+                        f.set(u, 0, v, cw.accent()); // a timber skirting
+                        for (int k = 1; k < floors; k++) {
+                            f.set(u, k * STOREY - 1, v, roof); // a coloured band at each floor
+                        }
+                    } else {
+                        f.fill(u, 0, v, u, h - 2, v, Blocks.AIR);
+                        for (int k = 1; k < floors; k++) {
+                            f.set(u, k * STOREY - 1, v, f.p.planks);
+                        }
+                    }
+                }
+            }
+        }
+        // Windows on every floor, all round.
+        for (int k = 0; k < floors; k++) {
+            int y = k * STOREY + 1;
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                if (side == Direction.SOUTH && k == 0) {
+                    continue;
+                }
+                f.set(cu + side.getStepX() * r, y, cv + side.getStepZ() * r, Blocks.GLASS_PANE);
+            }
+            int diag = Math.max(1, (int) Math.round(r * 0.7));
+            for (int[] s : new int[][] {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}) {
+                f.set(cu + s[0] * diag, y, cv + s[1] * diag, Blocks.GLASS_PANE);
+            }
+        }
+        frontDoor(f, cu, cv + r, f.d - 1);
+        // Inside.
+        bed(f, cu - r + 2, cv, 0);
+        f.set(cu + r - 2, 0, cv - 1, Blocks.FURNACE);
+        f.set(cu + r - 2, 0, cv, Blocks.BARREL);
+        f.set(cu, 0, cv - r + 1, Blocks.CRAFTING_TABLE);
+        f.set(cu, h - 2, cv, HANGING_LANTERN);
+        if (floors > 1) {
+            ladder(f, cu + 1, cv - r + 1, 0, h - 1, floors);
+            bed(f, cu - 1, cv + 1, STOREY);
+        }
+        // The roof.
+        if (f.p == VillagePalette.SAND || f.p == VillagePalette.CLOUD) {
+            dome(f, cu, h - 1, cv, r, roof);
+            if (f.p == VillagePalette.CLOUD) {
+                Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), false);
+            }
+        } else if (f.p == VillagePalette.SNOW) {
+            cone(f, cu, h - 1, cv, r + 1, roof);
+        } else {
+            // The Hidden Leaf's round roof: a flared ring eave round a raised flat top.
+            Shapes.disk(f, cu, cv, r, h - 1, roof.defaultBlockState());
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+            Shapes.disk(f, cu, cv, r - 1, h, roof.defaultBlockState());
+            if (f.p == VillagePalette.MIST) {
+                mossTop(f, cu, h + 1, cv, r - 1);
+            } else if (f.lot.style() % 2 == 0) {
+                waterTank(f, cu, h + 1, cv);
+            } else {
+                f.set(cu + 1, h + 1, cv, f.pick(FLOWERS));
+                f.set(cu - 1, h + 1, cv - 1, f.pick(FLOWERS));
+            }
+            for (int k = 1; k < floors; k++) {
+                Shapes.ringEave(f, cu, cv, r, k * STOREY - 1, cw.roofStairs(), cw.roofSlab(), false);
+                for (int du = -r - 2; du <= r + 2; du++) {
+                    for (int dv = -r - 2; dv <= r + 2; dv++) {
+                        double d = Shapes.dist(du, dv);
+                        if (d > r + 1.5 && d <= r + 2.5) {
+                            f.set(cu + du, k * STOREY - 1, cv + dv, Blocks.AIR); // a slim pent eave between floors
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * An apartment block, 4–6 storeys: an open gallery with a railing along the front of every
+     * floor, a door and a window for each flat, a ladder up the end of the gallery, beds and tables
+     * inside, water tanks and an aerial on the roof.
+     */
+    static void apartment(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 4;
+        int floors = Math.max(3, f.lot.floors());
+        Block wall = cw(f).wall();
+        Block band = cw(f).roofFlat();
+        shell(f, u1, v1, u2, v2, floors, wall);
+        for (int k = 1; k < floors; k++) {
+            f.fill(u1, k * STOREY - 1, v1, u2, k * STOREY - 1, v1, band);
+            f.fill(u1, k * STOREY - 1, v2, u2, k * STOREY - 1, v2, band);
+        }
+        int ladderU = u2 - 1;
+        for (int k = 0; k < floors; k++) {
+            int y = k * STOREY;
+            // The gallery and its railing.
+            if (k > 0) {
+                f.fill(u1, y - 1, v2 + 1, u2, y - 1, v2 + 1, slab(f.p.slab, SlabType.TOP));
+                f.fill(u1, y, v2 + 2, u2, y, v2 + 2, f.p.fence);
+                f.set(ladderU, y - 1, v2 + 1, Blocks.AIR);
+                f.set((u1 + u2) / 2, y + 2, v2 + 1, HANGING_LANTERN);
+            }
+            for (int u = u1 + 2; u <= u2 - 2; u += 4) {
+                if (u == ladderU) {
+                    continue;
+                }
+                door(f, u, y, v2, Direction.SOUTH);
+                if (u + 2 < u2) {
+                    f.set(u + 2, y + 1, v2, Blocks.GLASS_PANE);
+                }
+                f.set(u, y + 1, v1, Blocks.GLASS_PANE);
+                bed(f, u, v1 + 2, y);
+                f.set(u + 1, y, v1 + 1, k % 2 == 0 ? Blocks.BARREL : Blocks.CRAFTING_TABLE);
+                f.set(u, y + 2, v2 - 2, HANGING_LANTERN);
+            }
+            if (k > 0) {
+                f.fill(u1 + 1, y - 1, v1 + 1, u2 - 1, y - 1, v2 - 1, f.p.planks);
+            }
+        }
+        // The ladder up the gallery (against the front wall).
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.SOUTH);
+        for (int y = 0; y < floors * STOREY; y++) {
+            f.set(ladderU, y, v2 + 1, ladder);
+        }
+        int top = floors * STOREY;
+        flatRoof(f, u1, v1, u2, v2, top - 1);
+        f.set(ladderU, top, v2, Blocks.AIR); // step off the ladder onto the roof
+        if (f.p != VillagePalette.SAND) {
+            tankCluster(f, u1 + 2, top, v1 + 2, u2 - u1 > 9 ? 3 : 2);
+        }
+        laundryLine(f, u1 + 1, u2 - 1, v2 - 2, top);
+        f.fill(u1 + 1, top, v2 - 1, u1 + 1, top + 3, v2 - 1, Blocks.IRON_BARS);
+        f.set(u1 + 1, top + 4, v2 - 1, Blocks.LIGHTNING_ROD);
+    }
+
+    /** Moss carpet, azalea bushes and a fern or two over a round roof of radius {@code r} (the Mist village's green tops). */
+    static void mossTop(LotFrame f, int cu, int y, int cv, int r) {
+        for (int du = -r; du <= r; du++) {
+            for (int dv = -r; dv <= r; dv++) {
+                if (Shapes.dist(du, dv) > r + 0.5) {
+                    continue;
+                }
+                long h = Materials.hash(f.x(cu + du, cv + dv), y, f.z(cu + du, cv + dv), f.lot.seed()) % 10;
+                f.set(cu + du, y, cv + dv, h < 6 ? Blocks.MOSS_CARPET : h == 6 ? Blocks.AZALEA : h == 7 ? Blocks.FLOWERING_AZALEA
+                        : h == 8 ? Blocks.FERN : Blocks.AIR);
+            }
+        }
+    }
+
+    /** A tall round tower of flats (the Hidden Leaf skyline is full of them). */
+    static void roundTower(LotFrame f) {
+        if (f.p == VillagePalette.STONE) {
+            taperedTower(f);
+            return;
+        }
+        int r = Math.max(4, Math.min(f.w, f.d - 1) / 2 - 1);
+        int cu = (f.w - 1) / 2;
+        int cv = (f.d - 2) / 2;
+        int floors = Math.max(4, f.lot.floors());
+        int h = floors * STOREY;
+        Materials.Colourway cw = cw(f);
+        Block wall = cw.wall();
+        Block band = cw.roofFlat();
+        for (int du = -r - 1; du <= r + 1; du++) {
+            for (int dv = -r - 1; dv <= r + 1; dv++) {
+                boolean in = VillageBuilder.inDisk(du, dv, r);
+                boolean ring = in && !VillageBuilder.inDisk(du, dv, r - 1);
+                int u = cu + du, v = cv + dv;
+                if (in) {
+                    f.set(u, -1, v, f.p.planks);
+                }
+                if (ring) {
+                    for (int y = 0; y < h; y++) {
+                        boolean window = y % STOREY == 1 && ((du * 7 + dv * 3) & 3) == 0;
+                        f.set(u, y, v, y % STOREY == 3 ? band : window ? Blocks.GLASS_PANE : wall);
+                    }
+                } else if (in) {
+                    f.fill(u, 0, v, u, h - 1, v, Blocks.AIR);
+                    for (int k = 1; k < floors; k++) {
+                        f.set(u, k * STOREY - 1, v, f.p.planks);
+                    }
+                }
+                if (VillageBuilder.inDisk(du, dv, r + 1)) {
+                    f.set(u, h - 1, v, band);
+                }
+            }
+        }
+        frontDoor(f, cu, cv + r, f.d - 1);
+        ladder(f, cu, cv - r + 1, 0, h - 1, floors);
+        for (int k = 0; k < floors; k++) {
+            int y = k * STOREY;
+            bed(f, cu - r + 2, cv, y);
+            bed(f, cu + r - 2, cv + 1, y);
+            f.set(cu, y + 2, cv, HANGING_LANTERN);
+            f.set(cu + 1, y, cv - r + 2, k % 2 == 0 ? Blocks.BARREL : Blocks.BOOKSHELF);
+        }
+        f.set(cu, h - 1, cv - r + 1, slab(f.p.slab, SlabType.BOTTOM));
+        if (f.p == VillagePalette.CLOUD) {
+            dome(f, cu, h - 1, cv, r, cw.roofFlat());
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+        } else if (f.p == VillagePalette.MIST) {
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+            mossTop(f, cu, h, cv, r - 1);
+        } else if (f.p != VillagePalette.SAND) {
+            Shapes.ringEave(f, cu, cv, r, h - 1, cw.roofStairs(), cw.roofSlab(), true);
+            waterTank(f, cu, h, cv);
+        } else {
+            dome(f, cu, h - 1, cv, r - 1, band);
+        }
+    }
+
+    /**
+     * The Stone village's tower: a round tower that narrows as it rises (a block every two storeys),
+     * stone at the foot and the colourway's plaster above, a band and a ledge at every step, windows
+     * all round, a ladder inside, and a flat roof with a parapet (where the rope bridges land).
+     */
+    static void taperedTower(LotFrame f) {
+        Materials.Colourway cw = cw(f);
+        int r0 = Math.max(4, Math.min(f.w, f.d - 1) / 2 - 1);
+        int cu = (f.w - 1) / 2, cv = (f.d - 2) / 2;
+        int floors = Math.max(4, f.lot.floors());
+        int h = floors * STOREY;
+        Shapes.disk(f, cu, cv, r0, -1, f.p.planks.defaultBlockState());
+        for (int k = 0; k < floors; k++) {
+            int r = Math.max(3, r0 - k / 2);
+            int y0 = k * STOREY;
+            Shapes.drum(f, cu, cv, r, y0, y0 + STOREY - 1, k == 0 ? Blocks.STONE_BRICKS : cw.wall());
+            for (int du = -r + 1; du <= r - 1; du++) {
+                for (int dv = -r + 1; dv <= r - 1; dv++) {
+                    if (Shapes.dist(du, dv) <= r - 0.5) {
+                        f.fill(cu + du, y0, cv + dv, cu + du, y0 + STOREY - 2, cv + dv, Blocks.AIR);
+                        f.set(cu + du, y0 + STOREY - 1, cv + dv, f.p.planks);
+                    }
+                }
+            }
+            Shapes.drum(f, cu, cv, r, y0 + STOREY - 1, y0 + STOREY - 1, cw.accent());
+            int next = Math.max(3, r0 - (k + 1) / 2);
+            if (next < r && k + 1 < floors) {
+                // The step in: a ledge of slabs where the wall moves in.
+                for (int du = -r; du <= r; du++) {
+                    for (int dv = -r; dv <= r; dv++) {
+                        double d = Shapes.dist(du, dv);
+                        if (d <= r + 0.5 && d > next + 0.5) {
+                            f.set(cu + du, y0 + STOREY, cv + dv, slab(cw.roofSlab(), SlabType.BOTTOM));
+                        }
+                    }
+                }
+            }
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                if (side == Direction.SOUTH && k == 0) {
+                    continue;
+                }
+                f.set(cu + side.getStepX() * r, y0 + 1, cv + side.getStepZ() * r, window(f, cu, y0 + 1, cv + side.ordinal()));
+            }
+            f.set(cu, y0 + 2, cv, HANGING_LANTERN);
+            if (k % 2 == 0) {
+                bed(f, cu - 1, cv + 1, y0);
+            } else {
+                f.set(cu + 1, y0, cv + 1, Blocks.BARREL);
+            }
+        }
+        frontDoor(f, cu, cv + r0, f.d - 1);
+        ladder(f, cu, cv - Math.max(3, r0 - (floors - 1) / 2) + 1, 0, h, floors);
+        // The roof: a deck with a parapet, and a lookout's flagpole.
+        int rt = Math.max(3, r0 - (floors - 1) / 2);
+        Shapes.disk(f, cu, cv, rt, h - 1, cw.roofFlat().defaultBlockState());
+        Shapes.drum(f, cu, cv, rt, h, h, f.p.wall);
+        f.set(cu, h - 1, cv - rt + 1, Blocks.AIR);
+        f.fill(cu + 1, h, cv, cu + 1, h + 3, cv, Blocks.IRON_BARS);
+        f.set(cu + 1, h + 4, cv, f.p == VillagePalette.STONE ? Blocks.BROWN_WALL_BANNER.defaultBlockState()
+                .setValue(WallBannerBlock.FACING, Direction.SOUTH) : Blocks.LIGHTNING_ROD.defaultBlockState());
+    }
+
+    /** A wide traditional house: a raised veranda, paper screens, a big tiled roof (clan homes, the chief's house). */
+    static void traditionalHouse(LotFrame f, int u1, int v1, int u2, int v2, boolean garden) {
+        if (u2 - u1 < 6 || v2 - v1 < 5) {
+            house(f);
+            return;
+        }
+        Block frame = f.p == VillagePalette.SAND ? Blocks.STRIPPED_ACACIA_LOG : Blocks.STRIPPED_DARK_OAK_LOG;
+        Block wall = f.p == VillagePalette.SAND ? Blocks.SMOOTH_SANDSTONE : Blocks.WHITE_TERRACOTTA;
+        f.fill(u1, -1, v1, u2, -1, v2, f.p.planks);
+        f.fill(u1, 0, v1, u2, 0, v2, f.p.planks); // a raised floor
+        f.walls(u1, 1, v1, u2, 3, v2, wall);
+        for (int u = u1; u <= u2; u += 3) {
+            f.fill(u, 1, v1, u, 3, v1, frame);
+            f.fill(u, 1, v2, u, 3, v2, frame);
+        }
+        for (int v = v1; v <= v2; v += 3) {
+            f.fill(u1, 1, v, u1, 3, v, frame);
+            f.fill(u2, 1, v, u2, 3, v, frame);
+        }
+        f.fill(u1 + 1, 1, v1 + 1, u2 - 1, 3, v2 - 1, Blocks.AIR);
+        // Paper sliding screens along the front, one left open as the doorway.
+        for (int u = u1 + 1; u < u2; u++) {
+            if (u % 3 != u1 % 3) {
+                f.fill(u, 1, v2, u, 2, v2, Blocks.WHITE_STAINED_GLASS_PANE);
+            }
+        }
+        int mid = (u1 + u2) / 2;
+        f.fill(mid, 1, v2, mid, 2, v2, Blocks.AIR);
+        // The veranda (engawa) and a step up.
+        f.fill(u1 - 1 < 0 ? u1 : u1 - 1, 0, v2 + 1, u2, 0, v2 + 1, slab(f.p.slab, SlabType.TOP));
+        f.set(mid, 0, v2 + 2, stairs(f.p.stairs, Direction.NORTH));
+        // Inside: tatami-like carpets, low tables, futons (beds), a scroll shelf.
+        rug(f, u1 + 1, v1 + 1, u2 - 1, v2 - 1, 1, Blocks.LIME_CARPET);
+        f.set(mid, 1, (v1 + v2) / 2, Blocks.SPRUCE_TRAPDOOR.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.TrapDoorBlock.HALF, Half.TOP));
+        bed(f, u1 + 1, v1 + 2, 1);
+        bed(f, u2 - 1, v1 + 2, 1);
+        f.set(mid, 1, v1 + 1, Blocks.BOOKSHELF);
+        f.set(mid - 1, 1, v1 + 1, f.pick(FLOWERS));
+        f.set(mid, 3, (v1 + v2) / 2, HANGING_LANTERN);
+        // The roof: wide eaves.
+        pitchedRoofOf(f, u1 - 1, v1 - 1, u2 + 1, v2 + 2, 4, wall, cw(f).roofStairs(), cw(f).roofSlab());
+        f.set(u1 - 1, 3, v2 + 2, HANGING_LANTERN);
+        f.set(u2 + 1, 3, v2 + 2, HANGING_LANTERN);
+        if (garden && f.d - v2 > 5) {
+            // A little pond garden in front.
+            int gv = v2 + 4;
+            for (int u = mid - 3; u <= mid + 3; u++) {
+                if (Math.abs(u - mid) > 0) {
+                    f.set(u, -1, gv, Blocks.WATER);
+                    f.set(u, -2, gv, Blocks.CLAY);
+                }
+            }
+            stoneLantern(f, mid - 5, gv);
+            stoneLantern(f, mid + 5, gv);
+        }
+    }
+
+    // ================================================================ shops and food
+
+    /**
+     * A shop: an open front with a counter, cloth curtains (noren) over it and an awning; inside,
+     * the wares (weapons, scrolls or flowers); the family lives upstairs.
+     */
+    static void shop(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 3;
+        int kind = f.lot.style() % 3; // 0 weapons, 1 scrolls, 2 flowers
+        Block wall = cw(f).wall();
+        int floors = Math.max(2, f.lot.floors());
+        shell(f, u1, v1, u2, v2, floors, wall);
+        // The open shop front and its counter.
+        f.fill(u1 + 1, 0, v2, u2 - 1, 1, v2, Blocks.AIR);
+        f.fill(u1 + 1, 0, v2 - 1, u2 - 2, 0, v2 - 1, slab(f.p.slab, SlabType.TOP));
+        Block cloth = kind == 0 ? Blocks.BLACK_WALL_BANNER : kind == 1 ? Blocks.BLUE_WALL_BANNER : Blocks.PINK_WALL_BANNER;
+        noren(f, u1 + 1, u2 - 1, v2, cloth);
+        awning(f, u1, u2, v2 + 1, 3, kind == 2 ? Blocks.PINK_WOOL : f.p.awningA, f.p.awningB);
+        // The wares.
+        for (int u = u1 + 1; u <= u2 - 1; u++) {
+            Block shelf = switch (kind) {
+                case 0 -> u % 3 == 0 ? Blocks.ANVIL : u % 3 == 1 ? Blocks.GRINDSTONE : Blocks.SMITHING_TABLE;
+                case 1 -> Blocks.BOOKSHELF;
+                default -> f.pick(FLOWERS);
+            };
+            f.set(u, 0, v1 + 1, shelf);
+            if (kind == 1) {
+                f.set(u, 1, v1 + 1, Blocks.BOOKSHELF);
+            } else if (kind == 2) {
+                f.set(u, 0, v1 + 2, u % 2 == 0 ? Blocks.FLOWERING_AZALEA : Blocks.AZALEA);
+            }
+        }
+        if (kind == 1) {
+            f.set((u1 + u2) / 2, 0, v1 + 3, Blocks.LECTERN);
+        }
+        f.set((u1 + u2) / 2, 2, (v1 + v2) / 2, HANGING_LANTERN);
+        // Upstairs: home.
+        ladder(f, u2 - 1, v1 + 1, 0, floors * STOREY - 1, floors);
+        bed(f, u1 + 1, v1 + 2, STOREY);
+        f.set(u1 + 2, STOREY, v2 - 1, f.pick(FLOWERS));
+        f.set(u1 + 1, STOREY, v2 - 1, Blocks.CHEST);
+        facade(f, u1, u2, v2, floors, 2);
+        signboard(f, u2, v2, kind == 0 ? Blocks.BLACK_CONCRETE : kind == 1 ? Blocks.BLUE_CONCRETE : Blocks.PINK_CONCRETE);
+        roof(f, u1, v1, u2, v2, floors, wall);
+    }
+
+    /** A restaurant or teahouse: tables and stools, a kitchen at the back, curtains and lanterns at the door. */
+    static void restaurant(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 3;
+        boolean ramen = f.lot.style() % 2 == 0;
+        Block wall = cw(f).wall();
+        int floors = Math.max(2, f.lot.floors());
+        shell(f, u1, v1, u2, v2, floors, wall);
+        int mid = (u1 + u2) / 2;
+        frontDoor(f, mid, v2, f.d - 1);
+        for (int u = u1 + 1; u < u2; u++) {
+            if (Math.abs(u - mid) > 1) {
+                f.set(u, 1, v2, Blocks.GLASS_PANE);
+            }
+        }
+        noren(f, mid - 1, mid + 1, v2, ramen ? Blocks.RED_WALL_BANNER : Blocks.LIGHT_BLUE_WALL_BANNER);
+        // Paper lanterns either side of the door, under a little roof.
+        facade(f, u1, u2, v2, floors, 1);
+        paperLantern(f, mid - 2, 2, v2 + 1, ramen ? Blocks.SHROOMLIGHT : Blocks.OCHRE_FROGLIGHT);
+        paperLantern(f, mid + 2, 2, v2 + 1, ramen ? Blocks.SHROOMLIGHT : Blocks.OCHRE_FROGLIGHT);
+        signboard(f, u1, v2, ramen ? Blocks.RED_CONCRETE : Blocks.WHITE_CONCRETE);
+        // The kitchen counter.
+        f.set(u1 + 1, 0, v1 + 1, Blocks.SMOKER.defaultBlockState().setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH));
+        f.set(u1 + 2, 0, v1 + 1, Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+        f.set(u1 + 3, 0, v1 + 1, Blocks.BARREL);
+        f.fill(u1 + 1, 0, v1 + 2, u2 - 1, 0, v1 + 2, slab(f.p.slab, SlabType.TOP));
+        // Tables with stools.
+        for (int u = u1 + 2; u <= u2 - 2; u += 3) {
+            table(f, u, v2 - 2, 0);
+        }
+        f.set(mid, 2, (v1 + v2) / 2 + 1, HANGING_LANTERN);
+        ladder(f, u2 - 1, v1 + 1, 0, floors * STOREY - 1, floors);
+        bed(f, u1 + 1, v1 + 2, STOREY);
+        roof(f, u1, v1, u2, v2, floors, wall);
+    }
+
+    /**
+     * A food stall: a counter facing the street, stools, a striped awning, a smoker and barrels
+     * behind the counter, and a lantern. Drawn on the back {@code depth} rows from {@code v0}.
+     */
+    static void stall(LotFrame f, int v0, int vFront) {
+        int u1 = 1, u2 = Math.max(4, f.w - 2);
+        int front = Math.min(f.d - 2, Math.max(v0 + 3, vFront));
+        int back = front - 2;
+        f.fill(u1, -1, back, u2, -1, front, f.p.planks);
+        for (int u = u1; u <= u2; u++) {
+            boolean post = u == u1 || u == u2;
+            f.set(u, 0, front, post ? f.p.log.defaultBlockState() : f.p.planks.defaultBlockState());
+            if (post) {
+                f.fill(u, 1, front, u, 2, front, f.p.fence);
+                f.fill(u, 0, back, u, 2, back, f.p.fence);
+            }
+            f.set(u, 3, front + 1, (u & 1) == 0 ? f.p.awningA : f.p.awningB);
+            f.set(u, 3, front, (u & 1) == 0 ? f.p.awningA : f.p.awningB);
+            f.set(u, 3, back + 1, (u & 1) == 0 ? f.p.awningA : f.p.awningB);
+            f.set(u, 3, back, (u & 1) == 0 ? f.p.awningA : f.p.awningB);
+        }
+        int mid = (u1 + u2) / 2;
+        f.set(mid - 1, 0, back, Blocks.BARREL);
+        f.set(mid, 0, back, Blocks.SMOKER.defaultBlockState().setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH));
+        f.set(mid + 1, 0, back, Blocks.BARREL);
+        for (int u = u1 + 1; u <= u2 - 1; u++) {
+            if (front + 1 < f.d) {
+                f.set(u, 0, front + 1, stairs(f.p.stairs, Direction.SOUTH));
+            }
+        }
+        f.set(mid, 2, back + 1, HANGING_LANTERN);
+    }
+
+    /** The ramen shop: a long counter with stools, white curtains, a big kitchen and a tiled roof. */
+    static void ramenShop(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 3;
+        f.fill(u1, -1, v1, u2, -1, v2, f.p.planks);
+        f.walls(u1, 0, v1, u2, 2, v2, f.p.planks);
+        for (int u : new int[] {u1, u2}) {
+            for (int v : new int[] {v1, v2}) {
+                f.fill(u, 0, v, u, 3, v, f.p.log);
+            }
+        }
+        f.fill(u1 + 1, 0, v2, u2 - 1, 2, v2, Blocks.AIR);
+        f.fill(u1 + 1, 0, v2 - 1, u2 - 1, 0, v2 - 1, slab(Blocks.SMOOTH_STONE_SLAB, SlabType.TOP));
+        f.fill(u1 + 1, 3, v2, u2 - 1, 3, v2, f.p.log.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.X));
+        noren(f, u1 + 1, u2 - 1, v2, Blocks.WHITE_WALL_BANNER);
+        for (int u = u1 + 1; u <= u2 - 1; u++) {
+            f.set(u, 0, v2 + 1, stairs(f.p.stairs, Direction.SOUTH));
+        }
+        // The kitchen: two stoves, a stock pot (cauldron), barrels of noodles.
+        f.set(u1 + 1, 0, v1 + 1, Blocks.SMOKER.defaultBlockState().setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH));
+        f.set(u1 + 2, 0, v1 + 1, Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+        f.set(u1 + 3, 0, v1 + 1, Blocks.SMOKER.defaultBlockState().setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH));
+        f.set(u2 - 1, 0, v1 + 1, Blocks.BARREL);
+        f.set(u2 - 1, 1, v1 + 1, Blocks.BARREL);
+        f.set(u2 - 2, 0, v1 + 1, Blocks.CRAFTING_TABLE);
+        f.set((u1 + u2) / 2, 2, (v1 + v2) / 2, HANGING_LANTERN);
+        pitchedRoofOf(f, u1 - 1, v1 - 1, u2 + 1, v2 + 1, 4, f.p.planks, cw(f).roofStairs(), cw(f).roofSlab());
+        f.set((u1 + u2) / 2, 4, v2 + 2, Blocks.RED_WALL_BANNER.defaultBlockState().setValue(WallBannerBlock.FACING, Direction.SOUTH));
+    }
+
+    /** The inn: a long two-storey house with a veranda, many beds upstairs and a dining room below. */
+    static void inn(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 4;
+        Block wall = cw(f).wall();
+        shell(f, u1, v1, u2, v2, 2, wall);
+        int mid = (u1 + u2) / 2;
+        frontDoor(f, mid, v2, f.d - 1);
+        noren(f, mid - 1, mid + 1, v2, Blocks.BLUE_WALL_BANNER);
+        f.fill(u1, 0, v2 + 1, u2, 0, v2 + 1, slab(f.p.slab, SlabType.BOTTOM));
+        for (int u = u1; u <= u2; u += 4) {
+            f.fill(u, 0, v2 + 2, u, 2, v2 + 2, f.p.fence);
+        }
+        f.fill(u1, 3, v2 + 1, u2, 3, v2 + 2, slab(f.p.slab, SlabType.BOTTOM));
+        for (int u = u1 + 2; u <= u2 - 2; u += 3) {
+            table(f, u, (v1 + v2) / 2 + 1, 0);
+            if (u + 1 < u2) {
+                bed(f, u, v1 + 2, STOREY);
+            }
+            f.set(u, 1, v1, Blocks.GLASS_PANE);
+            f.set(u, STOREY + 1, v1, Blocks.GLASS_PANE);
+            f.set(u, STOREY + 1, v2, Blocks.GLASS_PANE);
+        }
+        f.set(u1 + 1, 0, v1 + 1, Blocks.SMOKER.defaultBlockState().setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH));
+        f.set(u1 + 2, 0, v1 + 1, Blocks.BARREL);
+        ladder(f, u2 - 1, v1 + 1, 0, 2 * STOREY - 1, 2);
+        roof(f, u1, v1, u2, v2, 2, wall);
+    }
+
+    static void warehouse(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 3;
+        f.fill(u1, -1, v1, u2, -1, v2, f.p.planks);
+        f.walls(u1, 0, v1, u2, 2, v2, f.p.planks);
+        for (int u : new int[] {u1, u2}) {
+            for (int v : new int[] {v1, v2}) {
+                f.fill(u, 0, v, u, 2, v, f.p.log);
+            }
+        }
+        f.fill(u1 + 1, 0, v1 + 1, u2 - 1, 2, v2 - 1, Blocks.AIR);
+        int mid = (u1 + u2) / 2;
+        f.fill(mid - 1, 0, v2, mid + 1, 2, v2, Blocks.AIR);
+        for (int u = u1 + 1; u <= u2 - 1; u++) {
+            for (int v = v1 + 1; v <= v1 + 2; v++) {
+                int stack = 1 + f.rnd.nextInt(3);
+                Block crate = f.rnd.nextInt(4) == 0 ? Blocks.HAY_BLOCK : f.rnd.nextInt(3) == 0 ? Blocks.CHEST : Blocks.BARREL;
+                if (crate == Blocks.CHEST) {
+                    f.set(u, 0, v, Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+                } else {
+                    f.fill(u, 0, v, u, stack - 1, v, crate);
+                }
+            }
+        }
+        f.set(mid, 2, (v1 + v2) / 2, HANGING_LANTERN);
+        roof(f, u1, v1, u2, v2, 1, f.p.planks);
+    }
+
+    // ================================================================ green spaces
+
+    /** A walled garden: a hedge, flower beds, a small tree, a stone lantern and a bench. */
+    static void garden(LotFrame f) {
+        int u1 = 0, u2 = f.w - 1, v1 = 0, v2 = f.d - 1;
+        BlockState hedge = leaves(f.p.tree(2)[1]); // a green hedge (blossom is for the trees)
+        int gate = (u1 + u2) / 2;
+        for (int u = u1; u <= u2; u++) {
+            for (int v = v1; v <= v2; v++) {
+                boolean edge = u == u1 || u == u2 || v == v1 || v == v2;
+                if (edge && !(v == v2 && Math.abs(u - gate) <= 1)) {
+                    f.set(u, 0, v, hedge);
+                } else if (!edge && (u + v) % 3 == 0 && f.rnd.nextInt(3) == 0) {
+                    f.set(u, 0, v, f.rnd.nextBoolean() ? Blocks.POPPY : Blocks.OXEYE_DAISY);
+                }
+            }
+        }
+        f.fill(gate, -1, v1 + 1, gate, -1, v2, Blocks.GRAVEL);
+        tree(f, u1 + 2, v1 + 2, 4 + f.rnd.nextInt(2), f.rnd.nextInt(4));
+        stoneLantern(f, u2 - 2, v2 - 2);
+        f.set(u2 - 2, 0, v1 + 2, stairs(f.p.stairs, Direction.SOUTH));
+        f.set(u2 - 3, 0, v1 + 2, stairs(f.p.stairs, Direction.SOUTH));
+        if (f.w > 9 && f.d > 9) {
+            for (int u = u1 + 2; u <= u1 + 4; u++) {
+                for (int v = v2 - 4; v <= v2 - 2; v++) {
+                    f.set(u, -1, v, Blocks.WATER);
+                    f.set(u, -2, v, Blocks.CLAY);
+                }
+            }
+            f.set(u1 + 3, 0, v2 - 3, Blocks.LILY_PAD);
+        }
+    }
+
+    /** A park: trees, a gravel path across, benches, flowers, sometimes a pond. */
+    static void park(LotFrame f) {
+        int mu = f.w / 2;
+        int mv = f.d / 2;
+        f.fill(mu, -1, 0, mu, -1, f.d - 1, Blocks.GRAVEL);
+        f.fill(0, -1, mv, f.w - 1, -1, mv, Blocks.GRAVEL);
+        int trees = Math.max(1, f.w * f.d / 40);
+        for (int i = 0; i < trees; i++) {
+            int u = 1 + f.rnd.nextInt(Math.max(1, f.w - 2));
+            int v = 1 + f.rnd.nextInt(Math.max(1, f.d - 2));
+            if (Math.abs(u - mu) > 1 && Math.abs(v - mv) > 1) {
+                tree(f, u, v, 4 + f.rnd.nextInt(3), f.rnd.nextInt(4));
+            }
+        }
+        f.set(mu + 1, 0, mv + 2, stairs(f.p.stairs, Direction.WEST));
+        f.set(mu - 1, 0, mv - 2, stairs(f.p.stairs, Direction.EAST));
+        f.set(mu + 2, 0, mv + 1, Blocks.LANTERN);
+        f.set(mu + 2, -1, mv + 1, Blocks.STONE_BRICKS);
+        for (int i = 0; i < 6; i++) {
+            int u = f.rnd.nextInt(f.w);
+            int v = f.rnd.nextInt(f.d);
+            Block flower = f.rnd.nextBoolean() ? Blocks.CORNFLOWER : Blocks.ALLIUM; // (drawn first: a look into the next chunk mustn't change the rolls)
+            if (Math.abs(u - mu) > 1 && Math.abs(v - mv) > 1 && f.get(u, 0, v).isAir()) {
+                f.set(u, 0, v, flower);
+            }
+        }
+    }
+
+    // ================================================================ small buildings
+
+    /** A gate booth: a counter with two seats under a little roof (the gate guards' desk). */
+    static void guardPost(LotFrame f) {
+        int u1 = 1, u2 = f.w - 2, v1 = 1, v2 = f.d - 2;
+        f.fill(u1, -1, v1, u2, -1, v2, f.p.planks);
+        for (int u : new int[] {u1, u2}) {
+            for (int v : new int[] {v1, v2}) {
+                f.fill(u, 0, v, u, 3, v, f.p.log);
+            }
+        }
+        f.fill(u1 + 1, 0, v2, u2 - 1, 0, v2, f.p.planks);
+        f.fill(u1 + 1, 1, v2, u2 - 1, 1, v2, slab(f.p.slab, SlabType.BOTTOM));
+        f.fill(u1 + 1, 0, v1, u2 - 1, 2, v1, f.p.planks);
+        f.set(u1 + 1, 0, v2 - 1, stairs(f.p.stairs, Direction.NORTH));
+        f.set(u2 - 1, 0, v2 - 1, stairs(f.p.stairs, Direction.NORTH));
+        f.set((u1 + u2) / 2, 1, v2, Blocks.LANTERN);
+        f.fill(u1 - 1, 4, v1 - 1, u2 + 1, 4, v2 + 1, slab(f.p.slab, SlabType.BOTTOM));
+        f.set((u1 + u2) / 2, 3, (v1 + v2) / 2, HANGING_LANTERN);
+    }
+
+    /** A wooden lookout tower on four legs, with a ladder, a railed platform and a roof. */
+    static void watchtower(LotFrame f, int cu, int cv) {
+        int top = 9;
+        for (int du : new int[] {-2, 2}) {
+            for (int dv : new int[] {-2, 2}) {
+                f.fill(cu + du, 0, cv + dv, cu + du, top + 2, cv + dv, f.p.log);
+            }
+        }
+        f.fill(cu, 0, cv, cu, top - 1, cv, f.p.log);
+        f.fill(cu - 2, top, cv - 2, cu + 2, top, cv + 2, f.p.planks);
+        for (int du = -2; du <= 2; du++) {
+            for (int dv = -2; dv <= 2; dv++) {
+                if ((Math.abs(du) == 2 || Math.abs(dv) == 2) && !(Math.abs(du) == 2 && Math.abs(dv) == 2)) {
+                    f.set(cu + du, top + 1, cv + dv, f.p.fence);
+                }
+            }
+        }
+        f.fill(cu - 3, top + 3, cv - 3, cu + 3, top + 3, cv + 3, f.p.slab);
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.SOUTH);
+        for (int y = 0; y <= top; y++) {
+            f.set(cu, y, cv + 1, ladder);
+        }
+    }
+
+    // ================================================================ parts
+
+    /** Floors, outer walls with a timber frame, and the floor/ceiling slabs for {@code floors} storeys. */
+    static void shell(LotFrame f, int u1, int v1, int u2, int v2, int floors, Block wall) {
+        int h = floors * STOREY;
+        f.fill(u1, -1, v1, u2, -1, v2, f.p.planks);
+        Materials.Colourway cw = cw(f);
+        f.walls(u1, 0, v1, u2, h - 1, v2, wall);
+        f.walls(u1, 0, v1, u2, 0, v2, cw.accent()); // a timber skirting
+        f.fill(u1 + 1, 0, v1 + 1, u2 - 1, h - 2, v2 - 1, Blocks.AIR);
+        for (int u : new int[] {u1, u2}) {
+            for (int v : new int[] {v1, v2}) {
+                f.fill(u, 0, v, u, h - 1, v, cw.trim());
+            }
+        }
+        for (int k = 1; k < floors; k++) {
+            int y = k * STOREY - 1;
+            f.fill(u1 + 1, y, v1 + 1, u2 - 1, y, v2 - 1, f.p.planks);
+            f.walls(u1, y, v1, u2, y, v2, cw.accent()); // a timber band between floors
+        }
+        // Windows on every floor: sides and back, every other block (clear glass, paper screens, or lit).
+        for (int k = 0; k < floors; k++) {
+            int y = k * STOREY + 1;
+            for (int u = u1 + 2; u <= u2 - 2; u += 2) {
+                f.set(u, y, v1, window(f, u, y, v1));
+                if (k > 0) {
+                    f.set(u, y, v2, window(f, u, y, v2));
+                }
+            }
+            for (int v = v1 + 2; v <= v2 - 2; v += 2) {
+                f.set(u1, y, v, window(f, u1, y, v));
+                f.set(u2, y, v, window(f, u2, y, v));
+            }
+            f.set((u1 + u2) / 2, k * STOREY + 2, (v1 + v2) / 2, HANGING_LANTERN);
+        }
+    }
+
+    /** The lot's roof, pitched or flat by the lot's style (the same rule as {@link VillagePlan.Lot#roofTop()}). */
+    static void roof(LotFrame f, int u1, int v1, int u2, int v2, int floors, Block wall) {
+        int top = floors * STOREY;
+        if (f.lot.style() % 3 == 0) {
+            pitchedRoof(f, u1, v1, u2, v2, top - 1, wall);
+        } else {
+            flatRoof(f, u1, v1, u2, v2, top - 1);
+            rooftop(f, u1, v1, u2, v2, top);
+        }
+    }
+
+    /** A flat roof deck in the colourway's roof colour, with a coloured tile lip round the edge. */
+    static void flatRoof(LotFrame f, int u1, int v1, int u2, int v2, int y) {
+        Materials.Colourway cw = cw(f);
+        BlockState lip = slab(f.p == VillagePalette.SAND ? f.p.slab : cw.roofSlab(), SlabType.BOTTOM);
+        f.fill(u1, y, v1, u2, y, v2, cw.roofFlat());
+        for (int u = u1; u <= u2; u++) {
+            f.set(u, y + 1, v1, lip);
+            f.set(u, y + 1, v2, lip);
+        }
+        for (int v = v1; v <= v2; v++) {
+            f.set(u1, y + 1, v, lip);
+            f.set(u2, y + 1, v, lip);
+        }
+    }
+
+    /** A tiled gable roof over (u1, v1)–(u2, v2), ridge running across the front, eaves overhanging by one. */
+    static void pitchedRoof(LotFrame f, int u1, int v1, int u2, int v2, int y, Block gable) {
+        if (f.p == VillagePalette.SAND) {
+            vault(f, u1, v1, u2, v2, y);
+            return;
+        }
+        f.fill(u1, y, v1, u2, y, v2, f.p.planks);
+        pitchedRoofOf(f, u1 - 1, v1 - 1, u2 + 1, v2 + 1, y + 1, gable, cw(f).roofStairs(), cw(f).roofSlab());
+    }
+
+    /** Stairs climbing from the front and back eaves to a ridge; the gable ends filled with {@code gable}. */
+    static void pitchedRoofOf(LotFrame f, int u1, int v1, int u2, int v2, int y, Block gable, Block stairsBlock, Block slabBlock) {
+        int depth = v2 - v1 + 1;
+        int layers = depth / 2;
+        for (int k = 0; k < layers; k++) {
+            int yy = y + k;
+            for (int u = u1; u <= u2; u++) {
+                f.set(u, yy, v2 - k, stairs(stairsBlock, Direction.NORTH));
+                f.set(u, yy, v1 + k, stairs(stairsBlock, Direction.SOUTH));
+            }
+            if (k > 0) {
+                f.fill(u1 + 1, yy - 1, v1 + k, u1 + 1, yy - 1, v2 - k, gable);
+                f.fill(u2 - 1, yy - 1, v1 + k, u2 - 1, yy - 1, v2 - k, gable);
+            }
+        }
+        if (depth % 2 == 1) {
+            int v = v1 + layers;
+            f.fill(u1, y + layers, v, u2, y + layers, v, slab(slabBlock, SlabType.BOTTOM));
+            f.fill(u1 + 1, y + layers - 1, v, u2 - 1, y + layers - 1, v, gable);
+        }
+    }
+
+    /** A desert roof: a low rounded vault of smooth sandstone over a flat deck. */
+    static void vault(LotFrame f, int u1, int v1, int u2, int v2, int y) {
+        f.fill(u1, y, v1, u2, y, v2, f.p.planks);
+        double half = (v2 - v1) / 2.0 + 0.5;
+        double mid = (v1 + v2) / 2.0;
+        for (int v = v1; v <= v2; v++) {
+            double off = Math.abs(v - mid);
+            int rise = (int) Math.round(Math.sqrt(Math.max(0, half * half - off * off)) * 0.6);
+            for (int u = u1; u <= u2; u++) {
+                f.fill(u, y + 1, v, u, y + rise, v, Blocks.SMOOTH_SANDSTONE);
+            }
+        }
+    }
+
+    static void dome(LotFrame f, int cu, int y, int cv, int r, Block block) {
+        for (int du = -r; du <= r; du++) {
+            for (int dv = -r; dv <= r; dv++) {
+                for (int dy = 0; dy <= r; dy++) {
+                    double dist = Math.sqrt(du * du + dv * dv + dy * dy * 1.6);
+                    if (dist <= r + 0.3 && dist > r - 1.2) {
+                        f.set(cu + du, y + dy, cv + dv, block);
+                    }
+                }
+            }
+        }
+    }
+
+    static void cone(LotFrame f, int cu, int y, int cv, int r, Block block) {
+        for (int k = 0; k <= r; k++) {
+            for (int du = -r; du <= r; du++) {
+                for (int dv = -r; dv <= r; dv++) {
+                    if (VillageBuilder.inDisk(du, dv, r - k) && !VillageBuilder.inDisk(du, dv, r - k - 2)) {
+                        f.set(cu + du, y + k, cv + dv, block);
+                    }
+                }
+            }
+        }
+    }
+
+    // ================================================================ façades and rooftops
+
+    /** The lot's paint job (walls, roof colours, timber, accent), picked by the planner so neighbours differ. */
+    static Materials.Colourway cw(LotFrame f) {
+        return f.p.colourway(f.lot.colour());
+    }
+
+    /**
+     * A window pane at (u, y, v): mostly clear glass, some white paper screens, a few warm and lit
+     * (the same choice wherever it's drawn from).
+     */
+    static Block window(LotFrame f, int u, int y, int v) {
+        long h = Materials.hash(f.x(u, v), y, f.z(u, v), f.lot.seed()) % 20;
+        return h < 12 ? Blocks.GLASS_PANE : h < 17 ? Blocks.WHITE_STAINED_GLASS_PANE : h < 19 ? Blocks.YELLOW_STAINED_GLASS_PANE
+                : Blocks.ORANGE_STAINED_GLASS_PANE;
+    }
+
+    /**
+     * Depth on a building's front (frame v = {@code v2}, from u1 to u2): a pent eave of roof tiles
+     * along the floor line from storey {@code firstPent} up, and on the upper floors window sills,
+     * open shutters either side of each window and now and then a flower pot on the sill.
+     */
+    static void facade(LotFrame f, int u1, int u2, int v2, int floors, int firstPent) {
+        Materials.Colourway cw = cw(f);
+        Block shutterBlock = shutter(f);
+        for (int k = firstPent; k < floors; k++) {
+            int y = k * STOREY - 1;
+            for (int u = u1; u <= u2; u++) {
+                if (f.get(u, y, v2 + 1).isAir() || f.get(u, y, v2 + 1).getBlock() instanceof SlabBlock) {
+                    f.set(u, y, v2 + 1, stairs(cw.roofStairs(), Direction.NORTH));
+                }
+            }
+        }
+        for (int k = 1; k < floors; k++) {
+            int y = k * STOREY + 1;
+            for (int u = u1 + 2; u <= u2 - 2; u += 2) {
+                if (!(f.get(u, y, v2).getBlock() instanceof net.minecraft.world.level.block.IronBarsBlock)) {
+                    continue; // not a window (a balcony door, a sign)
+                }
+                setIfAir(f, u, y - 1, v2 + 1, Blocks.SPRUCE_TRAPDOOR.defaultBlockState().setValue(TrapDoorBlock.HALF, Half.TOP));
+                for (int s = -1; s <= 1; s += 2) {
+                    setIfAir(f, u + s, y, v2 + 1, shutterBlock.defaultBlockState().setValue(TrapDoorBlock.FACING, Direction.SOUTH)
+                            .setValue(TrapDoorBlock.OPEN, true));
+                }
+                long h = Materials.hash(f.x(u, v2), y, f.z(u, v2), f.lot.seed());
+                if (h % 4 == 0) {
+                    // (By hash, not the lot's random: whether this runs can depend on a neighbouring chunk.)
+                    setIfAir(f, u, y, v2 + 1, FLOWERS.get((int) (h / 4 % FLOWERS.size())));
+                }
+            }
+        }
+    }
+
+    /** Shutters: dark wood on light walls, pale wood on dark ones. */
+    private static Block shutter(LotFrame f) {
+        Block wall = cw(f).wall();
+        return wall == Blocks.SPRUCE_PLANKS || wall == Blocks.STRIPPED_SPRUCE_LOG || wall == Blocks.STONE_BRICKS || wall == Blocks.PACKED_MUD
+                ? Blocks.BIRCH_TRAPDOOR : Blocks.SPRUCE_TRAPDOOR;
+    }
+
+    private static void setIfAir(LotFrame f, int u, int y, int v, BlockState state) {
+        if (u >= 0 && v >= 0 && u < f.w && v < f.d && f.get(u, y, v).isAir()) {
+            f.set(u, y, v, state);
+        }
+    }
+
+    private static void setIfAir(LotFrame f, int u, int y, int v, Block block) {
+        setIfAir(f, u, y, v, block.defaultBlockState());
+    }
+
+    /**
+     * What stands on a flat roof (stood on at {@code top}): a cluster of water tanks, a roof garden,
+     * washing on a line, or a bench and an aerial, chosen by the lot. Rooftop runners land among them.
+     */
+    static void rooftop(LotFrame f, int u1, int v1, int u2, int v2, int top) {
+        int kind = (int) ((f.lot.seed() >>> 7) & 3);
+        if (f.p == VillagePalette.SAND && kind == 0) {
+            kind = 1;
+        }
+        if (f.p == VillagePalette.CLOUD && kind != 1) {
+            // The Cloud village's roofs carry little domes.
+            int r = Math.max(1, Math.min(u2 - u1, v2 - v1) / 2 - 2);
+            dome(f, (u1 + u2) / 2, top - 1, (v1 + v2) / 2, r, cw(f).roofFlat());
+            return;
+        }
+        switch (kind) {
+            case 0 -> tankCluster(f, u2 - 2, top, v1 + 2, u2 - u1 >= 8 ? 2 : 1);
+            case 1 -> {
+                f.set(u1 + 1, top, v1 + 1, f.pick(FLOWERS));
+                f.set(u1 + 2, top, v1 + 1, f.pick(FLOWERS));
+                f.set(u1 + 1, top, v1 + 2, Blocks.COMPOSTER);
+                if (u2 - u1 >= 6) {
+                    f.set(u2 - 1, top, v1 + 1, Blocks.POTTED_BAMBOO);
+                    f.set(u2 - 1, top, v2 - 1, Blocks.FLOWERING_AZALEA);
+                }
+            }
+            case 2 -> laundryLine(f, u1 + 1, u2 - 1, (v1 + v2) / 2, top);
+            default -> {
+                f.set(u1 + 1, top, v2 - 1, stairs(f.p.stairs, Direction.NORTH));
+                f.set(u1 + 2, top, v2 - 1, stairs(f.p.stairs, Direction.NORTH));
+                f.fill(u2 - 1, top, v1 + 1, u2 - 1, top + 2, v1 + 1, Blocks.IRON_BARS);
+                f.set(u2 - 1, top + 3, v1 + 1, Blocks.LIGHTNING_ROD);
+            }
+        }
+    }
+
+    /** {@code n} water tanks side by side (1–3), of slightly different heights. */
+    static void tankCluster(LotFrame f, int u, int y, int v, int n) {
+        for (int i = 0; i < n; i++) {
+            int tu = u - i * 3;
+            waterTank(f, tu, y, v);
+            if (i == 1) {
+                f.set(tu, y + 3, v, f.p.tank);
+                f.set(tu, y + 4, v, Blocks.SMOOTH_STONE_SLAB);
+            }
+        }
+    }
+
+    /** A washing line across a roof (or a yard) at height {@code y} + 2, with the laundry out. */
+    static void laundryLine(LotFrame f, int u1, int u2, int v, int y) {
+        if (u2 - u1 < 3) {
+            return;
+        }
+        f.fill(u1, y, v, u1, y + 2, v, f.p.fence);
+        f.fill(u2, y, v, u2, y + 2, v, f.p.fence);
+        BlockState chain = Blocks.CHAIN.defaultBlockState().setValue(net.minecraft.world.level.block.ChainBlock.AXIS, Direction.Axis.X);
+        Block[] washing = {Blocks.WHITE_WALL_BANNER, Blocks.LIGHT_BLUE_WALL_BANNER, Blocks.PINK_WALL_BANNER, Blocks.WHITE_WALL_BANNER,
+                Blocks.YELLOW_WALL_BANNER};
+        for (int u = u1 + 1; u < u2; u++) {
+            f.set(u, y + 2, v, chain);
+            if (Materials.hash(f.x(u, v), y, f.z(u, v), f.lot.seed()) % 3 != 0) {
+                f.set(u, y + 1, v, washing[(int) (Materials.hash(f.x(u, v), y + 1, f.z(u, v), f.lot.seed()) % washing.length)]
+                        .defaultBlockState().setValue(WallBannerBlock.FACING, Direction.SOUTH));
+            }
+        }
+    }
+
+    /**
+     * A shop sign standing out from the front corner at (u, v2): a column of the shop's colour
+     * framed in dark wood, lit by a lantern under it, readable from down the street.
+     */
+    static void signboard(LotFrame f, int u, int v2, Block colour) {
+        if (v2 + 1 >= f.d) {
+            return;
+        }
+        f.set(u, 4, v2 + 1, Blocks.DARK_OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.TOP));
+        f.set(u, 5, v2 + 1, colour);
+        f.set(u, 6, v2 + 1, colour == Blocks.WHITE_CONCRETE ? Blocks.RED_CONCRETE : Blocks.WHITE_CONCRETE);
+        f.set(u, 7, v2 + 1, Blocks.DARK_OAK_SLAB);
+        f.set(u, 3, v2 + 1, HANGING_LANTERN);
+    }
+
+    /** A paper lantern (a glowing block) hanging on a short chain under a little tiled cap. */
+    static void paperLantern(LotFrame f, int u, int y, int v, Block light) {
+        f.set(u, y, v, light);
+        f.set(u, y + 1, v, Blocks.CHAIN);
+        if (f.get(u, y + 2, v).isAir()) {
+            f.set(u, y + 2, v, slab(cw(f).roofSlab(), SlabType.TOP));
+        }
+    }
+
+    /** A round rooftop water tank on short legs (the Hidden Leaf's rooftops are full of them). */
+    static void waterTank(LotFrame f, int u, int y, int v) {
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            f.set(u + side.getStepX(), y, v + side.getStepZ(), f.p.fence);
+            f.set(u + side.getStepX(), y + 1, v + side.getStepZ(), f.p.tank);
+            f.set(u + side.getStepX(), y + 2, v + side.getStepZ(), f.p.tank);
+        }
+        f.set(u, y, v, f.p.fence);
+        f.set(u, y + 1, v, f.p.tank);
+        f.set(u, y + 2, v, f.p.tank);
+        f.set(u, y + 3, v, Blocks.SMOOTH_STONE_SLAB);
+    }
+
+    /** A brick chimney with a lit campfire on top, so smoke rises from the house. */
+    static void chimney(LotFrame f, int u, int v, int top) {
+        Block brick = f.p == VillagePalette.SAND ? Blocks.SANDSTONE : f.p == VillagePalette.SNOW ? Blocks.STONE_BRICKS : Blocks.BRICKS;
+        f.fill(u, 0, v, u, top, v, brick);
+        f.set(u, top + 1, v, Blocks.CAMPFIRE);
+    }
+
+    static void frontDoor(LotFrame f, int u, int v, int street) {
+        door(f, u, 0, v, Direction.SOUTH);
+        f.set(u - 1, 2, v + 1, HANGING_LANTERN);
+        f.fill(u - 1, 3, v + 1, u + 1, 3, v + 1, slab(f.p.slab, SlabType.TOP));
+        for (int k = v + 1; k <= street; k++) {
+            f.set(u, -1, k, f.p.road);
+        }
+    }
+
+    /** A door in a wall at (u, y, v), opening towards {@code outward}. */
+    static void door(LotFrame f, int u, int y, int v, Direction outward) {
+        BlockState lower = f.p.door.defaultBlockState().setValue(DoorBlock.FACING, outward.getOpposite()).setValue(DoorBlock.HALF, DoubleBlockHalf.LOWER);
+        f.set(u, y, v, lower);
+        f.set(u, y + 1, v, lower.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER));
+    }
+
+    /** Cloth shop curtains (noren) hanging from the lintel above the front opening. */
+    static void noren(LotFrame f, int u1, int u2, int v, Block banner) {
+        for (int u = u1; u <= u2; u++) {
+            f.set(u, 2, v, f.p.planks);
+            f.set(u, 2, v + 1, banner.defaultBlockState().setValue(WallBannerBlock.FACING, Direction.SOUTH));
+        }
+    }
+
+    /** A striped awning sticking out over the street at height {@code y}. */
+    static void awning(LotFrame f, int u1, int u2, int v, int y, Block a, Block b) {
+        for (int u = u1; u <= u2; u++) {
+            f.set(u, y, v, (u & 1) == 0 ? a : b);
+        }
+    }
+
+    /** A kitchen along the back wall: stove, barrel, a cauldron of water, a crafting table. */
+    static void kitchen(LotFrame f, int u1, int v, int u2, int y) {
+        Block[] row = {Blocks.SMOKER, Blocks.BARREL, Blocks.WATER_CAULDRON, Blocks.CRAFTING_TABLE};
+        for (int i = 0; i < row.length && u1 + i <= u2; i++) {
+            BlockState state = row[i].defaultBlockState();
+            if (row[i] == Blocks.SMOKER) {
+                state = state.setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, Direction.SOUTH);
+            } else if (row[i] == Blocks.WATER_CAULDRON) {
+                state = state.setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3);
+            }
+            f.set(u1 + i, y, v, state);
+        }
+    }
+
+    /** A little table (a fence post with a pressure plate) with a stool on each side. */
+    static void table(LotFrame f, int u, int v, int y) {
+        f.set(u, y, v, f.p.fence);
+        f.set(u, y + 1, v, Blocks.SPRUCE_PRESSURE_PLATE);
+        f.set(u - 1, y, v, stairs(f.p.stairs, Direction.WEST));
+        f.set(u + 1, y, v, stairs(f.p.stairs, Direction.EAST));
+    }
+
+    /** A bed with its head against the back wall: foot at (u, v), head at (u, v - 1). */
+    static void bed(LotFrame f, int u, int v, int y) {
+        Block bed = f.pick(BEDS);
+        BlockState foot = bed.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.FOOT);
+        f.set(u, y, v, foot);
+        f.set(u, y, v - 1, foot.setValue(BedBlock.PART, BedPart.HEAD));
+    }
+
+    static void rug(LotFrame f, int u1, int v1, int u2, int v2, int y) {
+        rug(f, u1, v1, u2, v2, y, f.pick(CARPETS));
+    }
+
+    static void rug(LotFrame f, int u1, int v1, int u2, int v2, int y, Block carpet) {
+        for (int u = u1; u <= u2; u++) {
+            for (int v = v1; v <= v2; v++) {
+                if (f.get(u, y, v).isAir()) {
+                    f.set(u, y, v, carpet);
+                }
+            }
+        }
+    }
+
+    /** A ladder up from {@code y1} to {@code y2}, cutting through the floors in between. */
+    static void ladder(LotFrame f, int u, int v, int y1, int y2, int floors) {
+        if (floors < 2) {
+            return;
+        }
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.SOUTH);
+        for (int y = y1; y < y2; y++) {
+            f.set(u, y, v, ladder);
+        }
+    }
+
+    /** Flower pots and a path in front of a house. */
+    static void frontYard(LotFrame f, int u1, int u2, int v2) {
+        for (int v = v2 + 1; v < f.d; v++) {
+            if (f.rnd.nextInt(3) == 0) {
+                f.set(u1, 0, v, f.pick(FLOWERS));
+            }
+            if (f.rnd.nextInt(3) == 0) {
+                f.set(u2, 0, v, f.pick(FLOWERS));
+            }
+        }
+    }
+
+    /** A stone lantern (tōrō): a stone post with a lantern and a little cap. */
+    static void stoneLantern(LotFrame f, int u, int v) {
+        f.set(u, 0, v, Blocks.STONE_BRICK_WALL);
+        f.set(u, 1, v, Blocks.LANTERN);
+        f.set(u, 2, v, Blocks.STONE_BRICK_SLAB);
+    }
+
+    /** A simple tree: a trunk and a round crown of (never-decaying) leaves. */
+    static void tree(LotFrame f, int u, int v, int height, int variant) {
+        Block[] kind = f.p.tree(variant);
+        BlockState leaves = leaves(kind[1]);
+        int crown = height >= 6 ? 3 : 2;
+        for (int du = -crown; du <= crown; du++) {
+            for (int dv = -crown; dv <= crown; dv++) {
+                for (int dy = -crown + 1; dy <= crown - (kind[1] == Blocks.SPRUCE_LEAVES ? 0 : 1); dy++) {
+                    int r2 = du * du + dv * dv + dy * dy * (kind[1] == Blocks.SPRUCE_LEAVES ? 0 : 1);
+                    int width = kind[1] == Blocks.SPRUCE_LEAVES ? Math.max(1, crown - (dy + crown) / 2) : crown;
+                    if (r2 <= width * width + 1 && f.get(u + du, height + dy, v + dv).isAir()) {
+                        f.set(u + du, height + dy, v + dv, leaves);
+                    }
+                }
+            }
+        }
+        f.fill(u, 0, v, u, height, v, kind[0]);
+    }
+
+    static BlockState leaves(Block block) {
+        BlockState state = block.defaultBlockState();
+        return state.hasProperty(LeavesBlock.PERSISTENT) ? state.setValue(LeavesBlock.PERSISTENT, true) : state;
+    }
+
+    static BlockState stairs(Block block, Direction facing) {
+        return block.defaultBlockState().setValue(StairBlock.FACING, facing);
+    }
+
+    static BlockState slab(Block block, SlabType type) {
+        BlockState state = block.defaultBlockState();
+        return state.hasProperty(SlabBlock.TYPE) ? state.setValue(SlabBlock.TYPE, type) : state;
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:kunai_backhand",
+  "timing": { "windup": 5, "active": 3, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 4, "posture": 14, "range": 2.5, "arc": 100, "knockback": 0.1, "lift": 0.7, "lunge": 0.2, "hitstun": 20, "hitstop": 4, "shake": 0.6 },
+  "next": { "light": "noirm:kunai/slash" }
+}

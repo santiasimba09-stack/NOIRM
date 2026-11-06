@@ -1,0 +1,17 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:training_dummy",
+      "count": 4
+    },
+    {
+      "item": "noirm:sealing_scroll",
+      "count": 2
+    },
+    {
+      "item": "noirm:ramen",
+      "count": 16
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "animation": "noirm:knee_strike",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 14,
+    "range": 2.0,
+    "arc": 90,
+    "knockback": 0,
+    "hitstun": 8,
+    "hitstop": 3,
+    "shake": 0.35,
+    "clinch": "hold"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "nature": "water",
+  "cast": "charge",
+  "behavior": "wave",
+  "rank": "A",
+  "chakra_cost": 60,
+  "cooldown": 500,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:suiton/water_dragon",
+    "mastery": 2
+  },
+  "params": {
+    "range": 20,
+    "radius": 6,
+    "speed": 0.7,
+    "damage": 9,
+    "knockback": 2.0,
+    "posture": 50,
+    "effect": "slowness:1",
+    "effect_ticks": 60
+  }
+}

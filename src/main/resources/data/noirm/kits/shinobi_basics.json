@@ -1,0 +1,32 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_mist"
+    },
+    {
+      "item": "noirm:mesh_shirt"
+    },
+    {
+      "item": "noirm:bandage_leggings"
+    },
+    {
+      "item": "noirm:jika_tabi"
+    },
+    {
+      "item": "noirm:training_shirt"
+    },
+    {
+      "item": "noirm:high_collar_jacket"
+    },
+    {
+      "item": "noirm:sarashi_wraps"
+    },
+    {
+      "item": "noirm:wrapped_sandals"
+    },
+    {
+      "item": "noirm:jika_tabi_ash"
+    }
+  ]
+}

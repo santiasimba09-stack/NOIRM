@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tonfa_hammer",
+  "timing": { "windup": 5, "active": 2, "recovery": 10, "cancel_after": 6 },
+  "hit": { "damage": 5.5, "posture": 26, "range": 2.4, "arc": 80, "knockback": 0.8, "lunge": 0.3, "hitstun": 14, "hitstop": 5, "shake": 0.7 },
+  "next": { "light": "noirm:tonfa/jab_l" }
+}

@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:katana/slash",
+    "heavy": "noirm:katana/iaido",
+    "launcher": "noirm:katana/rising",
+    "forward_light": "noirm:katana/dash_cut",
+    "forward_heavy": "noirm:katana/dash_cut",
+    "back_heavy": "noirm:katana/finisher"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

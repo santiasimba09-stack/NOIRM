@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:quick_jab",
+  "timing": { "windup": 3, "active": 2, "recovery": 6, "cancel_after": 2 },
+  "hit": { "damage": 3, "posture": 8, "range": 2.6, "arc": 90, "knockback": 0.15, "lunge": 0.25, "hitstun": 6, "hitstop": 2, "shake": 0.25 },
+  "next": { "light": "noirm:basic/hook", "heavy": "noirm:basic/heavy_kick" }
+}

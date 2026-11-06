@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "noirm:ryo_pouch",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{Ryo:200}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

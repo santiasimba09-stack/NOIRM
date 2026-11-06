@@ -1,0 +1,16 @@
+{
+  "nature": "boil",
+  "behavior": "cloud",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 360,
+  "params": {
+    "range": 6,
+    "radius": 4,
+    "duration": 160,
+    "damage": 1.5,
+    "effect": "weakness:1",
+    "effect_ticks": 40
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:pivot_palm",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 7,
+    "cancel_after": 3
+  },
+  "hit": {
+    "range": 2.6,
+    "arc": 120,
+    "pierce": 0.6,
+    "damage": 2.5,
+    "posture": 15,
+    "knockback": 0.3,
+    "lunge": 0.15,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.3,
+    "chakra": 7
+  },
+  "next": {
+    "light": "noirm:gentle_fist/palm_2",
+    "heavy": "noirm:gentle_fist/double_palm"
+  }
+}

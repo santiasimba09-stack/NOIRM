@@ -1,0 +1,6 @@
+{
+  "cast": "charge", "behavior": "rasengan", "rank": "A",
+  "chakra_cost": 35, "cooldown": 200, "min_charge": 12, "max_charge": 40,
+  "unlock": { "stat": "reserves", "value": 20 },
+  "params": { "damage": 14, "range": 4, "radius": 2, "knockback": 2.2 }
+}

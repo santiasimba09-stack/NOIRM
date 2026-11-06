@@ -1,0 +1,19 @@
+{
+  "nature": "wind",
+  "behavior": "projectile",
+  "rank": "C",
+  "chakra_cost": 20,
+  "cooldown": 90,
+  "unlock": {
+    "after": "noirm:futon/air_palm",
+    "mastery": 2
+  },
+  "params": {
+    "count": 3,
+    "spread": 10,
+    "speed": 2.2,
+    "damage": 4,
+    "knockback": 0.6,
+    "posture": 15
+  }
+}

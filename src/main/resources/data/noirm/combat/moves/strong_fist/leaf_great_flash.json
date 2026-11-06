@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:leaf_great_flash",
+  "timing": {
+    "windup": 8,
+    "active": 3,
+    "recovery": 13,
+    "cancel_after": 8
+  },
+  "hit": {
+    "damage": 8,
+    "posture": 36,
+    "range": 2.8,
+    "arc": 80,
+    "knockback": 0.3,
+    "lunge": 0.4,
+    "hitstun": 20,
+    "hitstop": 6,
+    "shake": 1.0,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:strong_fist/jab"
+  }
+}

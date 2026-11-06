@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:throw",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 12,
+    "cancel_after": 8
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 20,
+    "range": 2.2,
+    "arc": 120,
+    "knockback": 1.4,
+    "lift": 0.35,
+    "knockdown": true,
+    "hitstun": 10,
+    "hitstop": 5,
+    "shake": 0.8,
+    "clinch": "release"
+  }
+}

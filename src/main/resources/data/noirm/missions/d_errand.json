@@ -1,0 +1,9 @@
+{
+  "type": "deliver",
+  "rank": "D",
+  "reward": 80,
+  "points": 10,
+  "time_limit": 360,
+  "min_distance": 80,
+  "max_distance": 130
+}

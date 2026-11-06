@@ -1,0 +1,21 @@
+{
+  "nature": "earth",
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 35,
+  "cooldown": 240,
+  "unlock": {
+    "after": "noirm:doton/earth_wall",
+    "mastery": 2
+  },
+  "params": {
+    "damage": 11,
+    "speed": 0.8,
+    "radius": 2.5,
+    "knockback": 1.4,
+    "posture": 45,
+    "effect": "slowness:1",
+    "effect_ticks": 60,
+    "homing": 0.06
+  }
+}

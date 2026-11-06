@@ -1,0 +1,5 @@
+{
+  "timing": { "windup": 12, "active": 4, "recovery": 14, "cancel_after": 10 },
+  "hit": { "damage": 3, "posture": 25, "range": 4.5, "arc": 160, "knockback": 1.4, "lunge": 0.3, "hitstun": 12, "hitstop": 6, "shake": 1.0 },
+  "next": { "light": "noirm:beast/claw_back", "heavy": "noirm:beast/slam" }
+}

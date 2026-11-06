@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.noirm.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockStateBaseMixin"
+  ],
+  "client": [
+    "AbstractClientPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

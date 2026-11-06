@@ -1,0 +1,21 @@
+{
+  "nature": "scorch",
+  "behavior": "heat_orbs",
+  "rank": "D",
+  "starter": true,
+  "chakra_cost": 12,
+  "cooldown": 50,
+  "params": {
+    "count": 1,
+    "speed": 0.45,
+    "range": 14,
+    "damage": 5,
+    "radius": 0.6,
+    "duration": 60,
+    "homing": 0.12,
+    "posture": 10,
+    "knockback": 0.3,
+    "effect": "hunger:1,weakness:0",
+    "effect_ticks": 80
+  }
+}

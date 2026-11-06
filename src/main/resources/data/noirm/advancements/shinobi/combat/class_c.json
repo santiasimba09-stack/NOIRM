@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:stone_sword"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.combat.class_c.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.combat.class_c.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/first_defeat",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:defeat",
+      "conditions": {
+        "event": "defeat",
+        "min": 1
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "nature": "explosion",
+  "behavior": "projectile",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 18,
+  "cooldown": 110,
+  "params": {
+    "count": 3,
+    "spread": 30,
+    "speed": 0.7,
+    "homing": 0.18,
+    "damage": 4,
+    "radius": 1.6,
+    "knockback": 0.5,
+    "posture": 12
+  }
+}

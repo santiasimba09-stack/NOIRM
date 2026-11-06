@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:tonfa_uppercut",
+  "timing": { "windup": 4, "active": 2, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 3.5, "posture": 14, "range": 2.3, "arc": 80, "knockback": 0.1, "lift": 0.75, "hitstun": 18, "hitstop": 3, "shake": 0.5 },
+  "next": { "light": "noirm:tonfa/jab_l" }
+}

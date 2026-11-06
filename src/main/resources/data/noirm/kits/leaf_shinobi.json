@@ -1,0 +1,25 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_navy"
+    },
+    {
+      "item": "noirm:flak_vest"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:shinobi_sandals"
+    },
+    {
+      "item": "noirm:kunai",
+      "count": 16
+    },
+    {
+      "item": "noirm:shuriken",
+      "count": 16
+    }
+  ]
+}

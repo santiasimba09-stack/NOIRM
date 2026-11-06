@@ -1,0 +1,17 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_red"
+    },
+    {
+      "item": "noirm:senju_chestplate"
+    },
+    {
+      "item": "noirm:senju_leggings"
+    },
+    {
+      "item": "noirm:senju_boots"
+    }
+  ]
+}

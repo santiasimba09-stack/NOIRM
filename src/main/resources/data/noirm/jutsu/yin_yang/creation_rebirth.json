@@ -1,0 +1,6 @@
+{
+  "nature": "yin_yang", "cast": "channel", "behavior": "heal", "rank": "S",
+  "chakra_cost": 40, "cooldown": 600, "max_duration": 60,
+  "unlock": { "after": "noirm:yin_yang/truth_seeking_orb", "mastery": 2 },
+  "params": { "damage": 10, "range": 1 }
+}

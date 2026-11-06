@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "shadow_clone", "rank": "B",
+  "chakra_cost": 20, "cooldown": 300,
+  "unlock": { "stat": "reserves", "value": 15 },
+  "params": { "count": 2, "duration": 600 }
+}

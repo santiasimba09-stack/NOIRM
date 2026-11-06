@@ -1,0 +1,12 @@
+{
+  "openers": {
+    "light": "noirm:tanto/slash",
+    "heavy": "noirm:tanto/stab",
+    "launcher": "noirm:tanto/rising",
+    "forward_light": "noirm:tanto/shadow_step",
+    "forward_heavy": "noirm:tanto/shadow_step",
+    "back_light": "noirm:tanto/cut_2"
+  },
+  "npc_weight": 0,
+  "playable": false
+}

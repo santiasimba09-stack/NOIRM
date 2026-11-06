@@ -1,0 +1,158 @@
+{
+  "loader": "forge:separate_transforms",
+  "textures": {
+    "particle": "noirm:item/yari"
+  },
+  "base": {
+    "parent": "minecraft:item/handheld",
+    "loader": "forge:item_layers",
+    "textures": {
+      "layer0": "noirm:item/held/yari",
+      "layer1": "noirm:item/held/yari_glow"
+    },
+    "forge_data": {
+      "layers": {
+        "1": {
+          "block_light": 15,
+          "sky_light": 15
+        }
+      }
+    },
+    "display": {
+      "thirdperson_righthand": {
+        "rotation": [
+          0,
+          -90,
+          10
+        ],
+        "translation": [
+          0.0,
+          3.405,
+          0.605
+        ],
+        "scale": [
+          0.275,
+          2.2,
+          0.9775
+        ]
+      },
+      "thirdperson_lefthand": {
+        "rotation": [
+          0,
+          90,
+          -10
+        ],
+        "translation": [
+          -0.0,
+          3.405,
+          0.605
+        ],
+        "scale": [
+          0.275,
+          2.2,
+          0.9775
+        ]
+      },
+      "firstperson_righthand": {
+        "rotation": [
+          0.0,
+          -49.0,
+          32.0
+        ],
+        "translation": [
+          0.211,
+          1.375,
+          -1.407
+        ],
+        "scale": [
+          0.1513,
+          1.21,
+          0.782
+        ]
+      },
+      "firstperson_lefthand": {
+        "rotation": [
+          0.0,
+          49.0,
+          -32.0
+        ],
+        "translation": [
+          -0.211,
+          1.375,
+          -1.407
+        ],
+        "scale": [
+          0.1513,
+          1.21,
+          0.782
+        ]
+      }
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/yari",
+        "layer1": "noirm:item/yari_glow"
+      },
+      "forge_data": {
+        "layers": {
+          "1": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/yari",
+        "layer1": "noirm:item/yari_glow"
+      },
+      "forge_data": {
+        "layers": {
+          "1": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/yari",
+        "layer1": "noirm:item/yari_glow"
+      },
+      "forge_data": {
+        "layers": {
+          "1": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      }
+    },
+    "head": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/yari",
+        "layer1": "noirm:item/yari_glow"
+      },
+      "forge_data": {
+        "layers": {
+          "1": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      }
+    }
+  }
+}

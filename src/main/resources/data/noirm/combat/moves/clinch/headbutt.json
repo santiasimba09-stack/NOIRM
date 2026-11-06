@@ -1,0 +1,20 @@
+{
+  "animation": "noirm:headbutt",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 10,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 35,
+    "range": 2.0,
+    "arc": 90,
+    "knockback": 0.6,
+    "hitstun": 18,
+    "hitstop": 5,
+    "shake": 0.7,
+    "clinch": "release"
+  }
+}

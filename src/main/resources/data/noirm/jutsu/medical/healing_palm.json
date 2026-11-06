@@ -1,0 +1,12 @@
+{
+  "cast": "channel",
+  "behavior": "heal",
+  "rank": "B",
+  "chakra_cost": 12,
+  "cooldown": 80,
+  "max_duration": 120,
+  "params": {
+    "damage": 3,
+    "range": 4
+  }
+}

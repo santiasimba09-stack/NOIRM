@@ -1,0 +1,17 @@
+{
+  "nature": "ice",
+  "behavior": "bind",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 320,
+  "params": {
+    "range": 10,
+    "stun": 90,
+    "damage": 2,
+    "posture": 25,
+    "block": "minecraft:packed_ice",
+    "effect": "slowness:3",
+    "effect_ticks": 120
+  }
+}
