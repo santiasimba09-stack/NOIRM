@@ -235,7 +235,7 @@ public final class JutsuBehaviors {
                 com.noirm.world.Destruction.shatterFragile(ctx.level(), BlockPos.containing(at), 1);
             }
         }
-        sound(caster, SoundEvents.ENDER_DRAGON_FLAP, 1f, 1.5f);
+        sound(caster, com.noirm.sound.NoirmSounds.WIND_GUST.get(), 1f, 1.22f);
     }
 
     // ------------------------------------------------------------ wall: Earth Wall
@@ -266,7 +266,7 @@ public final class JutsuBehaviors {
         com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(earth.edge(), 1.0f, 40), Vec3.atCenterOf(center).add(0, 0.5, 0), 10, 1.2, 0.04);
         com.noirm.vfx.Vfx.radial(level, com.noirm.vfx.Vfx.shard(earth.mid(), 0.25f, 30), Vec3.atCenterOf(center).add(0, 1, 0), 14, 0.5);
         com.noirm.vfx.Vfx.quake(level, caster.position(), 0.4f, 12);
-        sound(caster, SoundEvents.GRAVEL_BREAK, 1.2f, 0.5f);
+        sound(caster, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), 1.2f, 0.71f);
     }
 
     // ------------------------------------------------------------ dash_strike: Chidori
@@ -324,7 +324,7 @@ public final class JutsuBehaviors {
             com.noirm.vfx.Vfx.discharge(level, contact, 3.5f, 4, com.noirm.vfx.Vfx.LIGHTNING);
             com.noirm.vfx.LightningVfx.groundForks(level, victim.position(), 3.5f, 5);
         }
-        sound(caster, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.7f, 1.6f);
+        sound(caster, com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), 0.7f, 1.26f);
     }
 
     // ------------------------------------------------------------ substitution / flicker
@@ -395,7 +395,7 @@ public final class JutsuBehaviors {
                 : new com.noirm.vfx.Vfx.Palette(0xFFE0E0, 0xE00010, 0x080000, 0x200000);
         com.noirm.vfx.Vfx.spiral(ctx.level(), target.position(), illusion, target.getBbWidth() + 0.4f, target.getBbHeight() + 0.4f, 3f);
         com.noirm.vfx.Vfx.burst(ctx.level(), com.noirm.vfx.Vfx.ring(illusion.mid(), 2.2f, 14), target.position().add(0, target.getBbHeight() * 0.8, 0), 1, 0, 0);
-        sound(target, SoundEvents.ILLUSIONER_CAST_SPELL, 1f, 0.8f);
+        sound(target, com.noirm.sound.NoirmSounds.GENJUTSU.get(), 1f, 0.89f);
         message(caster, Component.translatable("message.noirm.genjutsu.caught", target.getDisplayName()));
     }
 
@@ -433,7 +433,7 @@ public final class JutsuBehaviors {
                 }
             }
             if (tick % 8 == 1) {
-                sound(caster, nature(ctx) == Nature.FIRE ? SoundEvents.FIRECHARGE_USE : SoundEvents.GENERIC_SPLASH, 0.5f, 1f);
+                sound(caster, nature(ctx) == Nature.FIRE ? com.noirm.sound.NoirmSounds.FIRE_BURST.get() : com.noirm.sound.NoirmSounds.WATER_SPLASH.get(), 0.5f, 1.0f);
             }
         }
     }
@@ -444,24 +444,14 @@ public final class JutsuBehaviors {
         return ctx.def().nature().orElse(null);
     }
 
+    /** The sound of casting a jutsu of this nature: our own, picked in one place ({@link com.noirm.sound.NoirmSounds#forNature}). */
     static SoundEvent castSound(Nature nature) {
-        if (nature == null) {
-            return SoundEvents.SNOWBALL_THROW;
-        }
-        return switch (nature) {
-            case FIRE, SCORCH -> SoundEvents.BLAZE_SHOOT;
-            case WATER, BOIL -> SoundEvents.GENERIC_SPLASH;
-            case WIND -> SoundEvents.ENDER_DRAGON_FLAP;
-            case EARTH, MAGNET -> SoundEvents.GRAVEL_BREAK;
-            case LIGHTNING, STORM -> SoundEvents.LIGHTNING_BOLT_IMPACT;
-            case WOOD -> SoundEvents.WOOD_BREAK;
-            case ICE -> SoundEvents.GLASS_BREAK;
-            case LAVA -> SoundEvents.LAVA_POP;
-            case EXPLOSION -> SoundEvents.GENERIC_EXPLODE;
-            case DUST -> SoundEvents.BEACON_POWER_SELECT;
-            case YIN -> SoundEvents.ILLUSIONER_CAST_SPELL;
-            case YANG, YIN_YANG -> SoundEvents.AMETHYST_BLOCK_CHIME;
-        };
+        return com.noirm.sound.NoirmSounds.forNature(nature, com.noirm.sound.NoirmSounds.Kind.CAST);
+    }
+
+    /** The sound of a jutsu of this nature landing. */
+    static SoundEvent impactSound(Nature nature) {
+        return com.noirm.sound.NoirmSounds.forNature(nature, com.noirm.sound.NoirmSounds.Kind.IMPACT);
     }
 
     /** Living things within {@code range} and {@code halfAngle}° of where the caster looks (horizontally). */

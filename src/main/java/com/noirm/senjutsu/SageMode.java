@@ -128,7 +128,7 @@ public final class SageMode {
         Vfx.shockwave(level, player.position().add(0, 0.1, 0), PALETTE, 3.5f);
         Vfx.flash(level, player.position().add(0, 1.6, 0), PALETTE, 1.6f);
         level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.6f);
-        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.7f, 0.7f);
+        level.playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.YANG_SWELL.get(), SoundSource.PLAYERS, 0.7f, 0.84f);
         level.playSound(null, player.blockPosition(), SoundEvents.ROOTED_DIRT_BREAK, SoundSource.PLAYERS, 1f, 0.5f);
         Sage.notify(player, Component.translatable("message.noirm.sage.on").withStyle(ChatFormatting.GREEN));
         Sage.sync(player, data);

@@ -182,8 +182,11 @@ public final class JutsuCaster {
 
     /** Forgets a casting and drops the weaving slow. Every way a cast ends goes through here. */
     private static void end(LivingEntity entity) {
-        CASTING.remove(entity);
+        Casting casting = CASTING.remove(entity);
         stopWeaving(entity);
+        if (casting != null && !casting.firesAfterSeals) {
+            JutsuSounds.stopHeld(entity); // a charge or channel ends: its held hum stops with it
+        }
     }
 
     /** Starts the hand seals: the sequence's animation fitted to {@code animationTicks}, and the weaving slow. */
@@ -389,8 +392,14 @@ public final class JutsuCaster {
             casting.pauseTicks--; // a light hit holds the seals up
             return;
         }
-        if (casting.sealTicks > 0 && --casting.sealTicks == 0) {
-            stopWeaving(entity);
+        if (casting.sealTicks > 0) {
+            if ((casting.sealTotal - casting.sealTicks) % SEAL_PHASE_TICKS_PER_SEAL == 0) {
+                JutsuSounds.sealClap(entity); // one soft clap per seal
+            }
+            if (--casting.sealTicks == 0) {
+                stopWeaving(entity);
+                JutsuSounds.sealsComplete(entity);
+            }
         }
         if (casting.firesAfterSeals) {
             casting.ticks++;
@@ -415,6 +424,7 @@ public final class JutsuCaster {
             }
         }
         casting.ticks++;
+        JutsuSounds.held(entity, casting.def, casting.ticks);
         if (casting.def.cast() == CastType.CHARGE) {
             if (casting.def.behavior().equals("rasengan")) {
                 CanonTechniques.rasenganOrb(entity, Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge())));
@@ -432,8 +442,6 @@ public final class JutsuCaster {
                 KekkeiTechniquesA.charging(entity, casting.def, progress); // Storm, Lava and Explosion gather their own way
                 if (casting.def.behavior().equals("dash_strike")) {
                     // Chidori: "a thousand birds" chirping in the hand.
-                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                            net.minecraft.sounds.SoundEvents.PARROT_AMBIENT, net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 1.8f + progress * 0.3f);
                     com.noirm.vfx.Vfx.radial(entity.level(), com.noirm.vfx.Vfx.spark(0x9AD8FF, 0.15f, 5), hand, 3, 0.3);
                     // Arcs leap from the hand to the ground, longer as it fills.
                     for (int i = 0; i < 1 + Math.round(progress * 2); i++) {

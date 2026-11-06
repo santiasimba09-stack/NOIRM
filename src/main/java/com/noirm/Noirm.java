@@ -39,6 +39,7 @@ public final class Noirm {
         com.noirm.guide.GuideItems.register(modBus); // the Shinobi Handbook
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
+        com.noirm.sound.NoirmSounds.register(modBus); // our own synthesised sounds (tools/soundgen, docs/SOUND.md)
         com.noirm.world.Destruction.registerGameRules();
         com.noirm.movement.MovementFeel.registerGameRules();
         com.noirm.gore.Gore.registerGameRules();

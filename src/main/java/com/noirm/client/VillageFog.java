@@ -29,6 +29,7 @@ public final class VillageFog {
 
     public static void setVillage(int palette) {
         village = palette;
+        AmbienceLoops.setPlace(palette);
     }
 
     /** The mist for a village look: {near, far, r, g, b}, or null for none. */

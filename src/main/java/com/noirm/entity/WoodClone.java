@@ -60,7 +60,7 @@ public class WoodClone extends ShadowClone {
     protected void dispelEffects(ServerLevel level, Vec3 at) {
         WoodVfx.crumble(level, at, 1f);
         WoodVfx.emerge(level, position(), 1.2f);
-        level.playSound(null, getX(), getY(), getZ(), SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, getSoundSource(), 0.9f, 0.8f);
+        level.playSound(null, getX(), getY(), getZ(), com.noirm.sound.NoirmSounds.WOOD_BURST.get(), getSoundSource(), 0.9f, 0.89f);
         if (lastAttacker instanceof LivingEntity attacker && attacker.isAlive() && attacker.distanceTo(this) < 6
                 && (ownerEntity() == null || JutsuEffects.isTarget(ownerEntity(), attacker))) {
             trap(level, attacker);

@@ -27,7 +27,7 @@ public class WoodReleaseBlock extends RotatedPillarBlock {
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5,
                 pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.05);
         if (random.nextInt(4) == 0) {
-            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 0.7f, 0.6f);
+            level.playSound(null, pos, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.BLOCKS, 0.7f, 0.77f);
         }
     }
 }

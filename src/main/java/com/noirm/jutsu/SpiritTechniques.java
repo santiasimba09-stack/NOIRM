@@ -250,7 +250,7 @@ public final class SpiritTechniques {
         vision(victim, SpiritPackets.RELEASE, 0);
         if (victim.level() instanceof ServerLevel level) {
             SpiritVfx.shatter(level, victim.position().add(0, victim.getBbHeight() * 0.85, 0));
-            level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 0.8f, 1.5f);
+            level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), com.noirm.sound.NoirmSounds.ICE_SHATTER.get(), SoundSource.PLAYERS, 0.8f, 1.22f);
         }
         return true;
     }
@@ -297,8 +297,8 @@ public final class SpiritTechniques {
         } else {
             CombatSystem.stun(target, 5);
             Vfx.quake(level, target.position(), 0.3f, 10);
-            JutsuBehaviors.sound(target, SoundEvents.ILLUSIONER_CAST_SPELL, 1.2f, 0.5f);
-            JutsuBehaviors.sound(target, SoundEvents.WOOD_BREAK, 1f, 0.5f);
+            JutsuBehaviors.sound(target, com.noirm.sound.NoirmSounds.GENJUTSU.get(), 1.2f, 0.71f);
+            JutsuBehaviors.sound(target, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), 1f, 0.71f);
         }
         CAUGHT.put(target, new Caught(caster, kind, now, now + ticks, damage, posture, decoy, misses));
         vision(target, SpiritPackets.GENJUTSU, ticks + (kind == Illusion.TREE ? 10 : 0));
@@ -358,7 +358,7 @@ public final class SpiritTechniques {
         if (caught.caster.isAlive()) {
             hitstop(caught.caster, 5);
         }
-        level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.2f, 0.6f);
+        level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), com.noirm.sound.NoirmSounds.HIT_HEAVY.get(), SoundSource.PLAYERS, 1.2f, 0.77f);
         level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 0.5f, 1.6f);
     }
 
@@ -528,7 +528,7 @@ public final class SpiritTechniques {
             return false;
         });
         JutsuBehaviors.sound(caster, SoundEvents.BEACON_ACTIVATE, 0.8f, 1.6f);
-        JutsuBehaviors.sound(caster, SoundEvents.AMETHYST_BLOCK_CHIME, 1f, 1.2f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.YANG_SWELL.get(), 1f, 1.1f);
     }
 
     /** Yang Vitality's aura, every other tick while the mode is on (called by {@link ModeSystem}). */
@@ -584,7 +584,7 @@ public final class SpiritTechniques {
             CombatSystem.stun(victim, p.stun());
             hitstop(victim, 4);
         }
-        level.playSound(null, impact.x, impact.y, impact.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.4f, 0.6f);
+        level.playSound(null, impact.x, impact.y, impact.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1.4f, 0.77f);
         level.playSound(null, impact.x, impact.y, impact.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1f, 0.5f);
     }
 
@@ -967,7 +967,7 @@ public final class SpiritTechniques {
             if (caster.isAlive()) {
                 hitstop(caster, 5);
             }
-            level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 2f, 0.5f);
+            level.playSound(null, center.x, center.y, center.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 2f, 0.71f);
             level.playSound(null, center.x, center.y, center.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 1.2f, 0.7f);
             return true;
         });

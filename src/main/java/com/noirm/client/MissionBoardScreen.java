@@ -253,8 +253,7 @@ public class MissionBoardScreen extends Screen implements NoirmStyled {
                 Hit hit = hits.get(i);
                 if (hit.click() != null && hit.contains(mouseX, mouseY)) {
                     hit.click().run();
-                    Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                            net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+                    com.noirm.client.ui.UiSounds.click();
                     return true;
                 }
             }

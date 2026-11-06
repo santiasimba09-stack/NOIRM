@@ -213,7 +213,7 @@ public class WoodDragon extends Entity {
             WoodVfx.emerge(level, position(), 2.2f - age * 0.3f);
         }
         if (age == 1) {
-            level.playSound(null, getX(), getY(), getZ(), SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.PLAYERS, 1.6f, 0.5f);
+            level.playSound(null, getX(), getY(), getZ(), com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.6f, 0.71f);
             level.playSound(null, getX(), getY(), getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 1.2f, 0.6f);
         }
         if (target == null) {
@@ -277,7 +277,7 @@ public class WoodDragon extends Entity {
 
     private void catchTarget(ServerLevel level) {
         Vec3 chest = target.position().add(0, target.getBbHeight() * 0.5, 0);
-        level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 1.6f, 0.4f);
+        level.playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.6f, 0.63f);
         level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.5f, 0.5f);
         WoodVfx.crumble(level, chest, 1.2f);
         Vfx.quake(level, chest, 0.6f, 16);
@@ -316,7 +316,7 @@ public class WoodDragon extends Entity {
 
     private void crush(ServerLevel level) {
         Vec3 chest = target.position().add(0, target.getBbHeight() * 0.5, 0);
-        level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.PLAYERS, 1.8f, 0.5f);
+        level.playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.8f, 0.71f);
         JutsuEffects.hit(owner, target, damage, 0, posture, 0, Vec3.ZERO);
         CombatSystem.stun(target, 16);
         hitStop(target, 5);
@@ -332,7 +332,7 @@ public class WoodDragon extends Entity {
         for (int i = 0; i < body.size(); i += 3) {
             WoodVfx.crumble(level, body.get(i), 0.7f);
         }
-        level.playSound(null, getX(), getY(), getZ(), SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 1.4f, 0.5f);
+        level.playSound(null, getX(), getY(), getZ(), com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.4f, 0.71f);
         discard();
     }
 

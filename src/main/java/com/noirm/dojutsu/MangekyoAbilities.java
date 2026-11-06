@@ -116,7 +116,7 @@ public final class MangekyoAbilities {
         Vfx.burst(ctx.level(), Vfx.smoke(0x050008, 0.9f, 30), at, 16, 0.5, 0.03);
         Vfx.burst(ctx.level(), Vfx.glow(0x5A0A6A, 0x000000, 0.8f, 0.2f, 14), at, 6, 0.4, 0.02);
         bleed(caster);
-        sound(caster, SoundEvents.BLAZE_SHOOT, 1f, 0.4f);
+        sound(caster, com.noirm.sound.NoirmSounds.FIRE_ROAR.get(), 1f, 0.63f);
         sound(caster, SoundEvents.SOUL_ESCAPE, 1.2f, 0.5f);
         Mangekyo.addStrain(caster, MangekyoAbility.AMATERASU.strain());
     }
@@ -248,7 +248,7 @@ public final class MangekyoAbilities {
             Vfx.line(level, caster.getEyePosition(), target.getEyePosition(), ILLUSION, 0.06f);
         }
         bleed(caster);
-        sound(target, SoundEvents.ILLUSIONER_CAST_SPELL, 1f, 0.5f);
+        sound(target, com.noirm.sound.NoirmSounds.GENJUTSU.get(), 1f, 0.71f);
         sound(target, SoundEvents.WARDEN_HEARTBEAT, 1.5f, 0.5f);
         message(caster, Component.translatable("message.noirm.genjutsu.caught", target.getDisplayName()));
         return damage;
@@ -356,7 +356,7 @@ public final class MangekyoAbilities {
             Vfx.radial(level, Vfx.smoke(0x101010, 0.4f, 30), mob.getEyePosition(), 14, 0.15); // black feathers
             Vfx.line(level, owner.getEyePosition(), mob.getEyePosition(), ILLUSION, 0.05f);
         }
-        sound(mob, SoundEvents.EVOKER_CAST_SPELL, 1f, 0.7f);
+        sound(mob, com.noirm.sound.NoirmSounds.GENJUTSU.get(), 1f, 0.84f);
         message(owner, Component.translatable("message.noirm.mangekyo.koto.controlled", mob.getDisplayName()));
     }
 

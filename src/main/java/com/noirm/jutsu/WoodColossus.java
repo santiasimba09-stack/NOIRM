@@ -232,7 +232,7 @@ public class WoodColossus extends Entity {
         Vec3 base = position();
         if (age == 1) {
             level.playSound(null, base.x, base.y, base.z, SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 3f, 0.5f);
-            level.playSound(null, base.x, base.y, base.z, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.PLAYERS, 2f, 0.4f);
+            level.playSound(null, base.x, base.y, base.z, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 2f, 0.63f);
         }
         if (age < RISE || age > lifetime() - SINK) {
             // The earth heaves round it as it comes up (and as it goes down).
@@ -251,7 +251,7 @@ public class WoodColossus extends Entity {
                 landed = s + 1;
             } else if (age == strikeStart(s) + 1) {
                 Vec3 hand = idleHand(strikeArm(s), age);
-                level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 2f, 0.4f);
+                level.playSound(null, hand.x, hand.y, hand.z, com.noirm.sound.NoirmSounds.SWING_HEAVY.get(), SoundSource.PLAYERS, 2f, 0.63f);
             }
         }
     }
@@ -259,8 +259,8 @@ public class WoodColossus extends Entity {
     /** A fist comes down: everyone under it is crushed into the ground. */
     private void land(ServerLevel level, int strike) {
         Vec3 at = fistTarget(strike);
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.6f, 0.5f);
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.ZOMBIE_ATTACK_WOODEN_DOOR, SoundSource.PLAYERS, 2f, 0.5f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), SoundSource.PLAYERS, 1.6f, 0.71f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.WOOD_CREAK.get(), SoundSource.PLAYERS, 2f, 0.71f);
         WoodVfx.emerge(level, at, radius);
         Vfx.shockwave(level, at.add(0, 0.1, 0), new Vfx.Palette(0xE8E4D0, WoodVfx.DUST, WoodVfx.DUST_DARK, 0xC8C0A8), radius * 1.8f);
         Vfx.quake(level, at, 1.1f, 36);

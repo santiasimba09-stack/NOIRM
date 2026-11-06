@@ -1247,7 +1247,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
                 if (t != tab.ordinal()) {
                     setTab(Tab.values()[t]);
                     if (minecraft != null) {
-                        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+                        com.noirm.client.ui.UiSounds.click();
                     }
                 }
                 return true;
@@ -1257,7 +1257,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
                 if (hit.click() != null && hit.contains(mouseX, mouseY)) {
                     hit.click().run();
                     if (minecraft != null) {
-                        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 0.35f));
+                        com.noirm.client.ui.UiSounds.click();
                     }
                     return true;
                 }

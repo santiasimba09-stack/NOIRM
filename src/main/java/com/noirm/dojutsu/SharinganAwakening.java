@@ -340,7 +340,7 @@ public final class SharinganAwakening {
     }
 
     private static void moment(Player player, Component title, Component subtitle, float strength) {
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, strength, 1.4f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.noirm.sound.NoirmSounds.SHARINGAN.get(), SoundSource.PLAYERS, strength, 1.4f);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, strength, 0.9f);
         if (player.level() instanceof ServerLevel level) {
             Vec3 eyesAt = player.getEyePosition();
@@ -393,7 +393,7 @@ public final class SharinganAwakening {
         if (ninja.level() instanceof ServerLevel level) {
             Vec3 eyesAt = ninja.getEyePosition();
             level.sendParticles(RED, eyesAt.x, eyesAt.y, eyesAt.z, 20, 0.3, 0.2, 0.3, 0.02);
-            level.playSound(null, ninja.getX(), ninja.getY(), ninja.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.HOSTILE, 0.8f, 1.5f);
+            level.playSound(null, ninja.getX(), ninja.getY(), ninja.getZ(), com.noirm.sound.NoirmSounds.SHARINGAN.get(), SoundSource.HOSTILE, 0.8f, 1.22f);
             List<Player> near = level.getEntitiesOfClass(Player.class, ninja.getBoundingBox().inflate(ALLY_DEATH_RANGE));
             near.forEach(p -> p.displayClientMessage(Component.translatable(messageKey, ninja.getName()), false));
         }

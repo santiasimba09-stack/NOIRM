@@ -78,9 +78,9 @@ public final class ModeSystem {
             // A gate bursts open: a shockwave and a roar of wind around the body.
             Vfx.shockwave(caster.level(), caster.position().add(0, 0.1, 0), paletteOf(active), 2.5f + mode.gate());
             Vfx.quake(caster.level(), caster.position(), 0.25f * mode.gate(), 10);
-            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 1f, 0.6f);
+            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 1f, 0.77f);
         } else {
-            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.8f, 1.6f);
+            caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), SoundSource.PLAYERS, 0.8f, 1.26f);
         }
     }
 

@@ -117,7 +117,7 @@ public final class Susanoo {
             Vfx.shockwave(level, caster.position(), palette, 4f);
             Vfx.quake(level, caster.position(), 0.4f, 14);
         }
-        MangekyoAbilities.sound(caster, SoundEvents.BEACON_ACTIVATE, 1.4f, 0.5f);
+        MangekyoAbilities.sound(caster, com.noirm.sound.NoirmSounds.CLOAK.get(), 1.4f, 0.71f);
         MangekyoAbilities.sound(caster, SoundEvents.WITHER_SPAWN, 0.4f, 1.6f);
         return true;
     }
@@ -171,8 +171,8 @@ public final class Susanoo {
             Vfx.cone(level, center, flat, range, palette, 1.5f);
             Vfx.quake(level, caster.position(), 0.35f, 12);
         }
-        MangekyoAbilities.sound(caster, SoundEvents.PLAYER_ATTACK_SWEEP, 1.6f, 0.4f);
-        MangekyoAbilities.sound(caster, SoundEvents.ENDER_DRAGON_FLAP, 1.2f, 0.6f);
+        MangekyoAbilities.sound(caster, com.noirm.sound.NoirmSounds.SWING_HEAVY.get(), 1.6f, 0.63f);
+        MangekyoAbilities.sound(caster, com.noirm.sound.NoirmSounds.SWING_HEAVY.get(), 1.2f, 0.77f);
         return hits;
     }
 

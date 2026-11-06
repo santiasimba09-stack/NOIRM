@@ -213,7 +213,7 @@ public class ThrownWeapon extends AbstractArrow {
                 afterHurt(living, stack, stats, owner);
             }
         }
-        playSound(hurt ? SoundEvents.TRIDENT_HIT : SoundEvents.SHIELD_BLOCK, 0.7f, stats.flat() ? 1.5f : 1.2f);
+        playSound(hurt ? com.noirm.sound.NoirmSounds.WEAPON_IMPACT.get() : com.noirm.sound.NoirmSounds.BLADE_CLASH.get(), 0.7f, stats.flat() ? 1.5f : 1.2f);
         if (hurt && stats.pierce() > pierced.size()) {
             pierced.add(target.getId()); // the big blades carry on into the next one
             return;
@@ -289,7 +289,7 @@ public class ThrownWeapon extends AbstractArrow {
 
     @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
-        return SoundEvents.TRIDENT_HIT_GROUND;
+        return com.noirm.sound.NoirmSounds.WEAPON_IMPACT.get();
     }
 
     @Override

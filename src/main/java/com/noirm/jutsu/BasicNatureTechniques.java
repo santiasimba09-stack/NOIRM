@@ -141,7 +141,7 @@ public final class BasicNatureTechniques {
                         Vfx.burst(level, Vfx.glow(0xFFFFFF, WindEarthVfx.WIND_PALE, 0.9f, 0.1f, 4), c, 1, 0, 0);
                         Vfx.radial(level, Vfx.spark(WindEarthVfx.WIND_PALE, 0.15f, 8), c, 8, 0.4);
                         Vfx.burst(level, WindEarthVfx.windSmoke(0.35f, 16), c, 3, 0.25, 0.04);
-                        level.playSound(null, c.x, c.y, c.z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.9f, 1.4f);
+                        level.playSound(null, c.x, c.y, c.z, com.noirm.sound.NoirmSounds.SWING_HEAVY.get(), SoundSource.PLAYERS, 0.9f, 1.18f);
                     }
                 }
                 if (blade.travelled >= p.range()) {
@@ -151,8 +151,8 @@ public final class BasicNatureTechniques {
             }
             return !any;
         });
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1f, ring ? 0.6f : 1.2f);
-        level.playSound(null, hands.x, hands.y, hands.z, SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, ring ? 1.2f : 0.6f, 1.6f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.SWING_HEAVY.get(), SoundSource.PLAYERS, 1f, ring ? 0.6f : 1.2f);
+        level.playSound(null, hands.x, hands.y, hands.z, com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, ring ? 1.2f : 0.6f, 1.26f);
     }
 
     // ================================================================ Wind: the tornado
@@ -170,7 +170,7 @@ public final class BasicNatureTechniques {
         Set<LivingEntity> caught = new HashSet<>();
         int[] age = {0};
         Vfx.quake(level, base[0], 0.5f, 20);
-        level.playSound(null, base[0].x, base[0].y, base[0].z, SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 2f, 0.6f);
+        level.playSound(null, base[0].x, base[0].y, base[0].z, com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 2f, 0.77f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (!caster.isAlive() || caster.level() != level) {
@@ -215,7 +215,7 @@ public final class BasicNatureTechniques {
                     }
                 }
                 Destruction.shatterFragile(level, BlockPos.containing(foot.add(0, 1, 0)), (int) Math.ceil(radius));
-                level.playSound(null, foot.x, foot.y, foot.z, SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 1f, 0.5f + level.random.nextFloat() * 0.2f);
+                level.playSound(null, foot.x, foot.y, foot.z, com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 1f, 0.5f + level.random.nextFloat() * 0.2f);
             }
             if (age[0] < duration) {
                 return false;
@@ -231,7 +231,7 @@ public final class BasicNatureTechniques {
                     victim.fallDistance = 0;
                 }
             }
-            level.playSound(null, foot.x, foot.y, foot.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 1.5f);
+            level.playSound(null, foot.x, foot.y, foot.z, com.noirm.sound.NoirmSounds.EXPLOSION_BOOM.get(), SoundSource.PLAYERS, 1f, 1.22f);
             return true;
         });
     }
@@ -292,8 +292,8 @@ public final class BasicNatureTechniques {
             }
             return false;
         });
-        level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.PLAYERS, 1.4f, 0.5f);
-        JutsuBehaviors.sound(caster, SoundEvents.GRAVEL_BREAK, 1f, 0.6f);
+        level.playSound(null, feet.x, feet.y, feet.z, com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), SoundSource.PLAYERS, 1.4f, 0.71f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), 1f, 0.77f);
     }
 
     // ================================================================ Earth: rock hounds
@@ -369,7 +369,7 @@ public final class BasicNatureTechniques {
                             WindEarthVfx.groundBlock(level, hound.pos)), hound.pos.x, hound.pos.y + 0.2, hound.pos.z, 5, 0.3, 0.1, 0.3, 0.15);
                 }
                 if (age[0] % 5 == 0) {
-                    level.playSound(null, hound.pos.x, hound.pos.y, hound.pos.z, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.PLAYERS, 0.6f, 0.6f);
+                    level.playSound(null, hound.pos.x, hound.pos.y, hound.pos.z, com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), SoundSource.PLAYERS, 0.6f, 0.77f);
                 }
                 for (LivingEntity victim : KekkeiTechniquesB.near(caster, level, hound.pos.add(0, 0.8, 0), 0.8)) {
                     bite(caster, level, victim, hound, p, power);
@@ -400,7 +400,7 @@ public final class BasicNatureTechniques {
         JutsuEffects.applyEffects(victim, p.effect(), p.effectTicks());
         KekkeiTechniquesB.hitstop(victim, 3);
         level.playSound(null, c.x, c.y, c.z, SoundEvents.WOLF_HURT, SoundSource.PLAYERS, 0.8f, 0.4f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.STONE_BREAK, SoundSource.PLAYERS, 1.2f, 0.6f);
+        level.playSound(null, c.x, c.y, c.z, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), SoundSource.PLAYERS, 1.2f, 0.77f);
     }
 
     // ================================================================ Earth: Earth Flow Rampart
@@ -428,7 +428,7 @@ public final class BasicNatureTechniques {
         Set<LivingEntity> thrown = new HashSet<>();
         int[] age = {0};
         Vfx.quake(level, caster.position(), 0.45f, 16);
-        level.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.GRAVEL_BREAK, SoundSource.PLAYERS, 1.6f, 0.4f);
+        level.playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), SoundSource.PLAYERS, 1.6f, 0.63f);
         GreatTechniques.later(now -> {
             age[0]++;
             if (age[0] % RAMPART_LAYER != 1) {
@@ -455,7 +455,7 @@ public final class BasicNatureTechniques {
                     level.scheduleTick(pos, wall.getBlock(), p.duration() + level.random.nextInt(20));
                 }
             }
-            level.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.STONE_PLACE, SoundSource.PLAYERS, 1.4f, 0.5f);
+            level.playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), SoundSource.PLAYERS, 1.4f, 0.71f);
             return layer >= height - 1;
         });
     }
@@ -515,7 +515,7 @@ public final class BasicNatureTechniques {
             }
             return false;
         });
-        JutsuBehaviors.sound(caster, SoundEvents.STONE_PLACE, 1f, 0.5f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), 1f, 0.71f);
     }
 
     // ================================================================ Earth: the Falling Mountain
@@ -538,7 +538,7 @@ public final class BasicNatureTechniques {
         record Rock(Display.BlockDisplay display, Vector3f size, Quaternionf turn, Vector3f offset) {}
         List<Rock> rocks = new ArrayList<>();
         int[] age = {0};
-        level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.GRAVEL_BREAK, SoundSource.PLAYERS, 2f, 0.3f);
+        level.playSound(null, ground.x, ground.y, ground.z, com.noirm.sound.NoirmSounds.EARTH_CRACK.get(), SoundSource.PLAYERS, 2f, 0.55f);
         Vfx.quake(level, ground, 0.5f, radius * 6);
         GreatTechniques.later(now -> {
             age[0]++;
@@ -591,7 +591,7 @@ public final class BasicNatureTechniques {
                             slow ? MOUNTAIN_FALL_SLOW : MOUNTAIN_FALL_FAST);
                 }
                 if (!slow) {
-                    level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 2f, 0.4f);
+                    level.playSound(null, ground.x, ground.y, ground.z, com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 2f, 0.63f);
                 }
             }
             if (t < impact) {
@@ -641,7 +641,7 @@ public final class BasicNatureTechniques {
         KekkeiTechniquesB.hitstop(caster, 4);
         Destruction.crater(level, ground, radius * 0.7f, power * 1.6f);
         Destruction.spikes(level, ground, radius * 0.9f, Blocks.COBBLESTONE.defaultBlockState(), 2);
-        level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 3f, 0.4f);
+        level.playSound(null, ground.x, ground.y, ground.z, com.noirm.sound.NoirmSounds.BIG_IMPACT.get(), SoundSource.PLAYERS, 3f, 0.63f);
         level.playSound(null, ground.x, ground.y, ground.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 2f, 0.3f);
     }
 }

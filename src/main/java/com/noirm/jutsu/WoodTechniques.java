@@ -76,8 +76,8 @@ public final class WoodTechniques {
         WoodVfx.rootLine(level, caster.position().add(ctx.flatLook().scale(0.8)), at);
         WoodVfx.emerge(level, at, 1.3f);
         Destruction.spikes(level, at, 1.4f, wood(Direction.Axis.Y), 2);
-        JutsuBehaviors.sound(caster, SoundEvents.ROOTED_DIRT_BREAK, 1.4f, 0.6f);
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 1.2f, 0.6f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), 1.4f, 0.77f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.2f, 0.77f);
         List<LivingEntity> caught = new ArrayList<>();
         if (target != null) {
             caught.add(target);
@@ -127,8 +127,8 @@ public final class WoodTechniques {
             WoodVfx.emerge(level, at, 1.4f);
             WoodVfx.crumble(level, at.add(0, 1, 0), 0.7f);
         }
-        level.playSound(null, caster.blockPosition(), SoundEvents.ROOTED_DIRT_BREAK, SoundSource.PLAYERS, 1.5f, 0.5f);
-        level.playSound(null, caster.blockPosition(), SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1.5f, 0.6f);
+        level.playSound(null, caster.blockPosition(), com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), SoundSource.PLAYERS, 1.5f, 0.71f);
+        level.playSound(null, caster.blockPosition(), com.noirm.sound.NoirmSounds.WOOD_CREAK.get(), SoundSource.PLAYERS, 1.5f, 0.77f);
     }
 
     // ---------------------------------------------------------------- Wood Locking Wall
@@ -159,7 +159,7 @@ public final class WoodTechniques {
         }
         int[] tick = {0};
         WoodVfx.emerge(level, c, radius * 0.6f);
-        JutsuBehaviors.sound(caster, SoundEvents.ROOTED_DIRT_BREAK, 1.6f, 0.5f);
+        JutsuBehaviors.sound(caster, com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), 1.6f, 0.71f);
         GreatTechniques.later(now -> {
             int y = tick[0]++;
             if (y >= layers.size()) {
@@ -176,7 +176,7 @@ public final class WoodTechniques {
                     }
                 }
             }
-            level.playSound(null, center, SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1.2f, 0.5f + y * 0.1f);
+            level.playSound(null, center, com.noirm.sound.NoirmSounds.WOOD_CREAK.get(), SoundSource.PLAYERS, 1.2f, 0.5f + y * 0.1f);
             return false;
         });
     }
@@ -249,7 +249,7 @@ public final class WoodTechniques {
         int growth = trunks.isEmpty() ? 0 : trunks.get(trunks.size() - 1).delay() + 20;
         int life = growth + Math.max(20, p.duration());
         level.playSound(null, center.x, center.y, center.z, SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 2.5f, 0.6f);
-        level.playSound(null, center.x, center.y, center.z, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.PLAYERS, 3f, 0.4f);
+        level.playSound(null, center.x, center.y, center.z, com.noirm.sound.NoirmSounds.EARTH_RUMBLE.get(), SoundSource.PLAYERS, 3f, 0.63f);
         WoodVfx.gather(level, caster.getEyePosition().add(ctx.look().scale(0.6)).add(0, -0.45, 0));
         GreatTechniques.later(now -> {
             int t = age[0]++;
@@ -302,7 +302,7 @@ public final class WoodTechniques {
     private static void burst(LivingEntity caster, ServerLevel level, Trunk trunk, JutsuDefinition.Params p, float power, Set<LivingEntity> thrown) {
         Vec3 at = trunk.base();
         WoodVfx.emerge(level, at, 1.4f + trunk.thickness() * 0.9f);
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.PLAYERS, 1.4f, 0.4f + level.random.nextFloat() * 0.2f);
+        level.playSound(null, at.x, at.y, at.z, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), SoundSource.PLAYERS, 1.4f, 0.4f + level.random.nextFloat() * 0.2f);
         double reach = trunk.thickness() + 1.2;
         for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(reach, 2.5, reach),
                 e -> JutsuEffects.isTarget(caster, e) && e.isAlive() && !e.isSpectator()

@@ -88,7 +88,7 @@ public final class Throwing {
     /** The whoosh, and the thrower's throw animation. */
     private static void effects(LivingEntity thrower, ThrowStats stats) {
         thrower.level().playSound(null, thrower.getX(), thrower.getEyeY(), thrower.getZ(),
-                stats.flat() ? SoundEvents.PLAYER_ATTACK_SWEEP : SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS,
+                stats.flat() ? com.noirm.sound.NoirmSounds.THROW.get() : com.noirm.sound.NoirmSounds.THROW.get(), SoundSource.PLAYERS,
                 0.6f, stats.pierce() > 0 ? 0.7f : 1.4f);
         if (thrower instanceof Player) {
             NoirmNetwork.sendToTrackingAndSelf(thrower, new CombatClientPackets.PlayAnimation(thrower.getId(), stats.animation(), stats.animationTicks()));

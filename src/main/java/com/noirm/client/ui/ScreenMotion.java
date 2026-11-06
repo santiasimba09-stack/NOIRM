@@ -32,6 +32,7 @@ public final class ScreenMotion {
         openedAt = Anim.now();
         closingAt = -1;
         onClosed = null;
+        UiSounds.open();
     }
 
     /** True once {@link #open()} has run. */
@@ -58,6 +59,7 @@ public final class ScreenMotion {
         }
         closingAt = Anim.now();
         onClosed = done;
+        UiSounds.close();
     }
 
     /** Call every client tick: finishes a close whose fade is over. */
@@ -72,6 +74,7 @@ public final class ScreenMotion {
     /** Restart the content cross-fade (a tab was switched). */
     public void tabChanged() {
         tabAt = Anim.now();
+        UiSounds.tab();
     }
 
     public float contentAlpha() {

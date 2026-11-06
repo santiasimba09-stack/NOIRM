@@ -93,7 +93,7 @@ public final class ElementalBehaviors {
         JutsuAreas.add(new JutsuAreas.Area(ctx.level(), target.position(), target, caster, JutsuAreas.Mode.SHACKLE,
                 target.getBbWidth(), ctx.level().getGameTime() + hold, 0, 0, "", 0, 0, look(ctx)));
         JutsuBehaviors.sound(target, JutsuBehaviors.castSound(JutsuBehaviors.nature(ctx)), 1f, 0.7f);
-        ctx.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,
+        ctx.level().playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(),
                 net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.8f);
     }
 

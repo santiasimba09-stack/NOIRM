@@ -13,8 +13,8 @@ owner's answers to the gaps we found; ask before changing them. **Single-player 
     gore.
   - A balance pass driven by the playthrough. The open APX answers keep their current values for now
     (owner: "I like it all for now").
-- **Sound.** Our own sounds for jutsu, hits, seals, clashes, the UI and ambience. Today there are no
-  custom sounds at all. Never copied audio.
+- **Sound.** Our own sounds for jutsu, hits, seals, clashes, the UI and ambience. Never copied audio.
+  Done (v0.15.x): 54 synthesised sounds, see `docs/SOUND.md`.
 - **Exploration.** Ruins, rogue hideouts, scroll vaults, sealed tombs and dungeons, with loot and
   bosses. Tailed-beast lairs (today beasts only come from NPC jinchūriki). Rare wandering masters.
 - **Endgame.**

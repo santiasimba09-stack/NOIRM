@@ -62,7 +62,7 @@ public final class WeaponEvents {
             }
             default -> { }
         }
-        level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.PLAYERS, 0.6f, 1.8f);
+        level.playSound(null, target.getX(), target.getY(), target.getZ(), com.noirm.sound.NoirmSounds.WEAPON_IMPACT.get(), SoundSource.PLAYERS, 0.6f, 1.34f);
     }
 
     /** Players pay a little chakra per charged hit; ninjas don't. */

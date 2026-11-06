@@ -129,7 +129,7 @@ public final class KekkeiTechniquesA {
         }
         attacker.setSecondsOnFire(LAVA_ARMOR_BURN);
         KekkeiVfxA.lavaSplash(level, attacker.position().add(0, attacker.getBbHeight() * 0.5, 0), 0.7f);
-        playAt(level, attacker.position(), SoundEvents.LAVA_POP, 1f, 0.8f);
+        playAt(level, attacker.position(), com.noirm.sound.NoirmSounds.LAVA_HISS.get(), 1f, 0.89f);
     }
 
     // ================================================================ Freezing Field
@@ -148,7 +148,7 @@ public final class KekkeiTechniquesA {
         Vfx.burst(level, Vfx.glow(0xFFFFFF, KekkeiVfxA.ICE_PALE, 2.4f, 0.6f, 5), center.add(0, 0.4, 0), 1, 0, 0);
         KekkeiVfxA.groundLight(level, center, 0x6AB8E8, 0x0A2040, radius * 1.2f, 30);
         Vfx.quake(level, center, 0.35f, radius + 8);
-        playAt(level, center, SoundEvents.GLASS_BREAK, 1.2f, 0.6f);
+        playAt(level, center, com.noirm.sound.NoirmSounds.ICE_SHATTER.get(), 1.2f, 0.77f);
         playAt(level, center, SoundEvents.POWDER_SNOW_STEP, 1.5f, 0.5f);
         GreatTechniques.later(now -> {
             age[0]++;
@@ -173,7 +173,7 @@ public final class KekkeiTechniquesA {
                 Vec3 feet = victim.position();
                 KekkeiVfxA.iceShatter(level, feet.add(0, 0.6, 0), 1.0f);
                 Destruction.spikes(level, feet, 1.4f, Blocks.PACKED_ICE.defaultBlockState(), 2);
-                playAt(level, feet, SoundEvents.GLASS_BREAK, 0.8f, 1.3f);
+                playAt(level, feet, com.noirm.sound.NoirmSounds.ICE_SHATTER.get(), 0.8f, 1.14f);
             }
             return age[0] >= duration;
         });
@@ -260,7 +260,7 @@ public final class KekkeiTechniquesA {
                 }
             }
             Vfx.quake(level, center, 0.6f, 18);
-            playAt(level, center, SoundEvents.GLASS_BREAK, 2f, 0.5f);
+            playAt(level, center, com.noirm.sound.NoirmSounds.ICE_SHATTER.get(), 2f, 0.71f);
             return true;
         });
     }
