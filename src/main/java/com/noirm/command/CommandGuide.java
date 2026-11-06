@@ -140,7 +140,8 @@ public final class CommandGuide {
                 .add("destruction", "/noirm world destruction <on|off>", "/noirm world destruction off", true)
                 .add("regen", "/noirm world regen <seconds>", "/noirm world regen 60", true)
                 .add("gore", "/noirm world gore <on|off>", "/noirm world gore on", true)
-                .add("cleanup", "/noirm world cleanup [radius]", "/noirm world cleanup 32", true);
+                .add("cleanup", "/noirm world cleanup [radius]", "/noirm world cleanup 32", true)
+                .add("config", "/noirm config", "/noirm config", true);
         section("master")
                 .add("list", "/noirm master list", "/noirm master list", false)
                 .add("spawn", "/noirm master spawn <master>", "/noirm master spawn might_guy", true)

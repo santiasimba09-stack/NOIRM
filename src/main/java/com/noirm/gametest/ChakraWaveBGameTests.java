@@ -211,7 +211,7 @@ public final class ChakraWaveBGameTests {
     }
 
     /** The Vacuum Wave is a ring: it cuts the enemy behind the caster too, but not the crew mate. */
-    @GameTest(template = "empty", batch = "noirm_waveb_vacuum_wave", timeoutTicks = 40)
+    @GameTest(template = "empty", batch = "noirm_waveb_vacuum_wave", timeoutTicks = 100)
     public static void vacuumWaveCutsAllAround(GameTestHelper helper) {
         arena(helper);
         SparringNinja caster = ninja(helper, 1.5f, 3.5f, TestClans.EVERY_NATURE);
@@ -224,14 +224,28 @@ public final class ChakraWaveBGameTests {
         for (SparringNinja n : List.of(ahead, behind, mate)) {
             n.setInvulnerable(false);
         }
-        face(caster, ahead);
-        run(caster, "futon/vacuum_wave", 1f);
-        helper.runAfterDelay(12, () -> {
-            helper.assertTrue(ahead.getHealth() < ahead.getMaxHealth(), "ahead is cut");
-            helper.assertTrue(behind.getHealth() < behind.getMaxHealth(), "behind is cut too");
-            helper.assertTrue(mate.getHealth() == mate.getMaxHealth(), "the crew mate is spared");
-            finish(helper);
+        // The blades fly out into the chunks round the arena: a blade that crosses into a chunk
+        // that isn't entity-ticking yet freezes there, so cast only once every target's chunk ticks.
+        whenTicking(helper, List.of(ahead, behind, mate), 60, () -> {
+            face(caster, ahead);
+            run(caster, "futon/vacuum_wave", 1f);
+            helper.runAfterDelay(12, () -> {
+                helper.assertTrue(ahead.getHealth() < ahead.getMaxHealth(), "ahead is cut");
+                helper.assertTrue(behind.getHealth() < behind.getMaxHealth(), "behind is cut too");
+                helper.assertTrue(mate.getHealth() == mate.getMaxHealth(), "the crew mate is spared");
+                finish(helper);
+            });
         });
+    }
+
+    /** Runs {@code then} as soon as every one of {@code who} stands in an entity-ticking chunk (or after {@code maxTicks}). */
+    private static void whenTicking(GameTestHelper helper, List<? extends LivingEntity> who, int maxTicks, Runnable then) {
+        boolean ready = who.stream().allMatch(e -> helper.getLevel().isPositionEntityTicking(e.blockPosition()));
+        if (ready || maxTicks <= 0) {
+            then.run();
+        } else {
+            helper.runAfterDelay(1, () -> whenTicking(helper, who, maxTicks - 1, then));
+        }
     }
 
     @GameTest(template = "empty", batch = "noirm_waveb_tornado", timeoutTicks = 140)

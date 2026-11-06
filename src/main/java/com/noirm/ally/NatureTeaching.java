@@ -238,6 +238,7 @@ public final class NatureTeaching {
         ally.allyState().setLesson(null);
         next(ally, leader);
         AllyMind.respect(ally, RESPECT_ON_LEARN, null);
+        com.noirm.progress.CrewTrigger.taught(leader, nature.getSerializedName()); // "Path of the Shinobi"
         if (leader != null) {
             leader.sendSystemMessage(Component.translatable("message.noirm.ally.nature.learned", ally.getDisplayName(), name(nature))
                     .withStyle(ChatFormatting.GOLD));

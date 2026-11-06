@@ -114,8 +114,28 @@ public final class WildSpawner {
         RULE = GameRules.register("noirmWildNinjas", GameRules.Category.SPAWNING, GameRules.IntegerValue.create(100));
     }
 
+    /**
+     * The rate in use: the {@code noirmWildNinjas} gamerule (per world) × the config's
+     * {@code wildNinjas.ratePercent} (per install) / 100, up to {@link #MAX_RATE}.
+     */
     public static int rate(ServerLevel level) {
-        return RULE == null ? 100 : Mth.clamp(level.getGameRules().getInt(RULE), 0, MAX_RATE);
+        int rule = RULE == null ? 100 : Mth.clamp(level.getGameRules().getInt(RULE), 0, MAX_RATE);
+        return Mth.clamp((int) ((long) rule * com.noirm.config.NoirmConfig.WILD_RATE.get() / 100L), 0, MAX_RATE);
+    }
+
+    /** At most this many groups near a player (config {@code wildNinjas.maxGroupsNear}; default {@link #MAX_GROUPS_NEAR}). */
+    public static int maxGroupsNear() {
+        return com.noirm.config.NoirmConfig.WILD_MAX_GROUPS.get();
+    }
+
+    /** At most this many wild ninjas near a player (config {@code wildNinjas.maxNinjasNear}; default {@link #MAX_NINJAS_NEAR}). */
+    public static int maxNinjasNear() {
+        return com.noirm.config.NoirmConfig.WILD_MAX_NINJAS.get();
+    }
+
+    /** The safe start near the world spawn, in minutes (config {@code wildNinjas.safeStartMinutes}; default {@link #SAFE_PLAY_MINUTES}). */
+    public static int safePlayMinutes() {
+        return com.noirm.config.NoirmConfig.WILD_SAFE_MINUTES.get();
     }
 
     /** Ticks between tries at {@code rate} percent. */
@@ -192,11 +212,11 @@ public final class WildSpawner {
         if (rate(level) <= 0) {
             return Result.DISABLED;
         }
-        if (fromSpawn(level, origin) < SPAWN_SAFE_RADIUS && playedTicks < SAFE_PLAY_MINUTES * 60L * 20L) {
+        if (fromSpawn(level, origin) < SPAWN_SAFE_RADIUS && playedTicks < safePlayMinutes() * 60L * 20L) {
             return Result.TOO_EARLY;
         }
         int[] near = WildNinjas.countNear(level, origin, CAP_RADIUS);
-        if (near[0] >= MAX_GROUPS_NEAR || near[1] >= MAX_NINJAS_NEAR) {
+        if (near[0] >= maxGroupsNear() || near[1] >= maxNinjasNear()) {
             return Result.CAPPED;
         }
         BlockPos spot = findSpot(level, origin, random, minDistance, maxDistance);

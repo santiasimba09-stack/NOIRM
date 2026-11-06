@@ -894,7 +894,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         var health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             boolean full = getHealth() >= getMaxHealth();
-            health.setBaseValue(Mth.clamp(40 + (combatVitality() - ShinobiData.DEFAULT_STAT), 20, 1024));
+            float scale = inCrew() ? 1f : com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.NPC_HEALTH); // config: difficulty.npcHealth (enemies only)
+            health.setBaseValue(Mth.clamp(40 + (combatVitality() - ShinobiData.DEFAULT_STAT), 20, 1024) * scale);
             if (full || getHealth() > getMaxHealth()) {
                 setHealth(getMaxHealth());
             }

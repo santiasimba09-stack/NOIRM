@@ -24,6 +24,7 @@ import java.util.List;
  *   <li>{@code destruction on|off} — whether jutsu break terrain (the {@code noirmTerrainDamage} rule)</li>
  *   <li>{@code gore on|off} — bruises, dirt, soot and cuts on fighters, and severed limbs (the {@code noirmGore} rule)</li>
  *   <li>{@code regen <seconds>} — how long broken terrain takes to grow back (0 = never; {@code noirmTerrainRegen})</li>
+ *   <li>{@code /noirm config} — the survival tuning file's values ({@link com.noirm.config.NoirmConfig})</li>
  *   <li>{@code cleanup [radius]} — removes ninjas (not your crew, masters or village people), beasts,
  *       clones, dummies and stray jutsu around you</li>
  * </ul>
@@ -37,6 +38,8 @@ public final class WorldCommand {
 
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal("noirm").then(Commands.literal("config").requires(s -> s.hasPermission(Cmd.CHEATS))
+                .executes(ctx -> config(ctx.getSource()))));
         event.getDispatcher().register(Commands.literal("noirm").then(Commands.literal("world").requires(s -> s.hasPermission(Cmd.CHEATS))
                 .then(Commands.literal("destruction")
                         .then(Commands.literal("on").executes(ctx -> destruction(ctx.getSource(), true)))
@@ -50,6 +53,29 @@ public final class WorldCommand {
                         .executes(ctx -> cleanup(ctx.getSource(), DEFAULT_CLEANUP_RADIUS))
                         .then(Commands.argument("radius", IntegerArgumentType.integer(1, 512))
                                 .executes(ctx -> cleanup(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "radius")))))));
+    }
+
+    /**
+     * {@code /noirm config}: every option of {@code config/noirm-common.toml} with the value in use;
+     * a changed one shows its default too. Edit the file to change them (Forge reloads it).
+     */
+    static int config(CommandSourceStack source) {
+        net.minecraft.network.chat.MutableComponent text = net.minecraft.network.chat.Component.translatable("command.noirm.config.title")
+                .withStyle(net.minecraft.ChatFormatting.GOLD, net.minecraft.ChatFormatting.BOLD);
+        for (com.noirm.config.NoirmConfig.Value<?> value : com.noirm.config.NoirmConfig.all()) {
+            boolean changed = !value.get().equals(value.defaultValue());
+            text.append("\n ").append(net.minecraft.network.chat.Component.literal(value.path() + " = ").withStyle(net.minecraft.ChatFormatting.GRAY))
+                    .append(net.minecraft.network.chat.Component.literal(String.valueOf(value.get()))
+                            .withStyle(changed ? net.minecraft.ChatFormatting.YELLOW : net.minecraft.ChatFormatting.WHITE));
+            if (changed) {
+                text.append(" ").append(net.minecraft.network.chat.Component.translatable("command.noirm.config.default", String.valueOf(value.defaultValue()))
+                        .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+            }
+        }
+        text.append("\n").append(net.minecraft.network.chat.Component.translatable("command.noirm.config.footer")
+                .withStyle(net.minecraft.ChatFormatting.DARK_GRAY, net.minecraft.ChatFormatting.ITALIC));
+        source.sendSuccess(() -> text, false);
+        return com.noirm.config.NoirmConfig.all().size();
     }
 
     static int destruction(CommandSourceStack source, boolean on) {

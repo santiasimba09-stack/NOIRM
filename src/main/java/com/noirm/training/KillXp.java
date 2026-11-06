@@ -115,6 +115,7 @@ public final class KillXp {
             return Map.of();
         }
         enemy.getPersistentData().putBoolean(REWARDED_TAG, true);
+        com.noirm.progress.DefeatTrigger.defeated(player, com.noirm.bounty.NinjaClass.code(enemy)); // "Path of the Shinobi"
         FightLog log = data.training().fight();
         float worth = worthFactor(player, enemy);
         float pool = KILL_XP * worth;

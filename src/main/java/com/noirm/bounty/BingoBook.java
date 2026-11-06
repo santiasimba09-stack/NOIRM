@@ -58,6 +58,21 @@ public final class BingoBook extends SavedData {
      */
     public static final int LEGEND_SAFE_RADIUS = 1000;
     public static final int LEGEND_NEW_PLAYER_MINUTES = 120;
+
+    /** Legends a new world's book lists (config {@code legends.perWorld}; default {@link #LEGEND_COUNT}). */
+    public static int legendCount() {
+        return com.noirm.config.NoirmConfig.LEGEND_COUNT.get();
+    }
+
+    /** Legends are kept this far from the world spawn (config {@code legends.safeRadius}; default {@link #LEGEND_SAFE_RADIUS}). */
+    public static int legendSafeRadius() {
+        return com.noirm.config.NoirmConfig.LEGEND_SAFE_RADIUS.get();
+    }
+
+    /** Legends leave a new player alone this long, in minutes (config {@code legends.graceMinutes}; default {@link #LEGEND_NEW_PLAYER_MINUTES}). */
+    public static int legendGraceMinutes() {
+        return com.noirm.config.NoirmConfig.LEGEND_GRACE_MINUTES.get();
+    }
     /** One refresh per Minecraft day. */
     public static final int REFRESH_TICKS = 24000;
     public static final int WANDER = 160;
@@ -135,11 +150,12 @@ public final class BingoBook extends SavedData {
             add(level, random, false, null);
         }
         List<Legendary.Kind> kinds = new ArrayList<>(List.of(Legendary.Kind.values()));
-        for (int i = 0; i < LEGEND_COUNT && !kinds.isEmpty(); i++) {
+        int legends = legendCount();
+        for (int i = 0; i < legends && !kinds.isEmpty(); i++) {
             add(level, random, true, kinds.remove(random.nextInt(kinds.size())));
         }
         setDirty();
-        Noirm.LOGGER.info("The bingo book lists {} rogues ({} legends)", entries.size(), LEGEND_COUNT);
+        Noirm.LOGGER.info("The bingo book lists {} rogues ({} legends)", entries.size(), legends);
         return true;
     }
 
@@ -283,7 +299,8 @@ public final class BingoBook extends SavedData {
         BlockPos spawn = level.getSharedSpawnPos();
         double dx = area.getX() - spawn.getX(), dz = area.getZ() - spawn.getZ();
         double d = Math.sqrt(dx * dx + dz * dz);
-        if (d >= LEGEND_SAFE_RADIUS) {
+        int safe = legendSafeRadius();
+        if (d >= safe) {
             return area;
         }
         if (d < 1) {
@@ -291,7 +308,7 @@ public final class BingoBook extends SavedData {
             dz = 0;
             d = 1;
         }
-        double k = LEGEND_SAFE_RADIUS / d;
+        double k = safe / d;
         return new BlockPos(spawn.getX() + Mth.floor(dx * k), area.getY(), spawn.getZ() + Mth.floor(dz * k));
     }
 
@@ -316,8 +333,9 @@ public final class BingoBook extends SavedData {
         entry.claimedAt = payee.level().getGameTime();
         entry.entity = null;
         setDirty();
-        Ryo.give(payee, entry.bounty);
-        payee.sendSystemMessage(Component.translatable("bingo.noirm.claimed", entry.name(), Ryo.format(entry.bounty))
+        Ryo.give(payee, entry.payout());
+        com.noirm.progress.DefeatTrigger.bounty(payee, entry.legendary); // "Path of the Shinobi"
+        payee.sendSystemMessage(Component.translatable("bingo.noirm.claimed", entry.name(), Ryo.format(entry.payout()))
                 .withStyle(entry.legendary ? ChatFormatting.GOLD : ChatFormatting.YELLOW));
         payee.level().playSound(null, payee.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8f, 0.8f);
         payee.level().playSound(null, payee.blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.PLAYERS, 0.8f, 1.4f);

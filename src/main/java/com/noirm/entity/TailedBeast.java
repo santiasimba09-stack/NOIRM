@@ -135,7 +135,7 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         entityData.set(TAILS, (byte) clamped);
         AttributeInstance health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.setBaseValue(healthFor(clamped));
+            health.setBaseValue(healthFor(clamped) * com.noirm.config.NoirmConfig.NPC_HEALTH.get()); // config: difficulty.npcHealth
         }
         setHealth(getMaxHealth());
         CombatStates.get(this).setMaxPosture(150f + 25f * clamped);
@@ -186,6 +186,9 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         boolean hurt = super.hurt(source, Math.min(amount, getHealth() - 1f));
         if (hurt && getHealth() <= getMaxHealth() * SUBDUE_FRACTION) {
             subdue();
+            if (source.getEntity() instanceof net.minecraft.world.entity.player.Player player) {
+                com.noirm.progress.BeastTrigger.subdued(player, tails()); // "Path of the Shinobi"
+            }
         }
         return hurt;
     }

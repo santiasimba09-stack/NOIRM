@@ -193,6 +193,7 @@ public final class CharacterCreator {
         creator.release();
         creator.setMode(CreatorData.Mode.NONE);
         creator.clearRolls();
+        com.noirm.progress.BeginningsTrigger.created(player); // "Path of the Shinobi"
         data.markDirty();
         data.markPowersDirty();
         sendState(player, data);

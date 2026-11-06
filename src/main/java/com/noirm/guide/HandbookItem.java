@@ -44,6 +44,7 @@ public class HandbookItem extends Item {
     /** The server's side of opening it: the first step is done. */
     public static void opened(Player player) {
         ShinobiCapability.get(player).ifPresent(data -> data.guide().setOpenedHandbook(true));
+        com.noirm.progress.BeginningsTrigger.handbook(player); // "Path of the Shinobi"
     }
 
     @Override

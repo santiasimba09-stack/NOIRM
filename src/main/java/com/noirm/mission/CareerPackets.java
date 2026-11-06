@@ -144,7 +144,7 @@ public final class CareerPackets {
                 Component why = Missions.blocker(player, def);
                 boolean taken = career.offerTaken(Missions.offerKey(pos, i), day);
                 boolean rankLocked = def != null && !career.rank().atLeast(def.rank().required());
-                rows.add(new OfferRow(i, offers.get(i), def.rank().ordinal(), def.kind().ordinal(), def.reward(), def.points(), def.timeLimit(),
+                rows.add(new OfferRow(i, offers.get(i), def.rank().ordinal(), def.kind().ordinal(), com.noirm.config.NoirmConfig.ryoReward(def.reward()), def.points(), def.timeLimit(),
                         taken ? TAKEN : rankLocked || why != null ? LOCKED : READY,
                         taken ? Component.translatable("mission.noirm.why.taken") : why == null ? Component.empty() : why));
             }

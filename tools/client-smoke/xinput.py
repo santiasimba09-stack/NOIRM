@@ -49,6 +49,13 @@ while args:
         key(args.pop(0), 0)
     elif cmd == "holdclick":  # hold a mouse button for some seconds (e.g. holdclick 3 2.5 uses an item)
         b = int(args.pop(0)); t = float(args.pop(0)); button(b, 1); time.sleep(t); button(b, 0)
+    elif cmd == "drag":  # drag with the left button from x1 y1 to x2 y2 in small steps (e.g. pan the advancement map)
+        x1, y1, x2, y2 = (int(args.pop(0)) for _ in range(4))
+        xtst.XTestFakeMotionEvent(d, -1, x1, y1, 0); x11.XFlush(d); time.sleep(0.1)
+        button(1, 1); time.sleep(0.1)
+        for i in range(1, 21):
+            xtst.XTestFakeMotionEvent(d, -1, x1 + (x2 - x1) * i // 20, y1 + (y2 - y1) * i // 20, 0); x11.XFlush(d); time.sleep(0.03)
+        time.sleep(0.1); button(1, 0)
     elif cmd == "move":
         xtst.XTestFakeMotionEvent(d, -1, int(args.pop(0)), int(args.pop(0)), 0); x11.XFlush(d)
     elif cmd == "type":

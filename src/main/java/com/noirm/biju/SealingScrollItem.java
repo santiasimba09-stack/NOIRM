@@ -120,6 +120,7 @@ public class SealingScrollItem extends Item {
         effects(beast, ParticleTypes.REVERSE_PORTAL, SoundEvents.END_PORTAL_FRAME_FILL);
         beast.discard();
         player.sendSystemMessage(Component.translatable("message.noirm.scroll.captured", BijuSystem.beastName(tails)).withStyle(ChatFormatting.GOLD));
+        com.noirm.progress.BeastTrigger.sealed(player, tails); // "Path of the Shinobi"
         return true;
     }
 

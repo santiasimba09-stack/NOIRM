@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_sword"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.combat.class_s.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.combat.class_s.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/class_a",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:defeat",
+      "conditions": {
+        "event": "defeat",
+        "min": 4
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "noirm:advancement/ryo_500"
+    ]
+  }
+}

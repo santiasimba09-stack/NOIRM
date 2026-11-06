@@ -584,6 +584,7 @@ public final class JutsuCaster {
     private static void afterCast(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
         if (caster instanceof Player player) {
             com.noirm.training.TrainingSystem.onJutsuCast(player, def.behavior()); // Body Flicker trains speed; kill XP
+            com.noirm.progress.JutsuTrigger.cast(player, def.rank()); // "Path of the Shinobi"
             ShinobiCapability.get(player).ifPresent(data -> {
                 data.jutsu().setCooldown(id, cooldown(caster, id, def));
                 int before = data.jutsu().masteryLevel(id);
@@ -755,6 +756,9 @@ public final class JutsuCaster {
                     cost = 0f;
                 }
             }
+        }
+        if (caster instanceof Player) {
+            cost *= com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.CHAKRA_COST); // config: difficulty.chakraCost
         }
         return Math.max(0f, cost);
     }

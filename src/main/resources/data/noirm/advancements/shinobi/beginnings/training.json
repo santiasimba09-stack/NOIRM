@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:training_dummy"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beginnings.training.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beginnings.training.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beginnings/handbook",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:beginnings",
+      "conditions": {
+        "event": "training"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

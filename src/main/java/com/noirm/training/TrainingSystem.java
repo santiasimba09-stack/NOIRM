@@ -138,6 +138,9 @@ public final class TrainingSystem {
             float xp = (HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f);
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
             Supplementary.onExchange(player, target);
+            if (target instanceof TrainingDummy) {
+                com.noirm.progress.BeginningsTrigger.training(player); // "Path of the Shinobi": first training
+            }
             ShinobiCapability.get(player).ifPresent(d -> {
                 // A fast string (hit after hit) trains speed too.
                 if (d.training().fight().hit(player, target instanceof TrainingDummy) <= FAST_STRING_TICKS) {
@@ -306,7 +309,8 @@ public final class TrainingSystem {
     }
 
     /** Adds XP and raises the stat for every threshold crossed. */
-    public static void grant(Player player, Stat stat, float xp) {
+    public static void grant(Player player, Stat stat, float baseXp) {
+        float xp = baseXp * com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.TRAINING_SPEED); // config: progression.trainingSpeed
         if (xp <= 0f) {
             return;
         }
@@ -326,6 +330,7 @@ public final class TrainingSystem {
             if (gained > 0) {
                 setStat(data, stat, value);
                 announce(player, stat, value);
+                com.noirm.progress.StatTrigger.reached(player, stat, value);
             }
             data.markDirty();
         });
