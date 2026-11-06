@@ -94,6 +94,9 @@ public final class ClientPowers {
         }
         latest = packet;
         ticksSinceSync = 0;
+        // Workshop creations: known to the client as jutsu (names, the J screen, the loadout).
+        packet.creations().forEach(com.noirm.workshop.WorkshopRegistry::register);
+        ClientJutsuCatalog.setCreations(packet.creations());
     }
 
     public static void visuals(PowerPackets.Visuals packet) {

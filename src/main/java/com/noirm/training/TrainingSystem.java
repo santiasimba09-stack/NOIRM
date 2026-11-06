@@ -138,6 +138,7 @@ public final class TrainingSystem {
             float xp = (HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f);
             grant(player, Stat.TAIJUTSU, xp * opponentFactor(player, target, Stat.TAIJUTSU));
             Supplementary.onExchange(player, target);
+            com.noirm.arts.SpiritPaths.noteBody(player); // body training: Yang's drill
             ShinobiCapability.get(player).ifPresent(d -> {
                 // A fast string (hit after hit) trains speed too.
                 if (d.training().fight().hit(player, target instanceof TrainingDummy) <= FAST_STRING_TICKS) {

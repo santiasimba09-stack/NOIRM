@@ -118,7 +118,7 @@ public final class MasterPackets {
             }
             for (var practice : lesson.mastery().entrySet()) {
                 parts.add(Component.translatable("screen.noirm.master.need.practice",
-                        Component.translatable(MasterSystem.jutsuKey(practice.getKey())), practice.getValue()));
+                        com.noirm.dojutsu.Sharingan.jutsuName(practice.getKey()), practice.getValue()));
             }
             if (parts.isEmpty()) {
                 return Component.translatable(lesson.test() ? "screen.noirm.master.need.test" : "screen.noirm.master.need.nothing");

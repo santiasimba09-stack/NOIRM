@@ -656,7 +656,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
     }
 
     private static String jutsuName(ResourceLocation id) {
-        return Component.translatable(Sharingan.jutsuKey(id)).getString();
+        return com.noirm.dojutsu.Sharingan.jutsuName(id).getString();
     }
 
     // ---------------------------------------------------------------- Natures

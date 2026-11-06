@@ -139,6 +139,6 @@ public final class JutsuLearning {
     }
 
     static Component jutsuName(ResourceLocation id) {
-        return Component.translatable(Sharingan.jutsuKey(id));
+        return com.noirm.dojutsu.Sharingan.jutsuName(id);
     }
 }

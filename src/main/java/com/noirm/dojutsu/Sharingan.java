@@ -291,7 +291,8 @@ public final class Sharingan {
 
     /** {@code watcher} saw {@code caster} use a jutsu: with 3 tomoe active, they learn it. */
     public static boolean tryCopy(Player watcher, LivingEntity caster, ResourceLocation id) {
-        if (activeStage(watcher) < COPY_STAGE || Mangekyo.isMangekyoJutsu(id) || !isWatching(watcher, caster)) {
+        if (activeStage(watcher) < COPY_STAGE || Mangekyo.isMangekyoJutsu(id) || com.noirm.workshop.JutsuDesign.isCreation(id)
+                || !isWatching(watcher, caster)) { // a self-made jutsu is only shared by its scroll or a lesson
             return false;
         }
         ShinobiData data = ShinobiCapability.get(watcher).orElse(null);
@@ -311,6 +312,12 @@ public final class Sharingan {
         Vec3 to = caster.getEyePosition().subtract(watcher.getEyePosition()).normalize();
         double dot = watcher.getViewVector(1f).dot(to);
         return dot >= Math.cos(Math.toRadians(40)) && watcher.hasLineOfSight(caster);
+    }
+
+    /** A jutsu's name to show: a workshop creation's own name, or the translated name. */
+    public static net.minecraft.network.chat.MutableComponent jutsuName(ResourceLocation id) {
+        String custom = com.noirm.workshop.WorkshopRegistry.name(id);
+        return custom != null ? Component.literal(custom) : Component.translatable(jutsuKey(id));
     }
 
     public static String jutsuKey(ResourceLocation id) {

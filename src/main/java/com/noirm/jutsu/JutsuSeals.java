@@ -32,6 +32,9 @@ public final class JutsuSeals {
 
         /** The animation that forms these seals, e.g. {@code noirm:seals_katon_great_fireball}. */
         public ResourceLocation animation(ResourceLocation jutsu) {
+            if (com.noirm.workshop.JutsuDesign.isCreation(jutsu)) {
+                return com.noirm.Noirm.id("cast_seals"); // a creation has no seal animation of its own: the generic one
+            }
             return new ResourceLocation(jutsu.getNamespace(), "seals_" + jutsu.getPath().replace('/', '_'));
         }
 
@@ -57,7 +60,11 @@ public final class JutsuSeals {
     private JutsuSeals() {}
 
     public static Sequence get(ResourceLocation jutsu) {
-        return jutsu == null ? null : sequences.get(jutsu);
+        if (jutsu == null) {
+            return null;
+        }
+        Sequence seq = sequences.get(jutsu);
+        return seq != null ? seq : com.noirm.workshop.WorkshopRegistry.seals(jutsu);
     }
 
     public static Map<ResourceLocation, Sequence> all() {

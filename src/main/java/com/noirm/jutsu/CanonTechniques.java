@@ -44,6 +44,8 @@ public final class CanonTechniques {
         final float knockback;
         final float radius;
         final float power;
+        /** The ball's colours: the Rasengan's blue, or a creation's nature. */
+        Vfx.Palette palette = new Vfx.Palette(0xFFFFFF, 0x7FC8FF, 0x2050A0);
         int ticks;
 
         Grind(LivingEntity target, float damagePerTick, float knockback, float radius, float power, int ticks) {
@@ -125,7 +127,8 @@ public final class CanonTechniques {
         ServerLevel level = ctx.level();
         float power = ctx.power() * (0.6f + 0.4f * ctx.charge());
         LivingEntity target = JutsuBehaviors.lookTarget(caster, ctx.params().range(), 30);
-        Vfx.Palette palette = new Vfx.Palette(0xFFFFFF, 0x7FC8FF, 0x2050A0);
+        // The canon Rasengan is pure chakra; a nature-shaped ball (a workshop creation) takes its nature's colours.
+        Vfx.Palette palette = ctx.def().nature().isPresent() ? Vfx.palette(ctx.def().nature().get()) : new Vfx.Palette(0xFFFFFF, 0x7FC8FF, 0x2050A0);
         if (target == null) {
             // Nothing to hit: it bursts against whatever is in front.
             Vec3 front = caster.getEyePosition().add(caster.getViewVector(1f).scale(2));
@@ -142,21 +145,38 @@ public final class CanonTechniques {
             }
         }
         float damage = ctx.params().damage() * power;
-        GRINDS.put(caster, new Grind(target, damage * 0.5f / 6f, ctx.params().knockback() * power, ctx.params().radius() * power, power, 6));
+        Grind grind = new Grind(target, damage * 0.5f / 6f, ctx.params().knockback() * power, ctx.params().radius() * power, power, 6);
+        grind.palette = palette;
+        GRINDS.put(caster, grind);
         CombatSystem.stun(target, 12);
         caster.level().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.PLAYERS, 1.2f, 1.6f);
     }
 
     /** The Rasengan's orb while it's being formed: chakra spinning in many directions in the palm. */
     public static void rasenganOrb(LivingEntity caster, float progress) {
+        rasenganOrb(caster, progress, null);
+    }
+
+    /** The same orb in a nature's colours (a creation's ball), with that nature's edge spinning round it. */
+    public static void rasenganOrb(LivingEntity caster, float progress, com.noirm.clan.Nature nature) {
         Vec3 hand = caster.getEyePosition().add(caster.getViewVector(1f).scale(0.8)).add(0, -0.4, 0);
         float size = 0.25f + 0.45f * progress;
-        Vfx.burst(caster.level(), Vfx.glow(0xFFFFFF, 0x7FC8FF, size, size * 0.6f, 3), hand, 1, 0, 0);
+        Vfx.Palette p = nature == null ? new Vfx.Palette(0xFFFFFF, 0x7FC8FF, 0x2050A0) : Vfx.palette(nature);
+        Vfx.burst(caster.level(), Vfx.glow(p.core(), p.mid(), size, size * 0.6f, 3), hand, 1, 0, 0);
         long t = caster.level().getGameTime();
         for (int i = 0; i < 4; i++) {
             double a = t * 0.9 + i * Math.PI / 2;
             Vec3 ring = new Vec3(Math.cos(a) * size * 0.8, Math.sin(a * 1.3) * size * 0.8, Math.sin(a) * size * 0.8);
-            Vfx.one(caster.level(), Vfx.glow(0xBFE6FF, 0x2050A0, 0.12f, 0.04f, 5), hand.add(ring), Vec3.ZERO);
+            Vfx.one(caster.level(), Vfx.glow(nature == null ? 0xBFE6FF : p.mid(), p.edge(), 0.12f, 0.04f, 5), hand.add(ring), Vec3.ZERO);
+        }
+        if (nature != null && (t & 1) == 0) {
+            // The nature's own edge: a flat spinning ring around the ball (wind blades, flame, sparks…).
+            for (int i = 0; i < 6; i++) {
+                double a = -t * 0.7 + i * Math.PI / 3;
+                double r = size * (1.6 + 0.6 * progress);
+                Vfx.one(caster.level(), Vfx.spark(p.accent() == 0 ? p.core() : p.accent(), 0.07f, 4),
+                        hand.add(Math.cos(a) * r, 0, Math.sin(a) * r), Vec3.ZERO);
+            }
         }
     }
 
@@ -317,7 +337,7 @@ public final class CanonTechniques {
             return;
         }
         Vec3 contact = target.position().add(0, target.getBbHeight() * 0.55, 0);
-        Vfx.Palette palette = new Vfx.Palette(0xFFFFFF, 0x7FC8FF, 0x2050A0);
+        Vfx.Palette palette = grind.palette;
         if (grind.ticks > 0) {
             grind.ticks--;
             target.invulnerableTime = 0;
@@ -328,10 +348,10 @@ public final class CanonTechniques {
             target.hurtMarked = true;
             for (int i = 0; i < 6; i++) {
                 double a = caster.level().getGameTime() * 1.3 + i;
-                Vfx.one(caster.level(), Vfx.glow(0xFFFFFF, 0x7FC8FF, 0.35f, 0.1f, 6), contact,
+                Vfx.one(caster.level(), Vfx.glow(palette.core(), palette.mid(), 0.35f, 0.1f, 6), contact,
                         new Vec3(Math.cos(a) * 0.35, Math.sin(a * 0.7) * 0.2, Math.sin(a) * 0.35));
             }
-            Vfx.radial(caster.level(), Vfx.spark(0x7FC8FF, 0.18f, 6), contact, 4, 0.5);
+            Vfx.radial(caster.level(), Vfx.spark(palette.mid(), 0.18f, 6), contact, 4, 0.5);
             return;
         }
         // The spiral blast: the rest of the damage, a big throw, a crater.

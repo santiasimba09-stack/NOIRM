@@ -149,7 +149,8 @@ public final class PowerPackets {
                              int sharinganPressure, int sharinganDrillXp,
                              int mangekyoFlags, int mangekyoPattern, int mangekyoDonorPattern,
                              int mangekyoLeft, int mangekyoRight, float mangekyoStrain, int susanooStage,
-                             boolean meditating, float natureEnergy) {
+                             boolean meditating, float natureEnergy,
+                             com.noirm.arts.ArtsSync arts, List<com.noirm.workshop.JutsuDesign> creations) {
         /** {@link #mangekyoFlags} bits. */
         public static final int MS = 1, MS_ETERNAL = 2, MS_TRANSPLANTED = 4, MS_BLIND = 8;
 
@@ -212,7 +213,8 @@ public final class PowerPackets {
                     eyes.pattern(), eyes.donorPattern(),
                     eyes.left() == null ? -1 : eyes.left().ordinal(), eyes.right() == null ? -1 : eyes.right().ordinal(),
                     eyes.strain(), com.noirm.dojutsu.Susanoo.stage(player),
-                    data.senjutsu().isMeditating(), data.senjutsu().natureEnergy());
+                    data.senjutsu().isMeditating(), data.senjutsu().natureEnergy(),
+                    com.noirm.arts.ArtsSync.of(data), data.creations().list());
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -254,6 +256,8 @@ public final class PowerPackets {
             buf.writeByte(susanooStage);
             buf.writeBoolean(meditating);
             buf.writeFloat(natureEnergy);
+            arts.encode(buf);
+            buf.writeCollection(creations, (b, d) -> d.encode(b));
         }
 
         public static SyncPowers decode(FriendlyByteBuf buf) {
@@ -268,7 +272,8 @@ public final class PowerPackets {
                     buf.readByte(), buf.readByte(), buf.readVarInt() - 100,
                     buf.readVarInt() - 1, buf.readVarInt(),
                     buf.readVarInt(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readFloat(), buf.readByte(),
-                    buf.readBoolean(), buf.readFloat());
+                    buf.readBoolean(), buf.readFloat(),
+                    com.noirm.arts.ArtsSync.decode(buf), buf.readList(com.noirm.workshop.JutsuDesign::decode));
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {
