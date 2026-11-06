@@ -28,7 +28,7 @@ public final class NaturePackets {
      * @param active     the drill being worked on (ordinal), or -1
      * @param pace       how fast it moves now (0 = not moving)
      * @param teacher    0 none, 1 crew mate, 2 master
-     * @param shares     drill progress (0..1) per basic nature, in {@link NatureDrills#TRAINABLE} order
+     * @param shares     drill progress (0..1) per basic nature, in {@link NatureDrills#DRILLABLE} order
      */
     public record Sync(int hiddenMask, boolean revealed, int active, float pace, int teacher, float[] shares) {
         public static Sync of(ShinobiData data) {
@@ -39,9 +39,9 @@ public final class NaturePackets {
                     mask |= 1 << n.ordinal();
                 }
             }
-            float[] shares = new float[NatureDrills.TRAINABLE.size()];
+            float[] shares = new float[NatureDrills.DRILLABLE.size()];
             for (int i = 0; i < shares.length; i++) {
-                shares[i] = NatureDrills.share(data, NatureDrills.TRAINABLE.get(i));
+                shares[i] = NatureDrills.share(data, NatureDrills.DRILLABLE.get(i));
             }
             return new Sync(mask, t.revealed(), t.active() == null ? -1 : t.active().ordinal(), t.pace(), t.teacher(), shares);
         }

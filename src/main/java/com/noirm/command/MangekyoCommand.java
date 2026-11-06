@@ -79,8 +79,8 @@ public final class MangekyoCommand {
         }
         source.sendSuccess(() -> Component.translatable("command.noirm.mangekyo.info",
                 Component.translatable("pattern.noirm.mangekyo." + eyes.pattern()),
-                eyes.left() == null ? Component.literal("-") : Component.translatable(Sharingan.jutsuKey(eyes.left().jutsu())),
-                eyes.right() == null ? Component.literal("-") : Component.translatable(Sharingan.jutsuKey(eyes.right().jutsu())),
+                eyes.left() == null ? Component.literal("-") : com.noirm.dojutsu.Sharingan.jutsuName(eyes.left().jutsu()),
+                eyes.right() == null ? Component.literal("-") : com.noirm.dojutsu.Sharingan.jutsuName(eyes.right().jutsu()),
                 Math.round(eyes.strain()), String.format("#%06X", eyes.susanooColor()),
                 eyes.isEternal() ? "eternal" : eyes.isTransplanted() ? "transplanted" : "own"), false);
         return 1;

@@ -360,7 +360,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             var player = leaderPlayer();
             if (player != null) {
                 player.sendSystemMessage(Component.translatable("message.noirm.ally.mastery", getDisplayName(),
-                        Component.translatable(Sharingan.jutsuKey(id)), jutsuMastery(id)).withStyle(net.minecraft.ChatFormatting.AQUA));
+                        com.noirm.dojutsu.Sharingan.jutsuName(id), jutsuMastery(id)).withStyle(net.minecraft.ChatFormatting.AQUA));
             }
             onMasteryLevel(id, jutsuMastery(id)); // they may work out a new jutsu (see the section at the end)
         }
@@ -946,6 +946,15 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             net.minecraft.nbt.ListTag taughtTag = new net.minecraft.nbt.ListTag();
             taught.forEach(id -> taughtTag.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
             tag.put("Taught", taughtTag);
+            // Workshop creations their leader taught them: kept as designs, so they still know them when the leader is away.
+            net.minecraft.nbt.ListTag creationsTag = new net.minecraft.nbt.ListTag();
+            for (ResourceLocation id : jutsu) {
+                com.noirm.workshop.JutsuDesign design = com.noirm.workshop.WorkshopRegistry.design(id);
+                if (design != null) {
+                    creationsTag.add(design.save());
+                }
+            }
+            tag.put("Creations", creationsTag);
             tag.putFloat("Respect", respect);
             tag.putString("Trait", trait().name());
             net.minecraft.nbt.CompoundTag masteryTag = new net.minecraft.nbt.CompoundTag();
@@ -1005,6 +1014,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             for (var stat : com.noirm.training.TrainingSystem.Stat.values()) {
                 setXp(stat, xpTag.getFloat(stat.key()));
             }
+            tag.getList("Creations", net.minecraft.nbt.Tag.TAG_COMPOUND).forEach(t ->
+                    com.noirm.workshop.WorkshopRegistry.register(com.noirm.workshop.JutsuDesign.load((net.minecraft.nbt.CompoundTag) t)));
             taught.clear();
             tag.getList("Taught", net.minecraft.nbt.Tag.TAG_STRING).forEach(t -> {
                 ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
@@ -1192,7 +1203,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         var player = leaderPlayer();
         if (learned != null && player != null) {
             player.sendSystemMessage(Component.translatable("message.noirm.ally.self_learned", getDisplayName(),
-                    Component.translatable(Sharingan.jutsuKey(learned))).withStyle(net.minecraft.ChatFormatting.AQUA));
+                    com.noirm.dojutsu.Sharingan.jutsuName(learned)).withStyle(net.minecraft.ChatFormatting.AQUA));
         }
     }
 

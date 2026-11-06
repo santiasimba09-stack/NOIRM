@@ -230,7 +230,7 @@ public final class NatureTeaching {
                     ally.teach(id);
                     if (leader != null) {
                         leader.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
-                                Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+                                com.noirm.dojutsu.Sharingan.jutsuName(id)).withStyle(ChatFormatting.AQUA));
                     }
                 }
             }

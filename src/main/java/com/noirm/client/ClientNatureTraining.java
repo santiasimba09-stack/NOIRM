@@ -45,7 +45,7 @@ public final class ClientNatureTraining {
 
     /** The drill's progress, 0..1 (0 for natures without a drill). */
     public static float share(Nature nature) {
-        int i = NatureDrills.TRAINABLE.indexOf(nature);
+        int i = NatureDrills.DRILLABLE.indexOf(nature);
         return i >= 0 && i < state.shares().length ? state.shares()[i] : 0f;
     }
 
@@ -54,8 +54,14 @@ public final class ClientNatureTraining {
     /** Lines for a basic nature you don't have, in the nature tree: the drill, its progress and the other routes. */
     public static List<Component> drillLines(Nature nature) {
         List<Component> lines = new ArrayList<>();
-        if (!NatureDrills.TRAINABLE.contains(nature)) {
+        if (!NatureDrills.DRILLABLE.contains(nature)) {
             lines.add(Component.translatable("screen.noirm.tree.basic_locked"));
+            return lines;
+        }
+        if (com.noirm.arts.SpiritPaths.isSpirit(nature)) {
+            lines.add(Component.translatable("screen.noirm.tree.drill", Component.translatable("drill.noirm." + nature.getSerializedName())));
+            lines.add(Component.translatable("screen.noirm.tree.drill_progress", Math.round(share(nature) * 100)));
+            lines.add(Component.translatable("screen.noirm.tree.spirit_gate." + nature.getSerializedName()));
             return lines;
         }
         lines.add(Component.translatable("screen.noirm.tree.drill", Component.translatable("drill.noirm." + nature.getSerializedName())));
@@ -95,6 +101,9 @@ public final class ClientNatureTraining {
         int y = height / 2 + 24;
         Nature active = state.active() >= 0 && state.active() < Nature.values().length ? Nature.values()[state.active()] : null;
         if (active == null || state.pace() <= 0f) {
+            if (ArtsHud.moving()) {
+                return; // a shape drill or the fusion trial is what's moving: its own line says so
+            }
             boolean anyLeft = NatureDrills.TRAINABLE.stream().anyMatch(n -> !ownedNature(powers, n));
             if (anyLeft) {
                 g.drawCenteredString(font, Component.translatable("hud.noirm.drill.none"), cx, y, com.noirm.client.ui.Theme.TEXT_DIM);

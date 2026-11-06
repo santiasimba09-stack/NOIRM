@@ -231,8 +231,8 @@ public final class Mangekyo {
         player.sendSystemMessage(Component.translatable("message.noirm.mangekyo.awakened." + route.key()).withStyle(ChatFormatting.DARK_RED));
         player.sendSystemMessage(Component.translatable("message.noirm.mangekyo.abilities",
                 Component.translatable("pattern.noirm.mangekyo." + eyes.pattern()),
-                Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(left.jutsu())),
-                Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(right.jutsu()))).withStyle(ChatFormatting.RED));
+                com.noirm.dojutsu.Sharingan.jutsuName(left.jutsu()),
+                com.noirm.dojutsu.Sharingan.jutsuName(right.jutsu())).withStyle(ChatFormatting.RED));
         moment(player, Component.translatable("title.noirm.mangekyo"), Component.translatable("subtitle.noirm.mangekyo." + route.key()),
                 eyes.susanooColor());
         return true;

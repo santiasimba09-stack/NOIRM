@@ -1,5 +1,6 @@
 """Draws the item icons for natures and jutsu learning in NOIRM's ink style (docs/ART_STYLE.md):
-the chakra paper, the five nature scrolls and the four jutsu scrolls (ranks C, B, A, S).
+the chakra paper, the five nature scrolls, the four jutsu scrolls (ranks C, B, A, S), and the
+workshop's blank and creation scrolls.
 
     python3 tools/naturegen/gen_items.py [--preview out.png]
 
@@ -177,6 +178,61 @@ def jutsu_scroll(rank):
     return draw(JUTSU_T, pal, 37 + ord(rank))
 
 
+# A blank scroll: rolled closed, tied with a plain cord (the workshop writes on it).
+BLANK_T = [
+    "................",
+    "................",
+    "................",
+    "..oooooooooooo..",
+    ".owhhhhhhhhhhwo.",
+    ".owppppccppppwo.",
+    ".owppppccppppwo.",
+    ".owssssccsssswo.",
+    "..oooooooooooo..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+
+
+def blank_scroll():
+    pal = {"w": (WOOD, 1), "h": (PAPER, 0), "p": (PAPER, 1), "s": (PAPER, 2), "c": (OLD_PAPER, 3)}
+    return draw(BLANK_T, pal, 61)
+
+
+# A creation scroll: the open scroll with free-hand ink (your own seals) and a chakra-blue wax seal.
+CREATION_T = [
+    "................",
+    "................",
+    ".oo.............",
+    "owwoooooooooooo.",
+    "owhohhhhhhhhhhLo",
+    "owhopIppIpppIppo",
+    "owhopIpIIpIIIppo",
+    "owhoppIppppIpSpo",
+    "owhopppIIppSSXSo",
+    "owhopIIpIpppSSso",
+    "owhoppIpppIIppso",
+    "owhoppppppppssso",
+    "owwooooooooooooo",
+    ".oo.............",
+    "................",
+    "................",
+]
+
+
+def creation_scroll():
+    pal = {
+        "w": (WOOD, 2), "h": (PAPER, 0), "p": (PAPER, 1), "s": (PAPER, 2), "L": (PAPER, 0),
+        "I": ([INK, INK, INK, INK], 0), "S": (CHAKRA, 1), "X": (CHAKRA, 0),
+    }
+    return draw(CREATION_T, pal, 71)
+
+
 def model(name):
     return {"parent": "minecraft:item/generated", "textures": {"layer0": "noirm:item/" + name}}
 
@@ -187,6 +243,8 @@ def main():
         icons["nature_scroll_" + n] = nature_scroll(n)
     for r in RANK_SEALS:
         icons["jutsu_scroll_" + r] = jutsu_scroll(r)
+    icons["blank_scroll"] = blank_scroll()
+    icons["creation_scroll"] = creation_scroll()
     os.makedirs(TEX, exist_ok=True)
     os.makedirs(MODELS, exist_ok=True)
     for name, img in icons.items():

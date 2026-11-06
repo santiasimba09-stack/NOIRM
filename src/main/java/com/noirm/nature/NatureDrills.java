@@ -89,8 +89,14 @@ public final class NatureDrills {
     /** Stone blocks around you (5×5, from the floor up to head height and one above) for the earth drill. */
     public static final int STONE_NEEDED = 12;
 
-    /** The natures a drill can teach. */
+    /** The basic natures a drill can teach (and that chakra paper, hidden natures and nature scrolls cover). */
     public static final List<Nature> TRAINABLE = Nature.BASIC;
+    /**
+     * Every nature with a drill: the five elements, and the solo paths to Yin, Yang and Yin-Yang
+     * ({@link com.noirm.arts.SpiritPaths}: their settings and gates).
+     */
+    public static final List<Nature> DRILLABLE = List.of(Nature.FIRE, Nature.WATER, Nature.WIND, Nature.EARTH, Nature.LIGHTNING,
+            Nature.YIN, Nature.YANG, Nature.YIN_YANG);
 
     private NatureDrills() {}
 
@@ -145,6 +151,7 @@ public final class NatureDrills {
             case LIGHTNING -> anyNear(level, at, ROD_RANGE, 1, 3, s -> s.is(Blocks.LIGHTNING_ROD))
                     || (level.isThundering() && level.canSeeSky(at.above()));
             case EARTH -> isStone(level.getBlockState(at.below())) && countNear(level, at, STONE_RANGE, 1, 2, NatureDrills::isStone) >= STONE_NEEDED;
+            case YIN, YANG, YIN_YANG -> com.noirm.arts.SpiritPaths.inSetting(player, nature);
             default -> false;
         };
     }
@@ -219,8 +226,9 @@ public final class NatureDrills {
         int teacher = teacher(player, nature);
         boolean hidden = data.natureTraining().isHidden(nature);
         float rate = 0f;
-        if (setting || teacher > 0) {
-            rate = (hidden ? HIDDEN_PACE : 1f) * (teacher == 2 ? MASTER_TEACHER_PACE : teacher == 1 ? CREW_TEACHER_PACE : 1f);
+        if ((setting || teacher > 0) && com.noirm.arts.SpiritPaths.gate(data, nature) == null) {
+            rate = (hidden ? HIDDEN_PACE : 1f) * (teacher == 2 ? MASTER_TEACHER_PACE : teacher == 1 ? CREW_TEACHER_PACE : 1f)
+                    * com.noirm.arts.SpiritPaths.pace(data, nature);
         }
         return new Pace(nature, setting, teacher, hidden, rate);
     }
@@ -232,7 +240,7 @@ public final class NatureDrills {
     public static Pace current(Player player, ShinobiData data) {
         NatureTraining t = data.natureTraining();
         Pace best = null;
-        for (Nature nature : TRAINABLE) {
+        for (Nature nature : DRILLABLE) {
             if (data.identity().affinity(nature) > 0f) {
                 continue;
             }
@@ -305,7 +313,12 @@ public final class NatureDrills {
         if (t.active() == nature) {
             t.setActive(null);
         }
-        NatureSystem.grant(data, nature, Clan.TRAINED_AFFINITY);
+        float affinity = Clan.TRAINED_AFFINITY;
+        if (nature == Nature.YIN_YANG) { // balance: as strong as your weaker half (at most natural)
+            affinity = Math.max(Clan.TRAINED_AFFINITY, Math.min(Clan.SECONDARY_AFFINITY,
+                    Math.min(data.identity().affinity(Nature.YIN), data.identity().affinity(Nature.YANG))));
+        }
+        NatureSystem.grant(data, nature, affinity);
         player.sendSystemMessage(Component.translatable("message.noirm.drill.done", name(nature)).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1.1f);
         Vfx.aura(player.level(), player.position(), player.getBbWidth(), player.getBbHeight(), Vfx.palette(nature), 40);
@@ -321,6 +334,27 @@ public final class NatureDrills {
         } else {
             t.setProgress(nature, Math.max(0f, share) * secondsNeeded(nature));
         }
+    }
+
+    /**
+     * Picks the drill to work on (from the training screen or the nature tree): it becomes the active
+     * one, so it moves first whenever its setting is met. Returns false (and says why) when you
+     * already have the nature, it has no drill, or its gate (WIL for Yin, Vitality for Yang, both
+     * halves for Yin-Yang) isn't met.
+     */
+    public static boolean choose(Player player, ShinobiData data, Nature nature) {
+        if (!DRILLABLE.contains(nature) || data.identity().affinity(nature) > 0f) {
+            return false;
+        }
+        String gate = com.noirm.arts.SpiritPaths.gate(data, nature);
+        if (gate != null) {
+            player.displayClientMessage(Component.translatable(gate).withStyle(ChatFormatting.GRAY), false);
+            return false;
+        }
+        data.natureTraining().setActive(nature);
+        player.displayClientMessage(Component.translatable("message.noirm.drill.chosen", name(nature),
+                Component.translatable("drill.noirm." + nature.getSerializedName())).withStyle(ChatFormatting.AQUA), false);
+        return true;
     }
 
     /** A drill's progress as a share 0..1. */

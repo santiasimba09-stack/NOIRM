@@ -315,7 +315,7 @@ public final class PowerHud {
             int sideW = font.width(side);
             int nameX = x + 4 + font.width("4") + 5;
             Component name = entry == null ? Component.translatable("hud.noirm.jutsu.empty")
-                    : Component.translatable(Sharingan.jutsuKey(entry.id()));
+                    : com.noirm.dojutsu.Sharingan.jutsuName(entry.id());
             String shown = Ui.fit(font, name.getString(), x + w - 4 - sideW - 4 - nameX);
             graphics.drawString(font, shown, nameX, y + 2, entry == null ? Theme.TEXT_FAINT : cooling ? Theme.mix(color, 0xFF000000, 0.45f) : color, false);
             graphics.drawString(font, side, x + w - 4 - sideW, y + 2, sideColor, false);

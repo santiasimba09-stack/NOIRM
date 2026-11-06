@@ -75,6 +75,10 @@ public final class ShinobiData {
     private final com.noirm.creator.CreatorData creator = new com.noirm.creator.CreatorData();
     /** Hidden natures, the chakra paper and nature drills ({@code nature.NatureDrills}). */
     private final com.noirm.nature.NatureTraining natureTraining = new com.noirm.nature.NatureTraining();
+    /** Solo transformations: chakra shapes, shape + nature fusions, the fusion trial ({@code arts.*}). */
+    private final com.noirm.arts.ArtsData arts = new com.noirm.arts.ArtsData();
+    /** Jutsu you made in the workshop or learned from a creation scroll ({@code workshop.*}). */
+    private final com.noirm.workshop.CreationBook creations = new com.noirm.workshop.CreationBook();
     /** Your crew mates (ninjas who joined you), by UUID. */
     private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
 
@@ -106,6 +110,16 @@ public final class ShinobiData {
     /** Hidden natures and nature drills. */
     public com.noirm.nature.NatureTraining natureTraining() {
         return natureTraining;
+    }
+
+    /** Chakra shapes, shape + nature fusions and the fusion trial. */
+    public com.noirm.arts.ArtsData arts() {
+        return arts;
+    }
+
+    /** Your workshop creations (and ones learned from scrolls). */
+    public com.noirm.workshop.CreationBook creations() {
+        return creations;
     }
 
     public java.util.List<java.util.UUID> crew() {
@@ -373,6 +387,8 @@ public final class ShinobiData {
         tag.put("Career", career.save());
         tag.put("NatureTraining", natureTraining.save());
         tag.put("Guide", guide.save());
+        tag.put("Arts", arts.save());
+        tag.put("Creations", creations.save());
         return tag;
     }
 
@@ -403,6 +419,8 @@ public final class ShinobiData {
         career.load(tag.getCompound("Career"));
         natureTraining.load(tag.getCompound("NatureTraining"));
         guide.load(tag.getCompound("Guide"));
+        arts.load(tag.getCompound("Arts"));
+        creations.load(tag.getList("Creations", net.minecraft.nbt.Tag.TAG_COMPOUND));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

@@ -63,8 +63,16 @@ public final class NatureGameTests {
         helper.assertFalse(NatureSystem.unlock(player, data, Nature.WOOD), "a locked nature can't be unlocked");
         data.jutsu().addXp(Noirm.id("doton/earth_wall"), 40);
         data.jutsu().addXp(Noirm.id("suiton/water_bullet"), 40);
-        helper.assertTrue(NatureSystem.status(data, Nature.WOOD) == NatureSystem.Status.AVAILABLE, "★2 in earth and water opens wood");
-        helper.assertTrue(NatureSystem.unlock(player, data, Nature.WOOD), "unlock wood");
+        helper.assertTrue(NatureSystem.status(data, Nature.WOOD) == NatureSystem.Status.LOCKED, "★2 isn't enough to fuse alone (chakra wave 2)");
+        data.jutsu().addXp(Noirm.id("doton/earth_wall"), 100);
+        data.jutsu().addXp(Noirm.id("suiton/water_bullet"), 100);
+        helper.assertTrue(NatureSystem.status(data, Nature.WOOD) == NatureSystem.Status.AVAILABLE, "★4 in earth and water opens the wood trial");
+        helper.assertFalse(NatureSystem.unlock(player, data, Nature.WOOD), "the trial also needs high CTL");
+        data.setControl(com.noirm.arts.FusionTrial.MIN_CTL);
+        helper.assertTrue(NatureSystem.unlock(player, data, Nature.WOOD), "begin the wood trial");
+        helper.assertTrue(data.arts().trialNature() == Nature.WOOD, "the trial runs");
+        helper.assertFalse(data.identity().affinity(Nature.WOOD) > 0f, "not yours until the trial is done");
+        com.noirm.arts.FusionTrial.complete(player, data);
         helper.assertTrue(NatureSystem.status(data, Nature.WOOD) == NatureSystem.Status.OWNED, "wood is owned now");
         helper.assertTrue(data.jutsu().knows(Noirm.id("mokuton/wood_binding")), "and its jutsu are learned");
         helper.assertTrue(Math.abs(data.identity().affinity(Nature.WOOD) - Clan.SECONDARY_AFFINITY) < 1e-4, "affinity = the weaker component (capped at 1)");

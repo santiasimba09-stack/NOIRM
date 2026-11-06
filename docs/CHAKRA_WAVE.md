@@ -190,3 +190,81 @@ from an older jutsu of the same nature. NPC ninjas use all of them (`KekkeiTechn
 Screenshots (client smoke, first person unless noted): `docs/screenshots/cw-scorch-steaming-murder-{latched,flare}.jpg`,
 `cw-dust-expanding-cube{,-growing}.jpg`, `cw-magnet-world-order-{gather,burst}.jpg`, `cw-wind-raging-tornado.jpg`,
 `cw-wind-vacuum-wave.jpg` (third person), `cw-earth-falling-mountain-{gather,impact}.jpg`.
+
+## Part 2 built: solo transformations and the jutsu workshop
+Code: `arts/` (`ChakraShape`, `ShapeTraining`, `FusionTrial`, `SpiritPaths`, `ArtsData` saved in
+`ShinobiData.arts()`, `ArtsSync`, `ArtsEvents`), `workshop/` (`JutsuDesign`, `Workshop` (the rules and
+numbers), `WorkshopRegistry` (creations as runtime jutsu), `CreationBook` (`ShinobiData.creations()`),
+`WorkshopItems`, `WorkshopPackets`), the screens `client/TrainingScreen`, `client/WorkshopScreen`
+(the J screen's new **Training** and **Workshop** tabs), `client/ArtsHud`, commands in
+`command/ArtsCommand` (`/noirm help arts`). Tests: `gametest/ChakraWave2GameTests`.
+Network: protocol **24** (the powers sync carries shapes, fusions, the trial and creations; three new
+packets). Every number below is a constant at the top of its class.
+
+### Fusing two natures alone (`FusionTrial`)
+- **To begin:** own both parts, master each (a jutsu of it at ★4), CTL 40. Start from the nature
+  tree ("Begin the fusion trial"), the Training tab or `/noirm fusion start <nature>`. Clans born to a
+  combined nature still get it free.
+- **Stages, while meditating (N):** Attune to each part in its drill setting (1,200 s = one in-game day
+  each) → Blend where two parts' settings meet at once (1,800 s; Dust ×1.5) → Proof: cast a jutsu of
+  each part within 3 s of each other, 5 times. About 3.5 in-game days of focus in all.
+- **Failure:** every 300 s of the blend: 15% chance, −0.2% per CTL point above 40, −0.1% per WIL point
+  above 10 (between 4% and 25%). A failure loses half the blend, 30% of max health (never the last
+  point) and half your chakra.
+- **Reward:** the nature at your weaker part's strength (at most 1.0) and its starting jutsu.
+- The old instant "Unlock" at ★2 is gone for elemental mixes (it was the earlier placeholder).
+
+### Shapes (`ShapeTraining`, `ChakraShape`)
+Eight shapes: Ball 球, Blade 刃, Spear 槍, Wave 波, Wall 壁, Beast 獣, Field 陣, Bind 縛. Hold the
+shape's focus item and meditate (ball: slime ball, blade: flint, spear: arrow, wave: water bucket,
+wall: brick, beast: bone, field: amethyst shard, bind: string).
+
+| Stage | Takes | Drain | Rule |
+|---|---|---|---|
+| 1 Form (the ball's "Rotation") | 600 s | 0.2 chakra/s | — |
+| 2 Power | 600 s | 1.5 chakra/s | a canon jutsu of the shape cast in this stage adds 20 s |
+| 3 Containment | 900 s | 1 chakra/s | only above 50% chakra; pace = CTL/20 (×0.5 to ×2) |
+| + Nature fusion | 1,200 s | — | stage 3, a nature at ★3, meditate in that nature's drill setting |
+
+Each stage gives canon jutsu of that shape +5% power and −4% chakra (up to +15% / −12%), and raises
+the workshop's rank cap for that shape: stage 1 → C, 2 → B, 3 → A; fused with the nature → S.
+
+### Yin, Yang, Yin-Yang alone (`SpiritPaths`, in `NatureDrills`)
+Same drill speed as the elements (3,600 s), with teachers and the hidden-nature bonus working the same:
+- **Yin:** needs WIL 20. Meditate in darkness (light 7 or less) or within a minute of a genjutsu (cast
+  or broken with Kai). WIL 40: ×1.5.
+- **Yang:** needs Vitality 20. Meditate in daylight under open sky or within a minute of landing a hit.
+  Vitality 40: ×1.5.
+- **Yin-Yang:** once both are held with a jutsu of each at ★2; meditate anywhere. Comes at your weaker
+  half's strength.
+
+### The workshop (`Workshop`)
+Pick a nature you own, a trained shape, and size / speed / power / range (1–5 each), then name it.
+- **Weight** = size + speed + 2 × power + range (5–25). **Rank:** D ≤7, C ≤10, B ≤14, A ≤19, S above.
+- **Chakra** = 6 × (weight/5)^1.45, then +25% per point above 19 (weight 15 ≈ 29.5, 25 ≈ 155).
+- **Cooldown** = (40 + 1.2 × weight²) × (1.15 − 0.075 × speed) ticks.
+- **Seals:** 1 + weight/4 (2–7): the nature's opening seal, seals picked from the choices (the same
+  choices always give the same seals), the shape's closing seal.
+- **Power:** base damage × (0.6/1.0/1.4/1.9/2.5 by power); a full-power ball does 28 (the Rasengan 14).
+- **Backlash:** above weight 17, 3.5% of max health per point per cast (weight 25: 28%), never lethal.
+- **Stat budget:** 6 + 0.15 per Reserves point above 10 + 0.2 per CTL point above 10 + 1.5 per ★ of
+  your best jutsu of the nature. A design heavier than your budget can't be made, and a learned one can't
+  be cast (`TOO_DEMANDING`).
+- **Practice:** misfire chance 55/40/25/12/5/0% at ★0–★5: the chakra is spent, half the cooldown runs,
+  and it still counts as practice.
+- **Behaviours:** ball → `rasengan` (charged, in the nature's colours), blade → `wind_crescent`, spear →
+  `beam`, wave → `wave`, wall → `ward_shell`, beast → `projectile` (dragon look, homing), field → `nova`,
+  bind → `bind`. Fire-family natures add burning, ice slows, lightning and storm stun briefly.
+- **No forms:** armour, cloaks, avatars, Susanoo or modes are refused by name, and no shape uses a form's
+  behaviour.
+- **Limits:** 12 creations of your own, 24 in all.
+- **Sharing:** teach a crew mate from the ally screen once the creation is at ★2; they keep its design
+  in their save. Write a scroll at ★2 (the author only): a blank scroll (paper + paper + stick) or a
+  sheet of paper, an ink sac, and half the jutsu's chakra cost (at least 10). Reading the scroll teaches
+  that exact jutsu to anyone who owns its nature and passes the rank gate. NPC ninjas never roll
+  creations, and the Sharingan can't copy them.
+
+**Screenshots** (client smoke, 1280×720, GUI scale auto unless noted): `docs/screenshots/cw2-workshop.jpg`,
+`cw2-workshop-creations.jpg`, `cw2-training.jpg`, `cw2-training-shapes.jpg`, `cw2-cast-charge.jpg` and
+`cw2-cast-hit.jpg` (Spiral Gale, a self-made S-rank wind ball), `cw2-scroll.jpg` (a written creation
+scroll), and at GUI scale 2: `cw2-workshop-gui2.jpg`, `cw2-training-gui2.jpg`.

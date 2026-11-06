@@ -291,7 +291,7 @@ public final class PowersCommand {
         for (ResourceLocation id : JutsuData.all().keySet().stream().sorted().toList()) {
             boolean known = book.knows(id);
             text.append("\n ").append(Component.literal(known ? "✔ " : "· ").withStyle(known ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY))
-                    .append(Component.translatable(Sharingan.jutsuKey(id)))
+                    .append(com.noirm.dojutsu.Sharingan.jutsuName(id))
                     .append(Component.literal(" " + id + (known ? " ★" + book.masteryLevel(id) : "")).withStyle(ChatFormatting.GRAY));
         }
         source.sendSuccess(() -> text, false);
@@ -307,7 +307,7 @@ public final class PowersCommand {
         data.jutsu().learn(id, false);
         data.jutsu().equipIfRoom(id);
         data.markPowersDirty();
-        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.learned", Component.translatable(Sharingan.jutsuKey(id))), false);
+        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.learned", com.noirm.dojutsu.Sharingan.jutsuName(id)), false);
         return 1;
     }
 
@@ -326,7 +326,7 @@ public final class PowersCommand {
             return 0;
         }
         data.markPowersDirty();
-        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.equipped", Component.translatable(Sharingan.jutsuKey(id)), slot + 1), false);
+        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.equipped", com.noirm.dojutsu.Sharingan.jutsuName(id), slot + 1), false);
         return 1;
     }
 
@@ -343,7 +343,7 @@ public final class PowersCommand {
         data.jutsu().addXp(id, xp - data.jutsu().xp(id));
         com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id);
         data.markPowersDirty();
-        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.mastery", Component.translatable(Sharingan.jutsuKey(id)), level), false);
+        source.sendSuccess(() -> Component.translatable("command.noirm.jutsu.mastery", com.noirm.dojutsu.Sharingan.jutsuName(id), level), false);
         return 1;
     }
 

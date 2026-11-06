@@ -241,6 +241,10 @@ public final class AllyPackets {
         if (ally.allyState().pendingJutsu().contains(id)) {
             return PENDING;
         }
+        String creation = com.noirm.workshop.Workshop.teachBlocker(player, id); // your own jutsu: practise it first
+        if (creation != null) {
+            return creation;
+        }
         String why = blocker(ally, def);
         if (why.equals("screen.noirm.ally.teach.nature") && def.nature().isPresent()) {
             com.noirm.clan.Nature nature = def.nature().get();
@@ -270,7 +274,7 @@ public final class AllyPackets {
             ally.teach(id);
             AllyMind.respect(ally, 5f, "message.noirm.ally.grateful");
             player.sendSystemMessage(Component.translatable("message.noirm.ally.taught", ally.getDisplayName(),
-                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id))).withStyle(ChatFormatting.AQUA));
+                    com.noirm.dojutsu.Sharingan.jutsuName(id)).withStyle(ChatFormatting.AQUA));
             return true;
         }
         if (why.equals(VIA_NATURE)) {
@@ -283,7 +287,7 @@ public final class AllyPackets {
                 state.pendingJutsu().add(id);
             }
             player.displayClientMessage(Component.translatable("message.noirm.ally.teach.after_nature", ally.getDisplayName(),
-                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(id)), Component.translatable(nature.translationKey())), true);
+                    com.noirm.dojutsu.Sharingan.jutsuName(id), Component.translatable(nature.translationKey())), true);
             return true;
         }
         return false;

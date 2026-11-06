@@ -19,10 +19,16 @@ public final class JutsuData {
 
     private JutsuData() {}
 
+    /** A jutsu by id: data-pack jutsu, or a workshop creation ({@code noirm:workshop/…}) the game knows of. */
     public static JutsuDefinition get(ResourceLocation id) {
-        return id == null ? null : jutsu.get(id);
+        if (id == null) {
+            return null;
+        }
+        JutsuDefinition def = jutsu.get(id);
+        return def != null ? def : com.noirm.workshop.WorkshopRegistry.definition(id);
     }
 
+    /** Every data-pack jutsu (never workshop creations: NPC sets, the catalog and scrolls use this). */
     public static Map<ResourceLocation, JutsuDefinition> all() {
         return jutsu;
     }

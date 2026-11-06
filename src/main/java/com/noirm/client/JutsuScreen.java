@@ -81,7 +81,14 @@ public class JutsuScreen extends Screen implements NoirmStyled {
     private final List<Hit> hits = new ArrayList<>();
 
     public JutsuScreen() {
+        this(ArtsScreens.TAB_JUTSU);
+    }
+
+    /** Opens on a tab: {@link ArtsScreens#TAB_JUTSU} or {@link ArtsScreens#TAB_TREE}. */
+    public JutsuScreen(int tab) {
         super(Component.translatable("screen.noirm.jutsu"));
+        this.tab = tab == ArtsScreens.TAB_TREE ? Tab.TREE : Tab.JUTSU;
+        tabs.snap(this.tab.ordinal());
     }
 
     @Override
@@ -90,8 +97,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         ph = Math.min(height - 16, 300);
         px = (width - pw) / 2;
         py = (height - ph) / 2;
-        tabLabels = new String[]{Component.translatable("screen.noirm.jutsu.tab.jutsu").getString(),
-                Component.translatable("screen.noirm.jutsu.tab.tree").getString()};
+        tabLabels = ArtsScreens.tabLabels(); // Jutsu, Nature Tree, then Training and Workshop (their own screens)
         if (!motion.started()) {
             motion.open();
         }
@@ -272,7 +278,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         } else {
             g.fill(x, y, x + w, y + h, Theme.mix(Theme.fade(Theme.WELL, 0.6f), Theme.WELL, hv));
         }
-        String name = Component.translatable(Sharingan.jutsuKey(info.id())).getString();
+        String name = com.noirm.dojutsu.Sharingan.jutsuName(info.id()).getString();
         String rank = info.rank();
         g.drawString(font, Ui.fit(font, name, w - 14 - font.width(rank)), x + 6, y + 4, known ? Theme.mix(natureColor, Theme.TEXT, 0.25f) : LOCKED, false);
         Ui.textRight(g, font, rank, x + w - 5, y + 4, known ? Theme.darken(GOLD, 0.85f) : Theme.darken(LOCKED, 0.8f));
@@ -309,7 +315,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
             }
             g.drawString(font, String.valueOf(slot + 1), x + 5, y + 4, Theme.TEXT_FAINT, false);
             Component text = entry == null ? Component.translatable("hud.noirm.jutsu.empty")
-                    : Component.translatable(Sharingan.jutsuKey(entry.id()));
+                    : com.noirm.dojutsu.Sharingan.jutsuName(entry.id());
             int color = entry == null ? Theme.TEXT_FAINT : entry.nature() >= 0 ? 0xFF000000 | Nature.values()[entry.nature()].color() : Theme.TEXT;
             g.drawString(font, Ui.fit(font, text.getString(), SIDEBAR - 22), x + 15, y + 4, color, false);
             if (over && entry != null) {
@@ -326,7 +332,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
             y += 16;
         }
         Component hint = selected == null ? Component.translatable("screen.noirm.jutsu.hint")
-                : Component.translatable("screen.noirm.jutsu.selected", Component.translatable(Sharingan.jutsuKey(selected)));
+                : Component.translatable("screen.noirm.jutsu.selected", com.noirm.dojutsu.Sharingan.jutsuName(selected));
         y = wrap(g, hint, x, y + 3, SIDEBAR, selected == null ? Theme.TEXT_FAINT : Theme.CHAKRA_LIGHT) + Theme.S3;
         Ui.hairline(g, x, y, SIDEBAR);
         String detailsId = hovered != null ? hovered : selected != null ? selected.toString() : null;
@@ -371,7 +377,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
             return;
         }
         int natureColor = info.nature() >= 0 ? 0xFF000000 | Nature.values()[info.nature()].color() : Theme.TEXT;
-        y = wrap(g, Component.translatable(Sharingan.jutsuKey(info.id())), x, y, w, natureColor) + 1;
+        y = wrap(g, com.noirm.dojutsu.Sharingan.jutsuName(info.id()), x, y, w, natureColor) + 1;
         Component nature = info.nature() >= 0 ? Component.translatable(Nature.values()[info.nature()].translationKey())
                 : Component.translatable("screen.noirm.jutsu.filter.universal");
         y = wrap(g, Component.translatable("screen.noirm.jutsu.details.kind", info.rank(), nature), x, y, w, DIM) + 3;
@@ -391,7 +397,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         // What the next mastery level unlocks.
         for (JutsuCatalogPacket.Entry other : ClientJutsuCatalog.all()) {
             if (other.unlockAfter().equals(info.id().toString()) && ClientPowers.entry(other.id().toString()) == null) {
-                y = wrap(g, Component.translatable("screen.noirm.jutsu.details.leads_to", Component.translatable(Sharingan.jutsuKey(other.id())),
+                y = wrap(g, Component.translatable("screen.noirm.jutsu.details.leads_to", com.noirm.dojutsu.Sharingan.jutsuName(other.id()),
                         other.unlockMastery()), x, y, w, 0xFF90C090) + 1;
             }
         }
@@ -532,7 +538,8 @@ public class JutsuScreen extends Screen implements NoirmStyled {
                 int bw = SIDEBAR;
                 int by = Math.min(y + 4, bottom - 32);
                 boolean over = Ui.in(mouseX, mouseY, sx, by, bw, 15);
-                Ui.button(g, font, sx, by, bw, 15, Component.translatable("screen.noirm.tree.unlock"),
+                Ui.button(g, font, sx, by, bw, 15, Component.translatable(shown == Nature.YIN_YANG ? "screen.noirm.tree.begin_drill"
+                                : shown.isElemental() ? "screen.noirm.tree.begin_trial" : "screen.noirm.tree.unlock"),
                         hover.get(HoverTracker.key(5, 0), over), true, GOLD, true);
                 Nature target = shown;
                 hits.add(new Hit(sx, by, bw, 15, () -> NoirmNetwork.sendToServer(new PowerPackets.UnlockNature(target.ordinal())), null));
@@ -565,12 +572,26 @@ public class JutsuScreen extends Screen implements NoirmStyled {
             for (Nature part : nature.components()) {
                 boolean has = owned.containsKey(part);
                 int mastery = best.getOrDefault(part, 0);
-                boolean mastered = mastery >= NatureSystem.REQUIRED_MASTERY;
+                boolean mastered = mastery >= NatureSystem.requiredMastery(nature);
                 y = wrap(g, Component.literal((has ? "✔ " : "✘ ")).append(Component.translatable(part.translationKey())),
                         x + 2, y, w - 2, has ? OWNED_GREEN : NO) + 1;
                 if (has) {
                     y = wrap(g, Component.literal("   " + (mastered ? "✔ " : "✘ ")).append(Component.translatable("screen.noirm.tree.mastery",
-                            NatureSystem.REQUIRED_MASTERY, mastery)), x + 2, y, w - 2, mastered ? OWNED_GREEN : NO) + 1;
+                            NatureSystem.requiredMastery(nature), mastery)), x + 2, y, w - 2, mastered ? OWNED_GREEN : NO) + 1;
+                }
+            }
+            if (nature.isElemental()) {
+                // Fused alone: the long trial, which also needs high chakra control.
+                float ctl = ClientShinobiData.get() == null ? 0f : ClientShinobiData.get().control();
+                boolean ok = ctl >= com.noirm.arts.FusionTrial.MIN_CTL;
+                y = wrap(g, Component.literal(ok ? "✔ " : "✘ ").append(Component.translatable("screen.noirm.tree.ctl",
+                        Math.round(com.noirm.arts.FusionTrial.MIN_CTL), Math.round(ctl))), x + 2, y, w - 2, ok ? OWNED_GREEN : NO) + 1;
+                com.noirm.arts.ArtsSync arts = ArtsScreens.arts();
+                if (arts.trialNature() == nature.ordinal()) {
+                    y = wrap(g, Component.translatable("screen.noirm.tree.trial_running", Math.round(arts.trialStage() + 1),
+                            com.noirm.arts.FusionTrial.stages(nature).size()), x + 2, y, w - 2, GOLD) + 1;
+                } else {
+                    y = wrap(g, Component.translatable("screen.noirm.tree.trial_hint"), x + 2, y, w - 2, DIM) + 1;
                 }
             }
             y += 3;
@@ -579,7 +600,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         for (JutsuCatalogPacket.Entry info : ClientJutsuCatalog.all()) {
             if (info.nature() == nature.ordinal()) {
                 boolean knows = ClientPowers.entry(info.id().toString()) != null;
-                y = wrap(g, Component.literal((knows ? "• " : "◦ ")).append(Component.translatable(Sharingan.jutsuKey(info.id()))),
+                y = wrap(g, Component.literal((knows ? "• " : "◦ ")).append(com.noirm.dojutsu.Sharingan.jutsuName(info.id())),
                         x + 2, y, w - 2, knows ? color : Theme.TEXT_FAINT);
             }
         }
@@ -599,6 +620,11 @@ public class JutsuScreen extends Screen implements NoirmStyled {
             return true;
         }
         int t = tabs.at(mouseX, mouseY);
+        if (button == 0 && t >= ArtsScreens.TAB_TRAINING) {
+            click();
+            ArtsScreens.switchTo(t);
+            return true;
+        }
         if (button == 0 && t >= 0 && t != tab.ordinal()) {
             tab = Tab.values()[t];
             scroll = 0;
@@ -680,7 +706,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         }
         if (!info.unlockAfter().isEmpty()) {
             ResourceLocation after = ResourceLocation.tryParse(info.unlockAfter());
-            String name = after == null ? info.unlockAfter() : Component.translatable(Sharingan.jutsuKey(after)).getString();
+            String name = after == null ? info.unlockAfter() : com.noirm.dojutsu.Sharingan.jutsuName(after).getString();
             return Component.translatable("screen.noirm.jutsu.unlock_after", name, info.unlockMastery()).getString();
         }
         return Component.translatable("screen.noirm.jutsu.unlock_nature").getString();

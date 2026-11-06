@@ -89,7 +89,7 @@ public class SharinganEyeItem extends Item {
             tooltip.add(Component.translatable("pattern.noirm.mangekyo." + eye.pattern()).withStyle(ChatFormatting.DARK_RED));
             for (MangekyoAbility ability : new MangekyoAbility[] {eye.left(), eye.right()}) {
                 if (ability != null) {
-                    tooltip.add(Component.literal(" · ").append(Component.translatable(Sharingan.jutsuKey(ability.jutsu()))).withStyle(ChatFormatting.RED));
+                    tooltip.add(Component.literal(" · ").append(com.noirm.dojutsu.Sharingan.jutsuName(ability.jutsu())).withStyle(ChatFormatting.RED));
                 }
             }
             tooltip.add(Component.translatable("item.noirm.sharingan_eye.strain", Math.round(eye.strain())).withStyle(ChatFormatting.GRAY));

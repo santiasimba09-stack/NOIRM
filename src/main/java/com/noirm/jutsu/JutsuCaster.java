@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING }
 
     /**
      * A jutsu in progress: hand seals before a TAP jutsu (or an NPC's cast) fires, or a CHARGE or
@@ -427,7 +427,8 @@ public final class JutsuCaster {
         JutsuSounds.held(entity, casting.def, casting.ticks);
         if (casting.def.cast() == CastType.CHARGE) {
             if (casting.def.behavior().equals("rasengan")) {
-                CanonTechniques.rasenganOrb(entity, Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge())));
+                CanonTechniques.rasenganOrb(entity, Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge())),
+                        casting.def.nature().orElse(null)); // a creation's ball takes its nature's colours
             } else if (casting.ticks <= casting.def.maxCharge() && casting.ticks % 2 == 0) {
                 // Anticipation: energy gathers in front of the caster, tighter and brighter as it fills.
                 float progress = Math.min(1f, casting.ticks / (float) Math.max(1, casting.def.maxCharge()));
@@ -564,8 +565,21 @@ public final class JutsuCaster {
 
     private static void execute(LivingEntity caster, ResourceLocation id, JutsuDefinition def, float charge) {
         castAnimation(caster, "cast_release", 10);
+        if (com.noirm.workshop.Workshop.misfires(caster, id)) {
+            // A creation not yet mastered: the chakra is spent, nothing comes out, but it's practice.
+            com.noirm.workshop.Workshop.misfire(caster, id, def);
+            afterCast(caster, id, def);
+            if (caster instanceof Player player) {
+                ShinobiCapability.get(player).ifPresent(data -> data.jutsu().setCooldown(id,
+                        Math.round(cooldown(caster, id, def) * com.noirm.workshop.Workshop.MISFIRE_COOLDOWN)));
+            }
+            return;
+        }
         runBehavior(caster, id, def, charge, true, 0);
         afterCast(caster, id, def);
+        if (com.noirm.workshop.JutsuDesign.isCreation(id)) {
+            com.noirm.workshop.Workshop.backlash(caster, id); // a strong creation tears at its user
+        }
     }
 
     private static void runBehavior(LivingEntity caster, ResourceLocation id, JutsuDefinition def, float charge, boolean start, int tick) {
@@ -594,6 +608,7 @@ public final class JutsuCaster {
             com.noirm.training.TrainingSystem.onJutsuCast(player, def.behavior()); // Body Flicker trains speed; kill XP
             ShinobiCapability.get(player).ifPresent(data -> {
                 data.jutsu().setCooldown(id, cooldown(caster, id, def));
+                com.noirm.arts.ArtsEvents.onJutsuCast(player, data, id, def); // fusion proof, shape Power stage, mind practice
                 int before = data.jutsu().masteryLevel(id);
                 data.jutsu().addXp(id, data.identity().has(ClanTrait.JUTSU_PRODIGY) ? 2 : 1);
                 if (data.jutsu().masteryLevel(id) > before) {
@@ -633,6 +648,9 @@ public final class JutsuCaster {
         }
         if ("mode".equals(def.behavior()) && !ModeSystem.isActive(caster, id) && ModeSystem.tooHurtFor(caster, def)) {
             return Result.TOO_HURT; // the Gates won't open on a body that's already spent
+        }
+        if (com.noirm.workshop.Workshop.castBlocker(caster, id) != null) {
+            return Result.TOO_DEMANDING; // a creation heavier than your Reserves, CTL and mastery can carry
         }
         return Result.OK;
     }
@@ -684,6 +702,9 @@ public final class JutsuCaster {
                 // Taijutsu techniques hit as hard as your body is trained, not your chakra.
                 power *= chakraPower(taijutsu ? data.getTaijutsu() : data.getReserves());
                 power *= 1f + MASTERY_POWER * data.jutsu().masteryLevel(id);
+                if (!com.noirm.workshop.JutsuDesign.isCreation(id)) {
+                    power *= com.noirm.arts.ShapeTraining.canonPower(data, def); // a shape you've trained
+                }
                 AwakeningData awakening = data.awakening();
                 if (awakening.isLockedIn()) {
                     power *= 1.3f;
@@ -755,6 +776,9 @@ public final class JutsuCaster {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {
                 cost *= 1f - 0.08f * data.jutsu().masteryLevel(id);
+                if (!com.noirm.workshop.JutsuDesign.isCreation(id)) {
+                    cost *= com.noirm.arts.ShapeTraining.canonCost(data, def); // a shape you've trained
+                }
                 if (data.identity().has(ClanTrait.CHAKRA_FLOW)) {
                     cost *= 0.85f;
                 }

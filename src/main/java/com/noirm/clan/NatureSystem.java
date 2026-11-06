@@ -14,17 +14,24 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * The nature tree. You <b>own</b> a nature when your clan gave it to you (or you trained or
+ * The nature tree. You <b>own</b> a nature when your clan gave it to you (or you trained, fused or
  * unlocked it). A combined nature becomes <b>available</b> once you own every nature it mixes
- * <i>and</i> have mastered ({@link #REQUIRED_MASTERY}) at least one jutsu of each; then you can
- * unlock it from the jutsu screen. Basic natures you lack stay <b>locked</b> (only very hard
- * training will open them, later).
+ * <i>and</i> have mastered each ({@link #requiredMastery}: a jutsu of it at ★4 for an elemental mix,
+ * ★2 for Yin-Yang). "Unlock" then <b>begins</b> the way to it: the long fusion trial for an
+ * elemental mix ({@link com.noirm.arts.FusionTrial}, which also needs high CTL), the Yin-Yang drill for
+ * Yin-Yang. Clans that carry a combined nature get it for free. Basic natures you lack stay
+ * <b>locked</b> here: their drills teach them ({@code nature.NatureDrills}).
  */
 public final class NatureSystem {
     public enum Status { OWNED, AVAILABLE, LOCKED }
 
-    /** Mastery (★) needed in a jutsu of each component nature. */
+    /** Mastery (★) needed in a jutsu of each half for Yin-Yang. */
     public static final int REQUIRED_MASTERY = 2;
+
+    /** Mastery (★) needed in a jutsu of each part before this combined nature can be worked toward. */
+    public static int requiredMastery(Nature nature) {
+        return nature.isElemental() ? com.noirm.arts.FusionTrial.PART_MASTERY : REQUIRED_MASTERY;
+    }
 
     private NatureSystem() {}
 
@@ -40,7 +47,7 @@ public final class NatureSystem {
             return Status.LOCKED;
         }
         for (Nature part : nature.components()) {
-            if (owned.getOrDefault(part, 0f) <= 0f || bestMastery.getOrDefault(part, 0) < REQUIRED_MASTERY) {
+            if (owned.getOrDefault(part, 0f) <= 0f || bestMastery.getOrDefault(part, 0) < requiredMastery(nature)) {
                 return Status.LOCKED;
             }
         }
@@ -64,13 +71,24 @@ public final class NatureSystem {
     }
 
     /**
-     * Unlocks an available combined nature: its affinity is your weakest component's (at most
-     * natural, 1.0), and you learn its starting jutsu. Returns false if it isn't available.
+     * Begins the way to an available combined nature: the fusion trial (an elemental mix) or the
+     * Yin-Yang drill. Returns false if it isn't available or can't begin (the player is told why).
      */
     public static boolean unlock(Player player, ShinobiData data, Nature nature) {
         if (status(data, nature) != Status.AVAILABLE) {
             return false;
         }
+        if (nature == Nature.YIN_YANG) {
+            return com.noirm.nature.NatureDrills.choose(player, data, nature);
+        }
+        return com.noirm.arts.FusionTrial.start(player, data, nature);
+    }
+
+    /**
+     * Gives a combined nature straight away (commands, old saves): its affinity is your weakest
+     * component's (at most natural, 1.0), and you learn its starting jutsu.
+     */
+    public static boolean grantCombined(Player player, ShinobiData data, Nature nature) {
         float affinity = Clan.SECONDARY_AFFINITY;
         for (Nature part : nature.components()) {
             affinity = Math.min(affinity, data.identity().affinity(part));
@@ -117,7 +135,7 @@ public final class NatureSystem {
             data.jutsu().learn(entry.getKey(), false);
             data.jutsu().equipIfRoom(entry.getKey());
             player.sendSystemMessage(Component.translatable("message.noirm.jutsu.unlocked_stat",
-                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(entry.getKey()))).withStyle(ChatFormatting.AQUA));
+                    com.noirm.dojutsu.Sharingan.jutsuName(entry.getKey())).withStyle(ChatFormatting.AQUA));
             learned++;
         }
         if (learned > 0) {
@@ -145,7 +163,7 @@ public final class NatureSystem {
             data.jutsu().learn(entry.getKey(), false);
             data.jutsu().equipIfRoom(entry.getKey());
             player.sendSystemMessage(Component.translatable("message.noirm.jutsu.unlocked",
-                    Component.translatable(com.noirm.dojutsu.Sharingan.jutsuKey(entry.getKey()))).withStyle(ChatFormatting.AQUA));
+                    com.noirm.dojutsu.Sharingan.jutsuName(entry.getKey())).withStyle(ChatFormatting.AQUA));
             learned++;
         }
         if (learned > 0) {
