@@ -182,6 +182,7 @@ class Player:
         self.xp = {k: 0.0 for k in self.STATS}
         self.jutsu = 4  # two clan starters + Substitution + Body Flicker
         self.sage = False
+        self.casts = 0.0  # casts of the main clan starter (mastery)
 
     def grant(self, stat, xp):
         if xp <= 0:
@@ -246,6 +247,7 @@ def fight(p, foe_power, a, g):
     taken = a["DAMAGE_SHARE"] * p.max_health()
     p.grant("vit", taken * g["VITALITY_XP_PER_DAMAGE"] * factor)
     p.grant("dur", 100 * a["DAMAGE_SHARE"] * g["DUR_XP_PER_PERCENT"] * factor)
+    p.casts += a["JUTSU_PER_FIGHT"] * 0.5
     spent = a["JUTSU_PER_FIGHT"] * a["JUTSU_COST"]
     p.grant("res", spent * g["RESERVES_XP_PER_CHAKRA"])
     p.grant("ctl", spent / 2 * g["CTL_PRESSURE_XP"])
@@ -309,7 +311,6 @@ def simulate(g, a, max_hours=60, verbose=False):
     drill_needed = g["DRILL_SECONDS"] / 60 / (g["HIDDEN_PACE"] if a["HIDDEN_CHANCE"] >= 0.5 else 1)
     natures = a["CLAN_NATURES"]
     second_jutsu_casts = 0
-    starter_casts = 0
     village = False
     met_hermit = False
     shopping = [("bingo_book", g["BINGO_BOOK_PRICE"]), ("chakra_paper", g["RYO_PER_EMERALD"]), ("swift_seals", 150),
@@ -341,7 +342,8 @@ def simulate(g, a, max_hours=60, verbose=False):
             mark("10,000 ryo earned", minute)
         if int(minute) // 60 not in curve:
             h = int(minute) // 60
-            curve[h] = (round(p.power(), 1), class_of(p.power(), g), round(ninja_power(danger(g, a["HOME_DISTANCE"], h) * 1.0, g), 1),
+            curve[h] = (round(p.power(), 1), class_of(p.power(), g),
+                        round(ninja_power(danger(g, a["HOME_DISTANCE"], h) * g["ENCOUNTERS"]["rogue"]["leader_strength"], g), 1),
                         round(ninja_power(danger(g, 1200, h) * g["ENCOUNTERS"]["rogue_strong"]["leader_strength"], g), 1), g["RANKS"][rank_index][0])
         day = int(minute // day_len)
         in_day = minute % day_len
@@ -388,15 +390,17 @@ def simulate(g, a, max_hours=60, verbose=False):
             p.drill("spd", hits * a["STRING_SHARE"] * g["FAST_STRING_XP"])
             # practising jutsu between strings
             casts = budget * 60 * g["CHAKRA_REGEN_PER_TICK"] * 20 * (1 + (p.s["res"] - 10) * g["REGEN_PER_RESERVES"]) / a["JUTSU_COST"]
-            starter_casts += casts * 0.5
+            p.casts += casts * 0.5
             p.drill("res", casts * a["JUTSU_COST"] * g["RESERVES_XP_PER_CHAKRA"])
             mark("first training (dummy)", minute)
-            if starter_casts >= 1:
+            if p.casts >= 1:
                 mark("first jutsu cast", minute)
-            if starter_casts >= 10:
+            if p.casts >= 10:
                 mark("first ★ (10 casts)", minute)
-            if starter_casts >= 30:
+            if p.casts >= 30:
                 mark("first ★2 (a mastery chain opens)", minute)
+            if p.casts >= 60:
+                mark("fire clan: Great Fireball ★3 (60 casts; S-rank chain jutsu, ungated)", minute)
             continue
         # Exams and rank-ups.
         if rank_index + 1 < len(g["RANKS"]):
@@ -527,9 +531,11 @@ def simulate(g, a, max_hours=60, verbose=False):
         # Second nature: its first jutsu to ★2 (30 casts) opens the combined nature in the tree.
         if natures >= 2:
             second_jutsu_casts += budget * 2.0
-            if second_jutsu_casts >= 30 and starter_casts >= 30:
+            if second_jutsu_casts >= 30 and p.casts >= 30:
                 mark("combined nature (kekkei genkai) unlocked", minute)
         # Reserves gate for A/S jutsu from scrolls, rank gates (B chūnin, A jōnin, S ANBU).
+        if p.casts >= 60 and p.s["res"] >= g["RESERVES_FOR_RANK"][5]:
+            mark("fire clan: S-rank chain jutsu with the Reserves 40 gate", minute)
         if p.s["res"] >= g["RESERVES_FOR_RANK"][4] and rank_index >= 3:
             mark("A-rank jutsu (scroll or Rensai, gates met)", minute)
         if p.s["res"] >= g["RESERVES_FOR_RANK"][5] and rank_index >= 4:
@@ -576,7 +582,12 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--hours", type=float, default=60)
     ap.add_argument("--set", action="append", default=[], help="override an assumption, e.g. SKILL=1.0")
+    ap.add_argument("--root", help="read the numbers from another checkout (e.g. an older commit, to compare)")
     args = ap.parse_args()
+    if args.root:
+        global JAVA, DATA
+        JAVA = os.path.join(args.root, "src", "main", "java", "com", "noirm")
+        DATA = os.path.join(args.root, "src", "main", "resources", "data", "noirm")
     g = read_game()
     a = dict(ASSUMPTIONS)
     for kv in args.set:
@@ -608,7 +619,7 @@ def main():
     print(f"Exam fails: {ev.get('_exam_fails', {})}; missions skipped as unwinnable: {ev.get('_skipped', {})}; "
           f"minutes where local wild ninjas were too strong: {ev.get('_too_strong_minutes', 0)}")
     print()
-    print("Mastery-chain shortcuts (casts of a clan starter to reach the jutsu, no rank or Reserves gate):")
+    print("Mastery-chain routes (casts of a clan starter; from casting, the jutsu also waits for the Reserves of its rank: B 15, A 25, S 40):")
     for casts, jid, rank, nature, root, root_rank in chain_shortcuts(g)[:8]:
         print(f"  {jid} ({rank}) from {root} ({root_rank}): {casts if casts is not None else '-'} casts")
 
