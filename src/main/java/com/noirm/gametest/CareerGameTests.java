@@ -208,6 +208,47 @@ public final class CareerGameTests {
         helper.succeed();
     }
 
+    /** Playthrough bug: senbon bought 16 for 40 ryo sold back for 5 each (a money loop); crafted ones sold for 15 each elsewhere. */
+    @GameTest(template = "empty", batch = "noirm_career_shop_loop")
+    public static void shopsNeverBuyBackForMoreThanTheySell(GameTestHelper helper) {
+        floor(helper);
+        Player player = player(helper);
+        BlockPos home = helper.absolutePos(new BlockPos(1, 1, 1));
+        VillageMerchant smith = NoirmEntities.VILLAGE_MERCHANT.get().create(helper.getLevel());
+        smith.moveTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5);
+        smith.setup(VillageMerchant.Role.MERCHANT, VillageMerchant.SHOP_WEAPONS, home, home, 4);
+        helper.getLevel().addFreshEntity(smith);
+        VillageMerchant store = NoirmEntities.VILLAGE_MERCHANT.get().create(helper.getLevel());
+        store.moveTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5);
+        store.setup(VillageMerchant.Role.MERCHANT, VillageMerchant.SHOP_GENERAL, home, home, 4);
+        helper.getLevel().addFreshEntity(store);
+        Ryo.give(player, 1000);
+        // Buy every stackable weapon the smith sells, sell the whole lot back: never a profit.
+        for (net.minecraft.world.item.Item item : List.of(NinjaWeapons.SENBON.get(), NinjaWeapons.SHURIKEN.get(), NinjaWeapons.KUNAI.get(),
+                NinjaWeapons.EXPLOSIVE_TAG.get())) {
+            int start = Ryo.balance(player);
+            helper.assertTrue(Shop.trade(player, smith, index(Shop.rows(smith, player), item, false)), "bought " + item);
+            int bought = Shop.count(player, item);
+            for (int i = 0; i < bought; i++) {
+                int sell = index(Shop.rows(smith, player), item, true);
+                helper.assertTrue(sell >= 0 && Shop.trade(player, smith, sell), "sold back " + item);
+            }
+            helper.assertTrue(Ryo.balance(player) < start, "buying and selling back " + item + " loses ryo (" + start + " -> "
+                    + Ryo.balance(player) + ")");
+        }
+        // Crafted senbon at a shop that doesn't stock them: pennies, not 15 ryo each.
+        player.getInventory().add(new ItemStack(NinjaWeapons.SENBON.get(), 8));
+        int at = index(Shop.rows(store, player), NinjaWeapons.SENBON.get(), true);
+        helper.assertTrue(at >= 0 && Shop.rows(store, player).get(at).price() == Shop.LOOT_STACKABLE, "loose senbon are worth "
+                + Shop.LOOT_STACKABLE + " each");
+        // A wheat straw hat is not worth a flak vest.
+        helper.assertTrue(Shop.lootPrice(NoirmGear.STRAW_HAT.get(), List.of()) < Shop.lootPrice(NoirmGear.FLAK_VEST.get(), List.of()),
+                "cheap cloth sells for less than a vest");
+        smith.discard();
+        store.discard();
+        helper.succeed();
+    }
+
     private static int index(List<Shop.Row> rows, net.minecraft.world.item.Item item, boolean sell) {
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).sell() == sell && rows.get(i).stack().is(item)) {
@@ -462,6 +503,7 @@ public final class CareerGameTests {
         career(player).setPoints(150);
         helper.assertTrue(Exams.start(player, board), "the chūnin exam starts");
         SparringNinja rival = (SparringNinja) helper.getLevel().getEntity(career(player).exam().examiner);
+        helper.assertTrue(rival.tails() == 0 && rival.tailsSettled(), "an exam rival is never a jinchūriki (playthrough fix)");
         player.invulnerableTime = 0;
         player.hurt(rival.damageSources().mobAttack(rival), 100000f);
         helper.assertTrue(player.isAlive() && player.getHealth() >= 1f, "nobody dies: " + player.getHealth());
@@ -515,6 +557,7 @@ public final class CareerGameTests {
         CareerData.Exam exam = career(player).exam();
         helper.assertTrue(exam != null && exam.stage == CareerData.Exam.Stage.FIGHT, "now the fight");
         SparringNinja jonin = (SparringNinja) helper.getLevel().getEntity(exam.examiner);
+        helper.assertTrue(jonin.tails() == 0 && jonin.tailsSettled(), "the jōnin examiner holds no beast");
         jonin.invulnerableTime = 0;
         jonin.hurt(jonin.damageSources().playerAttack(player), 100000f);
         helper.assertTrue(PlayerRank.of(player) == PlayerRank.JONIN, "jōnin");

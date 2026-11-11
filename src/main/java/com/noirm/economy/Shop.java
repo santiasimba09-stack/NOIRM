@@ -43,6 +43,10 @@ public final class Shop {
     public static final int RYO_PER_EMERALD_SOLD = 15;
     /** Loot the weaponsmith and general store buy: gear, other weapons; a shop's own goods go for this share of their price. */
     public static final int LOOT_GEAR = 20, LOOT_OTHER = 15, RESELL_DIVISOR = 4;
+    /** Loot that stacks (throwing weapons, tags) that the shop doesn't sell itself: ryo per piece. */
+    public static final int LOOT_STACKABLE = 1;
+    /** Gear the shop doesn't sell itself: ryo per armor point (capped at {@link #LOOT_GEAR}). */
+    public static final int LOOT_PER_DEFENSE = 4;
 
     /** One line in a shop: buy {@code stack} for {@code price} ryo, or sell it for that. */
     public record Row(ItemStack stack, int price, boolean sell, PlayerRank need) {}
@@ -134,16 +138,34 @@ public final class Shop {
                     continue;
                 }
                 listed.add(item);
-                int price = item instanceof ArmorItem ? LOOT_GEAR : LOOT_OTHER;
-                for (Row row : rows) {
-                    if (!row.sell() && row.stack().is(item)) {
-                        price = Math.max(5, row.price() / Math.max(1, row.stack().getCount()) / RESELL_DIVISOR);
-                    }
-                }
-                rows.add(new Row(new ItemStack(item), price, true, PlayerRank.ACADEMY));
+                rows.add(new Row(new ItemStack(item), lootPrice(item, rows), true, PlayerRank.ACADEMY));
             }
         }
         return rows;
+    }
+
+    /**
+     * What a shop pays for one piece of loot. Something it also sells: a quarter of its own price
+     * per piece (at least 1), so buying and selling back always loses ryo (it used to be at least 5,
+     * and senbon sold 16 for 40 ryo went back for 5 each: a money loop). Anything else: gear
+     * {@link #LOOT_PER_DEFENSE} per armor point up to {@link #LOOT_GEAR} (a wheat straw hat isn't
+     * worth a flak vest), a weapon {@link #LOOT_OTHER}, but things that stack (senbon, shuriken,
+     * kunai, tags) only {@link #LOOT_STACKABLE} each, so a handful of iron nuggets crafted into
+     * senbon isn't worth hundreds of ryo. Public for tests.
+     */
+    public static int lootPrice(Item item, List<Row> rows) {
+        for (Row row : rows) {
+            if (!row.sell() && row.stack().is(item)) {
+                return Math.max(1, row.price() / Math.max(1, row.stack().getCount()) / RESELL_DIVISOR);
+            }
+        }
+        if (item.getMaxStackSize() > 1) {
+            return LOOT_STACKABLE;
+        }
+        if (item instanceof ArmorItem armor) {
+            return Math.max(2, Math.min(LOOT_GEAR, LOOT_PER_DEFENSE * armor.getDefense())); // a cloth hat 4, a flak vest 20
+        }
+        return LOOT_OTHER;
     }
 
     /** Gear and weapons from this mod (not food, eggs, money or mission items). */

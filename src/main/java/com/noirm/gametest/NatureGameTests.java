@@ -93,6 +93,32 @@ public final class NatureGameTests {
         helper.succeed();
     }
 
+    /**
+     * Playthrough: Great Fireball ★3 (60 casts) taught a brand-new Academy student Great Fire
+     * Annihilation (S). From casting, a chain jutsu now waits for the Reserves its rank needs (S: 40),
+     * and comes by itself once they're there.
+     */
+    @GameTest(template = "empty")
+    public static void masteryChainsWaitForTheReservesARankNeeds(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        com.noirm.clan.ClanSystem.assign(player, data, TestClans.FIRE);
+        ResourceLocation fireball = Noirm.id("katon/great_fireball");
+        ResourceLocation annihilation = Noirm.id("katon/great_fire_annihilation");
+        ResourceLocation phoenix = Noirm.id("katon/phoenix_flower");
+        helper.assertTrue("S".equals(JutsuData.get(annihilation).rank()), "Great Fire Annihilation is S rank");
+        data.setReserves(10f);
+        data.jutsu().addXp(fireball, 60); // ★3
+        NatureSystem.checkMasteryUnlocks(player, data, fireball, true);
+        helper.assertTrue(data.jutsu().knows(phoenix), "a C-rank jutsu needs no Reserves");
+        helper.assertFalse(data.jutsu().knows(annihilation), "an S-rank jutsu waits for Reserves 40");
+        NatureSystem.checkWaitingUnlocks(player, data);
+        helper.assertFalse(data.jutsu().knows(annihilation), "still waiting at Reserves 10");
+        data.setReserves(40f);
+        helper.assertTrue(NatureSystem.checkWaitingUnlocks(player, data) >= 1 && data.jutsu().knows(annihilation), "learned at Reserves 40");
+        helper.succeed();
+    }
+
     /** Casts every nature jutsu once (from a ninja with every nature) at a target in front: no errors, and it gets hurt. */
     @GameTest(template = "empty", batch = "noirm_all_jutsu", timeoutTicks = 4800) // 16 ticks a jutsu: room for the chakra wave's new ones
     public static void everyNatureJutsuWorks(GameTestHelper helper) {

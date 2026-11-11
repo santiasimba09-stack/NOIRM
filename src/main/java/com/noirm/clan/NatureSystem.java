@@ -146,9 +146,20 @@ public final class NatureSystem {
 
     /**
      * After {@code id} reaches a new mastery level: learn every jutsu that unlocks from it (when
-     * you have its nature). Returns how many were learned.
+     * you have its nature). Returns how many were learned. Ungated: commands and tests use this.
      */
     public static int checkMasteryUnlocks(Player player, ShinobiData data, ResourceLocation id) {
+        return checkMasteryUnlocks(player, data, id, false);
+    }
+
+    /**
+     * As above; {@code gated} (real casting): a B-, A- or S-rank jutsu also needs the Reserves a
+     * scroll of that rank needs ({@code JutsuLearning.RESERVES_FOR_RANK}: 15 / 25 / 40), so a new
+     * Academy student can't master the Great Fireball 60 times and hold an S-rank jutsu in their
+     * first half hour (playthrough). Until then the player is told what's missing, and
+     * {@link #checkWaitingUnlocks} teaches it the moment their Reserves are there.
+     */
+    public static int checkMasteryUnlocks(Player player, ShinobiData data, ResourceLocation id, boolean gated) {
         int level = data.jutsu().masteryLevel(id);
         int learned = 0;
         for (Map.Entry<ResourceLocation, JutsuDefinition> entry : JutsuData.all().entrySet()) {
@@ -158,6 +169,45 @@ public final class NatureSystem {
                 continue;
             }
             if (def.nature().isPresent() && data.identity().affinity(def.nature().get()) <= 0f) {
+                continue;
+            }
+            float need = reservesFor(def);
+            if (gated && data.getReserves() < need) {
+                player.sendSystemMessage(Component.translatable("message.noirm.jutsu.unlock_waits",
+                        com.noirm.dojutsu.Sharingan.jutsuName(entry.getKey()), def.rank(), Math.round(need),
+                        Math.round(data.getReserves())).withStyle(ChatFormatting.DARK_AQUA));
+                continue;
+            }
+            data.jutsu().learn(entry.getKey(), false);
+            data.jutsu().equipIfRoom(entry.getKey());
+            player.sendSystemMessage(Component.translatable("message.noirm.jutsu.unlocked",
+                    com.noirm.dojutsu.Sharingan.jutsuName(entry.getKey())).withStyle(ChatFormatting.AQUA));
+            learned++;
+        }
+        if (learned > 0) {
+            player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.6f);
+            data.markPowersDirty();
+        }
+        return learned;
+    }
+
+    /** The Reserves a jutsu of this rank needs (the same as a scroll of that rank). */
+    public static float reservesFor(JutsuDefinition def) {
+        return com.noirm.nature.JutsuLearning.RESERVES_FOR_RANK[com.noirm.nature.JutsuLearning.rankIndex(def.rank())];
+    }
+
+    /**
+     * Mastery-chain jutsu that were waiting for Reserves: learned once the stat is there (checked
+     * with the other stat unlocks every two seconds). Returns how many were learned.
+     */
+    public static int checkWaitingUnlocks(Player player, ShinobiData data) {
+        int learned = 0;
+        for (Map.Entry<ResourceLocation, JutsuDefinition> entry : JutsuData.all().entrySet()) {
+            JutsuDefinition def = entry.getValue();
+            JutsuDefinition.Unlock unlock = def.unlock().orElse(null);
+            if (unlock == null || unlock.after() == null || data.jutsu().knows(entry.getKey()) || !data.jutsu().knows(unlock.after())
+                    || data.jutsu().masteryLevel(unlock.after()) < unlock.mastery() || data.getReserves() < reservesFor(def)
+                    || def.nature().isPresent() && data.identity().affinity(def.nature().get()) <= 0f) {
                 continue;
             }
             data.jutsu().learn(entry.getKey(), false);

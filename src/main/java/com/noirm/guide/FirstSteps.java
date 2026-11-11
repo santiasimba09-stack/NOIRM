@@ -113,6 +113,12 @@ public final class FirstSteps {
             return;
         }
         player.sendSystemMessage(tip(step, guide.step()));
+        if (step == Step.BOARD && player.level() instanceof net.minecraft.server.level.ServerLevel level) {
+            Component hint = villageHint(level, player.blockPosition());
+            if (hint != null) {
+                player.sendSystemMessage(hint.copy().withStyle(ChatFormatting.GRAY));
+            }
+        }
         player.level().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 0.4f, 1.6f);
         guide.addReminder();
         guide.setNextTip(now + REMIND_TICKS);
@@ -152,6 +158,40 @@ public final class FirstSteps {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("/noirm guide tips off"))));
         return Component.translatable("guide.noirm.tip", index + 1, Step.values().length).withStyle(ChatFormatting.GOLD)
                 .append(" ").append(body.copy().withStyle(ChatFormatting.WHITE)).append(" ").append(skip);
+    }
+
+    /** How far the board tip looks for a settlement (structure search radius, in chunks; about 1,000 blocks). */
+    public static final int HINT_RADIUS_CHUNKS = 64;
+
+    /**
+     * "Travellers say the nearest ninja settlement is about 300 blocks to the north-east." A new
+     * survival player has no /locate, and settlements are a few hundred blocks apart: without this
+     * the last tip was a dead end (playthrough). Null if none is near. Public for tests.
+     */
+    public static Component villageHint(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos from) {
+        return villageHint(level, from, HINT_RADIUS_CHUNKS);
+    }
+
+    /** {@link #villageHint(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos)} within {@code radius} chunks. */
+    public static Component villageHint(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos from, int radius) {
+        net.minecraft.core.BlockPos found;
+        try {
+            found = level.findNearestMapStructure(com.noirm.world.village.VillageAtmosphere.VILLAGES, from, radius, false);
+        } catch (RuntimeException e) {
+            return null; // worlds without structure generation
+        }
+        if (found == null) {
+            return null;
+        }
+        double dx = found.getX() - from.getX(), dz = found.getZ() - from.getZ();
+        double distance = Math.sqrt(dx * dx + dz * dz);
+        if (distance < 48) {
+            return null; // already there
+        }
+        String[] dirs = {"east", "south_east", "south", "south_west", "west", "north_west", "north", "north_east"};
+        int octant = Math.floorMod((int) Math.round(Math.atan2(dz, dx) / (Math.PI / 4)), 8);
+        return Component.translatable("guide.noirm.tip.board_hint", Math.max(50, (int) (Math.round(distance / 50.0) * 50)),
+                Component.translatable("command.noirm.sage.dir." + dirs[octant]));
     }
 
     /** Puts a handbook in the player's bag (or at their feet if it's full). */

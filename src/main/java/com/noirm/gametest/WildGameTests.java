@@ -152,7 +152,7 @@ public final class WildGameTests {
         float veteran = WildSpawner.danger(level, spawn, 72000L * 5);
         helper.assertTrue(Math.abs(atSpawn - WildSpawner.BASE_DANGER) < 0.01f, "at spawn, for a new player: the base danger");
         helper.assertTrue(far > atSpawn + 20, "far from spawn they're much stronger: " + far);
-        helper.assertTrue(veteran > atSpawn + 10, "and after hours of play: " + veteran);
+        helper.assertTrue(veteran > atSpawn + 5 * WildSpawner.DANGER_PER_HOUR - 0.01f && veteran > atSpawn + 5, "and after hours of play: " + veteran);
         helper.assertTrue(WildSpawner.danger(level, spawn.offset(100000, 0, 0), 72000L * 1000)
                 <= WildSpawner.BASE_DANGER + WildSpawner.DISTANCE_DANGER_MAX + WildSpawner.TIME_DANGER_MAX + 0.01f, "with a ceiling");
         // Rogues don't turn up next to the spawn, the dangerous rogue only far away after an hour.
