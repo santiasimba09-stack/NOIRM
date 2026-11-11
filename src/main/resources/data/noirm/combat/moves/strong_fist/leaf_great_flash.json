@@ -1,10 +1,10 @@
 {
   "animation": "noirm:leaf_great_flash",
   "timing": {
-    "windup": 8,
+    "windup": 6,
     "active": 3,
-    "recovery": 13,
-    "cancel_after": 8
+    "recovery": 9,
+    "cancel_after": 6
   },
   "hit": {
     "damage": 8,
@@ -14,9 +14,11 @@
     "knockback": 0.3,
     "lunge": 0.4,
     "hitstun": 20,
-    "hitstop": 6,
+    "hitstop": 4,
     "shake": 1.0,
-    "knockdown": true
+    "knockdown": true,
+    "guard_break": true,
+    "ender": "knockdown"
   },
   "next": {
     "light": "noirm:strong_fist/jab"

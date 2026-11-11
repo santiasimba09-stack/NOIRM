@@ -1,10 +1,10 @@
 {
   "animation": "noirm:elbow_strike",
   "timing": {
-    "windup": 3,
+    "windup": 2,
     "active": 2,
-    "recovery": 6,
-    "cancel_after": 2
+    "recovery": 4,
+    "cancel_after": 1
   },
   "hit": {
     "damage": 3.5,
@@ -14,12 +14,15 @@
     "knockback": 0.15,
     "lunge": 0.2,
     "hitstun": 7,
-    "hitstop": 2,
+    "hitstop": 1,
     "shake": 0.3
   },
   "next": {
     "light": "noirm:brawler/rising_knee",
     "heavy": "noirm:brawler/headbutt",
     "grab": "noirm:clinch/grab"
+  },
+  "variants": {
+    "low": "noirm:brawler/body_hook"
   }
 }

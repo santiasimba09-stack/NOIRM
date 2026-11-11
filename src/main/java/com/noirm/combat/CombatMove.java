@@ -124,9 +124,12 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
             }
         }
 
-        /** Heavy hits get weightier sounds and particles. */
+        /** This much hit-stop (or more) makes a hit heavy. Was 4 before the 2026-11 rebuild shortened hit-stops by a tick. */
+        public static final int HEAVY_HITSTOP = 3;
+
+        /** Heavy hits get weightier sounds and particles (and perception focus, gore). Enders always count. */
         public boolean isHeavy() {
-            return hitstop >= 4;
+            return hitstop >= HEAVY_HITSTOP || ender != Ender.NONE;
         }
     }
 }

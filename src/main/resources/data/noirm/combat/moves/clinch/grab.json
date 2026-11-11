@@ -1,9 +1,9 @@
 {
   "animation": "noirm:clinch_grab",
   "timing": {
-    "windup": 4,
+    "windup": 3,
     "active": 3,
-    "recovery": 8,
+    "recovery": 6,
     "cancel_after": 2
   },
   "hit": {

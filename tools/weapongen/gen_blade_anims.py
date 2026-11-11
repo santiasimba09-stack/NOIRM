@@ -13,7 +13,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "animgen"))
-from motion import Anim, P, mirror, strike  # noqa: E402
+from motion import Anim, P, mirror, stance_set  # noqa: E402
+# The 2026-11 rebuild: attacks are snap() key poses (same arguments as the old strike()).
+from motion import snap as strike  # noqa: E402
 
 MOVES = "src/main/resources/data/noirm/combat/moves"
 ANIMS = []
@@ -29,24 +31,33 @@ def add(anim):
     return anim
 
 
+# Sub-stances per moveset (as in tools/weapongen/gen_moves.py STANCES).
+KINDS = {
+    "tanto": ("aggressive", "defensive", "low"), "katana": ("aggressive", "defensive"), "greatsword": ("aggressive", "defensive"),
+    "tonfa": ("aggressive", "defensive", "low"), "spear": ("aggressive", "defensive", "low"),
+    "claws": ("aggressive", "defensive", "low"), "fan": ("aggressive", "defensive"),
+}
+
+
 def stance(name, pose, period, breathe):
-    a = Anim(name, period, loop=True)
-    a.key(0, pose, "catmullrom").key(period / 2, pose.add(**breathe), "catmullrom").key(period, pose, "catmullrom")
-    return add(a)
+    key = name[len("stance_"):]
+    for a in stance_set(key, pose, period, breathe, KINDS.get(key, ()), lead="right"):
+        add(a)
 
 
-LEGS_R = dict(right_leg=(-20, 0, 4, 30), left_leg=(18, 0, -10, 24))
-LEGS_L = dict(left_leg=(-20, 0, -4, 30), right_leg=(18, 0, 10, 24))
-WIDE = dict(left_leg=(-26, 0, -10, 40), right_leg=(22, 0, 14, 32))
+# Wider, lower footwork (the rebuild): legs further apart, knees deeper, hips down.
+LEGS_R = dict(right_leg=(-26, 0, 9, 38), left_leg=(24, 0, -15, 32), body=dict(pos=(0, -1.6, 0)))
+LEGS_L = dict(left_leg=(-26, 0, -9, 38), right_leg=(24, 0, 15, 32), body=dict(pos=(0, -1.6, 0)))
+WIDE = dict(left_leg=(-32, 0, -15, 48), right_leg=(28, 0, 19, 40), body=dict(pos=(0, -2.2, 0)))
 BREATHE = dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 3), left_arm=(-2, 0, 0, 3))
 
 # ------------------------------------------------------------------ stances
-TANTO = P(torso=(16, -20, 0, 12), right_arm=(-40, 30, 0, 95), left_arm=(-75, 10, -5, 105), body=dict(pos=(0, -1.2, 0)), **LEGS_R)
+TANTO = P(torso=(18, -26, 0, 12), right_arm=(-40, 30, 0, 95), left_arm=(-75, 10, -5, 105), **LEGS_R)
 KATANA = P(torso=(6, -10, 0, 4), right_arm=(-55, 15, 0, 25), left_arm=(-60, 40, 0, 40), **LEGS_R)          # both hands, mid guard
-GREAT = P(torso=(8, 20, 0, 6), right_arm=(-35, 35, 10, 30), left_arm=(-40, 55, -5, 45), body=dict(pos=(0, -0.8, 0)), **WIDE)
+GREAT = P(torso=(8, 26, 0, 6), right_arm=(-35, 35, 10, 30), left_arm=(-40, 55, -5, 45), **WIDE)
 TONFA = P(torso=(12, 10, 0, 10), right_arm=(-70, -15, 8, 120), left_arm=(-80, 15, -8, 125), **LEGS_L)      # forearms up like a boxer
-SPEAR = P(torso=(10, 30, 0, 6), right_arm=(-25, 10, 5, 40), left_arm=(-60, 40, -5, 25), body=dict(pos=(0, -1, 0)), **LEGS_L)
-CLAWS = P(torso=(22, 0, 0, 16), right_arm=(-60, -20, 10, 70), left_arm=(-60, 20, -10, 70), body=dict(pos=(0, -1.8, 0)), **WIDE)
+SPEAR = P(torso=(10, 36, 0, 6), right_arm=(-25, 10, 5, 40), left_arm=(-60, 40, -5, 25), **LEGS_L)
+CLAWS = P(torso=(24, 0, 0, 16), right_arm=(-60, -20, 10, 70), left_arm=(-60, 20, -10, 70), **WIDE)
 FAN = P(torso=(4, -25, 0, 2), right_arm=(-75, 35, 0, 40), left_arm=(-20, 0, -15, 40), **LEGS_R)
 
 stance("stance_tanto", TANTO, 20, BREATHE)
@@ -111,7 +122,7 @@ def spin(name, move, base, arms=((-85, 0, 30, 0), (-85, 0, -30, 0))):
     sp = Anim(name, w + a + r, timing=(w, a, r))
     sp.key(0, base)
     sp.key(w * 0.6, base(torso=(8, 40, 0, 6), right_arm=(-80, 50, 0, 10), left_arm=(-80, 60, 0, 20), body=dict(rot=(0, 30, 0))), "easeOutQuad")
-    sp.key(w, base(torso=(8, 0, 0, 4), right_arm=arms[0], left_arm=arms[1], body=dict(rot=(0, -150, 0), pos=(0, 1, 0))), "easeInQuad")
+    sp.snapkey(w, base(torso=(10, 0, 0, 4), right_arm=arms[0], left_arm=arms[1], body=dict(rot=(0, -150, 0), pos=(0, 0, 0))), hold=1)
     sp.key(w + a, base(torso=(8, 0, 0, 4), right_arm=arms[0], left_arm=arms[1], body=dict(rot=(0, -330, 0), pos=(0, 1, 0))), "linear")
     sp.key(w + a + r, base(body=dict(rot=(0, -360, 0))), "easeOutQuad")
     return add(sp)
@@ -221,6 +232,17 @@ add(strike("fan_gust", FAN,
 rising("fan_rising", "fan/rising", FAN)
 cut("fan_glide", "fan/glide", FAN, (-80, 50, 0, 40), (-90, -60, 0, 5), (6, 30, 0, 4), (16, -45, 0, 8), lunge=-9,
     legs=dict(right_leg=(-44, 0, 4, 40), left_leg=(32, 0, -8, 10)))
+
+
+# ------------------------------------------------------------------ dodge counters (the rebuild)
+# A 1-tick wind-up strike from behind or beside the enemy, timed from <moveset>/counter.
+cut("tanto_counter", "tanto/counter", TANTO, (-85, -60, 0, 60), (-92, 60, 0, 10), (16, -45, 0, 10), (18, 34, 0, 8))
+cut("katana_counter", "katana/counter", KATANA, (-35, -60, 0, 25), (-90, 60, 0, 5), (14, -50, 0, 8), (16, 45, 0, 6), two_hand=True, lunge=-3)
+cut("greatsword_counter", "greatsword/counter", GREAT, (-70, -75, 0, 15), (-72, 72, 0, 5), (12, -55, 0, 8), (14, 55, 0, 6), two_hand=True)
+left("tonfa_counter", "tonfa/counter", TONFA, (-80, -30, 0, 100), (-88, 55, 0, 60), (10, 40, 0, 8), (18, -40, 0, 10))
+cut("spear_counter", "spear/counter", SPEAR, (-60, -60, 10, 20), (-78, 60, 0, 10), (8, -50, 0, 6), (14, 45, 0, 6), two_hand=True)
+cut("claws_counter", "claws/counter", CLAWS, (-60, -60, 0, 50), (-82, 60, 0, 10), (16, -40, 0, 12), (24, 40, 0, 14))
+cut("fan_counter", "fan/counter", FAN, (-90, -50, 0, 70), (-92, 55, 0, 5), (12, -45, 0, 6), (10, 35, 0, 4))
 
 
 if __name__ == "__main__":

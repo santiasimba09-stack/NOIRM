@@ -9,5 +9,24 @@
     "back_heavy": "noirm:gentle_fist/trigram_sweep"
   },
   "byakugan": true,
-  "npc_weight": 0
+  "npc_weight": 0,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_gentle_fist",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_gentle_fist_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_gentle_fist_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_gentle_fist_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:gentle_fist/counter_palm"
 }

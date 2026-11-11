@@ -8,5 +8,20 @@
     "back_heavy": "noirm:fan/flourish"
   },
   "npc_weight": 0,
-  "playable": false
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_fan",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_fan_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_fan_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:fan/counter"
 }

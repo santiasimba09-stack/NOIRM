@@ -1,10 +1,10 @@
 {
   "animation": "noirm:lion_palms",
   "timing": {
-    "windup": 7,
+    "windup": 5,
     "active": 3,
-    "recovery": 12,
-    "cancel_after": 7
+    "recovery": 9,
+    "cancel_after": 5
   },
   "hit": {
     "range": 3.4,
@@ -15,9 +15,10 @@
     "knockback": 1.5,
     "lunge": 1.0,
     "hitstun": 15,
-    "hitstop": 5,
+    "hitstop": 3,
     "shake": 0.75,
-    "chakra": 18
+    "chakra": 18,
+    "ender": "splat"
   },
   "next": {
     "light": "noirm:gentle_fist/palm"

@@ -1,6 +1,29 @@
 {
   "animation": "noirm:counter_kick",
-  "timing": { "windup": 9, "active": 3, "recovery": 12, "cancel_after": 7 },
-  "hit": { "damage": 7, "posture": 28, "range": 3.0, "arc": 100, "knockback": 0.9, "lunge": 0.4, "hitstun": 14, "hitstop": 5, "shake": 0.8 },
-  "next": { "light": "noirm:basic/jab" }
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 7,
+    "posture": 28,
+    "range": 3.0,
+    "arc": 100,
+    "knockback": 0.9,
+    "lunge": 0.4,
+    "hitstun": 14,
+    "hitstop": 3,
+    "shake": 0.8,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:basic/jab"
+  },
+  "variants": {
+    "aggressive": "noirm:basic/axe_kick",
+    "defensive": "noirm:basic/push_kick",
+    "air": "noirm:basic/air_kick"
+  }
 }

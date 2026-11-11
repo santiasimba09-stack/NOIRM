@@ -1,10 +1,10 @@
 {
   "animation": "noirm:strong_fist_straight",
   "timing": {
-    "windup": 3,
+    "windup": 2,
     "active": 2,
-    "recovery": 6,
-    "cancel_after": 2
+    "recovery": 5,
+    "cancel_after": 1
   },
   "hit": {
     "damage": 4,
@@ -14,11 +14,11 @@
     "knockback": 0.3,
     "lunge": 0.3,
     "hitstun": 8,
-    "hitstop": 3,
+    "hitstop": 2,
     "shake": 0.35
   },
   "next": {
-    "light": "noirm:strong_fist/leaf_whirlwind",
+    "light": "noirm:strong_fist/rapid_kick",
     "heavy": "noirm:strong_fist/leaf_great_flash",
     "launcher": "noirm:strong_fist/leaf_rising_wind"
   }

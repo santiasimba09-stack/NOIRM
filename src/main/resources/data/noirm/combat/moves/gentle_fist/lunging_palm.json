@@ -1,10 +1,10 @@
 {
   "animation": "noirm:lunging_palm",
   "timing": {
-    "windup": 4,
+    "windup": 3,
     "active": 2,
-    "recovery": 8,
-    "cancel_after": 3
+    "recovery": 6,
+    "cancel_after": 2
   },
   "hit": {
     "range": 3.2,
@@ -15,7 +15,7 @@
     "knockback": 0.3,
     "lunge": 0.8,
     "hitstun": 9,
-    "hitstop": 3,
+    "hitstop": 2,
     "shake": 0.35,
     "chakra": 8
   },

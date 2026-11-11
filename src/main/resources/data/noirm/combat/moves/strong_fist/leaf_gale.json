@@ -1,10 +1,10 @@
 {
   "animation": "noirm:leaf_gale",
   "timing": {
-    "windup": 6,
+    "windup": 5,
     "active": 4,
-    "recovery": 11,
-    "cancel_after": 6
+    "recovery": 8,
+    "cancel_after": 5
   },
   "hit": {
     "damage": 5,
@@ -13,7 +13,7 @@
     "arc": 360,
     "knockback": 0.4,
     "hitstun": 16,
-    "hitstop": 4,
+    "hitstop": 3,
     "shake": 0.6,
     "knockdown": true
   },
