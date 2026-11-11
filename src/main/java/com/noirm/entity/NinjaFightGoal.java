@@ -106,7 +106,18 @@ class NinjaFightGoal extends Goal {
             List.of(AttackInput.LIGHT, AttackInput.BACK_HEAVY),
             List.of(AttackInput.BACK_LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
             List.of(AttackInput.FORWARD_LIGHT, AttackInput.LIGHT),
-            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LAUNCHER, AttackInput.LIGHT, AttackInput.LIGHT));
+            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LAUNCHER, AttackInput.LIGHT, AttackInput.LIGHT),
+            // The rebuild's long strings: the full light route to its ender, and its branches.
+            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT),
+            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
+            List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
+            List.of(AttackInput.BACK_LIGHT, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT));
+    /** Against a raised guard, pressing: a quick hit puts them in the aggressive sub-stance, whose heavy is often a guard break. */
+    private static final List<AttackInput> GUARD_BREAK = List.of(AttackInput.LIGHT, AttackInput.HEAVY);
+    /** Chance per tick (in dash range, between combos) of a dash strike: sprinting into an attack. */
+    static final float DASH_STRIKE_CHANCE = 0.08f;
+    static final double DASH_STRIKE_MIN = 3.2;
+    static final double DASH_STRIKE_MAX = 6.0;
     /** Against a raised guard: grab (grabs beat guard), knee twice, then headbutt or throw. */
     private static final List<List<AttackInput>> GRAPPLES = List.of(
             List.of(AttackInput.GRAB, AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
@@ -251,19 +262,33 @@ class NinjaFightGoal extends Goal {
 
         thinkJutsu(target, distance, false);
         CombatState opponent = CombatStates.getIfPresent(target);
+        // A perfect dodge just opened a counter window: strike now (it lands from behind or beside them).
+        if (self.dodgeCounterTicks() > 0 && !self.isGuarding() && CombatSystem.canAttackNow(ninja)) {
+            combo.clear();
+            if (CombatSystem.requestAttack(ninja, AttackInput.LIGHT)) {
+                attackCooldown = 6;
+                return;
+            }
+        }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= 2.2 && !self.isGuarding()
                 && opponent != null && opponent.isGuarding() && ninja.getRandom().nextFloat() < 0.5f) {
-            combo.addAll(GRAPPLES.get(ninja.getRandom().nextInt(GRAPPLES.size())));
+            combo.addAll(ninja.getRandom().nextBoolean() ? GUARD_BREAK : GRAPPLES.get(ninja.getRandom().nextInt(GRAPPLES.size())));
         }
-        if (combo.isEmpty() && attackCooldown <= 0 && distance > ATTACK_RANGE + 0.5 && distance < 5 && !self.isGuarding()
-                && ninja.getRandom().nextFloat() < 0.03f) {
-            combo.add(AttackInput.FORWARD_HEAVY); // a dash attack to close the gap
+        if (combo.isEmpty() && attackCooldown <= 0 && distance > DASH_STRIKE_MIN && distance < DASH_STRIKE_MAX && !self.isGuarding()
+                && ninja.getRandom().nextFloat() < DASH_STRIKE_CHANCE) {
+            // A dash strike to close the gap: sprint in, then the forward attack (and maybe a follow-up).
+            ninja.getNavigation().moveTo(target, 1.6);
+            combo.add(ninja.getRandom().nextBoolean() ? AttackInput.FORWARD_HEAVY : AttackInput.FORWARD_LIGHT);
+            if (ninja.getRandom().nextBoolean()) {
+                combo.add(AttackInput.LIGHT);
+            }
         }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()) {
             combo.addAll(COMBOS.get(ninja.getRandom().nextInt(COMBOS.size())));
         }
         if (!combo.isEmpty() && CombatSystem.canAttackNow(ninja)) {
-            if (distance > (combo.peek() == AttackInput.FORWARD_HEAVY ? 5.5 : ATTACK_RANGE + 1)) {
+            boolean dashing = combo.peek() == AttackInput.FORWARD_HEAVY || combo.peek() == AttackInput.FORWARD_LIGHT;
+            if (distance > (dashing ? DASH_STRIKE_MAX : ATTACK_RANGE + 1)) {
                 combo.clear(); // target escaped: stop swinging at air
             } else if (CombatSystem.requestAttack(ninja, combo.peek())) {
                 combo.poll();

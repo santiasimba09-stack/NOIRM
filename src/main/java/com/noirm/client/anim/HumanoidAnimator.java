@@ -745,13 +745,13 @@ public final class HumanoidAnimator {
     /** The ninja run: chest leaning in, head up, arms swept straight back. */
     static void ninjaRun(SkeletonPose p, float w, boolean arms) {
         SkeletonPose run = new SkeletonPose();
-        run.set(Bone.TORSO, SkeletonPose.RX, 0.55f);
-        run.set(Bone.TORSO, SkeletonPose.BEND, 0.18f);
+        run.set(Bone.TORSO, SkeletonPose.RX, 0.68f); // the rebuild: a deeper lean (was 0.55)
+        run.set(Bone.TORSO, SkeletonPose.BEND, 0.22f);
         run.set(Bone.TORSO, SkeletonPose.RY, p.get(Bone.TORSO, SkeletonPose.RY) * 0.4f);
         run.set(Bone.HEAD, SkeletonPose.RX, p.get(Bone.HEAD, SkeletonPose.RX) - 0.6f);
         if (arms) {
-            run.set(Bone.RIGHT_ARM, SkeletonPose.RX, 1.25f);
-            run.set(Bone.LEFT_ARM, SkeletonPose.RX, 1.25f);
+            run.set(Bone.RIGHT_ARM, SkeletonPose.RX, 1.4f); // swept further back (was 1.25)
+            run.set(Bone.LEFT_ARM, SkeletonPose.RX, 1.4f);
             run.set(Bone.RIGHT_ARM, SkeletonPose.RY, 0f);
             run.set(Bone.LEFT_ARM, SkeletonPose.RY, 0f);
             run.set(Bone.RIGHT_ARM, SkeletonPose.RZ, 0.22f);
@@ -905,7 +905,7 @@ public final class HumanoidAnimator {
     }
 
     /** How far (pixels) the hips may sink to keep both feet down. */
-    static final float MAX_PELVIS_DROP = 3f;
+    static final float MAX_PELVIS_DROP = 4.5f; // the rebuild's wider, lower stances (was 3)
 
     /** Plants one leg; returns how many pixels short of the ground it still is (0 if it reached). */
     /**

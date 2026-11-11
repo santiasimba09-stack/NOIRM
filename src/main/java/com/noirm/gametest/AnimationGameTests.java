@@ -40,7 +40,7 @@ public final class AnimationGameTests {
     private AnimationGameTests() {}
 
     /** Every file in assets/noirm/player_animation, parsed with the NPC evaluator, by animation name. */
-    private static Map<String, KeyframeAnimation> loadAll(GameTestHelper helper) {
+    static Map<String, KeyframeAnimation> loadAll(GameTestHelper helper) {
         Path folder = ModList.get().getModFileById(Noirm.MOD_ID).getFile().findResource("assets", Noirm.MOD_ID, "player_animation");
         Map<String, KeyframeAnimation> all = new HashMap<>();
         try (Stream<Path> files = Files.list(folder)) {
@@ -122,18 +122,19 @@ public final class AnimationGameTests {
         helper.assertTrue(all.get("elbow_strike").hasBend(Bone.RIGHT_ARM), "elbow_strike should bend the right elbow");
         helper.assertTrue(all.get("knee_strike").hasBend(Bone.RIGHT_LEG), "knee_strike should bend the right knee");
         helper.assertTrue(all.get("stance_brawler").hasBend(Bone.TORSO), "the brawler stance should hunch at the waist");
-        // The jab lands on the move's contact tick (windup 3 of 11): lead arm straight out, feet stepping in.
+        // The jab lands on the move's contact tick (windup 2 of 8): lead arm straight out, feet stepping in.
         KeyframeAnimation jab = all.get("quick_jab");
-        assertNear(helper, 11f, jab.lengthTicks, "quick_jab is as long as the move");
+        assertNear(helper, 8f, jab.lengthTicks, "quick_jab is as long as the move");
+        assertNear(helper, 2f, jab.strikeTick, "quick_jab's strike marker is the hit tick");
         pose.clear();
-        jab.sample(3f, pose);
+        jab.sample(2f, pose);
         assertNear(helper, (float) Math.toRadians(-90), pose.get(Bone.LEFT_ARM, SkeletonPose.RX), "jab: lead arm level at contact");
-        assertNear(helper, (float) Math.toRadians(4), pose.get(Bone.LEFT_ARM, SkeletonPose.BEND), "jab: elbow straight at contact");
+        assertNear(helper, 0f, pose.get(Bone.LEFT_ARM, SkeletonPose.BEND), "jab: elbow fully straight at contact (snap pose)");
         helper.assertTrue(pose.isSet(Bone.LEFT_LEG, SkeletonPose.RX), "jab: the feet step too");
         // Bends come out in radians: the elbow strike's folded elbow at contact.
         KeyframeAnimation elbow = all.get("elbow_strike");
         pose.clear();
-        elbow.sample(3f, pose);
+        elbow.sample(2f, pose);
         assertNear(helper, (float) Math.toRadians(150), pose.get(Bone.RIGHT_ARM, SkeletonPose.BEND), "elbow bend at contact");
         // Loops wrap: a stance one cycle later is the same pose.
         KeyframeAnimation stance = all.get("stance_basic");

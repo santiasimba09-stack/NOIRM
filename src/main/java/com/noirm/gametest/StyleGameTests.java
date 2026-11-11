@@ -33,7 +33,7 @@ public final class StyleGameTests {
     @GameTest(template = "empty")
     public static void directionalAttacksAndStyles(GameTestHelper helper) {
         Player player = helper.makeMockPlayer();
-        assertMove(helper, player, AttackInput.FORWARD_HEAVY, "basic/heavy_kick", "a dash attack falls back to the plain one");
+        assertMove(helper, player, AttackInput.FORWARD_HEAVY, "basic/flying_kick", "a dash heavy is the flying kick");
         assertMove(helper, player, AttackInput.BACK_LIGHT, "basic/low_sweep", "holding back sweeps low");
         assertMove(helper, player, AttackInput.GRAB, "clinch/grab", "everyone can grab");
         var data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);

@@ -20,7 +20,7 @@
         0.0,
         0.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -62,7 +62,7 @@
         -4.5,
         3.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -106,7 +106,7 @@
         0.0,
         0.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -144,7 +144,7 @@
        "vector": [
         60.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -182,7 +182,7 @@
         0.0,
         0.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -226,7 +226,7 @@
         0.0,
         20.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -264,7 +264,7 @@
        "vector": [
         130.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -302,7 +302,7 @@
         0.0,
         -20.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -340,7 +340,7 @@
        "vector": [
         130.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -378,7 +378,7 @@
         0.0,
         0.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -416,7 +416,7 @@
        "vector": [
         150.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -454,7 +454,7 @@
         0.0,
         0.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [
@@ -492,7 +492,7 @@
        "vector": [
         150.0
        ],
-       "easing": "easeInQuad"
+       "easing": "snap"
       },
       "0.35": {
        "vector": [

@@ -30,6 +30,8 @@ public final class ClientCombat {
     private static int staminaFlashTicks;
 
     public static final int FOCUS_PULSE_TICKS = 20;
+    /** Camera shake left after each tick: a sharp punch that dies quickly (was 0.8 before the 2026-11 rebuild). */
+    static final float SHAKE_DECAY = 0.68f;
 
     private ClientCombat() {}
 
@@ -99,7 +101,7 @@ public final class ClientCombat {
     }
 
     static void tick() {
-        shake = shake < 0.01f ? 0f : shake * 0.8f;
+        shake = shake < 0.01f ? 0f : shake * SHAKE_DECAY;
         if (focusTicks > 0) {
             focusTicks--;
         }

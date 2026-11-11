@@ -768,7 +768,7 @@ public final class CombatSystem {
         state.perfectDodgeUsed = false;
         enterPhase(entity, state, CombatPhase.DODGE, DODGE_TICKS);
         com.noirm.movement.MovementFeel.noteDodge(entity); // a dodge is the roll that skips landing recovery
-        CombatEffects.dodge(entity, forward >= 0, DODGE_TICKS);
+        CombatEffects.dodge(entity, forward, strafe, DODGE_TICKS);
         TrainingSystem.onDodge(entity);
         return true;
     }

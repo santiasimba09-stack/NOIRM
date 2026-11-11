@@ -236,12 +236,14 @@ final class CombatEffects {
         feedback(entity, Feedback.Kind.POSTURE_BREAK, 0.7f);
     }
 
-    static void dodge(LivingEntity entity, boolean forward, int ticks) {
+    static void dodge(LivingEntity entity, float forward, float strafe, int ticks) {
         sound(entity, NoirmSounds.SWING_HEAVY.get(), 0.4f, 1.2f);
         if (entity.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.CLOUD, entity.getX(), entity.getY() + 0.1, entity.getZ(), 6, 0.3, 0.05, 0.3, 0.02);
         }
-        ResourceLocation roll = Noirm.id(forward ? "forward_roll" : "backward_roll");
+        // A sideways dodge is a quick side step (the dodge counter then comes in from the side); otherwise a roll.
+        ResourceLocation roll = Noirm.id(Math.abs(strafe) > Math.abs(forward) ? (strafe > 0 ? "dodge_side_left" : "dodge_side_right")
+                : forward >= 0 ? "forward_roll" : "backward_roll");
         if (entity instanceof Player) {
             NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), roll, ticks));
         } else if (entity instanceof CombatAnimated animated) {

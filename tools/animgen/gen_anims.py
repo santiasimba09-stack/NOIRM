@@ -585,7 +585,7 @@ TUCK = P(torso=(55, 0, 0, 60), head=(45, 0, 0), right_arm=(-70, 0, 20, 130), lef
          right_leg=(-125, 0, 0, 150), left_leg=(-125, 0, 0, 150))
 roll = Anim("forward_roll", 12)
 roll.key(0, P(torso=(20, 0, 0, 10), right_leg=(-30, 0, 0, 60), left_leg=(-30, 0, 0, 60), body=dict(pos=(0, -2, 0))))
-roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -4.5, -3))), "easeInQuad")
+roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -4.5, -3))), "snap")  # the rebuild: tucked at once
 roll.key(7, TUCK(body=dict(rot=(260, 0, 0), pos=(0, -4.5, -8))), "linear")
 roll.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(345, 0, 0), pos=(0, -3, -10))), "easeOutQuad")
@@ -593,12 +593,25 @@ roll.key(12, P(body=dict(rot=(360, 0, 0), pos=(0, 0, -10))), "easeInOutSine")
 add(roll)
 back = Anim("backward_roll", 12)
 back.key(0, P(torso=(10, 0, 0, 10), right_leg=(-40, 0, 0, 80), left_leg=(-40, 0, 0, 80), body=dict(pos=(0, -3, 0))))
-back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -4.5, 3))), "easeInQuad")
+back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -4.5, 3))), "snap")
 back.key(7, TUCK(body=dict(rot=(-260, 0, 0), pos=(0, -4.5, 8))), "linear")
 back.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(-345, 0, 0), pos=(0, -3, 10))), "easeOutQuad")
 back.key(12, P(body=dict(rot=(-360, 0, 0), pos=(0, 0, 10))), "easeInOutSine")
 add(back)
+# Side steps (the rebuild): a sideways dodge snaps low and wide to the side, leaning away, hands up;
+# the dodge counter then comes in from that side.
+for side, sign in (("left", 1), ("right", -1)):
+    out = P(torso=(18, 0, 22 * sign, 10), head=(0, 0, -12 * sign), right_arm=(-100, -20, 8, 120), left_arm=(-104, 20, -8, 125),
+            right_leg=(-10, 0, 30 if sign < 0 else 6, 60), left_leg=(-10, 0, -30 if sign > 0 else -6, 60),
+            body=dict(pos=(1.5 * sign, -4, 0), rot=(0, 0, 10 * sign)))  # the entity itself slides sideways
+    step = Anim("dodge_side_" + side, 10)
+    step.key(0, P(torso=(8, 0, 0, 4), right_arm=(-60, 0, 5, 90), left_arm=(-60, 0, -5, 90), right_leg=(0, 0, 4, 20),
+                  left_leg=(0, 0, -4, 20)))
+    step.key(2, out, "snap", hold=4)
+    step.key(10, P(torso=(8, 0, 0, 4), right_arm=(-60, 0, 5, 90), left_arm=(-60, 0, -5, 90), right_leg=(0, 0, 4, 20),
+                   left_leg=(0, 0, -4, 20)), "easeOutQuad")
+    add(step)
 
 # ------------------------------------------------------------------ weapons
 t = timing_of("kunai/slash", (3, 2, 6))
