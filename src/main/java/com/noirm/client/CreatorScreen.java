@@ -338,7 +338,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     }
 
     private void drawFace(GuiGraphics g, int y, int mx, int my) {
-        y = option(g, y, Slot.EYES, mx, my);
+        y = eyeShapes(g, y, mx, my);
         y = color(g, y, Tone.EYE, mx, my);
         y = option(g, y, Slot.NOSE, mx, my);
         y = option(g, y, Slot.JAW, mx, my);
@@ -349,6 +349,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
 
     private void drawBody(GuiGraphics g, int y, int mx, int my) {
         y = color(g, y, Tone.SKIN, mx, my);
+        y = option(g, y, Slot.BODY, mx, my);
+        y = option(g, y, Slot.FRAME, mx, my);
         y = option(g, y, Slot.MUSCLE, mx, my);
         y = option(g, y, Slot.SCAR, mx, my);
         y = option(g, y, Slot.WEATHERING, mx, my);
@@ -369,11 +371,144 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     }
 
     private void drawHair(GuiGraphics g, int y, int mx, int my) {
-        y = option(g, y, Slot.HAIR, mx, my);
+        y = hairStyles(g, y, mx, my);
         y = option(g, y, Slot.HAIR_LENGTH, mx, my);
         y = option(g, y, Slot.HAIR_VOLUME, mx, my);
-        y = color(g, y, Tone.HAIR, mx, my);
-        fineTune(g, y + 4, mx, my);
+        y = colorGrid(g, y, Tone.HAIR, mx, my);
+        fineTune(g, y + 2, mx, my);
+    }
+
+    private static final net.minecraft.resources.ResourceLocation HAIR_ICONS = com.noirm.Noirm.id("textures/gui/hair_styles.png");
+    private static final int ICON = 48;
+    private static final int ICON_COLS = 8;
+
+    /**
+     * Every hair style as a small picture (drawn by tools/skingen/gen_hair.py, tinted with the chosen colour),
+     * in a grid; the chosen one outlined, its name on hover.
+     */
+    private int hairStyles(GuiGraphics g, int y, int mx, int my) {
+        int x = px + 8;
+        int w = pw - 16;
+        int count = Slot.HAIR.size();
+        int tile = Mth.clamp(w / 9, 18, 30);
+        int cols = Math.max(1, (w + 2) / (tile + 2));
+        int rows = (count + cols - 1) / cols;
+        int current = draft.get(Slot.HAIR);
+        int rgb = draft.color(Tone.HAIR);
+        // brighten very dark colours a little so the picture still shows its shape
+        float r = Math.max(0.3f, ((rgb >> 16) & 0xFF) / 255f);
+        float gr = Math.max(0.3f, ((rgb >> 8) & 0xFF) / 255f);
+        float b = Math.max(0.3f, (rgb & 0xFF) / 255f);
+        for (int i = 0; i < count; i++) {
+            int tx = x + (i % cols) * (tile + 2);
+            int ty = y + (i / cols) * (tile + 2);
+            boolean over = mx >= tx && mx < tx + tile && my >= ty && my < ty + tile;
+            float hv = hover.get(HoverTracker.key(5, i), over);
+            g.fill(tx, ty, tx + tile, ty + tile, Theme.mix(RAISED, RAISED_HOVER, hv));
+            int u = (i % ICON_COLS) * ICON;
+            int v = (i / ICON_COLS) * ICON;
+            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+            g.setColor(r, gr, b, 1f);
+            g.blit(HAIR_ICONS, tx + 1, ty + 1, tile - 2, tile - 2, u, v, ICON, ICON, ICON * ICON_COLS, ICON * 3);
+            g.setColor(1f, 1f, 1f, 1f);
+            if (i == current) {
+                g.renderOutline(tx - 1, ty - 1, tile + 2, tile + 2, CHAKRA);
+            } else if (over) {
+                g.renderOutline(tx - 1, ty - 1, tile + 2, tile + 2, DIM);
+            }
+            int index = i;
+            hits.add(new Hit(tx, ty, tile, tile, () -> {
+                draft.set(Slot.HAIR, index);
+                changed();
+            }, List.of(Component.translatable(Slot.HAIR.translationKey(i)))));
+        }
+        return y + rows * (tile + 2) + 3;
+    }
+
+    /** All of a tone's swatches in wrapped rows (the hair's 40), and the current colour at the end. */
+    private int colorGrid(GuiGraphics g, int y, Tone tone, int mx, int my) {
+        int x = px + 8;
+        Component label = Component.translatable("creator.noirm.tone." + tone.key());
+        g.drawString(font, cut(label, LABEL_W - 4), x, y + 1, tone == activeTone ? CHAKRA : DIM, false);
+        hits.add(new Hit(x, y, LABEL_W, 10, () -> activeTone = tone, null));
+        int sx = x + LABEL_W;
+        int size = 8;
+        int cols = Math.max(1, (px + pw - 8 - sx) / (size + 1));
+        int[] palette = tone.palette();
+        int current = draft.color(tone);
+        boolean inPalette = false;
+        for (int i = 0; i <= palette.length; i++) {
+            int cx = sx + (i % cols) * (size + 1);
+            int cy = y + (i / cols) * (size + 1);
+            boolean custom = i == palette.length;
+            int c = custom ? current : palette[i];
+            g.fill(cx, cy, cx + size, cy + size, 0xFF000000 | c);
+            boolean over = mx >= cx && mx < cx + size && my >= cy && my < cy + size;
+            if (!custom && c == current) {
+                inPalette = true;
+                g.renderOutline(cx - 1, cy - 1, size + 2, size + 2, PAPER);
+            } else if (custom) {
+                g.renderOutline(cx - 1, cy - 1, size + 2, size + 2, inPalette ? IRON : PAPER);
+            } else if (over) {
+                g.renderOutline(cx - 1, cy - 1, size + 2, size + 2, DIM);
+            }
+            if (custom) {
+                hits.add(new Hit(cx, cy, size, size, () -> activeTone = tone,
+                        List.of(Component.literal(String.format("#%06X", current)), Component.translatable("creator.noirm.custom_color"))));
+            } else {
+                hits.add(new Hit(cx, cy, size, size, () -> {
+                    draft.setColor(tone, c);
+                    activeTone = tone;
+                    changed();
+                }, null));
+            }
+        }
+        int rows = (palette.length + 1 + cols - 1) / cols;
+        return y + rows * (size + 1) + 3;
+    }
+
+    private static final String[] EYE_SHAPES = {"round", "sharp", "wide", "narrow", "pale"};
+
+    /** The eye shapes as chips, each showing the eye itself (the in-game high-detail atlas, in your eye colour). */
+    private int eyeShapes(GuiGraphics g, int y, int mx, int my) {
+        int x = px + 8;
+        int right = px + pw - 8;
+        g.drawString(font, cut(Component.translatable("creator.noirm.slot.eyes"), LABEL_W - 4), x, y + 5, DIM, false);
+        int bx = x + LABEL_W;
+        int n = EYE_SHAPES.length;
+        int cw = Math.max(16, (right - bx - (n - 1) * 2) / n);
+        int ch = 18;
+        int current = draft.get(Slot.EYES);
+        int iris = SkinComposer.tint(draft.color(Tone.EYE), 186);
+        for (int i = 0; i < n; i++) {
+            int cx = bx + i * (cw + 2);
+            boolean over = mx >= cx && mx < cx + cw && my >= y && my < y + ch;
+            float hv = hover.get(HoverTracker.key(6, i), over);
+            g.fill(cx, y, cx + cw, y + ch, Theme.mix(RAISED, RAISED_HOVER, hv));
+            int index = Slot.EYES.indexOf(EYE_SHAPES[i]);
+            net.minecraft.resources.ResourceLocation atlas = com.noirm.Noirm.id("textures/entity/eyes/" + EYE_SHAPES[i] + ".png");
+            int ew = Math.min(cw - 2, (ch - 2) * 64 / 40);
+            int eh = ew * 40 / 64;
+            int ex = cx + (cw - ew) / 2;
+            int ey = y + (ch - eh) / 2;
+            g.fill(ex, ey, ex + ew, ey + eh, 0xFF000000 | draft.color(Tone.SKIN)); // a patch of skin under the eye
+            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+            for (int layer = 0; layer < 3; layer++) {
+                if (layer == 1) {
+                    g.setColor(((iris >> 16) & 0xFF) / 255f, ((iris >> 8) & 0xFF) / 255f, (iris & 0xFF) / 255f, 1f);
+                }
+                g.blit(atlas, ex, ey, ew, eh, layer * 64, 0, 64, 40, 512, 64);
+                g.setColor(1f, 1f, 1f, 1f);
+            }
+            if (index == current) {
+                g.renderOutline(cx - 1, y - 1, cw + 2, ch + 2, CHAKRA);
+            }
+            hits.add(new Hit(cx, y, cw, ch, () -> {
+                draft.set(Slot.EYES, index);
+                changed();
+            }, List.of(Component.translatable(Slot.EYES.translationKey(index)))));
+        }
+        return y + ch + 3;
     }
 
     /** "Label   <  value  >": click the arrows (or scroll over the row) to change it. */

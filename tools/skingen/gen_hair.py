@@ -907,6 +907,54 @@ def render(style, colour, view, size=200, tex=None, scale=10.0, swing=0.0):
     return img.resize((size, size), Image.LANCZOS)
 
 
+ICONS = os.path.join(ASSETS, "textures/gui/hair_styles.png")
+ICON = 48
+ICON_COLS = 8
+
+
+def icons(styles, tex):
+    """The creator's style picker thumbnails: one ICON x ICON cell per style in PlayerLook's order (the last is
+    bald), hair in light gray (the screen tints it with the chosen colour), the head a dark silhouette."""
+    n = len(styles) + 1
+    rows = (n + ICON_COLS - 1) // ICON_COLS
+    sheet = np.zeros((rows * ICON, ICON_COLS * ICON, 4), np.uint8)
+    big = ICON * 4
+    for i in range(n):
+        st = styles[i] if i < len(styles) else {"locks": []}
+        r = Raster(big, big / 21.0, big * 0.66)
+        r.rgb[:] = 0
+        view = (32, 10)
+        Ld = unit(v3(-0.35, -0.75, -0.55))
+        head = [v3(x, y, z) for x in (-4, 4) for y in (-8, 0) for z in (-4, 4)]
+        for a, b, c_, d, nrm in ((0, 1, 3, 2, v3(-1, 0, 0)), (4, 6, 7, 5, v3(1, 0, 0)), (0, 4, 5, 1, v3(0, -1, 0)),
+                                 (2, 3, 7, 6, v3(0, 1, 0)), (0, 2, 6, 4, v3(0, 0, -1)), (1, 5, 7, 3, v3(0, 0, 1))):
+            P = [project(head[k], view) for k in (a, b, c_, d)]
+            li = 0.6 + 0.4 * abs(np.dot(nrm, Ld))
+            r.tri([P[0], P[1], P[2]], None, 1, (70, 66, 64), None, li)
+            r.tri([P[0], P[2], P[3]], None, 1, (70, 66, 64), None, li)
+        for lock in st["locks"]:
+            if lock["tex"] == "clump":
+                u0, uw = lock["cell"] * 32 / TEX, 32 / TEX
+            else:
+                u0, uw = (128 + lock["cell"] * 64) / TEX, 64 / TEX
+            for q, face, v0, v1 in lock_quads(lock):
+                nrm = np.cross(q[3] - q[0], q[1] - q[0])
+                P = [project(p, view) for p in q]
+                UV = [(u0, v0), (u0 + uw, v0), (u0 + uw, v1), (u0, v1)]
+                li = 0.5 + 0.5 * abs(np.dot(unit(nrm), Ld)) if np.linalg.norm(nrm) > 1e-9 else 0.7
+                sh = FACE_SHADE[face] * lock["shade"]
+                r.tri([P[0], P[1], P[2]], [UV[0], UV[1], UV[2]], sh, (205, 205, 205), tex, li)
+                r.tri([P[0], P[2], P[3]], [UV[0], UV[2], UV[3]], sh, (205, 205, 205), tex, li)
+        alpha = (r.z < 1e8).astype(np.float32) * 255
+        img = np.concatenate([np.clip(r.rgb, 0, 255), alpha[..., None]], -1).astype(np.uint8)
+        small = np.array(Image.fromarray(img, "RGBA").resize((ICON, ICON), Image.LANCZOS))
+        y0, x0 = (i // ICON_COLS) * ICON, (i % ICON_COLS) * ICON
+        sheet[y0:y0 + ICON, x0:x0 + ICON] = small
+    os.makedirs(os.path.dirname(ICONS), exist_ok=True)
+    Image.fromarray(sheet, "RGBA").save(ICONS, optimize=True)
+    print("wrote %d style icons to %s" % (n, os.path.relpath(ICONS, ROOT)))
+
+
 def preview(styles, out_path, colours=None, views=None):
     tex = np.array(Image.open(TEXTURE).convert("RGBA"))
     views = views or [(0, 6), (40, 10), (90, 4), (180, 6)]
@@ -939,6 +987,7 @@ def main():
         built.append(data)
     print("wrote %d hair styles (%d locks) to %s" % (len(built), sum(len(b["locks"]) for b in built),
                                                      os.path.relpath(STYLE_DIR, ROOT)))
+    icons(built, np.array(Image.open(TEXTURE).convert("RGBA")))
     if a.preview:
         chosen = [b for b in built if not a.styles or b["id"] in a.styles]
         preview(chosen, a.preview)
