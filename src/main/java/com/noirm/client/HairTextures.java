@@ -8,8 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 
 import java.io.InputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -24,25 +22,21 @@ public final class HairTextures {
 
     private static int[] gray;   // ARGB with the gray value in the red channel
     private static int size;
-    private static final Map<Integer, ResourceLocation> TEXTURES = new LinkedHashMap<>(32, 0.75f, true) {
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Integer, ResourceLocation> eldest) {
-            if (size() > MAX_CACHED) {
-                Minecraft.getInstance().getTextureManager().release(eldest.getValue());
-                return true;
-            }
-            return false;
-        }
-    };
+    /** By colour, oldest first (a primitive map: looking a colour up every frame allocates nothing). */
+    private static final it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap<ResourceLocation> TEXTURES =
+            new it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap<>();
 
     private HairTextures() {}
 
     /** The strand texture in this colour (0xRRGGBB), or null if the source is missing. */
     public static ResourceLocation get(int rgb) {
         rgb &= 0xFFFFFF;
-        ResourceLocation id = TEXTURES.get(rgb);
+        ResourceLocation id = TEXTURES.getAndMoveToLast(rgb);
         if (id != null) {
             return id;
+        }
+        if (TEXTURES.size() >= MAX_CACHED) {
+            Minecraft.getInstance().getTextureManager().release(TEXTURES.removeFirst());
         }
         if (!loadSource()) {
             return null;

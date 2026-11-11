@@ -20,8 +20,6 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * High-detail eyes (docs/ART_STYLE.md, "Hair, eyes and bodies rework"): each eye drawn once more as a small
@@ -50,11 +48,14 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
     private static final float Z_BACK = -4.01f;
     private static final float Z_TOP = -4.045f;
     private static final int FULL_BRIGHT = 0xF000F0;
-    private static final Map<String, int[]> NPC = new HashMap<>();
+    private static final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<String> NPC = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
+    private static final it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap MERCHANTS = new it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap();
     private static final Vector3f POS = new Vector3f();
     private static final Vector3f NRM = new Vector3f();
 
     static {
+        NPC.defaultReturnValue(Long.MIN_VALUE);
+        MERCHANTS.defaultReturnValue(Long.MIN_VALUE);
         for (int i = 0; i < SHAPES.length; i++) {
             TYPES[i] = RenderType.entityCutoutNoCull(Noirm.id("textures/entity/eyes/" + SHAPES[i] + ".png"));
         }
@@ -70,8 +71,8 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
         if (entity.isInvisible() || (GoreClient.severed(entity.getId()) & 1) != 0) {
             return;
         }
-        int[] spec = spec(entity); // {shape, eye colour}
-        if (spec == null) {
+        long spec = spec(entity); // shape << 24 | eye colour
+        if (spec < 0) {
             return;
         }
         ModelPart head = getParentModel().head;
@@ -92,11 +93,11 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
         }
         poseStack.pushPose();
         head.translateAndRotate(poseStack);
-        VertexConsumer consumer = buffers.getBuffer(TYPES[spec[0]]);
+        VertexConsumer consumer = buffers.getBuffer(TYPES[(int) (spec >>> 24)]);
         Matrix4f pose = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
         int overlay = LivingEntityRenderer.getOverlayCoords(entity, 0f);
-        int iris = SkinComposer.tint(spec[1], 186);
+        int iris = SkinComposer.tint((int) (spec & 0xFFFFFF), 186);
         float ir = ((iris >> 16) & 0xFF) / 255f;
         float ig = ((iris >> 8) & 0xFF) / 255f;
         float ib = (iris & 0xFF) / 255f;
@@ -140,37 +141,49 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
         consumer.vertex(POS.x(), POS.y(), POS.z(), r, g, b, 1f, u, v, overlay, light, NRM.x(), NRM.y(), NRM.z());
     }
 
-    /** {eye shape index, eye colour} for this entity, or null if it has no look of ours (account skins). */
-    static int[] spec(LivingEntity entity) {
+    /** {eye shape index << 24 | eye colour} for this entity, or -1 if it has no look of ours (account skins). */
+    static long spec(LivingEntity entity) {
         if (entity instanceof Player player) {
             PlayerLook look = PlayerSkins.lookFor(player);
-            return look == null ? null : new int[]{shape(look.id(PlayerLook.Slot.EYES)), look.color(PlayerLook.Tone.EYE)};
+            return look == null ? -1L : pack(shape(look.id(PlayerLook.Slot.EYES)), look.color(PlayerLook.Tone.EYE));
         }
-        String key;
-        if (entity instanceof SparringNinja ninja) {
-            key = ninja.outfit();
-        } else if (entity instanceof VillageMerchant merchant) {
-            key = VillageMerchantRenderer.lookKey(merchant);
-        } else {
-            return null;
-        }
-        if (key.isEmpty()) {
-            return null;
-        }
-        int[] cached = NPC.get(key);
-        if (cached == null) {
-            try {
-                NinjaLook.Features f = NinjaLook.decode(key);
-                cached = new int[]{shape(f.get("eyes")), f.color("eye_color")};
-            } catch (RuntimeException e) {
-                cached = new int[]{0, 0x3A2A22};
+        if (entity instanceof VillageMerchant merchant) {
+            long cached = MERCHANTS.get(entity.getId());
+            if (cached == Long.MIN_VALUE) {
+                cached = decode(VillageMerchantRenderer.lookKey(merchant));
+                if (MERCHANTS.size() > 512) {
+                    MERCHANTS.clear();
+                }
+                MERCHANTS.put(entity.getId(), cached);
             }
+            return cached;
+        }
+        if (!(entity instanceof SparringNinja ninja) || ninja.outfit().isEmpty()) {
+            return -1L;
+        }
+        String key = ninja.outfit();
+        long cached = NPC.getLong(key);
+        if (cached == Long.MIN_VALUE) {
+            cached = decode(key);
             if (NPC.size() > 512) {
                 NPC.clear();
             }
             NPC.put(key, cached);
         }
         return cached;
+    }
+
+    private static long pack(int shape, int color) {
+        return ((long) shape << 24) | (color & 0xFFFFFFL);
+    }
+
+    private static long decode(String key) {
+        try {
+            NinjaLook.Features f = NinjaLook.decode(key);
+            return pack(shape(f.get("eyes")), f.color("eye_color"));
+        } catch (RuntimeException e) {
+            return pack(0, 0x3A2A22);
+        }
     }
 
     private static int shape(String id) {

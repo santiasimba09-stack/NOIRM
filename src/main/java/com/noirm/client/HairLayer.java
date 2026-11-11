@@ -26,9 +26,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * NOIRM's 3D hair (docs/ART_STYLE.md, "Hair, eyes and bodies rework"): every lock of the wearer's style
@@ -53,11 +51,15 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
     /** A style baked into quads (4 vertices each). */
     record Mesh(float[] data, int vertices, boolean anySwing) {}
 
-    /** What to draw for one entity. */
-    record Spec(String style, int color, int volume, int length) {}
+    private static final Mesh EMPTY = new Mesh(new float[0], 0, false);
+    private static final it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<Mesh> MESHES = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
+    private static final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<String> NPC_SPECS = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
+    private static final it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap MERCHANT_SPECS = new it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap();
 
-    private static final Map<String, Mesh> MESHES = new HashMap<>();
-    private static final Map<String, Spec> NPC_SPECS = new HashMap<>();
+    static {
+        NPC_SPECS.defaultReturnValue(Long.MIN_VALUE);
+        MERCHANT_SPECS.defaultReturnValue(Long.MIN_VALUE);
+    }
     private static final Vector3f POS = new Vector3f();
     private static final Vector3f NRM = new Vector3f();
 
@@ -71,8 +73,8 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         if (entity.isInvisible() || (GoreClient.severed(entity.getId()) & 1) != 0) {
             return;
         }
-        Spec spec = spec(entity);
-        if (spec == null) {
+        long spec = spec(entity);
+        if (spec == NONE) {
             return;
         }
         ModelPart head = getParentModel().head;
@@ -87,7 +89,7 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         if (mesh == null || mesh.vertices() == 0) {
             return;
         }
-        ResourceLocation texture = HairTextures.get(spec.color());
+        ResourceLocation texture = HairTextures.get((int) (spec & 0xFFFFFF));
         if (texture == null) {
             return;
         }
@@ -165,55 +167,75 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
 
     // ------------------------------------------------------------ who wears what
 
-    /** The hair this entity is drawn with, or null for none (bald, an account skin, no look). */
-    static Spec spec(LivingEntity entity) {
+    /** No hair. Specs are packed in a long so a frame allocates nothing: style index, volume, length, colour. */
+    static final long NONE = -1L;
+    private static final long UNKNOWN = Long.MIN_VALUE;
+    private static final int NONE_STYLE = PlayerLook.Slot.HAIR.indexOf("none");
+
+    static long pack(int style, int volume, int length, int color) {
+        return ((long) style << 32) | ((long) (volume & 15) << 28) | ((long) (length & 15) << 24) | (color & 0xFFFFFFL);
+    }
+
+    /** The hair this entity is drawn with, or {@link #NONE} (bald, an account skin, no look). */
+    static long spec(LivingEntity entity) {
         if (entity instanceof Player player) {
             PlayerLook look = PlayerSkins.lookFor(player);
             if (look == null) {
-                return null;
+                return NONE;
             }
-            String style = look.id(PlayerLook.Slot.HAIR);
-            return style.equals("none") ? null : new Spec(style, look.color(PlayerLook.Tone.HAIR), look.get(PlayerLook.Slot.HAIR_VOLUME),
-                    look.get(PlayerLook.Slot.HAIR_LENGTH));
+            int style = look.get(PlayerLook.Slot.HAIR);
+            return style == NONE_STYLE ? NONE : pack(style, look.get(PlayerLook.Slot.HAIR_VOLUME), look.get(PlayerLook.Slot.HAIR_LENGTH),
+                    look.color(PlayerLook.Tone.HAIR));
         }
-        String key;
-        if (entity instanceof SparringNinja ninja) {
-            key = ninja.outfit();
-        } else if (entity instanceof VillageMerchant merchant) {
-            key = VillageMerchantRenderer.lookKey(merchant);
-        } else {
-            return null;
+        if (entity instanceof VillageMerchant merchant) {
+            long cached = MERCHANT_SPECS.get(entity.getId());
+            if (cached == UNKNOWN) {
+                cached = decode(VillageMerchantRenderer.lookKey(merchant));
+                if (MERCHANT_SPECS.size() > 512) {
+                    MERCHANT_SPECS.clear();
+                }
+                MERCHANT_SPECS.put(entity.getId(), cached);
+            }
+            return cached;
         }
+        if (!(entity instanceof SparringNinja ninja)) {
+            return NONE;
+        }
+        String key = ninja.outfit();
         if (key.isEmpty()) {
-            return null;
+            return NONE;
         }
-        if (NPC_SPECS.containsKey(key)) {
-            return NPC_SPECS.get(key);
+        long cached = NPC_SPECS.getLong(key);
+        if (cached == UNKNOWN) {
+            cached = decode(key);
+            if (NPC_SPECS.size() > 512) {
+                NPC_SPECS.clear();
+            }
+            NPC_SPECS.put(key, cached);
         }
-        Spec spec;
+        return cached;
+    }
+
+    private static long decode(String key) {
         try {
             NinjaLook.Features f = NinjaLook.decode(key);
-            String style = f.get("hair_style");
-            spec = style.isEmpty() || style.equals("none") || HairStyles.get(style) == null ? null
-                    : new Spec(style, f.color("hair_color"), 1, 0);
+            int style = PlayerLook.Slot.HAIR.indexOf(f.get("hair_style"));
+            return style < 0 || style == NONE_STYLE || HairStyles.get(f.get("hair_style")) == null ? NONE
+                    : pack(style, 1, 0, f.color("hair_color"));
         } catch (RuntimeException e) {
-            spec = null;
+            return NONE;
         }
-        if (NPC_SPECS.size() > 512) {
-            NPC_SPECS.clear();
-        }
-        NPC_SPECS.put(key, spec);
-        return spec;
     }
 
     // ------------------------------------------------------------ baking
 
-    static Mesh mesh(Spec spec) {
-        String key = spec.style() + "/" + spec.volume() + "/" + spec.length();
+    static Mesh mesh(long spec) {
+        int key = (int) ((spec >>> 24) & 0xFFFFF); // style, volume, length
         Mesh mesh = MESHES.get(key);
-        if (mesh == null && !MESHES.containsKey(key)) {
-            HairStyles.Style style = HairStyles.get(spec.style());
-            mesh = style == null ? null : bake(style, PlayerLook.volumeScale(spec.volume()), spec.length());
+        if (mesh == null) {
+            int styleIndex = (int) (spec >>> 32);
+            HairStyles.Style style = HairStyles.get(PlayerLook.Slot.HAIR.option(styleIndex));
+            mesh = style == null ? EMPTY : bake(style, PlayerLook.volumeScale((int) ((spec >>> 28) & 15)), (int) ((spec >>> 24) & 15));
             MESHES.put(key, mesh);
         }
         return mesh;
@@ -223,6 +245,7 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
     static void clear() {
         MESHES.clear();
         NPC_SPECS.clear();
+        MERCHANT_SPECS.clear();
     }
 
     /** Bakes a style: every lock into quads, scaled by the volume, plus hair down the back for a chosen length. */

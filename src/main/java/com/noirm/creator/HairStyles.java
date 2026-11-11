@@ -194,9 +194,14 @@ public final class HairStyles {
         if (head.isEmpty()) {
             return Cover.NONE;
         }
-        ResourceLocation key = ForgeRegistries.ITEMS.getKey(head.getItem());
-        return key == null ? Cover.CROWN : cover(key);
+        // asked every frame for everyone drawn: remembered per item
+        return BY_ITEM.computeIfAbsent(head.getItem(), item -> {
+            ResourceLocation key = ForgeRegistries.ITEMS.getKey(item);
+            return key == null ? Cover.CROWN : cover(key);
+        });
     }
+
+    private static final Map<net.minecraft.world.item.Item, Cover> BY_ITEM = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static synchronized Cover cover(ResourceLocation item) {
         JsonObject rules = headgear();

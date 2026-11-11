@@ -14,12 +14,23 @@ trace or sample them).
   tendons and veins as thin dark lines. Lean and wiry rather than bulky.
 - **Palette:** ash blacks and greys, bone/off-white highlights, desaturated skin tones, and **blood
   red** as the accent (seals, trims, blood, eyes). Chakra blue/green only for chakra effects.
-- **Faces:** sharp, intense eyes (dark lids, small bright highlight), strong brows, shadowed jaw.
-  Owner, round 15: big round eyes read "soulless and way too bubbly". Eyes are a narrow slit: a heavy,
-  angled upper lid cutting across the top of a small iris (dark ring, lighter lower half, small pupil,
-  a one-pixel highlight), white showing on the outer side, the inner corner low (a focused tilt), the
-  brow close above casting a shadow on the lid. Dojutsu overlays are drawn per eye style so they sit
-  inside the lids.
+- **Faces:** sharp, intense eyes, strong brows, shadowed jaw. **The eye rule (2026-11-11 rework):** big and
+  wide but **sharp, never round or bubbly** (round 15: round eyes read "soulless and way too bubbly").
+  Each eye is a slit between a low inner corner and a higher outer one, about 2.8 model pixels wide:
+  - a **thick, near-black upper lash line**, thin at the inner corner and heavy at the outer one, that
+    **flicks out and up** past the corner to a sharp point, with three short lashes off its outer third;
+  - **white sclera**, shaded under the upper lid, pinker at the inner corner; a thin lower lid line on the
+    outer two thirds;
+  - a **large shaded iris** (fibres, a dark limbal ring, a lighter lower half, the lid's shadow across its
+    top, a small pupil) with a **sharp four-sided highlight** up-left and a tiny one lower right;
+  - a lid crease and the brow's shadow above, and **dark brows** set higher to make room.
+  - Shapes in the creator: Steady (heavy-lidded, default), Sharp (long upswept flick), Fierce (wide glare),
+    Narrow (a slit), plus Pale for the Hyūga.
+  The skin carries the eye at 4× (`gen_parts.py`); a high-detail copy at 16 px per model pixel is drawn
+  on top by `client/EyeDecalLayer` (`gen_eye_decals.py`), on exactly the same lid curves
+  (`anatomy.EYE_SHAPES`). Dōjutsu use the same atlas: the Sharingan (1–3 tomoe with curling tails, a red
+  iris lit from below, black ring and pupil) and the pale Byakugan iris are drawn full-bright inside the
+  lids; the Mangekyō disc sits between the iris and the lash line.
 
 ## Clothing
 - Like the clothing references: the outfit reads as **real cloth on a body**: big folds and
@@ -94,3 +105,33 @@ redirect):
   - Keep the HD 4× pipeline, adapted to the base's clean, high-contrast feel, and start in underwear.
   - Add body types in the creator: slim, average, athletic, broad.
   - Armor still has to fit.
+
+### As built (how the rework works)
+- **Hair is 3D, built from locks.** A lock is a short polyline with a width and a thickness at each point:
+  short, it's a chunky tapered clump at its own angle; long and flat, it's a draped ribbon with jagged strand
+  tips. Styles are data: `assets/noirm/hair/styles/<id>.json`, written by `tools/skingen/gen_hair.py` (edit
+  the recipes there and rerun; `--preview out.png` draws a contact sheet from four sides with a small
+  z-buffered renderer that matches the game). 23 styles: spiky, messy, short, swept, bowl, buzz, topknot,
+  back spikes, bun, hime cut, ponytail, long, high ponytail, braid, side bangs, shoulder length, twin buns,
+  wild mane, undercut, ridge, slicked back, curly, twin tails (and bald).
+  - Short styles are **shingles**: rows of 2.5–3.5 px clumps lying along the skull, flowing away from a
+    whorl, top rows lighter than lower ones (2–3 shades), plus bangs rooted on the forehead's hairline.
+  - Long styles hang: back sheets over the back of the skull and down the back, side locks in front of the
+    shoulders, tails and braids. Hanging locks **swing** a little (walking, falling) and stay with the body
+    when the head turns.
+  - **Texture:** `textures/entity/hair/strands.png`, gray strands with inked edges, root shadow, a broken
+    sheen band and jagged sheet tips, coloured per hair colour with the skin tint rule.
+  - The painted **scalp** under the 3D hair is a skin part (`ninja/parts/scalp_<name>`, by `gen_parts.py`).
+  - **Head gear** (`assets/noirm/hair/headgear.json`): forehead protectors press the hair in, hats and
+    helmets leave only the hanging hair, hoods hide it, masks leave it alone.
+  - **Colours:** 40 swatches of our own palette (20 natural shades first), plus any custom colour.
+  - **Clans:** Uchiha dark with back spikes or spikes, Hyūga long and straight (hime, braids), Uzumaki red and
+    spiky, Senju long; generated clans use everything.
+- **Eyes:** see the eye rule under "Faces" above.
+- **Bodies:** the HD 4× ink pipeline (`anatomy.py`, `gen_player_parts.py`), starting in black boxers.
+  - **Build** (slim, average, athletic, broad): an ink shading layer (`build_*`: ribs for slim, a hard V
+    taper and shoulder caps for athletic, lit shoulders and dark flanks for broad) plus a small width change
+    of the torso and arms (`client/BodyShape`). Armor still fits around it.
+  - **Frame:** masculine or feminine. The feminine frame redraws the body (`fem_*`, at each muscle level)
+    with a rounded bust, softer abs and a shaded waist, and adds a black crop top (`under_top`) to the
+    boxers.
