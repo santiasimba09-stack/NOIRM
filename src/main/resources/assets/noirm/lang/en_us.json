@@ -13,7 +13,7 @@
   "key.noirm.dodge": "Dodge",
   "key.noirm.guard": "Guard (hold)",
   "key.noirm.lock_on": "Lock on",
-  "entity.noirm.sparring_ninja": "Sparring Ninja",
+  "entity.noirm.sparring_ninja": "Ninja",
   "item.noirm.sparring_ninja_spawn_egg": "Sparring Ninja Spawn Egg",
   "command.noirm.stat": "Speed: %s · Taijutsu: %s · Perception: %s · Vitality: %s · Reserves: %s · Chakra control: %s · Willpower: %s",
   "nature.noirm.fire": "Katon (Fire)",

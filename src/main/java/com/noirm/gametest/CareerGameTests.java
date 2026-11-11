@@ -317,6 +317,34 @@ public final class CareerGameTests {
         cleanup(helper, 24);
     }
 
+    /**
+     * Playthrough bug: a hunt marked far away, reached while its chunks were still loading, completed
+     * with no fight (the bandit couldn't be found, so it "fled"). Nobody turns up in an unloaded place,
+     * and a missing foe only counts as fled where the world is loaded.
+     */
+    @GameTest(template = "empty", batch = "noirm_career_hunt_unloaded", timeoutTicks = 100)
+    public static void huntNeverCompletesWhileItsPlaceIsUnloaded(GameTestHelper helper) {
+        floor(helper);
+        Player player = player(helper);
+        Mission m = start(helper, player, "d_bandit_hunt");
+        BlockPos far = near(helper, 40000, 40000); // never loaded in a game test
+        helper.assertFalse(helper.getLevel().isPositionEntityTicking(far), "the far place isn't loaded");
+        m.points.set(0, far);
+        BlockPos home = player.blockPosition();
+        moveTo(player, far.offset(3, 0, 0)); // "arrived", as a traveller whose chunks haven't loaded yet
+        Missions.update(player);
+        helper.assertFalse(m.spawned, "no bandit is put into an unloaded place");
+        // A foe that can't be found while its place is unloaded hasn't fled.
+        m.spawned = true;
+        m.required = 1;
+        m.foes.add(java.util.UUID.randomUUID());
+        Missions.update(player);
+        helper.assertTrue(m.stage == Mission.Stage.GO && m.foes.size() == 1, "not done: the foe may just not be loaded");
+        moveTo(player, home);
+        Missions.abandon(player);
+        cleanup(helper, 24);
+    }
+
     /** Hunt rogues that were in unloaded chunks when the mission failed never come back with their chunk. */
     @GameTest(template = "empty", batch = "noirm_career_leftovers", timeoutTicks = 100)
     public static void leftoversOfAFailedMissionNeverComeBack(GameTestHelper helper) {
