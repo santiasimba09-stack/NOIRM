@@ -769,7 +769,9 @@ def hair_field(f, rows, salt, lock_w, sharp, layer):
     return k, alpha
 
 
-def part_hair(name, salt):
+def part_hair(name, salt, scalp=False):
+    """The painted hair of a style. scalp=True: only the layer on the head itself (the scalp and hairline under the
+    3D hair of gen_hair.py); otherwise also the outer layer and the back."""
     style = HAIR[name]
     lock_w, sharp = HAIR_LOCKS[name]
     p = Part()
@@ -806,6 +808,8 @@ def part_hair(name, salt):
         return hair_field(f, rows, salt + (5 if f.side else 7), lock_w, sharp, "hat")
 
     paint(p, "head", base)
+    if scalp:
+        return p
     paint(p, "hat", hat)
     rows = style.get("jacket_back", [])
     if rows:
@@ -1238,7 +1242,8 @@ def w(d, **weights):
 CLANS = {
     "uchiha": {
         "skin": w(SKIN, pale=4, light=4, fair=2, medium=1),
-        "hair_style": [["spiky", 4], ["duck", 4], ["long", 2], ["messy", 2], ["short", 2], ["ponytail", 2], ["hime", 1]],
+        "hair_style": [["duck", 5], ["spiky", 4], ["wild_mane", 2], ["messy", 2], ["long", 2], ["side_bangs", 2],
+                       ["swept", 1], ["ponytail", 1], ["short", 1]],
         "hair_color": [["#1b1c22", 5], ["#141418", 4], ["#1e2230", 2], ["#2a2224", 1]],
         "eyes": [["sharp", 4], ["round", 3], ["narrow", 2], ["wide", 1]],
         "eye_color": [["#1e1a1f", 4], ["#2a1f24", 3], ["#2b2b33", 2]],
@@ -1254,7 +1259,8 @@ CLANS = {
     },
     "senju": {
         "skin": w(SKIN, fair=3, medium=4, tan=4, light=2, brown=2),
-        "hair_style": [["long", 5], ["swept", 3], ["spiky", 2], ["short", 2], ["ponytail", 2], ["topknot", 2], ["messy", 1]],
+        "hair_style": [["long", 6], ["wild_mane", 2], ["swept", 2], ["ponytail", 2], ["topknot", 2], ["slick_back", 1],
+                       ["shoulder_messy", 1], ["spiky", 1]],
         "hair_color": [["#3a2618", 4], ["#4a3020", 3], ["#2a1d16", 3], ["#5a3a24", 2], ["#d8d8dc", 1], ["#a8743a", 1]],
         "eyes": [["round", 4], ["sharp", 3], ["narrow", 2], ["wide", 1]],
         "eye_color": [["#3a2a1c", 4], ["#2c2018", 3], ["#5a3a1e", 2], ["#7a2a24", 1]],
@@ -1270,7 +1276,7 @@ CLANS = {
     },
     "hyuga": {
         "skin": w(SKIN, pale=6, light=3, fair=2),
-        "hair_style": [["hime", 4], ["long", 4], ["ponytail", 2], ["bun", 2], ["short", 1], ["topknot", 1]],
+        "hair_style": [["long", 5], ["hime", 4], ["ponytail", 2], ["braid", 2], ["bun", 2], ["slick_back", 1], ["short", 1]],
         "hair_color": [["#2b1d16", 4], ["#302018", 3], ["#1d1a1c", 3], ["#3a271c", 2], ["#2a2638", 1]],
         "eyes": [["pale", 1]],
         "eye_color": [["#e4dcef", 4], ["#d9d0ea", 3], ["#ece8f2", 2]],
@@ -1286,7 +1292,8 @@ CLANS = {
     },
     "uzumaki": {
         "skin": w(SKIN, fair=4, light=3, pale=2, medium=2, tan=1),
-        "hair_style": [["spiky", 4], ["messy", 3], ["long", 3], ["bun", 2], ["ponytail", 2], ["hime", 1], ["short", 1]],
+        "hair_style": [["spiky", 5], ["messy", 3], ["shoulder_messy", 2], ["long", 2], ["twin_buns", 1], ["high_ponytail", 1],
+                       ["twin_tails", 1], ["hime", 1]],
         "hair_color": [["#d8352a", 5], ["#e03a2e", 3], ["#b8261f", 3], ["#e85a2a", 2], ["#e8c24a", 2], ["#8a1e1e", 1]],
         "eyes": [["round", 4], ["wide", 3], ["sharp", 2]],
         "eye_color": [["#2f4a6e", 3], ["#3a6a9a", 3], ["#4a3a6a", 2], ["#3a5a4a", 1]],
@@ -1303,7 +1310,9 @@ CLANS = {
     "generic": {
         "skin": w(SKIN, pale=2, light=3, fair=3, medium=3, tan=3, brown=2, dark=2),
         "hair_style": [["spiky", 3], ["messy", 3], ["short", 3], ["ponytail", 2], ["long", 2], ["swept", 2],
-                       ["bowl", 1], ["buzz", 2], ["topknot", 1], ["duck", 1], ["bun", 2], ["hime", 1]],
+                       ["bowl", 1], ["buzz", 2], ["topknot", 1], ["duck", 1], ["bun", 2], ["hime", 1],
+                       ["high_ponytail", 1], ["braid", 1], ["side_bangs", 2], ["shoulder_messy", 2], ["twin_buns", 1],
+                       ["wild_mane", 1], ["undercut", 2], ["mohawk", 1], ["slick_back", 2], ["curly", 2], ["twin_tails", 1]],
         "hair_color": [["#2a2522", 4], ["#4a3426", 4], ["#141414", 3], ["#6a4a2a", 2], ["#c7ccd2", 2],
                        ["#e3c26a", 2], ["#8a3a22", 1], ["#2f5a3a", 1], ["#2f3f6a", 1], ["#d98aa8", 1],
                        ["#7a7f88", 1], ["#5a3a6a", 1]],
@@ -1344,7 +1353,7 @@ CLANS = {
     # trousers under his sage kimono, wrapped arms and legs.
     "sage_hermit": {
         "skin": [["#a87250", 1]],
-        "hair_style": [["long", 1]],
+        "hair_style": [["wild_mane", 1]],
         "hair_color": [["#d6d2c8", 1]],
         "eyes": [["narrow", 1]],
         "eye_color": [["#7a6a2a", 1]],
@@ -1363,7 +1372,7 @@ CLANS = {
     # glasses, a navy long-sleeved shirt and charcoal trousers, wrapped forearms.
     "ninjutsu_scholar": {
         "skin": [["#c98e66", 1]],
-        "hair_style": [["swept", 1]],
+        "hair_style": [["slick_back", 1]],
         "hair_color": [["#7a7f88", 1]],
         "eyes": [["narrow", 1]],
         "eye_color": [["#2d4f6a", 1]],
@@ -1423,7 +1432,7 @@ def main():
     for s in BROW_STYLES:
         parts["brows_" + s] = part_brows(s)
     for i, name in enumerate(HAIR):
-        parts["hair_" + name] = part_hair(name, 17 + i * 7)
+        parts["scalp_" + name] = part_hair(name, 17 + i * 7, scalp=True)
     for name in MARKS:
         parts["mark_" + name] = part_mark(name)
     parts["acc_mask"] = part_mask()

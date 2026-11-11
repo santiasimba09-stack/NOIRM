@@ -22,15 +22,15 @@
    ],
    "hair_style": [
     [
+     "duck",
+     5
+    ],
+    [
      "spiky",
      4
     ],
     [
-     "duck",
-     4
-    ],
-    [
-     "long",
+     "wild_mane",
      2
     ],
     [
@@ -38,15 +38,23 @@
      2
     ],
     [
-     "short",
+     "long",
      2
+    ],
+    [
+     "side_bangs",
+     2
+    ],
+    [
+     "swept",
+     1
     ],
     [
      "ponytail",
-     2
+     1
     ],
     [
-     "hime",
+     "short",
      1
     ]
    ],
@@ -277,18 +285,14 @@
    "hair_style": [
     [
      "long",
-     5
+     6
     ],
     [
-     "swept",
-     3
-    ],
-    [
-     "spiky",
+     "wild_mane",
      2
     ],
     [
-     "short",
+     "swept",
      2
     ],
     [
@@ -300,7 +304,15 @@
      2
     ],
     [
-     "messy",
+     "slick_back",
+     1
+    ],
+    [
+     "shoulder_messy",
+     1
+    ],
+    [
+     "spiky",
      1
     ]
    ],
@@ -542,11 +554,11 @@
    ],
    "hair_style": [
     [
-     "hime",
-     4
+     "long",
+     5
     ],
     [
-     "long",
+     "hime",
      4
     ],
     [
@@ -554,15 +566,19 @@
      2
     ],
     [
+     "braid",
+     2
+    ],
+    [
      "bun",
      2
     ],
     [
-     "short",
+     "slick_back",
      1
     ],
     [
-     "topknot",
+     "short",
      1
     ]
    ],
@@ -777,30 +793,34 @@
    "hair_style": [
     [
      "spiky",
-     4
+     5
     ],
     [
      "messy",
      3
     ],
     [
+     "shoulder_messy",
+     2
+    ],
+    [
      "long",
-     3
-    ],
-    [
-     "bun",
      2
     ],
     [
-     "ponytail",
-     2
-    ],
-    [
-     "hime",
+     "twin_buns",
      1
     ],
     [
-     "short",
+     "high_ponytail",
+     1
+    ],
+    [
+     "twin_tails",
+     1
+    ],
+    [
+     "hime",
      1
     ]
    ],
@@ -1091,6 +1111,50 @@
     ],
     [
      "hime",
+     1
+    ],
+    [
+     "high_ponytail",
+     1
+    ],
+    [
+     "braid",
+     1
+    ],
+    [
+     "side_bangs",
+     2
+    ],
+    [
+     "shoulder_messy",
+     2
+    ],
+    [
+     "twin_buns",
+     1
+    ],
+    [
+     "wild_mane",
+     1
+    ],
+    [
+     "undercut",
+     2
+    ],
+    [
+     "mohawk",
+     1
+    ],
+    [
+     "slick_back",
+     2
+    ],
+    [
+     "curly",
+     2
+    ],
+    [
+     "twin_tails",
      1
     ]
    ],
@@ -1514,7 +1578,7 @@
    ],
    "hair_style": [
     [
-     "long",
+     "wild_mane",
      1
     ]
    ],
@@ -1612,7 +1676,7 @@
    ],
    "hair_style": [
     [
-     "swept",
+     "slick_back",
      1
     ]
    ],
