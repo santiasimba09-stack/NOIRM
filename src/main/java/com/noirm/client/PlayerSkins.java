@@ -96,8 +96,15 @@ public final class PlayerSkins {
         out.add(Map.entry(PLAYER + "jaw_" + look.id(Slot.JAW), skin));
         out.add(Map.entry(PLAYER + "nose_" + look.id(Slot.NOSE), skin));
         out.add(Map.entry(PLAYER + "mouth_" + look.id(Slot.MOUTH), skin));
-        if (!look.id(Slot.MUSCLE).equals("none")) {
+        boolean feminine = look.id(Slot.FRAME).equals("feminine");
+        if (feminine) {
+            // the feminine frame: the body redrawn with a softer chest and waist, at the chosen muscle level
+            out.add(Map.entry(PLAYER + "fem_" + look.id(Slot.MUSCLE), skin));
+        } else if (!look.id(Slot.MUSCLE).equals("none")) {
             out.add(Map.entry(PLAYER + "muscle_" + look.id(Slot.MUSCLE), skin));
+        }
+        if (!look.id(Slot.BODY).equals("average")) {
+            out.add(Map.entry(PLAYER + "build_" + look.id(Slot.BODY), skin)); // the build's shading (width: BodyShape)
         }
         if (!look.id(Slot.WEATHERING).equals("none")) {
             out.add(Map.entry(PLAYER + "weather_" + look.id(Slot.WEATHERING), -1));
@@ -112,6 +119,9 @@ public final class PlayerSkins {
             out.add(Map.entry(NINJA + "mark_" + look.id(Slot.MARKING), -1));
         }
         out.add(Map.entry(PLAYER + "under_" + look.id(Slot.UNDERWEAR), look.color(Tone.UNDERWEAR)));
+        if (feminine) {
+            out.add(Map.entry(PLAYER + "under_top", look.color(Tone.UNDERWEAR))); // a black top with the boxers
+        }
         // No clothes: characters start in their underwear, and clothes are gear worn on top.
         String wraps = look.id(Slot.WRAPS);
         if (wraps.equals("legs") || wraps.equals("both")) {
@@ -123,11 +133,10 @@ public final class PlayerSkins {
         out.add(Map.entry(NINJA + "iris_" + look.id(Slot.EYES), look.color(Tone.EYE))); // under the eye's lids and shine
         out.add(Map.entry(NINJA + "eyes_" + look.id(Slot.EYES), -1));
         out.add(Map.entry(NINJA + "brows_" + look.id(Slot.BROWS), hair));
-        if (!look.id(Slot.HAIR).equals("none")) {
-            out.add(Map.entry(NINJA + "hair_" + look.id(Slot.HAIR), hair));
-        }
-        if (!look.id(Slot.HAIR_LENGTH).equals("as_styled") && !look.id(Slot.HAIR).equals("none")) {
-            out.add(Map.entry(PLAYER + "hairlen_" + look.id(Slot.HAIR_LENGTH), hair));
+        // the scalp under the 3D hair (HairLayer draws the hair itself, and its length)
+        String scalp = com.noirm.creator.HairStyles.scalp(look.id(Slot.HAIR));
+        if (scalp != null) {
+            out.add(Map.entry(NINJA + "scalp_" + scalp, hair));
         }
         return out;
     }

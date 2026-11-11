@@ -25,7 +25,7 @@ from hdskin import (ink, grit, F, ell, ell_d, gauss, sstep, stroke, bezier, grai
 # ---------------------------------------------------------------------------
 
 EYE_Y = 4.5
-EYE_XS = (2.5, 5.5)       # texture-left eye, texture-right eye
+EYE_XS = (2.25, 5.75)     # texture-left eye, texture-right eye (wider apart for the bigger eyes)
 NOSE_TIP_Y = 5.75
 MOUTH_Y = 6.6
 
@@ -46,21 +46,24 @@ MOUTH_Y = 6.6
 # The iris centre sits on an HD pixel's centre (shift, idy multiples of 1/8 at SCALE 4), so the
 # pupil is one pixel wide and the highlight one pixel.
 EYE_SHAPES = {
+    # Rework (owner, 2026-11-11): "big, wide, sharp anime eyes" -- bigger and more detailed than round 15,
+    # but still sharp-cornered, never round or bubbly. A high-detail copy of each eye is drawn over the
+    # skin by client/EyeDecalLayer (tools/skingen/gen_eye_decals.py) from these same shapes.
     # steady and heavy-lidded (the default): the lid low on the iris, calm and dangerous
-    "round":  dict(ein=1.1, eout=1.3, inner=0.15, outer=-0.1, up=0.62, peak=0.4, down=0.42, iris=0.6,
-                   shift=0.125, idy=-0.125, lash=0.42, wing=0.3, hood=0.5),
+    "round":  dict(ein=1.22, eout=1.55, inner=0.2, outer=-0.12, up=0.8, peak=0.42, down=0.5, iris=0.74,
+                   shift=0.125, idy=-0.125, lash=0.5, wing=0.5, hood=0.55),
     # sharp: a strong upward sweep to a long outer flick
-    "sharp":  dict(ein=1.1, eout=1.34, inner=0.22, outer=-0.3, up=0.52, peak=0.36, down=0.4, iris=0.56,
-                   shift=0.125, idy=-0.125, lash=0.44, wing=0.5, hood=0.45),
+    "sharp":  dict(ein=1.22, eout=1.6, inner=0.28, outer=-0.4, up=0.7, peak=0.38, down=0.46, iris=0.7,
+                   shift=0.125, idy=-0.125, lash=0.52, wing=0.6, hood=0.5),
     # fierce: opened wide in a glare, white around the iris, the brow pressing down
-    "wide":   dict(ein=1.08, eout=1.28, inner=0.12, outer=-0.12, up=0.74, peak=0.4, down=0.72, iris=0.56,
-                   shift=0.125, idy=-0.125, lash=0.38, wing=0.26, hood=0.4),
+    "wide":   dict(ein=1.2, eout=1.5, inner=0.14, outer=-0.14, up=0.94, peak=0.42, down=0.78, iris=0.7,
+                   shift=0.125, idy=-0.125, lash=0.46, wing=0.42, hood=0.45),
     # narrow: a slit, the lid half over the iris (cold, tired)
-    "narrow": dict(ein=1.1, eout=1.32, inner=0.14, outer=-0.12, up=0.44, peak=0.42, down=0.27, iris=0.56,
-                   shift=0.125, idy=0.125, lash=0.46, wing=0.36, hood=0.55),
+    "narrow": dict(ein=1.22, eout=1.58, inner=0.16, outer=-0.16, up=0.58, peak=0.44, down=0.34, iris=0.7,
+                   shift=0.125, idy=0.125, lash=0.54, wing=0.55, hood=0.6),
     # pale (the Hyuga's white eyes): heavy-lidded, a pale iris without a pupil
-    "pale":   dict(ein=1.1, eout=1.3, inner=0.15, outer=-0.1, up=0.62, peak=0.4, down=0.42, iris=0.6,
-                   shift=0.125, idy=-0.125, lash=0.4, wing=0.3, hood=0.45),
+    "pale":   dict(ein=1.22, eout=1.55, inner=0.2, outer=-0.12, up=0.8, peak=0.42, down=0.5, iris=0.76,
+                   shift=0.125, idy=-0.125, lash=0.46, wing=0.45, hood=0.5),
 }
 
 
@@ -285,13 +288,36 @@ def is_outer(f):
 # The torso
 # ---------------------------------------------------------------------------
 
+FEMININE = False   # gen_player_parts.py sets it while drawing the feminine frame (fem_* parts)
+
+
 def torso(f, s):
     """(height field, ink grooves, vertical tilt) for the torso at muscle level s (0 = soft)."""
     X, Y = f.X, f.Y
     h = np.zeros_like(X)
     g = np.zeros_like(X)
     tilt = 0.5 * sstep(1.3, 0.0, Y)                                  # shoulders face up
-    if f.name == "front":
+    if f.name == "front" and FEMININE:
+        # the feminine frame: a rounded bust, softer abs, the waist turning away into shadow
+        for sx in (-1, 1):
+            h += dome(f, 4 + 1.85 * sx, 3.15, 1.75, 1.45, 0.95)
+            h += pad(f, 4 + 3.45 * sx, 6.6, 0.7, 2.0, 0.2 * s)
+            for cy in (5.7, 6.9):
+                h += pad(f, 4 + 0.85 * sx, cy, 0.75, 0.55, 0.22 * s)
+        h += pad(f, 4, 9.6, 1.6, 1.0, 0.12 * s)
+        h += -0.55 * sstep(2.5, 3.9, np.abs(X - 4)) * np.exp(-((Y - 6.6) / 1.7) ** 2)
+        w = 0.2 + 0.08 * s
+        for sx in (-1, 1):
+            g = np.maximum(g, groove(f, bezier((4 + 0.35 * sx, 4.05), (4 + 1.85 * sx, 4.75), (4 + 3.4 * sx, 3.85), 20),
+                                     w * 1.4, w * 2.2))                                       # under the bust
+            g = np.maximum(g, groove(f, bezier((4 + 0.8 * sx, 1.0), (4 + 1.9 * sx, 1.15), (4 + 3.0 * sx, 0.85), 12),
+                                     w * 0.5, 0.04))                                          # collarbones
+        if s > 0:
+            g = np.maximum(g, groove(f, [(4, 5.0), (4, 8.3)], w * 0.7, w * 0.4))
+            for y in (6.3, 7.5):
+                g = np.maximum(g, groove(f, bezier((3.2, y + 0.08), (4, y - 0.03), (4.8, y + 0.08), 10), w * 0.6, w * 0.6))
+        g = np.maximum(g, crisp(ell(f, 4, 8.8, 0.15, 0.22)))                                  # navel
+    elif f.name == "front":
         for sx in (-1, 1):
             h += pad(f, 4 + 1.95 * sx, 2.45, 1.95, 1.4, 0.55 * s + 0.15)       # pecs
             h += pad(f, 4 + 3.45 * sx, 6.4, 0.75, 2.3, 0.3 * s)                 # obliques

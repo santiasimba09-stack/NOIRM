@@ -21,6 +21,8 @@ import java.util.Map;
 public final class PlayerLook {
     public static final float MIN_HEIGHT = 0.85f;
     public static final float MAX_HEIGHT = 1.15f;
+    /** The first this-many hair swatches are natural shades (black to white, browns, auburn). */
+    public static final int NATURAL_HAIR = 20;
 
     /** A choice with a fixed list of options. The first option is the default. */
     public enum Slot {
@@ -41,9 +43,16 @@ public final class PlayerLook {
         BOTTOM("bottom", "none"),
         FEET("feet", "bare"),
         WRAPS("wraps", "none", "legs", "arms", "both"),
-        HAIR("hair", "spiky", "messy", "short", "swept", "bowl", "buzz", "topknot", "duck", "bun", "hime", "ponytail", "long", "none"),
+        // 3D hair styles (assets/noirm/hair/styles/<id>.json, by tools/skingen/gen_hair.py); "none" last
+        HAIR("hair", "spiky", "messy", "short", "swept", "bowl", "buzz", "topknot", "duck", "bun", "hime", "ponytail", "long",
+                "high_ponytail", "braid", "side_bangs", "shoulder_messy", "twin_buns", "wild_mane", "undercut", "mohawk",
+                "slick_back", "curly", "twin_tails", "none"),
         HAIR_LENGTH("hair_length", "as_styled", "nape", "shoulder", "waist"),
-        HAIR_VOLUME("hair_volume", "flat", "full", "thick", "wild");
+        HAIR_VOLUME("hair_volume", "flat", "full", "thick", "wild"),
+        /** Build: shading plus a small shoulder and arm width change (client/BodyShape). */
+        BODY("body", "average", "slim", "athletic", "broad"),
+        /** The feminine frame changes the chest's shading and adds a black top to the underwear. */
+        FRAME("frame", "masculine", "feminine");
 
         private final String key;
         private final String[] options;
@@ -84,8 +93,12 @@ public final class PlayerLook {
     public enum Tone {
         SKIN("skin", 0xF1CDB0, 0xE8BC98, 0xE0AC84, 0xC98E66, 0xB07650, 0x8A5A3C, 0x6A4330, 0x4E3024, 0xF3D9C4, 0xD9A27A, 0xA36B47, 0x5C3A28),
         EYE("eye", 0x1E1A1F, 0x3A2A22, 0x5A3C24, 0x2E4A6B, 0x3F6E9C, 0x3E6B45, 0x6C7A3A, 0x7A7F86, 0xB9B6C8, 0x8E2B2B, 0xC9A445, 0x4B3A6E),
-        HAIR("hair", 0x141418, 0x2A2224, 0x3A2618, 0x5A3A24, 0x8A5A30, 0xC08A48, 0xE6CF8E, 0xD8D4CC, 0x8E9096, 0xB4462E, 0xE07A2E, 0x6B88B8,
-                0x4E6B3A, 0xC86A9E, 0x2B3A6E, 0xF2F0EA),
+        // 40 swatches of our own palette: the first NATURAL_HAIR are natural shades (random looks mostly use those)
+        HAIR("hair", 0x141418, 0x1B1C22, 0x1E2230, 0x2A2224, 0x2B1D16, 0x3A2618, 0x4A3020, 0x5A3A24, 0x6A4A2A, 0x8A5A30,
+                0xA8743A, 0xC08A48, 0xE3C26A, 0xE6CF8E, 0xF2E6BE, 0xD8D4CC, 0xB8B6B0, 0x8E9096, 0x5A5C62, 0xF2F0EA,
+                0x8A1E1E, 0xB8261F, 0xD8352A, 0xE85A2A, 0xE07A2E, 0xF0A030, 0xB4462E,
+                0x2F5A3A, 0x4E6B3A, 0x6E9A4A, 0x2B3A6E, 0x2F3F6A, 0x6B88B8, 0x9EC4E8, 0x5A3A6A, 0x8A5AB0,
+                0xC86A9E, 0xD98AA8, 0xF0B8C8, 0x3AA8A0),
         // black first: new characters start in black boxers (owner, round 15)
         UNDERWEAR("underwear", 0x1A1A1E, 0x1C2233, 0x24262E, 0xD9D4C8, 0x3A3F48, 0x5B2B2B, 0x2E3A2A, 0x6B5A3A, 0x2B3A55, 0x8A8F96, 0x4B2E4E, 0xB8A27A),
         // TOP and BOTTOM: no longer used (clothes are gear), kept so the look packet keeps its shape.
@@ -164,9 +177,18 @@ public final class PlayerLook {
         return this;
     }
 
-    /** How much bigger the hair's outer layer is drawn (1 = as painted). */
+    /** How much bigger each lock of the 3D hair is drawn (flat 0.9 .. wild 1.24). */
     public float hairVolumeScale() {
-        return 1f + 0.04f * get(Slot.HAIR_VOLUME);
+        return volumeScale(get(Slot.HAIR_VOLUME));
+    }
+
+    public static float volumeScale(int volume) {
+        return switch (volume) {
+            case 0 -> 0.9f;
+            case 2 -> 1.12f;
+            case 3 -> 1.24f;
+            default -> 1f;
+        };
     }
 
     /** A short text naming every choice: the client's skin cache key. */
@@ -204,6 +226,9 @@ public final class PlayerLook {
         for (Tone tone : Tone.values()) {
             int[] palette = tone.palette;
             look.setColor(tone, palette[random.nextInt(palette.length)]);
+        }
+        if (random.nextFloat() < 0.8f) {
+            look.setColor(Tone.HAIR, Tone.HAIR.palette[random.nextInt(NATURAL_HAIR)]); // vivid hair is the exception
         }
         // everyone starts (and re-rolls) in the default black boxers; the Body tab changes them
         look.set(Slot.UNDERWEAR, 0);

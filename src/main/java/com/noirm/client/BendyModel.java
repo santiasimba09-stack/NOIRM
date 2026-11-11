@@ -187,6 +187,7 @@ public class BendyModel<T extends LivingEntity> extends PlayerModel<T> {
         lastPose.copyFrom(pose);
         applyPose(pose);
         severedMask = GoreClient.severed(entity.getId()); // gore: parts a dying body has lost
+        BodyShape.apply(this, entity); // creator body types: torso and arm width
     }
 
     /** Parts this body has lost (gore, {@code SeveredLimb.Part} bits): not drawn, nor their armor. */
