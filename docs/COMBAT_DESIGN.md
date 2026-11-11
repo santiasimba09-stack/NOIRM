@@ -216,3 +216,28 @@ parts no longer apply.
 - **Hand seals:** `data/noirm/jutsu_seals/<jutsu>.json` lists a jutsu's seals; `tools/animgen/seals.py`
   writes them and the matching `seals_<nature>_<name>` animation (3 ticks per seal). Charged and
   channelled jutsu play the sequence; every cast names the seals above the hotbar.
+
+## Combat animation rebuild (owner's brief, 2026-11-11)
+The owner's view: "Each time I attack, it tries to be too realistic for Minecraft and doesn't get to a
+point where it feels comfortable." They want combat "clean and smooth but still brutal and raw". Their
+pose sheets (mood only, never traced) show strong, exaggerated key poses: wide stances, twisted torsos,
+big wind-ups, foreshortened fists and kicks. These are the owner's answers; ask before changing them.
+- **Snappy key poses.** A quick wind-up pose, then an instant snap to a big, exaggerated strike pose
+  that is held for a few frames on impact, then a short recovery back to stance. Few in-between
+  frames, strong silhouettes. No mocap-like blending through every joint.
+- **Stances: both kinds.**
+  - Each style (unarmed and weapon) has its own idle guard stance, footwork and move set.
+  - Each style also has 2–3 **sub-stances** (high/low, aggressive/defensive…) that change its moves.
+  - **The game picks the sub-stance automatically** from what you're doing: guarding, pressing,
+    crouching, and so on.
+- **Expansion:**
+  - **Longer combo strings:** more hits, branching routes, and enders that launch, knock down or
+    wall-splat.
+  - **Dash and counters:** a well-timed dodge opens a short window where your next attack becomes a
+    fast counter (behind or beside the enemy); sprinting into an attack does a dash strike; a few
+    guard-break moves for blockers.
+- **Pace: faster overall.** Everything quicker and more fluid, with a smaller hit-stop.
+- **Impact: hard but clean.** A short, sharp hit-stop, a punch of camera shake, blood and debris on
+  heavy hits, enemies crumpling or flying on enders. It stays readable and fast.
+- **Scope:** unarmed styles, grabs and throws; every weapon moveset; hand seals and jutsu casts; getting
+  hit, dodges, guard, idle and the ninja run.
