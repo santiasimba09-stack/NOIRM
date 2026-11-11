@@ -2,5 +2,5 @@
   "animation": "noirm:tonfa_hook_l",
   "timing": { "windup": 2, "active": 2, "recovery": 4, "cancel_after": 2 },
   "hit": { "damage": 3, "posture": 12, "range": 2.3, "arc": 110, "knockback": 0.3, "lunge": 0.2, "hitstun": 6, "hitstop": 1, "shake": 0.3 },
-  "next": { "light": "noirm:tonfa/jab_r", "heavy": "noirm:tonfa/hammer" }
+  "next": { "light": "noirm:tonfa/spin_strike", "heavy": "noirm:tonfa/hammer" }
 }

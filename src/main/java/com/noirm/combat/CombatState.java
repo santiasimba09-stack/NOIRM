@@ -71,9 +71,11 @@ public final class CombatState {
     SubStance subStance = SubStance.NEUTRAL;
     ResourceLocation stanceAnimation;
     int stanceSwitch = 2;
+    /** "Never happened", far enough back that game-time differences can't overflow. */
+    static final long NEVER = Long.MIN_VALUE / 4;
     /** Game time this fighter last took / landed a hit (sub-stances). */
-    long lastHitTaken = Long.MIN_VALUE;
-    long lastHitDealt = Long.MIN_VALUE;
+    long lastHitTaken = NEVER;
+    long lastHitDealt = NEVER;
     /** Hits of the current string so far (0 = an opener). */
     int comboDepth;
     /** Ticks in the air (the air stance waits for a real jump, not a step). */

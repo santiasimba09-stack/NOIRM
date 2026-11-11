@@ -129,7 +129,7 @@ public final class CombatRebuildGameTests {
         anim.sample(12.9f, pose);
         near(helper, target, pose.get(Bone.RIGHT_ARM, SkeletonPose.RX), "and held for the hold (3 ticks)");
         pose.clear();
-        anim.sample(16.5f, pose);
+        anim.sample(17.5f, pose);
         helper.assertTrue(pose.get(Bone.RIGHT_ARM, SkeletonPose.RX) > target * 0.5f, "then the recovery");
         near(helper, 10f, anim.strikeTick, "the strike marker");
         helper.assertTrue(anim.snapWeight(11f) == 1f && anim.snapWeight(16f) == 0f, "the springs are pinned only through the snap and hold");
