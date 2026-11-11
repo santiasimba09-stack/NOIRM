@@ -34,7 +34,13 @@ import java.util.WeakHashMap;
  *   <li><b>Springs:</b> every joint follows its target through a small spring, so limbs
  *       overshoot and settle (follow-through) instead of snapping from key to key.</li>
  * </ol>
- * Layers fade in and out, so nothing snaps. Tuning lives in the constants below.
+ * Layers fade in and out, so nothing pops. Tuning lives in the constants below.
+ *
+ * <p><b>Snappy key poses</b> (2026-11 rebuild): while a move's snap key is reached or held
+ * ({@link KeyframeAnimation#snapWeight}) the springs are pinned to the pose, so the strike lands
+ * as authored, instead of being smoothed into a mocap-like blend; they take over again for the
+ * recovery. A style's sub-stance (neutral, aggressive, defensive, low, air), chosen by the server,
+ * swaps the stance with a quick snap ({@code stanceSwitch} ticks).
  */
 public final class HumanoidAnimator {
     // Fades, in ticks.
@@ -47,6 +53,8 @@ public final class HumanoidAnimator {
     static final float LEGACY_FADE = 2f;
     static final float RUN_FADE = 5f;
     static final float AIR_FADE = 3f;
+    /** How hard snap keys pin the springs (1 = the authored pose exactly; a little less keeps a hint of life). */
+    static final float SNAP_PIN = 0.9f;
     /** Horizontal speed (blocks/tick) from which a sprinter breaks into the ninja run. */
     static final float RUN_SPEED = 0.25f;
     /** Ticks a flinch lasts. */
@@ -76,9 +84,17 @@ public final class HumanoidAnimator {
 
     record PlayerAction(int seq, String id, int ticks, long startedAt) {}
 
-    /** What an entity is doing, as far as animation cares. */
+    /** What an entity is doing, as far as animation cares. {@code stanceSwitch}: ticks a stance change snaps over. */
     public record Inputs(int seq, String action, int actionTicks, ResourceLocation stance, boolean fighting,
-                         boolean guarding, boolean staggered, SparringNinja.Pose legacy) {}
+                         boolean guarding, boolean staggered, SparringNinja.Pose legacy, int stanceSwitch) {
+        public Inputs(int seq, String action, int actionTicks, ResourceLocation stance, boolean fighting,
+                      boolean guarding, boolean staggered, SparringNinja.Pose legacy) {
+            this(seq, action, actionTicks, stance, fighting, guarding, staggered, legacy, DEFAULT_STANCE_SWITCH);
+        }
+    }
+
+    /** A stance change (a new sub-stance) snaps over this many ticks unless the style says otherwise. */
+    static final int DEFAULT_STANCE_SWITCH = 2;
 
     // ------------------------------------------------------------ entry points
 
@@ -115,7 +131,7 @@ public final class HumanoidAnimator {
             return;
         }
         compose(entity, model, state, pose, limbSwing, limbAmount);
-        state.springs(pose, state.partsDt, state.partsTime != state.partsTime || !state.partsValid);
+        state.springs(pose, state.partsDt, state.partsTime != state.partsTime || !state.partsValid, state.pin);
         plantFeet(entity, state, pose, limbAmount);
         state.parts.copyFrom(pose);
         state.partsTime = time;
@@ -178,6 +194,11 @@ public final class HumanoidAnimator {
             out.clear();
             animation.sample((clock - start) * speed, out);
         }
+
+        /** 1 while a snap key of this animation is being reached or held (see {@link KeyframeAnimation#snapWeight}). */
+        float snap(float clock) {
+            return animation.snapWeight((clock - start) * speed);
+        }
     }
 
     static final class State {
@@ -194,6 +215,13 @@ public final class HumanoidAnimator {
         float previousWeight;
         KeyframeAnimation stance;
         float stanceWeight;
+        /** The stance before the last switch, and when / how fast the switch snaps. */
+        KeyframeAnimation stanceBefore;
+        float stanceSwitchStart = Float.NEGATIVE_INFINITY;
+        float stanceSwitchTicks = DEFAULT_STANCE_SWITCH;
+        final SkeletonPose stanceBeforePose = new SkeletonPose();
+        /** How hard the springs are pinned to the target this frame (0 = free springs, 1 = exact pose). */
+        float pin;
         float guardWeight;
         float staggerWeight;
         float legacyWeight;
@@ -243,6 +271,14 @@ public final class HumanoidAnimator {
 
         /** Runs every channel of {@code pose} through its bone's spring, in place. */
         void springs(SkeletonPose pose, float dtTicks, boolean fresh) {
+            springs(pose, dtTicks, fresh, 0f);
+        }
+
+        /**
+         * As above; {@code pin} (0..1) pulls each spring onto its target and calms it, so a snap
+         * key or a held strike pose shows as authored (1 = exactly).
+         */
+        void springs(SkeletonPose pose, float dtTicks, boolean fresh, float pin) {
             if (!springInit || dtTicks > 10f) {
                 for (Bone bone : Bone.values()) {
                     for (int c = 0; c < SkeletonPose.CHANNELS; c++) {
@@ -276,9 +312,22 @@ public final class HumanoidAnimator {
                 for (int c = 0; c < SkeletonPose.CHANNELS; c++) {
                     int i = bone.ordinal() * SkeletonPose.CHANNELS + c;
                     float target = pose.get(bone, c);
-                    pose.set(bone, c, step(i, target, isAngle(c), k, seconds, steps, t));
+                    float value = step(i, target, isAngle(c), k, seconds, steps, t);
+                    if (pin > 0f) {
+                        value = pinTo(i, value, target, isAngle(c), pin);
+                    }
+                    pose.set(bone, c, value);
                 }
             }
+        }
+
+        /** Pulls spring {@code i} from {@code value} toward {@code target} by {@code pin}, and damps it. */
+        float pinTo(int i, float value, float target, boolean angle, float pin) {
+            float goal = angle ? value + SkeletonPose.wrap(target - value) : target;
+            float y = value + (goal - value) * pin;
+            springY[i] = y;
+            springV[i] *= 1f - pin;
+            return y;
         }
 
         float step(int i, float target, boolean angle, float[] k, float seconds, int steps, float t) {
@@ -318,12 +367,17 @@ public final class HumanoidAnimator {
 
     static Inputs inputsFor(LivingEntity entity, float time) {
         if (entity instanceof SparringNinja ninja) {
-            ResourceLocation stance = WeaponStances.stanceFor(ninja.getMainHandItem());
+            // The server's pick for the sub-stance first; else the weapon's or the style's own stance.
+            ResourceLocation stance = ninja.syncedStance().isEmpty() ? null : ResourceLocation.tryParse(ninja.syncedStance());
+            if (stance == null || NpcAnimations.get(stance) == null) {
+                stance = WeaponStances.stanceFor(ninja.getMainHandItem());
+            }
             if (stance == null) {
                 stance = styleStance(ninja.syncedStyle());
             }
             return new Inputs(ninja.animationSeq(), ninja.animationId(), ninja.animationTicks(), stance, ninja.isFighting(),
-                    ninja.ninjaPose() == SparringNinja.Pose.GUARD, ninja.ninjaPose() == SparringNinja.Pose.STAGGER, ninja.ninjaPose());
+                    ninja.ninjaPose() == SparringNinja.Pose.GUARD, ninja.ninjaPose() == SparringNinja.Pose.STAGGER, ninja.ninjaPose(),
+                    Math.max(1, ninja.syncedStanceSwitch()));
         }
         if (entity instanceof Player player) {
             PlayerAction action = PLAYER_ACTIONS.get(player.getId());
@@ -332,13 +386,17 @@ public final class HumanoidAnimator {
                     : action != null && player.level().getGameTime() - action.startedAt < 80 && !action.id.startsWith("noirm:meditate");
             ResourceLocation stance = null;
             if (fighting) {
-                stance = WeaponStances.stanceFor(player.getMainHandItem());
+                stance = local ? com.noirm.client.ClientPlayerState.stance() : null; // the server's sub-stance pick
+                if (stance == null || NpcAnimations.get(stance) == null) {
+                    stance = WeaponStances.stanceFor(player.getMainHandItem());
+                }
                 if (stance == null) {
                     stance = styleStance(local ? com.noirm.client.ClientPlayerState.style() : "");
                 }
             }
             return new Inputs(action == null ? 0 : action.seq, action == null ? "" : action.id, action == null ? 1 : action.ticks,
-                    stance, fighting, local && com.noirm.client.ClientPlayerState.guarding(), false, SparringNinja.Pose.IDLE);
+                    stance, fighting, local && com.noirm.client.ClientPlayerState.guarding(), false, SparringNinja.Pose.IDLE,
+                    local ? Math.max(1, com.noirm.client.ClientPlayerState.stanceSwitch()) : DEFAULT_STANCE_SWITCH);
         }
         return new Inputs(0, "", 1, null, false, false, false, SparringNinja.Pose.IDLE);
     }
@@ -407,18 +465,33 @@ public final class HumanoidAnimator {
             state.previous.sample(clock, state.previousPose);
         }
 
-        // Stance.
+        // Stance (a sub-stance change snaps from the old one to the new one).
         KeyframeAnimation stance = in.stance() == null ? null : NpcAnimations.get(in.stance());
         if (stance == null && in.fighting()) {
             stance = NpcAnimations.get(Noirm.id("stance_basic"));
         }
         if (stance != null) {
+            if (state.stance != null && stance != state.stance && state.stanceWeight > 0f) {
+                state.stanceBefore = state.stance;
+                state.stanceSwitchStart = time;
+                state.stanceSwitchTicks = Math.max(0.5f, in.stanceSwitch());
+            }
             state.stance = stance;
         }
         state.stanceWeight = approach(state.stanceWeight, in.fighting() && stance != null ? 1f : 0f, dt / STANCE_FADE);
+        float switching = state.stanceBefore == null ? 1f : Mth.clamp((time - state.stanceSwitchStart) / state.stanceSwitchTicks, 0f, 1f);
+        if (switching >= 1f) {
+            state.stanceBefore = null;
+        }
         if (state.stance != null) {
             state.stancePose.clear();
             state.stance.sample(time, state.stancePose);
+            if (state.stanceBefore != null) {
+                state.stanceBeforePose.clear();
+                state.stanceBefore.sample(time, state.stanceBeforePose);
+                state.stanceBeforePose.blend(state.stancePose, KeyframeAnimation.snap(switching, 0.7f));
+                state.stancePose.copyFrom(state.stanceBeforePose);
+            }
             // Its legs (footwork) apply only while standing; the rest always.
             state.stanceLegs.clear();
             state.stanceHasLegs = false;
@@ -439,6 +512,11 @@ public final class HumanoidAnimator {
                 }
             }
         }
+
+        // Snap keys (and a stance switch) pin the springs: the pose shows as authored, no mushy blend.
+        float snap = state.current == null ? 0f : state.current.snap(clock) * state.currentWeight;
+        float stanceSnap = state.stanceBefore == null ? 0f : state.stanceWeight * (1f - state.currentWeight);
+        state.pin = Math.max(snap, stanceSnap) * SNAP_PIN;
 
         state.guardWeight = approach(state.guardWeight, in.guarding() ? 1f : 0f, dt / GUARD_FADE);
         state.staggerWeight = approach(state.staggerWeight, in.staggered() ? 1f : 0f, dt / (in.staggered() ? STAGGER_FADE_IN : STAGGER_FADE_OUT));
@@ -550,6 +628,9 @@ public final class HumanoidAnimator {
                 value = target;
             } else {
                 value = state.step(i, target, isAngle(c), k, seconds, steps, seconds / steps);
+                if (state.pin > 0f) {
+                    value = state.pinTo(i, value, target, isAngle(c), state.pin);
+                }
             }
             if (Math.abs(value) > 1.0e-5f || body.isSet(Bone.BODY, c)) {
                 state.bodyOut.set(Bone.BODY, c, value);

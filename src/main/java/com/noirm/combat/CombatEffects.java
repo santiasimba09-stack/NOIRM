@@ -39,6 +39,87 @@ final class CombatEffects {
                 particles(entity, ParticleTypes.ENCHANTED_HIT, 12, 0.4);
             }
         }
+        if (move.hit().guardBreak() && entity.level() instanceof ServerLevel level) {
+            // A guard break telegraphs in red: block it and it shatters (parry it instead).
+            net.minecraft.world.phys.Vec3 at = entity.position().add(0, entity.getBbHeight() * 0.7, 0);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xFF5A40, 0x801010, 0.3f, 0.05f, 8), at, 6, 0.3, 0.02);
+        }
+    }
+
+    /** Sprinting into an attack: a streak of dust behind the fighter and a rush of air. */
+    static void dashStrike(LivingEntity entity) {
+        sound(entity, NoirmSounds.SWING_HEAVY.get(), 0.5f, 1.35f);
+        if (entity.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 back = net.minecraft.world.phys.Vec3.directionFromRotation(0, entity.getYRot()).scale(-0.6);
+            for (int i = 0; i < 4; i++) {
+                net.minecraft.world.phys.Vec3 at = entity.position().add(back.scale(i * 0.5)).add(0, 0.15, 0);
+                com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.smoke(0xC8BCA8, 0.35f, 10), at, back.scale(0.05));
+            }
+        }
+    }
+
+    /** The dodge counter's slip: a blur where you were and where you land. */
+    static void dodgeCounter(LivingEntity entity, net.minecraft.world.phys.Vec3 from, net.minecraft.world.phys.Vec3 to) {
+        sound(entity, NoirmSounds.JUST_FRAME.get(), 0.5f, 1.6f);
+        if (entity.level() instanceof ServerLevel level) {
+            for (net.minecraft.world.phys.Vec3 at : new net.minecraft.world.phys.Vec3[]{from, to}) {
+                com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(0xE8E4DC, 0.45f, 9), at.add(0, 0.9, 0), 5, 0.25, 0.03);
+            }
+            com.noirm.vfx.Vfx.streak(level, from.add(0, 1, 0), to.add(0, 1, 0), com.noirm.vfx.Vfx.NEUTRAL);
+        }
+        feedback(entity, Feedback.Kind.SHAKE, 0.25f);
+    }
+
+    /** A guard break: the guard shatters with a crack. */
+    static void guardBreak(LivingEntity attacker, LivingEntity target) {
+        sound(target, NoirmSounds.POSTURE_BREAK.get(), 1.1f, 0.8f);
+        if (target.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 chest = target.position().add(0, target.getBbHeight() * 0.65, 0);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.shard(0xD8E8FF, 0.18f, 10), chest, 10, 0.25, 0.25);
+        }
+        feedback(attacker, Feedback.Kind.SHAKE, 0.45f);
+    }
+
+    /**
+     * A combo ender lands: the target crumples, launches or flies (their reaction animation), and
+     * it hits harder: a heavier shake, blood and debris.
+     */
+    static void ender(LivingEntity attacker, LivingEntity target, CombatMove.Hit.Ender ender, CombatMove.Hit hit) {
+        ResourceLocation reaction = Noirm.id(switch (ender) {
+            case LAUNCH -> "hit_launch";
+            case KNOCKDOWN -> "hit_crumple";
+            default -> "hit_fly";
+        });
+        int ticks = ender == CombatMove.Hit.Ender.KNOCKDOWN ? CombatSystem.KNOCKDOWN_TICKS : 18;
+        if (target instanceof Player) {
+            NoirmNetwork.sendToTrackingAndSelf(target, new PlayAnimation(target.getId(), reaction, ticks));
+        } else if (target instanceof CombatAnimated animated) {
+            animated.playCombatAnimation(reaction, ticks);
+        }
+        float shake = Math.min(1f, hit.shake() + CombatSystem.ENDER_SHAKE);
+        feedback(attacker, Feedback.Kind.SHAKE, shake * 0.8f);
+        feedback(target, Feedback.Kind.SHAKE, shake);
+        heavyImpact(target, 1.5f);
+    }
+
+    /** Blood (when gore is on) and debris kicked up from the ground: heavy hits and enders. */
+    static void heavyImpact(LivingEntity target, float amount) {
+        if (!(target.level() instanceof ServerLevel level)) {
+            return;
+        }
+        net.minecraft.core.BlockPos below = target.blockPosition().below();
+        net.minecraft.world.level.block.state.BlockState ground = level.getBlockState(below);
+        if (!ground.isAir() && ground.getRenderShape() != net.minecraft.world.level.block.RenderShape.INVISIBLE) {
+            level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground),
+                    target.getX(), target.getY() + 0.1, target.getZ(), Math.round(8 * amount), 0.35, 0.05, 0.35, 0.15);
+        }
+        if (com.noirm.gore.Gore.enabled(level) && com.noirm.gore.Gore.marksOn(target)) {
+            int drops = Math.round(4 * amount * com.noirm.gore.Gore.intensity());
+            if (drops > 0) {
+                level.sendParticles(com.noirm.gore.GoreParticles.BLOOD_DROP.get(), target.getX(), target.getY() + target.getBbHeight() * 0.62,
+                        target.getZ(), drops, 0.15, 0.12, 0.15, 0.2);
+            }
+        }
     }
 
     static void swing(LivingEntity entity, CombatMove move) {
@@ -64,6 +145,7 @@ final class CombatEffects {
             styleImpact(attacker, target, chest, hit.isHeavy());
             if (hit.isHeavy()) {
                 particles(target, ParticleTypes.SWEEP_ATTACK, 1, 0);
+                heavyImpact(target, 1f);
             }
         } else {
             com.noirm.vfx.Vfx.burst(target.level(), com.noirm.vfx.Vfx.spark(0x9AC8FF, 0.15f, 6), chest, 5, 0.1, 0.25);
@@ -93,11 +175,11 @@ final class CombatEffects {
                     com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.spark(0xFFFFFF, 0.12f, 5), chest.subtract(dir.scale(i * 0.45)), dir.scale(0.4));
                 }
             }
-            case "weapon_kunai", "weapon_sword" -> {
+            case "weapon_kunai", "weapon_sword", "weapon_tanto", "weapon_katana", "weapon_greatsword", "weapon_spear", "weapon_claws" -> {
                 sound(target, NoirmSounds.WEAPON_IMPACT.get(), 0.6f, heavy ? 0.9f : 1.15f);
                 particles(target, ParticleTypes.CRIT, heavy ? 8 : 4, 0.25);
             }
-            case "weapon_staff" -> sound(target, SoundEvents.WOOD_HIT, 0.9f, heavy ? 0.7f : 1.0f);
+            case "weapon_staff", "weapon_tonfa", "weapon_fan" -> sound(target, SoundEvents.WOOD_HIT, 0.9f, heavy ? 0.7f : 1.0f);
             case "gentle_fist" -> {
                 sound(target, NoirmSounds.MEDICAL_CHIME.get(), 0.35f, 1.8f); // Gentle Fist: chakra, not muscle
                 com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xE8FAFF, 0x6FB8FF, 0.25f, 0.05f, 7), chest, 4, 0.1, 0.06);

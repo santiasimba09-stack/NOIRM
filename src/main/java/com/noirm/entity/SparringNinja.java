@@ -70,6 +70,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     private static final EntityDataAccessor<Boolean> FIGHTING = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BOOLEAN);
     /** The Mangekyō's look (0 = none; see dojutsu/Mangekyo#look). Set from saved data by dojutsu/MangekyoNpcs. */
     private static final EntityDataAccessor<Integer> MANGEKYO = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.INT);
+    /** The sub-stance's stance animation, and the sub-stance (low 3 bits) with its switch ticks (the rest). */
+    private static final EntityDataAccessor<String> STANCE = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Byte> SUB_STANCE = SynchedEntityData.defineId(SparringNinja.class, EntityDataSerializers.BYTE);
     /** A jinchūriki ninja calls on its beast below this fraction of its health. */
     public static final float CLOAK_HEALTH = 0.35f;
 
@@ -156,6 +159,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.define(STYLE, "");
         entityData.define(FIGHTING, false);
         entityData.define(MANGEKYO, 0);
+        entityData.define(STANCE, "");
+        entityData.define(SUB_STANCE, (byte) (2 << 3));
     }
 
     @Override
@@ -802,6 +807,27 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         entityData.set(ANIMATION_TICKS, Math.max(1, durationTicks));
         entityData.set(ANIMATION_SEQ, entityData.get(ANIMATION_SEQ) + 1);
         entityData.set(FIGHTING, true);
+    }
+
+    @Override
+    public void setCombatStance(ResourceLocation stance, com.noirm.combat.SubStance subStance, int switchTicks) {
+        entityData.set(STANCE, stance == null ? "" : stance.toString());
+        entityData.set(SUB_STANCE, (byte) (subStance.ordinal() | (Math.min(31, switchTicks) << 3)));
+    }
+
+    /** The stance animation the server picked for the current sub-stance (empty = the style's own). */
+    public String syncedStance() {
+        return entityData.get(STANCE);
+    }
+
+    /** The current sub-stance (server-picked). */
+    public com.noirm.combat.SubStance syncedSubStance() {
+        return com.noirm.combat.SubStance.byId(entityData.get(SUB_STANCE) & 7);
+    }
+
+    /** Ticks a switch into the current sub-stance snaps over. */
+    public int syncedStanceSwitch() {
+        return (entityData.get(SUB_STANCE) >> 3) & 31;
     }
 
     /** The last combat animation started (empty if none yet). */

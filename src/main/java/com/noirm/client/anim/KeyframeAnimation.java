@@ -24,23 +24,78 @@ import java.util.Map;
  * keyframe) bends the elbow / knee / waist of the NPC model, like Better Combat's bends.
  * PlayerAnimator ignores it, so player animation is unchanged.
  *
+ * <p>NOIRM key-pose extensions (the 2026-11 combat rebuild, see docs/COMBAT_DESIGN.md):
+ * <ul>
+ *   <li>{@code "easing": "snap"} (or {@code "snap": true}, or {@code "snap": <fraction>}) on a
+ *       keyframe: a near-stepped move into it. The pose is reached within the first
+ *       {@link #SNAP_REACH} of the gap (or the given fraction), with a tiny
+ *       {@link #SNAP_OVERSHOOT}, then stays. The engine's springs don't smooth these out.</li>
+ *   <li>{@code "hold": <seconds>} on a keyframe: its pose is held that long before the next key
+ *       starts (a strike pose frozen on impact).</li>
+ *   <li>{@code "strike": <seconds>} on the animation: the strike marker, the moment the hit lands
+ *       (the move's windup), and {@code "strike_hold"} how long the strike pose is held.</li>
+ * </ul>
+ *
  * <p>Plain Java + Gson only (no Minecraft client classes), so game tests can parse every file on
  * the server.
  */
 public final class KeyframeAnimation {
     private static final int ROT = 0, POS = 1, BEND = 2;
     private static final float DEG = (float) (Math.PI / 180.0);
+    /** A snap key reaches its pose within this share of the gap before it. */
+    public static final float SNAP_REACH = 0.35f;
+    /** …overshooting it by this share of the move on the way (a tiny "crack", then still). */
+    public static final float SNAP_OVERSHOOT = 0.06f;
 
     public final String name;
     /** Length in ticks (seconds × 20). */
     public final float lengthTicks;
     public final boolean loop;
+    /** The strike marker: the tick the hit lands on (-1 = none). */
+    public float strikeTick = -1f;
+    /** How many ticks the strike pose is held after {@link #strikeTick}. */
+    public float strikeHold;
     private final Track[][] tracks = new Track[Bone.values().length][3];
+    /** Animation-time windows (start, end pairs, in ticks) where a snap key or its hold plays. */
+    private float[] snapWindows = new float[0];
 
     private KeyframeAnimation(String name, float lengthTicks, boolean loop) {
         this.name = name;
         this.lengthTicks = lengthTicks;
         this.loop = loop;
+    }
+
+    /**
+     * 1 while a snap key is being reached or held at animation time {@code tick} (the engine's
+     * springs should follow it exactly), easing to 0 over one tick after. Looping animations wrap.
+     */
+    public float snapWeight(float tick) {
+        if (snapWindows.length == 0) {
+            return 0f;
+        }
+        float t = tick;
+        if (loop && lengthTicks > 0) {
+            t = t % lengthTicks;
+            if (t < 0) {
+                t += lengthTicks;
+            }
+        }
+        float best = 0f;
+        for (int i = 0; i < snapWindows.length; i += 2) {
+            float start = snapWindows[i], end = snapWindows[i + 1];
+            if (t >= start && t <= end) {
+                return 1f;
+            }
+            if (t > end && t < end + 1f) {
+                best = Math.max(best, 1f - (t - end));
+            }
+        }
+        return best;
+    }
+
+    /** True if any key of this animation snaps. */
+    public boolean hasSnaps() {
+        return snapWindows.length > 0;
     }
 
     // ------------------------------------------------------------ sampling
@@ -98,12 +153,15 @@ public final class KeyframeAnimation {
         final float[] ticks;
         final float[][] values;
         final String[] eases;
+        /** Per key: 0 = normal, else a snap reaching its pose within this share of the gap. */
+        final float[] snaps;
         private final float[] scratch;
 
-        Track(float[] ticks, float[][] values, String[] eases, int dim) {
+        Track(float[] ticks, float[][] values, String[] eases, float[] snaps, int dim) {
             this.ticks = ticks;
             this.values = values;
             this.eases = eases;
+            this.snaps = snaps;
             this.scratch = new float[dim];
         }
 
@@ -124,6 +182,13 @@ public final class KeyframeAnimation {
             float span = ticks[i + 1] - ticks[i];
             float f = span <= 0 ? 1f : (t - ticks[i]) / span;
             // GeckoLib's rule: a keyframe's easing shapes the way *into* it.
+            if (snaps[i + 1] > 0f) {
+                f = snap(f, snaps[i + 1]);
+                for (int k = 0; k < scratch.length; k++) {
+                    scratch[k] = values[i][k] + (values[i + 1][k] - values[i][k]) * f;
+                }
+                return scratch;
+            }
             String ease = eases[i + 1];
             if (ease != null && ease.equalsIgnoreCase("catmullrom")) {
                 // A smooth curve through the neighbouring keys (no stop at each key).
@@ -144,6 +209,22 @@ public final class KeyframeAnimation {
         }
     }
 
+    /**
+     * Near-stepped: reaches 1 at {@code reach} (a share of the gap), overshooting by about
+     * {@link #SNAP_OVERSHOOT} on the way, then holds 1.
+     */
+    static float snap(float x, float reach) {
+        if (x >= reach) {
+            return 1f;
+        }
+        float u = Math.max(0f, x / reach);
+        // An "out-back" curve with a small peak overshoot, landing exactly on 1.
+        float c1 = 1.70158f * SNAP_OVERSHOOT / 0.1f;
+        float c3 = c1 + 1f;
+        float v = u - 1f;
+        return 1f + c3 * v * v * v + c1 * v * v;
+    }
+
     static float ease(String name, float x) {
         if (name == null) {
             return x;
@@ -151,6 +232,7 @@ public final class KeyframeAnimation {
         float pi = (float) Math.PI;
         return switch (name.toLowerCase(java.util.Locale.ROOT)) {
             case "step", "constant" -> 0f;
+            case "snap" -> snap(x, SNAP_REACH);
             case "easeinsine" -> 1 - (float) Math.cos(x * pi / 2);
             case "easeoutsine" -> (float) Math.sin(x * pi / 2);
             case "easeinoutsine", "catmullrom" -> -((float) Math.cos(pi * x) - 1) / 2;
@@ -218,10 +300,51 @@ public final class KeyframeAnimation {
                 }
             }
         }
-        if (length < 0) {
-            return new KeyframeAnimation(name, maxTick, loop).withTracks(animation);
+        KeyframeAnimation out = length < 0 ? new KeyframeAnimation(name, maxTick, loop).withTracks(animation) : animation;
+        if (json.has("strike")) {
+            out.strikeTick = json.get("strike").getAsFloat() * 20f;
+            out.strikeHold = json.has("strike_hold") ? json.get("strike_hold").getAsFloat() * 20f : 0f;
         }
-        return animation;
+        out.snapWindows = snapWindows(out.tracks);
+        return out;
+    }
+
+    /** Where snap keys play: from the key before each snap key to the snap key (and its hold). */
+    private static float[] snapWindows(Track[][] tracks) {
+        List<float[]> windows = new ArrayList<>();
+        for (Track[] bt : tracks) {
+            for (Track track : bt) {
+                if (track == null) {
+                    continue;
+                }
+                for (int i = 1; i < track.ticks.length; i++) {
+                    if (track.snaps[i] > 0f) {
+                        float end = track.ticks[i];
+                        // A hold is a repeat of the same key right after it: include it.
+                        if (i + 1 < track.ticks.length && java.util.Arrays.equals(track.values[i], track.values[i + 1])) {
+                            end = track.ticks[i + 1];
+                        }
+                        windows.add(new float[]{track.ticks[i - 1], end});
+                    }
+                }
+            }
+        }
+        windows.sort((a, b) -> Float.compare(a[0], b[0]));
+        List<float[]> merged = new ArrayList<>();
+        for (float[] w : windows) {
+            float[] last = merged.isEmpty() ? null : merged.get(merged.size() - 1);
+            if (last != null && w[0] <= last[1]) {
+                last[1] = Math.max(last[1], w[1]);
+            } else {
+                merged.add(w.clone());
+            }
+        }
+        float[] out = new float[merged.size() * 2];
+        for (int i = 0; i < merged.size(); i++) {
+            out[2 * i] = merged.get(i)[0];
+            out[2 * i + 1] = merged.get(i)[1];
+        }
+        return out;
     }
 
     private KeyframeAnimation withTracks(KeyframeAnimation from) {
@@ -231,7 +354,7 @@ public final class KeyframeAnimation {
         return this;
     }
 
-    private record Key(float tick, float[] value, String ease) {}
+    private record Key(float tick, float[] value, String ease, float snap) {}
 
     private static Track readTrack(JsonElement channel, int dim, Bone bone, int kind) {
         if (channel == null || channel.isJsonNull()) {
@@ -239,11 +362,11 @@ public final class KeyframeAnimation {
         }
         List<Key> keys = new ArrayList<>();
         if (channel.isJsonArray() || channel.isJsonPrimitive()) {
-            keys.add(new Key(0, vector(channel, dim), null));
+            keys.add(new Key(0, vector(channel, dim), null, 0f));
         } else if (channel.isJsonObject()) {
             JsonObject object = channel.getAsJsonObject();
             if (object.has("vector") && !isTimeKey(object)) {
-                keys.add(new Key(0, vector(object.get("vector"), dim), null));
+                keys.add(new Key(0, vector(object.get("vector"), dim), null, 0f));
             } else {
                 for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
                     float seconds;
@@ -254,6 +377,8 @@ public final class KeyframeAnimation {
                     }
                     JsonElement frame = entry.getValue();
                     String ease = null;
+                    float snap = 0f;
+                    float hold = 0f;
                     JsonElement value = frame;
                     if (frame.isJsonObject()) {
                         JsonObject f = frame.getAsJsonObject();
@@ -261,6 +386,16 @@ public final class KeyframeAnimation {
                             ease = f.get("easing").getAsString();
                         } else if (f.has("lerp_mode") && "catmullrom".equals(f.get("lerp_mode").getAsString())) {
                             ease = "catmullrom";
+                        }
+                        if ("snap".equalsIgnoreCase(ease)) {
+                            snap = SNAP_REACH;
+                        }
+                        if (f.has("snap") && f.get("snap").isJsonPrimitive()) {
+                            var p = f.getAsJsonPrimitive("snap");
+                            snap = p.isBoolean() ? (p.getAsBoolean() ? SNAP_REACH : 0f) : Math.max(0.01f, Math.min(1f, p.getAsFloat()));
+                        }
+                        if (f.has("hold")) {
+                            hold = Math.max(0f, f.get("hold").getAsFloat() * 20f);
                         }
                         value = f.has("vector") ? f.get("vector") : f.has("post") ? f.get("post")
                                 : f.has("pre") ? f.get("pre") : f.has("value") ? f.get("value") : null;
@@ -271,7 +406,11 @@ public final class KeyframeAnimation {
                     if (value == null) {
                         continue;
                     }
-                    keys.add(new Key(seconds * 20f, vector(value, dim), ease));
+                    float[] v = vector(value, dim);
+                    keys.add(new Key(seconds * 20f, v, ease, snap));
+                    if (hold > 0f) {
+                        keys.add(new Key(seconds * 20f + hold, v.clone(), "linear", 0f)); // held still, then on to the next key
+                    }
                 }
             }
         }
@@ -282,13 +421,15 @@ public final class KeyframeAnimation {
         float[] ticks = new float[keys.size()];
         float[][] values = new float[keys.size()][];
         String[] eases = new String[keys.size()];
+        float[] snaps = new float[keys.size()];
         for (int i = 0; i < keys.size(); i++) {
             Key key = keys.get(i);
             ticks[i] = key.tick;
             values[i] = convert(key.value, bone, kind);
             eases[i] = key.ease;
+            snaps[i] = key.snap;
         }
-        return new Track(ticks, values, eases, dim);
+        return new Track(ticks, values, eases, snaps, dim);
     }
 
     private static boolean isTimeKey(JsonObject object) {
