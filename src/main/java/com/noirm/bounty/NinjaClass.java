@@ -34,9 +34,9 @@ import net.minecraft.world.entity.player.Player;
  * <p><b>Thresholds</b> (power): D below 15, C from 15, B from 28, A from 45, S from 80. They line up
  * with the rest of the game: a fresh player (10) and the D-rank bandits (9) are D; the genin test
  * opponent (16), C-rank rogues and the chūnin exam (20–26) are C; the jōnin trial and examiner
- * (~37–40) are B; A-rank rogues (~48) are A; the S-rank missions' foes (~77–88) and every Kage (120+)
- * are S. (A rank sits one class below the missions it opens: a jōnin is a strong B facing A-rank
- * work; playthrough balance pass.)
+ * (~37–40) are B; A-rank rogues (~48) are A; the S-rank missions' foes run from a strong A (~72)
+ * to S (~93); every Kage (120+) is S. (A rank sits about one class below the missions it opens: a
+ * jōnin is a strong B facing A-rank work; playthrough balance pass.)
  * <b>Legendary</b> ninjas are shown as S+.
  *
  * <p><b>Worth</b> (kill XP): D 10, C 20, B 40, A 80, S 160, legendary {@link #LEGENDARY_WORTH}: each
