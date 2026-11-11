@@ -57,3 +57,40 @@ The owner's direction for Wood Release (Mokuton) at its most epic, for later:
   throwing up dust clouds and rock.
 - Look: raw grey-green wood with deep ink grain, dust and debris on every emergence, overwhelming
   scale (bigger than anything else we have), slow heavy motion.
+
+## Hair, eyes and bodies rework (owner's brief, 2026-11-11)
+The owner: "Rework the hair based on these types of hair references; you can also go through the eyes and
+the bodies." Then: "Adapt the bodies to be more to our vision, but this is a great base to build the work
+around." The references are **mood only**. Some are other mods' art or franchise images, so never copy,
+trace or sample them. What they show, in words:
+- **Hair, 3D clumps:** hair built from many small angled cuboid clumps and locks sticking out of the head,
+  each a short box at its own angle, in 2–3 shades. Styles: spiky, messy, swept, curly, wild manes, one
+  big swept lock. Very readable silhouettes in bright colours.
+- **Hair, draped sheets:** layered 3D sheets with strand textures that hang. Styles: long straight hair
+  down the back, side bangs over one eye, messy shoulder length, long locks in front of the shoulders.
+  About 40 hair colours.
+- **Eyes:** big, wide, sharp anime eyes with:
+  - white sclera;
+  - a thick dark upper lash line that flicks out at the outer corner;
+  - a large detailed iris (a crisp, high-detail Sharingan or Mangekyō pattern);
+  - dark brows;
+  - sharp corners, never round or bubbly.
+- **Bodies (the "great base"):** a base skin in black underwear (boxers, plus a black top for the female
+  variant), with strong shaded muscle definition (pecs, abs, arms), big messy 3D hair clumps and sharp
+  narrow eyes. Clean, readable and high-contrast.
+
+**The plan** (the owner didn't pick from the options, so these are the recommended ones; the owner can
+redirect):
+- **Hair:**
+  - 3D clumps for short and spiky styles, and draped sheets for long styles (long straight, ponytail,
+    high ponytail, braid, bangs over one eye, twin buns, wild mane).
+  - **About 20 styles** defined as data, plus a hair-colour picker with about 40 swatches and a custom
+    colour.
+  - NPC clans keep their own hair: Uchiha dark and spiky, Hyūga long and straight, Uzumaki red, and so on.
+  - Hats, helmets, hoods and masks hide or squash the hair.
+- **Eyes:** bigger and more detailed, but sharp, not bubbly; 3–4 eye shapes in the creator; the
+  Sharingan, Mangekyō and Byakugan redrawn at higher detail as our own designs.
+- **Bodies:**
+  - Keep the HD 4× pipeline, adapted to the base's clean, high-contrast feel, and start in underwear.
+  - Add body types in the creator: slim, average, athletic, broad.
+  - Armor still has to fit.
