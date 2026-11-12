@@ -946,7 +946,8 @@ def icons(styles, tex):
                 r.tri([P[0], P[1], P[2]], [UV[0], UV[1], UV[2]], sh, (205, 205, 205), tex, li)
                 r.tri([P[0], P[2], P[3]], [UV[0], UV[2], UV[3]], sh, (205, 205, 205), tex, li)
         alpha = (r.z < 1e8).astype(np.float32) * 255
-        img = np.concatenate([np.clip(r.rgb, 0, 255), alpha[..., None]], -1).astype(np.uint8)
+        # lit ×2: the pictures sit on dark tiles and are tinted with the hair colour in the creator
+        img = np.concatenate([np.clip(r.rgb * 2.0, 0, 255), alpha[..., None]], -1).astype(np.uint8)
         small = np.array(Image.fromarray(img, "RGBA").resize((ICON, ICON), Image.LANCZOS))
         y0, x0 = (i // ICON_COLS) * ICON, (i % ICON_COLS) * ICON
         sheet[y0:y0 + ICON, x0:x0 + ICON] = small

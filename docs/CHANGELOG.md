@@ -2,6 +2,40 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-12 — Combat animation rebuild, hair/eyes/bodies, survival playthrough, v0.17.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- **Combat animations rebuilt on the existing engine** (the owner: "too realistic for Minecraft"; they
+  want it "clean and smooth but still brutal and raw", and the engine kept). Details in `COMBAT_DESIGN.md`.
+  - **Snap key poses:** `snap` / `hold` keys and a strike marker in `KeyframeAnimation`, and a `snap()`
+    builder in `tools/animgen/motion.py`. Moves go wind-up, snap to an exaggerated strike held on the
+    hit tick, then a short recovery.
+  - **Sub-stances** picked automatically for every style (neutral, aggressive, defensive, low, air).
+    They change the idle and which variant of a move comes out, and show as a HUD label.
+  - **5-hit strings** with branches and enders (launch, knockdown, splat).
+  - **Dodge into counter:** a perfect dodge makes the next attack a counter from behind or beside.
+  - **Dash strikes** and **guard breaks**.
+  - **Pace and NPCs:** faster overall with a shorter hit-stop, and NPC ninjas use all of it.
+- **Hair, eyes and bodies** (`ART_STYLE.md`).
+  - **Hair:** 23 3D styles built from locks (chunky clumps for short hair, draped sheets that swing for
+    long hair), defined as data by `tools/skingen/gen_hair.py`. 40 colours plus custom, clan hair
+    tables, and rules for hats, hoods and protectors.
+  - **Eyes:** 5 shapes with lash lines, shaded irises and highlights; the dōjutsu are redrawn.
+  - **Bodies:** build (slim, average, athletic, broad) and frame (masculine or feminine, with a black
+    top). The creator has a hair grid, eye chips and build rows.
+- **Survival playthrough and balance pass** (`docs/PLAYTHROUGH.md`, `tools/balance/simulate.py`). The
+  start was played in the real client and the long arc was simulated from the code's constants. 14 fixes:
+  - **Bugs:** a mission that completed with no fight; a shop money loop; exam opponents that could be
+    jinchūriki.
+  - **Balance:** S-rank jutsu after half an hour (chains now wait for Reserves); exam walls shortened
+    (chūnin 14.4 h → 10 h, jōnin 31.6 h → 21 h); wild danger no longer outruns the player; the first
+    rogue comes later and softer.
+  - **Guidance:** the last tip now points to the nearest settlement; the missions board is visible
+    from every side; ninjas are no longer named "Sparring Ninja"; wrong advancement texts corrected.
+- Network protocol 26 (combat state and look packets changed).
+- **Tests:** 478 game tests. After the look test's expected hairstyles were updated, all 478 passed
+  three times in a row. Five tests each failed once in the first two runs and are listed as flaky in
+  `STATUS.md`.
+
 ## 2026-11-06 — The jutsu workshop, Path of the Shinobi, a config file, our own sound, v0.16.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Chakra wave part 2** (`docs/CHAKRA_WAVE.md`):

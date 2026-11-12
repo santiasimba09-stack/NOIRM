@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-06 (v0.16.0: workshop, advancements, config, sound) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-12 (v0.17.0: combat animation rebuild, hair/eyes/bodies, survival playthrough) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -40,15 +40,29 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 | **Path of the Shinobi:** 49 advancements in 9 branches, each saying how to do it; 14 triggers in `progress/` | ✅ v0.16.0, tested; checked in client (`sv-advancements-*`) |
 | **Config file** `config/noirm-common.toml` (`config/NoirmConfig`): difficulty, wild ninjas, legends, terrain, gore, progression speeds; `/noirm config` | ✅ v0.16.0, tested |
 | **Sound:** 54 synthesised sounds (152 variants) for seals, chakra, hits, weapons, every nature, big moments, UI, ambience (`docs/SOUND.md`, `tools/soundgen/`) | ✅ v0.16.0, tested; subtitles checked in client (`sv-sound-*`) |
-| Full survival playthrough + balance pass | next |
+| Full survival playthrough + balance pass (`docs/PLAYTHROUGH.md`, `tools/balance/simulate.py`): 14 fixes (free-mission bug, shop money loop, exam walls, wild danger, S jutsu too early, village hint) | ✅ v0.17.0, tested; start played in client (`pt-*`) |
 | Survival staples, exploration, new paths, endgame | planned |
+
+## v0.17.0 (2026-11-12)
+
+| Piece | State |
+|---|---|
+| **Combat animation rebuild** (`COMBAT_DESIGN.md`, last sections), built on the round-5 engine: snap key poses, automatic sub-stances per style, 5-hit strings with enders, dodge into counter, dash strike, guard breaks, faster pace, NPCs use them | ✅ tested; a string and the stance label checked in client (`ca-string-third-person.jpg`). Side-view frame strips per style not captured yet |
+| **Hair, eyes, bodies** (`ART_STYLE.md`, last sections): 23 3D hair styles as data, 40 colours, clan hair, headgear rules; 5 eye shapes, redrawn dōjutsu; build and frame (masculine/feminine) in the creator | ✅ tested; checked in client (`hb-after-*`) |
+| **Survival playthrough + balance pass** | ✅ (see the survival table above) |
+
+**Known flaky tests** (each failed once in five full runs, not root-caused): `woodlockingwallclosesthensplinters`,
+`outpostisbuilt`, `vacuumwavecutsallaround`, `despawnrules` (all four in the first run on a freshly
+generated test world) and `groupmatesjointhefight`.
 
 ## Next steps (in order)
 
-1. **Owner listens to the sounds** (`docs/sound-samples/`) and tries the workshop and the advancement tab.
-2. **Full survival playthrough** from a fresh world to the late game; fix pacing, difficulty and anything confusing; balance pass.
-3. **Survival staples:** food, pills and tools; crafting and economy.
+1. **Owner playtest of v0.17.0:** the new combat feel, hair/eyes/bodies, and the questions in `PLAYTHROUGH.md`.
+2. **Combat follow-up:** side-view frame strips for every style and weapon; tune from the owner's feedback.
+3. **Survival staples** (food, pills, tools; crafting and economy), aimed at the quiet middle of the game
+   (chūnin → jōnin) the playthrough found.
 4. **Exploration**, then **new paths**, then **endgame** (`docs/SURVIVAL.md`). Chakra wave part 3 (solid-flame chakra) when the owner wants it.
+5. Root-cause the flaky tests above.
 
 ## Code map
 
@@ -189,6 +203,17 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
   it calls `TestKit.clearStrays` first (a failed earlier test leaves its fighters behind).
 
 ## Open questions for the owner
+
+- **v0.17.0:**
+  - **Playthrough** (full list in `PLAYTHROUGH.md`):
+    - Vanilla armour cuts ninja melee by 70–90%, but fire jutsu burn through it: which way to fix?
+    - Should mastery chains need rank as well as Reserves?
+    - Exam strengths (chūnin 26, jōnin 40), and when rogues first appear (30 min)?
+    - Ryo has no sink after ~10 h.
+    - Water has no S-rank jutsu.
+    - Legends take ~100 h without eyes, a beast or a crew.
+  - **Combat:** does it feel clean and brutal now? Which moves still feel off?
+  - **Hair/eyes/bodies:** do the styles and eyes match the vision?
 
 - **v0.16.0:**
   - **Sound:** do the sounds fit? Likely tweaks are the scorch sizzle, the light hits and UI loudness.

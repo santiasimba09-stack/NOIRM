@@ -395,10 +395,11 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         int rows = (count + cols - 1) / cols;
         int current = draft.get(Slot.HAIR);
         int rgb = draft.color(Tone.HAIR);
-        // brighten very dark colours a little so the picture still shows its shape
-        float r = Math.max(0.3f, ((rgb >> 16) & 0xFF) / 255f);
-        float gr = Math.max(0.3f, ((rgb >> 8) & 0xFF) / 255f);
-        float b = Math.max(0.3f, (rgb & 0xFF) / 255f);
+        // The pictures are dark strands on a dark tile: lift the tint well toward white so every
+        // style's shape reads, while keeping a hint of the chosen colour.
+        float r = 0.6f + 0.4f * ((rgb >> 16) & 0xFF) / 255f;
+        float gr = 0.6f + 0.4f * ((rgb >> 8) & 0xFF) / 255f;
+        float b = 0.6f + 0.4f * (rgb & 0xFF) / 255f;
         for (int i = 0; i < count; i++) {
             int tx = x + (i % cols) * (tile + 2);
             int ty = y + (i / cols) * (tile + 2);
