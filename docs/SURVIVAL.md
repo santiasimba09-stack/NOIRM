@@ -114,3 +114,17 @@ are on; gore shows only if `gore.enabled` and `noirmGore` are on (and each playe
 `goreLevel` in `noirm-client.toml` can still turn it down on their screen); the wild-ninja rate and
 the regrowth time are the gamerule times the config value.
 Screenshots: `docs/screenshots/sv-advancements-*.jpg` (the tab, a tooltip, a toast).
+
+## Owner's answers on the progress map (2026-11-12)
+- **Armour:** ninja attacks should **mostly ignore vanilla armour**. A new **chakra reinforcement**
+  covers the body and armour with chakra: the more chakra (Reserves) and chakra control (CTL) you have,
+  the more damage you deal and the less you take.
+- **The quiet middle of the game:** yes, aim the next work at it, but **first foods, and above all
+  pills**: "the development of pills is very important".
+- **Rank gate on mastery chains:** no, they keep waiting for Reserves only.
+- **Ryo:** don't worry about the economy for now. Foods, armour and weapons to spend it on will keep
+  coming.
+- **Water:** add an S-rank jutsu of our own design.
+- **Legends:** about 100 hours without eyes, a beast or a crew is the intended endgame.
+- **Combat feel and sound:** good for now, to revisit later.
+- **Eyes:** less stretched, with no lid crease and nothing black past the eye (done 2026-11-12).
