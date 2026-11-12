@@ -86,6 +86,8 @@ public final class NoirmConfig {
     public static final Value<Double> NPC_DAMAGE = value("difficulty.npcDamage", 1.0);
     public static final Value<Double> NPC_HEALTH = value("difficulty.npcHealth", 1.0);
     public static final Value<Double> CHAKRA_COST = value("difficulty.chakraCost", 1.0);
+    public static final Value<Double> CHAKRA_REINFORCEMENT = value("difficulty.chakraReinforcement", 1.0);
+    public static final Value<Double> NINJA_ARMOUR = value("difficulty.ninjaArmour", (double) com.noirm.combat.ChakraReinforcement.ARMOUR_SHARE);
     // ---------------------------------------------------------------- wild ninjas
     public static final Value<Integer> WILD_RATE = value("wildNinjas.ratePercent", 100);
     public static final Value<Integer> WILD_MAX_GROUPS = value("wildNinjas.maxGroupsNear", 2);
@@ -117,6 +119,10 @@ public final class NoirmConfig {
                 .defineInRange("npcHealth", 1.0, 0.1, 10.0);
         CHAKRA_COST.spec = b.comment("Chakra cost of the jutsu players cast (NPCs pay the normal price).")
                 .defineInRange("chakraCost", 1.0, 0.1, 10.0);
+        CHAKRA_REINFORCEMENT.spec = b.comment("Chakra reinforcement: how much Reserves and CTL add to melee hits and take off ninja attacks (everyone: players and NPCs). 0 = off.")
+                .defineInRange("chakraReinforcement", 1.0, 0.0, 3.0);
+        NINJA_ARMOUR.spec = b.comment("Share of vanilla armour's normal protection (and its enchantments') that counts against ninja attacks and jutsu. 1.0 = full vanilla armour; vanilla mobs always meet full armour.")
+                .defineInRange("ninjaArmour", (double) com.noirm.combat.ChakraReinforcement.ARMOUR_SHARE, 0.0, 1.0);
         b.pop();
 
         b.comment("Wild ninjas: groups that turn up around you in the wild.").push("wildNinjas");

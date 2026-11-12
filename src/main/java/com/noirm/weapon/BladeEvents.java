@@ -178,7 +178,7 @@ public final class BladeEvents {
             piercing = true;
             try {
                 e.invulnerableTime = 0;
-                e.hurt(source, damage);
+                com.noirm.combat.ChakraReinforcement.hurt(e, source, damage, com.noirm.combat.ChakraReinforcement.Kind.WEAPON);
             } finally {
                 piercing = false;
             }

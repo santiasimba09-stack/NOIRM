@@ -144,10 +144,11 @@ public final class StatsParryGameTests {
                 helper.assertTrue(CombatSystem.requestAttack(defender, AttackInput.LIGHT), "the counter starts inside the window");
             }
         });
-        // The jab: 3 x taijutsu 20 (x2) x counter 1.5 = 9.
+        // The jab: 3 x taijutsu 20 (x2) x counter 1.5 = 9, x the defender's chakra reinforcement (reserves 20: +7.5%).
+        float reinforced = 1f + com.noirm.combat.ChakraReinforcement.damageBonus(com.noirm.combat.ChakraReinforcement.chakraStat(defender));
         helper.succeedWhen(() -> {
             helper.assertTrue(countered[0] && attacker.getHealth() < NINJA_HEALTH, "the counter hasn't landed yet");
-            assertNear(helper, NINJA_HEALTH - 3f * 2f * CombatSystem.COUNTER_DAMAGE, attacker.getHealth(), "the counter hits x1.5");
+            assertNear(helper, NINJA_HEALTH - 3f * 2f * CombatSystem.COUNTER_DAMAGE * reinforced, attacker.getHealth(), "the counter hits x1.5");
             helper.assertFalse(defenderState.hasCounter(), "the counter is spent");
             clearAround(helper);
         });

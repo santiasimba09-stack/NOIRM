@@ -69,6 +69,7 @@ public final class ShinobiHudOverlay {
             HudKit.text(graphics, font, state, X, y, ClientCombat.isGuarding() ? Theme.TEXT : Theme.GOLD, 1f);
             drawStance(graphics, font, X + font.width(state) + Theme.S4, y);
             y += Theme.LINE + 2;
+            y = drawReinforcement(graphics, font, minecraft, data, X, y);
             drawTarget(graphics, font, minecraft, screenWidth);
         } else {
             POSTURE.snap(fraction(ClientCombat.posture(), ClientCombat.maxPosture()));
@@ -93,6 +94,28 @@ public final class ShinobiHudOverlay {
         float alpha = since < STANCE_FLASH_MS ? 1f : 0.75f;
         String label = "· " + HudLabels.get(sub.translationKey());
         HudKit.text(graphics, font, label, x, y, color, alpha);
+    }
+
+    /**
+     * Chakra reinforcement (combat.ChakraReinforcement), in combat mode: "◇ Chakra armour +26%" in chakra
+     * blue while you have the chakra to reinforce a hit, faint when you don't; then the chakra durability
+     * your worn armour holds ("+312"). Nothing at all for a beginner (no reinforcement yet).
+     */
+    private static int drawReinforcement(GuiGraphics graphics, Font font, Minecraft minecraft, SyncShinobiDataPacket data, int x, int y) {
+        float stat = (data.reserves() + data.control()) / 2f;
+        float bonus = com.noirm.combat.ChakraReinforcement.damageBonus(stat);
+        if (bonus <= 0.005f) {
+            return y;
+        }
+        float cost = com.noirm.combat.ChakraReinforcement.STRIKE_COST * com.noirm.combat.ChakraReinforcement.costFactor(data.control());
+        boolean ready = data.chakra() >= cost;
+        String label = HudLabels.get("hud.noirm.reinforcement") + " +" + Math.round(bonus * 100f) + "%";
+        int pool = com.noirm.combat.ChakraArmour.totalPool(minecraft.player);
+        if (pool > 0) {
+            label += "  ·  +" + pool;
+        }
+        HudKit.text(graphics, font, label, x, y, ready ? Theme.CHAKRA_LIGHT : Theme.TEXT_FAINT, ready ? 0.85f : 0.5f);
+        return y + Theme.LINE + 2;
     }
 
     /** How long the stance label stays bright after a change (ms). */

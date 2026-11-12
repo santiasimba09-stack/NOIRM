@@ -59,6 +59,8 @@ SEQUENCES = {
     "suiton/water_bullet": ["tiger"],
     "suiton/water_prison": ["ram", "snake", "rat"],
     "suiton/water_formation_wall": ["tiger", "ox", "dog"],
+    # Water Release's own S-rank (ours): the sea opens, closes, and the leviathan rises.
+    "suiton/leviathan_maelstrom": ["boar", "dog", "rat", "bird", "dragon", "snake", "ox", "tiger"],
     "doton/earth_wall": ["tiger", "hare", "boar", "dog"],
     "doton/earth_dragon": ["boar", "dog", "tiger", "snake"],
     "doton/earth_spikes": ["ram", "dog"],

@@ -26,6 +26,7 @@ public final class Handbook {
             chapter("welcome", "noirm:shinobi_handbook", "minecraft:iron_sword", "noirm:ramen"),
             chapter("controls", "noirm:training_dummy", "minecraft:iron_sword", "minecraft:shield"),
             chapter("stats", "noirm:training_dummy", "minecraft:feather", "minecraft:golden_apple", "minecraft:iron_chestplate"),
+            chapter("reinforcement", "minecraft:diamond_chestplate", "minecraft:lapis_lazuli", "minecraft:blaze_powder"),
             chapter("natures", "noirm:chakra_paper", "minecraft:oak_leaves", "minecraft:campfire", "minecraft:lightning_rod"),
             chapter("scrolls", "noirm:jutsu_scroll_c", "noirm:jutsu_scroll_b", "noirm:nature_scroll_fire"),
             chapter("missions", "noirm:mission_board", "noirm:ryo_pouch", "noirm:mission_parcel"),

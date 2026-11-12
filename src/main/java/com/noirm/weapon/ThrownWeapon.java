@@ -208,7 +208,9 @@ public class ThrownWeapon extends AbstractArrow {
                 damage += EnchantmentHelper.getDamageBonus(stack, living.getMobType());
             }
             DamageSource source = damageSources().thrown(this, owner == null ? this : owner);
-            hurt = damage > 0 && target.hurt(source, damage);
+            hurt = damage > 0 && (target instanceof LivingEntity living
+                    ? com.noirm.combat.ChakraReinforcement.hurt(living, source, damage, com.noirm.combat.ChakraReinforcement.Kind.WEAPON)
+                    : target.hurt(source, damage));
             if (hurt && target instanceof LivingEntity living) {
                 afterHurt(living, stack, stats, owner);
             }

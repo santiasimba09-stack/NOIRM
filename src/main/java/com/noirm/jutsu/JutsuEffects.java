@@ -28,7 +28,9 @@ public final class JutsuEffects {
         DamageSource damageSource = source.damageSources().indirectMagic(source, owner);
         if (damage > 0) {
             living.invulnerableTime = 0;
-            if (!living.hurt(damageSource, damage)) {
+            com.noirm.combat.ChakraReinforcement.Kind kind = fireSeconds > 0
+                    ? com.noirm.combat.ChakraReinforcement.Kind.FIRE : com.noirm.combat.ChakraReinforcement.Kind.JUTSU;
+            if (!com.noirm.combat.ChakraReinforcement.hurt(living, damageSource, damage, kind)) {
                 return;
             }
         }
@@ -36,7 +38,7 @@ public final class JutsuEffects {
             CombatSystem.addPostureDamage(living, posture);
         }
         if (fireSeconds > 0) {
-            living.setSecondsOnFire(fireSeconds);
+            com.noirm.combat.NinjaFire.ignite(owner, living, fireSeconds); // ninja fire: shorter from NPCs, a ceiling per second
         }
         Vec3 flat = new Vec3(direction.x, 0, direction.z);
         if (knockback > 0 && flat.lengthSqr() > 1e-6) {

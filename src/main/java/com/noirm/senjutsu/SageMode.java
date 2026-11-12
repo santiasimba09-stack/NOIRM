@@ -336,7 +336,8 @@ public final class SageMode {
                 Vec3 push = target.position().subtract(player.position()).multiply(1, 0, 1).normalize().scale(0.6 + vented * 0.02);
                 target.push(push.x, 0.25, push.z);
                 target.hurtMarked = true;
-                target.hurt(level.damageSources().playerAttack(player), vented * PURGE_DAMAGE_PER_ENERGY);
+                com.noirm.combat.ChakraReinforcement.hurt(target, level.damageSources().playerAttack(player), vented * PURGE_DAMAGE_PER_ENERGY,
+                        com.noirm.combat.ChakraReinforcement.Kind.JUTSU);
             }
         }
         data.markPowersDirty();

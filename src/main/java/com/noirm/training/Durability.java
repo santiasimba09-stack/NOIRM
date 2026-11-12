@@ -31,7 +31,9 @@ import net.minecraftforge.fml.common.Mod;
  * DUR ({@code LivingDamageEvent}, high priority so health-based reactions see the real amount).
  * Because it multiplies what is left (it always keeps at least 40%) and never takes a hit below
  * {@link #MIN_DAMAGE}, stacking it with armor and guard can never make anyone immune. It never
- * touches {@code /kill}, the void or starvation.
+ * touches {@code /kill}, the void or starvation. Against ninja attacks, chakra reinforcement
+ * ({@code combat.ChakraReinforcement}) stacks on top in the same step; the two together never negate
+ * more than 70%.
  *
  * <p><b>Training:</b> taking hits in real fights: {@link #XP_PER_PERCENT} per percent of your max
  * health the hit was worth (before DUR), times how much the attacker teaches (stronger foes
@@ -94,7 +96,8 @@ public final class Durability {
         if (victim.level().isClientSide() || event.isCanceled() || amount <= 0f) {
             return;
         }
-        event.setAmount(reduce(victim, event.getSource(), amount));
+        // DUR, plus chakra reinforcement against ninja attacks (together capped: combat.ChakraReinforcement).
+        event.setAmount(com.noirm.combat.ChakraReinforcement.defend(victim, event.getSource(), amount));
         if (victim instanceof Player player && !exempt(event.getSource())) {
             onHitTaken(player, event.getSource().getEntity(), amount);
         }
