@@ -157,13 +157,13 @@ public final class HairGameTests {
         helper.succeed();
     }
 
-    /** The high-detail eye atlases exist for every eye shape, at their layout's size. */
+    /** The high-detail eye atlases exist for every eye shape, at their layout's size (32 px per model pixel). */
     @GameTest(template = "empty", batch = "noirm_hair")
     public static void everyEyeShapeHasItsAtlas(GameTestHelper helper) {
         for (int i = 0; i < Slot.EYES.size(); i++) {
             String id = Slot.EYES.option(i);
             int[] size = png("/assets/noirm/textures/entity/eyes/" + id + ".png");
-            helper.assertTrue(size != null && size[0] == 512 && size[1] == 64, "eye atlas for " + id);
+            helper.assertTrue(size != null && size[0] == 1024 && size[1] == 128, "eye atlas for " + id);
         }
         helper.succeed();
     }

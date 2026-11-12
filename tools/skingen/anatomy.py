@@ -46,26 +46,29 @@ MOUTH_Y = 6.6
 # The iris centre sits on an HD pixel's centre (shift, idy multiples of 1/8 at SCALE 4), so the
 # pupil is one pixel wide and the highlight one pixel.
 EYE_SHAPES = {
-    # Owner, 2026-11-12: the reworked eyes were "too bubbly, look too gentle". So: no domes. Each eye is
-    # an angular slit (see lid_curves: straight lids, hard corners), slanted down towards the nose
-    # like a glare, the brow pressing on it; a small iris cut by the upper lid; no long lashes, no big
-    # highlight. A high-detail copy of each eye is drawn over the skin by client/EyeDecalLayer
-    # (tools/skingen/gen_eye_decals.py) from these same shapes.
-    # steady (the default): a level, heavy-lidded stare
-    "round":  dict(ein=1.2, eout=1.5, inner=0.22, outer=-0.2, up=0.46, peak=0.2, down=0.26, iris=0.5,
-                   shift=0.125, idy=-0.0, lash=0.3, wing=0.22, hood=0.6),
-    # sharp: the strongest slant, a long outer point
-    "sharp":  dict(ein=1.2, eout=1.6, inner=0.34, outer=-0.38, up=0.42, peak=0.18, down=0.24, iris=0.48,
-                   shift=0.125, idy=-0.0, lash=0.3, wing=0.32, hood=0.6),
-    # fierce: opened in a glare, white over and under a small iris
-    "wide":   dict(ein=1.2, eout=1.5, inner=0.26, outer=-0.26, up=0.6, peak=0.2, down=0.36, iris=0.42,
-                   shift=0.125, idy=0.0, lash=0.28, wing=0.2, hood=0.55),
-    # narrow: a cold slit, both lids on the iris
-    "narrow": dict(ein=1.2, eout=1.56, inner=0.2, outer=-0.2, up=0.32, peak=0.2, down=0.2, iris=0.48,
-                   shift=0.125, idy=0.0, lash=0.3, wing=0.24, hood=0.65),
-    # pale (the Hyuga's white eyes): a level stare, a pale iris without a pupil
-    "pale":   dict(ein=1.2, eout=1.5, inner=0.22, outer=-0.2, up=0.46, peak=0.2, down=0.26, iris=0.62,
-                   shift=0.125, idy=-0.0, lash=0.28, wing=0.2, hood=0.55),
+    # Owner, 2026-11-12 (third pass, with eye references): "not round", "the end of the eyes" must match the
+    # references, "aggressive and raw". The eye is a long narrow leaf: the upper lid rises fast at the inner
+    # corner, then runs almost flat (slanting down towards the nose, a glare) and tapers into a sharp outer
+    # point; the lower lid is a shallow curve meeting it there. The upper lash line carries on past the
+    # outer point as a long thin stroke, and hooks down at the inner corner. A separate crease line above,
+    # a thin lower lid line on the outer part only. A high-detail copy is drawn over the skin by
+    # client/EyeDecalLayer (tools/skingen/gen_eye_decals.py) from these same shapes.
+    #   flat   how flat the upper lid stays after its peak (higher = flatter, more aggressive)
+    # steady (the default): focused, the iris cut by the upper lid
+    "round":  dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
+                   iris=0.5, shift=0.125, idy=0.0, lash=0.36, wing=0.75, hood=0.3, crease=0.34),
+    # sharp (aggressive): narrower, the lid flatter and lower, a small iris
+    "sharp":  dict(ein=1.22, eout=1.7, inner=0.32, outer=-0.24, up=0.44, peak=0.14, flat=0.8, down=0.26,
+                   iris=0.42, shift=0.125, idy=0.0, lash=0.38, wing=0.85, hood=0.32, crease=0.32),
+    # fierce: opened in a glare, white around a small iris, still pointed
+    "wide":   dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.2, up=0.62, peak=0.18, flat=0.6, down=0.38,
+                   iris=0.4, shift=0.125, idy=0.0, lash=0.34, wing=0.7, hood=0.28, crease=0.38),
+    # narrow (sleepy, cold): the heavy lid low over the iris, a line under the eye
+    "narrow": dict(ein=1.22, eout=1.66, inner=0.2, outer=-0.12, up=0.36, peak=0.2, flat=0.75, down=0.28,
+                   iris=0.5, shift=0.125, idy=0.125, lash=0.4, wing=0.7, hood=0.36, crease=0.3, bags=1),
+    # pale (the Hyuga's white eyes): steady, a pale iris without a pupil
+    "pale":   dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
+                   iris=0.56, shift=0.125, idy=0.0, lash=0.34, wing=0.7, hood=0.28, crease=0.34),
 }
 
 
@@ -90,12 +93,16 @@ def lid_curves(x, cx, s):
     and a higher outer corner, the upper lid an angled line, the lower lid a shallow curve."""
     u = np.clip(across_u(x, cx, s), 0, 1)
     chord = EYE_Y + s["inner"] + (s["outer"] - s["inner"]) * u
-    # Angular, not domed: both lids are straight lines parallel to the corners' slanted line, with a
-    # short ramp up from the inner corner (peak) and a shorter, harder one down to the outer point.
+    # A long leaf: the upper lid rises fast from the inner corner (sine up to `peak`), stays nearly flat
+    # (falling only by 1 - flat), then drops into the outer point; the lower lid is a shallow curve
+    # that thins to nothing at both corners, so both corners are sharp points.
     p = s["peak"]
-    ramp = np.clip(np.minimum(u / p, (1 - u) / 0.1), 0, 1)
-    top = chord - s["up"] * ramp
-    bottom = chord + s["down"] * np.clip(np.minimum(u / 0.3, (1 - u) / 0.16), 0, 1)
+    q = np.clip((u - p) / (1 - p), 0, 1)
+    rise = np.where(u < p, np.sin(0.5 * np.pi * np.minimum(u / p, 1)),
+                    1 - (1 - s["flat"]) * q - s["flat"] * q ** 3.2)
+    top = chord - s["up"] * np.clip(rise, 0, 1)
+    low = np.clip(np.sin(np.pi * np.clip(u, 0, 1) ** 0.85), 0, 1) ** 1.25
+    bottom = chord + s["down"] * low
     return top, bottom
 
 
@@ -593,21 +600,22 @@ def jaw_fill(f, name, k):
         return k
     X, Y = f.X, f.Y
     ax = np.abs(X - 4)
+    # Owner, 2026-11-12: the jaw read "way too sharp". The shadow shapes now start lower on the face,
+    # turn with rounder edges, and the dark side is one tone lighter (half tone, the lit side light).
     if name == "soft":
-        away = (Y - 6.4) * 1.1 > (3.3 - ax) * 1.3
+        away = ell_d(f, 4, 4.2, 4.35, 3.75) > 1.0
     elif name == "square":
-        away = ((Y > 7.45) & (ax > 1.5)) | ((ax > 3.55) & (Y > 6.2))
+        away = ((Y > 7.55) & (ax > 2.1)) | ((ax > 3.7) & (Y > 6.7))
     elif name == "sharp":
-        away = (Y - 5.7) > (3.75 - ax) * 0.95
+        away = (Y - 6.55) > (3.85 - ax) * 0.75
     else:  # round
-        away = ell_d(f, 4, 4.4, 4.15, 3.45) > 1.0
-    # the shadow side of the face (the character's left = texture right) goes darker
-    tone_away = np.where(X > 4, TONE_SHADOW, TONE_HALF)
+        away = ell_d(f, 4, 4.3, 4.3, 3.6) > 1.0
+    tone_away = np.where(X > 4, TONE_HALF, TONE_LIGHT)
     k = np.where(away, np.minimum(k, tone_away), k)
     return k
 
 
-JAW_SIDE = {"none": 0.0, "soft": 0.4, "square": 0.6, "sharp": 0.75, "round": 0.3}
+JAW_SIDE = {"none": 0.0, "soft": 0.25, "square": 0.4, "sharp": 0.45, "round": 0.2}
 
 
 def head_tones(f, nose="none", mouth="none", jaw="none", seed=5):
@@ -636,7 +644,7 @@ def head_tones(f, nose="none", mouth="none", jaw="none", seed=5):
         h += pad(f, 3.5, 4.8, 0.75, 1.1, 0.35, X=mx)                                  # the ear
         g = np.maximum(g, crisp(ell(f, 3.7, 5.0, 0.16, 0.34, X=mx)))                    # the ear's hollow
         js = JAW_SIDE.get(jaw, 0.0)
-        jaw_y = 6.3 + (mx - 3.6) * (0.45 if jaw == "sharp" else 0.32)
+        jaw_y = 6.5 + (mx - 3.6) * (0.36 if jaw == "sharp" else 0.28)
         h += -js * sstep(jaw_y - 0.1, jaw_y + 0.3, Y) * sstep(4.6, 5.4, mx)
         h += 0.25 * sstep(1.0, 0.3, ell_d(f, 6.6, 5.3, 1.1, 0.8, X=mx))              # cheekbone
     light = lit(f, h, None, ROUNDNESS["head"])

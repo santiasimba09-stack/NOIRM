@@ -34,12 +34,12 @@ from hdskin import hash01, vnoise, hx  # noqa: E402
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT_DIR = os.path.join(ROOT, "src/main/resources/assets/noirm/textures/entity/eyes")
 
-RES = 16
+RES = 32
 X_FROM, X_TO = -2.25, 1.75
 Y_FROM, Y_TO = -1.65, 0.85
-CELL_W, CELL_H = 64, 40
+CELL_W, CELL_H = 128, 80
 CELLS = 8
-ATLAS_W, ATLAS_H = 512, 64
+ATLAS_W, ATLAS_H = 1024, 128
 
 WHITE = np.array(hx("#e2dcd2"), np.float32)
 WHITE_SHADE = np.array(hx("#7c726e"), np.float32)
@@ -130,10 +130,16 @@ def cell_base(shape):
     col = WHITE_SHADE + (WHITE - WHITE_SHADE) * shade[..., None]
     col = col * (1 - 0.18 * np.clip((Y - (bottom - 0.18)) / 0.18, 0, 1))[..., None]
     rgb, a = over(rgb, a, inside, col)
-    # the lower lid: one hard, thin line across the whole eye, heavier at its outer end (no lashes)
-    lo = lid_line(cx, s, "bottom", u0=0.08, u1=0.98)
-    lo = [(x, y + 0.05) for x, y in lo]
-    rgb, a = over(rgb, a, seg_cov(X, Y, lo, 0.06, 0.13) * 0.9, LID)
+    # the lower lid: a thin line on the middle-to-outer part only, stopping short of the outer corner so
+    # the eye stays open and sharp there (the upper sweep carries the corner), plus a faint inner touch
+    lo = [(x, y + 0.05) for x, y in lid_line(cx, s, "bottom", u0=0.42, u1=0.9)]
+    rgb, a = over(rgb, a, seg_cov(X, Y, lo, 0.05, 0.13), LID)
+    li = [(x, y + 0.04) for x, y in lid_line(cx, s, "bottom", u0=0.1, u1=0.26)]
+    rgb, a = over(rgb, a, seg_cov(X, Y, li, 0.03, 0.05) * 0.5, LID)
+    if s.get("bags"):
+        # sleepy: a soft line under the eye
+        bg = [(x, y + 0.24) for x, y in lid_line(cx, s, "bottom", u0=0.28, u1=0.82)]
+        rgb, a = over(rgb, a, seg_cov(X, Y, bg, 0.03, 0.07) * 0.45, CREASE)
     return rgb, a
 
 
@@ -168,40 +174,51 @@ def cell_iris(shape):
 
 
 def cell_top(shape):
-    """The heavy upper lash line, its outer flick and lashes, the lid crease and the brow's shadow, the
-    highlight."""
+    """The upper lash line sweeping past the outer corner, the crease line above it, a light lid shadow,
+    one small highlight."""
     s = A.EYE_SHAPES[shape]
     X, Y = grid()
     cx = A.EYE_XS[0]
     rgb = np.zeros(X.shape + (3,), np.float32)
     a = np.zeros(X.shape, np.float32)
     inside, top, bottom, u = opening(X, Y, cx, s)
-    up = lid_line(cx, s, "top")
     lash = s["lash"]
-    centre = [(x, y - lash * 0.22) for x, y in up]
-    # the brow's shadow on the lid, then the crease above it
-    crease = [(x, y - lash * 0.95 - 0.12) for x, y in lid_line(cx, s, "top", u0=0.22, u1=0.96)]
-    span = (u > 0.0) & (u < 1.0)
-    gap = (top - lash * 0.2) - Y
-    hood_cov = np.where(span & (gap > 0) & (gap < s["hood"]), 0.46 * (1 - gap / s["hood"]) + 0.1, 0)
-    rgb, a = over(rgb, a, hood_cov, HOOD)
-    rgb, a = over(rgb, a, seg_cov(X, Y, crease, 0.04, 0.09) * 0.6, CREASE)
-    # the lash line: thin at the inner corner, heavy at the outer one
-    rgb, a = over(rgb, a, seg_cov(X, Y, centre, lash * 0.35, lash), LASH)
-    # the flick: out and up from the outer corner, to a sharp point
-    ox, oy = centre[-1]
+    # a light shadow on the lid, between the lash line and the crease (not a heavy band)
+    span = (u > 0.05) & (u < 1.0)
+    gap = (top - lash * 0.25) - Y
+    shadow = np.where(span & (gap > 0) & (gap < s["hood"]), 0.22 * (1 - gap / s["hood"]), 0)
+    rgb, a = over(rgb, a, shadow, HOOD)
+    # the crease: a separate thin line following the lid above it, fading in from the inner side
+    crease = [(x, y - s["crease"] - lash * 0.3) for x, y in lid_line(cx, s, "top", u0=0.2, u1=0.98)]
+    rgb, a = over(rgb, a, seg_cov(X, Y, crease, 0.02, 0.07) * 0.75, CREASE)
+    # the lash line: thin at the inner corner, thickest past the peak, riding just over the lid
+    up = lid_line(cx, s, "top", u0=0.02, u1=1.0)
+    centre = [(x, y - lash * 0.25) for x, y in up]
+    rgb, a = over(rgb, a, seg_cov(X, Y, centre, lash * 0.25, lash), LASH)
+    # the sweep: the line carries on past the outer point in the lid's direction as a long thin stroke,
+    # bending a little upwards at its end (the "end of the eye" in the owner's references)
+    (x1, y1), (x2, y2) = centre[-8], centre[-1]
+    dx, dy = x2 - x1, y2 - y1
+    n = max(np.hypot(dx, dy), 1e-6)
+    dx, dy = dx / n, dy / n
     wing = s["wing"]
-    tipx, tipy = ox - wing, oy - 0.03 - wing * 0.3
-    rgb, a = over(rgb, a, seg_cov(X, Y, [(ox + 0.12, oy + 0.02), ((ox + tipx) / 2, (oy + tipy) / 2 + 0.02), (tipx, tipy)],
-                                  lash * 0.9, 0.02), LASH)
-    # a thin warm rim under the lash line where it meets the white (gives the lid thickness)
-    rim = np.clip(aa(Y - (top + 0.02)) - aa(Y - (top + 0.08)), 0, 1) * inside
-    rgb, a = over(rgb, a, rim * 0.55, LID)
-    # the highlight: one tiny glint, up and to the side (enough for life, never a sparkle)
+    pts = []
+    for k in range(9):
+        t = k / 8
+        pts.append((x2 + dx * wing * t, y2 + dy * wing * t - 0.1 * wing * t * t))
+    rgb, a = over(rgb, a, seg_cov(X, Y, [(x2 - dx * 0.12, y2 - dy * 0.12)] + pts, lash * 0.9, 0.015), LASH)
+    # the inner corner: the lash line hooks down a little past the corner, towards the nose
+    xi, yi = centre[0]
+    hook = [(xi, yi), (xi + 0.12, yi + 0.1), (xi + 0.2, yi + 0.24)]
+    rgb, a = over(rgb, a, seg_cov(X, Y, hook, lash * 0.3, 0.02), LASH)
+    # a thin warm rim under the lash line where it meets the white
+    rim = np.clip(aa(Y - (top + 0.02)) - aa(Y - (top + 0.07)), 0, 1) * inside
+    rgb, a = over(rgb, a, rim * 0.5, LID)
+    # one small highlight, up and to the side
     ix, iy, r = iris_geo(cx, s)
-    gx, gy = ix - r * 0.42, iy - r * 0.18
-    glint = aa(0.055 - (np.abs(X - gx) + np.abs(Y - gy)))
-    rgb, a = over(rgb, a, glint * 0.9 * inside * (Y > top + 0.05), (255, 255, 255))
+    gx, gy = ix - r * 0.4, iy - r * 0.15
+    glint = aa(0.075 - np.hypot(X - gx, (Y - gy) * 1.2))
+    rgb, a = over(rgb, a, glint * 0.95 * inside * (Y > top + 0.06), (255, 255, 255))
     return rgb, a
 
 

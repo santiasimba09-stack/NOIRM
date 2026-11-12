@@ -14,21 +14,21 @@ trace or sample them).
   tendons and veins as thin dark lines. Lean and wiry rather than bulky.
 - **Palette:** ash blacks and greys, bone/off-white highlights, desaturated skin tones, and **blood
   red** as the accent (seals, trims, blood, eyes). Chakra blue/green only for chakra effects.
-- **Faces:** sharp, intense eyes, strong brows, shadowed jaw. **The eye rule (2026-11-12, after the owner
-  found the 2026-11-11 eyes "too bubbly, too gentle"; round 15 said "soulless and way too bubbly"):** eyes are
-  **angular slits, never domes** — they should read as a glare, not as cute.
-  - **Shape:** straight upper and lower lids parallel to a line slanted down towards the nose, with a short
-    ramp up from the inner corner and a hard drop to the outer point. Low openings (`up` 0.3–0.6, `down`
-    0.2–0.36 model px).
-  - **Lash line:** heavy and near-black, thin at the inner corner; a **short, level flick** at the outer
-    corner (a point, not a curl). **No separate lashes.**
-  - **Brow shadow:** a dark band pressing on the lid from above (`hood`).
-  - **White:** shaded hard under the upper lid, no pink inner corner; one thin, hard lower lid line across
-    the whole eye.
-  - **Iris:** **small** (radius about 0.45–0.5 model px, the Hyūga's 0.62), cut by the upper lid, with fibres,
-    a dark limbal ring and a small pupil; **one tiny glint** only, never a sparkle.
-  - **Shapes in the creator:** Steady (a level, heavy-lidded stare, default), Sharp (the strongest slant),
-    Fierce (a wide glare, white around a small iris), Narrow (a cold slit), plus Pale for the Hyūga.
+- **Faces:** sharp, intense eyes, strong brows, a **soft** jaw (owner, 2026-11-12: the jaw was "way too sharp": its
+  shadow shapes start low on the face and are one tone lighter). **The eye rule (2026-11-12, from the owner's eye
+  references, after "too bubbly / too gentle" and then "too round"):** aggressive and raw, never round or bubbly.
+  - **Shape:** a long, narrow leaf. The upper lid rises fast at the inner corner, then runs **almost flat**,
+    slanting down towards the nose like a glare, and tapers into a **sharp outer point**. The lower lid is a
+    shallow curve that meets it there. Both corners are points.
+  - **The ends:** the heavy upper lash line **carries on past the outer point as a long thin stroke** that bends
+    slightly up at its end, and **hooks down at the inner corner**. No separate lashes.
+  - **Lines:** a separate thin **crease line** above the lid, a light shadow between them, and a thin lower lid
+    line on the middle-to-outer part only (open at the outer corner).
+  - **Iris:** medium to small, its top cut by the upper lid, with a dark rim, fibres, a small pupil and **one
+    small highlight**.
+  - **Shapes in the creator:** Steady (default), Sharp (aggressive: flatter, narrower, smaller iris), Fierce (a
+    wide glare), Narrow (sleepy and cold, with a line under the eye), plus Pale for the Hyūga.
+  - **Resolution:** the high-detail eye is drawn at 32 px per model pixel so the points and the sweep stay crisp.
   The skin carries the eye at 4× (`gen_parts.py`); a high-detail copy at 16 px per model pixel is drawn
   on top by `client/EyeDecalLayer` (`gen_eye_decals.py`), on exactly the same lid curves
   (`anatomy.EYE_SHAPES`). Dōjutsu use the same atlas: the Sharingan (1–3 tomoe with curling tails, a red
