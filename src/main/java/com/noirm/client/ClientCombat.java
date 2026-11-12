@@ -14,6 +14,11 @@ public final class ClientCombat {
     private static boolean guarding;
     private static float posture;
     private static float maxPosture = 100f;
+    private static com.noirm.combat.SubStance subStance = com.noirm.combat.SubStance.NEUTRAL;
+    private static net.minecraft.resources.ResourceLocation stance;
+    private static int stanceSwitch = 2;
+    /** Client time (ms) of the last sub-stance change, for the HUD label's flash. */
+    private static long subStanceChangedAt;
 
     private static int lastTargetId = -1;
     private static float lastTargetPosture;
@@ -25,6 +30,8 @@ public final class ClientCombat {
     private static int staminaFlashTicks;
 
     public static final int FOCUS_PULSE_TICKS = 20;
+    /** Camera shake left after each tick: a sharp punch that dies quickly (was 0.8 before the 2026-11 rebuild). */
+    static final float SHAKE_DECAY = 0.68f;
 
     private ClientCombat() {}
 
@@ -47,6 +54,25 @@ public final class ClientCombat {
 
     public static float maxPosture() {
         return maxPosture;
+    }
+
+    /** The local player's sub-stance (server-picked). */
+    public static com.noirm.combat.SubStance subStance() {
+        return subStance;
+    }
+
+    /** The stance animation the server says the local player shows, or null. */
+    public static net.minecraft.resources.ResourceLocation stance() {
+        return stance;
+    }
+
+    public static int stanceSwitch() {
+        return stanceSwitch;
+    }
+
+    /** Milliseconds since the sub-stance last changed. */
+    public static long sinceSubStanceChange() {
+        return System.currentTimeMillis() - subStanceChangedAt;
     }
 
     public static float shake() {
@@ -75,7 +101,7 @@ public final class ClientCombat {
     }
 
     static void tick() {
-        shake = shake < 0.01f ? 0f : shake * 0.8f;
+        shake = shake < 0.01f ? 0f : shake * SHAKE_DECAY;
         if (focusTicks > 0) {
             focusTicks--;
         }
@@ -92,6 +118,8 @@ public final class ClientCombat {
         combatMode = false;
         guarding = false;
         posture = 0;
+        subStance = com.noirm.combat.SubStance.NEUTRAL;
+        stance = null;
         lastTargetTicks = 0;
         shake = 0;
         focusTicks = 0;
@@ -121,6 +149,13 @@ public final class ClientCombat {
         guarding = packet.guarding();
         posture = packet.posture();
         maxPosture = packet.maxPosture();
+        com.noirm.combat.SubStance sub = com.noirm.combat.SubStance.byId(packet.subStance());
+        if (sub != subStance) {
+            subStanceChangedAt = System.currentTimeMillis();
+        }
+        subStance = sub;
+        stance = packet.stance().isEmpty() ? null : net.minecraft.resources.ResourceLocation.tryParse(packet.stance());
+        stanceSwitch = packet.stanceSwitch();
         if (!combatMode) {
             LockOn.clear();
         }

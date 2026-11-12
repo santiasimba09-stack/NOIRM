@@ -1,10 +1,10 @@
 {
   "animation": "noirm:pivot_palm",
   "timing": {
-    "windup": 3,
+    "windup": 2,
     "active": 2,
-    "recovery": 7,
-    "cancel_after": 3
+    "recovery": 5,
+    "cancel_after": 2
   },
   "hit": {
     "range": 2.6,
@@ -15,7 +15,7 @@
     "knockback": 0.3,
     "lunge": 0.15,
     "hitstun": 8,
-    "hitstop": 2,
+    "hitstop": 1,
     "shake": 0.3,
     "chakra": 7
   },

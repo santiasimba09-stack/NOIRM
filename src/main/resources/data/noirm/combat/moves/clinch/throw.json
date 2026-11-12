@@ -1,10 +1,10 @@
 {
   "animation": "noirm:throw",
   "timing": {
-    "windup": 6,
+    "windup": 5,
     "active": 3,
-    "recovery": 12,
-    "cancel_after": 8
+    "recovery": 9,
+    "cancel_after": 6
   },
   "hit": {
     "damage": 4,
@@ -15,8 +15,9 @@
     "lift": 0.35,
     "knockdown": true,
     "hitstun": 10,
-    "hitstop": 5,
+    "hitstop": 4,
     "shake": 0.8,
-    "clinch": "release"
+    "clinch": "release",
+    "ender": "knockdown"
   }
 }

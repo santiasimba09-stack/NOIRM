@@ -4,28 +4,82 @@
   "stance_basic": {
    "animation_length": 1.6,
    "bones": {
-    "torso": {
+    "body": {
      "rotation": {
       "0.0": {
        "vector": [
-        10.0,
-        22.0,
+        0.0,
+        0.0,
         0.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        12.0,
-        22.0,
+        0.0,
+        0.0,
         0.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        10.0,
-        22.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "easing": "catmullrom"
+      }
+     },
+     "position": {
+      "0.0": {
+       "vector": [
+        0.0,
+        -1.6,
+        0.0
+       ],
+       "easing": "catmullrom"
+      },
+      "0.8": {
+       "vector": [
+        0.0,
+        -1.6,
+        0.0
+       ],
+       "easing": "catmullrom"
+      },
+      "1.6": {
+       "vector": [
+        0.0,
+        -1.6,
+        0.0
+       ],
+       "easing": "catmullrom"
+      }
+     }
+    },
+    "torso": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        12.0,
+        30.0,
+        0.0
+       ],
+       "easing": "catmullrom"
+      },
+      "0.8": {
+       "vector": [
+        14.0,
+        30.0,
+        0.0
+       ],
+       "easing": "catmullrom"
+      },
+      "1.6": {
+       "vector": [
+        12.0,
+        30.0,
         0.0
        ],
        "easing": "catmullrom"
@@ -34,19 +88,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        6.0
+        8.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        8.0
+        10.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        6.0
+        8.0
        ],
        "easing": "catmullrom"
       }
@@ -56,7 +110,7 @@
      "rotation": {
       "0.0": {
        "vector": [
-        -45.0,
+        -48.0,
         -25.0,
         5.0
        ],
@@ -64,7 +118,7 @@
       },
       "0.8": {
        "vector": [
-        -48.0,
+        -51.0,
         -25.0,
         5.0
        ],
@@ -72,7 +126,7 @@
       },
       "1.6": {
        "vector": [
-        -45.0,
+        -48.0,
         -25.0,
         5.0
        ],
@@ -82,19 +136,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        125.0
+        128.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        129.0
+        132.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        125.0
+        128.0
        ],
        "easing": "catmullrom"
       }
@@ -104,7 +158,7 @@
      "rotation": {
       "0.0": {
        "vector": [
-        -62.0,
+        -66.0,
         0.0,
         0.0
        ],
@@ -112,7 +166,7 @@
       },
       "0.8": {
        "vector": [
-        -65.0,
+        -69.0,
         0.0,
         0.0
        ],
@@ -120,7 +174,7 @@
       },
       "1.6": {
        "vector": [
-        -62.0,
+        -66.0,
         0.0,
         0.0
        ],
@@ -152,25 +206,25 @@
      "rotation": {
       "0.0": {
        "vector": [
-        18.0,
+        24.0,
         0.0,
-        10.0
+        15.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        18.0,
+        24.0,
         0.0,
-        10.0
+        15.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        18.0,
+        24.0,
         0.0,
-        10.0
+        15.0
        ],
        "easing": "catmullrom"
       }
@@ -178,19 +232,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        24.0
+        32.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        24.0
+        32.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        24.0
+        32.0
        ],
        "easing": "catmullrom"
       }
@@ -200,25 +254,25 @@
      "rotation": {
       "0.0": {
        "vector": [
-        -20.0,
+        -26.0,
         0.0,
-        -4.0
+        -9.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        -20.0,
+        -26.0,
         0.0,
-        -4.0
+        -9.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        -20.0,
+        -26.0,
         0.0,
-        -4.0
+        -9.0
        ],
        "easing": "catmullrom"
       }
@@ -226,19 +280,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        30.0
+        38.0
        ],
        "easing": "catmullrom"
       },
       "0.8": {
        "vector": [
-        30.0
+        38.0
        ],
        "easing": "catmullrom"
       },
       "1.6": {
        "vector": [
-        30.0
+        38.0
        ],
        "easing": "catmullrom"
       }

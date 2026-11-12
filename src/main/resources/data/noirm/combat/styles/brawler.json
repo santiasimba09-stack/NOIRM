@@ -8,5 +8,24 @@
     "back_heavy": "noirm:brawler/back_elbow",
     "back_light": "noirm:brawler/body_hook"
   },
-  "npc_weight": 2
+  "npc_weight": 2,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_brawler",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_brawler_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_brawler_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_brawler_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:brawler/counter_knee"
 }

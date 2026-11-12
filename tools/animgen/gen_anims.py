@@ -10,6 +10,8 @@ Design notes (inspired by how Epic Fight and Better Combat animate, built from o
     arms, the head is left to the engine (it keeps looking at the opponent);
   * anticipation -> fast contact (easing accelerates into the hit) -> follow-through -> settle;
   * each style has its own stance and footwork; combos alternate sides instead of repeating.
+  * 2026-11 rebuild: snap key poses (motion.snap), exaggerated for the blocky model, wider and lower
+    stances, sub-stances per style (motion.stance_set), hit reactions for combo enders.
 """
 import glob
 import json
@@ -17,7 +19,29 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from motion import Anim, P, mirror, strike  # noqa: E402
+from motion import Anim, P, mirror, mix, full, stance_set, hold_for  # noqa: E402
+# The 2026-11 rebuild: every attack is a snap() (key poses: wind-up, snapped and held strike,
+# recovery). snap() takes strike()'s arguments, so the moves below read as before.
+from motion import snap as _snap  # noqa: E402
+
+_POSES = {}
+
+
+def strike(name, *args, **kw):
+    """snap(), remembering the poses so the same attack can be re-timed for another move (retime)."""
+    _POSES[name] = (args, kw)
+    return _snap(name, *args, **kw)
+
+
+def retime(new, old, move, fn=None):
+    """`old`'s poses timed for `move` (its own animation, so its strike lands on that move's hit tick).
+    `fn` (e.g. mirror) reshapes the wind-up, strike and follow poses, not the stance."""
+    args, kw = _POSES[old]
+    args = list(args)
+    if fn:
+        args[1:4] = [fn(a) if a is not None else None for a in args[1:4]]
+    args[4] = timing_of(move)
+    return add(_snap(new, *args, **kw))
 
 MOVES = "src/main/resources/data/noirm/combat/moves"
 
@@ -41,18 +65,19 @@ def add(anim):
 
 # ------------------------------------------------------------------ stances
 # Orthodox footwork: left foot forward, right foot back and out, knees soft.
-LEGS_L = dict(left_leg=(-20, 0, -4, 30), right_leg=(18, 0, 10, 24))
-LEGS_R = dict(right_leg=(-20, 0, 4, 30), left_leg=(18, 0, -10, 24))
+LEGS_L = dict(left_leg=(-26, 0, -9, 38), right_leg=(24, 0, 15, 32))
+LEGS_R = dict(right_leg=(-26, 0, 9, 38), left_leg=(24, 0, -15, 32))
+LOW = dict(pos=(0, -1.6, 0))  # stances sit lower in the knees
 
-BASIC = P(torso=(10, 22, 0, 6), left_arm=(-62, 0, 0, 100), right_arm=(-45, -25, 5, 125), **LEGS_L)
+BASIC = P(torso=(12, 30, 0, 8), left_arm=(-66, 0, 0, 100), right_arm=(-48, -25, 5, 128), body=LOW, **LEGS_L)
 BRAWLER = P(torso=(16, 12, 0, 14), left_arm=(-80, 12, -6, 118), right_arm=(-76, -22, 8, 128),
-            left_leg=(-12, 0, -6, 34), right_leg=(12, 0, 8, 30))
-STRONG = P(torso=(-2, -32, 0, 0), right_arm=(-78, 25, 0, 15), left_arm=(45, 0, 22, 75), **LEGS_R)
+            left_leg=(-16, 0, -11, 42), right_leg=(16, 0, 13, 38), body=LOW)
+STRONG = P(torso=(-2, -40, 0, 0), right_arm=(-80, 25, 0, 10), left_arm=(45, 0, 22, 75), body=LOW, **LEGS_R)
 GENTLE = P(torso=(8, 50, 0, 8), left_arm=(-82, -42, 0, 22), right_arm=(-122, -30, 15, 60),
-           left_leg=(-30, 0, -12, 42), right_leg=(28, 0, 14, 38))
-KUNAI = P(torso=(12, -18, 0, 8), right_arm=(-55, 25, 0, 70), left_arm=(-70, 15, -5, 95), **LEGS_R)
-STAFF = P(torso=(8, 25, 0, 5), right_arm=(-15, 0, 5, 25), left_arm=(-55, 35, -5, 60), **LEGS_L)
-SWORD = P(torso=(6, -15, 0, 4), right_arm=(-40, 15, 0, 10), left_arm=(-50, 30, 0, 90), **LEGS_R)
+           left_leg=(-34, 0, -16, 48), right_leg=(32, 0, 18, 44), body=dict(pos=(0, -2.2, 0)))
+KUNAI = P(torso=(14, -24, 0, 10), right_arm=(-55, 25, 0, 70), left_arm=(-72, 15, -5, 95), body=LOW, **LEGS_R)
+STAFF = P(torso=(8, 30, 0, 5), right_arm=(-15, 0, 5, 25), left_arm=(-55, 35, -5, 60), body=LOW, **LEGS_L)
+SWORD = P(torso=(8, -20, 0, 4), right_arm=(-40, 15, 0, 10), left_arm=(-50, 30, 0, 90), body=LOW, **LEGS_R)
 
 
 def stance(name, pose, period, breathe, extra=None):
@@ -65,16 +90,22 @@ def stance(name, pose, period, breathe, extra=None):
     return add(a)
 
 
-stance("stance_basic", BASIC, 32, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 4), left_arm=(-3, 0, 0, -4)))
-stance("stance_brawler", BRAWLER.add(body=dict(pos=(0, 0, 0))), 14,
-       dict(torso=(3, 0, 0, 3), right_arm=(4, 0, 0, -5), left_arm=(4, 0, 0, -5), left_leg=(0, 0, 0, 10), right_leg=(0, 0, 0, 10),
-            body=dict(pos=(0, -0.9, 0))))
-stance("stance_strong_fist", STRONG, 36, dict(torso=(-1, 0, 0, 1), right_arm=(-3, 0, 0, 4)))
-stance("stance_gentle_fist", GENTLE.add(body=dict(pos=(0, -1.2, 0))), 60,
-       dict(torso=(1, 0, 0, 1), left_arm=(-1, 0, 0, 2), body=dict(pos=(0, -0.2, 0))))
-stance("stance_kunai", KUNAI, 24, dict(torso=(2, 0, 0, 2), right_arm=(-4, 0, 0, 6), left_arm=(-3, 0, 0, 4)))
-stance("stance_staff", STAFF, 30, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 3), left_arm=(-2, 0, 0, 3)))
-stance("stance_sword", SWORD, 30, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 2), left_arm=(-2, 0, 0, 4)))
+def stances(name, pose, period, breathe, kinds, lead="left"):
+    for a in stance_set(name, pose, period, breathe, kinds, lead):
+        add(a)
+
+
+stances("basic", BASIC, 32, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 4), left_arm=(-3, 0, 0, -4)),
+        ("aggressive", "defensive", "low", "air"))
+stances("brawler", BRAWLER, 14,
+        dict(torso=(3, 0, 0, 3), right_arm=(4, 0, 0, -5), left_arm=(4, 0, 0, -5), left_leg=(0, 0, 0, 10), right_leg=(0, 0, 0, 10),
+             body=dict(pos=(0, -0.9, 0))), ("aggressive", "defensive", "low"))
+stances("strong_fist", STRONG, 36, dict(torso=(-1, 0, 0, 1), right_arm=(-3, 0, 0, 4)), ("aggressive", "defensive", "air"), lead="right")
+stances("gentle_fist", GENTLE, 60, dict(torso=(1, 0, 0, 1), left_arm=(-1, 0, 0, 2), body=dict(pos=(0, -0.2, 0))),
+        ("aggressive", "defensive", "low"))
+stances("kunai", KUNAI, 24, dict(torso=(2, 0, 0, 2), right_arm=(-4, 0, 0, 6), left_arm=(-3, 0, 0, 4)), ("aggressive", "defensive", "low"), lead="right")
+stances("staff", STAFF, 30, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 3), left_arm=(-2, 0, 0, 3)), ("aggressive", "defensive", "low"))
+stances("sword", SWORD, 30, dict(torso=(2, 0, 0, 2), right_arm=(-3, 0, 0, 2), left_arm=(-2, 0, 0, 4)), ("aggressive", "defensive"), lead="right")
 
 # ------------------------------------------------------------------ Academy (basic)
 t = timing_of("basic/jab")
@@ -101,8 +132,8 @@ spin = Anim("rotating_kick", sum(t), timing=t)
 spin.key(0, BASIC)
 spin.key(w * 0.5, BASIC(torso=(-6, 10, 10, 0), right_arm=(-60, -20, 30, 110), left_arm=(-60, 10, -30, 110),
                         right_leg=(-45, 0, 25, 85), left_leg=(-6, 0, -4, 36), body=dict(rot=(0, -35, 0), pos=(0, 0.5, 0))), "easeOutQuad")
-spin.key(w, BASIC(torso=(-12, 0, 28, 0), right_arm=(30, 0, 50, 30), left_arm=(-35, 0, -55, 40),
-                  right_leg=(-12, 0, 88, 6), left_leg=(-4, 0, -8, 20), body=dict(rot=(0, -95, 0), pos=(0, 1.5, -1))), "easeInCubic")
+spin.snapkey(w, BASIC(torso=(-14, 0, 32, 0), right_arm=(30, 0, 55, 30), left_arm=(-35, 0, -60, 40),
+                      right_leg=(-12, 0, 92, 0), left_leg=(-4, 0, -12, 26), body=dict(rot=(0, -100, 0), pos=(0, 1.5, -1))), hold=1)
 spin.key(w + a_ + 0.5, BASIC(torso=(-10, 0, 22, 0), right_arm=(30, 0, 45, 30), left_arm=(-35, 0, -50, 40),
                              right_leg=(-12, 0, 76, 20), left_leg=(-4, 0, -8, 24), body=dict(rot=(0, -160, 0), pos=(0, 1, -1))), "easeOutQuad")
 spin.key(w + a_ + r * 0.55, BASIC(right_leg=(-10, 0, 20, 70), body=dict(rot=(0, -300, 0), pos=(0, 0.3, 0))), "easeInOutSine")
@@ -116,8 +147,8 @@ crouch = BASIC(torso=(28, 0, 0, 14), right_arm=(40, 0, 15, 30), left_arm=(40, 0,
                right_leg=(-40, 0, 6, 90), left_leg=(-40, 0, -6, 90), body=dict(pos=(0, -3, 0)))
 flip.key(0, BASIC)
 flip.key(w * 0.6, crouch, "easeOutQuad")
-flip.key(w, P(torso=(-20, 0, 0, -5), right_arm=(-160, 0, 20, 10), left_arm=(-160, 0, -20, 10),
-              right_leg=(-150, 0, 0, 0), left_leg=(-30, 0, 0, 90), body=dict(rot=(-110, 0, 0), pos=(0, 12, 2))), "easeInQuad")
+flip.snapkey(w, P(torso=(-24, 0, 0, -5), right_arm=(-165, 0, 25, 0), left_arm=(-165, 0, -25, 0),
+                  right_leg=(-160, 0, 0, 0), left_leg=(-30, 0, 0, 100), body=dict(rot=(-115, 0, 0), pos=(0, 12, 2))), hold=1)
 flip.key(w + a_ + 1, P(torso=(10, 0, 0, 10), right_arm=(-90, 0, 30, 60), left_arm=(-90, 0, -30, 60),
                        right_leg=(-80, 0, 0, 120), left_leg=(-80, 0, 0, 120), body=dict(rot=(-250, 0, 0), pos=(0, 10, 3))), "linear")
 flip.key(w + a_ + r * 0.6, crouch(body=dict(rot=(-360, 0, 0), pos=(0, -1.5, 2))), "easeOutQuad")
@@ -157,7 +188,7 @@ w, a_, r = t
 be = Anim("back_elbow", sum(t), timing=t)
 be.key(0, BRAWLER)
 be.key(w * 0.6, BRAWLER(torso=(14, -20, 0, 12), right_arm=(-80, 20, 0, 150), body=dict(rot=(0, -60, 0))), "easeOutQuad")
-be.key(w, BRAWLER(torso=(18, 25, 0, 14), right_arm=(-88, 75, 0, 150), body=dict(rot=(0, -185, 0), pos=(0, 0, -1))), "easeInCubic")
+be.snapkey(w, BRAWLER(torso=(20, 32, 0, 14), right_arm=(-90, 80, 0, 150), body=dict(rot=(0, -185, 0), pos=(0, -1, -1.5))), hold=hold_for(a_))
 be.key(w + a_ + 0.5, BRAWLER(torso=(18, 30, 0, 14), right_arm=(-86, 80, 0, 150), body=dict(rot=(0, -215, 0), pos=(0, 0, -1))), "easeOutQuad")
 be.key(sum(t), BRAWLER(body=dict(rot=(0, -360, 0))), "easeInOutSine")
 add(be)
@@ -198,8 +229,8 @@ t = timing_of("clinch/grab")
 w, a_, r = t
 g = Anim("clinch_grab", sum(t), timing=t)
 g.key(0, BRAWLER)
-g.key(w, BRAWLER(torso=(18, 0, 0, 8), right_arm=(-102, -28, 0, 18), left_arm=(-102, 28, 0, 18),
-                 left_leg=(-24, 0, -6, 34), body=dict(pos=(0, 0, -2))), "easeInQuad")
+g.snapkey(w, BRAWLER(torso=(22, 0, 0, 8), right_arm=(-104, -28, 0, 0), left_arm=(-104, 28, 0, 0),
+                     left_leg=(-30, 0, -10, 40), body=dict(pos=(0, -1, -2.5))), hold=1)
 g.key(w + a_, HOLD(body=dict(pos=(0, 0, -1))), "easeOutQuad")
 g.key(sum(t), HOLD, "easeInOutSine")
 add(g)
@@ -210,8 +241,8 @@ th = Anim("throw", sum(t), timing=t)
 th.key(0, HOLD)
 th.key(w * 0.6, HOLD(torso=(10, 35, 0, 12), right_arm=(-95, 10, 20, 70), left_arm=(-95, 30, -10, 70),
                      right_leg=(-20, 0, 6, 50), left_leg=(-10, 0, -6, 50), body=dict(pos=(0, -2, 0))), "easeOutQuad")
-th.key(w, HOLD(torso=(30, -30, 0, 18), right_arm=(-160, -20, 20, 30), left_arm=(-140, 0, -20, 30),
-               right_leg=(-10, 0, 10, 20), left_leg=(10, 0, -6, 20), body=dict(rot=(0, -100, 0), pos=(0, 0, 0))), "easeInCubic")
+th.snapkey(w, HOLD(torso=(34, -40, 0, 18), right_arm=(-165, -20, 20, 20), left_arm=(-145, 0, -20, 20),
+                   right_leg=(-14, 0, 14, 26), left_leg=(12, 0, -10, 26), body=dict(rot=(0, -100, 0), pos=(0, -1.5, 0))), hold=hold_for(a_))
 th.key(w + a_ + 1, HOLD(torso=(40, -20, 0, 24), right_arm=(-40, -10, 20, 20), left_arm=(-40, 10, -20, 20),
                         body=dict(rot=(0, -135, 0), pos=(0, -1, 0))), "easeOutQuad")
 th.key(sum(t), BRAWLER(body=dict(rot=(0, -360, 0))), "easeInOutSine")
@@ -301,8 +332,8 @@ lw = Anim("leaf_whirlwind", sum(t), timing=t)
 lw.key(0, STRONG)
 lw.key(w * 0.6, STRONG(torso=(20, 10, 0, 12), right_arm=(-40, 0, 40, 30), left_arm=(-40, 0, -40, 30),
                        right_leg=(-25, 0, 4, 70), left_leg=(-25, 0, -4, 70), body=dict(pos=(0, -3, 0), rot=(0, 30, 0))), "easeOutQuad")
-lw.key(w, P(torso=(-6, 0, -18, 0), right_arm=(0, 0, 75, 10), left_arm=(0, 0, -75, 10),
-            right_leg=(-15, 0, 88, 0), left_leg=(10, 0, -10, 40), body=dict(pos=(0, 7, -1), rot=(0, -150, 0))), "easeInQuad")
+lw.snapkey(w, P(torso=(-8, 0, -22, 0), right_arm=(0, 0, 80, 0), left_arm=(0, 0, -80, 0),
+                right_leg=(-15, 0, 92, 0), left_leg=(10, 0, -14, 46), body=dict(pos=(0, 7, -1), rot=(0, -150, 0))), hold=1)
 lw.key(w + a_ + 0.5, P(torso=(-6, 0, -18, 0), right_arm=(0, 0, 75, 10), left_arm=(0, 0, -75, 10),
                        right_leg=(-15, 0, 85, 0), left_leg=(10, 0, -10, 40), body=dict(pos=(0, 6, -1), rot=(0, -300, 0))), "linear")
 lw.key(w + a_ + r * 0.5, STRONG(right_leg=(-20, 0, 20, 60), body=dict(pos=(0, 0, 0), rot=(0, -360, 0))), "easeOutQuad")
@@ -405,13 +436,156 @@ add(strike("lion_palms", GENTLE,
                   right_leg=(34, 0, 12, 20), body=dict(pos=(0, -1, -5))),
            t))
 
+
+# ------------------------------------------------------------------ the rebuild's new moves (2026-11)
+# Academy: the long string's body shot and axe kick, the flying kick (dash heavy), the dodge
+# counter, and the low and air variants of the jab.
+t = timing_of("basic/body_shot")
+add(strike("body_shot", BASIC,
+           BASIC(torso=(20, 45, 0, 12), left_arm=(-40, 10, -20, 112), body=dict(pos=(0, -2.5, 0))),
+           BASIC(torso=(28, -32, 0, 16), left_arm=(-62, 42, 0, 8), left_leg=(-32, 0, -10, 48), right_leg=(26, 0, 16, 36),
+                 body=dict(pos=(0, -3, -1.5))),
+           BASIC(torso=(28, -38, 0, 16), left_arm=(-60, 46, 0, 12), left_leg=(-32, 0, -10, 48), right_leg=(26, 0, 16, 36),
+                 body=dict(pos=(0, -3, -1.5))),
+           t))
+t = timing_of("basic/axe_kick")
+add(strike("axe_kick", BASIC,
+           BASIC(torso=(-20, 10, 0, -6), right_leg=(-168, 0, 6, 0), left_leg=(-4, 0, -4, 22), right_arm=(-20, 0, 40, 30),
+                 left_arm=(-40, 0, -40, 40), body=dict(pos=(0, 1, 0.5))),
+           BASIC(torso=(34, 0, 0, 16), right_leg=(-42, 0, 4, 0), left_leg=(-6, 0, -6, 46), right_arm=(10, 0, 30, 30),
+                 left_arm=(-50, 0, -30, 60), body=dict(pos=(0, -2.5, -2.5))),
+           BASIC(torso=(32, 0, 0, 16), right_leg=(-36, 0, 4, 6), left_leg=(-6, 0, -6, 46), right_arm=(10, 0, 30, 30),
+                 left_arm=(-50, 0, -30, 60), body=dict(pos=(0, -2.5, -2.5))),
+           t, weight=False, antic_at=0.6))
+t = timing_of("basic/flying_kick")
+add(strike("flying_kick_basic", BASIC,
+           BASIC(torso=(26, -10, 0, 14), right_arm=(40, 0, 15, 20), left_arm=(40, 0, -15, 20),
+                 right_leg=(-35, 0, 4, 90), left_leg=(-35, 0, -4, 90), body=dict(pos=(0, -3.5, 1))),
+           P(torso=(-16, 0, 0, -2), right_arm=(55, 0, 35, 20), left_arm=(-50, 0, -25, 40),
+             right_leg=(-95, 0, 0, 0), left_leg=(30, 0, 0, 115), body=dict(rot=(-14, 0, 0), pos=(0, 8, -12))),
+           P(torso=(-12, 0, 0, -2), right_arm=(55, 0, 35, 20), left_arm=(-45, 0, -25, 50),
+             right_leg=(-88, 0, 0, 6), left_leg=(30, 0, 0, 105), body=dict(rot=(-10, 0, 0), pos=(0, 5, -11))),
+           t, settle=BASIC(body=dict(pos=(0, -1, -6)), right_leg=(-30, 0, 4, 60))))
+t = timing_of("basic/counter_strike")
+add(strike("counter_strike", BASIC,
+           BASIC(torso=(14, -55, 0, 10), right_arm=(-70, -70, 0, 125), body=dict(pos=(0, -1.5, 0))),
+           BASIC(torso=(18, 45, 0, 6), right_arm=(-94, 62, 0, 0), left_arm=(-40, 0, -20, 110), left_leg=(-34, 0, -10, 40),
+                 right_leg=(28, 0, 16, 30), body=dict(pos=(0, -2, -2))),
+           BASIC(torso=(18, 52, 0, 6), right_arm=(-90, 70, 0, 6), left_arm=(-40, 0, -20, 110), left_leg=(-34, 0, -10, 40),
+                 right_leg=(28, 0, 16, 30), body=dict(pos=(0, -2, -2))),
+           t))
+t = timing_of("basic/low_kick")
+add(strike("low_kick", BASIC,
+           BASIC(torso=(10, 15, 0, 6), right_leg=(22, 0, 12, 70), body=dict(pos=(0, -2.5, 0))),
+           BASIC(torso=(-4, -32, 0, 0), right_leg=(-42, 0, -22, 0), left_leg=(-8, 0, -8, 46), right_arm=(-30, -10, 20, 90),
+                 body=dict(pos=(0, -2.5, -0.5))),
+           BASIC(torso=(-4, -36, 0, 0), right_leg=(-38, 0, -26, 6), left_leg=(-8, 0, -8, 46), right_arm=(-30, -10, 20, 90),
+                 body=dict(pos=(0, -2.5, -0.5))),
+           t, weight=False))
+t = timing_of("basic/air_kick")
+AIRBORNE = P(torso=(10, 0, 0, 8), right_arm=(-30, 0, 30, 40), left_arm=(-30, 0, -30, 40), right_leg=(-40, 0, 0, 80), left_leg=(-20, 0, 0, 60))
+add(strike("air_kick", AIRBORNE,
+           AIRBORNE(torso=(24, 0, 0, 16), right_leg=(-70, 0, 0, 130), left_leg=(-50, 0, 0, 115), right_arm=(-150, 0, 30, 30),
+                    left_arm=(-150, 0, -30, 30)),
+           AIRBORNE(torso=(-14, 0, 0, -2), right_leg=(-72, 0, 0, 0), left_leg=(25, 0, 0, 95), right_arm=(40, 0, 45, 20),
+                    left_arm=(-70, 0, -30, 40), body=dict(rot=(-12, 0, 0), pos=(0, 0, -3))),
+           AIRBORNE(torso=(-12, 0, 0, -2), right_leg=(-68, 0, 0, 6), left_leg=(25, 0, 0, 95), right_arm=(40, 0, 45, 20),
+                    left_arm=(-70, 0, -30, 40), body=dict(rot=(-10, 0, 0), pos=(0, 0, -3))),
+           t, weight=False))
+
+# Brawler: the rising elbow ender and the counter knee.
+t = timing_of("brawler/uppercut_elbow")
+add(strike("uppercut_elbow", BRAWLER,
+           BRAWLER(torso=(30, 25, 0, 16), right_arm=(-30, -10, 10, 150), body=dict(pos=(0, -3, 0))),
+           BRAWLER(torso=(-18, -30, 0, -4), right_arm=(-168, -22, 0, 150), left_arm=(-60, 25, -10, 110), left_leg=(-22, 0, -10, 14),
+                   right_leg=(14, 0, 12, 10), body=dict(pos=(0, 2, -1.5))),
+           BRAWLER(torso=(-20, -34, 0, -4), right_arm=(-172, -22, 0, 150), left_arm=(-60, 25, -10, 110), left_leg=(-22, 0, -10, 14),
+                   right_leg=(14, 0, 12, 10), body=dict(pos=(0, 2.5, -1.5))),
+           t, antic_at=0.6))
+t = timing_of("brawler/counter_knee")
+add(strike("counter_knee", BRAWLER,
+           BRAWLER(torso=(6, 0, 0, 6), right_leg=(28, 0, 4, 70), right_arm=(-100, -20, 10, 60), left_arm=(-100, 20, -10, 60),
+                   body=dict(pos=(0, -1.5, 1))),
+           BRAWLER(torso=(-14, 0, 0, 4), right_leg=(-118, 0, 0, 135), left_leg=(-4, 0, -6, 8), right_arm=(-110, -25, 10, 40),
+                   left_arm=(-110, 25, -10, 40), body=dict(pos=(0, 2, -3))),
+           BRAWLER(torso=(-12, 0, 0, 4), right_leg=(-110, 0, 0, 130), left_leg=(-4, 0, -6, 8), right_arm=(-108, -25, 10, 40),
+                   left_arm=(-108, 25, -10, 40), body=dict(pos=(0, 2, -3))),
+           t))
+
+# Strong Fist: the rapid kick in the string and the counter heel.
+t = timing_of("strong_fist/rapid_kick")
+add(strike("rapid_kick", STRONG,
+           STRONG(torso=(4, -20, 0, 2), right_leg=(-20, 0, 4, 100), left_leg=(-4, 0, -6, 34)),
+           STRONG(torso=(-22, -12, 0, -4), right_leg=(-98, 0, 4, 0), left_leg=(-4, 0, -6, 30), right_arm=(30, 25, 30, 20),
+                  left_arm=(20, 0, -35, 60), body=dict(pos=(0, 0.5, -1.5))),
+           STRONG(torso=(-20, -12, 0, -4), right_leg=(-92, 0, 4, 8), left_leg=(-4, 0, -6, 30), right_arm=(30, 25, 30, 20),
+                  left_arm=(20, 0, -35, 60), body=dict(pos=(0, 0.5, -1.5))),
+           t, weight=False))
+t = timing_of("strong_fist/counter_heel")
+add(strike("counter_heel", STRONG,
+           STRONG(torso=(10, 55, 0, 6), right_leg=(12, 0, 30, 90), body=dict(pos=(0, -1.5, 0))),
+           STRONG(torso=(-16, -45, 0, -2), right_leg=(-94, 0, -12, 0), left_leg=(-4, 0, -6, 30), right_arm=(40, 0, 40, 20),
+                  left_arm=(-40, 0, -40, 40), body=dict(pos=(0, 0, -2))),
+           STRONG(torso=(-14, -50, 0, -2), right_leg=(-88, 0, -14, 8), left_leg=(-4, 0, -6, 30), right_arm=(40, 0, 40, 20),
+                  left_arm=(-40, 0, -40, 40), body=dict(pos=(0, 0, -2))),
+           t, weight=False))
+
+# Gentle Fist: the palm flurry in the string and the counter palm.
+t = timing_of("gentle_fist/palm_flurry")
+add(strike("palm_flurry", GENTLE,
+           GENTLE(torso=(10, 45, 0, 8), right_arm=(-60, -20, 20, 90), left_arm=(-60, 20, -20, 90)),
+           GENTLE(torso=(18, -14, 0, 6), right_arm=(-95, 10, 0, 0), left_arm=(-82, -12, 0, 55), body=dict(pos=(0, -2, -3)), **DEEP),
+           GENTLE(torso=(18, 10, 0, 6), right_arm=(-82, 10, 0, 55), left_arm=(-95, -12, 0, 0), body=dict(pos=(0, -2, -3)), **DEEP),
+           t))
+t = timing_of("gentle_fist/counter_palm")
+add(strike("counter_palm", GENTLE,
+           GENTLE(torso=(8, 70, 0, 8), right_arm=(-50, -10, 25, 100)),
+           GENTLE(torso=(14, -30, 0, 8), right_arm=(-94, -6, 0, 0), left_arm=(-30, -20, 0, 40), body=dict(pos=(0, -2, -2.5)), **DEEP),
+           GENTLE(torso=(14, -36, 0, 8), right_arm=(-90, -6, 0, 6), left_arm=(-30, -20, 0, 40), body=dict(pos=(0, -2, -2.5)), **DEEP),
+           t))
+
+# The clinch's knee and headbutt: the Brawler's, timed for the clinch moves.
+retime("clinch_knee", "knee_strike", "clinch/knee")
+retime("clinch_headbutt", "headbutt", "clinch/headbutt")
+
+# ------------------------------------------------------------------ hit reactions (combo enders)
+# Played on whoever an ender hits (CombatEffects.ender), on top of the stagger pose and the flinch.
+LIMP = P(torso=(10, 0, 0, 8), head=(10, 0, 0), right_arm=(-10, 0, 20, 30), left_arm=(-10, 0, -20, 30),
+         right_leg=(-6, 0, 6, 20), left_leg=(-6, 0, -6, 20))
+launch = Anim("hit_launch", 18)
+launch.key(0, LIMP)
+launch.snapkey(1, P(torso=(-38, 0, 0, -12), head=(-30, 0, 0), right_arm=(-155, 0, 35, 10), left_arm=(-150, 0, -35, 10),
+                    right_leg=(18, 0, 6, 40), left_leg=(8, 0, -6, 30), body=dict(rot=(-25, 0, 0))), hold=3)
+launch.key(11, P(torso=(-20, 0, 0, -4), head=(-15, 0, 0), right_arm=(-120, 0, 50, 20), left_arm=(-110, 0, -50, 20),
+                 right_leg=(-30, 0, 6, 70), left_leg=(-10, 0, -6, 50), body=dict(rot=(-50, 0, 0))), "easeOutQuad")
+launch.key(18, LIMP, "easeInOutSine")
+add(launch)
+crumple = Anim("hit_crumple", 32)
+crumple.key(0, LIMP)
+crumple.snapkey(1, P(torso=(52, 0, 0, 30), head=(32, 0, 0), right_arm=(20, 0, 15, 40), left_arm=(25, 0, -15, 40),
+                     right_leg=(-20, 0, 6, 50), left_leg=(-10, 0, -6, 40), body=dict(pos=(0, -2, 0))), hold=2)
+crumple.key(8, P(torso=(40, 0, 0, 30), head=(20, 0, 0), right_arm=(-30, 0, 30, 30), left_arm=(-30, 0, -30, 30),
+                 right_leg=(-90, 0, 10, 150), left_leg=(-80, 0, -10, 150), body=dict(pos=(0, -9, 0), rot=(10, 0, 0))), "easeInQuad")
+crumple.key(13, P(torso=(10, 0, 0, 5), head=(0, 0, 0), right_arm=(-160, 0, 20, 20), left_arm=(-150, 0, -20, 20),
+                  right_leg=(-10, 0, 6, 20), left_leg=(-10, 0, -6, 30), body=dict(pos=(0, -16, 4), rot=(78, 0, 0))), "easeInQuad", hold=12)
+crumple.key(32, LIMP, "easeInOutSine")
+add(crumple)
+fly = Anim("hit_fly", 18)
+fly.key(0, LIMP)
+fly.snapkey(1, P(torso=(-30, 0, 0, -8), head=(-35, 0, 0), right_arm=(-70, 0, 25, 20), left_arm=(-70, 0, -25, 20),
+                 right_leg=(-55, 0, 6, 15), left_leg=(-45, 0, -6, 25), body=dict(rot=(-35, 0, 0), pos=(0, 2, 0))), hold=6)
+fly.key(13, P(torso=(-10, 0, 0, 4), head=(-10, 0, 0), right_arm=(-40, 0, 30, 30), left_arm=(-40, 0, -30, 30),
+              right_leg=(-40, 0, 6, 60), left_leg=(-30, 0, -6, 50), body=dict(rot=(-15, 0, 0))), "easeOutQuad")
+fly.key(18, LIMP, "easeInOutSine")
+add(fly)
+
 # ------------------------------------------------------------------ dodge rolls
 # A tight ball rolling about a point ~0.4 blocks up (the body pivot is 0.7 up, hence the small drop).
 TUCK = P(torso=(55, 0, 0, 60), head=(45, 0, 0), right_arm=(-70, 0, 20, 130), left_arm=(-70, 0, -20, 130),
          right_leg=(-125, 0, 0, 150), left_leg=(-125, 0, 0, 150))
 roll = Anim("forward_roll", 12)
 roll.key(0, P(torso=(20, 0, 0, 10), right_leg=(-30, 0, 0, 60), left_leg=(-30, 0, 0, 60), body=dict(pos=(0, -2, 0))))
-roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -4.5, -3))), "easeInQuad")
+roll.key(3, TUCK(body=dict(rot=(100, 0, 0), pos=(0, -4.5, -3))), "snap")  # the rebuild: tucked at once
 roll.key(7, TUCK(body=dict(rot=(260, 0, 0), pos=(0, -4.5, -8))), "linear")
 roll.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(345, 0, 0), pos=(0, -3, -10))), "easeOutQuad")
@@ -419,12 +593,25 @@ roll.key(12, P(body=dict(rot=(360, 0, 0), pos=(0, 0, -10))), "easeInOutSine")
 add(roll)
 back = Anim("backward_roll", 12)
 back.key(0, P(torso=(10, 0, 0, 10), right_leg=(-40, 0, 0, 80), left_leg=(-40, 0, 0, 80), body=dict(pos=(0, -3, 0))))
-back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -4.5, 3))), "easeInQuad")
+back.key(3, TUCK(body=dict(rot=(-100, 0, 0), pos=(0, -4.5, 3))), "snap")
 back.key(7, TUCK(body=dict(rot=(-260, 0, 0), pos=(0, -4.5, 8))), "linear")
 back.key(10, P(torso=(25, 0, 0, 15), right_leg=(-60, 0, 0, 110), left_leg=(-40, 0, 0, 90),
                body=dict(rot=(-345, 0, 0), pos=(0, -3, 10))), "easeOutQuad")
 back.key(12, P(body=dict(rot=(-360, 0, 0), pos=(0, 0, 10))), "easeInOutSine")
 add(back)
+# Side steps (the rebuild): a sideways dodge snaps low and wide to the side, leaning away, hands up;
+# the dodge counter then comes in from that side.
+for side, sign in (("left", 1), ("right", -1)):
+    out = P(torso=(18, 0, 22 * sign, 10), head=(0, 0, -12 * sign), right_arm=(-100, -20, 8, 120), left_arm=(-104, 20, -8, 125),
+            right_leg=(-10, 0, 30 if sign < 0 else 6, 60), left_leg=(-10, 0, -30 if sign > 0 else -6, 60),
+            body=dict(pos=(1.5 * sign, -4, 0), rot=(0, 0, 10 * sign)))  # the entity itself slides sideways
+    step = Anim("dodge_side_" + side, 10)
+    step.key(0, P(torso=(8, 0, 0, 4), right_arm=(-60, 0, 5, 90), left_arm=(-60, 0, -5, 90), right_leg=(0, 0, 4, 20),
+                  left_leg=(0, 0, -4, 20)))
+    step.key(2, out, "snap", hold=4)
+    step.key(10, P(torso=(8, 0, 0, 4), right_arm=(-60, 0, 5, 90), left_arm=(-60, 0, -5, 90), right_leg=(0, 0, 4, 20),
+                   left_leg=(0, 0, -4, 20)), "easeOutQuad")
+    add(step)
 
 # ------------------------------------------------------------------ weapons
 t = timing_of("kunai/slash", (3, 2, 6))
@@ -475,7 +662,7 @@ w, a_, r = t
 sp = Anim("staff_spin", sum(t), timing=t)
 sp.key(0, STAFF)
 sp.key(w * 0.6, STAFF(torso=(8, 40, 0, 6), right_arm=(-80, 50, 0, 10), left_arm=(-80, 60, 0, 20), body=dict(rot=(0, 30, 0))), "easeOutQuad")
-sp.key(w, STAFF(torso=(8, 0, 0, 4), right_arm=(-85, 0, 30, 0), left_arm=(-85, 0, -30, 0), body=dict(rot=(0, -150, 0), pos=(0, 1, 0))), "easeInQuad")
+sp.snapkey(w, STAFF(torso=(10, 0, 0, 4), right_arm=(-88, 0, 34, 0), left_arm=(-88, 0, -34, 0), body=dict(rot=(0, -150, 0), pos=(0, 0, 0))), hold=1)
 sp.key(w + a_, STAFF(torso=(8, 0, 0, 4), right_arm=(-85, 0, 30, 0), left_arm=(-85, 0, -30, 0), body=dict(rot=(0, -330, 0), pos=(0, 1, 0))), "linear")
 sp.key(sum(t), STAFF(body=dict(rot=(0, -360, 0))), "easeOutQuad")
 add(sp)
@@ -506,6 +693,22 @@ add(strike("sword_rising", SWORD,
            SWORD(torso=(-14, -20, 0, -4), right_arm=(-175, -10, 0, 5), body=dict(pos=(0, 4, -2))),
            SWORD(torso=(-16, -24, 0, -4), right_arm=(-180, -10, 0, 8), body=dict(pos=(0, 4.5, -2))),
            t, antic_at=0.6))
+
+
+# The rebuild: every move has its own animation (timed to it), and every moveset a dodge counter.
+retime("kunai_slash_2", "kunai_slash", "kunai/slash_2", mirror)
+retime("kunai_backhand_2", "kunai_backhand", "kunai/backhand_2")
+retime("kunai_finishing_stab", "kunai_stab", "kunai/finishing_stab")
+retime("kunai_rising_cut", "kunai_backhand", "kunai/rising_cut")
+retime("kunai_lunging_stab", "kunai_stab", "kunai/lunging_stab")
+retime("kunai_counter", "kunai_backhand", "kunai/counter")
+retime("staff_return_sweep", "staff_sweep", "staff/return_sweep", mirror)
+retime("staff_rising_sweep", "staff_sweep", "staff/rising_sweep")
+retime("staff_lunging_thrust", "staff_thrust", "staff/lunging_thrust")
+retime("staff_counter", "staff_sweep", "staff/counter")
+retime("sword_finishing_slash", "sword_slash", "sword/finishing_slash")
+retime("sword_dash_thrust", "sword_thrust", "sword/dash_thrust")
+retime("sword_counter", "sword_cross", "sword/counter")
 
 # ------------------------------------------------------------------ throws
 NEUTRAL = P(torso=(6, 0, 0, 4), right_arm=(-30, 0, 5, 30), left_arm=(-30, 0, -5, 30),
@@ -549,10 +752,11 @@ add(seals)
 release = Anim("cast_release", 10)
 release.key(0, base)
 release.key(2, base.add(torso=(-10, 0, 0, -6), right_arm=(20, 0, 0, 0), left_arm=(20, 0, 0, 0)), "easeOutQuad")
-release.key(4, NEUTRAL(torso=(16, 0, 0, 8), right_arm=(-90, 5, 0, 0), left_arm=(-90, -5, 0, 0), left_leg=(-26, 0, -4, 30),
-                       body=dict(pos=(0, 0, -2))), "easeInCubic")
-release.key(7, NEUTRAL(torso=(14, 0, 0, 8), right_arm=(-88, 5, 0, 4), left_arm=(-88, -5, 0, 4), left_leg=(-26, 0, -4, 30),
-                       body=dict(pos=(0, 0, -2))), "easeOutQuad")
+# The cast pose snaps out and holds (the rebuild): both palms thrust, wide low base.
+release.snapkey(4, NEUTRAL(torso=(20, 0, 0, 8), right_arm=(-92, 5, 0, 0), left_arm=(-92, -5, 0, 0), left_leg=(-34, 0, -10, 40),
+                           right_leg=(24, 0, 14, 30), body=dict(pos=(0, -1.6, -2.5))), hold=2, strike=False)
+release.key(7.5, NEUTRAL(torso=(14, 0, 0, 8), right_arm=(-84, 5, 0, 10), left_arm=(-84, -5, 0, 10), left_leg=(-30, 0, -8, 36),
+                         right_leg=(20, 0, 12, 26), body=dict(pos=(0, -1.2, -2))), "easeOutQuad")
 release.key(10, NEUTRAL, "easeInOutSine")
 add(release)
 

@@ -241,3 +241,116 @@ big wind-ups, foreshortened fists and kicks. These are the owner's answers; ask 
   heavy hits, enemies crumpling or flying on enders. It stays readable and fast.
 - **Scope:** unarmed styles, grabs and throws; every weapon moveset; hand seals and jutsu casts; getting
   hit, dodges, guard, idle and the ninja run.
+
+### How the rebuild is built (2026-11)
+
+Built on the round-5 engine (HumanoidAnimator, Rig, KeyframeAnimation, SkeletonPose, leg IK,
+springs, lean, hit-stop). Nothing was replaced; these are the extensions.
+
+**Snappy key poses (engine).**
+- `KeyframeAnimation` reads three new keys. `"easing": "snap"` (or `"snap": true | <fraction>`) on a
+  keyframe makes a near-stepped move into it: the pose is reached in the first 35% of the gap
+  (`SNAP_REACH`), overshooting by about 6% (`SNAP_OVERSHOOT`), then it holds. `"hold": <seconds>` on a
+  keyframe holds its pose that long. `"strike"` and `"strike_hold"` on the animation mark the hit tick
+  (the strike marker).
+- `HumanoidAnimator` pins the springs to the pose while a snap key is being reached or held
+  (`SNAP_PIN` 0.9), for the body too, so the strike lands as authored. The springs, leg IK and lean
+  take over again for the recovery. Hit-stop still freezes the clock on top of the hold.
+- `tools/animgen/motion.py` has `snap()`, a builder with the old `strike()` arguments: stance → a quick
+  wind-up (half the windup) → snap to the strike pose on the hit tick, held 1–3 ticks (the active
+  frames) → a short recovery → the stance. `exaggerate()` pushes poses for the blocky model: torso twist
+  ×1.35, lean ×1.2, legs 45% wider and 25% longer in stride, knees 8° deeper, the body 1.2 px lower and
+  driven 30% further, and the hitting arm or leg fully straight. Base stances are wider and lower too.
+- `tools/animgen/check_moves.py` checks that every move's animation lasts the move and strikes on its
+  windup. The game test `strikePosesLandOnTheHitTick` checks the same thing.
+
+**Sub-stances.** Every style JSON has `"stances"`: `neutral` plus 2–3 of `aggressive`, `defensive`,
+`low` and `air`, each with an `animation` (`stance_<style>_<kind>`) and a `switch` time in ticks (2).
+The server picks one each tick (`CombatSystem.pickSubStance`), in this order:
+1. **air:** off the ground for at least 4 ticks.
+2. **low:** crouching.
+3. **defensive:** guarding, or hit within the last 24 ticks.
+4. **aggressive:** in a string (second hit on), or landed a hit within the last 30 ticks.
+
+When both defensive and aggressive apply, whichever happened last wins. A style without that
+sub-stance stays in neutral. The pick is synced in `SyncState` for the player and in entity data for
+NPCs. The client snaps the stance over the `switch` ticks, and the HUD shows it next to "Combat mode".
+
+A move's `"variants"` swap in another move for a sub-stance. Examples:
+- The jab becomes a low kick when crouching and an air kick in the air.
+- The heavy kick becomes the axe kick (a guard break) when aggressive and a push kick when defensive.
+
+| Style | Sub-stances |
+|---|---|
+| Academy | aggressive, defensive, low, air |
+| Brawler | aggressive, defensive, low |
+| Strong Fist | aggressive, defensive, air |
+| Gentle Fist | aggressive, defensive, low |
+| kunai, staff, tantō, tonfa, yari, tekko-kagi | aggressive, defensive, low |
+| sword, katana, nodachi, tessen | aggressive, defensive |
+
+**Long strings.** Each light route is now 5 hits and ends in an ender, with branches on the way:
+- Academy: jab › hook › body shot › spin kick › axe kick. Hook + heavy is a flip kick (launch); spin
+  kick + heavy is a heavy kick (splat).
+- Brawler: elbow › rising knee › back elbow › body hook › uppercut elbow (launch).
+- Strong Fist: jab › straight › rapid kick › Leaf Whirlwind › Leaf Great Flash (guard break, knockdown).
+- Gentle Fist: palm › palm › palm › palm flurry › Twin Lion Palms (splat).
+- Weapons: at least 4 hits each (see `EXTRA_NEXT` in `tools/weapongen/gen_moves.py`).
+
+A hit's `"ender"` can be `launch` (lift at least `ENDER_LAUNCH_LIFT` 0.8), `knockdown`, or `splat`
+(knockback at least `ENDER_SPLAT_KNOCKBACK` 1.4, which slams into a wall when there is one). An ender
+plays a reaction on the target (`hit_launch`, `hit_crumple` or `hit_fly`) and adds `ENDER_SHAKE` 0.3 of
+camera shake, plus blood (when gore is on) and debris.
+
+**Dodge into counter.** A perfect dodge (hit in the first 3 ticks of a dodge) opens a
+`DODGE_COUNTER_WINDOW` (14 ticks). The next attack, which may cut the roll short, becomes the style's
+`"counter"` move:
+- It slips to `DODGE_COUNTER_DISTANCE` (1.2 blocks) behind the enemy, or beside them after a sideways
+  dodge (`DODGE_COUNTER_SIDE` 0.35). Sideways dodges are a side step now, not a roll.
+- It has a 1-tick wind-up and hits like a parry counter: ×1.5 damage, and it can't be guarded.
+
+**Dash strike.** Sprinting into an attack (the forward inputs) has a 1-tick shorter wind-up and 0.45
+more lunge, and does ×1.2 damage and ×1.3 posture (the `DASH_STRIKE_*` constants). A trail of dust
+marks it.
+
+**Guard break.** `"guard_break": true` shatters a guard that blocks the move: a posture break, and the
+hit does 60% of its damage. A parry still beats it. It telegraphs with a red glow. Guard breaks:
+- Academy: axe kick.
+- Brawler: hammer fist.
+- Strong Fist: Leaf Great Flash.
+- Gentle Fist: double palm.
+- Weapons: their heaviest move.
+
+**NPCs** use the 5-hit strings and their branches. They dash-strike from 3.2 to 6 blocks (8% a tick),
+counter as soon as a perfect dodge opens the window, and against a raised guard they press with a jab
+into a heavy, which is a guard break when they're aggressive.
+
+**Pace and impact (before → after).** Weapons use `pace()` in gen_moves.py: windups longer than 2 ×0.75,
+recovery ×0.7, cancel ×0.6, and hit-stop one tick less.
+
+| Move | windup / active / recovery (total) | hit-stop |
+|---|---|---|
+| jab | 3/2/6 (11) → 2/2/4 (8) | 2 → 1 |
+| hook | 3/2/7 (12) → 2/2/5 (9) | 2 → 1 |
+| spin kick | 6/3/10 (19) → 4/3/7 (14) | 4 → 3 |
+| heavy kick | 9/3/12 (24) → 6/3/8 (17) | 5 → 3 |
+| uppercut | 6/3/10 (19) → 4/3/7 (14) | 4 → 3 |
+| Brawler hammer fist | 8/2/13 (23) → 6/2/9 (17) | 6 → 4 |
+| Leaf Great Flash | 8/3/13 (24) → 6/3/9 (18) | 6 → 4 |
+| katana slash | 5/2/9 (16) → 4/2/6 (12) | 3 → 2 |
+| nodachi cleave | 11/3/15 (29) → 8/3/11 (22) | 8 → 4 |
+
+- No hit-stop is longer than `MAX_HITSTOP` (5). A wall splat adds `WALL_SPLAT_HITSTOP` (2), down from 4.
+- `COMBO_RESET_TICKS` went from 12 to 10.
+- A hit counts as "heavy" from hit-stop 3 (`HEAVY_HITSTOP`, was 4). Enders always count as heavy.
+- The camera shake is a punch: 3.2° instead of 2.5°, faster, and it dies off faster (`SHAKE_DECAY`
+  0.68, was 0.8).
+- Heavy hits kick up debris from the ground, plus blood when gore is on.
+
+**Other animations.**
+- Hand seals snap into each seal and hold it, on a wider base. The jutsu release pose snaps out and
+  holds.
+- The rolls tuck at once.
+- The ninja run leans deeper and sweeps the arms further back.
+- The leg IK may drop the hips up to 4.5 px (was 3) for the lower stances.
+- First-person arms show the same snapped poses, because they come from the same animator.

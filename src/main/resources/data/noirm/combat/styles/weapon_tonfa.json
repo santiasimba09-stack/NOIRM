@@ -8,5 +8,24 @@
     "back_light": "noirm:tonfa/hook_l"
   },
   "npc_weight": 0,
-  "playable": false
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_tonfa",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_tonfa_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_tonfa_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_tonfa_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:tonfa/counter"
 }

@@ -19,6 +19,16 @@ public final class ClientPlayerState {
         return ClientCombat.isGuarding();
     }
 
+    /** The stance the server picked for the local player's sub-stance, or null. */
+    public static net.minecraft.resources.ResourceLocation stance() {
+        return ClientCombat.stance();
+    }
+
+    /** Ticks a sub-stance switch snaps over. */
+    public static int stanceSwitch() {
+        return ClientCombat.stanceSwitch();
+    }
+
     /** The player's style id or path (e.g. {@code brawler}), or empty. */
     public static String style() {
         var data = ClientShinobiData.get();

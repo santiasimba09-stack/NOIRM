@@ -15,14 +15,18 @@ import java.util.Optional;
  * @param timing    how long each phase lasts
  * @param hit       what happens to whoever is hit
  * @param next      combo routes: which move follows when this one is followed by each input
+ * @param variants  the move that comes out instead while the fighter is in a given sub-stance
+ *                  (a low sweep when crouching, an air kick in the air…)
  */
-public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hit hit, Map<AttackInput, ResourceLocation> next) {
+public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hit hit, Map<AttackInput, ResourceLocation> next,
+                         Map<SubStance, ResourceLocation> variants) {
 
     public static final Codec<CombatMove> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.optionalFieldOf("animation").forGetter(CombatMove::animation),
             Timing.CODEC.fieldOf("timing").forGetter(CombatMove::timing),
             Hit.CODEC.fieldOf("hit").forGetter(CombatMove::hit),
-            Codec.unboundedMap(AttackInput.CODEC, ResourceLocation.CODEC).optionalFieldOf("next", Map.of()).forGetter(CombatMove::next)
+            Codec.unboundedMap(AttackInput.CODEC, ResourceLocation.CODEC).optionalFieldOf("next", Map.of()).forGetter(CombatMove::next),
+            Codec.unboundedMap(SubStance.CODEC, ResourceLocation.CODEC).optionalFieldOf("variants", Map.of()).forGetter(CombatMove::variants)
     ).apply(i, CombatMove::new));
 
     public int totalTicks() {
@@ -59,10 +63,14 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
      * @param chakra    chakra knocked out of the target (Gentle Fist strikes the chakra network)
      * @param pierce    fraction of the damage a guard can't stop (0 = normal guard)
      * @param clinch    {@code grab} starts a clinch, {@code hold} keeps it, {@code release} ends it
+     * @param guardBreak a guard that blocks it breaks at once (posture break); a parry still beats it
+     * @param ender     how a combo ender finishes the target: {@code launch} (sends them flying up),
+     *                  {@code knockdown} (crumples them to the floor), {@code splat} (blasts them
+     *                  away, into a wall if there is one), or {@code none}
      */
     public record Hit(float damage, float posture, float range, float arc, float knockback, float lift,
                       float lunge, int hitstun, int hitstop, float shake, boolean knockdown, float chakra,
-                      float pierce, Clinch clinch) {
+                      float pierce, Clinch clinch, boolean guardBreak, Ender ender) {
         public static final Codec<Hit> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.floatRange(0, 1000).fieldOf("damage").forGetter(Hit::damage),
                 Codec.floatRange(0, 1000).optionalFieldOf("posture", 0f).forGetter(Hit::posture),
@@ -77,8 +85,27 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
                 Codec.BOOL.optionalFieldOf("knockdown", false).forGetter(Hit::knockdown),
                 Codec.floatRange(0, 1000).optionalFieldOf("chakra", 0f).forGetter(Hit::chakra),
                 Codec.floatRange(0, 1).optionalFieldOf("pierce", 0f).forGetter(Hit::pierce),
-                Clinch.CODEC.optionalFieldOf("clinch", Clinch.NONE).forGetter(Hit::clinch)
+                Clinch.CODEC.optionalFieldOf("clinch", Clinch.NONE).forGetter(Hit::clinch),
+                Codec.BOOL.optionalFieldOf("guard_break", false).forGetter(Hit::guardBreak),
+                Ender.CODEC.optionalFieldOf("ender", Ender.NONE).forGetter(Hit::ender)
         ).apply(i, Hit::new));
+
+        /** How a combo ender finishes its target (see {@link CombatSystem}'s ENDER constants). */
+        public enum Ender implements net.minecraft.util.StringRepresentable {
+            NONE("none"), LAUNCH("launch"), KNOCKDOWN("knockdown"), SPLAT("splat");
+
+            public static final Codec<Ender> CODEC = net.minecraft.util.StringRepresentable.fromEnum(Ender::values);
+            private final String name;
+
+            Ender(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public String getSerializedName() {
+                return name;
+            }
+        }
 
         /** How a move takes part in a clinch (grappling at close range). */
         public enum Clinch implements net.minecraft.util.StringRepresentable {
@@ -97,9 +124,12 @@ public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hi
             }
         }
 
-        /** Heavy hits get weightier sounds and particles. */
+        /** This much hit-stop (or more) makes a hit heavy. Was 4 before the 2026-11 rebuild shortened hit-stops by a tick. */
+        public static final int HEAVY_HITSTOP = 3;
+
+        /** Heavy hits get weightier sounds and particles (and perception focus, gore). Enders always count. */
         public boolean isHeavy() {
-            return hitstop >= 4;
+            return hitstop >= HEAVY_HITSTOP || ender != Ender.NONE;
         }
     }
 }

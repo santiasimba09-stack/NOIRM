@@ -67,6 +67,7 @@ public final class ShinobiHudOverlay {
                     numbers(POSTURE, ClientCombat.posture(), ClientCombat.maxPosture(), true), valueAlpha(POSTURE, true), POSTURE, Theme.AMBER);
             Component state = Component.translatable(ClientCombat.isGuarding() ? "hud.noirm.guarding" : "hud.noirm.combat_mode");
             HudKit.text(graphics, font, state, X, y, ClientCombat.isGuarding() ? Theme.TEXT : Theme.GOLD, 1f);
+            drawStance(graphics, font, X + font.width(state) + Theme.S4, y);
             y += Theme.LINE + 2;
             drawTarget(graphics, font, minecraft, screenWidth);
         } else {
@@ -74,6 +75,28 @@ public final class ShinobiHudOverlay {
         }
         PowerHud.drawStatus(graphics, font, minecraft, y + 2, combat);
     }
+
+    /**
+     * The sub-stance the server picked (neutral, aggressive, defensive, low, air), after the combat
+     * line: a small "·" and its name in its colour, bright for a moment when it changes.
+     */
+    private static void drawStance(GuiGraphics graphics, Font font, int x, int y) {
+        com.noirm.combat.SubStance sub = ClientCombat.subStance();
+        int color = switch (sub) {
+            case AGGRESSIVE -> Theme.SEAL;
+            case DEFENSIVE -> Theme.CHAKRA_LIGHT;
+            case LOW -> Theme.AMBER;
+            case AIR -> Theme.TEXT;
+            default -> Theme.TEXT_DIM;
+        };
+        long since = ClientCombat.sinceSubStanceChange();
+        float alpha = since < STANCE_FLASH_MS ? 1f : 0.75f;
+        String label = "· " + HudLabels.get(sub.translationKey());
+        HudKit.text(graphics, font, label, x, y, color, alpha);
+    }
+
+    /** How long the stance label stays bright after a change (ms). */
+    private static final long STANCE_FLASH_MS = 450;
 
     private static float fraction(float value, float max) {
         return max > 0 ? Math.min(1f, Math.max(0f, value / max)) : 0f;

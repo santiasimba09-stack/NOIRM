@@ -37,7 +37,7 @@ public final class CombatSystem {
     /** How long an early button press is remembered (paused during hit-stop). */
     public static final int BUFFER_TICKS = 10;
     /** After a move ends, how long the next press still continues the combo route. */
-    public static final int COMBO_RESET_TICKS = 12;
+    public static final int COMBO_RESET_TICKS = 10;
 
     public static final int DODGE_TICKS = 10;
     /** The first ticks of a dodge can't be hit. */
@@ -98,6 +98,55 @@ public final class CombatSystem {
      */
     public static final int COUNTER_TICKS = 10;
     public static final float COUNTER_DAMAGE = 1.5f;
+
+    // ---- Combat animation rebuild (2026-11): sub-stances, dodge counters, dash strikes, guard breaks, enders
+
+    /** Sub-stances: you stay aggressive this long after landing a hit (and while a string goes on). */
+    public static final int AGGRESSIVE_TICKS = 30;
+    /** …and defensive this long after taking a hit (and while guarding). */
+    public static final int DEFENSIVE_TICKS = 24;
+    /** The air stance starts after this many ticks off the ground (not on every step or hop). */
+    public static final int AIR_STANCE_TICKS = 4;
+
+    /**
+     * Dodge into counter: a perfect dodge opens a window of this many ticks; the next attack you
+     * start in it becomes your style's counter, thrown from {@link #DODGE_COUNTER_DISTANCE} blocks
+     * behind the enemy (or beside them, after a side dodge), with a {@link #DODGE_COUNTER_WINDUP}-tick
+     * wind-up. It hits like a parry counter: ×{@link #COUNTER_DAMAGE}, can't be guarded.
+     */
+    public static final int DODGE_COUNTER_WINDOW = 14;
+    public static final float DODGE_COUNTER_DISTANCE = 1.2f;
+    public static final int DODGE_COUNTER_WINDUP = 1;
+    /** A dodge this far sideways (strafe) counters from the side instead of from behind. */
+    public static final float DODGE_COUNTER_SIDE = 0.35f;
+    /** The enemy must be this close for the counter to reach them. */
+    public static final double DODGE_COUNTER_RANGE = 6.0;
+
+    /**
+     * Dash strike: sprinting into an attack (the forward inputs). The wind-up is this many ticks
+     * shorter (never under 1), the fighter carries this much extra lunge, and the hit does
+     * ×{@link #DASH_STRIKE_DAMAGE} damage and ×{@link #DASH_STRIKE_POSTURE} posture.
+     */
+    public static final int DASH_STRIKE_WINDUP_CUT = 1;
+    public static final float DASH_STRIKE_LUNGE = 0.45f;
+    public static final float DASH_STRIKE_DAMAGE = 1.2f;
+    public static final float DASH_STRIKE_POSTURE = 1.3f;
+    /** A player counts as dashing from this horizontal speed (blocks/tick) or while sprinting. */
+    public static final double DASH_STRIKE_SPEED = 0.18;
+
+    /** Guard break ({@code "guard_break": true}): a guard that blocks it shatters; the hit then does this share of its damage. */
+    public static final float GUARD_BREAK_DAMAGE = 0.6f;
+
+    /** Combo enders: a launch sends the target up at least this fast… */
+    public static final float ENDER_LAUNCH_LIFT = 0.8f;
+    /** …a splat blasts them away at least this hard (into a wall if one is there)… */
+    public static final float ENDER_SPLAT_KNOCKBACK = 1.4f;
+    /** …and every ender shakes the camera this much more. */
+    public static final float ENDER_SHAKE = 0.3f;
+
+    /** Hit-stop: short and sharp. No hit freezes the fighters longer than this; a wall splat adds this much. */
+    public static final int MAX_HITSTOP = 5;
+    public static final int WALL_SPLAT_HITSTOP = 2;
 
     /**
      * Weapons. Each hit adds this share of the held weapon's attack damage (what it adds over bare
@@ -263,6 +312,11 @@ public final class CombatSystem {
         if (state.counterTicks > 0) {
             state.counterTicks--;
         }
+        if (state.dodgeCounterTicks > 0 && --state.dodgeCounterTicks == 0) {
+            state.dodgeCounterFrom = null;
+        }
+        state.airTicks = entity.onGround() || entity.isInWater() ? 0 : state.airTicks + 1;
+        updateSubStance(entity, state);
         if (state.postureRegenDelay > 0) {
             state.postureRegenDelay--;
         } else if (state.posture > 0) {
@@ -338,6 +392,9 @@ public final class CombatSystem {
             return amount;
         }
         Entity attacker = source.getEntity();
+        if (attacker != null) {
+            state.lastHitTaken = target.level().getGameTime();
+        }
         if (classify(target, state, attacker) == Outcome.GUARDED) {
             boolean shield = blocksWithShield(target, amount);
             absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : 1f), amount);
@@ -415,8 +472,26 @@ public final class CombatSystem {
 
     // ---------------------------------------------------------------- routing (public for tests)
 
-    /** Which move {@code input} starts, continuing {@code from}'s combo route if it has one. */
+    /**
+     * Which move {@code input} starts, continuing {@code from}'s combo route if it has one, in the
+     * fighter's current sub-stance (a move's {@code variants} swap in another move for it).
+     */
     public static ResourceLocation resolveMove(LivingEntity entity, ResourceLocation from, AttackInput input) {
+        CombatState state = CombatStates.getIfPresent(entity);
+        return variant(resolveBase(entity, from, input), state == null ? SubStance.NEUTRAL : state.subStance);
+    }
+
+    /** {@code id}'s variant for {@code sub} (one step, so variants can't loop), or {@code id} itself. */
+    public static ResourceLocation variant(ResourceLocation id, SubStance sub) {
+        CombatMove move = id == null ? null : CombatData.move(id);
+        if (move == null || sub == SubStance.NEUTRAL) {
+            return id;
+        }
+        ResourceLocation other = move.variants().get(sub);
+        return other != null && CombatData.move(other) != null ? other : id;
+    }
+
+    private static ResourceLocation resolveBase(LivingEntity entity, ResourceLocation from, AttackInput input) {
         CombatState state = CombatStates.getIfPresent(entity);
         if (state != null && state.clinchTarget != null) {
             // In a clinch, the grab's routes decide everything: knees, headbutt, throw.
@@ -468,7 +543,9 @@ public final class CombatSystem {
             return false;
         }
         return state.phase == CombatPhase.IDLE
-                || (state.phase == CombatPhase.RECOVERY && state.phaseTime >= state.move.timing().cancelAfter());
+                || (state.phase == CombatPhase.RECOVERY && state.phaseTime >= state.move.timing().cancelAfter())
+                // After a perfect dodge the counter cuts the roll short (once its invulnerable start is over).
+                || (state.phase == CombatPhase.DODGE && state.dodgeCounterTicks > 0 && state.phaseTime >= PERFECT_DODGE_TICKS);
     }
 
     static boolean canDodge(CombatState state) {
@@ -485,14 +562,29 @@ public final class CombatSystem {
             return false;
         }
         ResourceLocation from = state.phase == CombatPhase.RECOVERY ? state.moveId : state.comboFrom;
-        ResourceLocation id = resolveMove(entity, from, input);
+        updateSubStance(entity, state);
+        // A perfect dodge just opened a window: this attack is the style's counter, from behind or beside.
+        LivingEntity dodged = state.dodgeCounterTicks > 0 ? state.dodgeCounterFrom : null;
+        boolean dodgeCounter = dodged != null && dodged.isAlive() && dodged.level() == entity.level()
+                && entity.distanceTo(dodged) <= DODGE_COUNTER_RANGE && state.clinchTarget == null && input != AttackInput.GRAB;
+        ResourceLocation id = dodgeCounter ? dodgeCounterMove(entity) : resolveMove(entity, from, input);
         CombatMove move = id == null ? null : CombatData.move(id);
         if (move == null) {
             return false;
         }
-        LivingEntity target = findTarget(entity, move.hit().range() + com.noirm.senjutsu.SageMode.reachBonus(entity) + 1.5f);
+        boolean dash = !dodgeCounter && isDashInput(entity, input);
+        if (dodgeCounter) {
+            slipAround(entity, state, dodged);
+        }
+        LivingEntity target = dodgeCounter ? dodged
+                : findTarget(entity, move.hit().range() + com.noirm.senjutsu.SageMode.reachBonus(entity) + 1.5f);
         float slow = target == null ? 1f : Perception.slowFactor(target, entity);
         float windup = move.timing().windup() * slow;
+        if (dodgeCounter) {
+            windup = Math.min(windup, DODGE_COUNTER_WINDUP);
+        } else if (dash && windup > 1f) {
+            windup = Math.max(1f, windup - DASH_STRIKE_WINDUP_CUT);
+        }
         // Perception focus: the defender sees this (heavy) attack coming in slow motion.
         if (target != null && slow - 1f >= PERCEPTION_FOCUS_MIN && (!PERCEPTION_FOCUS_HEAVY_ONLY || move.hit().isHeavy())) {
             state.perceivedBy = target.getId();
@@ -502,9 +594,15 @@ public final class CombatSystem {
             state.perceivedBy = -1;
             state.perceivedSlowdown = 0f;
         }
-        // Started inside the counter window after a just-frame parry: this attack is the counter.
-        state.counterArmed = state.counterTicks > 0;
+        // Started inside the counter window after a just-frame parry (or a perfect dodge): this attack is the counter.
+        state.counterArmed = state.counterTicks > 0 || dodgeCounter;
         state.counterTicks = 0;
+        state.dodgeCountering = dodgeCounter;
+        state.dodgeCounterTicks = 0;
+        state.dodgeCounterFrom = null;
+        state.dashStrike = dash;
+        CombatMove previous = from == null ? null : CombatData.move(from);
+        state.comboDepth = !dodgeCounter && previous != null && route(previous, input) != null ? state.comboDepth + 1 : 0;
 
         if (target != null) {
             Sharingan.onAttackWindup(entity, target, Math.round(windup));
@@ -522,7 +620,122 @@ public final class CombatSystem {
             onActiveStart(entity, state);
         }
         CombatEffects.attackStarted(entity, move, Math.round(windup) + move.timing().active() + move.timing().recovery());
+        if (dash) {
+            CombatEffects.dashStrike(entity);
+        }
         return true;
+    }
+
+    /** The style's dodge counter. */
+    private static ResourceLocation dodgeCounterMove(LivingEntity entity) {
+        CombatStyle style = CombatData.style(styleFor(entity));
+        ResourceLocation id = style == null ? CombatStyle.DEFAULT_COUNTER : style.counterMove();
+        return CombatData.move(id) != null ? id : CombatStyle.DEFAULT_COUNTER;
+    }
+
+    /**
+     * A dash strike: the forward inputs (sent while sprinting). NPCs ask for them only when they
+     * mean to dash; a player must really be moving fast (or sprinting) when it reaches the server.
+     */
+    private static boolean isDashInput(LivingEntity entity, AttackInput input) {
+        if (input != AttackInput.FORWARD_LIGHT && input != AttackInput.FORWARD_HEAVY) {
+            return false;
+        }
+        if (!(entity instanceof Player)) {
+            return true;
+        }
+        Vec3 motion = entity.getDeltaMovement();
+        return entity.isSprinting() || motion.x * motion.x + motion.z * motion.z >= DASH_STRIKE_SPEED * DASH_STRIKE_SPEED;
+    }
+
+    /**
+     * The dodge counter's slip: to {@link #DODGE_COUNTER_DISTANCE} behind {@code enemy} (beside
+     * them after a side dodge), facing them. Stays put if a wall is in the way.
+     */
+    private static void slipAround(LivingEntity entity, CombatState state, LivingEntity enemy) {
+        Vec3 facing = Vec3.directionFromRotation(0, enemy.getYRot());
+        Vec3 side = new Vec3(-facing.z, 0, facing.x); // the enemy's left
+        Vec3 offset;
+        if (Math.abs(state.dodgeStrafe) >= DODGE_COUNTER_SIDE) {
+            // A side dodge: come in from the side you dodged to (as seen from the enemy).
+            Vec3 toMe = entity.position().subtract(enemy.position());
+            offset = side.scale(Math.signum(toMe.dot(side)) == 0 ? 1 : Math.signum(toMe.dot(side)));
+        } else {
+            offset = facing.scale(-1);
+        }
+        double reach = DODGE_COUNTER_DISTANCE + enemy.getBbWidth() / 2;
+        Vec3 spot = enemy.position().add(offset.scale(reach));
+        Vec3 from = entity.position();
+        AABB moved = entity.getBoundingBox().move(spot.subtract(from));
+        if (!entity.level().noCollision(entity, moved)) {
+            spot = from; // no room: counter from where you stand
+        }
+        double dx = enemy.getX() - spot.x, dz = enemy.getZ() - spot.z;
+        float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90f;
+        if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
+            player.connection.teleport(spot.x, spot.y, spot.z, yaw, player.getXRot());
+        } else {
+            entity.moveTo(spot.x, spot.y, spot.z, yaw, entity.getXRot());
+        }
+        entity.setYRot(yaw);
+        entity.setYHeadRot(yaw);
+        entity.setYBodyRot(yaw);
+        entity.setDeltaMovement(Vec3.ZERO);
+        entity.hurtMarked = true;
+        CombatEffects.dodgeCounter(entity, from, spot);
+    }
+
+    // ---------------------------------------------------------------- sub-stances
+
+    /**
+     * The sub-stance {@code entity} is in now: air (off the ground for a while), low (crouching),
+     * defensive (guarding, or hit recently), aggressive (in a string, or landed a hit recently), or
+     * neutral. Whichever of the last two happened more recently wins. A style without that
+     * sub-stance stays neutral.
+     */
+    public static SubStance pickSubStance(LivingEntity entity) {
+        CombatState state = CombatStates.get(entity);
+        CombatStyle style = CombatData.style(styleFor(entity));
+        SubStance sub = rawSubStance(entity, state);
+        return style == null || style.has(sub) ? sub : SubStance.NEUTRAL;
+    }
+
+    private static SubStance rawSubStance(LivingEntity entity, CombatState state) {
+        if (state.airTicks >= AIR_STANCE_TICKS && !entity.onGround()) {
+            return SubStance.AIR;
+        }
+        if (entity.isCrouching()) {
+            return SubStance.LOW;
+        }
+        long now = entity.level().getGameTime();
+        boolean attacking = state.phase == CombatPhase.WINDUP || state.phase == CombatPhase.ACTIVE || state.phase == CombatPhase.RECOVERY;
+        boolean defensive = state.guarding || now - state.lastHitTaken <= DEFENSIVE_TICKS;
+        boolean aggressive = (attacking && state.comboDepth >= 1) || now - state.lastHitDealt <= AGGRESSIVE_TICKS;
+        if (state.guarding) {
+            return SubStance.DEFENSIVE;
+        }
+        if (defensive && aggressive) {
+            return state.lastHitTaken >= state.lastHitDealt ? SubStance.DEFENSIVE : SubStance.AGGRESSIVE;
+        }
+        return defensive ? SubStance.DEFENSIVE : aggressive ? SubStance.AGGRESSIVE : SubStance.NEUTRAL;
+    }
+
+    /** Recomputes the sub-stance and its stance; tells the HUD and the animation when they change. */
+    private static void updateSubStance(LivingEntity entity, CombatState state) {
+        SubStance sub = pickSubStance(entity);
+        CombatStyle style = CombatData.style(styleFor(entity));
+        CombatStyle.Stance stance = style == null ? null : style.stance(sub);
+        ResourceLocation animation = stance == null ? null : stance.animation();
+        int switchTicks = stance == null ? 2 : stance.switchTicks();
+        if (sub != state.subStance || !java.util.Objects.equals(animation, state.stanceAnimation) || switchTicks != state.stanceSwitch) {
+            state.subStance = sub;
+            state.stanceAnimation = animation;
+            state.stanceSwitch = switchTicks;
+            state.markDirty();
+            if (entity instanceof CombatAnimated animated) {
+                animated.setCombatStance(animation, sub, switchTicks);
+            }
+        }
     }
 
     private static boolean doDodge(LivingEntity entity, CombatState state, float forward, float strafe) {
@@ -541,6 +754,7 @@ public final class CombatSystem {
         float length = Mth.sqrt(forward * forward + strafe * strafe);
         forward /= length;
         strafe /= length;
+        state.dodgeStrafe = strafe;
         float yaw = entity.getYRot() * Mth.DEG_TO_RAD;
         double x = strafe * Mth.cos(yaw) - forward * Mth.sin(yaw);
         double z = forward * Mth.cos(yaw) + strafe * Mth.sin(yaw);
@@ -554,7 +768,7 @@ public final class CombatSystem {
         state.perfectDodgeUsed = false;
         enterPhase(entity, state, CombatPhase.DODGE, DODGE_TICKS);
         com.noirm.movement.MovementFeel.noteDodge(entity); // a dodge is the roll that skips landing recovery
-        CombatEffects.dodge(entity, forward >= 0, DODGE_TICKS);
+        CombatEffects.dodge(entity, forward, strafe, DODGE_TICKS);
         TrainingSystem.onDodge(entity);
         return true;
     }
@@ -630,7 +844,7 @@ public final class CombatSystem {
     }
 
     private static void onActiveStart(LivingEntity entity, CombatState state) {
-        float lunge = state.move.hit().lunge();
+        float lunge = state.move.hit().lunge() + (state.dashStrike ? DASH_STRIKE_LUNGE : 0f);
         if (lunge > 0) {
             Vec3 facing = Vec3.directionFromRotation(0, entity.getYHeadRot());
             entity.setDeltaMovement(entity.getDeltaMovement().add(facing.x * lunge, 0, facing.z * lunge));
@@ -690,10 +904,26 @@ public final class CombatSystem {
         }
         // A fighter held in your clinch can't guard.
         boolean guarded = outcome == Outcome.GUARDED && targetState.clinchedBy != attacker;
+        // A guard break shatters the guard that blocks it (a parry still beats it, above).
+        boolean guardBroken = guarded && hit.guardBreak();
+        if (guardBroken) {
+            postureBreak(target, targetState);
+            CombatEffects.guardBreak(attacker, target);
+            guarded = false;
+        }
+        long now = attacker.level().getGameTime();
+        targetState.lastHitTaken = now;
         // Gentle Fist (Byakugan open): more posture damage, and a guard keeps out less.
         boolean gentleFist = Byakugan.isActive(attacker);
         float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
         float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponDamage(attacker, target, hit.damage());
+        if (attackerState.dashStrike) {
+            damage *= DASH_STRIKE_DAMAGE;
+            posture *= DASH_STRIKE_POSTURE;
+        }
+        if (guardBroken) {
+            damage *= GUARD_BREAK_DAMAGE;
+        }
         if (counter) {
             damage *= COUNTER_DAMAGE;
             attackerState.counterArmed = false;
@@ -711,8 +941,11 @@ public final class CombatSystem {
                     hit.pierce());
             damage *= kept;
         } else {
-            addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
-            stagger(target, targetState, hit.knockdown() ? Math.max(hit.hitstun(), KNOCKDOWN_TICKS) : hit.hitstun());
+            if (!guardBroken) {
+                addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
+            }
+            boolean floored = hit.knockdown() || hit.ender() == CombatMove.Hit.Ender.KNOCKDOWN;
+            stagger(target, targetState, floored ? Math.max(hit.hitstun(), KNOCKDOWN_TICKS) : hit.hitstun());
         }
         if (hit.clinch() == CombatMove.Hit.Clinch.RELEASE && attackerState.clinchTarget == target) {
             releaseClinch(attacker, attackerState);
@@ -732,17 +965,23 @@ public final class CombatSystem {
             return;
         }
         attacker.setLastHurtMob(target); // like a vanilla attack: crew mates fight what their leader fights
+        attackerState.lastHitDealt = now;
+        CombatMove.Hit.Ender ender = guarded ? CombatMove.Hit.Ender.NONE : hit.ender();
         applyWeaponEffects(attacker, target, guarded, firstOfSwing);
 
         float yaw = attacker.getYHeadRot() * Mth.DEG_TO_RAD;
         float knockback = (hit.knockback() + KNOCKBACK_PER_LEVEL * EnchantmentHelper.getKnockbackBonus(attacker)) * (guarded ? 0.4f : 1f);
+        if (ender == CombatMove.Hit.Ender.SPLAT) {
+            knockback = Math.max(knockback, ENDER_SPLAT_KNOCKBACK);
+        }
         boolean splatted = !guarded && knockback >= WALL_SPLAT_KNOCKBACK && wallSplat(attacker, target, targetState, damage, knockback);
         if (knockback > 0 && !splatted) {
             target.knockback(knockback, Mth.sin(yaw), -Mth.cos(yaw));
         }
-        if (!guarded && !splatted && hit.lift() > 0) {
+        float lift = ender == CombatMove.Hit.Ender.LAUNCH ? Math.max(hit.lift(), ENDER_LAUNCH_LIFT) : hit.lift();
+        if (!guarded && !splatted && lift > 0) {
             Vec3 motion = target.getDeltaMovement();
-            target.setDeltaMovement(motion.x, Math.max(motion.y, hit.lift()), motion.z);
+            target.setDeltaMovement(motion.x, Math.max(motion.y, lift), motion.z);
         } else if (airborne && !splatted && targetState.juggleHits < MAX_JUGGLE) {
             // Juggle: hits in the air keep them up, a little less each time.
             Vec3 motion = target.getDeltaMovement();
@@ -751,7 +990,7 @@ public final class CombatSystem {
         if (airborne) {
             targetState.juggleHits++;
         }
-        if (!guarded && hit.knockdown() && !splatted) {
+        if (!guarded && (hit.knockdown() || ender == CombatMove.Hit.Ender.KNOCKDOWN) && !splatted) {
             Vec3 motion = target.getDeltaMovement();
             target.setDeltaMovement(motion.x, Math.max(motion.y, 0.3), motion.z);
             CombatEffects.knockdown(target);
@@ -765,16 +1004,23 @@ public final class CombatSystem {
         if (gentleFist) {
             Byakugan.gentleFist(attacker, target, hit.isHeavy());
         }
-        int hitstop = guarded ? hit.hitstop() / 2 : splatted ? hit.hitstop() + 4 : hit.hitstop();
+        int hitstop = Math.min(MAX_HITSTOP, guarded ? hit.hitstop() / 2 : splatted ? hit.hitstop() + WALL_SPLAT_HITSTOP : hit.hitstop());
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);
         targetState.hitstop = Math.max(targetState.hitstop, hitstop);
         CombatEffects.hitstop(attacker, target, hitstop);
         CombatEffects.hitLanded(attacker, target, move, guarded, targetState);
+        if (ender != CombatMove.Hit.Ender.NONE || splatted) {
+            CombatEffects.ender(attacker, target, splatted ? CombatMove.Hit.Ender.SPLAT : ender, hit);
+        }
     }
 
     private static void onDodged(LivingEntity target, CombatState state, Entity attacker) {
         if (!state.perfectDodgeUsed && state.phaseTime < PERFECT_DODGE_TICKS) {
             state.perfectDodgeUsed = true;
+            if (attacker instanceof LivingEntity enemy) {
+                state.dodgeCounterTicks = DODGE_COUNTER_WINDOW; // your next attack: a counter from behind or beside
+                state.dodgeCounterFrom = enemy;
+            }
             CombatEffects.perfectDodge(target);
             TrainingSystem.onAttackDodged(target, attacker, true);
             AwakeningSystem.onClutch(target);
@@ -827,6 +1073,14 @@ public final class CombatSystem {
         defenderState.counterTicks = COUNTER_TICKS;
         defenderState.counterArmed = false;
         focus(defender);
+    }
+
+    /** Opens a dodge-counter window as if {@code entity} had just perfectly dodged {@code enemy} (tests, debugging). */
+    public static void openDodgeCounter(LivingEntity entity, LivingEntity enemy, float strafe) {
+        CombatState state = CombatStates.get(entity);
+        state.dodgeCounterTicks = DODGE_COUNTER_WINDOW;
+        state.dodgeCounterFrom = enemy;
+        state.dodgeStrafe = strafe;
     }
 
     /** Opens a counter window as if {@code entity} had just made a just-frame parry (tests, debugging). */

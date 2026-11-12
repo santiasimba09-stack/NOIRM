@@ -35,7 +35,7 @@
       "0.0": {
        "vector": [
         0.0,
-        0.0,
+        -1.6,
         0.0
        ],
        "easing": "catmullrom"
@@ -43,7 +43,7 @@
       "0.35": {
        "vector": [
         0.0,
-        -0.9,
+        -2.5,
         0.0
        ],
        "easing": "catmullrom"
@@ -51,7 +51,7 @@
       "0.7": {
        "vector": [
         0.0,
-        0.0,
+        -1.6,
         0.0
        ],
        "easing": "catmullrom"
@@ -206,25 +206,25 @@
      "rotation": {
       "0.0": {
        "vector": [
-        12.0,
+        16.0,
         0.0,
-        8.0
+        13.0
        ],
        "easing": "catmullrom"
       },
       "0.35": {
        "vector": [
-        12.0,
+        16.0,
         0.0,
-        8.0
+        13.0
        ],
        "easing": "catmullrom"
       },
       "0.7": {
        "vector": [
-        12.0,
+        16.0,
         0.0,
-        8.0
+        13.0
        ],
        "easing": "catmullrom"
       }
@@ -232,19 +232,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        30.0
+        38.0
        ],
        "easing": "catmullrom"
       },
       "0.35": {
        "vector": [
-        40.0
+        48.0
        ],
        "easing": "catmullrom"
       },
       "0.7": {
        "vector": [
-        30.0
+        38.0
        ],
        "easing": "catmullrom"
       }
@@ -254,25 +254,25 @@
      "rotation": {
       "0.0": {
        "vector": [
-        -12.0,
+        -16.0,
         0.0,
-        -6.0
+        -11.0
        ],
        "easing": "catmullrom"
       },
       "0.35": {
        "vector": [
-        -12.0,
+        -16.0,
         0.0,
-        -6.0
+        -11.0
        ],
        "easing": "catmullrom"
       },
       "0.7": {
        "vector": [
-        -12.0,
+        -16.0,
         0.0,
-        -6.0
+        -11.0
        ],
        "easing": "catmullrom"
       }
@@ -280,19 +280,19 @@
      "bend": {
       "0.0": {
        "vector": [
-        34.0
+        42.0
        ],
        "easing": "catmullrom"
       },
       "0.35": {
        "vector": [
-        44.0
+        52.0
        ],
        "easing": "catmullrom"
       },
       "0.7": {
        "vector": [
-        34.0
+        42.0
        ],
        "easing": "catmullrom"
       }

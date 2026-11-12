@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:counter_knee",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 20,
+    "range": 2.2,
+    "arc": 120,
+    "knockback": 0.3,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6,
+    "lift": 0.3
+  },
+  "next": {
+    "light": "noirm:brawler/elbow",
+    "grab": "noirm:clinch/grab"
+  }
+}

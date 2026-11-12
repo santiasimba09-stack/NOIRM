@@ -1,10 +1,10 @@
 {
   "animation": "noirm:dynamic_entry",
   "timing": {
-    "windup": 5,
+    "windup": 4,
     "active": 4,
-    "recovery": 14,
-    "cancel_after": 8
+    "recovery": 10,
+    "cancel_after": 6
   },
   "hit": {
     "damage": 8,
@@ -14,9 +14,10 @@
     "knockback": 1.6,
     "lunge": 1.4,
     "hitstun": 18,
-    "hitstop": 6,
+    "hitstop": 4,
     "shake": 0.9,
-    "knockdown": true
+    "knockdown": true,
+    "ender": "splat"
   },
   "next": {
     "light": "noirm:strong_fist/jab"

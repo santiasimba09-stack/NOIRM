@@ -1,10 +1,10 @@
 {
   "animation": "noirm:body_hook",
   "timing": {
-    "windup": 3,
+    "windup": 2,
     "active": 2,
-    "recovery": 7,
-    "cancel_after": 3
+    "recovery": 5,
+    "cancel_after": 2
   },
   "hit": {
     "damage": 3.5,
@@ -14,11 +14,11 @@
     "knockback": 0.1,
     "lunge": 0.2,
     "hitstun": 8,
-    "hitstop": 3,
+    "hitstop": 2,
     "shake": 0.35
   },
   "next": {
-    "light": "noirm:brawler/elbow",
+    "light": "noirm:brawler/uppercut_elbow",
     "heavy": "noirm:brawler/hammer_fist",
     "grab": "noirm:clinch/grab"
   }

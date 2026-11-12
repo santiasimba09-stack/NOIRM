@@ -16,14 +16,105 @@ def compact(obj):
     return json.dumps(obj).replace("{", "{ ").replace("}", " }")
 
 
+# ---------------------------------------------------------------------------------------------
+# The 2026-11 combat rebuild (docs/COMBAT_DESIGN.md, "Combat animation rebuild"). The numbers in the
+# move() calls below are the old ones; pace() makes every move faster on the way out:
+#   windup: 1-2 stay, longer ones x0.75 (3->2, 4->3, 6->4, 8->6, 11->8)
+#   recovery x0.7 (at least 3), cancel_after x0.6 (at least 1), hit-stop one tick shorter (heavies 3-4).
+# Each moveset also gets: longer strings (EXTRA_NEXT), enders and guard breaks (FLAGS), sub-stance
+# variants (VARIANTS), sub-stances (STANCES) and a dodge counter (<moveset>/counter).
+
+
+def pace(timing, hitstop):
+    w, a, r, c = timing
+    w2 = w if w <= 2 else int(w * 0.75 + 0.5)
+    r2 = max(3, int(r * 0.7 + 0.5))
+    c2 = max(1, int(c * 0.6 + 0.5))
+    hs = max(1, hitstop - 1) if hitstop <= 4 else (3 if hitstop == 5 else 4)
+    return (w2, a, r2, c2), hs
+
+
+# Longer strings: extra routes added to a move's own (the last hit of each string is an ender).
+EXTRA_NEXT = {
+    "kunai/slash_2": {"light": "kunai/backhand_2"},
+    "kunai/backhand_2": {"light": "kunai/finishing_stab", "heavy": "kunai/rising_cut"},
+    "staff/spin": {"light": "staff/overhead"},
+    "staff/return_sweep": {"light": "staff/spin", "heavy": "staff/thrust", "launcher": "staff/rising_sweep"},
+    "sword/cross": {"light": "sword/thrust", "heavy": "sword/finishing_slash"},
+    "sword/thrust": {"light": "sword/finishing_slash", "heavy": "sword/rising"},
+    "tanto/flurry": {"light": "tanto/stab"},
+    "tanto/cut_3": {"light": "tanto/flurry", "heavy": "tanto/stab", "launcher": "tanto/rising"},
+    "katana/cut_2": {"light": "katana/thrust", "heavy": "katana/finisher"},
+    "katana/thrust": {"light": "katana/finisher", "heavy": "katana/rising"},
+    "greatsword/return_sweep": {"light": "greatsword/spin", "heavy": "greatsword/cleave"},
+    "greatsword/spin": {"light": "greatsword/cleave"},
+    "tonfa/hook_l": {"light": "tonfa/spin_strike", "heavy": "tonfa/hammer"},
+    "tonfa/spin_strike": {"light": "tonfa/hammer"},
+    "spear/thrust_2": {"light": "spear/sweep", "heavy": "spear/lunge_thrust"},
+    "spear/sweep": {"light": "spear/lunge_thrust", "launcher": "spear/vault"},
+    "claws/rake_3": {"light": "claws/maul", "heavy": "claws/shred"},
+    "claws/maul": {"light": "claws/shred", "heavy": "claws/rising"},
+    "fan/snap_back": {"light": "fan/flourish", "heavy": "fan/gust"},
+    "fan/flourish": {"light": "fan/gust", "launcher": "fan/rising"},
+}
+# Enders (launch / knockdown / splat) and guard breaks.
+FLAGS = {
+    "kunai/finishing_stab": {"ender": "splat"}, "kunai/rising_cut": {"ender": "launch"},
+    "staff/overhead": {"ender": "knockdown", "guard_break": True}, "staff/rising_sweep": {"ender": "launch"},
+    "staff/thrust": {"ender": "splat"},
+    "sword/finishing_slash": {"ender": "splat", "guard_break": True}, "sword/rising": {"ender": "launch"},
+    "tanto/flurry": {"ender": "splat"}, "tanto/stab": {"guard_break": True}, "tanto/rising": {"ender": "launch"},
+    "katana/finisher": {"ender": "knockdown", "guard_break": True}, "katana/rising": {"ender": "launch"},
+    "katana/iaido": {"ender": "splat"},
+    "greatsword/cleave": {"ender": "knockdown", "guard_break": True}, "greatsword/spin": {"ender": "splat"},
+    "greatsword/rising": {"ender": "launch"},
+    "tonfa/hammer": {"ender": "knockdown", "guard_break": True}, "tonfa/uppercut": {"ender": "launch"},
+    "spear/lunge_thrust": {"ender": "splat", "guard_break": True}, "spear/vault": {"ender": "launch"},
+    "claws/shred": {"ender": "splat", "guard_break": True}, "claws/rising": {"ender": "launch"},
+    "fan/gust": {"ender": "splat", "guard_break": True}, "fan/rising": {"ender": "launch"},
+}
+# The move that comes out instead in a sub-stance (aggressive: pressing; defensive: a guarded answer;
+# low: crouching).
+VARIANTS = {
+    "kunai/slash": {"low": "kunai/rising_cut", "defensive": "kunai/backhand"},
+    "kunai/stab": {"aggressive": "kunai/finishing_stab"},
+    "staff/sweep": {"low": "staff/rising_sweep", "defensive": "staff/thrust"},
+    "staff/thrust": {"aggressive": "staff/overhead"},
+    "sword/slash": {"defensive": "sword/cross"},
+    "sword/thrust": {"aggressive": "sword/finishing_slash"},
+    "tanto/slash": {"low": "tanto/rising", "aggressive": "tanto/cut_2"},
+    "tanto/stab": {"defensive": "tanto/cut_3"},
+    "katana/slash": {"defensive": "katana/thrust"},
+    "katana/iaido": {"aggressive": "katana/finisher"},
+    "greatsword/sweep": {"defensive": "greatsword/spin"},
+    "greatsword/cleave": {"aggressive": "greatsword/charge"},
+    "tonfa/jab_l": {"low": "tonfa/uppercut", "aggressive": "tonfa/jab_r"},
+    "tonfa/spin_strike": {"defensive": "tonfa/hook_l"},
+    "spear/thrust": {"low": "spear/vault", "defensive": "spear/sweep"},
+    "spear/sweep": {"aggressive": "spear/lunge_thrust"},
+    "claws/rake": {"low": "claws/rising", "aggressive": "claws/rake_back"},
+    "claws/maul": {"defensive": "claws/rake_3"},
+    "fan/snap": {"defensive": "fan/flourish"},
+    "fan/gust": {"aggressive": "fan/glide"},
+}
+
+
 def move(path, anim, timing, hit, nxt=None):
+    timing, hit["hitstop"] = pace(timing, hit["hitstop"])
+    hit.update(FLAGS.get(path, {}))
+    nxt = dict(nxt or {})
+    for k, v in EXTRA_NEXT.get(path, {}).items():
+        nxt[k] = v
+    variants = VARIANTS.get(path)
     w, a, r, c = timing
     lines = ["{",
              f'  "animation": "noirm:{anim}",',
              '  "timing": ' + compact({"windup": w, "active": a, "recovery": r, "cancel_after": c}) + ",",
-             '  "hit": ' + compact(hit) + ("," if nxt else "")]
+             '  "hit": ' + compact(hit) + ("," if nxt or variants else "")]
     if nxt:
-        lines.append('  "next": ' + compact({k: "noirm:" + v for k, v in nxt.items()}))
+        lines.append('  "next": ' + compact({k: "noirm:" + v for k, v in nxt.items()}) + ("," if variants else ""))
+    if variants:
+        lines.append('  "variants": ' + compact({k: "noirm:" + v for k, v in variants.items()}))
     lines.append("}")
     out = os.path.join(ROOT, "moves", path + ".json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -42,8 +133,23 @@ def H(damage, posture, rng, arc, kb, hitstun, hitstop, shake, lunge=0, lift=0, *
     return h
 
 
+# Sub-stances per moveset (each has its own stance animation, stance_<moveset>_<kind>).
+STANCES = {
+    "kunai": ("aggressive", "defensive", "low"), "staff": ("aggressive", "defensive", "low"),
+    "sword": ("aggressive", "defensive"), "tanto": ("aggressive", "defensive", "low"),
+    "katana": ("aggressive", "defensive"), "greatsword": ("aggressive", "defensive"),
+    "tonfa": ("aggressive", "defensive", "low"), "spear": ("aggressive", "defensive", "low"),
+    "claws": ("aggressive", "defensive", "low"), "fan": ("aggressive", "defensive"),
+}
+
+
 def style(name, openers):
-    d = {"openers": {k: "noirm:" + v for k, v in openers.items()}, "npc_weight": 0, "playable": False}
+    key = name[len("weapon_"):]
+    stances = {"neutral": {"animation": "noirm:stance_" + key, "switch": 2}}
+    for kind in STANCES.get(key, ()):
+        stances[kind] = {"animation": "noirm:stance_%s_%s" % (key, kind), "switch": 2}
+    d = {"openers": {k: "noirm:" + v for k, v in openers.items()}, "npc_weight": 0, "playable": False,
+         "stances": stances, "counter": "noirm:%s/counter" % key}
     with open(os.path.join(ROOT, "styles", name + ".json"), "w") as f:
         f.write(json.dumps(d, indent=2) + "\n")
 
@@ -51,28 +157,37 @@ def style(name, openers):
 # Kunai: fast, short cuts; a stab finisher. (Back + heavy with a kunai throws it instead.)
 move("kunai/slash", "kunai_slash", (2, 2, 5, 2), H(3, 8, 2.4, 100, 0.1, 6, 1, 0.2, lunge=0.25), {"light": "kunai/backhand", "heavy": "kunai/stab"})
 move("kunai/backhand", "kunai_backhand", (2, 2, 6, 2), H(3, 8, 2.4, 110, 0.15, 6, 1, 0.2, lunge=0.2), {"light": "kunai/slash_2", "heavy": "kunai/stab"})
-move("kunai/slash_2", "kunai_slash", (3, 2, 7, 3), H(3.5, 10, 2.5, 110, 0.2, 7, 2, 0.3, lunge=0.25), {"light": "kunai/finishing_stab", "heavy": "kunai/finishing_stab"})
-move("kunai/finishing_stab", "kunai_stab", (5, 2, 12, 7), H(6.5, 24, 2.7, 50, 0.9, 14, 5, 0.7, lunge=0.5, pierce=0.2), {"light": "kunai/slash"})
+move("kunai/slash_2", "kunai_slash_2", (3, 2, 7, 3), H(3.5, 10, 2.5, 110, 0.2, 7, 2, 0.3, lunge=0.25), {"light": "kunai/finishing_stab", "heavy": "kunai/finishing_stab"})
+move("kunai/backhand_2", "kunai_backhand_2", (2, 2, 6, 2), H(3.5, 10, 2.4, 110, 0.2, 7, 2, 0.3, lunge=0.25))
+move("kunai/finishing_stab", "kunai_finishing_stab", (5, 2, 12, 7), H(6.5, 24, 2.7, 50, 0.9, 14, 5, 0.7, lunge=0.5, pierce=0.2), {"light": "kunai/slash"})
 move("kunai/stab", "kunai_stab", (4, 2, 9, 5), H(5, 16, 2.7, 50, 0.5, 10, 3, 0.4, lunge=0.4, pierce=0.2), {"light": "kunai/slash", "heavy": "kunai/finishing_stab"})
-move("kunai/rising_cut", "kunai_backhand", (5, 3, 10, 6), H(4, 14, 2.5, 100, 0.1, 20, 4, 0.6, lunge=0.2, lift=0.7), {"light": "kunai/slash"})
-move("kunai/lunging_stab", "kunai_stab", (5, 2, 10, 6), H(5, 16, 3.0, 50, 0.6, 10, 4, 0.5, lunge=0.9, pierce=0.2), {"light": "kunai/backhand"})
+move("kunai/rising_cut", "kunai_rising_cut", (5, 3, 10, 6), H(4, 14, 2.5, 100, 0.1, 20, 4, 0.6, lunge=0.2, lift=0.7), {"light": "kunai/slash"})
+move("kunai/lunging_stab", "kunai_lunging_stab", (5, 2, 10, 6), H(5, 16, 3.0, 50, 0.6, 10, 4, 0.5, lunge=0.9, pierce=0.2), {"light": "kunai/backhand"})
 
 # Staff: wide sweeps, reach, a spinning finisher and an overhead smash.
 move("staff/sweep", "staff_sweep", (5, 3, 9, 5), H(4.5, 14, 3.6, 160, 0.6, 9, 3, 0.4, lunge=0.2), {"light": "staff/return_sweep", "heavy": "staff/overhead"})
-move("staff/return_sweep", "staff_sweep", (5, 3, 9, 5), H(4.5, 14, 3.6, 160, 0.6, 9, 3, 0.4, lunge=0.2), {"light": "staff/spin", "heavy": "staff/thrust"})
+move("staff/return_sweep", "staff_return_sweep", (5, 3, 9, 5), H(4.5, 14, 3.6, 160, 0.6, 9, 3, 0.4, lunge=0.2), {"light": "staff/spin", "heavy": "staff/thrust"})
 move("staff/spin", "staff_spin", (7, 5, 12, 8), H(6, 25, 3.6, 360, 1.1, 14, 5, 0.7), {"light": "staff/sweep"})
 move("staff/thrust", "staff_thrust", (6, 2, 10, 6), H(6, 22, 4.2, 40, 1.0, 12, 4, 0.6, lunge=0.3), {"light": "staff/sweep", "heavy": "staff/overhead"})
 move("staff/overhead", "staff_overhead", (9, 3, 12, 7), H(8, 32, 3.8, 70, 0.4, 20, 6, 0.9, knockdown=True))
-move("staff/rising_sweep", "staff_sweep", (6, 3, 10, 6), H(4.5, 15, 3.4, 120, 0.1, 20, 4, 0.6, lift=0.75), {"light": "staff/sweep"})
-move("staff/lunging_thrust", "staff_thrust", (6, 2, 10, 6), H(6, 22, 4.2, 40, 1.0, 12, 4, 0.6, lunge=0.8), {"light": "staff/sweep"})
+move("staff/rising_sweep", "staff_rising_sweep", (6, 3, 10, 6), H(4.5, 15, 3.4, 120, 0.1, 20, 4, 0.6, lift=0.75), {"light": "staff/sweep"})
+move("staff/lunging_thrust", "staff_lunging_thrust", (6, 2, 10, 6), H(6, 22, 4.2, 40, 1.0, 12, 4, 0.6, lunge=0.8), {"light": "staff/sweep"})
 
 # Sword (ninjatō and vanilla swords): solid slashes, a thrust, a rising cut.
 move("sword/slash", "sword_slash", (4, 2, 8, 4), H(5, 14, 3.0, 120, 0.25, 8, 3, 0.35, lunge=0.3), {"light": "sword/cross", "heavy": "sword/thrust"})
 move("sword/cross", "sword_cross", (4, 2, 9, 4), H(5, 14, 3.0, 120, 0.3, 8, 3, 0.35, lunge=0.25), {"light": "sword/finishing_slash", "heavy": "sword/thrust"})
-move("sword/finishing_slash", "sword_slash", (6, 3, 12, 7), H(7, 24, 3.1, 150, 0.9, 14, 5, 0.7, lunge=0.35), {"light": "sword/slash"})
+move("sword/finishing_slash", "sword_finishing_slash", (6, 3, 12, 7), H(7, 24, 3.1, 150, 0.9, 14, 5, 0.7, lunge=0.35), {"light": "sword/slash"})
 move("sword/thrust", "sword_thrust", (6, 2, 10, 6), H(7, 20, 3.4, 40, 0.7, 12, 4, 0.6, lunge=0.5, pierce=0.25), {"light": "sword/slash", "heavy": "sword/finishing_slash"})
 move("sword/rising", "sword_rising", (6, 3, 10, 6), H(5.5, 16, 3.0, 100, 0.1, 20, 4, 0.6, lunge=0.2, lift=0.75), {"light": "sword/slash"})
-move("sword/dash_thrust", "sword_thrust", (6, 2, 10, 6), H(7, 20, 3.4, 40, 0.7, 12, 4, 0.6, lunge=0.9, pierce=0.25), {"light": "sword/cross"})
+move("sword/dash_thrust", "sword_dash_thrust", (6, 2, 10, 6), H(7, 20, 3.4, 40, 0.7, 12, 4, 0.6, lunge=0.9, pierce=0.25), {"light": "sword/cross"})
+
+# Dodge counters: a 1-tick wind-up cut thrown from behind or beside the enemy (CombatSystem). Written
+# with their final timing (pace() leaves a 1-tick wind-up alone).
+for key, dmg, rng in (("kunai", 4.5, 2.6), ("staff", 5.5, 3.6), ("sword", 6, 3.0), ("tanto", 4.5, 2.6), ("katana", 7.5, 3.3),
+                      ("greatsword", 9, 4.0), ("tonfa", 4.5, 2.4), ("spear", 6, 4.6), ("claws", 4.5, 2.5), ("fan", 4.5, 2.7)):
+    move(key + "/counter", key + "_counter", (1, 2, 9, 5), H(dmg, 20, rng, 140, 0.6, 13, 4, 0.6, lunge=0.2), {"light": {
+        "kunai": "kunai/slash", "staff": "staff/sweep", "sword": "sword/slash", "tanto": "tanto/slash", "katana": "katana/slash",
+        "greatsword": "greatsword/sweep", "tonfa": "tonfa/jab_l", "spear": "spear/thrust", "claws": "claws/rake", "fan": "fan/snap"}[key]})
 
 style("weapon_kunai", {"light": "kunai/slash", "heavy": "kunai/stab", "launcher": "kunai/rising_cut",
                        "forward_light": "kunai/lunging_stab", "forward_heavy": "kunai/lunging_stab", "back_light": "kunai/backhand"})

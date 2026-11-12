@@ -1,10 +1,10 @@
 {
   "animation": "noirm:trigram_sweep",
   "timing": {
-    "windup": 6,
+    "windup": 5,
     "active": 3,
-    "recovery": 11,
-    "cancel_after": 6
+    "recovery": 8,
+    "cancel_after": 5
   },
   "hit": {
     "range": 2.8,
@@ -14,7 +14,7 @@
     "posture": 26,
     "knockback": 0.3,
     "hitstun": 14,
-    "hitstop": 4,
+    "hitstop": 3,
     "shake": 0.5,
     "chakra": 12,
     "knockdown": true

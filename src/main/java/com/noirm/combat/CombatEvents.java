@@ -28,7 +28,9 @@ public final class CombatEvents {
             CombatSystem.tick(player);
             if (state.consumeDirty()) {
                 NoirmNetwork.sendToPlayer(player, new CombatClientPackets.SyncState(
-                        state.isCombatMode(), state.isGuarding(), state.posture(), state.maxPosture()));
+                        state.isCombatMode(), state.isGuarding(), state.posture(), state.maxPosture(),
+                        state.subStance().ordinal(), state.stanceAnimation() == null ? "" : state.stanceAnimation().toString(),
+                        state.stanceSwitch()));
             }
         } else {
             CombatSystem.tick(entity);

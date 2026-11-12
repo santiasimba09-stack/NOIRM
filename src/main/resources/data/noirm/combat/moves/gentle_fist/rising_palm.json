@@ -1,10 +1,10 @@
 {
   "animation": "noirm:rising_palm",
   "timing": {
-    "windup": 6,
+    "windup": 5,
     "active": 3,
-    "recovery": 12,
-    "cancel_after": 5
+    "recovery": 9,
+    "cancel_after": 4
   },
   "hit": {
     "range": 2.6,
@@ -15,9 +15,10 @@
     "knockback": 0.1,
     "lift": 0.9,
     "hitstun": 20,
-    "hitstop": 4,
+    "hitstop": 3,
     "shake": 0.5,
-    "chakra": 8
+    "chakra": 8,
+    "ender": "launch"
   },
   "next": {
     "light": "noirm:gentle_fist/palm_2"

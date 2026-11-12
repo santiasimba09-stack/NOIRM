@@ -9,4 +9,11 @@ import net.minecraft.resources.ResourceLocation;
  */
 public interface CombatAnimated {
     void playCombatAnimation(ResourceLocation animation, int durationTicks);
+
+    /**
+     * The fighter's sub-stance changed (or its style did): sync the stance it shows. {@code stance}
+     * is null when the style lists none (the client then picks the style's own).
+     */
+    default void setCombatStance(ResourceLocation stance, SubStance subStance, int switchTicks) {
+    }
 }

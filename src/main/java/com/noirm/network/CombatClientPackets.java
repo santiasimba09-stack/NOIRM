@@ -37,17 +37,26 @@ public final class CombatClientPackets {
         }
     }
 
-    /** The local player's own combat state, for the HUD. */
-    public record SyncState(boolean combatMode, boolean guarding, float posture, float maxPosture) {
+    /**
+     * The local player's own combat state, for the HUD and their stance: the sub-stance (its
+     * ordinal), the stance animation it shows ({@code ""} = the client picks the style's own) and
+     * how many ticks the switch into it snaps over.
+     */
+    public record SyncState(boolean combatMode, boolean guarding, float posture, float maxPosture,
+                            int subStance, String stance, int stanceSwitch) {
         public void encode(FriendlyByteBuf buf) {
             buf.writeBoolean(combatMode);
             buf.writeBoolean(guarding);
             buf.writeFloat(posture);
             buf.writeFloat(maxPosture);
+            buf.writeByte(subStance);
+            buf.writeUtf(stance, 128);
+            buf.writeByte(stanceSwitch);
         }
 
         public static SyncState decode(FriendlyByteBuf buf) {
-            return new SyncState(buf.readBoolean(), buf.readBoolean(), buf.readFloat(), buf.readFloat());
+            return new SyncState(buf.readBoolean(), buf.readBoolean(), buf.readFloat(), buf.readFloat(),
+                    buf.readByte(), buf.readUtf(128), buf.readByte());
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

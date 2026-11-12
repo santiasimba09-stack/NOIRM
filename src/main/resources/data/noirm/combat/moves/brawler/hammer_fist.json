@@ -1,10 +1,10 @@
 {
   "animation": "noirm:hammer_fist",
   "timing": {
-    "windup": 8,
+    "windup": 6,
     "active": 2,
-    "recovery": 13,
-    "cancel_after": 8
+    "recovery": 9,
+    "cancel_after": 6
   },
   "hit": {
     "damage": 7,
@@ -14,9 +14,11 @@
     "knockback": 0.5,
     "lunge": 0.3,
     "hitstun": 18,
-    "hitstop": 6,
+    "hitstop": 4,
     "shake": 0.9,
-    "knockdown": true
+    "knockdown": true,
+    "guard_break": true,
+    "ender": "knockdown"
   },
   "next": {
     "light": "noirm:brawler/elbow"

@@ -157,7 +157,7 @@ SEQUENCES = {
     "doton/falling_mountain": ["ram", "dog", "boar", "ox", "tiger"],
 }
 
-LEGS = dict(left_leg=(-8, 0, -4, 14), right_leg=(8, 0, 6, 12))
+LEGS = dict(left_leg=(-16, 0, -9, 24), right_leg=(14, 0, 11, 22), body=dict(pos=(0, -1.2, 0)))  # a wide, grounded base
 NEUTRAL = P(torso=(6, 0, 0, 4), right_arm=(-30, 0, 5, 30), left_arm=(-30, 0, -5, 30),
             left_leg=(-10, 0, -4, 16), right_leg=(10, 0, 6, 14))
 
@@ -177,7 +177,7 @@ def sequence_anim(name, seals):
     t = 2.0
     for seal in seals:
         pose = seal_pose(seal)
-        anim.key(t, pose, "easeOutCubic")
+        anim.key(t, pose, "snap")  # snapped into the seal, then held (the springs keep it crisp)
         anim.key(t + TICKS_PER_SEAL - 1, pose, "linear")
         t += TICKS_PER_SEAL
     anim.key(anim.ticks, seal_pose(seals[-1]), "easeOutQuad")

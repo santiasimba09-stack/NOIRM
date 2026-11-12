@@ -3,8 +3,8 @@
   "timing": {
     "windup": 3,
     "active": 2,
-    "recovery": 8,
-    "cancel_after": 4
+    "recovery": 6,
+    "cancel_after": 3
   },
   "hit": {
     "damage": 4,
@@ -13,11 +13,11 @@
     "arc": 110,
     "knockback": 0.5,
     "hitstun": 9,
-    "hitstop": 3,
+    "hitstop": 2,
     "shake": 0.45
   },
   "next": {
-    "light": "noirm:brawler/elbow",
+    "light": "noirm:brawler/body_hook",
     "heavy": "noirm:brawler/flying_knee"
   }
 }

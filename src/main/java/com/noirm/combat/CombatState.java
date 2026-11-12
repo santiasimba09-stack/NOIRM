@@ -67,6 +67,31 @@ public final class CombatState {
     /** The attack in progress was started inside the counter window: its next hit is a counter. */
     boolean counterArmed;
 
+    // Sub-stance (picked automatically, see CombatSystem.pickSubStance) and the stance it shows
+    SubStance subStance = SubStance.NEUTRAL;
+    ResourceLocation stanceAnimation;
+    int stanceSwitch = 2;
+    /** "Never happened", far enough back that game-time differences can't overflow. */
+    static final long NEVER = Long.MIN_VALUE / 4;
+    /** Game time this fighter last took / landed a hit (sub-stances). */
+    long lastHitTaken = NEVER;
+    long lastHitDealt = NEVER;
+    /** Hits of the current string so far (0 = an opener). */
+    int comboDepth;
+    /** Ticks in the air (the air stance waits for a real jump, not a step). */
+    int airTicks;
+
+    // Dodge into counter, dash strike
+    /** After a perfect dodge: ticks left in which your next attack becomes a dodge counter. */
+    int dodgeCounterTicks;
+    /** Whose attack was dodged (the counter lands behind or beside them). */
+    net.minecraft.world.entity.LivingEntity dodgeCounterFrom;
+    /** The last dodge's sideways direction (-1..1, + = left): a side dodge counters from the side. */
+    float dodgeStrafe;
+    /** The attack in progress is a dodge counter / a dash strike. */
+    boolean dodgeCountering;
+    boolean dashStrike;
+
     // Sync
     private boolean dirty = true;
     int lastSyncedPosture = -1;
@@ -131,6 +156,41 @@ public final class CombatState {
     /** True while the next hit of this fighter's attack is a counter (bonus damage, can't be guarded). */
     public boolean hasCounter() {
         return counterTicks > 0 || counterArmed;
+    }
+
+    /** The sub-stance the fighter is in (it changes the idle pose and which variant of a move comes out). */
+    public SubStance subStance() {
+        return subStance;
+    }
+
+    /** The stance animation the sub-stance shows (null = the client picks the style's own). */
+    public ResourceLocation stanceAnimation() {
+        return stanceAnimation;
+    }
+
+    /** Ticks the switch into the current sub-stance snaps over. */
+    public int stanceSwitch() {
+        return stanceSwitch;
+    }
+
+    /** Hits so far in the current string (0 = the opener). */
+    public int comboDepth() {
+        return comboDepth;
+    }
+
+    /** Ticks left in the window a perfect dodge opened (the next attack is a dodge counter). */
+    public int dodgeCounterTicks() {
+        return dodgeCounterTicks;
+    }
+
+    /** True while the attack in progress is a dodge counter. */
+    public boolean isDodgeCounter() {
+        return dodgeCountering;
+    }
+
+    /** True while the attack in progress is a dash strike (sprinting into an attack). */
+    public boolean isDashStrike() {
+        return dashStrike;
     }
 
     public void setMaxPosture(float value) {

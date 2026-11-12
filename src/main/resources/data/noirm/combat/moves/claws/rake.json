@@ -1,6 +1,7 @@
 {
   "animation": "noirm:claws_rake",
-  "timing": { "windup": 2, "active": 2, "recovery": 4, "cancel_after": 2 },
+  "timing": { "windup": 2, "active": 2, "recovery": 3, "cancel_after": 1 },
   "hit": { "damage": 2.5, "posture": 8, "range": 2.4, "arc": 110, "knockback": 0.1, "lunge": 0.3, "hitstun": 5, "hitstop": 1, "shake": 0.2 },
-  "next": { "light": "noirm:claws/rake_back", "heavy": "noirm:claws/maul" }
+  "next": { "light": "noirm:claws/rake_back", "heavy": "noirm:claws/maul" },
+  "variants": { "low": "noirm:claws/rising", "aggressive": "noirm:claws/rake_back" }
 }

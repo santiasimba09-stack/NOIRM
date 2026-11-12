@@ -1,10 +1,10 @@
 {
   "animation": "noirm:palm_strike",
   "timing": {
-    "windup": 3,
+    "windup": 2,
     "active": 2,
-    "recovery": 6,
-    "cancel_after": 2
+    "recovery": 4,
+    "cancel_after": 1
   },
   "hit": {
     "range": 2.6,
@@ -15,12 +15,16 @@
     "knockback": 0.1,
     "lunge": 0.2,
     "hitstun": 7,
-    "hitstop": 2,
+    "hitstop": 1,
     "shake": 0.25,
     "chakra": 6
   },
   "next": {
     "light": "noirm:gentle_fist/palm_2",
     "heavy": "noirm:gentle_fist/double_palm"
+  },
+  "variants": {
+    "low": "noirm:gentle_fist/trigram_sweep",
+    "defensive": "noirm:gentle_fist/back_palm"
   }
 }

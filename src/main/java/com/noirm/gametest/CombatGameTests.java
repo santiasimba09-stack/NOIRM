@@ -70,12 +70,14 @@ public final class CombatGameTests {
         Player player = helper.makeMockPlayer();
         assertRoute(helper, player, null, AttackInput.LIGHT, "basic/jab");
         assertRoute(helper, player, "basic/jab", AttackInput.LIGHT, "basic/hook");
-        assertRoute(helper, player, "basic/hook", AttackInput.LIGHT, "basic/spin_kick");
+        assertRoute(helper, player, "basic/hook", AttackInput.LIGHT, "basic/body_shot");
+        assertRoute(helper, player, "basic/body_shot", AttackInput.LIGHT, "basic/spin_kick");
+        assertRoute(helper, player, "basic/spin_kick", AttackInput.LIGHT, "basic/axe_kick");
         assertRoute(helper, player, "basic/hook", AttackInput.HEAVY, "basic/flip_kick");
         assertRoute(helper, player, null, AttackInput.HEAVY, "basic/heavy_kick");
         assertRoute(helper, player, null, AttackInput.LAUNCHER, "basic/uppercut");
-        // A finisher has no follow-up: the next press starts a fresh combo.
-        assertRoute(helper, player, "basic/spin_kick", AttackInput.LIGHT, "basic/jab");
+        // An ender has no follow-up: the next press starts a fresh combo.
+        assertRoute(helper, player, "basic/axe_kick", AttackInput.LIGHT, "basic/jab");
         helper.succeed();
     }
 
