@@ -94,6 +94,8 @@ the file to change one (it reloads while the game runs).
 | difficulty | `npcDamage` | 1.0 | damage enemy ninjas and tailed beasts deal to players |
 | | `npcHealth` | 1.0 | health of enemy ninjas (not your crew) and tailed beasts |
 | | `chakraCost` | 1.0 | chakra cost of players' jutsu |
+| | `chakraReinforcement` | 1.0 | chakra reinforcement for everyone (0 = off) |
+| | `ninjaArmour` | 0.25 | share of vanilla armour's protection that counts against ninja attacks (1.0 = full) |
 | wildNinjas | `ratePercent` | 100 | how often groups turn up (× the `noirmWildNinjas` gamerule) |
 | | `maxGroupsNear` / `maxNinjasNear` | 2 / 6 | caps within 128 blocks of a player |
 | | `safeStartMinutes` | 20 | nothing near spawn for a new player's first minutes |

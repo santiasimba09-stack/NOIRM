@@ -268,3 +268,19 @@ Pick a nature you own, a trained shape, and size / speed / power / range (1–5 
 `cw2-workshop-creations.jpg`, `cw2-training.jpg`, `cw2-training-shapes.jpg`, `cw2-cast-charge.jpg` and
 `cw2-cast-hit.jpg` (Spiral Gale, a self-made S-rank wind ball), `cw2-scroll.jpg` (a written creation
 scroll), and at GUI scale 2: `cw2-workshop-gui2.jpg`, `cw2-training-gui2.jpg`.
+
+## Water's S-rank: the Leviathan Maelstrom (our design, 2026-11-12)
+The owner: "Water: add an S-rank jutsu of our own design." `suiton/leviathan_maelstrom` (behaviour
+`maelstrom`, `jutsu/WaterTechniques`, look in `vfx/WaterVfx`; seals boar, dog, rat, bird, dragon, snake, ox,
+tiger). It comes by mastery from the Great Waterfall (★2) and, like every S, waits for Reserves 40. Charged:
+1. **The sea opens** (1.3 s): a whirlpool (radius 6, more with charge and power) turns where you aim, with
+   spiral arms of sea blue and foam, a dark eye and a foam rim. Enemies on it are dragged in and round,
+   slowed and scraped (10% of the damage every half second). Step off it in time and you're out.
+2. **The prison** (1.2 s): the water closes into a churning sphere over the eye (two bands winding opposite
+   ways, bubbles inside). Whoever is in it is held, put out if burning, and crushed (20% every 8 ticks).
+3. **The leviathan** (1.8 s): a serpent of water with a pale horned head, white eyes and a jaw of foam bursts
+   from the sphere, coils up round it to 14 blocks, turns over and crashes down on the eye: 15 × power
+   (less toward the edge), a big knockback outward, slowness, fires put out, a column of water and two rings of foam.
+
+NPC ninjas of Water at S tier use it from range. Test: `ReinforcementGameTests.leviathanMaelstrom*`.
+Screenshots: `docs/screenshots/cr-water-*.jpg`.

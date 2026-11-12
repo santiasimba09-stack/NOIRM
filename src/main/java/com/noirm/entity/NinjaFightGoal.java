@@ -128,7 +128,7 @@ class NinjaFightGoal extends Goal {
     private static final Set<String> RANGED = union(Set.of("projectile", "genjutsu", "beam", "bind", "pillar", "rain", "cloud", "strike", "wave", "ash_cloud", "chain",
             "amaterasu", "tsukuyomi", "kotoamatsukami",
             "mirage", "tree_bind", "shadow_stitch", "attraction", "equilibrium", "poison_mist",
-            "wood_roots", "wood_dragon", "deep_forest", "wood_colossus"),
+            "wood_roots", "wood_dragon", "deep_forest", "wood_colossus", "maelstrom"),
             com.noirm.jutsu.KekkeiTechniquesA.NPC_RANGED, com.noirm.jutsu.KekkeiTechniquesB.NPC_RANGED);
     private static final Set<String> CLOSE = union(Set.of("burst", "nova", "rasengan", "palms", "susanoo", "kamui",
             "giant_fist", "repulsion", "derangement", "scalpel_strike"),

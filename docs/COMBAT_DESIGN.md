@@ -354,3 +354,101 @@ recovery ×0.7, cancel ×0.6, and hit-stop one tick less.
 - The ninja run leans deeper and sweeps the arms further back.
 - The leg IK may drop the hips up to 4.5 px (was 3) for the lower stances.
 - First-person arms show the same snapped poses, because they come from the same animator.
+
+## Chakra reinforcement and ninja armour (owner's answer, 2026-11-12)
+The owner: "it should mostly ignore the vanilla armour, although I want you to be able to reinforce your body
+and armour with chakra, so the more chakra and chakra control you have, the more damage you deal and the less
+you take." Then: "the armor should also get a boosted durability with the chakra reinforcement, displayed by
+the side of the armour's normal durability." Code: `combat/ChakraReinforcement` (the rules and numbers),
+`combat/NinjaArmour` + `mixin/LivingEntityArmourMixin` (armour), `combat/NinjaFire` (fire),
+`combat/ChakraArmour` + `mixin/ItemStackWearMixin` (chakra durability), `client/ChakraArmourDisplay` (tooltip
+and slot line), the HUD line in `client/ShinobiHudOverlay`. Tests: `gametest/ReinforcementGameTests`.
+
+**Ninja attacks** are the hits NOIRM itself deals: combat-mode strikes (fists and weapons), wall splats, thrown
+ninja weapons, blade-flow cuts, every jutsu (`JutsuEffects.hit`, the Mangekyō techniques, the Sage's purge) and
+the fire a jutsu lights. They all go through `ChakraReinforcement.hurt`, which marks the hit. Vanilla mobs'
+attacks, arrows, lava and falls are not ninja attacks and work exactly as in vanilla.
+
+**The damage pipeline, in order** (one hit):
+1. The move or jutsu: damage × taijutsu power (or jutsu power) + the weapon part; dash, counter, guard-break,
+   juggle as before; then **× (1 + reinforcement bonus)** for melee and weapon strikes.
+2. `LivingHurtEvent`: modes, the cloak, vitality toughness (÷ √(VIT/10)), guard (25%), `npcDamage` config.
+3. **Armour and enchantments** (vanilla's two steps, patched): against a ninja attack they keep only
+   `ARMOUR_SHARE` = **25%** (config `difficulty.ninjaArmour`) of what they normally stop. Resistance (the
+   potion) counts in full. Jutsu, which skip armour in vanilla, meet the same 25% (without wearing it).
+4. Absorption hearts (vanilla).
+5. `LivingDamageEvent`: **Durability and reinforcement** together: `1 − (1 − DUR)(1 − R)`, capped at
+   `COMBINED_CAP` = **70%** (DUR alone stops at 60%). The reinforcement part is paid in chakra here.
+6. The **ninja-fire ceiling** (enemy NPC fire against players only), then the health change.
+
+| A 10-point hit on… | vanilla mob | ninja attack |
+|---|---:|---:|
+| no armour | 10 | 10 |
+| full iron (15) | 6.0 | 9.0 |
+| full diamond (20, toughness 8) | 3.0 | 8.25 |
+| diamond + Protection IV everywhere | 1.1 | 6.9 |
+
+**Reinforcement strength** comes from the chakra stat `C = (Reserves + CTL) / 2` (NPCs: their reserves, and a
+CTL of 10 + `NPC_CONTROL_SHARE` 30% of their reserves above 10, since ninjas don't train control the way players
+do). `strength = 1 − e^(−(C − 10) / 40)` (× config `difficulty.chakraReinforcement`), then:
+
+| C (Reserves+CTL)/2 | 10 | 20 | 30 | 40 | 60 | 80 | 120 | 200 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| your strikes, ×(1 + …) (max 50%) | 0% | +11% | +20% | +26% | +36% | +41% | +47% | +50% |
+| ninja attacks you take (max 35%) | 0% | −8% | −14% | −18% | −25% | −29% | −33% | −35% |
+
+**Example fighters** (a 10-point ninja strike, no armour; DUR and reinforcement together):
+
+| Who | Reserves / CTL / DUR | Hits | Takes | Chakra per strike / per hit taken |
+|---|---|---:|---:|---|
+| beginner | 10 / 10 / 10 | 10 | 10 (0%) | nothing (nothing to reinforce) |
+| mid (chūnin, ~hour 12) | 35 / 30 / 35 | 12.2 | 6.5 (−35%) | 0.58 / 0.29 |
+| strong (S class, ~hour 60) | 60 / 53 / 74 | 13.4 | 4.3 (−57%) | 0.43 / 0.22 |
+| legend-scale | 200 / 200 / 200 | 15.0 | 3.0 (cap −70%) | 0.3 / 0.15 |
+
+**Chakra:** paid per hit, never over time (walking around costs nothing): `STRIKE_COST` 1 per reinforced strike
+landed (not on training dummies), `GUARD_COST_PER_DAMAGE` 0.3 per point the reinforcement stops (at least
+`MIN_GUARD_COST` 0.5); both × `√(10 / CTL)` (at least ×0.3). If the chakra isn't there, the hit simply isn't
+reinforced. Strikes and softened hits spend chakra like jutsu do (so they also train Reserves); a long fight
+costs roughly 10–25% of a pool.
+
+**Look:** a reinforced strike leaves a few faint chakra-blue motes at the point of impact; a reinforced body
+shows a thin blue shimmer over the skin when it shrugs a hit off. In combat mode the HUD shows
+"◇ Chakra armour +26%" under the combat line, in chakra blue while you have the chakra for it, faint when you
+don't, and the chakra durability your worn armour holds ("· +312"). A beginner sees nothing.
+
+### Chakra durability (the owner's follow-up)
+Every worn armour piece holds a **pool of chakra durability** on top of its own, stored on the item (NBT
+`NoirmChakraDurability` / `…Max`, saved and synced with it).
+- **Size:** `POOL_SHARE` 50% of the piece's max durability × the reinforcement strength. A diamond chestplate
+  (528): +0 for a beginner, +140 at C 40, +218 at C 80, up to +264.
+- **Wear** comes out of the pool first; only what it can't take wears the item (Unbreaking then applies).
+- **Refill:** while worn, `REFILL_SHARE` 4% of the pool a second (≈25 s from empty), costing `REFILL_CHAKRA`
+  0.025 chakra per point × the CTL factor (a full diamond chestplate at CTL 40: ≈3.5 chakra). No chakra, no
+  refill. A piece taken off keeps what it held; if your reinforcement shrinks the pool shrinks with it.
+- **Why a pool rather than only "less wear":** it's a number you can see next to the real durability, it
+  visibly drains in a hard fight and fills back up after, and running out of chakra stops it refilling, which
+  ties it to the same chakra the rest of reinforcement uses.
+- **Display:** the tooltip says "Durability 340/528 + 120 chakra" (the chakra part in chakra blue; with
+  advanced tooltips it replaces vanilla's line), and a 1-px chakra-blue line sits just above vanilla's
+  durability bar in every slot, as long as the pool is full. Vanilla has no armour-durability readout in the
+  HUD; NOIRM's "Chakra armour" line shows the total pool worn.
+- **NPC ninjas** fill their armour's pools from their own stats and chakra (vanilla never wears a mob's armour,
+  so it only shows on a piece they drop).
+
+### Ninja fire (the playthrough's 4-second death)
+With armour mostly ignored, fire needed its own rules so a beginner can react (a C-class rogue's charged Great
+Fireball is about 32 damage against 20 health, then 6 s of burning and burning grass).
+- A jutsu that sets you alight **marks** the burn: the burning and the flames you stand in then count as a ninja
+  attack (reinforcement softens them; Fire Protection counts at 25%).
+- **Enemy NPC fire burns a player shorter:** `NPC_BURN_SCALE` 60% of the jutsu's `fire_seconds`, at least 2 s
+  (Great Fireball 6 → 4 s, Majestic Destroyer Flame 10 → 6 s).
+- **A ceiling per second:** in any one second, an enemy NPC's fire (the jutsu's hit, its burning and the flames
+  around) takes at most `CAP_PER_SECOND` **35%** of a player's max health. A fresh player loses at most 7 a
+  second to fire: one fireball, its burn and the burning grass leave them alive with time to reach water; two
+  or three in a row still kill. **Legendary ninjas are exempt.** Players' fire and fire against NPCs are unchanged.
+
+Screenshots: `docs/screenshots/cr-armor-tooltip.jpg` (the tooltip), `cr-armor-slots.jpg` (the blue line over
+the durability bar, zoomed), `cr-reinforcement-hud-hit.jpg` (the HUD line and a reinforced strike). No packets
+changed: the HUD works the reinforcement out from the stats and chakra it already receives, and the pools travel
+on the items themselves.

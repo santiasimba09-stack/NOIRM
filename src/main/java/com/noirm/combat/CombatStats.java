@@ -27,6 +27,16 @@ public interface CombatStats {
         return (combatSpeed() + combatTaijutsu()) / 2f;
     }
 
+    /**
+     * Chakra control (CTL), for chakra reinforcement ({@code ChakraReinforcement}): ninjas don't train
+     * it the way players do, so by default 10 plus {@code NPC_CONTROL_SHARE} of their reserves above 10.
+     */
+    default float combatControl() {
+        float reserves = combatReserves();
+        return com.noirm.player.ShinobiData.DEFAULT_STAT
+                + Math.max(0f, reserves - com.noirm.player.ShinobiData.DEFAULT_STAT) * ChakraReinforcement.NPC_CONTROL_SHARE;
+    }
+
     /** The fighting style this fighter uses ({@code data/noirm/combat/styles/}), or null for the basic one. */
     default net.minecraft.resources.ResourceLocation combatStyle() {
         return null;

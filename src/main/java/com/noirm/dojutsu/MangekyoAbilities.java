@@ -236,7 +236,8 @@ public final class MangekyoAbilities {
             mob.setTarget(null);
         }
         target.invulnerableTime = 0;
-        target.hurt(caster.damageSources().indirectMagic(caster, caster), damage);
+        com.noirm.combat.ChakraReinforcement.hurt(target, caster.damageSources().indirectMagic(caster, caster), damage,
+                com.noirm.combat.ChakraReinforcement.Kind.JUTSU);
         if (target instanceof ServerPlayer player) {
             NoirmNetwork.sendToPlayer(player, new MangekyoPackets.Tsukuyomi(stun + 40));
             player.displayClientMessage(Component.translatable("message.noirm.mangekyo.tsukuyomi.caught").withStyle(ChatFormatting.DARK_RED), false);

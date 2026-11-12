@@ -68,6 +68,10 @@ def read_game():
     g["DUR_XP_PER_PERCENT"] = const("training/Durability.java", "XP_PER_PERCENT")
     g["DUR_MAX"] = const("training/Durability.java", "MAX_NEGATION")
     g["DUR_SCALE"] = const("training/Durability.java", "SCALE")
+    cr = "combat/ChakraReinforcement.java"
+    for n in ["SCALE", "MAX_DAMAGE_BONUS", "MAX_REDUCTION", "COMBINED_CAP", "STRIKE_COST", "MIN_GUARD_COST", "MIN_COST_FACTOR",
+              "NPC_CONTROL_SHARE"]:
+        g["CR_" + n] = const(cr, n)
     g["MEDITATION_RES_XP"] = const("senjutsu/Meditation.java", "RESERVES_XP_PER_SECOND")
     g["MEDITATION_REGEN"] = const("senjutsu/Meditation.java", "CHAKRA_REGEN_MULTIPLIER")
     g["CHAKRA_REGEN_PER_TICK"] = const("player/ShinobiData.java", "CHAKRA_REGEN_PER_TICK")
@@ -228,6 +232,36 @@ def negation(dur, g):
     return 0 if dur <= 10 else g["DUR_MAX"] * (1 - math.exp(-(dur - 10) / g["DUR_SCALE"]))
 
 
+def reinforcement(res, ctl, dur, g):
+    """Chakra reinforcement (combat/ChakraReinforcement): (damage bonus, extra share of a hit stopped on top of DUR)."""
+    stat = (res + ctl) / 2
+    strength = 0 if stat <= 10 else 1 - math.exp(-(stat - 10) / g["CR_SCALE"])
+    bonus = g["CR_MAX_DAMAGE_BONUS"] * strength
+    d = negation(dur, g)
+    together = max(d, min(g["CR_COMBINED_CAP"], 1 - (1 - d) * (1 - g["CR_MAX_REDUCTION"] * strength)))
+    extra = 1 - (1 - together) / (1 - d)  # what reinforcement adds to what DUR already stops
+    return bonus, extra
+
+
+def fight_factor(res, ctl, dur, g):
+    """How much reinforcement multiplies a fighter's strength: √(damage out × health that lasts)."""
+    bonus, extra = reinforcement(res, ctl, dur, g)
+    return math.sqrt((1 + bonus) / (1 - extra))
+
+
+def npc_factor(foe_power, g):
+    """An NPC of this power: reserves = DUR = strength, CTL = 10 + NPC_CONTROL_SHARE of its reserves above 10."""
+    strength = foe_power / 1.06
+    ctl = 10 + max(0, strength - 10) * g["CR_NPC_CONTROL_SHARE"]
+    return fight_factor(strength, ctl, strength, g)
+
+
+def beats(p, foe_power, a, g, margin=1.0):
+    """Can the player (with their skill) beat a foe of this power? Both sides reinforced from their own stats."""
+    me = p.power() * fight_factor(p.s["res"], p.s["ctl"], p.s["dur"], g) * a["SKILL"]
+    return me >= margin * foe_power * npc_factor(foe_power, g)
+
+
 def danger(g, distance, hours):
     return g["BASE_DANGER"] + min(g["DISTANCE_DANGER_MAX"], distance / g["BLOCKS_PER_DANGER"]) + min(g["TIME_DANGER_MAX"], hours * g["DANGER_PER_HOUR"])
 
@@ -235,7 +269,7 @@ def danger(g, distance, hours):
 def fight(p, foe_power, a, g):
     """One won fight against a foe of this power: grants the XP the game would. Returns True if won."""
     me = p.power()
-    if me * a["SKILL"] < foe_power:
+    if not beats(p, foe_power, a, g):
         return False
     ratio = max(g["MIN_OPPONENT_RATIO"], min(g["MAX_OPPONENT_RATIO"], foe_power / max(1, me)))
     factor = ratio * g["REAL_FIGHT_BONUS"]
@@ -249,6 +283,10 @@ def fight(p, foe_power, a, g):
     p.grant("dur", 100 * a["DAMAGE_SHARE"] * g["DUR_XP_PER_PERCENT"] * factor)
     p.casts += a["JUTSU_PER_FIGHT"] * 0.5
     spent = a["JUTSU_PER_FIGHT"] * a["JUTSU_COST"]
+    if reinforcement(p.s["res"], p.s["ctl"], p.s["dur"], g)[0] > 0:
+        # Reinforced strikes and softened hits cost chakra too (and spending trains Reserves).
+        cf = min(1, max(g["CR_MIN_COST_FACTOR"], math.sqrt(10 / p.s["ctl"])))
+        spent += (hits / a["SWINGS_PER_HIT"] * g["CR_STRIKE_COST"] + 10 * g["CR_MIN_GUARD_COST"]) * cf
     p.grant("res", spent * g["RESERVES_XP_PER_CHAKRA"])
     p.grant("ctl", spent / 2 * g["CTL_PRESSURE_XP"])
     pool = g["KILL_XP"] * max(g["MIN_WORTH"], min(g["MAX_WORTH"], worth(foe_power, g) / worth(me, g)))
@@ -413,9 +451,9 @@ def simulate(g, a, max_hours=60, verbose=False):
                         trial = g["EXAM_MISSIONS"]["missions/exam/jonin_trial"]
                         rounds = [trial["strength"] * g["ENCOUNTERS"]["rogue_strong"]["leader_strength"]] + rounds
                     hardest = max(ninja_power(r, g) for r in rounds)
-                    if p.power() * a["SKILL"] < 0.85 * hardest:
+                    if not beats(p, hardest, a, g, 0.85):
                         ev.setdefault("_exam_waits", {}).setdefault(name, round(minute / 60, 1))
-                    elif all(p.power() * a["SKILL"] >= ninja_power(r, g) for r in rounds):
+                    elif all(beats(p, ninja_power(r, g), a, g) for r in rounds):
                         rank_index += 1
                         mark(f"rank: {name}", minute)
                         for r in rounds:
@@ -446,7 +484,7 @@ def simulate(g, a, max_hours=60, verbose=False):
             pool = [m for k, m in g["MISSIONS"].items() if m["rank"] == letter and not m.get("exam")]
             m = pool[(day * 7 + taken_today.get(key, 0)) % len(pool)]
             foe = mission_foe(m, g)
-            if foe and p.power() * a["SKILL"] < foe:
+            if foe and not beats(p, foe, a, g):
                 taken_today[key] = taken_today.get(key, 0) + 1  # can't win it: skipped
                 ev.setdefault("_skipped", {}).setdefault(letter, 0)
                 ev["_skipped"][letter] += 1
@@ -492,7 +530,7 @@ def simulate(g, a, max_hours=60, verbose=False):
             # Rogue strong (2.2x) out past 1200 blocks once roaming that far: beat it when able.
             if roam >= 1200 and hours * 60 >= enc["rogue_strong"].get("min_played_minutes", 0):
                 strong = ninja_power(danger(g, roam, hours) * enc["rogue_strong"]["leader_strength"], g)
-                if p.power() * a["SKILL"] >= strong:
+                if beats(p, strong, a, g):
                     fight(p, strong, a, g)
                     for c in letters[:letters.index(class_of(strong, g)) + 1]:
                         mark(f"beat class {c}", minute)
@@ -505,7 +543,7 @@ def simulate(g, a, max_hours=60, verbose=False):
                 foe = ninja_power(lo, g, 0.1 + (g["SAGE_BONUS"] if kind == "legend" else 0))
                 if kind == "legend" and hours * 60 < g["BINGO_LEGEND_NEW_PLAYER_MINUTES"]:
                     continue
-                if p.power() * a["SKILL"] >= foe:
+                if beats(p, foe, a, g):
                     bounty_days.add(day)
                     fight(p, foe, a, g)
                     bounty = (blo + bhi) / 2

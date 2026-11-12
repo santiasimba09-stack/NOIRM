@@ -2458,5 +2458,12 @@
   "creator.noirm.option.frame.masculine": "Masculine",
   "creator.noirm.option.frame.feminine": "Feminine",
   "creator.noirm.hair_styles": "Styles",
-  "creator.noirm.custom_color": "Custom colour: the hue, saturation and brightness bars below"
+  "creator.noirm.custom_color": "Custom colour: the hue, saturation and brightness bars below",
+  "hud.noirm.reinforcement": "◇ Chakra armour",
+  "tooltip.noirm.chakra_durability": "Durability %s/%s",
+  "tooltip.noirm.chakra_durability.pool": "+ %s chakra",
+  "jutsu.noirm.suiton.leviathan_maelstrom": "Water Release: Leviathan Maelstrom",
+  "screen.noirm.jutsu.behavior.maelstrom": "Maelstrom",
+  "handbook.noirm.reinforcement": "Chakra and armour",
+  "handbook.noirm.reinforcement.body": "Ninjas fight through armour. Against a ninja's strikes, thrown weapons, jutsu and the fire they light, vanilla armour (and its enchantments) keeps only a quarter of its usual protection: diamond still helps a little, but it won't save you. Zombies, skeletons and the other vanilla monsters still meet your armour in full.\n\nChakra reinforcement is the real defence. Your Reserves and chakra control (CTL) lay chakra over your body and your gear: the more you have, the harder your strikes and weapons hit (up to +50%) and the less ninja attacks hurt you (up to -35%). It stacks with Durability, but the two together never stop more than 70% of a hit.\n\nIt costs a little chakra every time: about a point for each reinforced strike you land, and a little for each hit it softens (good CTL makes both cheaper). Out of chakra, you fight unreinforced. In combat mode the HUD shows \"Chakra armour\" and its bonus, in blue while you have the chakra for it; a faint blue sheen marks a reinforced hit. Enemy ninjas reinforce themselves the same way, from their own chakra.\n\nYour armour holds chakra too. Every piece you wear gets a pool of chakra durability (up to half its own) that takes the wear before the item does and slowly refills from your chakra. The tooltip shows it as \"Durability 340/528 + 120 chakra\", and a thin blue line over the item's durability bar shows how full it is.\n\nFire: an enemy ninja's fire burns you for a shorter time, and in any one second it can't take more than about a third of your health, so a beginner caught by a fireball has time to run for water. Two or three in a row still kill."
 }

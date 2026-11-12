@@ -82,6 +82,15 @@ nature, no eyes or beasts. Times are hours of play (an in-game day is 20 minutes
 Before, play time added +4 danger an hour up to +25: after ~6 hours every rogue around your home
 was A-class while you were still C. Now +2 an hour up to +20, and the lone rogue is 0.85×.
 
+**After chakra reinforcement (2026-11-12).** The simulator now gives both sides reinforcement from their own
+stats (NPCs: reserves = strength, CTL 10 + 30% of the rest) and compares `power × √((1 + bonus) / (1 − extra
+share stopped))`; reinforced hits also spend chakra. With the NPCs' CTL at 30% of their reserves the timeline
+stays within about an hour of the table above: chūnin 10.0 → 10.2 h, jōnin 21.0 → 20.7, ANBU 23.0 → 22.1,
+beat class A 26.2 → 26.2, S-rank jutsu 29.8 → 27.4 (Reserves come a little sooner: reinforcement spends chakra),
+Kage candidate 41.0 → 42.3, beat class S 52.4 → 53.6; the first C win moves from 2.3 to 3.5 h. Legends are
+still not beaten in 140 simulated hours, before or after (power 133 at 140 h against a legend's ~225).
+Water now has an S-rank of its own (Leviathan Maelstrom, from the Great Waterfall ★2, waiting for Reserves 40).
+
 ### Walls, skips, dead ends
 - **Walls:** the chūnin exam (points at 2.9 h, passable at 14.4 h) and the jōnin trial (points at
   14.5 h, passable at 31.6 h); wild danger outrunning the player from hour 3. Shortened (exams
@@ -112,6 +121,13 @@ scrolls are rare chest loot), "Chūnin" (said "C- and B-rank missions": a genin 
   IV. So diamond *does* trivialise ninja **melee** — but not their **jutsu**: fire sets you
   burning (armour doesn't help) and the grass around you on fire, and I died in 4 s in full diamond
   at the start. Net: melee too weak against armour, fire too strong against beginners. **Question 2.**
+  **Answered and built (2026-11-12, `COMBAT_DESIGN.md`, "Chakra reinforcement and ninja armour"):** ninja
+  attacks now meet only 25% of vanilla armour and enchantments (diamond: a 10-point strike does 8.25, not 3),
+  chakra reinforcement (Reserves + CTL) adds up to +50% to strikes and takes up to 35% off ninja attacks
+  (with DUR, at most 70%), and enemy NPC fire burns a player 60% as long and takes at most 35% of their
+  health in any second. The 4-second death in diamond no longer happens: a fresh player hit square by that
+  rogue's charged Great Fireball (≈32) loses 7, then about 1–3 a second while burning, and is alive 4 s later
+  (game test `beginnerSurvivesARoguesFireLongEnoughToReact`).
 - **Early ninja combat** doesn't one-shot by melee (a strength-12 rogue's heavy ≈ 8 of your 20 hp),
   but a charged Great Fireball (up to 20 + fire) nearly does. Legends (180–240) do one-shot, as the
   APX answer accepted.
@@ -157,7 +173,7 @@ scrolls are rare chest loot), "Chūnin" (said "C- and B-rank missions": a genin 
   design call (question 2).
 - The rank gate on chain jutsu (scrolls need chūnin/jōnin/ANBU; chains don't) — a design change
   (question 3).
-- Vanilla armour vs NOIRM melee — design (question 2).
+- Vanilla armour vs NOIRM melee — design (question 2). *Since built: see section 3.*
 - The creator's "+2", the jutsu screen listing locked other-path jutsu — other helpers' screens.
 - First-join chat wall — small, but the creator/clan messages belong to the creator area.
 

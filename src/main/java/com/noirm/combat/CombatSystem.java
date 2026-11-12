@@ -917,6 +917,8 @@ public final class CombatSystem {
         boolean gentleFist = Byakugan.isActive(attacker);
         float posture = hit.posture() * (gentleFist ? Byakugan.GENTLE_FIST_POSTURE : 1f);
         float damage = hit.damage() * Perception.damageMultiplier(attacker) + weaponDamage(attacker, target, hit.damage());
+        // Chakra reinforcement: Reserves and CTL harden the fist (or the blade's edge); costs a little chakra.
+        damage *= ChakraReinforcement.strike(attacker, target, target.position().add(0, target.getBbHeight() * 0.6, 0));
         if (attackerState.dashStrike) {
             damage *= DASH_STRIKE_DAMAGE;
             posture *= DASH_STRIKE_POSTURE;
@@ -956,7 +958,7 @@ public final class CombatSystem {
         applyingHeavy = hit.isHeavy() || hit.knockdown();
         try {
             target.invulnerableTime = 0;
-            hurt = target.hurt(damageSource(attacker), damage);
+            hurt = ChakraReinforcement.hurt(target, damageSource(attacker), damage, ChakraReinforcement.Kind.MELEE);
         } finally {
             applyingHit = false;
             applyingHeavy = false;
@@ -1255,7 +1257,7 @@ public final class CombatSystem {
         applyingHit = true;
         try {
             target.invulnerableTime = 0;
-            target.hurt(damageSource(attacker), damage * WALL_SPLAT_DAMAGE);
+            ChakraReinforcement.hurt(target, damageSource(attacker), damage * WALL_SPLAT_DAMAGE, ChakraReinforcement.Kind.MELEE);
         } finally {
             applyingHit = false;
         }

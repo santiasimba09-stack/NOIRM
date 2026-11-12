@@ -2458,5 +2458,12 @@
   "creator.noirm.option.frame.masculine": "Masculina",
   "creator.noirm.option.frame.feminine": "Femenina",
   "creator.noirm.hair_styles": "Peinados",
-  "creator.noirm.custom_color": "Color propio: las barras de tono, saturación y brillo de abajo"
+  "creator.noirm.custom_color": "Color propio: las barras de tono, saturación y brillo de abajo",
+  "hud.noirm.reinforcement": "◇ Armadura de chakra",
+  "tooltip.noirm.chakra_durability": "Durabilidad %s/%s",
+  "tooltip.noirm.chakra_durability.pool": "+ %s de chakra",
+  "jutsu.noirm.suiton.leviathan_maelstrom": "Elemento Agua: Vórtice del Leviatán",
+  "screen.noirm.jutsu.behavior.maelstrom": "Vórtice",
+  "handbook.noirm.reinforcement": "Chakra y armadura",
+  "handbook.noirm.reinforcement.body": "Los ninjas golpean a través de la armadura. Contra los golpes de un ninja, sus armas arrojadizas, sus jutsu y el fuego que encienden, la armadura normal (y sus encantamientos) conserva solo una cuarta parte de su protección: el diamante aún ayuda un poco, pero no te salvará. Los zombis, los esqueletos y los demás monstruos normales siguen chocando con toda tu armadura.\n\nEl refuerzo de chakra es la verdadera defensa. Tus Reservas y tu control de chakra (CTL) cubren de chakra tu cuerpo y tu equipo: cuanto más tengas, más fuerte golpean tus puños y tus armas (hasta +50%) y menos te dañan los ataques ninja (hasta -35%). Se suma a la Durabilidad, pero entre las dos nunca detienen más del 70% de un golpe.\n\nCuesta un poco de chakra cada vez: cerca de un punto por cada golpe reforzado que aciertas, y un poco por cada golpe que amortigua (un buen CTL abarata ambos). Sin chakra, peleas sin refuerzo. En modo combate el HUD muestra \"Armadura de chakra\" y su bonus, en azul mientras tengas chakra para ello; un leve brillo azul marca un golpe reforzado. Los ninjas enemigos se refuerzan igual, con su propio chakra.\n\nTu armadura también guarda chakra. Cada pieza que llevas recibe una reserva de durabilidad de chakra (hasta la mitad de la suya) que recibe el desgaste antes que el objeto y se rellena despacio con tu chakra. La descripción la muestra como \"Durabilidad 340/528 + 120 de chakra\", y una fina línea azul sobre la barra de durabilidad del objeto muestra cuánto le queda.\n\nFuego: el fuego de un ninja enemigo te quema menos tiempo, y en un segundo no puede quitarte más de un tercio de tu salud, así que un principiante alcanzado por una bola de fuego tiene tiempo de correr al agua. Dos o tres seguidas aún matan."
 }

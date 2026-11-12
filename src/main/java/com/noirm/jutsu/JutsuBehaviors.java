@@ -87,6 +87,8 @@ public final class JutsuBehaviors {
             Map.entry("wood_dragon", WoodTechniques::dragon),
             Map.entry("deep_forest", WoodTechniques::forest),
             Map.entry("wood_colossus", WoodTechniques::colossus),
+            // Water Release's own S-rank (WaterTechniques): the Leviathan Maelstrom
+            Map.entry("maelstrom", WaterTechniques::maelstrom),
             // The Mangekyō Sharingan (dojutsu/MangekyoAbilities, dojutsu/Susanoo)
             Map.entry("amaterasu", com.noirm.dojutsu.MangekyoAbilities::amaterasu),
             Map.entry("tsukuyomi", com.noirm.dojutsu.MangekyoAbilities::tsukuyomi),
