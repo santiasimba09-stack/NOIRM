@@ -4,6 +4,11 @@ _Last updated: 2026-11-12 (v0.17.0: combat animation rebuild, hair/eyes/bodies, 
 
 ## Where we are
 
+**Progress map:** https://claude.ai/artifact/2vipQQ4goqPot6eTa3xMQp (page source `docs/progress-map/index.html`;
+its data lives in the artifact's database). It shows every system by status, the road ahead, the release trail
+with test counts, and the owner's questions and notes. Keep it up to date (CLAUDE.md, "Keeping context fresh").
+
+
 **NOIRM APX 0.1 (v0.14.0) is out: the game is playable from a fresh character to a legend. 365/365
 game tests are green twice in a row; every piece was checked in the real client.** The owner's
 decisions are in `docs/APX.md`; the history is in `CHANGELOG.md`.

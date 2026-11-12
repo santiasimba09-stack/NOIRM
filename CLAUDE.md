@@ -79,3 +79,12 @@ At the end of every working session, before the final commit:
    decisions or open questions. Keep it short; it's a dashboard, not a diary.
 2. Add an entry to **`docs/CHANGELOG.md`**: date, PR or branch, and a few bullets on what changed.
 3. If the vision or milestones changed, update `docs/ROADMAP.md`.
+4. Update the **progress map** (https://claude.ai/artifact/2vipQQ4goqPot6eTa3xMQp, page source
+   `docs/progress-map/index.html`) through the artifact's database (`ArtifactData`, version-pinned):
+   - `systems`: one doc per system, with status `done`, `doing`, `owner` (needs the owner) or `planned`;
+   - `releases`: each release, with its game-test count;
+   - `roadmap`: lanes `now`, `next`, `later`;
+   - `meta/now`: what's being built right now;
+   - `questions`: open questions for the owner.
+
+   Before planning, read `questions` and `notes`: the owner answers questions and leaves notes there.
