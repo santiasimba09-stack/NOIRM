@@ -119,8 +119,8 @@ public final class GearGameTests {
         helper.assertTrue(NinjaLook.decode(NinjaLook.key("hyuga", 7)).get("eyes").equals("pale"), "Hyūga have pale eyes");
         // Same answers as the Python twin (tools/skingen/looks.py) that draws the previews.
         String[][] python = {
-                {"uchiha:1234", "[#e8bc98, duck, #1b1c22, narrow, #2a1f24, soft, turtleneck, #1c2233, long, #d9d4c8, 0, none, none, #1f2638]"},
-                {"generic:1a2b0000abcdef", "[#c98e66, spiky, #2f3f6a, round, #6a4a2a, thin, mesh, #2a2e3a, shorts, #33302a, 0, whiskers, head_bandage, #1f2638]"},
+                {"uchiha:1234", "[#e8bc98, wild_mane, #1b1c22, narrow, #2a1f24, soft, turtleneck, #1c2233, long, #d9d4c8, 0, none, none, #1f2638]"},
+                {"generic:1a2b0000abcdef", "[#c98e66, shoulder_messy, #2f3f6a, round, #6a4a2a, thin, mesh, #2a2e3a, shorts, #33302a, 0, whiskers, head_bandage, #1f2638]"},
         };
         for (String[] expected : python) {
             String got = NinjaLook.decode(expected[0]).values().values().toString();
