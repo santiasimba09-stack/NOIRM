@@ -152,12 +152,16 @@ public final class WildGameTests {
         float veteran = WildSpawner.danger(level, spawn, 72000L * 5);
         helper.assertTrue(Math.abs(atSpawn - WildSpawner.BASE_DANGER) < 0.01f, "at spawn, for a new player: the base danger");
         helper.assertTrue(far > atSpawn + 20, "far from spawn they're much stronger: " + far);
-        helper.assertTrue(veteran > atSpawn + 10, "and after hours of play: " + veteran);
+        helper.assertTrue(veteran > atSpawn + 5 * WildSpawner.DANGER_PER_HOUR - 0.01f && veteran > atSpawn + 5, "and after hours of play: " + veteran);
         helper.assertTrue(WildSpawner.danger(level, spawn.offset(100000, 0, 0), 72000L * 1000)
                 <= WildSpawner.BASE_DANGER + WildSpawner.DISTANCE_DANGER_MAX + WildSpawner.TIME_DANGER_MAX + 0.01f, "with a ceiling");
         // Rogues don't turn up next to the spawn, the dangerous rogue only far away after an hour.
         EncounterType strong = Encounters.get(Encounters.ROGUE_STRONG);
         helper.assertTrue(strong.minDistance() >= 1000 && strong.minPlayedMinutes() >= 60 && strong.leaderStrength() >= 2f, "the dangerous rogue is rare and far");
+        // Playthrough: a C-class rogue met at minute 10 killed a fresh, untrained player in seconds; a lone rogue
+        // now waits half an hour (time for some dummy training), a band three quarters.
+        helper.assertTrue(Encounters.get(Encounters.ROGUE).minPlayedMinutes() >= 30 && Encounters.get(Encounters.ROGUE_BAND).minPlayedMinutes() >= 45,
+                "rogues give a new player time to train");
         for (int i = 0; i < 40; i++) {
             ResourceLocation picked = WildSpawner.pick(level, spawn, 0, level.getRandom());
             helper.assertTrue(picked != null && !Encounters.get(picked).hostile(), "no rogues by the spawn for a new player, got " + picked);

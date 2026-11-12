@@ -96,9 +96,15 @@ public final class WildSpawner {
     /** +1 danger per this many blocks from the world spawn, up to {@link #DISTANCE_DANGER_MAX}. */
     public static final float BLOCKS_PER_DANGER = 60f;
     public static final float DISTANCE_DANGER_MAX = 50f;
-    /** +this much danger per hour played, up to {@link #TIME_DANGER_MAX}. */
-    public static final float DANGER_PER_HOUR = 4f;
-    public static final float TIME_DANGER_MAX = 25f;
+    /**
+     * +this much danger per hour played, up to {@link #TIME_DANGER_MAX}. Playthrough balance pass:
+     * it was +4 an hour up to +25 (reached after about 6 hours), which outran a normal player: by
+     * hour 7 the rogues around a home 350 blocks out were A-class while the player was still C (see
+     * docs/PLAYTHROUGH.md and tools/balance/simulate.py). Distance stays the main way to find
+     * stronger foes; play time adds a slower push.
+     */
+    public static final float DANGER_PER_HOUR = 2f;
+    public static final float TIME_DANGER_MAX = 20f;
     /** Each ninja's stats vary by ±15 %. */
     public static final float STAT_SPREAD = 0.15f;
 

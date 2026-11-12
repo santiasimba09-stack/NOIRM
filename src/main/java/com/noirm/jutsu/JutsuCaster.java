@@ -613,7 +613,7 @@ public final class JutsuCaster {
                 int before = data.jutsu().masteryLevel(id);
                 data.jutsu().addXp(id, data.identity().has(ClanTrait.JUTSU_PRODIGY) ? 2 : 1);
                 if (data.jutsu().masteryLevel(id) > before) {
-                    com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id);
+                    com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id, true); // Reserves gate (playthrough)
                 }
                 data.markPowersDirty();
             });

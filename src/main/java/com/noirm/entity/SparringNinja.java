@@ -617,6 +617,11 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         return entityData.get(TAILS);
     }
 
+    /** Whether this ninja's beast (or none) is settled, so no random jinchūriki roll is still to come. */
+    public boolean tailsSettled() {
+        return tailsDecided;
+    }
+
     /** Seals a tailed beast into this ninja: it will use the cloak (and the Tailed Beast Ball) when hurt. */
     public void sealBeast(int tails) {
         tailsDecided = true;

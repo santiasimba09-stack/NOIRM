@@ -361,9 +361,15 @@ public final class Missions {
     private static void hunt(ServerLevel level, Player player, Mission m, MissionTemplate def) {
         BlockPos area = m.points.get(0);
         if (!m.spawned) {
-            if (flat(player, area) < SPAWN_RANGE) {
+            // Only once the place is loaded and ticking (playthrough: a hunt marked out at sea, reached by a fast
+            // traveller, spawned its bandit where it couldn't be found; "gone" counted as fled and the mission was
+            // done with no fight).
+            if (flat(player, area) < SPAWN_RANGE && level.isPositionEntityTicking(area)) {
                 List<SparringNinja> group = spawnGroup(level, player, def.encounter().orElse(com.noirm.world.wild.Encounters.ROGUE),
                         ground(level, area), def.strength(), 0, 4);
+                if (group.isEmpty()) {
+                    return; // nobody could be put there: try again next time
+                }
                 group.forEach(n -> m.foes.add(n.getUUID()));
                 m.required = group.size();
                 m.spawned = true;
@@ -480,7 +486,7 @@ public final class Missions {
 
     private static void retrieve(ServerLevel level, Player player, Mission m, MissionTemplate def) {
         BlockPos area = m.points.get(0);
-        if (!m.spawned && flat(player, area) < SPAWN_RANGE) {
+        if (!m.spawned && flat(player, area) < SPAWN_RANGE && level.isPositionEntityTicking(area)) {
             BlockPos camp = ground(level, area);
             m.points.set(0, camp);
             pitchCamp(level, camp, m);
@@ -535,7 +541,10 @@ public final class Missions {
      * Returns false if the mission failed.
      */
     static boolean checkFoes(ServerLevel level, Player player, Mission m, BlockPos where) {
-        boolean near = flat(player, where) < VANISH_NEAR;
+        // A foe who can't be found counts as fled only if you're near and the place is loaded (so they'd be found if
+        // they were there), never while the chunks around are still loading.
+        boolean near = flat(player, where) < VANISH_NEAR && level.isPositionEntityTicking(where)
+                && level.isPositionEntityTicking(player.blockPosition());
         int before = m.foes.size();
         m.foes.removeIf(id -> {
             Entity e = level.getEntity(id);
@@ -592,6 +601,12 @@ public final class Missions {
         BlockPos spot = null;
         for (int i = 0; i < 12 && spot == null; i++) {
             BlockPos p = max <= 0 ? near : place(level, near, random, min, max);
+            if (level.hasChunkAt(p) && WildSpawner.standable(level, p)) {
+                spot = p;
+            }
+        }
+        for (int i = 0; i < 24 && spot == null; i++) {
+            BlockPos p = place(level, near, random, 2, Math.max(16, max * 3)); // out at sea or on a cliff: the nearest dry ground
             if (level.hasChunkAt(p) && WildSpawner.standable(level, p)) {
                 spot = p;
             }

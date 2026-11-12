@@ -397,6 +397,19 @@ public final class ApxMastersGameTests {
         helper.succeed();
     }
 
+    /** Playthrough: the last tip (find a missions board) names where the nearest settlement is, if one is near. */
+    @GameTest(template = "empty", batch = "noirm_apxm_guide")
+    public static void boardTipPointsTowardASettlement(GameTestHelper helper) {
+        var hint = FirstSteps.villageHint(helper.getLevel(), helper.absolutePos(net.minecraft.core.BlockPos.ZERO), 4);
+        helper.assertTrue(hint == null || hint.getContents() instanceof TranslatableContents t && t.getKey().equals("guide.noirm.tip.board_hint")
+                && t.getArgs().length == 2, "no settlement near, or a hint with a distance and a direction");
+        for (String lang : List.of("en_us", "es_es", "es_mx")) {
+            JsonObject json = lang(lang);
+            helper.assertTrue(json.has("guide.noirm.tip.board_hint") && json.has("message.noirm.jutsu.unlock_waits"), lang + " has the new texts");
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = "noirm_apxm_guide")
     public static void handbookChaptersHaveTextInEveryLanguage(GameTestHelper helper) {
         helper.assertTrue(Handbook.CHAPTERS.size() >= 10, "ten chapters or more");

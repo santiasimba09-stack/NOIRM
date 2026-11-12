@@ -6,7 +6,7 @@
   "min_distance": 100,
   "max_distance": 150,
   "encounter": "noirm:rogue_strong",
-  "strength": 20,
+  "strength": 17,
   "solo": true,
   "exam": true,
   "weight": 0

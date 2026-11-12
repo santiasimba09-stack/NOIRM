@@ -58,12 +58,18 @@ public final class Exams {
 
     private Exams() {}
 
-    /** The strength (speed and taijutsu) of each round's opponent. */
+    /**
+     * The strength (speed and taijutsu) of each round's opponent. Playthrough balance pass: the
+     * chūnin final was 30 and the jōnin examiner 48, which a player who had just reached the drill
+     * cap (30) or the B class could not touch for many hours with the points already in hand (the
+     * walls in docs/PLAYTHROUGH.md). A rank is a title, not a class: a chūnin is a strong C or a B,
+     * a jōnin a strong B. They stay above the D-C-B thresholds a beginner reaches by drills alone.
+     */
     public static float[] rounds(PlayerRank target) {
         return switch (target) {
             case GENIN -> new float[] {16f};
-            case CHUNIN -> new float[] {22f, 30f};
-            case JONIN -> new float[] {48f};
+            case CHUNIN -> new float[] {20f, 26f};
+            case JONIN -> new float[] {40f};
             default -> new float[0];
         };
     }
@@ -170,6 +176,7 @@ public final class Exams {
         Vec3 look = player.getViewVector(1f).multiply(1, 0, 1);
         Vec3 at = player.position().add(look.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 5) : look.normalize().scale(5));
         opponent.moveTo(at.x, player.getY(), at.z, player.getYRot() + 180f, 0f);
+        opponent.sealBeast(0); // an exam is a spar: never a jinchūriki who throws a tailed-beast cloak at a genin (playthrough)
         opponent.setCombatStats(strength, strength);
         opponent.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), MobSpawnType.EVENT, null, null);
         if (level.getServer() != null) {

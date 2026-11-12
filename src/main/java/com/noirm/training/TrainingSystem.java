@@ -254,6 +254,7 @@ public final class TrainingSystem {
         applyReserves(data);
         if (player.tickCount % 40 == 0) {
             com.noirm.clan.NatureSystem.checkStatUnlocks(player, data);
+            com.noirm.clan.NatureSystem.checkWaitingUnlocks(player, data); // mastery-chain jutsu that waited for Reserves
         }
     }
 
