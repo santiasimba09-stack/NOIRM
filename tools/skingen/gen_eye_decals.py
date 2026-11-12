@@ -183,34 +183,12 @@ def cell_top(shape):
     a = np.zeros(X.shape, np.float32)
     inside, top, bottom, u = opening(X, Y, cx, s)
     lash = s["lash"]
-    # a light shadow on the lid, between the lash line and the crease (not a heavy band)
-    span = (u > 0.05) & (u < 1.0)
-    gap = (top - lash * 0.25) - Y
-    shadow = np.where(span & (gap > 0) & (gap < s["hood"]), 0.22 * (1 - gap / s["hood"]), 0)
-    rgb, a = over(rgb, a, shadow, HOOD)
-    # the crease: a separate thin line following the lid above it, fading in from the inner side
-    crease = [(x, y - s["crease"] - lash * 0.3) for x, y in lid_line(cx, s, "top", u0=0.2, u1=0.98)]
-    rgb, a = over(rgb, a, seg_cov(X, Y, crease, 0.02, 0.07) * 0.75, CREASE)
     # the lash line: thin at the inner corner, thickest past the peak, riding just over the lid
-    up = lid_line(cx, s, "top", u0=0.02, u1=1.0)
+    up = lid_line(cx, s, "top", u0=0.02, u1=0.97)
     centre = [(x, y - lash * 0.25) for x, y in up]
-    rgb, a = over(rgb, a, seg_cov(X, Y, centre, lash * 0.25, lash), LASH)
-    # the sweep: the line carries on past the outer point in the lid's direction as a long thin stroke,
-    # bending a little upwards at its end (the "end of the eye" in the owner's references)
-    (x1, y1), (x2, y2) = centre[-8], centre[-1]
-    dx, dy = x2 - x1, y2 - y1
-    n = max(np.hypot(dx, dy), 1e-6)
-    dx, dy = dx / n, dy / n
-    wing = s["wing"]
-    pts = []
-    for k in range(9):
-        t = k / 8
-        pts.append((x2 + dx * wing * t, y2 + dy * wing * t - 0.1 * wing * t * t))
-    rgb, a = over(rgb, a, seg_cov(X, Y, [(x2 - dx * 0.12, y2 - dy * 0.12)] + pts, lash * 0.9, 0.015), LASH)
-    # the inner corner: the lash line hooks down a little past the corner, towards the nose
-    xi, yi = centre[0]
-    hook = [(xi, yi), (xi + 0.12, yi + 0.1), (xi + 0.2, yi + 0.24)]
-    rgb, a = over(rgb, a, seg_cov(X, Y, hook, lash * 0.3, 0.02), LASH)
+    rgb, a = over(rgb, a, seg_cov(X, Y, centre[:-10], lash * 0.25, lash), LASH)
+    # the last stretch tapers into the outer point, ending on the eye (nothing runs past it)
+    rgb, a = over(rgb, a, seg_cov(X, Y, centre[-11:], lash, lash * 0.3), LASH)
     # a thin warm rim under the lash line where it meets the white
     rim = np.clip(aa(Y - (top + 0.02)) - aa(Y - (top + 0.07)), 0, 1) * inside
     rgb, a = over(rgb, a, rim * 0.5, LID)

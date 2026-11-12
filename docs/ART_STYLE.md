@@ -20,10 +20,11 @@ trace or sample them).
   - **Shape:** a long, narrow leaf. The upper lid rises fast at the inner corner, then runs **almost flat**,
     slanting down towards the nose like a glare, and tapers into a **sharp outer point**. The lower lid is a
     shallow curve that meets it there. Both corners are points.
-  - **The ends:** the heavy upper lash line **carries on past the outer point as a long thin stroke** that bends
-    slightly up at its end, and **hooks down at the inner corner**. No separate lashes.
-  - **Lines:** a separate thin **crease line** above the lid, a light shadow between them, and a thin lower lid
-    line on the middle-to-outer part only (open at the outer corner).
+  - **Size:** compact, not stretched (owner, 2026-11-12, fourth pass): about 2.5 model pixels wide.
+  - **The ends:** the heavy upper lash line **tapers into the outer point and stops there**: nothing black runs
+    past the eye, and there is no hook. No separate lashes.
+  - **Lines:** **no crease line and no lid shadow** above the eye (owner: "the eyelid… I don't like"); a thin lower
+    lid line on the middle-to-outer part only (open at the outer corner).
   - **Iris:** medium to small, its top cut by the upper lid, with a dark rim, fibres, a small pupil and **one
     small highlight**.
   - **Shapes in the creator:** Steady (default), Sharp (aggressive: flatter, narrower, smaller iris), Fierce (a

@@ -46,7 +46,10 @@ MOUTH_Y = 6.6
 # The iris centre sits on an HD pixel's centre (shift, idy multiples of 1/8 at SCALE 4), so the
 # pupil is one pixel wide and the highlight one pixel.
 EYE_SHAPES = {
-    # Owner, 2026-11-12 (third pass, with eye references): "not round", "the end of the eyes" must match the
+    # Owner, 2026-11-12 (fourth pass, from the progress map): "not so stretched", and no lid crease or black
+    # line running past the eye; the rest of the third pass stays. So: shorter eyes, no sweep, no hook, no
+    # crease or lid shadow (gen_eye_decals.py).
+    # Third pass, with eye references: "not round", "the end of the eyes" must match the
     # references, "aggressive and raw". The eye is a long narrow leaf: the upper lid rises fast at the inner
     # corner, then runs almost flat (slanting down towards the nose, a glare) and tapers into a sharp outer
     # point; the lower lid is a shallow curve meeting it there. The upper lash line carries on past the
@@ -55,20 +58,20 @@ EYE_SHAPES = {
     # client/EyeDecalLayer (tools/skingen/gen_eye_decals.py) from these same shapes.
     #   flat   how flat the upper lid stays after its peak (higher = flatter, more aggressive)
     # steady (the default): focused, the iris cut by the upper lid
-    "round":  dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
-                   iris=0.5, shift=0.125, idy=0.0, lash=0.36, wing=0.75, hood=0.3, crease=0.34),
+    "round":  dict(ein=1.1, eout=1.38, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
+                   iris=0.5, shift=0.125, idy=0.0, lash=0.30, wing=0.75, hood=0.3, crease=0.34),
     # sharp (aggressive): narrower, the lid flatter and lower, a small iris
-    "sharp":  dict(ein=1.22, eout=1.7, inner=0.32, outer=-0.24, up=0.44, peak=0.14, flat=0.8, down=0.26,
-                   iris=0.42, shift=0.125, idy=0.0, lash=0.38, wing=0.85, hood=0.32, crease=0.32),
+    "sharp":  dict(ein=1.1, eout=1.42, inner=0.32, outer=-0.24, up=0.44, peak=0.14, flat=0.8, down=0.26,
+                   iris=0.42, shift=0.125, idy=0.0, lash=0.31, wing=0.85, hood=0.32, crease=0.32),
     # fierce: opened in a glare, white around a small iris, still pointed
-    "wide":   dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.2, up=0.62, peak=0.18, flat=0.6, down=0.38,
-                   iris=0.4, shift=0.125, idy=0.0, lash=0.34, wing=0.7, hood=0.28, crease=0.38),
+    "wide":   dict(ein=1.1, eout=1.38, inner=0.26, outer=-0.2, up=0.62, peak=0.18, flat=0.6, down=0.38,
+                   iris=0.4, shift=0.125, idy=0.0, lash=0.28, wing=0.7, hood=0.28, crease=0.38),
     # narrow (sleepy, cold): the heavy lid low over the iris, a line under the eye
-    "narrow": dict(ein=1.22, eout=1.66, inner=0.2, outer=-0.12, up=0.36, peak=0.2, flat=0.75, down=0.28,
-                   iris=0.5, shift=0.125, idy=0.125, lash=0.4, wing=0.7, hood=0.36, crease=0.3, bags=1),
+    "narrow": dict(ein=1.1, eout=1.38, inner=0.2, outer=-0.12, up=0.36, peak=0.2, flat=0.75, down=0.28,
+                   iris=0.5, shift=0.125, idy=0.125, lash=0.33, wing=0.7, hood=0.36, crease=0.3, bags=1),
     # pale (the Hyuga's white eyes): steady, a pale iris without a pupil
-    "pale":   dict(ein=1.22, eout=1.66, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
-                   iris=0.56, shift=0.125, idy=0.0, lash=0.34, wing=0.7, hood=0.28, crease=0.34),
+    "pale":   dict(ein=1.1, eout=1.38, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
+                   iris=0.56, shift=0.125, idy=0.0, lash=0.28, wing=0.7, hood=0.28, crease=0.34),
 }
 
 
