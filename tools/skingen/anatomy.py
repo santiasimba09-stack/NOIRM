@@ -46,24 +46,26 @@ MOUTH_Y = 6.6
 # The iris centre sits on an HD pixel's centre (shift, idy multiples of 1/8 at SCALE 4), so the
 # pupil is one pixel wide and the highlight one pixel.
 EYE_SHAPES = {
-    # Rework (owner, 2026-11-11): "big, wide, sharp anime eyes" -- bigger and more detailed than round 15,
-    # but still sharp-cornered, never round or bubbly. A high-detail copy of each eye is drawn over the
-    # skin by client/EyeDecalLayer (tools/skingen/gen_eye_decals.py) from these same shapes.
-    # steady and heavy-lidded (the default): the lid low on the iris, calm and dangerous
-    "round":  dict(ein=1.22, eout=1.55, inner=0.2, outer=-0.12, up=0.8, peak=0.42, down=0.5, iris=0.74,
-                   shift=0.125, idy=-0.125, lash=0.5, wing=0.5, hood=0.55),
-    # sharp: a strong upward sweep to a long outer flick
-    "sharp":  dict(ein=1.22, eout=1.6, inner=0.28, outer=-0.4, up=0.7, peak=0.38, down=0.46, iris=0.7,
-                   shift=0.125, idy=-0.125, lash=0.52, wing=0.6, hood=0.5),
-    # fierce: opened wide in a glare, white around the iris, the brow pressing down
-    "wide":   dict(ein=1.2, eout=1.5, inner=0.14, outer=-0.14, up=0.94, peak=0.42, down=0.78, iris=0.7,
-                   shift=0.125, idy=-0.125, lash=0.46, wing=0.42, hood=0.45),
-    # narrow: a slit, the lid half over the iris (cold, tired)
-    "narrow": dict(ein=1.22, eout=1.58, inner=0.16, outer=-0.16, up=0.58, peak=0.44, down=0.34, iris=0.7,
-                   shift=0.125, idy=0.125, lash=0.54, wing=0.55, hood=0.6),
-    # pale (the Hyuga's white eyes): heavy-lidded, a pale iris without a pupil
-    "pale":   dict(ein=1.22, eout=1.55, inner=0.2, outer=-0.12, up=0.8, peak=0.42, down=0.5, iris=0.76,
-                   shift=0.125, idy=-0.125, lash=0.46, wing=0.45, hood=0.5),
+    # Owner, 2026-11-12: the reworked eyes were "too bubbly, look too gentle". So: no domes. Each eye is
+    # an angular slit (see lid_curves: straight lids, hard corners), slanted down towards the nose
+    # like a glare, the brow pressing on it; a small iris cut by the upper lid; no long lashes, no big
+    # highlight. A high-detail copy of each eye is drawn over the skin by client/EyeDecalLayer
+    # (tools/skingen/gen_eye_decals.py) from these same shapes.
+    # steady (the default): a level, heavy-lidded stare
+    "round":  dict(ein=1.2, eout=1.5, inner=0.22, outer=-0.2, up=0.46, peak=0.2, down=0.26, iris=0.5,
+                   shift=0.125, idy=-0.0, lash=0.3, wing=0.22, hood=0.6),
+    # sharp: the strongest slant, a long outer point
+    "sharp":  dict(ein=1.2, eout=1.6, inner=0.34, outer=-0.38, up=0.42, peak=0.18, down=0.24, iris=0.48,
+                   shift=0.125, idy=-0.0, lash=0.3, wing=0.32, hood=0.6),
+    # fierce: opened in a glare, white over and under a small iris
+    "wide":   dict(ein=1.2, eout=1.5, inner=0.26, outer=-0.26, up=0.6, peak=0.2, down=0.36, iris=0.42,
+                   shift=0.125, idy=0.0, lash=0.28, wing=0.2, hood=0.55),
+    # narrow: a cold slit, both lids on the iris
+    "narrow": dict(ein=1.2, eout=1.56, inner=0.2, outer=-0.2, up=0.32, peak=0.2, down=0.2, iris=0.48,
+                   shift=0.125, idy=0.0, lash=0.3, wing=0.24, hood=0.65),
+    # pale (the Hyuga's white eyes): a level stare, a pale iris without a pupil
+    "pale":   dict(ein=1.2, eout=1.5, inner=0.22, outer=-0.2, up=0.46, peak=0.2, down=0.26, iris=0.62,
+                   shift=0.125, idy=-0.0, lash=0.28, wing=0.2, hood=0.55),
 }
 
 
@@ -88,10 +90,12 @@ def lid_curves(x, cx, s):
     and a higher outer corner, the upper lid an angled line, the lower lid a shallow curve."""
     u = np.clip(across_u(x, cx, s), 0, 1)
     chord = EYE_Y + s["inner"] + (s["outer"] - s["inner"]) * u
+    # Angular, not domed: both lids are straight lines parallel to the corners' slanted line, with a
+    # short ramp up from the inner corner (peak) and a shorter, harder one down to the outer point.
     p = s["peak"]
-    rise = np.where(u < p, (u / p) ** 0.5, ((1 - u) / (1 - p)) ** 0.9)
-    top = chord - s["up"] * rise
-    bottom = chord + s["down"] * np.clip(np.sin(np.pi * u ** 0.85), 0, 1) ** 0.7
+    ramp = np.clip(np.minimum(u / p, (1 - u) / 0.1), 0, 1)
+    top = chord - s["up"] * ramp
+    bottom = chord + s["down"] * np.clip(np.minimum(u / 0.3, (1 - u) / 0.16), 0, 1)
     return top, bottom
 
 

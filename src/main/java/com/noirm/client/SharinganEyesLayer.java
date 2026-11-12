@@ -43,11 +43,11 @@ public class SharinganEyesLayer<T extends LivingEntity, M extends HumanoidModel<
      */
     private static final float[][] IRIS = {
             // x, y, radius, visible top, visible bottom
-            {1.625f, -3.625f, 0.74f, -4.25f, -3.0f},   // round
-            {1.625f, -3.625f, 0.7f, -4.25f, -3.0f},    // sharp
-            {1.625f, -3.625f, 0.7f, -4.25f, -3.0f},    // wide
-            {1.625f, -3.375f, 0.7f, -4.0f, -3.0f},     // narrow
-            {1.625f, -3.625f, 0.76f, -4.25f, -3.0f},   // pale
+            {1.625f, -3.5f, 0.5f, -4.0f, -3.25f},      // round
+            {1.625f, -3.5f, 0.48f, -4.0f, -3.25f},     // sharp
+            {1.625f, -3.5f, 0.42f, -4.0f, -3.0f},      // wide
+            {1.625f, -3.5f, 0.48f, -3.75f, -3.25f},    // narrow
+            {1.625f, -3.5f, 0.62f, -4.0f, -3.25f},     // pale
     };
     private static final Map<String, Integer> NINJA_STYLES = new HashMap<>();
     private static final int FULL_BRIGHT = 0xF000F0;

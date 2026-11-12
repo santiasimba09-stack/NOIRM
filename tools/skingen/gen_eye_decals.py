@@ -41,8 +41,8 @@ CELL_W, CELL_H = 64, 40
 CELLS = 8
 ATLAS_W, ATLAS_H = 512, 64
 
-WHITE = np.array(hx("#ece6dc"), np.float32)
-WHITE_SHADE = np.array(hx("#9a8e88"), np.float32)
+WHITE = np.array(hx("#e2dcd2"), np.float32)
+WHITE_SHADE = np.array(hx("#7c726e"), np.float32)
 WHITE_INNER = np.array(hx("#c9a49a"), np.float32)
 LASH = np.array(hx("#0b0709"), np.float32)
 LID = np.array(hx("#4a2620"), np.float32)
@@ -129,18 +129,11 @@ def cell_base(shape):
     shade = np.clip((Y - top) / 0.32, 0, 1)
     col = WHITE_SHADE + (WHITE - WHITE_SHADE) * shade[..., None]
     col = col * (1 - 0.18 * np.clip((Y - (bottom - 0.18)) / 0.18, 0, 1))[..., None]
-    inner = np.clip((0.16 - u) / 0.1, 0, 1)
-    col = col + (WHITE_INNER - col) * inner[..., None]
     rgb, a = over(rgb, a, inside, col)
-    # the lower lid: a thin line along the outer two thirds, darker at its outer end, with two short lashes
-    lo = lid_line(cx, s, "bottom", u0=0.35, u1=0.98)
-    lo = [(x, y + 0.06) for x, y in lo]
-    rgb, a = over(rgb, a, seg_cov(X, Y, lo, 0.05, 0.16) * 0.85, LID)
-    ox, oy = lo[-1]
-    out = -1.0
-    for k, (dx, dy) in enumerate(((0.18, 0.14), (0.3, 0.06))):
-        bx, by = lo[-6 - 4 * k]
-        rgb, a = over(rgb, a, seg_cov(X, Y, [(bx, by), (bx + out * dx, by + dy)], 0.06, 0.01) * 0.7, LID)
+    # the lower lid: one hard, thin line across the whole eye, heavier at its outer end (no lashes)
+    lo = lid_line(cx, s, "bottom", u0=0.08, u1=0.98)
+    lo = [(x, y + 0.05) for x, y in lo]
+    rgb, a = over(rgb, a, seg_cov(X, Y, lo, 0.06, 0.13) * 0.9, LID)
     return rgb, a
 
 
@@ -163,7 +156,7 @@ def cell_iris(shape):
     g = np.where(np.abs(d - 0.5) < 0.05, g * 1.15, g)
     # the dark limbal ring and the lid's shadow across the top
     g = np.where(d > 0.84, 0.18 + 0.15 * (d < 0.9), g)
-    g = g * (0.35 + 0.65 * np.clip((Y - top) / 0.28, 0, 1))
+    g = g * (0.3 + 0.7 * np.clip((Y - top) / 0.22, 0, 1))
     if pale:
         g = np.where(d > 0.84, 0.55, np.clip(g * 0.4 + 0.6, 0, 1))
     else:
@@ -190,7 +183,7 @@ def cell_top(shape):
     crease = [(x, y - lash * 0.95 - 0.12) for x, y in lid_line(cx, s, "top", u0=0.22, u1=0.96)]
     span = (u > 0.0) & (u < 1.0)
     gap = (top - lash * 0.2) - Y
-    hood_cov = np.where(span & (gap > 0) & (gap < s["hood"]), 0.28 * (1 - gap / s["hood"]) + 0.08, 0)
+    hood_cov = np.where(span & (gap > 0) & (gap < s["hood"]), 0.46 * (1 - gap / s["hood"]) + 0.1, 0)
     rgb, a = over(rgb, a, hood_cov, HOOD)
     rgb, a = over(rgb, a, seg_cov(X, Y, crease, 0.04, 0.09) * 0.6, CREASE)
     # the lash line: thin at the inner corner, heavy at the outer one
@@ -198,25 +191,17 @@ def cell_top(shape):
     # the flick: out and up from the outer corner, to a sharp point
     ox, oy = centre[-1]
     wing = s["wing"]
-    tipx, tipy = ox - wing, oy - 0.08 - wing * 0.22
+    tipx, tipy = ox - wing, oy - 0.03 - wing * 0.3
     rgb, a = over(rgb, a, seg_cov(X, Y, [(ox + 0.12, oy + 0.02), ((ox + tipx) / 2, (oy + tipy) / 2 + 0.02), (tipx, tipy)],
                                   lash * 0.9, 0.02), LASH)
-    # a few lashes off the outer third
-    for k, t in enumerate((0.62, 0.74, 0.86)):
-        bx, by = centre[int(t * (len(centre) - 1))]
-        ln = 0.13 + 0.06 * k
-        rgb, a = over(rgb, a, seg_cov(X, Y, [(bx, by - lash * 0.3), (bx - ln * 0.85, by - lash * 0.3 - ln * 0.55)], 0.09, 0.01),
-                      LASH)
     # a thin warm rim under the lash line where it meets the white (gives the lid thickness)
     rim = np.clip(aa(Y - (top + 0.02)) - aa(Y - (top + 0.08)), 0, 1) * inside
     rgb, a = over(rgb, a, rim * 0.55, LID)
-    # the highlight: a sharp four-sided glint up-left in the iris, and a tiny one lower right
+    # the highlight: one tiny glint, up and to the side (enough for life, never a sparkle)
     ix, iy, r = iris_geo(cx, s)
-    gx, gy = ix - r * 0.38, iy - r * 0.2
-    glint = aa(0.13 - (np.abs(X - gx) * 0.9 + np.abs(Y - gy) * 1.3))
-    gx2, gy2 = ix + r * 0.42, iy + r * 0.38
-    glint2 = aa(0.05 - (np.abs(X - gx2) + np.abs(Y - gy2)))
-    rgb, a = over(rgb, a, np.maximum(glint, glint2 * 0.85) * inside * (Y > top + 0.06), (255, 255, 255))
+    gx, gy = ix - r * 0.42, iy - r * 0.18
+    glint = aa(0.055 - (np.abs(X - gx) + np.abs(Y - gy)))
+    rgb, a = over(rgb, a, glint * 0.9 * inside * (Y > top + 0.05), (255, 255, 255))
     return rgb, a
 
 
