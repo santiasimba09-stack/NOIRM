@@ -193,7 +193,7 @@ public final class CreatorPackets {
             return new LookSync(player.getId(), look);
         }
 
-        void encode(FriendlyByteBuf buf) {
+        public void encode(FriendlyByteBuf buf) {
             buf.writeVarInt(entityId);
             buf.writeBoolean(look != null);
             if (look != null) {
@@ -201,7 +201,7 @@ public final class CreatorPackets {
             }
         }
 
-        static LookSync decode(FriendlyByteBuf buf) {
+        public static LookSync decode(FriendlyByteBuf buf) {
             int id = buf.readVarInt();
             return new LookSync(id, buf.readBoolean() ? PlayerLook.decode(buf) : null);
         }

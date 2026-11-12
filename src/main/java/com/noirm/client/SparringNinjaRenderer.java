@@ -34,6 +34,8 @@ public class SparringNinjaRenderer extends HumanoidMobRenderer<SparringNinja, Pl
                 new BendyArmorModel<>(0.5f), new BendyArmorModel<>(1.0f), // bends with the body
                 context.getModelManager()));
         addLayer(new GoreArmorLayer<>(this)); // dirt, soot, cuts and blood on their clothes
+        addLayer(new EyeDecalLayer<>(this)); // the high-detail eyes
+        addLayer(new HairLayer<>(this)); // 3D hair from their look
     }
 
     @Override

@@ -1,0 +1,7 @@
+{
+  "_comment": "What a worn head piece does to the 3D hair (com.noirm.creator.HairStyles.Cover), by item id prefix. none: nothing (masks, glasses). squash: a band around the head presses the hair in. crown: a hat or helmet, only hair hanging below it shows. all: a hood, no hair. Anything not listed counts as crown.",
+  "all": ["noirm:tattered_hood"],
+  "crown": ["noirm:kage_hat_", "noirm:straw_hat", "noirm:kabuto", "noirm:head_wrap_protector", "minecraft:"],
+  "squash": ["noirm:forehead_protector_"],
+  "none": ["noirm:anbu_mask", "noirm:mask_", "noirm:oni_mask", "noirm:cloth_mask", "noirm:half_mask"]
+}

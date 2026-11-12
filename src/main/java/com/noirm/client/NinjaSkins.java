@@ -100,7 +100,10 @@ public final class NinjaSkins {
         out.add(Map.entry("iris_" + f.get("eyes"), f.color("eye_color"))); // under the eye: lids, lashes, shine on top
         out.add(Map.entry("eyes_" + f.get("eyes"), -1));
         out.add(Map.entry("brows_" + f.get("brows"), f.color("hair_color")));
-        out.add(Map.entry("hair_" + f.get("hair_style"), f.color("hair_color")));
+        String scalp = com.noirm.creator.HairStyles.scalp(f.get("hair_style")); // under the 3D hair (HairLayer)
+        if (scalp != null) {
+            out.add(Map.entry("scalp_" + scalp, f.color("hair_color")));
+        }
         String accessory = f.get("accessory");
         if (!accessory.equals("none") && !accessory.isEmpty()) {
             out.add(Map.entry("acc_" + accessory, NinjaLook.tintedAccessory(accessory) ? f.color("accessory_color") : -1));

@@ -496,8 +496,130 @@ def part_hairlen(name):
     return p
 
 
+# ---------------------------------------------------------------------------
+# Body rework (owner, 2026-11-11): the feminine frame, body types, the black top
+# ---------------------------------------------------------------------------
+
+FEM_MUSCLE = {"none": BASE_MUSCLE, "lean": 0.6, "defined": 0.85, "heavy": 1.1}
+
+
+def part_fem(name):
+    """The feminine frame: the whole body redrawn (opaque) like a muscle part, with a softer chest and waist."""
+    s = FEM_MUSCLE[name]
+    p = Part()
+    A.FEMININE = True
+    try:
+        for box, seed in (("body", 13), ("rarm", 25), ("larm", 25), ("rleg", 39), ("lleg", 39)):
+            paint(p, box, lambda f, sd=seed: (A.shade_body(f, s * (0.8 if box != "body" else 1.0), sd), 1.0), light=False)
+    finally:
+        A.FEMININE = False
+    return p
+
+
+def part_build(name):
+    """A body type's shading, laid over the muscles (the width change is client/BodyShape): ink deltas only.
+
+    slim: the ribs show on the sides, the arms lean; athletic: hard shoulder caps and a sharp V taper;
+    broad: wide lit shoulders and traps, heavy shadow under the chest and down the flanks."""
+    p = Part()
+
+    def body(f):
+        if f.name in ("top", "bottom"):
+            return None
+        X, Y = f.X, f.Y
+        dk = np.zeros_like(X)
+        if name == "slim":
+            if f.side or f.name == "front":
+                lx = f.MX if f.side else np.minimum(X, f.W - X)
+                for i in range(4):
+                    y = 4.0 + 0.7 * i
+                    rib = A.crisp(stroke(f, [(0.2, y), (1.6, y + 0.35)], 0.12, 0.03, X=lx))
+                    dk = np.where(rib > 0, -1.2, dk)
+        elif name == "athletic":
+            if f.name in ("front", "back"):
+                for sx in (-1, 1):
+                    v = A.crisp(stroke(f, bezier((4 + 3.9 * sx, 3.6), (4 + 3.2 * sx, 7.0), (4 + 2.3 * sx, 9.6), 14), 0.22, 0.08))
+                    dk = np.where(v > 0, -1.4, dk)
+        elif name == "broad":
+            if f.name in ("front", "back"):
+                hi = A.crisp(((Y < 1.4) & (np.abs(X - 4) > 0.9)).astype(np.float32))
+                dk = np.where(hi > 0, 0.9, dk)
+                flank = A.crisp(((np.abs(X - 4) > 3.25) & (Y > 4.0) & (Y < 9.5)).astype(np.float32))
+                dk = np.where(flank > 0, -1.1, dk)
+            elif f.side:
+                dk = np.where(Y < 1.0, 0.7, dk)
+        return A.delta(dk)
+
+    def arm(f):
+        if f.name in ("top", "bottom"):
+            return None
+        X, Y = f.X, f.Y
+        dk = np.zeros_like(X)
+        lx = A.lateral(f) if not f.side else f.MX
+        if name == "athletic":
+            cap = A.crisp(stroke(f, bezier((0.2, 3.2), (2.0, 3.9), (3.8, 3.2), 12), 0.16, 0.16, X=lx))
+            dk = np.where(cap > 0, -1.3, dk)
+        elif name == "broad":
+            dk = np.where(Y < 1.6, 0.8, dk)
+            cap = A.crisp(stroke(f, bezier((0.2, 3.5), (2.0, 4.2), (3.8, 3.5), 12), 0.22, 0.22, X=lx))
+            dk = np.where(cap > 0, -1.4, dk)
+        elif name == "slim":
+            dk = np.where((lx < 0.35) & (Y > 2) & (Y < 9), -0.6, dk)
+        return A.delta(dk)
+
+    paint(p, "body", body, light=False)
+    for box in ARMS:
+        paint(p, box, arm, light=False)
+    return p
+
+
+def part_under_top():
+    """The black top worn with the boxers on the feminine frame: a wide-strapped crop top, its cloth lit
+    like the boxers (BOXER_TONES, so black still shows its folds), a ribbed elastic band under the bust."""
+    p = Part()
+    T = BOXER_TONES
+    top_y, band0, band1 = 0.9, 4.75, 5.55
+
+    def fn(f):
+        if f.name == "bottom":
+            return None
+        X, Y = f.X, f.Y
+        if f.name == "top":
+            strap = A.crisp(((np.abs(X - 4) > 1.0) & (np.abs(X - 4) < 3.0)).astype(np.float32))
+            return np.full_like(X, T[2]), strap
+        lx = f.MX if f.side else X
+        h = np.zeros_like(X)
+        if f.name == "front":
+            for sx in (-1, 1):
+                h += A.dome(f, 4 + 1.85 * sx, 3.15, 1.75, 1.45, 0.8)
+            h += fold(f, 4.0, 2.4, 4.0, 4.6, 0.35, -0.3)
+        k = cloth_tones(f, h, 431, "body", T)
+        if f.name in ("front", "back"):
+            # the neckline: a scoop at the front, straight across the back; straps over the shoulders
+            neck = 1.0 + (1.1 if f.name == "front" else 0.45) * np.clip(1 - ((X - 4) / 2.0) ** 2, 0, 1)
+            strap = (np.abs(X - 4) > 1.0) & (np.abs(X - 4) < 3.0) & (Y < neck + 0.3)
+            body = Y >= neck
+            a = A.crisp((((body | strap) & (Y >= top_y) & (Y < band1))).astype(np.float32))
+            k = np.where(np.abs(Y - neck) < 0.12, T[0], k)
+        else:
+            a = A.crisp(((Y > 1.6) & (Y < band1)).astype(np.float32))
+        band = (Y >= band0) & (Y < band1)
+        rib = tri(lx / 0.5) > 0.82
+        k = np.where(band, np.where(rib, T[1] - 0.4, T[1] + 0.3), k)
+        k = np.where((Y > band1 - 0.18) & band, T[3], k)
+        return k, a
+
+    paint(p, "body", fn, light=False)
+    return p
+
+
 def main():
     parts = {"skin_base": part_skin_base()}
+    for name in FEM_MUSCLE:
+        parts["fem_" + name] = part_fem(name)
+    for name in ("slim", "athletic", "broad"):
+        parts["build_" + name] = part_build(name)
+    parts["under_top"] = part_under_top()
     for name in NOSES:
         parts["nose_" + name] = feature_part(nose=name)
     for name in MOUTHS:
@@ -512,8 +634,7 @@ def main():
         parts["scar_" + name] = part_scar(name)
     for name in UNDER:
         parts["under_" + name] = part_under(name)
-    for name in ("nape", "shoulder", "waist"):
-        parts["hairlen_" + name] = part_hairlen(name)
+    # (hair length is now 3D hair down the back: client/HairLayer; the painted hairlen_* parts are retired)
     for name, part in parts.items():
         part.save(os.path.join(OUT_DIR, name + ".png"))
     print("wrote %d parts (%dx%d) to %s" % (len(parts), 64 * SCALE, 64 * SCALE, os.path.relpath(OUT_DIR, ROOT)))

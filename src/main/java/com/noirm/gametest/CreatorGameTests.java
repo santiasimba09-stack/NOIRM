@@ -297,7 +297,10 @@ public final class CreatorGameTests {
                 String id = slot.option(i);
                 switch (slot) {
                     case JAW, NOSE, MOUTH -> paths.add(player + slot.key() + "_" + id);
-                    case MUSCLE -> { if (!id.equals("none")) paths.add(player + "muscle_" + id); }
+                    case MUSCLE -> {
+                        if (!id.equals("none")) paths.add(player + "muscle_" + id);
+                        paths.add(player + "fem_" + id); // the feminine frame at each muscle level
+                    }
                     case WEATHERING -> { if (!id.equals("none")) paths.add(player + "weather_" + id); }
                     case SCAR -> {
                         if (id.equals("eye") || id.equals("nose")) paths.add(ninja + "mark_scar_" + id);
@@ -313,8 +316,9 @@ public final class CreatorGameTests {
                         paths.add("textures/entity/byakugan_eyes_" + id);
                     }
                     case BROWS -> paths.add(ninja + "brows_" + id);
-                    case HAIR -> { if (!id.equals("none")) paths.add(ninja + "hair_" + id); }
-                    case HAIR_LENGTH -> { if (!id.equals("as_styled")) paths.add(player + "hairlen_" + id); }
+                    case HAIR -> { if (!id.equals("none")) paths.add(ninja + "scalp_" + com.noirm.creator.HairStyles.scalp(id)); }
+                    case BODY -> { if (!id.equals("average")) paths.add(player + "build_" + id); }
+                    case FRAME -> { if (id.equals("feminine")) paths.add(player + "under_top"); }
                     default -> { }
                 }
             }
@@ -327,7 +331,7 @@ public final class CreatorGameTests {
             helper.assertTrue(in != null, "looks.json is there");
             com.google.gson.JsonObject clans = com.google.gson.JsonParser.parseReader(
                     new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("clans");
-            String[][] fields = {{"hair_style", "hair_"}, {"eyes", "eyes_"}, {"eyes", "iris_"}, {"brows", "brows_"},
+            String[][] fields = {{"eyes", "eyes_"}, {"eyes", "iris_"}, {"brows", "brows_"},
                     {"shirt", "shirt_"}, {"pants", "pants_"}, {"mark", "mark_"}, {"accessory", "acc_"}};
             for (String clan : clans.keySet()) {
                 com.google.gson.JsonObject table = clans.getAsJsonObject(clan);

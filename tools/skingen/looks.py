@@ -77,6 +77,17 @@ def part(parts_dir, name):
     return _PARTS[path]
 
 
+def scalp_of(style):
+    """The painted scalp part under a 3D hair style (assets/noirm/hair/styles/<style>.json), or None."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                        "src/main/resources/assets/noirm/hair/styles", style + ".json")
+    if not os.path.exists(path):
+        return None
+    import json
+    with open(path) as fh:
+        return json.load(fh).get("scalp")
+
+
 def layers(f, looks):
     """(part name, tint colour or None) in drawing order."""
     out = [("skin", f["skin"])]
@@ -93,7 +104,9 @@ def layers(f, looks):
     out.append(("iris_" + f["eyes"], f["eye_color"]))  # the iris sits under the eye (lids, lashes, shine)
     out.append(("eyes_" + f["eyes"], None))
     out.append(("brows_" + f["brows"], f["hair_color"]))
-    out.append(("hair_" + f["hair_style"], f["hair_color"]))
+    scalp = scalp_of(f["hair_style"])   # the 3D hair itself is drawn in game (client/HairLayer)
+    if scalp:
+        out.append(("scalp_" + scalp, f["hair_color"]))
     if f["accessory"] != "none":
         tinted = f["accessory"] in looks["tinted_accessories"]
         out.append(("acc_" + f["accessory"], f["accessory_color"] if tinted else None))
