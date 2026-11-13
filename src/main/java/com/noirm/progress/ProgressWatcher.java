@@ -62,7 +62,8 @@ public final class ProgressWatcher {
         }
         // Stats
         for (TrainingSystem.Stat stat : TrainingSystem.Stat.values()) {
-            StatTrigger.reached(player, stat, TrainingSystem.stat(data, stat));
+            // A pill's borrowed points don't count: only what you trained.
+            StatTrigger.reached(player, stat, TrainingSystem.stat(data, stat) - com.noirm.pills.PillEffects.statBonus(data, stat));
         }
         // Jutsu
         int stars = 0;

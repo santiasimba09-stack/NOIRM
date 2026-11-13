@@ -189,6 +189,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             tickChakra();
             com.noirm.world.wild.WildNinjas.tick(this); // wild groups: fight together, leave the wild for a crew
             com.noirm.ally.AllyFood.tickSelfFeed(this);
+            com.noirm.pills.NpcPills.tick(this); // a blood or soldier pill in a fight, sparingly
             syncAnimationState();
         }
         super.aiStep();

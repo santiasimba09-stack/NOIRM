@@ -32,7 +32,8 @@ import net.minecraftforge.fml.common.Mod;
  * <ol>
  *   <li>open the handbook;</li>
  *   <li>try combat mode (R) on the training dummy;</li>
- *   <li>find a missions board in a village.</li>
+ *   <li>find a missions board in a village;</li>
+ *   <li>brew a pill at an apothecary (herbs grow wild; {@code docs/PILLS.md}).</li>
  * </ol>
  * A tip comes back at most {@link #MAX_REMINDERS} times, {@link #REMIND_TICKS} apart, then the
  * guide moves on. Every tip has a "[Skip tips]" link ({@code /noirm guide tips off}).
@@ -42,7 +43,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Noirm.MOD_ID)
 public final class FirstSteps {
     /** The steps, in order. */
-    public enum Step { HANDBOOK, COMBAT, BOARD }
+    public enum Step { HANDBOOK, COMBAT, BOARD, APOTHECARY }
 
     /** The first tip, this long after the handbook is given (3 s). */
     public static final int FIRST_TIP_TICKS = 60;
@@ -140,6 +141,7 @@ public final class FirstSteps {
             case HANDBOOK -> guide.openedHandbook();
             case COMBAT -> guide.triedCombat();
             case BOARD -> guide.usedBoard() || data.career().mission() != null || data.career().rank().atLeast(PlayerRank.GENIN);
+            case APOTHECARY -> data.pills().brewed() > 0 || data.pills().swallowed() > 0;
         };
     }
 
@@ -150,7 +152,7 @@ public final class FirstSteps {
             case HANDBOOK -> Component.translatable(key);
             case COMBAT -> Component.translatable(key, Component.keybind("key.noirm.combat_mode").withStyle(ChatFormatting.YELLOW),
                     Component.keybind("key.noirm.jutsu_screen").withStyle(ChatFormatting.YELLOW));
-            case BOARD -> Component.translatable(key);
+            case BOARD, APOTHECARY -> Component.translatable(key);
         };
         MutableComponent skip = Component.translatable("guide.noirm.skip").withStyle(style -> style.withColor(ChatFormatting.DARK_GRAY)
                 .withUnderlined(true)

@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#noirm:has_herb/bloodleaf",
+  "features": "noirm:bloodleaf_patch",
+  "step": "vegetal_decoration"
+}

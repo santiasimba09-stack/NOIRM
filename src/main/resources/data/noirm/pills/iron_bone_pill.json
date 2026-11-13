@@ -1,0 +1,61 @@
+{
+  "item": "noirm:iron_bone_pill",
+  "color": "#8C8C94",
+  "cooldown": 300,
+  "toxicity": 40,
+  "effects": [
+    {
+      "type": "durability",
+      "amount": 0.5,
+      "seconds": 45
+    },
+    {
+      "type": "vitality",
+      "amount": 0.25,
+      "seconds": 45
+    },
+    {
+      "type": "posture_recovery",
+      "amount": 6.0,
+      "seconds": 45
+    }
+  ],
+  "crash": [
+    {
+      "type": "effect",
+      "seconds": 45,
+      "effect": "minecraft:slowness",
+      "amplifier": 1
+    },
+    {
+      "type": "speed",
+      "amount": -0.1,
+      "seconds": 45
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:ashthorn",
+        "count": 2
+      },
+      {
+        "item": "noirm:ironmillet",
+        "count": 2
+      },
+      {
+        "item": "minecraft:bone_meal",
+        "count": 2
+      },
+      {
+        "item": "minecraft:iron_ingot",
+        "count": 1
+      }
+    ],
+    "yield": 1,
+    "difficulty": 32,
+    "min_pharmacology": 30,
+    "unlock": "perk:high_grade_pills",
+    "xp": 50
+  }
+}

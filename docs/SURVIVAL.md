@@ -26,6 +26,8 @@ owner's answers to the gaps we found; ask before changing them. **Single-player 
   - **Summoning contracts:** animal clans of our own design, partners that fight with you, and
     training with them.
   - **Food, pills and tools:** soldier pills, chakra food, blood pills, smoke bombs, wire, traps.
+    Foods and pills built (12 foods, 8 pills, 5 herbs and rice, the apothecary and pharmacology):
+    `docs/PILLS.md`. Tools (smoke bombs, wire, traps) still to come.
   - **Sealing and other paths:** fūinjutsu (seals, barriers, storage), the puppet path, space-time
     techniques.
   - **Crafting and economy:** a chakra-metal ore, a blacksmith who forges and upgrades, homes, hiring

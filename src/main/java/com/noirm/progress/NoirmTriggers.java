@@ -31,7 +31,8 @@ public final class NoirmTriggers {
             BeginningsTrigger.INSTANCE, StatTrigger.INSTANCE, JutsuTrigger.INSTANCE, NatureTrigger.INSTANCE,
             RankTrigger.INSTANCE, MissionTrigger.INSTANCE, RyoTrigger.INSTANCE, DefeatTrigger.INSTANCE,
             CombatFeatTrigger.INSTANCE, CrewTrigger.INSTANCE, MasterTrigger.INSTANCE, EyesTrigger.INSTANCE,
-            SageTrigger.INSTANCE, BeastTrigger.INSTANCE, CreateJutsuTrigger.INSTANCE, FuseNaturesTrigger.INSTANCE);
+            SageTrigger.INSTANCE, BeastTrigger.INSTANCE, CreateJutsuTrigger.INSTANCE, FuseNaturesTrigger.INSTANCE,
+            PillTrigger.INSTANCE);
 
     /** Called from common setup (on the main thread: the game's trigger list is a plain map). */
     public static void setup(FMLCommonSetupEvent event) {

@@ -31,6 +31,7 @@ public final class Handbook {
             chapter("missions", "noirm:mission_board", "noirm:ryo_pouch", "noirm:mission_parcel"),
             chapter("crew", "noirm:sparring_ninja_spawn_egg", "minecraft:bread", "noirm:flak_vest"),
             chapter("masters", "noirm:master_spawn_egg", "noirm:antidote", "minecraft:book"),
+            chapter("medicine", "noirm:apothecary", "noirm:soldier_pill", "noirm:onigiri", "noirm:moonroot"),
             chapter("sage", "minecraft:mossy_cobblestone", "minecraft:lily_pad", "minecraft:stone"),
             chapter("bingo", "noirm:bingo_book", "noirm:ryo_pouch", "minecraft:skeleton_skull"),
             chapter("beasts", "noirm:sealing_scroll", "noirm:sharingan_eye", "minecraft:ender_eye"));

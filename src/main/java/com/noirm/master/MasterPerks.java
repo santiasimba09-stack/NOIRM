@@ -31,6 +31,9 @@ import java.util.Set;
  *   <tr><td>{@value #POISON_LORE}</td><td>the medical ninja</td><td>poisons last half as long and hit one level weaker; your
  *       antidotes work (anyone else's come out botched); two antidotes to start</td></tr>
  *   <tr><td>{@value #EYE_TRANSPLANT} (service)</td><td>the medical ninja</td><td>a safe eye transplant ({@link EyeSurgery})</td></tr>
+ *   <tr><td>{@code pill_lore}, {@code high_grade_pills}</td><td>the medical ninja</td><td>pill recipes and pharmacology
+ *       ({@code pills.PillLore})</td></tr>
+ *   <tr><td>{@code pill_supply} (service)</td><td>the medical ninja</td><td>a few soldier and blood pills</td></tr>
  * </table>
  */
 public final class MasterPerks {
@@ -39,9 +42,13 @@ public final class MasterPerks {
     public static final String NATURE_INSIGHT = "nature_insight";
     public static final String POISON_LORE = "poison_lore";
     public static final String EYE_TRANSPLANT = "eye_transplant";
+    /** The medic's pill-making lessons and her pill supply ({@code pills.PillLore}). */
+    public static final String PILL_LORE = com.noirm.pills.PillLore.PILL_LORE;
+    public static final String HIGH_GRADE_PILLS = com.noirm.pills.PillLore.HIGH_GRADE_PILLS;
+    public static final String PILL_SUPPLY = com.noirm.pills.PillLore.PILL_SUPPLY;
 
-    private static final Set<String> PERKS = Set.of(SWIFT_SEALS, CHAKRA_EFFICIENCY, NATURE_INSIGHT, POISON_LORE);
-    private static final Set<String> SERVICES = Set.of(EYE_TRANSPLANT);
+    private static final Set<String> PERKS = Set.of(SWIFT_SEALS, CHAKRA_EFFICIENCY, NATURE_INSIGHT, POISON_LORE, PILL_LORE, HIGH_GRADE_PILLS);
+    private static final Set<String> SERVICES = Set.of(EYE_TRANSPLANT, PILL_SUPPLY);
 
     // ---------------------------------------------------------------- tuning
     /** Swift Seals: the seal phase takes this share of its time. */
@@ -123,6 +130,9 @@ public final class MasterPerks {
         if (EYE_TRANSPLANT.equals(lesson.service())) {
             return EyeSurgery.byMedic(player, data, Component.translatable(master.name()));
         }
+        if (PILL_SUPPLY.equals(lesson.service())) {
+            return com.noirm.pills.PillLore.supply(player);
+        }
         return false;
     }
 
@@ -148,6 +158,7 @@ public final class MasterPerks {
                     player.drop(antidotes, false);
                 }
             }
+            case PILL_LORE, HIGH_GRADE_PILLS -> com.noirm.pills.PillLore.granted(player, data, lesson.perk());
             default -> { }
         }
         player.sendSystemMessage(Component.translatable("perk.noirm." + lesson.perk() + ".got").withStyle(ChatFormatting.GRAY));

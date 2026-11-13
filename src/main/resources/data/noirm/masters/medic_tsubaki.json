@@ -38,6 +38,18 @@
       "ryo": 150
     },
     {
+      "id": "pill_lore",
+      "perk": "pill_lore",
+      "rank": "genin",
+      "ryo": 200
+    },
+    {
+      "id": "pill_supply",
+      "service": "pill_supply",
+      "rank": "genin",
+      "ryo": 250
+    },
+    {
       "id": "chakra_scalpel",
       "jutsu": "noirm:medical/chakra_scalpel",
       "rank": "chunin",
@@ -81,6 +93,16 @@
       "service": "eye_transplant",
       "rank": "jonin",
       "ryo": 1500
+    },
+    {
+      "id": "high_grade_pills",
+      "perk": "high_grade_pills",
+      "rank": "jonin",
+      "ryo": 2000,
+      "control": 25,
+      "after": [
+        "pill_lore"
+      ]
     }
   ]
 }

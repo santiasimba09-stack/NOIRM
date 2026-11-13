@@ -1,0 +1,16 @@
+{
+  "item": "noirm:curry_rice",
+  "color": "#C8862A",
+  "effects": [
+    {
+      "type": "health_regen",
+      "amount": 0.5,
+      "seconds": 30
+    },
+    {
+      "type": "chakra_regen",
+      "amount": 1.2,
+      "seconds": 90
+    }
+  ]
+}

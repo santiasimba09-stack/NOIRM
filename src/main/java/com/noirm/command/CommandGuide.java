@@ -198,6 +198,14 @@ public final class CommandGuide {
                 .add("book", "/noirm guide", "/noirm guide", false)
                 .add("tips", "/noirm guide tips <on|off>", "/noirm guide tips off", false)
                 .add("reset", "/noirm guide reset", "/noirm guide reset", true);
+        section("medicine")
+                .add("status", "/noirm pill", "/noirm pill", false)
+                .add("recipes", "/noirm pill recipes", "/noirm pill recipes", false)
+                .add("give", "/noirm pill give <pill> [grade] [count]", "/noirm pill give soldier_pill perfect 3", true)
+                .add("take", "/noirm pill take <pill> [grade]", "/noirm pill take three_seal_pill refined", true)
+                .add("pharmacology", "/noirm pill pharmacology <1-100>", "/noirm pill pharmacology 30", true)
+                .add("learn", "/noirm pill learn <recipe|all>", "/noirm pill learn focus_pill", true)
+                .add("clear", "/noirm pill clear", "/noirm pill clear", true);
     }
 
     private CommandGuide() {}

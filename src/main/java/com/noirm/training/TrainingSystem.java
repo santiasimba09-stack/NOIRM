@@ -312,7 +312,8 @@ public final class TrainingSystem {
 
     /** Adds XP and raises the stat for every threshold crossed. */
     public static void grant(Player player, Stat stat, float baseXp) {
-        float xp = baseXp * com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.TRAINING_SPEED); // config: progression.trainingSpeed
+        float xp = baseXp * com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.TRAINING_SPEED) // config: progression.trainingSpeed
+                * com.noirm.pills.PillEffects.trainingXpMultiplier(player); // a training meal (foods)
         if (xp <= 0f) {
             return;
         }
@@ -332,7 +333,7 @@ public final class TrainingSystem {
             if (gained > 0) {
                 setStat(data, stat, value);
                 announce(player, stat, value);
-                com.noirm.progress.StatTrigger.reached(player, stat, value);
+                com.noirm.progress.StatTrigger.reached(player, stat, value - com.noirm.pills.PillEffects.statBonus(data, stat));
             }
             data.markDirty();
         });

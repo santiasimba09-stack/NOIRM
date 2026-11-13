@@ -384,6 +384,9 @@ public final class ApxMastersGameTests {
         CombatSystem.setCombatMode(player, false);
         data.guide().setUsedBoard(true);
         FirstSteps.tick(player, data, 1060);
+        helper.assertTrue(data.guide().step() == 3, "board used: next, the apothecary");
+        data.pills().addSwallowed(); // a first pill (or a first brew) ticks it off
+        FirstSteps.tick(player, data, 1080);
         helper.assertTrue(data.guide().step() == FirstSteps.Step.values().length, "all done");
         // Skippable: with the tips off, nothing more is said.
         data.guide().reset();

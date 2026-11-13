@@ -139,6 +139,13 @@ public final class CombatState {
         return maxPosture;
     }
 
+    /** Takes {@code amount} off the posture meter (foods and pills that steady you; never below 0). */
+    public void recoverPosture(float amount) {
+        if (amount > 0f && posture > 0f) {
+            posture = Math.max(0f, posture - amount);
+        }
+    }
+
     public float timeScale() {
         return timeScale;
     }
