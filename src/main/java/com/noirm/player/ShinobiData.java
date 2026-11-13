@@ -79,6 +79,8 @@ public final class ShinobiData {
     private final com.noirm.arts.ArtsData arts = new com.noirm.arts.ArtsData();
     /** Jutsu you made in the workshop or learned from a creation scroll ({@code workshop.*}). */
     private final com.noirm.workshop.CreationBook creations = new com.noirm.workshop.CreationBook();
+    /** Foods and pills: pharmacology, toxicity, cooldowns and the effects running now ({@code pills.*}). */
+    private final com.noirm.pills.PillData pills = new com.noirm.pills.PillData();
     /** Your crew mates (ninjas who joined you), by UUID. */
     private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
 
@@ -120,6 +122,11 @@ public final class ShinobiData {
     /** Your workshop creations (and ones learned from scrolls). */
     public com.noirm.workshop.CreationBook creations() {
         return creations;
+    }
+
+    /** Foods and pills: pharmacology, toxicity, cooldowns, active effects. */
+    public com.noirm.pills.PillData pills() {
+        return pills;
     }
 
     public java.util.List<java.util.UUID> crew() {
@@ -320,6 +327,7 @@ public final class ShinobiData {
         if (awakening.isExhausted()) {
             multiplier *= 0.5f;
         }
+        multiplier *= com.noirm.pills.PillEffects.chakraRegenMultiplier(this); // foods and pills
         return biju.cloakStage() > 0 ? multiplier * 3f : multiplier;
     }
 
@@ -329,6 +337,7 @@ public final class ShinobiData {
         if (awakening.isLockedIn()) {
             multiplier *= 2f;
         }
+        multiplier *= com.noirm.pills.PillEffects.staminaRegenMultiplier(this); // foods and pills
         return biju.cloakStage() > 0 ? multiplier * 1.5f : multiplier;
     }
 
@@ -389,6 +398,7 @@ public final class ShinobiData {
         tag.put("Guide", guide.save());
         tag.put("Arts", arts.save());
         tag.put("Creations", creations.save());
+        tag.put("Pills", pills.save());
         return tag;
     }
 
@@ -421,6 +431,7 @@ public final class ShinobiData {
         guide.load(tag.getCompound("Guide"));
         arts.load(tag.getCompound("Arts"));
         creations.load(tag.getList("Creations", net.minecraft.nbt.Tag.TAG_COMPOUND));
+        pills.load(tag.getCompound("Pills"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

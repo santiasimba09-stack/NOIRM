@@ -220,7 +220,7 @@ public final class Supplementary {
         if (value >= ShinobiData.MAX_STAT) {
             return;
         }
-        float total = data.training().xp(stat) + xp;
+        float total = data.training().xp(stat) + xp * com.noirm.pills.PillEffects.trainingXpMultiplier(data); // a training meal
         int gained = 0;
         while (total >= TrainingSystem.xpToNext(value) && value < ShinobiData.MAX_STAT) {
             total -= TrainingSystem.xpToNext(value);

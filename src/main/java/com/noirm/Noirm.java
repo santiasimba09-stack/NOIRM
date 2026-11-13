@@ -38,6 +38,7 @@ public final class Noirm {
         com.noirm.bounty.BountyItems.register(modBus); // the bingo book
         com.noirm.medical.MedicalItems.register(modBus); // the antidote
         com.noirm.guide.GuideItems.register(modBus); // the Shinobi Handbook
+        com.noirm.pills.PillItems.register(modBus); // foods, herbs, pills and the apothecary (docs/PILLS.md)
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
         com.noirm.sound.NoirmSounds.register(modBus); // our own synthesised sounds (tools/soundgen, docs/SOUND.md)

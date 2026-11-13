@@ -96,7 +96,8 @@ public final class Perception {
         return Sharingan.perceptionMultiplier(entity) * keenEyes
                 * com.noirm.jutsu.ModeSystem.perceptionMultiplier(entity)
                 * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity)
-                * com.noirm.senjutsu.SageMode.perceptionMultiplier(entity);
+                * com.noirm.senjutsu.SageMode.perceptionMultiplier(entity)
+                * com.noirm.pills.PillEffects.perceptionMultiplier(entity); // a focus pill
     }
 
     /**

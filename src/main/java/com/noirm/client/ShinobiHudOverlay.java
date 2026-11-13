@@ -74,7 +74,8 @@ public final class ShinobiHudOverlay {
         } else {
             POSTURE.snap(fraction(ClientCombat.posture(), ClientCombat.maxPosture()));
         }
-        PowerHud.drawStatus(graphics, font, minecraft, y + 2, combat);
+        y = PowerHud.drawStatus(graphics, font, minecraft, y + 2, combat);
+        PillHud.draw(graphics, font, X, y + 2, combat); // pills and foods at work, their crashes and cooldowns
     }
 
     /**

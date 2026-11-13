@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:soldier_pill"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.medicine.first_pill.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.medicine.first_pill.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/medicine/first_food",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:medicine",
+      "conditions": {
+        "event": "pill"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

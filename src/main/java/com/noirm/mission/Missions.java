@@ -710,6 +710,7 @@ public final class Missions {
         player.sendSystemMessage(Component.translatable("mission.noirm.complete", Component.translatable(MissionTemplate.nameKey(m.template)),
                 Ryo.format(reward), def.points()).withStyle(ChatFormatting.GOLD));
         player.level().playSound(null, player.blockPosition(), com.noirm.sound.NoirmSounds.MISSION_COMPLETE.get(), SoundSource.PLAYERS, 0.9f, 1f);
+        com.noirm.pills.PillShop.missionReward(player, def.rank()); // B-rank and up: pills now and then
         Exams.afterPoints(player);
         return true;
     }

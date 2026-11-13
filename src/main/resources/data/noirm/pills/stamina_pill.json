@@ -1,0 +1,40 @@
+{
+  "item": "noirm:stamina_pill",
+  "color": "#5CCB6A",
+  "cooldown": 30,
+  "toxicity": 12,
+  "instant": {
+    "stamina": 1.0
+  },
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 1.5,
+      "seconds": 40
+    }
+  ],
+  "crash": [
+    {
+      "type": "stamina_regen",
+      "amount": 0.8,
+      "seconds": 20
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:ironmillet",
+        "count": 2
+      },
+      {
+        "item": "minecraft:sugar",
+        "count": 1
+      }
+    ],
+    "yield": 3,
+    "difficulty": 1,
+    "min_pharmacology": 1,
+    "unlock": "starter",
+    "xp": 10
+  }
+}

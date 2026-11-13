@@ -86,10 +86,11 @@ public final class PowerHud {
     }
 
     /** The status lines under the vitals, from {@code y}. */
-    static void drawStatus(GuiGraphics graphics, Font font, Minecraft minecraft, int y, boolean combat) {
+    /** Draws the status lines from {@code y}; returns the y below them. */
+    static int drawStatus(GuiGraphics graphics, Font font, Minecraft minecraft, int y, boolean combat) {
         PowerPackets.SyncPowers powers = ClientPowers.get();
         if (powers == null || minecraft.player == null) {
-            return;
+            return y;
         }
         y = drawNature(graphics, font, powers, y, minecraft.player.tickCount);
 
@@ -179,8 +180,10 @@ public final class PowerHud {
             if (bondAlpha > 0.03f) {
                 int bondColor = powers.bond() >= 50 ? 0xFFFFC040 : powers.bond() >= 0 ? 0xFFD0A070 : 0xFFD05040;
                 HudKit.text(graphics, font, Component.translatable("hud.noirm.cloak.bond", powers.bond(), powers.unlockedTails()), X, y, bondColor, bondAlpha);
+                y += LINE;
             }
         }
+        return y;
     }
 
     /**

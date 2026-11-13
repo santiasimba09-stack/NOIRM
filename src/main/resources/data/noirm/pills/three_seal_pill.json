@@ -1,0 +1,110 @@
+{
+  "item": "noirm:three_seal_pill",
+  "color": "#D23C2A",
+  "cooldown": 600,
+  "toxicity": 60,
+  "instant": {
+    "chakra": 1.0,
+    "stamina": 1.0,
+    "heal": 6
+  },
+  "effects": [
+    {
+      "type": "speed",
+      "amount": 0.25,
+      "seconds": 60
+    },
+    {
+      "type": "taijutsu",
+      "amount": 0.25,
+      "seconds": 60
+    },
+    {
+      "type": "control",
+      "amount": 0.25,
+      "seconds": 60
+    },
+    {
+      "type": "durability",
+      "amount": 0.25,
+      "seconds": 60
+    },
+    {
+      "type": "willpower",
+      "amount": 0.25,
+      "seconds": 60
+    },
+    {
+      "type": "perception",
+      "amount": 1.15,
+      "seconds": 60
+    }
+  ],
+  "crash": [
+    {
+      "type": "speed",
+      "amount": -0.15,
+      "seconds": 120
+    },
+    {
+      "type": "taijutsu",
+      "amount": -0.15,
+      "seconds": 120
+    },
+    {
+      "type": "control",
+      "amount": -0.15,
+      "seconds": 120
+    },
+    {
+      "type": "durability",
+      "amount": -0.15,
+      "seconds": 120
+    },
+    {
+      "type": "effect",
+      "seconds": 120,
+      "effect": "minecraft:slowness"
+    },
+    {
+      "type": "effect",
+      "seconds": 120,
+      "effect": "minecraft:weakness"
+    },
+    {
+      "type": "effect",
+      "seconds": 60,
+      "effect": "minecraft:hunger"
+    },
+    {
+      "type": "chakra_regen",
+      "amount": 0.3,
+      "seconds": 120
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:bloodleaf",
+        "count": 2
+      },
+      {
+        "item": "noirm:ironmillet",
+        "count": 2
+      },
+      {
+        "item": "noirm:ashthorn",
+        "count": 2
+      },
+      {
+        "item": "minecraft:gold_nugget",
+        "count": 3
+      }
+    ],
+    "yield": 1,
+    "difficulty": 45,
+    "min_pharmacology": 40,
+    "unlock": "perk:high_grade_pills",
+    "xp": 80
+  }
+}

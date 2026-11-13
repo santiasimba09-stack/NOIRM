@@ -113,6 +113,7 @@ public final class Shop {
                 }
             });
         }
+        com.noirm.pills.PillShop.addStock(merchant.shop(), rows, stocked); // foods, herbs and pills (docs/PILLS.md)
         if (merchant.shop() == VillageMerchant.SHOP_GENERAL || merchant.shop() == VillageMerchant.SHOP_WEAPONS) {
             // The bingo book: cheap, for anyone (dangerous rogues and their bounties).
             rows.add(new Row(new ItemStack(com.noirm.bounty.BountyItems.BINGO_BOOK.get()), com.noirm.bounty.BingoBook.BOOK_PRICE, false,

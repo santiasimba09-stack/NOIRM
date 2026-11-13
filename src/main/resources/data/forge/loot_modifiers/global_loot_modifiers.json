@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
-    "noirm:nature_loot"
+    "noirm:nature_loot",
+    "noirm:pill_loot"
   ]
 }

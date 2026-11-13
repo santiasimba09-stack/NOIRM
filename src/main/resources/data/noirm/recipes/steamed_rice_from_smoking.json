@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "ingredient": {
+    "item": "noirm:rice"
+  },
+  "result": "noirm:steamed_rice",
+  "experience": 0.35,
+  "cookingtime": 100
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:ruined_pill"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.medicine.overdose.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.medicine.overdose.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/medicine/first_pill",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:medicine",
+      "conditions": {
+        "event": "toxicity",
+        "min": 95
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "item": "noirm:steamed_rice",
+  "color": "#F2EEE0",
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 1.1,
+      "seconds": 30
+    }
+  ]
+}

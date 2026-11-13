@@ -107,6 +107,8 @@ public final class NoirmConfig {
     public static final Value<Double> TRAINING_SPEED = value("progression.trainingSpeed", 1.0);
     public static final Value<Double> DRILL_TIME = value("progression.drillTime", 1.0);
     public static final Value<Double> RYO_REWARDS = value("progression.ryoRewards", 1.0);
+    // ---------------------------------------------------------------- medicine (foods and pills)
+    public static final Value<Double> PILL_STRENGTH = value("medicine.pillStrength", 1.0);
 
     public static final ForgeConfigSpec SPEC;
 
@@ -166,6 +168,11 @@ public final class NoirmConfig {
                 .defineInRange("drillTime", 1.0, 0.05, 10.0);
         RYO_REWARDS.spec = b.comment("Ryo paid by missions and bounties.")
                 .defineInRange("ryoRewards", 1.0, 0.0, 10.0);
+        b.pop();
+
+        b.comment("Medicine: pills from the apothecary, shops and loot (docs/PILLS.md).").push("medicine");
+        PILL_STRENGTH.spec = b.comment("How strong pills are: their boosts and refills (1.0 = normal). Crashes and toxicity are not scaled.")
+                .defineInRange("pillStrength", 1.0, 0.1, 5.0);
         b.pop();
         SPEC = b.build();
     }
