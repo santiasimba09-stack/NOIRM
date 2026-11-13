@@ -249,6 +249,10 @@ public final class WildGameTests {
         BlockPos at = helper.absolutePos(new BlockPos(2, 1, 2));
         zombie.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
         zombie.setNoAi(true);
+        // The test is about who targets the zombie, not killing it: with reinforced strikes a plain zombie
+        // could die before the second traveller picks it (an invulnerable one can't be targeted at all).
+        zombie.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+        zombie.setHealth(1000);
         helper.getLevel().addFreshEntity(zombie);
         pair.get(0).setTarget(zombie); // (as if the zombie had hit them)
         helper.succeedWhen(() -> {

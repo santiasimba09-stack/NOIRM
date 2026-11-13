@@ -54,6 +54,7 @@ Each milestone ends with something you can play and test.
 | 3.14 | **Chakra wave** (part 1 ✅, v0.15.0) | 71 new jutsu: epic Wood Release, every combined nature, Yin/Yang/Yin-Yang, Medical, more Wind and Earth. Next: solo transformations and a jutsu workshop (part 2), solid-flame chakra for cloaks, Susanoo, Sage and the Gates (part 3). See `CHAKRA_WAVE.md`. |
 | 3.15 | **A complete survival game** (planned) | The owner's plan in `SURVIVAL.md`: advancements and a playthrough, a config file and balance, our own sound, survival staples (food, pills, tools, crafting, economy), exploration (ruins, dungeons, beast lairs), new paths (summoning, sealing, puppets, space-time), and an endgame (Kage, wars, a rogue organisation). Single-player first. |
 | 3.16 | **Combat feel and looks** ✅ (v0.17.0) | Combat animations rebuilt on our engine (snap key poses, automatic sub-stances, 5-hit strings, dodge counters, dash strikes, guard breaks); 3D hair in 23 styles, new eyes, body builds and frames; a survival playthrough with a balance pass (`PLAYTHROUGH.md`). |
+| 3.17 | **Pills, food and chakra armour** ✅ (v0.18.0) | A pill-making craft (herbs, apothecary, pharmacology), ninja foods, chakra reinforcement over vanilla armour with chakra durability, a Water S-rank jutsu. |
 | later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
 
 ## Art without an artist

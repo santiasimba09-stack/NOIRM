@@ -2,6 +2,41 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-13 — Pills and foods, chakra reinforcement, Water S-rank, eyes fourth pass, v0.18.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+Built from the owner's answers on the progress map (`docs/SURVIVAL.md`, last section).
+- **Pills and foods** (`docs/PILLS.md`, package `pills/`):
+  - **Pills:** 8 kinds (stamina, soldier, chakra, blood, antidote, focus, and the rare iron-bone and
+    three-seal), each with crashes and cooldowns. Toxicity weakens pills taken on top of each other, and
+    an overdose sickens you.
+  - **Pill-making:** 5 herbs that grow in the world and can be farmed, an apothecary block with its own
+    screen, and a pharmacology skill that raises success, grade (crude to perfect) and yield; failed
+    brews leave a ruined pill.
+  - **Learning recipes:** Tsubaki teaches recipes, and medical scrolls are found as loot.
+  - **Ninjas:** they swallow blood and soldier pills in fights.
+  - **Foods:** 12, with short bonuses, sold in shops; the old ramen gets a recipe.
+  - **Around them:** a "Medicine" advancement branch (8), a Handbook chapter, a fourth first-steps tip,
+    a HUD for active pills and toxicity, and `/noirm pill` commands.
+- **Chakra reinforcement** (`docs/COMBAT_DESIGN.md`):
+  - **Armour:** ninja attacks keep only 25% of vanilla armour (`difficulty.ninjaArmour`); vanilla mobs
+    still meet full armour.
+  - **Reinforcement:** Reserves and CTL give up to +50% damage dealt and −35% damage taken, at most 70%
+    together with Durability, paid in chakra per hit; NPCs follow the same rules.
+  - **Chakra durability:** armour gets a pool of up to +50% of its durability, worn down first and
+    refilling with chakra, shown in blue in the tooltip and on the slot's durability bar.
+  - **Fire against beginners:** an enemy ninja's fire burns 40% shorter and takes at most 35% of a
+    player's health per second (legends excepted).
+- **Water S-rank: Leviathan Maelstrom:** a whirlpool, then a crushing water sphere, then a horned
+  serpent crashing down from 14 blocks.
+- **Eyes, fourth pass:** shorter, no crease or lid shadow, the lash line stops at the outer point.
+- **Tests:**
+  - 500 game tests, green twice in a row.
+  - `groupmatesjointhefight` got a sturdier zombie (1,000 health), because reinforced strikes could
+    kill it before the second traveller picked it.
+  - Network protocol 27.
+- The game-test world from before the restart ran the server out of memory, so the pills helper started
+  a fresh one. The cause is not found yet.
+
 ## 2026-11-12 — Combat animation rebuild, hair/eyes/bodies, survival playthrough, v0.17.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - **Combat animations rebuilt on the existing engine** (the owner: "too realistic for Minecraft"; they

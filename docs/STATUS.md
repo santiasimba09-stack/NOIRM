@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-12 (v0.17.0: combat animation rebuild, hair/eyes/bodies, survival playthrough) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-13 (v0.18.0: pills and foods, chakra reinforcement, Water S-rank) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -60,14 +60,22 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 `outpostisbuilt`, `vacuumwavecutsallaround`, `despawnrules` (all four in the first run on a freshly
 generated test world) and `groupmatesjointhefight`.
 
+## v0.18.0 (2026-11-13)
+
+| Piece | State |
+|---|---|
+| **Pills and foods** (`PILLS.md`): 8 pills with toxicity and crashes, 5 herbs, apothecary, pharmacology skill, 12 foods, NPCs use pills | ✅ tested; checked in client (`pills-*`) |
+| **Chakra reinforcement** (`COMBAT_DESIGN.md`): armour mostly ignored by ninja attacks, reinforcement from Reserves + CTL, chakra durability on armour, fire capped for beginners | ✅ tested; checked in client (`cr-*`) |
+| **Leviathan Maelstrom** (Water S-rank) | ✅ tested; checked in client (`cr-water-*`) |
+| **Eyes, fourth pass** | ✅ checked in client (`eyes-v2-*`) |
+
 ## Next steps (in order)
 
-1. **Owner playtest of v0.17.0:** the new combat feel, hair/eyes/bodies, and the questions in `PLAYTHROUGH.md`.
-2. **Combat follow-up:** side-view frame strips for every style and weapon; tune from the owner's feedback.
-3. **Survival staples** (food, pills, tools; crafting and economy), aimed at the quiet middle of the game
-   (chūnin → jōnin) the playthrough found.
-4. **Exploration**, then **new paths**, then **endgame** (`docs/SURVIVAL.md`). Chakra wave part 3 (solid-flame chakra) when the owner wants it.
-5. Root-cause the flaky tests above.
+1. **Owner tries v0.18.0** and answers the new questions on the progress map (reinforcement numbers,
+   legends vs the simulator, pill strength, toxicity pace, herbs).
+2. **Rest of the survival staples:** smoke bombs, wire, traps; then more foods, armour and weapons to buy.
+3. **Exploration**, then **new paths**, then **endgame** (`docs/SURVIVAL.md`). Chakra wave part 3 when the owner wants it.
+4. Flaky tests still listed above; find why the old test world ran out of memory.
 
 ## Code map
 
