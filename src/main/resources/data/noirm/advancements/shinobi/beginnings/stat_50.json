@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_50.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_50.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beginnings/stat_30",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:stat",
+      "conditions": {
+        "min": 50
+      }
+    }
+  },
+  "rewards": {
+    "experience": 150
+  }
+}

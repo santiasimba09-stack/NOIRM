@@ -1,0 +1,13 @@
+{
+  "nature": "lightning",
+  "behavior": "bind",
+  "rank": "B",
+  "chakra_cost": 26,
+  "cooldown": 260,
+  "params": {
+    "range": 9,
+    "stun": 45,
+    "damage": 3,
+    "posture": 25
+  }
+}

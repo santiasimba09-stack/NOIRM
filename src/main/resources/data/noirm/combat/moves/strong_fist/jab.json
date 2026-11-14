@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:strong_fist_jab",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 3,
+    "cancel_after": 1
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 8,
+    "range": 2.6,
+    "arc": 90,
+    "knockback": 0.15,
+    "lunge": 0.3,
+    "hitstun": 6,
+    "hitstop": 1,
+    "shake": 0.25
+  },
+  "next": {
+    "light": "noirm:strong_fist/straight",
+    "heavy": "noirm:strong_fist/leaf_whirlwind"
+  },
+  "variants": {
+    "air": "noirm:basic/air_kick"
+  }
+}

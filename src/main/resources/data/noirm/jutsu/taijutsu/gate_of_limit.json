@@ -1,0 +1,10 @@
+{
+  "cast": "tap", "behavior": "mode", "rank": "A",
+  "chakra_cost": 15, "cooldown": 600,
+  "params": { "duration": 0 },
+  "mode": {
+    "speed": 0.9, "perception": 2.0, "damage": 2.3, "defense": 0.9, "action_speed": 1.6,
+    "drain": 0.8, "health_drain": 1.0, "end_health": 0.25, "gate": 2,
+    "aura": ["#F0FFF8", "#5FE0B0", "#0E3A40", "#9FE8FF"]
+  }
+}

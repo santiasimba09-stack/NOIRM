@@ -1,0 +1,5 @@
+{
+  "cast": "tap", "behavior": "susanoo", "rank": "S",
+  "requires": { "dojutsu": "mangekyo", "stage": 1 },
+  "chakra_cost": 0, "cooldown": 20
+}

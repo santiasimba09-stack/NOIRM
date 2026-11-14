@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:katana_finisher",
+  "timing": { "windup": 5, "active": 3, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 9, "posture": 28, "range": 3.3, "arc": 90, "knockback": 0.9, "lunge": 0.4, "hitstun": 16, "hitstop": 4, "shake": 0.8, "ender": "knockdown", "guard_break": true },
+  "next": { "light": "noirm:katana/slash" }
+}

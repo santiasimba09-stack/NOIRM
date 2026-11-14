@@ -1,0 +1,23 @@
+{
+  "nature": "fire",
+  "cast": "charge",
+  "behavior": "wave",
+  "rank": "S",
+  "chakra_cost": 70,
+  "cooldown": 700,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:katon/great_fireball",
+    "mastery": 3
+  },
+  "params": {
+    "range": 22,
+    "radius": 5,
+    "speed": 0.8,
+    "damage": 12,
+    "knockback": 1.2,
+    "posture": 40,
+    "fire_seconds": 8
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:back_elbow",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 12,
+    "range": 2.3,
+    "arc": 110,
+    "knockback": 0.5,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.45
+  },
+  "next": {
+    "light": "noirm:brawler/body_hook",
+    "heavy": "noirm:brawler/flying_knee"
+  }
+}

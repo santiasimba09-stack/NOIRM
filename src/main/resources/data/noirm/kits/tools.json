@@ -1,0 +1,29 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:kunai",
+      "count": 32
+    },
+    {
+      "item": "noirm:shuriken",
+      "count": 32
+    },
+    {
+      "item": "noirm:fuma_shuriken",
+      "count": 4
+    },
+    {
+      "item": "noirm:senbon",
+      "count": 32
+    },
+    {
+      "item": "noirm:explosive_tag",
+      "count": 16
+    },
+    {
+      "item": "noirm:explosive_kunai",
+      "count": 8
+    }
+  ]
+}

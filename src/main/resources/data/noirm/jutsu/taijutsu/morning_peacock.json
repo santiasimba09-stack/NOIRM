@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "flurry", "rank": "A",
+  "requires": { "dojutsu": "gate", "stage": 2 },
+  "chakra_cost": 20, "cooldown": 400,
+  "params": { "range": 5, "damage": 2.5, "count": 10, "duration": 20, "knockback": 0.3, "posture": 6, "fire_seconds": 2 }
+}

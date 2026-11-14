@@ -1,0 +1,21 @@
+{
+  "nature": "boil",
+  "behavior": "geyser",
+  "rank": "B",
+  "chakra_cost": 26,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:futton/boiling_burst",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "radius": 1.8,
+    "duration": 14,
+    "damage": 8,
+    "knockback": 0.9,
+    "posture": 25,
+    "effect": "weakness:0",
+    "effect_ticks": 40
+  }
+}

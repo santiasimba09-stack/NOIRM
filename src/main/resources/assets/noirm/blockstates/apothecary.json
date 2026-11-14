@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "noirm:block/apothecary"
+    },
+    "facing=east": {
+      "model": "noirm:block/apothecary",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "noirm:block/apothecary",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "noirm:block/apothecary",
+      "y": 270
+    }
+  }
+}

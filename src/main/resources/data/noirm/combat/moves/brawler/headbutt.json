@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:headbutt",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 9,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 40,
+    "range": 2.0,
+    "arc": 80,
+    "knockback": 0.7,
+    "lunge": 0.25,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.7
+  },
+  "next": {
+    "light": "noirm:brawler/elbow"
+  },
+  "variants": {
+    "aggressive": "noirm:brawler/hammer_fist",
+    "defensive": "noirm:brawler/back_elbow"
+  }
+}

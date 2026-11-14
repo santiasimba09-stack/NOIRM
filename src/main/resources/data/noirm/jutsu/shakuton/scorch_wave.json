@@ -1,0 +1,15 @@
+{
+  "nature": "scorch",
+  "behavior": "burst",
+  "rank": "B",
+  "starter": true,
+  "chakra_cost": 30,
+  "cooldown": 180,
+  "params": {
+    "range": 7,
+    "damage": 4,
+    "fire_seconds": 5,
+    "knockback": 1.2,
+    "posture": 20
+  }
+}

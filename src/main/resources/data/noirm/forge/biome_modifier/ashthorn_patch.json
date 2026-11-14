@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#noirm:has_herb/ashthorn",
+  "features": "noirm:ashthorn_patch",
+  "step": "vegetal_decoration"
+}

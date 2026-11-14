@@ -1,0 +1,16 @@
+{
+  "beats": {
+    "water": ["fire"],
+    "fire": ["wind"],
+    "wind": ["lightning"],
+    "lightning": ["earth"],
+    "earth": ["water"]
+  },
+  "advantage": 1.5,
+  "equal_margin": 0.15,
+  "winner_min_remaining": 0.25,
+  "reach": 0.5,
+  "check_interval": 2,
+  "burst_radius": 2.5,
+  "burst_damage": 0.6
+}

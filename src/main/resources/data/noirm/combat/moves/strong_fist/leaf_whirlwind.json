@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:leaf_whirlwind",
+  "timing": {
+    "windup": 5,
+    "active": 4,
+    "recovery": 9,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 30,
+    "range": 3.2,
+    "arc": 360,
+    "knockback": 1.0,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.7
+  },
+  "next": {
+    "light": "noirm:strong_fist/leaf_great_flash",
+    "launcher": "noirm:strong_fist/leaf_rising_wind"
+  },
+  "variants": {
+    "aggressive": "noirm:strong_fist/leaf_great_flash",
+    "defensive": "noirm:strong_fist/back_kick"
+  }
+}

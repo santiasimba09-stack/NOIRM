@@ -1,0 +1,21 @@
+{
+  "nature": "wood",
+  "behavior": "deep_forest",
+  "rank": "S",
+  "chakra_cost": 85,
+  "cooldown": 1100,
+  "unlock": {
+    "after": "noirm:mokuton/wood_spears",
+    "mastery": 3
+  },
+  "params": {
+    "range": 24,
+    "radius": 11,
+    "count": 12,
+    "damage": 14,
+    "knockback": 0.85,
+    "posture": 50,
+    "stun": 25,
+    "duration": 160
+  }
+}

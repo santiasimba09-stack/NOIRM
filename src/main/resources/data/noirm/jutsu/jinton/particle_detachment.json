@@ -1,0 +1,17 @@
+{
+  "nature": "dust",
+  "cast": "charge",
+  "behavior": "beam",
+  "rank": "S",
+  "starter": true,
+  "chakra_cost": 80,
+  "cooldown": 900,
+  "min_charge": 20,
+  "max_charge": 40,
+  "params": {
+    "range": 24,
+    "radius": 2.5,
+    "damage": 18,
+    "posture": 80
+  }
+}

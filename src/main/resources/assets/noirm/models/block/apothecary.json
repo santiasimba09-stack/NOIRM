@@ -1,0 +1,228 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "noirm:block/apothecary_stone",
+    "stone": "noirm:block/apothecary_stone",
+    "top": "noirm:block/apothecary_top",
+    "bark": "noirm:block/apothecary_bark",
+    "rings": "noirm:block/apothecary_rings",
+    "pestle": "noirm:block/apothecary_pestle"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        7,
+        14
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#rings",
+          "cullface": "down"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#rings"
+        },
+        "north": {
+          "uv": [
+            2,
+            9,
+            14,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "south": {
+          "uv": [
+            2,
+            9,
+            14,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "west": {
+          "uv": [
+            2,
+            9,
+            14,
+            16
+          ],
+          "texture": "#bark"
+        },
+        "east": {
+          "uv": [
+            2,
+            9,
+            14,
+            16
+          ],
+          "texture": "#bark"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        7,
+        3
+      ],
+      "to": [
+        13,
+        12,
+        13
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#top"
+        },
+        "north": {
+          "uv": [
+            3,
+            0,
+            13,
+            5
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            13,
+            5
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            3,
+            0,
+            13,
+            5
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            3,
+            0,
+            13,
+            5
+          ],
+          "texture": "#stone"
+        }
+      }
+    },
+    {
+      "from": [
+        9,
+        9,
+        7
+      ],
+      "to": [
+        11,
+        18,
+        9
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          10,
+          10,
+          8
+        ]
+      },
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#pestle"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#pestle"
+        },
+        "north": {
+          "uv": [
+            6,
+            0,
+            8,
+            9
+          ],
+          "texture": "#pestle"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            8,
+            9
+          ],
+          "texture": "#pestle"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            10,
+            9
+          ],
+          "texture": "#pestle"
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            10,
+            9
+          ],
+          "texture": "#pestle"
+        }
+      }
+    }
+  ]
+}

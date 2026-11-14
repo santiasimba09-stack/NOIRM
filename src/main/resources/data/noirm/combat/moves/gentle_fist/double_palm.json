@@ -1,0 +1,29 @@
+{
+  "animation": "noirm:double_palm",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 5
+  },
+  "hit": {
+    "range": 2.6,
+    "arc": 80,
+    "pierce": 0.6,
+    "damage": 5,
+    "posture": 30,
+    "knockback": 1.3,
+    "hitstun": 14,
+    "hitstop": 3,
+    "shake": 0.6,
+    "chakra": 15,
+    "guard_break": true,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:gentle_fist/palm"
+  },
+  "variants": {
+    "aggressive": "noirm:gentle_fist/lion_palms"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "nature": "boil",
+  "behavior": "burst",
+  "rank": "B",
+  "starter": true,
+  "chakra_cost": 25,
+  "cooldown": 140,
+  "params": {
+    "range": 6,
+    "damage": 5,
+    "knockback": 1.5,
+    "posture": 25
+  }
+}

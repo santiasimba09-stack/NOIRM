@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:moonroot"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.medicine.herbalist.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.medicine.herbalist.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/medicine/refined",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:medicine",
+      "conditions": {
+        "event": "pharmacology",
+        "min": 25
+      }
+    }
+  },
+  "rewards": {
+    "experience": 60,
+    "loot": [
+      "noirm:advancement/medical_scroll"
+    ]
+  }
+}

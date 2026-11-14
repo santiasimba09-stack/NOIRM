@@ -1,0 +1,20 @@
+{
+  "timing": {
+    "windup": 7,
+    "active": 4,
+    "recovery": 12,
+    "cancel_after": 9
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 30,
+    "range": 4.5,
+    "arc": 160,
+    "knockback": 1.8,
+    "lunge": 0.2,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 1.0,
+    "ender": "splat"
+  }
+}

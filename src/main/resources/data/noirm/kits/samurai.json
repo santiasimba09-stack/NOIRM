@@ -1,0 +1,20 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:kabuto"
+    },
+    {
+      "item": "noirm:samurai_cuirass"
+    },
+    {
+      "item": "noirm:kusazuri"
+    },
+    {
+      "item": "noirm:samurai_greaves"
+    },
+    {
+      "item": "noirm:sode_pauldrons"
+    }
+  ]
+}

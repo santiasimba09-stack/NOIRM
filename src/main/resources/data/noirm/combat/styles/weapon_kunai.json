@@ -1,0 +1,31 @@
+{
+  "openers": {
+    "light": "noirm:kunai/slash",
+    "heavy": "noirm:kunai/stab",
+    "launcher": "noirm:kunai/rising_cut",
+    "forward_light": "noirm:kunai/lunging_stab",
+    "forward_heavy": "noirm:kunai/lunging_stab",
+    "back_light": "noirm:kunai/backhand"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_kunai",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_kunai_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_kunai_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_kunai_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:kunai/counter"
+}

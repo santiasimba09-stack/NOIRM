@@ -1,0 +1,19 @@
+{
+  "nature": "lava",
+  "behavior": "quicklime",
+  "rank": "B",
+  "chakra_cost": 28,
+  "cooldown": 240,
+  "unlock": {
+    "after": "noirm:yoton/magma_bullet",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "damage": 3,
+    "stun": 50,
+    "posture": 30,
+    "effect": "slowness:3",
+    "effect_ticks": 60
+  }
+}

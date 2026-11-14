@@ -1,0 +1,25 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_black"
+    },
+    {
+      "item": "noirm:jonin_vest"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:tabi"
+    },
+    {
+      "item": "noirm:kunai",
+      "count": 16
+    },
+    {
+      "item": "noirm:explosive_tag",
+      "count": 8
+    }
+  ]
+}

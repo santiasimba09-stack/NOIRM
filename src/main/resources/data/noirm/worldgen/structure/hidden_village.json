@@ -1,0 +1,8 @@
+{
+  "type": "noirm:ninja_village",
+  "size": "capital",
+  "biomes": "#noirm:has_structure/hidden_village",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {}
+}

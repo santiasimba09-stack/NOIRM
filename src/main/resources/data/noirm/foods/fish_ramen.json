@@ -1,0 +1,11 @@
+{
+  "item": "noirm:fish_ramen",
+  "color": "#E8D2A0",
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 1.3,
+      "seconds": 120
+    }
+  ]
+}

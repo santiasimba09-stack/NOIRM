@@ -1,0 +1,19 @@
+{
+  "nature": "earth",
+  "behavior": "headhunter",
+  "rank": "D",
+  "chakra_cost": 12,
+  "cooldown": 120,
+  "unlock": {
+    "after": "noirm:doton/earth_wall",
+    "mastery": 1
+  },
+  "params": {
+    "range": 8,
+    "damage": 3,
+    "stun": 30,
+    "posture": 20,
+    "effect": "slowness:2",
+    "effect_ticks": 60
+  }
+}

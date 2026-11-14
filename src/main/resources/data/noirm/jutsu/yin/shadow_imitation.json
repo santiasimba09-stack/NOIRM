@@ -1,0 +1,6 @@
+{
+  "nature": "yin", "cast": "channel", "behavior": "shadow_bind", "rank": "C",
+  "chakra_cost": 20, "cooldown": 200, "max_duration": 100,
+  "unlock": { "after": "noirm:yin/demonic_illusion", "mastery": 2 },
+  "params": { "range": 16 }
+}

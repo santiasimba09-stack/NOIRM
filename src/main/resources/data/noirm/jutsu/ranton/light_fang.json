@@ -1,0 +1,22 @@
+{
+  "nature": "storm",
+  "cast": "charge",
+  "behavior": "laser",
+  "rank": "B",
+  "chakra_cost": 26,
+  "cooldown": 160,
+  "min_charge": 8,
+  "max_charge": 24,
+  "unlock": {
+    "after": "noirm:ranton/black_cloud",
+    "mastery": 2
+  },
+  "params": {
+    "range": 22,
+    "damage": 8,
+    "charge_damage": 5,
+    "stun": 12,
+    "knockback": 0.4,
+    "posture": 25
+  }
+}

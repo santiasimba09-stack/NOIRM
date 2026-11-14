@@ -1,0 +1,10 @@
+{
+  "structures": [
+    { "structure": "noirm:hidden_village_ward", "weight": 1 }
+  ],
+  "placement": {
+    "type": "noirm:village_wards",
+    "anchors": "noirm:hidden_villages",
+    "salt": 718236452
+  }
+}

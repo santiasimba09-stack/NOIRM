@@ -1,0 +1,20 @@
+{
+  "nature": "earth",
+  "behavior": "cloud",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:doton/earth_spikes",
+    "mastery": 2
+  },
+  "params": {
+    "range": 8,
+    "radius": 3.5,
+    "duration": 140,
+    "damage": 0.5,
+    "effect": "slowness:3",
+    "effect_ticks": 40,
+    "block": "minecraft:mud"
+  }
+}

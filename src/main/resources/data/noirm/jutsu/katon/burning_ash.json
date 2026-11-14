@@ -1,0 +1,22 @@
+{
+  "nature": "fire",
+  "behavior": "ash_cloud",
+  "rank": "A",
+  "chakra_cost": 40,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:katon/fire_stream",
+    "mastery": 2
+  },
+  "params": {
+    "range": 10,
+    "radius": 3.5,
+    "duration": 30,
+    "damage": 14,
+    "knockback": 1.0,
+    "posture": 40,
+    "fire_seconds": 6,
+    "effect": "slowness:1",
+    "effect_ticks": 30
+  }
+}

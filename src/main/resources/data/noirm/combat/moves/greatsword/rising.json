@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:greatsword_rising",
+  "timing": { "windup": 7, "active": 3, "recovery": 9, "cancel_after": 5 },
+  "hit": { "damage": 8, "posture": 24, "range": 3.8, "arc": 120, "knockback": 0.1, "lift": 0.85, "hitstun": 22, "hitstop": 3, "shake": 0.8, "ender": "launch" },
+  "next": { "light": "noirm:greatsword/sweep" }
+}

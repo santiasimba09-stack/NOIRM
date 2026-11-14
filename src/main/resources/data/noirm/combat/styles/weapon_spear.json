@@ -1,0 +1,31 @@
+{
+  "openers": {
+    "light": "noirm:spear/thrust",
+    "heavy": "noirm:spear/sweep",
+    "launcher": "noirm:spear/vault",
+    "forward_light": "noirm:spear/charge",
+    "forward_heavy": "noirm:spear/charge",
+    "back_heavy": "noirm:spear/sweep"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_spear",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_spear_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_spear_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_spear_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:spear/counter"
+}

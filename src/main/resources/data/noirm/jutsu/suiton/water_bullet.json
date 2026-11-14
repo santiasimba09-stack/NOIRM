@@ -1,0 +1,5 @@
+{
+  "nature": "water", "cast": "tap", "behavior": "projectile", "rank": "C", "starter": true,
+  "chakra_cost": 12, "cooldown": 30,
+  "params": { "damage": 5, "speed": 2.0, "radius": 0, "knockback": 1.4, "posture": 25 }
+}

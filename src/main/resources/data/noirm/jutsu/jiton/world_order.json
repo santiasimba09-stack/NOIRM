@@ -1,0 +1,25 @@
+{
+  "nature": "magnet",
+  "cast": "charge",
+  "behavior": "sand_tide",
+  "rank": "S",
+  "chakra_cost": 75,
+  "cooldown": 800,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:jiton/iron_sand_rain",
+    "mastery": 3
+  },
+  "params": {
+    "range": 14,
+    "radius": 2,
+    "duration": 16,
+    "count": 7,
+    "spread": 110,
+    "damage": 16,
+    "knockback": 0.8,
+    "posture": 60,
+    "stun": 12
+  }
+}

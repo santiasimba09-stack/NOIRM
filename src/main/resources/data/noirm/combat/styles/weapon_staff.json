@@ -1,0 +1,30 @@
+{
+  "openers": {
+    "light": "noirm:staff/sweep",
+    "heavy": "noirm:staff/thrust",
+    "launcher": "noirm:staff/rising_sweep",
+    "forward_heavy": "noirm:staff/lunging_thrust",
+    "back_heavy": "noirm:staff/spin"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_staff",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_staff_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_staff_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_staff_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:staff/counter"
+}

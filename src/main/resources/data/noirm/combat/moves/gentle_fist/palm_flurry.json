@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:palm_flurry",
+  "timing": {
+    "windup": 3,
+    "active": 3,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 16,
+    "range": 2.6,
+    "arc": 90,
+    "knockback": 0.2,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.35,
+    "pierce": 0.6,
+    "chakra": 8,
+    "lunge": 0.2
+  },
+  "next": {
+    "light": "noirm:gentle_fist/lion_palms",
+    "heavy": "noirm:gentle_fist/rising_palm"
+  }
+}

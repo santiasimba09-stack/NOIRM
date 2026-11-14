@@ -1,0 +1,8 @@
+{
+  "type": "escort",
+  "rank": "D",
+  "reward": 100,
+  "points": 10,
+  "min_distance": 70,
+  "max_distance": 110
+}

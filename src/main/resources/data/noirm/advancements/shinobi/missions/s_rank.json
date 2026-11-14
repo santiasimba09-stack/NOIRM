@@ -1,0 +1,31 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:mission_scroll"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.missions.s_rank.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.missions.s_rank.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/rank/anbu",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:mission",
+      "conditions": {
+        "event": "completed",
+        "key": "S",
+        "min": 1
+      }
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

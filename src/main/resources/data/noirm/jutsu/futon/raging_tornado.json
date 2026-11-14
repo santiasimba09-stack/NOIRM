@@ -1,0 +1,25 @@
+{
+  "nature": "wind",
+  "cast": "charge",
+  "behavior": "tornado",
+  "rank": "S",
+  "chakra_cost": 70,
+  "cooldown": 700,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:futon/vacuum_wave",
+    "mastery": 3
+  },
+  "params": {
+    "range": 16,
+    "radius": 2.2,
+    "duration": 90,
+    "damage": 3,
+    "knockback": 1.2,
+    "posture": 15,
+    "speed": 0.12,
+    "effect": "weakness:0",
+    "effect_ticks": 60
+  }
+}

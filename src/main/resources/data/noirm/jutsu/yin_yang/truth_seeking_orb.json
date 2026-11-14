@@ -1,0 +1,5 @@
+{
+  "nature": "yin_yang", "cast": "tap", "behavior": "projectile", "rank": "S", "starter": true,
+  "chakra_cost": 45, "cooldown": 160,
+  "params": { "damage": 12, "speed": 1.1, "radius": 2.5, "knockback": 1.6, "posture": 60, "homing": 0.15 }
+}

@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:sword_dash_thrust",
+  "timing": { "windup": 5, "active": 2, "recovery": 7, "cancel_after": 4 },
+  "hit": { "damage": 7, "posture": 20, "range": 3.4, "arc": 40, "knockback": 0.7, "lunge": 0.9, "hitstun": 12, "hitstop": 3, "shake": 0.6, "pierce": 0.25 },
+  "next": { "light": "noirm:sword/cross" }
+}

@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:apothecary"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.medicine.brew.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.medicine.brew.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/medicine/first_pill",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:medicine",
+      "conditions": {
+        "event": "brewed"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20,
+    "loot": [
+      "noirm:advancement/herb_seeds"
+    ]
+  }
+}

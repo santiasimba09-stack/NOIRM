@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "noirm:hidden_village",
+    "noirm:hidden_village_ward",
+    "noirm:ninja_town",
+    "noirm:ninja_outpost"
+  ]
+}

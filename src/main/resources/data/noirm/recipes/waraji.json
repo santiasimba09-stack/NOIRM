@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "H H",
+    "S S"
+  ],
+  "key": {
+    "H": {
+      "item": "minecraft:wheat"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "item": "noirm:waraji"
+  }
+}

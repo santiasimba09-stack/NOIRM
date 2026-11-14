@@ -1,0 +1,16 @@
+{
+  "nature": "boil",
+  "behavior": "acid_breath",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 15,
+  "cooldown": 90,
+  "params": {
+    "range": 5,
+    "damage": 3,
+    "knockback": 0.2,
+    "posture": 8,
+    "effect": "weakness:0",
+    "effect_ticks": 60
+  }
+}

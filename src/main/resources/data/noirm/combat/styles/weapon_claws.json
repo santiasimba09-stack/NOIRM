@@ -1,0 +1,31 @@
+{
+  "openers": {
+    "light": "noirm:claws/rake",
+    "heavy": "noirm:claws/maul",
+    "launcher": "noirm:claws/rising",
+    "forward_light": "noirm:claws/pounce",
+    "forward_heavy": "noirm:claws/pounce",
+    "back_light": "noirm:claws/rake_back"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_claws",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_claws_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_claws_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_claws_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:claws/counter"
+}

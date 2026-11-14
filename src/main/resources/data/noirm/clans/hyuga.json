@@ -1,0 +1,8 @@
+{
+  "id": "hyuga", "name": "Hyūga", "weight": 3,
+  "natures": { "water": 1.0 },
+  "traits": ["keen_eyes", "chakra_flow"],
+  "speed_bonus": 1, "taijutsu_bonus": 3,
+  "kekkei_genkai": "byakugan",
+  "awakening": "will"
+}

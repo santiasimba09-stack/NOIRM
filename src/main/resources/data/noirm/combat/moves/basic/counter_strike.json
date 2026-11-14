@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:counter_strike",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 18,
+    "range": 2.8,
+    "arc": 120,
+    "knockback": 0.5,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:basic/hook",
+    "heavy": "noirm:basic/heavy_kick"
+  }
+}

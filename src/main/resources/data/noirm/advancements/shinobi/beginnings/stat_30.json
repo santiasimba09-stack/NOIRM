@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:gold_ingot"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_30.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_30.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beginnings/stat_15",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:stat",
+      "conditions": {
+        "min": 30
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

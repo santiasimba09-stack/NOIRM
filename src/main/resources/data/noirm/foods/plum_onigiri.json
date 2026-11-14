@@ -1,0 +1,16 @@
+{
+  "item": "noirm:plum_onigiri",
+  "color": "#C2364A",
+  "effects": [
+    {
+      "type": "posture_recovery",
+      "amount": 3.0,
+      "seconds": 90
+    },
+    {
+      "type": "stamina_regen",
+      "amount": 1.15,
+      "seconds": 90
+    }
+  ]
+}

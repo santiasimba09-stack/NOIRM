@@ -1,0 +1,27 @@
+{
+  "openers": {
+    "light": "noirm:katana/slash",
+    "heavy": "noirm:katana/iaido",
+    "launcher": "noirm:katana/rising",
+    "forward_light": "noirm:katana/dash_cut",
+    "forward_heavy": "noirm:katana/dash_cut",
+    "back_heavy": "noirm:katana/finisher"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_katana",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_katana_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_katana_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:katana/counter"
+}

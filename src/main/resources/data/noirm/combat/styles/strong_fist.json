@@ -1,0 +1,32 @@
+{
+  "openers": {
+    "light": "noirm:strong_fist/jab",
+    "heavy": "noirm:strong_fist/leaf_whirlwind",
+    "launcher": "noirm:strong_fist/leaf_rising_wind",
+    "forward_light": "noirm:strong_fist/straight",
+    "forward_heavy": "noirm:strong_fist/dynamic_entry",
+    "back_heavy": "noirm:strong_fist/leaf_gale",
+    "back_light": "noirm:strong_fist/back_kick"
+  },
+  "taijutsu": 18,
+  "npc_weight": 2,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_strong_fist",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_strong_fist_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_strong_fist_defensive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_strong_fist_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:strong_fist/counter_heel"
+}

@@ -1,0 +1,16 @@
+{
+  "nature": "storm",
+  "behavior": "beam",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 35,
+  "cooldown": 200,
+  "params": {
+    "count": 5,
+    "spread": 24,
+    "range": 16,
+    "damage": 4,
+    "stun": 8,
+    "posture": 15
+  }
+}

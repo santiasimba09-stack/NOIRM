@@ -1,0 +1,389 @@
+<title>NOIRM Progress Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an ink-and-paper scroll — header with the live state, then the system map (areas as columns of
+   status chips), the road ahead in three lanes, the release trail with its test-count chart, and the
+   owner's questions and notes. NOIRM's own palette: ash/iron, bone, blood red, chakra blue. */
+:root {
+  --bg: #efe9df;          /* washi paper */
+  --panel: #f8f4ec;
+  --ink: #1b1716;         /* sumi ink */
+  --muted: #6f6660;
+  --line: #d8cfc3;
+  --accent: #a3161d;      /* blood red seal */
+  --chakra: #2f6fb2;
+  --done: #3f7a4a;
+  --doing: #b07a12;
+  --planned: #8a8178;
+  --owner: #a3161d;
+  --chip-done: #e3eddf;
+  --chip-doing: #f4e6c8;
+  --chip-planned: #ebe5dc;
+  --chip-owner: #f3dcd9;
+  --display: "Zen Antique", "Hiragino Mincho ProN", "Times New Roman", serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121112; --panel: #1b191a; --ink: #ece6dc; --muted: #9a918a; --line: #2e2a2a;
+  --accent: #d8343b; --chakra: #5f9be0; --done: #6fb27b; --doing: #e0a43a; --planned: #8f877f; --owner: #e0525a;
+  --chip-done: #1d2b20; --chip-doing: #2f2616; --chip-planned: #232021; --chip-owner: #34191b; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121112; --panel: #1b191a; --ink: #ece6dc; --muted: #9a918a; --line: #2e2a2a;
+  --accent: #d8343b; --chakra: #5f9be0; --done: #6fb27b; --doing: #e0a43a; --planned: #8f877f; --owner: #e0525a;
+  --chip-done: #1d2b20; --chip-doing: #2f2616; --chip-planned: #232021; --chip-owner: #34191b; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 44px; }
+h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; letter-spacing: .02em; }
+h2 { font-size: 1.6rem; }
+.eyebrow { font: 600 .72rem/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+.sec-head p { margin: 0; color: var(--muted); font-size: .9rem; max-width: 60ch; }
+
+/* header */
+header { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 28px; align-items: end; }
+@media (max-width: 760px) { header { grid-template-columns: 1fr; } }
+.seal { display: inline-grid; place-items: center; width: 44px; height: 44px; background: var(--accent); color: #fff;
+  font-family: var(--display); font-size: 1.5rem; border-radius: 3px; transform: rotate(-4deg); }
+.title-row { display: flex; align-items: center; gap: 14px; }
+.lede { margin: 12px 0 0; color: var(--muted); max-width: 58ch; }
+.now { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--doing); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.now strong { font-size: 1.02rem; }
+.meter { display: flex; flex-direction: column; gap: 6px; }
+.bar { display: flex; height: 10px; border-radius: 2px; overflow: hidden; background: var(--chip-planned); }
+.bar span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .8rem; color: var(--muted); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+
+/* map */
+.map { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.area { background: var(--panel); border: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.area h3 { margin: 0 0 4px; font: 600 .8rem/1.2 var(--body); letter-spacing: .1em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 8px; }
+.area h3 .mono { color: var(--muted); font-weight: 400; letter-spacing: 0; }
+.chip { all: unset; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 9px;
+  border-radius: 3px; font-size: .86rem; line-height: 1.25; border-left: 3px solid transparent; }
+.chip:focus-visible { outline: 2px solid var(--chakra); outline-offset: 2px; }
+.chip .v { font: .72rem var(--mono); color: var(--muted); white-space: nowrap; }
+.s-done { background: var(--chip-done); border-left-color: var(--done); }
+.s-doing { background: var(--chip-doing); border-left-color: var(--doing); }
+.s-planned { background: var(--chip-planned); border-left-color: var(--planned); color: var(--muted); }
+.s-owner { background: var(--chip-owner); border-left-color: var(--owner); }
+.chip[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: 1px; }
+.detail { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--ink); padding: 14px 16px; display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; }
+.detail h4 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.3rem; }
+.detail p { margin: 0; grid-column: 1 / -1; max-width: 75ch; }
+.pill { font: 600 .7rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; align-self: start; }
+.pill.s-done { color: var(--done); } .pill.s-doing { color: var(--doing); } .pill.s-planned { color: var(--muted); } .pill.s-owner { color: var(--owner); }
+.detail .meta { grid-column: 1 / -1; font-size: .82rem; color: var(--muted); }
+
+/* lanes */
+.lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .lanes { grid-template-columns: 1fr; } }
+.lane { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.lane h3 { margin: 0; font: 600 .78rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.task { background: var(--panel); border: 1px solid var(--line); padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.task strong { font-weight: 600; }
+.task span { color: var(--muted); font-size: .85rem; }
+
+/* releases */
+.trail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .trail { grid-template-columns: 1fr; } }
+.chart { background: var(--panel); border: 1px solid var(--line); padding: 12px; overflow-x: auto; }
+.chart svg { display: block; width: 100%; height: auto; min-width: 320px; }
+.chart text { fill: var(--muted); font: 11px var(--mono); }
+.releases { display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--line); }
+.rel { position: relative; padding: 0 0 18px 18px; }
+.rel::before { content: ""; position: absolute; left: -7px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--ink); }
+.rel:first-child::before { background: var(--accent); border-color: var(--accent); }
+.rel .top { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.rel .ver { font: 600 .9rem var(--mono); }
+.rel .date { font: .78rem var(--mono); color: var(--muted); }
+.rel p { margin: 2px 0 0; color: var(--muted); font-size: .88rem; max-width: 70ch; }
+
+/* questions */
+.qs { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+@media (max-width: 400px) { .qs { grid-template-columns: 1fr; } }
+.q { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--owner); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.q.answered { border-left-color: var(--done); }
+.q .area-tag { font: 600 .68rem/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.q p { margin: 0; }
+.q textarea, .note-form textarea { width: 100%; min-height: 64px; resize: vertical; font: inherit; font-size: .9rem; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 3px; padding: 8px; }
+.q textarea:focus-visible, .note-form textarea:focus-visible { outline: 2px solid var(--chakra); outline-offset: 1px; }
+.row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.btn { all: unset; cursor: pointer; font: 600 .82rem/1 var(--body); padding: 8px 12px; border-radius: 3px; background: var(--ink); color: var(--bg); }
+.btn:focus-visible { outline: 2px solid var(--chakra); outline-offset: 2px; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.saved { font-size: .78rem; color: var(--muted); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { all: unset; cursor: pointer; font-size: .8rem; padding: 5px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.notes { display: flex; flex-direction: column; gap: 8px; }
+.note { background: var(--panel); border: 1px solid var(--line); padding: 10px 12px; font-size: .9rem; }
+.note small { color: var(--muted); display: block; margin-top: 4px; }
+.note-form { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
+.empty { color: var(--muted); font-size: .9rem; padding: 12px; border: 1px dashed var(--line); }
+.status-line { font-size: .8rem; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .chip, .btn { transition: transform .12s ease, background-color .12s ease; } .chip:hover { transform: translateX(2px); } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="title-row"><span class="seal" aria-hidden="true">忍</span><span class="eyebrow">Minecraft Forge 1.20.1 · mod id noirm</span></div>
+      <h1 style="margin-top:14px">NOIRM Progress Map</h1>
+      <p class="lede">Every system in the mod, where it stands, what is being built now, what comes next, and the questions waiting for the owner. Claude updates it after each piece of work; answer questions and leave notes right here.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="now" id="now"><span class="eyebrow">Now building</span><strong>Loading the latest state…</strong></div>
+      <div class="meter">
+        <div class="row"><span class="eyebrow">Systems</span><span class="mono" id="count">–</span></div>
+        <div class="bar" id="bar" role="img" aria-label="Systems by status"></div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--done)"></i>Done</span>
+          <span><i class="dot" style="background:var(--doing)"></i>In progress</span>
+          <span><i class="dot" style="background:var(--owner)"></i>Needs the owner</span>
+          <span><i class="dot" style="background:var(--planned)"></i>Planned</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>System map</h2><p>Each column is one part of the mod. Click a system to see what it is, which version brought it, and where its notes live.</p></div>
+    <div class="filters" id="filters" role="group" aria-label="Filter by status"></div>
+    <div class="map" id="map"><div class="empty">The map fills in from the project's saved state.</div></div>
+    <div class="detail" id="detail" hidden></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>The road ahead</h2><p>What is being built, what comes right after, and what is planned for later.</p></div>
+    <div class="lanes" id="lanes"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Release trail</h2><p>Every version so far. The chart shows how many automated game tests guard the mod at each release.</p></div>
+    <div class="trail">
+      <div class="chart" id="chart" role="img" aria-label="Game tests per release"></div>
+      <div class="releases" id="releases"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Questions for the owner</h2><p>Write an answer and press Save. Claude reads these before the next round of work.</p></div>
+    <div class="filters" id="qfilters" role="group" aria-label="Filter questions"></div>
+    <div class="qs" id="qs"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Notes and ideas</h2><p>Anything you want Claude to see: an idea, a bug you found while playing, a change of plan.</p></div>
+    <form class="note-form" id="noteForm">
+      <label class="eyebrow" for="noteText">New note</label>
+      <textarea id="noteText" placeholder="Example: the Wood Dragon should be bigger, and I found a bug when…"></textarea>
+      <div class="row"><span class="saved" id="noteState"></span><button class="btn" type="submit">Add note</button></div>
+    </form>
+    <div class="notes" id="notes"></div>
+  </section>
+  <p class="status-line" id="status">Connecting to the saved state…</p>
+</div>
+
+<script>
+const STATUS = { done: "Done", doing: "In progress", owner: "Needs the owner", planned: "Planned" };
+const ORDER = ["done", "doing", "owner", "planned"];
+const state = { systems: [], areas: [], releases: [], roadmap: [], questions: [], notes: [], now: null,
+  filter: "all", qfilter: "open", selected: null };
+let db = null, user = null;
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+function renderHeader() {
+  const now = $("now");
+  now.replaceChildren(el("span", "eyebrow", "Now building"));
+  if (state.now) {
+    now.append(el("strong", null, state.now.title || ""));
+    if (state.now.detail) now.append(el("span", null, state.now.detail));
+    if (state.now.version) now.append(el("span", "mono", "Current release: " + state.now.version));
+  } else now.append(el("strong", null, "Nothing recorded yet"));
+  const counts = Object.fromEntries(ORDER.map(s => [s, state.systems.filter(x => x.status === s).length]));
+  const total = state.systems.length;
+  $("count").textContent = total ? `${counts.done} of ${total} done` : "–";
+  const bar = $("bar"); bar.replaceChildren();
+  const colors = { done: "var(--done)", doing: "var(--doing)", owner: "var(--owner)", planned: "var(--planned)" };
+  if (total) for (const s of ORDER) if (counts[s]) { const sp = el("span"); sp.style.width = (100 * counts[s] / total) + "%"; sp.style.background = colors[s]; sp.title = `${STATUS[s]}: ${counts[s]}`; bar.append(sp); }
+}
+
+function renderFilters() {
+  const f = $("filters"); f.replaceChildren();
+  for (const key of ["all", ...ORDER]) {
+    const n = key === "all" ? state.systems.length : state.systems.filter(x => x.status === key).length;
+    const b = el("button", null, `${key === "all" ? "All" : STATUS[key]} · ${n}`);
+    b.type = "button"; b.setAttribute("aria-pressed", String(state.filter === key));
+    b.onclick = () => { state.filter = key; renderFilters(); renderMap(); };
+    f.append(b);
+  }
+}
+
+function renderMap() {
+  const map = $("map"); map.replaceChildren();
+  if (!state.systems.length) { map.append(el("div", "empty", "No systems saved yet.")); return; }
+  const areas = [...state.areas].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  for (const area of areas) {
+    const items = state.systems.filter(s => s.area === area.id).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const shown = items.filter(s => state.filter === "all" || s.status === state.filter);
+    const col = el("div", "area");
+    const h = el("h3"); h.append(el("span", null, area.name)); h.append(el("span", "mono", `${items.filter(s => s.status === "done").length}/${items.length}`));
+    col.append(h);
+    if (!shown.length) col.append(el("div", "status-line", "Nothing with this status."));
+    for (const s of shown) {
+      const c = el("button", "chip s-" + s.status); c.type = "button";
+      c.setAttribute("aria-pressed", String(state.selected === s.id));
+      c.append(el("span", null, s.name)); if (s.version) c.append(el("span", "v", s.version));
+      c.onclick = () => { state.selected = state.selected === s.id ? null : s.id; renderMap(); renderDetail(); };
+      col.append(c);
+    }
+    map.append(col);
+  }
+}
+
+function renderDetail() {
+  const d = $("detail");
+  const s = state.systems.find(x => x.id === state.selected);
+  if (!s) { d.hidden = true; return; }
+  d.replaceChildren();
+  d.append(el("h4", null, s.name));
+  d.append(el("span", "pill s-" + s.status, STATUS[s.status] || s.status));
+  if (s.summary) d.append(el("p", null, s.summary));
+  const meta = [s.version && "Version " + s.version, s.doc && "Notes: " + s.doc].filter(Boolean).join(" · ");
+  if (meta) d.append(el("div", "meta mono", meta));
+  d.hidden = false;
+}
+
+function renderLanes() {
+  const lanes = $("lanes"); lanes.replaceChildren();
+  for (const [key, name] of [["now", "Now"], ["next", "Next"], ["later", "Later"]]) {
+    const col = el("div", "lane"); col.append(el("h3", null, name));
+    const items = state.roadmap.filter(r => r.lane === key).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    if (!items.length) col.append(el("div", "empty", "Nothing here yet."));
+    for (const r of items) { const t = el("div", "task"); t.append(el("strong", null, r.title)); if (r.detail) t.append(el("span", null, r.detail)); col.append(t); }
+    lanes.append(col);
+  }
+}
+
+function renderReleases() {
+  const list = $("releases"); list.replaceChildren();
+  const rels = [...state.releases].sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+  if (!rels.length) list.append(el("div", "empty", "No releases saved yet."));
+  for (const r of rels) {
+    const row = el("div", "rel"); const top = el("div", "top");
+    top.append(el("span", "ver", r.version)); top.append(el("strong", null, r.title)); if (r.date) top.append(el("span", "date", r.date));
+    row.append(top); if (r.summary) row.append(el("p", null, r.summary)); list.append(row);
+  }
+  // chart: game tests per release, oldest to newest
+  const pts = [...state.releases].filter(r => typeof r.tests === "number").sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const chart = $("chart"); chart.replaceChildren();
+  if (pts.length < 2) { chart.append(el("div", "empty", "The chart appears once two releases have test counts.")); return; }
+  const W = 520, H = 240, L = 44, R = 14, T = 14, B = 36;
+  const max = Math.ceil(Math.max(...pts.map(p => p.tests)) / 100) * 100;
+  const x = i => L + (W - L - R) * i / (pts.length - 1), y = v => T + (H - T - B) * (1 - v / max);
+  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const mk = (tag, attrs) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  for (let v = 0; v <= max; v += 100) {
+    svg.append(mk("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--line)", "stroke-width": 1 }));
+    const t = mk("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }); t.textContent = v; svg.append(t);
+  }
+  const line = pts.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.tests).toFixed(1)}`).join(" ");
+  svg.append(mk("path", { d: `${line} L${x(pts.length - 1)},${y(0)} L${x(0)},${y(0)} Z`, fill: "var(--chakra)", "fill-opacity": .12, stroke: "none" }));
+  svg.append(mk("path", { d: line, fill: "none", stroke: "var(--chakra)", "stroke-width": 2 }));
+  const step = Math.max(1, Math.ceil(pts.length / 7));
+  pts.forEach((p, i) => {
+    const last = i === pts.length - 1;
+    svg.append(mk("circle", { cx: x(i), cy: y(p.tests), r: last ? 4.5 : 2.5, fill: last ? "var(--accent)" : "var(--chakra)" }));
+    if (i % step === 0 || last) { const t = mk("text", { x: x(i), y: H - B + 16, "text-anchor": "middle" }); t.textContent = p.version; svg.append(t); }
+    if (last) { const t = mk("text", { x: x(i) - 6, y: y(p.tests) - 9, "text-anchor": "end", fill: "var(--ink)" }); t.textContent = p.tests + " tests"; t.style.fill = "var(--ink)"; svg.append(t); }
+  });
+  chart.append(svg);
+}
+
+function renderQuestions() {
+  const qf = $("qfilters"); qf.replaceChildren();
+  const open = state.questions.filter(q => !q.answer).length;
+  for (const [key, name] of [["open", `Open · ${open}`], ["answered", `Answered · ${state.questions.length - open}`], ["all", `All · ${state.questions.length}`]]) {
+    const b = el("button", null, name); b.type = "button"; b.setAttribute("aria-pressed", String(state.qfilter === key));
+    b.onclick = () => { state.qfilter = key; renderQuestions(); }; qf.append(b);
+  }
+  const box = $("qs");
+  const active = document.activeElement && box.contains(document.activeElement) ? document.activeElement.id : null;
+  box.replaceChildren();
+  const items = state.questions.filter(q => state.qfilter === "all" || (state.qfilter === "open" ? !q.answer : !!q.answer))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  if (!items.length) box.append(el("div", "empty", state.qfilter === "open" ? "No open questions right now." : "Nothing here yet."));
+  for (const q of items) {
+    const card = el("div", "q" + (q.answer ? " answered" : ""));
+    card.append(el("span", "area-tag", q.topic || "General"));
+    card.append(el("p", null, q.text));
+    const ta = el("textarea"); ta.id = "ans-" + q.id; ta.value = drafts[q.id] ?? q.answer ?? "";
+    ta.setAttribute("aria-label", "Your answer"); ta.placeholder = "Your answer…";
+    ta.oninput = () => { drafts[q.id] = ta.value; };
+    const row = el("div", "row"); const msg = el("span", "saved", q.answer ? "Answered" : "Waiting for your answer");
+    const btn = el("button", "btn", "Save answer"); btn.type = "button";
+    btn.onclick = async () => {
+      if (!db) { msg.textContent = "Saving needs the page to be open on claude.ai while signed in."; return; }
+      btn.disabled = true; msg.textContent = "Saving…";
+      try { await db.doc("questions/" + q.id).update({ answer: ta.value.trim(), answeredAt: new Date().toISOString() }); delete drafts[q.id]; msg.textContent = "Saved"; }
+      catch (e) { msg.textContent = "Could not save (" + (e && e.code || "error") + "). Try again in a moment."; }
+      btn.disabled = false;
+    };
+    row.append(msg, btn); card.append(ta, row); box.append(card);
+  }
+  if (active) { const a = document.getElementById(active); if (a) a.focus(); }
+}
+const drafts = {};
+
+function renderNotes() {
+  const n = $("notes"); n.replaceChildren();
+  const items = [...state.notes].sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+  if (!items.length) n.append(el("div", "empty", "No notes yet. The first one you add shows up here."));
+  for (const it of items) { const d = el("div", "note", it.text); d.append(el("small", null, (it.from === "claude" ? "Claude" : "Owner") + (it.at ? " · " + it.at.slice(0, 10) : ""))); n.append(d); }
+}
+
+function renderAll() { renderHeader(); renderFilters(); renderMap(); renderDetail(); renderLanes(); renderReleases(); renderQuestions(); renderNotes(); }
+renderAll();
+
+$("noteForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = $("noteText").value.trim(); const st = $("noteState");
+  if (!text) { st.textContent = "Write something first."; return; }
+  if (!db) { st.textContent = "Saving needs the page to be open on claude.ai while signed in."; return; }
+  st.textContent = "Saving…";
+  try { await db.collection("notes").doc().set({ text, from: "owner", at: new Date().toISOString() }); $("noteText").value = ""; st.textContent = "Added"; }
+  catch (err) { st.textContent = "Could not save (" + (err && err.code || "error") + ")."; }
+});
+
+(async () => {
+  const status = $("status");
+  const timer = setTimeout(() => { status.textContent = "The saved state is taking a while to load. The page will fill in when it arrives."; }, 10000);
+  try {
+    db = await (window.claude?.use?.("db") ?? null);
+    user = await (window.claude?.use?.("user") ?? null);
+  } catch { db = null; }
+  if (!db) { clearTimeout(timer); status.textContent = "Open this page on claude.ai while signed in to see the saved state and to answer."; return; }
+  const sub = (name, key) => db.collection(name).onSnapshot(
+    snap => { clearTimeout(timer); state[key] = snap.docs.map(d => ({ id: d.id, ...d.data() })); status.textContent = "Up to date · changes appear live"; renderAll(); },
+    err => { clearTimeout(timer); status.textContent = "Lost the connection to the saved state (" + (err && err.code) + "). Reload the page to reconnect."; });
+  sub("systems", "systems"); sub("areas", "areas"); sub("releases", "releases"); sub("roadmap", "roadmap"); sub("questions", "questions"); sub("notes", "notes");
+  db.doc("meta/now").onSnapshot(d => { state.now = d.exists ? d.data() : null; renderHeader(); }, () => {});
+})();
+</script>
