@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-13 (v0.18.0: pills and foods, chakra reinforcement, Water S-rank) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-14 (**NOIRM APX 0.1** = v0.18.0, the owner's new baseline) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -60,7 +60,10 @@ Phase 1), round 6 and earlier: see `CHANGELOG.md`.
 `outpostisbuilt`, `vacuumwavecutsallaround`, `despawnrules` (all four in the first run on a freshly
 generated test world) and `groupmatesjointhefight`.
 
-## v0.18.0 (2026-11-13)
+## v0.18.0 = NOIRM APX 0.1 (2026-11-13; named the baseline by the owner on 2026-11-14)
+
+The owner: "name it noirm apx 0.1 now, and we shall continue from this point forward". The jar is
+`noirm-apx-0.1.jar` (the same build as `noirm-0.18.0.jar`). Everything after this builds on it.
 
 | Piece | State |
 |---|---|

@@ -2,6 +2,12 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-14 — v0.18.0 named NOIRM APX 0.1, the baseline (branch `claude/keen-cray-uc2d11`, PR #1)
+
+- The owner named v0.18.0 **NOIRM APX 0.1** and the point to continue from. It was sent as
+  `noirm-apx-0.1.jar`, the same build as `noirm-0.18.0.jar`. (v0.14.0 was the first "APX 0.1"
+  milestone; from now on the name means this build.)
+
 ## 2026-11-13 — Pills and foods, chakra reinforcement, Water S-rank, eyes fourth pass, v0.18.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 Built from the owner's answers on the progress map (`docs/SURVIVAL.md`, last section).
