@@ -16,6 +16,9 @@ make their perks noticeable." Personal talents (part 3) are in `TRAITS.md`._
   clan have their own appearance table (`looks.json`, from `tools/skingen/gen_parts.py`).
 - **Talent bias**: a clan makes some personal talents likelier (an Uzumaki is 5× likelier to
   roll Natural Sealer), but members still differ.
+- **Clan styles**: a clan file can name a fighting style (`"style"`): Hyūga `gentle_fist`, Akimichi
+  `sumo`, Might `leaf_hurricane`. Members are meant to get it through `StyleSystem.grant` (the styles
+  wave); until that is merged in, `ClanSystem.assign` holds a marked TODO.
 - **Generated clans** get two **perk packages** from `data/noirm/clan_perks/` (18 packages,
   some with a trade-off), so they have real identities too. Generated clans saved before this get
   a fixed package (seeded by the clan's id) when the world loads.

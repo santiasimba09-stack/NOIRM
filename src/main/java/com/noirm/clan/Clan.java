@@ -20,11 +20,12 @@ import java.util.Optional;
  * @param look         default hair and eye colours for new members
  * @param talentBias   personal talent id → how much likelier members are to roll it (×)
  * @param packages     generated clans: which perk packages ({@code data/noirm/clan_perks/}) made up {@code perks}
+ * @param style        a fighting style the clan teaches its members ({@code data/noirm/combat/styles/}), if any
  */
 public record Clan(String id, String name, boolean canon, Map<Nature, Float> natures, List<ClanTrait> traits,
                    float speedBonus, float taijutsuBonus, Optional<String> kekkeiGenkai, AwakeningPath awakening, int weight,
                    Map<String, Float> perks, List<ResourceLocation> clanJutsu, Optional<Look> look,
-                   Map<String, Float> talentBias, List<String> packages) {
+                   Map<String, Float> talentBias, List<String> packages, Optional<String> style) {
 
     /** A clan's main nature: much stronger and cheaper jutsu. */
     public static final float PRIMARY_AFFINITY = 1.5f;
@@ -76,26 +77,27 @@ public record Clan(String id, String name, boolean canon, Map<Nature, Float> nat
             ResourceLocation.CODEC.listOf().optionalFieldOf("clan_jutsu", List.of()).forGetter(Clan::clanJutsu),
             Look.CODEC.optionalFieldOf("look").forGetter(Clan::look),
             Codec.unboundedMap(Codec.STRING, Codec.FLOAT).optionalFieldOf("talent_bias", Map.of()).forGetter(Clan::talentBias),
-            Codec.STRING.listOf().optionalFieldOf("packages", List.of()).forGetter(Clan::packages)
+            Codec.STRING.listOf().optionalFieldOf("packages", List.of()).forGetter(Clan::packages),
+            Codec.STRING.optionalFieldOf("style").forGetter(Clan::style)
     ).apply(i, Clan::new));
 
     /** A clan without perks, clan jutsu or looks (tests, old code). */
     public Clan(String id, String name, boolean canon, Map<Nature, Float> natures, List<ClanTrait> traits,
                 float speedBonus, float taijutsuBonus, Optional<String> kekkeiGenkai, AwakeningPath awakening, int weight) {
         this(id, name, canon, natures, traits, speedBonus, taijutsuBonus, kekkeiGenkai, awakening, weight,
-                Map.of(), List.of(), Optional.empty(), Map.of(), List.of());
+                Map.of(), List.of(), Optional.empty(), Map.of(), List.of(), Optional.empty());
     }
 
     /** The same clan, marked canon or not. */
     public Clan withCanon(boolean canon) {
         return new Clan(id, name, canon, natures, traits, speedBonus, taijutsuBonus, kekkeiGenkai, awakening, weight,
-                perks, clanJutsu, look, talentBias, packages);
+                perks, clanJutsu, look, talentBias, packages, style);
     }
 
     /** The same clan with perks (generated clans, and generated clans saved before perks existed). */
     public Clan withPerks(Map<String, Float> perks, Map<String, Float> talentBias, List<String> packages) {
         return new Clan(id, name, canon, natures, traits, speedBonus, taijutsuBonus, kekkeiGenkai, awakening, weight,
-                Map.copyOf(perks), clanJutsu, look, Map.copyOf(talentBias), List.copyOf(packages));
+                Map.copyOf(perks), clanJutsu, look, Map.copyOf(talentBias), List.copyOf(packages), style);
     }
 
     public boolean hasSharingan() {

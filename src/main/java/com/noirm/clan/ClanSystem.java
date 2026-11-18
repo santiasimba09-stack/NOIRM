@@ -55,6 +55,9 @@ public final class ClanSystem {
             starters.addAll(Byakugan.JUTSU);
         }
         starters.addAll(clan.clanJutsu()); // the clan's secret techniques
+        // The clan's own fighting style (Hyūga → gentle_fist, Akimichi → sumo, Might → leaf_hurricane).
+        // TODO(styles wave merge): once StyleSystem.grant exists on this branch, replace this comment with:
+        //     clan.style().ifPresent(style -> com.noirm.combat.StyleSystem.grant(player, style));
         for (ResourceLocation id : starters) {
             data.jutsu().learn(id, false);
             data.jutsu().equipIfRoom(id);
