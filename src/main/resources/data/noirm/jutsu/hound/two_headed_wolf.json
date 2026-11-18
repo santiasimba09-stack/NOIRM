@@ -1,0 +1,14 @@
+{
+  "cast": "tap",
+  "behavior": "two_headed_wolf",
+  "rank": "A",
+  "chakra_cost": 60,
+  "cooldown": 2400,
+  "requires": {
+    "dojutsu": "hound",
+    "stage": 4
+  },
+  "params": {
+    "duration": 600
+  }
+}

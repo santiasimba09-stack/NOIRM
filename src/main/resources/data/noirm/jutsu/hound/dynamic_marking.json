@@ -1,0 +1,16 @@
+{
+  "cast": "tap",
+  "behavior": "dynamic_marking",
+  "rank": "D",
+  "chakra_cost": 8,
+  "cooldown": 400,
+  "quick": true,
+  "requires": {
+    "dojutsu": "hound",
+    "stage": 1
+  },
+  "params": {
+    "range": 16,
+    "duration": 1200
+  }
+}

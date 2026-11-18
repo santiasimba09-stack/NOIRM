@@ -13,7 +13,7 @@
     "start_speed": 2,
     "perception": 0.05,
     "melee_damage": 0.05,
-    "hound": 1,
+    "hound": 2,
     "max_chakra": -10
   },
   "look": {

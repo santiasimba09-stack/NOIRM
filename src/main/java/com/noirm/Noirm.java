@@ -26,6 +26,7 @@ public final class Noirm {
         IEventBus modBus = context.getModEventBus();
         NoirmBlocks.register(modBus);
         NoirmEntities.register(modBus);
+        com.noirm.hound.HoundRegistry.register(modBus); // the ninja hound and its items (docs/INUZUKA.md)
         NoirmItems.register(modBus);
         com.noirm.gear.NoirmGear.register(modBus);
         com.noirm.weapon.NinjaWeapons.register(modBus);

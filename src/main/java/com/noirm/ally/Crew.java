@@ -85,6 +85,11 @@ public final class Crew {
         if (entity instanceof SparringNinja ninja && ninja.leaderId() != null) {
             return ninja.leaderId();
         }
+        if (entity instanceof com.noirm.hound.NinjaHound hound && hound.getOwnerUUID() != null) {
+            // A ninja hound fights on its owner's side (an NPC owner's crew leader, if it has one).
+            LivingEntity owner = hound.getOwner();
+            return owner != null && owner != entity ? sideOf(owner) : hound.getOwnerUUID();
+        }
         return entity.getUUID();
     }
 
