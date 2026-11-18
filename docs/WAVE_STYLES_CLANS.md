@@ -36,3 +36,13 @@ the sense of it, and I want us to be the exception. Investigate all you can."
 ## 6. Flying Raijin (special attention)
 - Research it deeply (how it works in canon: the marked kunai and seals, instant space-time travel to any
   mark, the feel and timing of it) and build the best version any game or mod has made.
+
+## Follow-up (owner, 2026-11-18): much bigger clan gaps, and a growing Inuzuka hound
+- **Much bigger gaps between clans**, drawbacks included. Example: in Part 1, Kakashi says Naruto has
+  about 100 times his chakra (Naruto is an Uzumaki). The Lee/Might line should train taijutsu **much**
+  more efficiently and have better willpower. Research every clan deeply and make the differences big.
+- **The Inuzuka ninja hound:** you start with a **puppy** that grows stronger and bigger as you do. It looks
+  like a dog or wolf, in Minecraft-style boxes, and its growth stages are clearly visible. Try different
+  models and sizes first. Special attention to the dog's design, skills and growth, researched to be as
+  accurate as possible. (The owner wrote "Akimichi" here, but the dog is the Inuzuka clan's; treated as
+  the Inuzuka.)
