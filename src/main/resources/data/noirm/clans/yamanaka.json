@@ -15,8 +15,8 @@
     "start_willpower": 4,
     "xp_willpower": 0.4,
     "medical_power": 0.2,
-    "max_health": -4,
-    "melee_damage": -0.15
+    "max_health": -3,
+    "melee_damage": -0.1
   },
   "clan_jutsu": [
     "noirm:clan/mind_disturbance"

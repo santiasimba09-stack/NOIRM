@@ -10,9 +10,9 @@
     "genjutsu_power": 1.2,
     "genjutsu_resist": 0.6,
     "start_willpower": 5,
-    "max_health": -8,
+    "max_health": -6,
     "max_stamina": -50,
-    "melee_damage": -0.25
+    "melee_damage": -0.15
   },
   "look": {
     "hair": [

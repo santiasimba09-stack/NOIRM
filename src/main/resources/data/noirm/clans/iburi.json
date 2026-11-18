@@ -11,8 +11,8 @@
     "phase_dodge": 0.4,
     "genjutsu_resist": 0.2,
     "xp_speed": 0.2,
-    "max_health": -8,
-    "damage_taken": 0.15
+    "max_health": -6,
+    "damage_taken": 0.1
   },
   "clan_jutsu": [
     "noirm:clan/smoke_haze"

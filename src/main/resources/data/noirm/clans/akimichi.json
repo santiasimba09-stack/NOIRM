@@ -10,13 +10,13 @@
   "awakening": "will",
   "perks": {
     "food_power": 1.5,
-    "max_health": 14,
+    "max_health": 12,
     "start_durability": 6,
     "posture": 50,
     "max_stamina": 60,
-    "melee_damage": 0.3,
+    "melee_damage": 0.2,
     "chakra_pool": 1.0,
-    "damage_taken": -0.1,
+    "damage_taken": -0.05,
     "start_speed": -4,
     "xp_speed": -0.35
   },

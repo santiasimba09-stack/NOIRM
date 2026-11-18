@@ -8,6 +8,8 @@ someone retunes a constant the timeline here follows. What a "normal player" doe
 in ASSUMPTIONS below: change those to try other play styles.
 
 Run:   python3 tools/balance/simulate.py              (the table, in Markdown)
+       python3 tools/balance/simulate.py --clan uzumaki   (the same player born into a canon clan: its perks)
+       python3 tools/balance/simulate.py --clans          (every canon clan side by side, and their NPCs' strength)
        python3 tools/balance/simulate.py --json       (the raw milestones)
        python3 tools/balance/simulate.py --set SKILL=1.0 --set NOIRM_SHARE=0.8   (what-ifs)
 
@@ -177,18 +179,50 @@ def xp_to_next(stat):
     return 20 + 8 * s + 0.05 * past * past
 
 
+# The clan the simulated player is born into (--clan): its perks from data/noirm/clans/<id>.json.
+CLAN = {}
+STAT_PERK = {"tai": "taijutsu", "spd": "speed", "vit": "vitality", "res": "reserves", "dur": "durability", "ctl": "control",
+             "wil": "willpower"}
+# NPC ninjas' raw combat perks count at this share (traits/Perks.NPC_COMBAT_SHARE).
+NPC_COMBAT_SHARE = 0.5
+
+
+def clan_perk(key):
+    return float(CLAN.get("perks", {}).get(key, 0.0))
+
+
+def load_clan(cid):
+    path = os.path.join(DATA, "clans", cid + ".json")
+    return json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+
+
+def clan_fight_factor(share=1.0):
+    """How much a clan's combat perks multiply a fighter: sqrt(damage out x health / damage taken)."""
+    out = 1 + share * (0.6 * clan_perk("melee_damage") + 0.25 * clan_perk("jutsu_power") + 0.15 * clan_perk("genjutsu_power"))
+    health = 1 + share * clan_perk("max_health") / 30
+    # liquid and smoke bodies: blows pass through (water only part of the time); they count in full for NPCs too
+    dodge = (1 - min(0.8, clan_perk("phase_dodge"))) * (1 - 0.4 * min(0.8, clan_perk("water_dodge")))
+    taken = max(0.1, (1 + share * clan_perk("damage_taken")) * dodge)
+    return math.sqrt(max(0.1, out) * max(0.2, health) / taken)
+
+
 class Player:
     STATS = ["tai", "spd", "vit", "res", "dur", "ctl", "wil"]
 
     def __init__(self, g):
         self.g = g
         self.s = {k: 10.0 for k in self.STATS}
+        for stat, name in STAT_PERK.items():  # the clan's starting stats
+            self.s[stat] = max(1.0, self.s[stat] + clan_perk("start_" + name))
+        self.s["spd"] += float(CLAN.get("speed_bonus", 0))
+        self.s["tai"] += float(CLAN.get("taijutsu_bonus", 0))
         self.xp = {k: 0.0 for k in self.STATS}
         self.jutsu = 4  # two clan starters + Substitution + Body Flicker
         self.sage = False
         self.casts = 0.0  # casts of the main clan starter (mastery)
 
     def grant(self, stat, xp):
+        xp *= max(0.1, 1 + clan_perk("stat_xp") + clan_perk("xp_" + STAT_PERK[stat]))  # the clan trains this stat faster or slower
         if xp <= 0:
             return
         x = self.xp[stat] + xp
@@ -208,7 +242,7 @@ class Player:
         return stat * (1 + extras)
 
     def max_health(self):
-        return 20 + (self.s["vit"] - 10) * self.g["HEALTH_PER_VITALITY"]
+        return 20 + (self.s["vit"] - 10) * self.g["HEALTH_PER_VITALITY"] + clan_perk("max_health")
 
 
 def ninja_power(strength, g, jutsu_bonus=0.06):
@@ -258,7 +292,7 @@ def npc_factor(foe_power, g):
 
 def beats(p, foe_power, a, g, margin=1.0):
     """Can the player (with their skill) beat a foe of this power? Both sides reinforced from their own stats."""
-    me = p.power() * fight_factor(p.s["res"], p.s["ctl"], p.s["dur"], g) * a["SKILL"]
+    me = p.power() * fight_factor(p.s["res"], p.s["ctl"], p.s["dur"], g) * a["SKILL"] * clan_fight_factor()
     return me >= margin * foe_power * npc_factor(foe_power, g)
 
 
@@ -615,15 +649,36 @@ def chain_shortcuts(g):
     return sorted(out, key=lambda r: (r[0] is None, r[0] or 0))
 
 
+def clans_table(g, a, hours):
+    """Every canon clan: when the same normal player reaches each class and rank, and how strong its NPCs are."""
+    global CLAN
+    ids = ["(no clan)"] + sorted(os.path.basename(f)[:-5] for f in glob.glob(os.path.join(DATA, "clans", "*.json")))
+    keys = ["player is class C", "player is class B", "player is class A", "player is class S", "rank: chunin", "rank: jonin",
+            "beat class S"]
+    print("| Clan | class C | class B | class A | class S | chunin | jonin | beat S | power at end | TAI/WIL at end | "
+          "fight x (player) | NPC x |")
+    print("|---|" + "---:|" * 11)
+    for cid in ids:
+        CLAN = {} if cid.startswith("(") else load_clan(cid)
+        ev, _ = simulate(g, a, hours)
+        cells = [f"{ev[k]:.1f}" if k in ev else "-" for k in keys]
+        final = ev["_final"]
+        print(f"| {cid} | " + " | ".join(cells) + f" | {final['power']} | {final['stats']['tai']}/{final['stats']['wil']} | "
+              f"{clan_fight_factor():.2f} | {clan_fight_factor(NPC_COMBAT_SHARE):.2f} |")
+    CLAN = {}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--hours", type=float, default=60)
     ap.add_argument("--set", action="append", default=[], help="override an assumption, e.g. SKILL=1.0")
     ap.add_argument("--root", help="read the numbers from another checkout (e.g. an older commit, to compare)")
+    ap.add_argument("--clan", help="the player is born into this canon clan (its perks)")
+    ap.add_argument("--clans", action="store_true", help="every canon clan side by side")
     args = ap.parse_args()
+    global JAVA, DATA, CLAN
     if args.root:
-        global JAVA, DATA
         JAVA = os.path.join(args.root, "src", "main", "java", "com", "noirm")
         DATA = os.path.join(args.root, "src", "main", "resources", "data", "noirm")
     g = read_game()
@@ -631,6 +686,11 @@ def main():
     for kv in args.set:
         k, v = kv.split("=", 1)
         a[k] = type(a[k])(v) if not isinstance(a[k], dict) else json.loads(v)
+    if args.clans:
+        clans_table(g, a, args.hours)
+        return
+    if args.clan:
+        CLAN = load_clan(args.clan)
     ev, log = simulate(g, a, args.hours)
     if args.json:
         print(json.dumps({"milestones": {k: v for k, v in ev.items()}, "assumptions": a}, indent=1, default=str))

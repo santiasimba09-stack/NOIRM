@@ -16,7 +16,7 @@
   "perks": {
     "chakra_pool": 3.0,
     "chakra_regen": 1.0,
-    "max_health": 16,
+    "max_health": 14,
     "health_regen": 0.4,
     "max_stamina": 100,
     "stamina_regen": 0.6,
