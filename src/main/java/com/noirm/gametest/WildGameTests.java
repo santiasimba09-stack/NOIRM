@@ -337,7 +337,7 @@ public final class WildGameTests {
     }
 
     /** Far from everyone a group goes away, but never crew mates or named ninjas. */
-    @GameTest(template = "empty", batch = "noirm_wild_despawn", timeoutTicks = 40)
+    @GameTest(template = "empty", batch = "noirm_wild_despawn", timeoutTicks = 100)
     public static void despawnRules(GameTestHelper helper) {
         floor(helper);
         ServerLevel level = helper.getLevel();
@@ -353,15 +353,16 @@ public final class WildGameTests {
         helper.assertFalse(WildNinjas.mayDespawn(loner, 80, 20), "just out of sight: it stays");
         helper.assertFalse(WildNinjas.mayDespawn(named, 1000, 100000), "a named ninja never goes");
         helper.assertFalse(WildNinjas.mayDespawn(recruit, 1000, 100000), "a crew mate never goes");
-        helper.runAfterDelay(3, () -> {
-            helper.assertFalse(recruit.getPersistentData().contains(WildNinjas.TAG), "a recruit leaves the wild for good");
+        // The recruit leaves the wild on its own next tick, which waits until its chunk is entity-ticking
+        // (TestWorld forces it at the end of the tick it spawned in; early in a run that takes a few ticks).
+        helper.startSequence().thenWaitUntil(() -> helper.assertFalse(recruit.getPersistentData().contains(WildNinjas.TAG),
+                "a recruit leaves the wild for good")).thenExecute(() -> {
             WildNinjas.sweep(level); // (no players in a test world: everyone is "far")
             helper.assertTrue(loner.isRemoved(), "the lone wanderer is gone");
             helper.assertTrue(pair.get(0).isRemoved(), "so is the recruit's old partner");
             helper.assertFalse(named.isRemoved() || recruit.isRemoved(), "the named one and the crew mate stay");
             named.discard();
             recruit.discard();
-            helper.succeed();
-        });
+        }).thenSucceed();
     }
 }
