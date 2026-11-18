@@ -1,0 +1,10 @@
+{
+  "kind": "mixed",
+  "weight": 5,
+  "modifiers": {
+    "damage_taken": 0.08,
+    "pill_toxicity": 0.25,
+    "resolve": 0.2,
+    "stat_xp": 0.05
+  }
+}

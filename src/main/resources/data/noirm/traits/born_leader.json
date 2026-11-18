@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "crew_respect": 0.4,
+    "resolve": 0.15
+  }
+}

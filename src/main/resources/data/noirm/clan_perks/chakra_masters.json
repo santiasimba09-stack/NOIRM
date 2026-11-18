@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 9,
+  "modifiers": {
+    "jutsu_cost": -0.12,
+    "start_control": 2
+  },
+  "talent_bias": {
+    "fine_control": 3
+  }
+}

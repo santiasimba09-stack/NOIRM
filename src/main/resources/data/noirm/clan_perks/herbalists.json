@@ -1,0 +1,13 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "pill_power": 0.2,
+    "pharmacology_xp": 0.5,
+    "pill_toxicity": -0.2
+  },
+  "talent_bias": {
+    "pill_prodigy": 4,
+    "healing_hands": 2
+  }
+}

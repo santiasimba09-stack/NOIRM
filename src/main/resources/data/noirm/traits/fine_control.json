@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "jutsu_cost": -0.12,
+    "start_control": 3
+  },
+  "excludes": [
+    "shaky_control"
+  ]
+}

@@ -110,8 +110,12 @@ public final class CreatorGameTests {
             for (int s = 0; s < 5; s++) {
                 helper.assertTrue(base[s] >= CharacterCreator.STAT_MIN && base[s] <= CharacterCreator.STAT_MAX,
                         "rolled stat " + s + " = " + base[s] + " is within bounds");
-                float bonus = stats[s] - base[s];
-                helper.assertTrue(bonus >= 0 && bonus <= 3 + Math.max(clan.speedBonus(), clan.taijutsuBonus()) + 0.001f,
+                // the clan's and the talents' starting stats (perks, docs/CLANS.md) come on top, up or down
+                com.noirm.traits.Perk start = new com.noirm.traits.Perk[]{com.noirm.traits.Perk.START_RESERVES, com.noirm.traits.Perk.START_TAIJUTSU,
+                        com.noirm.traits.Perk.START_SPEED, com.noirm.traits.Perk.START_CONTROL, com.noirm.traits.Perk.START_WILLPOWER}[s];
+                float perk = com.noirm.traits.Perks.resolve(clan.perks(), roll.talents()).getOrDefault(start, 0f);
+                float bonus = stats[s] - base[s] - perk;
+                helper.assertTrue(bonus >= -0.001f && bonus <= 3 + Math.max(clan.speedBonus(), clan.taijutsuBonus()) + 0.001f,
                         "traits add a small bonus to stat " + s + ": +" + bonus);
             }
             if (first < 0) {

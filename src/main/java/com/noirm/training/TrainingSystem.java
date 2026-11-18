@@ -281,6 +281,10 @@ public final class TrainingSystem {
     /** Max chakra from reserves: adjusts the max by the change in bonus since last time. */
     public static void applyReserves(ShinobiData data) {
         float bonus = (data.getReserves() - ShinobiData.DEFAULT_STAT) * CHAKRA_PER_RESERVES;
+        // Clan blood and talents: a flat amount, then the whole pool ×(1 + chakra_pool) (the Uzumaki's huge reserves).
+        float flat = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.MAX_CHAKRA);
+        float pool = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.CHAKRA_POOL);
+        bonus += flat + pool * (ShinobiData.DEFAULT_MAX_CHAKRA + bonus + flat);
         float applied = data.training().appliedChakraBonus();
         if (Math.abs(bonus - applied) > 1e-4) {
             data.setMaxChakra(data.getMaxChakra() - applied + bonus);
@@ -322,7 +326,7 @@ public final class TrainingSystem {
             if (value >= ShinobiData.MAX_STAT) {
                 return;
             }
-            float total = data.training().xp(stat) + xp;
+            float total = data.training().xp(stat) + xp * com.noirm.traits.Perks.statXpMultiplier(data, stat); // talents, clan
             int gained = 0;
             while (total >= xpToNext(value) && value < ShinobiData.MAX_STAT) {
                 total -= xpToNext(value);

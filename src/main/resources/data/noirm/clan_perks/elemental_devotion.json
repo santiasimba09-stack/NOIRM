@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 9,
+  "modifiers": {
+    "jutsu_power": 0.1,
+    "mastery": 0.15
+  },
+  "talent_bias": {
+    "prodigy": 2
+  }
+}

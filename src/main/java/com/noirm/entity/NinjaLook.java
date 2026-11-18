@@ -30,7 +30,11 @@ import java.util.Map;
  */
 public final class NinjaLook {
     /** Clan folders that have their own appearance tables; every other clan uses "generic". */
-    public static final List<String> FOLDERS = List.of("uchiha", "senju", "hyuga", "uzumaki", "generic");
+    public static final List<String> FOLDERS = List.of("uchiha", "senju", "hyuga", "uzumaki",
+            // the other canon clans (docs/CLANS.md: each one's hair, eyes, marks)
+            "nara", "akimichi", "yamanaka", "aburame", "inuzuka", "hatake", "sarutobi", "kaguya", "hozuki", "yuki",
+            "chinoike", "kurama", "fuma", "iburi", "jugo", "kamizuru", "yotsuki", "kazekage", "kurogane", "shimura",
+            "hoshigaki", "might", "generic");
     /** Fixed looks (every seed decodes the same), for masters ({@code data/noirm/masters/}). */
     public static final List<String> FIXED_FOLDERS = List.of("taijutsu_master", "sage_hermit", "ninjutsu_scholar", "medic");
     /** Decoding order: changing it changes every ninja's look. */

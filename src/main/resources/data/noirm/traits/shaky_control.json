@@ -1,0 +1,11 @@
+{
+  "kind": "negative",
+  "weight": 4,
+  "modifiers": {
+    "jutsu_cost": 0.15,
+    "xp_control": -0.2
+  },
+  "excludes": [
+    "fine_control"
+  ]
+}

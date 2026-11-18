@@ -1,0 +1,12 @@
+{
+  "kind": "negative",
+  "weight": 4,
+  "modifiers": {
+    "max_health": -4,
+    "dot_resist": -0.25,
+    "health_regen": -0.02
+  },
+  "excludes": [
+    "tough_as_nails"
+  ]
+}

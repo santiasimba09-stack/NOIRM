@@ -1,0 +1,14 @@
+{
+  "nature": "earth",
+  "behavior": "projectile",
+  "rank": "C",
+  "chakra_cost": 14,
+  "cooldown": 90,
+  "params": {
+    "count": 5,
+    "spread": 10,
+    "speed": 2.2,
+    "damage": 3,
+    "posture": 8
+  }
+}

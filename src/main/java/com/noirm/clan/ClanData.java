@@ -28,8 +28,7 @@ public final class ClanData {
     @SubscribeEvent
     public static void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new CodecJsonLoader<>("clans", Clan.CODEC, loaded -> canon = loaded.values().stream()
-                .map(c -> new Clan(c.id(), c.name(), true, c.natures(), c.traits(), c.speedBonus(), c.taijutsuBonus(),
-                        c.kekkeiGenkai(), c.awakening(), c.weight()))
+                .map(c -> c.withCanon(true))
                 .sorted(Comparator.comparing(Clan::id))
                 .toList()));
     }

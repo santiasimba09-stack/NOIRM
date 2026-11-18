@@ -129,12 +129,14 @@ public final class NpcJutsuSets {
         RandomSource random = RandomSource.create(seed);
         int size = tier.min + random.nextInt(tier.max - tier.min + 1);
         int cap = rankIndex(tier.maxRank);
-        List<ResourceLocation> signatures = CLAN_SIGNATURES.getOrDefault(clanId, List.of());
+        List<ResourceLocation> signatures = new ArrayList<>(CLAN_SIGNATURES.getOrDefault(clanId, List.of()));
+        signatures.addAll(com.noirm.traits.ClanJutsu.of(clanId)); // the clan's secret techniques are its signatures
         List<ResourceLocation> result = new ArrayList<>();
 
         // The pool: everything they could know, sorted by id so the same seed gives the same set.
         List<Map.Entry<ResourceLocation, JutsuDefinition>> pool = JutsuData.all().entrySet().stream()
                 .filter(e -> eligible(e.getKey(), e.getValue(), natures, byakugan))
+                .filter(e -> com.noirm.traits.ClanJutsu.allowedFor(clanId, e.getKey())) // clan jutsu only for their clan
                 .filter(e -> rankIndex(e.getValue().rank()) <= cap + (signatures.contains(e.getKey()) ? SIGNATURE_RANK_STRETCH : 0))
                 .sorted(Comparator.comparing(e -> e.getKey().toString()))
                 .toList();
@@ -244,6 +246,7 @@ public final class NpcJutsuSets {
                 .filter(e -> e.getValue().unlock().map(u -> id.equals(u.after()) && u.mastery() <= level).orElse(false))
                 .filter(e -> !ninja.knownJutsu().contains(e.getKey()))
                 .filter(e -> eligible(e.getKey(), e.getValue(), ninja.natures(), false))
+                .filter(e -> com.noirm.traits.ClanJutsu.allowedFor(ninja.clanId(), e.getKey()))
                 .sorted(Comparator.comparing(e -> e.getKey().toString()))
                 .limit(SELF_LEARN_PER_LEVEL)
                 .forEach(e -> learned.add(e.getKey()));

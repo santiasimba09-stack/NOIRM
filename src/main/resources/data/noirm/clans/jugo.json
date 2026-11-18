@@ -1,0 +1,35 @@
+{
+  "id": "jugo",
+  "name": "Jūgo's clan",
+  "weight": 1,
+  "natures": {
+    "earth": 1.0
+  },
+  "taijutsu_bonus": 2,
+  "awakening": "will",
+  "perks": {
+    "max_health": 6,
+    "melee_damage": 0.15,
+    "health_regen": 0.15,
+    "xp_taijutsu": 0.2,
+    "start_control": -3,
+    "genjutsu_resist": -0.2
+  },
+  "clan_jutsu": [
+    "noirm:clan/sage_frenzy"
+  ],
+  "look": {
+    "hair": [
+      "#e07a2e",
+      "#f0a030"
+    ],
+    "eyes": "#c9a445"
+  },
+  "talent_bias": {
+    "hot_blooded": 4,
+    "heavy_handed": 3,
+    "tough_as_nails": 2,
+    "kindred_spirit": 2,
+    "shaky_control": 2
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "start_speed": 3,
+    "xp_speed": 0.3
+  }
+}

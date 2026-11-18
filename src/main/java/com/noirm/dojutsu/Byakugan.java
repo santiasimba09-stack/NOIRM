@@ -100,7 +100,9 @@ public final class Byakugan {
 
     /** A Gentle Fist hit landed: drain chakra and close chakra points (heavy hits close more). */
     public static void gentleFist(LivingEntity attacker, LivingEntity target, boolean heavy) {
-        closePoints(attacker, target, heavy ? POINTS_PER_HIT * 2 : POINTS_PER_HIT, heavy ? GENTLE_FIST_CHAKRA * 2 : GENTLE_FIST_CHAKRA);
+        float art = com.noirm.traits.Perks.mult(attacker, com.noirm.traits.Perk.GENTLE_FIST); // the Hyūga's own art
+        int points = Math.round((heavy ? POINTS_PER_HIT * 2 : POINTS_PER_HIT) * art);
+        closePoints(attacker, target, points, (heavy ? GENTLE_FIST_CHAKRA * 2 : GENTLE_FIST_CHAKRA) * art);
     }
 
     /** Closes {@code points} chakra points on {@code target} and drains {@code chakra} (players). */

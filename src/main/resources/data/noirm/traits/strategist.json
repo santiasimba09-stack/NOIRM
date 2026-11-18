@@ -1,0 +1,9 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "xp_control": 0.4,
+    "xp_willpower": 0.2,
+    "mastery": 0.25
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "iburi",
+  "name": "Iburi",
+  "weight": 1,
+  "natures": {
+    "fire": 1.5
+  },
+  "kekkei_genkai": "smoke_body",
+  "awakening": "will",
+  "perks": {
+    "phase_dodge": 0.25,
+    "max_health": -4,
+    "genjutsu_resist": 0.1,
+    "xp_speed": 0.1
+  },
+  "clan_jutsu": [
+    "noirm:clan/smoke_haze"
+  ],
+  "look": {
+    "hair": [
+      "#8e9096",
+      "#5a5c62"
+    ],
+    "eyes": "#7a7f86"
+  },
+  "talent_bias": {
+    "sickly": 3,
+    "frail_but_precise": 3,
+    "fleet_footed": 2
+  }
+}

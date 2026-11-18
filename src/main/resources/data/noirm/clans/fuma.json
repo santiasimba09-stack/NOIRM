@@ -1,0 +1,29 @@
+{
+  "id": "fuma",
+  "name": "Fūma",
+  "weight": 1,
+  "natures": {
+    "wind": 1.0,
+    "fire": 1.0
+  },
+  "speed_bonus": 1,
+  "awakening": "will",
+  "perks": {
+    "melee_damage": 0.06,
+    "perception": 0.05,
+    "start_speed": 1,
+    "xp_taijutsu": 0.1
+  },
+  "look": {
+    "hair": [
+      "#141418",
+      "#2a2224"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "fleet_footed": 2,
+    "heavy_handed": 2,
+    "keen_eyes": 2
+  }
+}

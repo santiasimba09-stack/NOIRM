@@ -161,7 +161,8 @@ public final class SpiritTechniques {
     /** The chance a genjutsu of {@code power} from {@code caster} takes hold of {@code target}. */
     public static float genjutsuChance(LivingEntity caster, LivingEntity target, float power) {
         float ratio = mind(target) / Math.max(1f, mind(caster));
-        return Mth.clamp((GENJUTSU_BASE_CHANCE - GENJUTSU_RATIO_WEIGHT * ratio) * Math.min(1.5f, power), GENJUTSU_MIN_CHANCE, GENJUTSU_MAX_CHANCE);
+        return Mth.clamp((GENJUTSU_BASE_CHANCE - GENJUTSU_RATIO_WEIGHT * ratio) * Math.min(1.5f, power), GENJUTSU_MIN_CHANCE, GENJUTSU_MAX_CHANCE)
+                * com.noirm.traits.Perks.genjutsuTakeMultiplier(target); // Iron Will, the Kurama, the Yamanaka
     }
 
     /** An open Sharingan sees through any of these illusions. */

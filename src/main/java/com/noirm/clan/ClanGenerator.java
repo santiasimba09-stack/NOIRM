@@ -64,8 +64,22 @@ public final class ClanGenerator {
 
         AwakeningPath awakening = random.nextFloat() < 0.5f ? AwakeningPath.NATURE_SURGE : AwakeningPath.WILL;
         String id = "custom_" + name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
-        return new Clan(id, name, false, Map.copyOf(natures), List.copyOf(traits),
+        Clan clan = new Clan(id, name, false, Map.copyOf(natures), List.copyOf(traits),
                 random.nextInt(3), random.nextInt(3), java.util.Optional.empty(), awakening, 1);
+        return withPackages(clan, random);
+    }
+
+    /**
+     * Gives a generated clan its blood: {@link com.noirm.traits.Talents#PACKAGES_PER_CLAN} perk
+     * packages from {@code data/noirm/clan_perks/} (their perks summed, their talent biases
+     * multiplied). Also used for generated clans saved before perks existed.
+     */
+    public static Clan withPackages(Clan clan, RandomSource random) {
+        List<String> packages = com.noirm.traits.Talents.rollPackages(random);
+        if (packages.isEmpty()) {
+            return clan;
+        }
+        return clan.withPerks(com.noirm.traits.Talents.packagePerks(packages), com.noirm.traits.Talents.packageBias(packages), packages);
     }
 
     private static boolean isTaken(String name, Collection<String> taken) {

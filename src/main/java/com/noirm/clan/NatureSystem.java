@@ -102,6 +102,9 @@ public final class NatureSystem {
 
     /** Gives a nature and its starting jutsu (filling free loadout slots). */
     public static void grant(ShinobiData data, Nature nature, float affinity) {
+        if (!nature.isBasic()) { // bloodlines with a gift for combinations (the Senju's Wood potential)
+            affinity = Math.min(Clan.PRIMARY_AFFINITY, affinity + com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.COMBO_AFFINITY));
+        }
         data.identity().addNature(nature, affinity);
         for (ResourceLocation id : JutsuData.startersFor(nature)) {
             if (data.jutsu().learn(id, false)) {

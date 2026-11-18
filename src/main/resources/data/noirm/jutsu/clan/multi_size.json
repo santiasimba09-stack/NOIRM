@@ -1,0 +1,23 @@
+{
+  "behavior": "mode",
+  "rank": "B",
+  "chakra_cost": 18,
+  "cooldown": 60,
+  "params": {
+    "duration": 0
+  },
+  "mode": {
+    "speed": -0.2,
+    "perception": 1.0,
+    "damage": 1.8,
+    "defense": 0.6,
+    "action_speed": 0.85,
+    "drain": 1.6,
+    "aura": [
+      "#FFE8C8",
+      "#E07A2E",
+      "#5A2A10",
+      "#FFC080"
+    ]
+  }
+}

@@ -1,8 +1,37 @@
 {
-  "id": "hyuga", "name": "Hyūga", "weight": 3,
-  "natures": { "water": 1.0 },
-  "traits": ["keen_eyes", "chakra_flow"],
-  "speed_bonus": 1, "taijutsu_bonus": 3,
+  "id": "hyuga",
+  "name": "Hyūga",
+  "weight": 3,
+  "natures": {
+    "water": 1.0
+  },
+  "traits": [
+    "keen_eyes",
+    "chakra_flow"
+  ],
+  "speed_bonus": 1,
+  "taijutsu_bonus": 3,
   "kekkei_genkai": "byakugan",
-  "awakening": "will"
+  "awakening": "will",
+  "perks": {
+    "gentle_fist": 0.25,
+    "start_control": 2,
+    "jutsu_cost": -0.1,
+    "xp_taijutsu": 0.15,
+    "jutsu_power": -0.1
+  },
+  "look": {
+    "hair": [
+      "#2b1d16",
+      "#1d1a1c"
+    ],
+    "eyes": "#e4dcef"
+  },
+  "talent_bias": {
+    "fine_control": 3,
+    "taijutsu_genius": 2,
+    "keen_eyes": 2,
+    "iron_will": 1.5
+  },
+  "style": "gentle_fist"
 }

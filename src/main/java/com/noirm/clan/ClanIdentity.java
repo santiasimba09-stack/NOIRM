@@ -22,6 +22,12 @@ public final class ClanIdentity {
     private final EnumSet<ClanTrait> traits = EnumSet.noneOf(ClanTrait.class);
     private String kekkeiGenkai = "";
     private AwakeningPath awakening = AwakeningPath.WILL;
+    /** What the blood gives ({@code com.noirm.traits.Perk} key → amount): a copy of the clan's perks. */
+    private final java.util.Map<String, Float> perks = new java.util.TreeMap<>();
+    /** The clan's secret techniques (only members can use them). */
+    private final java.util.List<net.minecraft.resources.ResourceLocation> clanJutsu = new java.util.ArrayList<>();
+    /** Bumped whenever the clan or its perks change (cached perk totals are rebuilt). */
+    private int version;
 
     public boolean isAssigned() {
         return !clanId.isEmpty();
@@ -63,6 +69,41 @@ public final class ClanIdentity {
         return awakening;
     }
 
+    public String kekkeiGenkai() {
+        return kekkeiGenkai;
+    }
+
+    public java.util.Map<String, Float> perks() {
+        return java.util.Collections.unmodifiableMap(perks);
+    }
+
+    public java.util.List<net.minecraft.resources.ResourceLocation> clanJutsu() {
+        return java.util.Collections.unmodifiableList(clanJutsu);
+    }
+
+    public int version() {
+        return version;
+    }
+
+    /** Takes the clan's current perks and clan jutsu (old saves, a clan file that changed). */
+    public void refreshPerks(Clan clan) {
+        perks.clear();
+        perks.putAll(clan.perks());
+        clanJutsu.clear();
+        clanJutsu.addAll(clan.clanJutsu());
+        version++;
+    }
+
+    /** Sets one perk directly (commands, tests); 0 removes it. */
+    public void setPerk(String key, float amount) {
+        if (amount == 0f) {
+            perks.remove(key);
+        } else {
+            perks.put(key, amount);
+        }
+        version++;
+    }
+
     /** 0 if the player doesn't have this nature at all. */
     public float affinity(Nature nature) {
         return natures.getOrDefault(nature, 0f);
@@ -83,6 +124,7 @@ public final class ClanIdentity {
         traits.addAll(clan.traits());
         kekkeiGenkai = clan.kekkeiGenkai().orElse("");
         awakening = clan.awakening();
+        refreshPerks(clan);
     }
 
     public CompoundTag save() {
@@ -98,6 +140,12 @@ public final class ClanIdentity {
         tag.put("Traits", traitList);
         tag.putString("KekkeiGenkai", kekkeiGenkai);
         tag.putString("Awakening", awakening.getSerializedName());
+        CompoundTag perkTag = new CompoundTag();
+        perks.forEach(perkTag::putFloat);
+        tag.put("Perks", perkTag);
+        ListTag jutsuList = new ListTag();
+        clanJutsu.forEach(id -> jutsuList.add(StringTag.valueOf(id.toString())));
+        tag.put("ClanJutsu", jutsuList);
         return tag;
     }
 
@@ -127,5 +175,18 @@ public final class ClanIdentity {
                 awakening = path;
             }
         }
+        perks.clear();
+        CompoundTag perkTag = tag.getCompound("Perks");
+        for (String key : perkTag.getAllKeys()) {
+            perks.put(key, perkTag.getFloat(key));
+        }
+        clanJutsu.clear();
+        for (Tag t : tag.getList("ClanJutsu", Tag.TAG_STRING)) {
+            net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(t.getAsString());
+            if (id != null) {
+                clanJutsu.add(id);
+            }
+        }
+        version++;
     }
 }

@@ -43,8 +43,9 @@ public final class AllyMind {
             return;
         }
         float before = ally.respect();
-        ally.setRespect(before + amount * ally.trait().respectGain);
         Player leader = ally.level().getPlayerByUUID(ally.leaderId());
+        float charisma = leader != null && amount > 0 ? com.noirm.traits.Perks.mult(leader, com.noirm.traits.Perk.CREW_RESPECT) : 1f;
+        ally.setRespect(before + amount * ally.trait().respectGain * charisma);
         if (leader != null && reasonKey != null && Math.abs(amount) >= 3) {
             leader.displayClientMessage(Component.translatable(reasonKey, ally.getDisplayName()), true);
         }

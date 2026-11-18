@@ -70,6 +70,7 @@ public final class CommandGuide {
                 .add("set", "/noirm clan set <clan>", "/noirm clan set uchiha", true)
                 .add("reroll", "/noirm clan reroll", "/noirm clan reroll", true)
                 .add("new", "/noirm clan new", "/noirm clan new", true)
+                .add("perks", "/noirm clan perks [clan]", "/noirm clan perks uzumaki", false)
                 .add("natures", "/noirm nature list", "/noirm nature list", true)
                 .add("nature_add", "/noirm nature add <nature>", "/noirm nature add water", true)
                 .add("nature_remove", "/noirm nature remove <nature>", "/noirm nature remove water", true)
@@ -77,6 +78,12 @@ public final class CommandGuide {
                 .add("drills", "/noirm drills", "/noirm drills", false)
                 .add("nature_train", "/noirm nature train <nature> <0-100>", "/noirm nature train wind 90", true)
                 .add("nature_hidden", "/noirm nature hidden <nature>", "/noirm nature hidden earth", true);
+        section("trait")
+                .add("list", "/noirm trait list", "/noirm trait list", false)
+                .add("list_all", "/noirm trait list all", "/noirm trait list all", false)
+                .add("give", "/noirm trait give <talent>", "/noirm trait give natural_sealer", true)
+                .add("take", "/noirm trait take <talent>", "/noirm trait take natural_sealer", true)
+                .add("reroll", "/noirm trait reroll", "/noirm trait reroll", true);
         section("jutsu")
                 .add("list", "/noirm jutsu list", "/noirm jutsu list", false)
                 .add("loadout", "/noirm jutsu loadout", "/noirm jutsu loadout", false)

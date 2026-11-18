@@ -1,0 +1,12 @@
+{
+  "kind": "mixed",
+  "weight": 6,
+  "modifiers": {
+    "melee_damage": 0.12,
+    "resolve": 0.3,
+    "jutsu_cost": 0.08
+  },
+  "talent_bias": {
+    "hot_blooded": 4
+  }
+}

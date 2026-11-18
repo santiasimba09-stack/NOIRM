@@ -37,6 +37,14 @@ import java.util.List;
  */
 public class SealingScrollItem extends Item {
     private static final String TAILS = "Tails";
+    /** A master sealer (sealing power at least this) can capture a beast that is merely badly hurt, not subdued. */
+    public static final float MASTER_SEALER = 0.4f;
+    /** ...once it's at or below this share of its health. */
+    public static final float MASTER_CAPTURE_HEALTH = 0.25f;
+    /** Bond a beast starts with per +100% sealing power of whoever seals it in (a well-made seal). */
+    public static final float BOND_PER_SEALING = 30f;
+    /** Chance per +100% sealing power that the scroll survives the sealing (it can be used again). */
+    public static final float SCROLL_KEPT_PER_SEALING = 0.6f;
 
     public SealingScrollItem(Properties properties) {
         super(properties);
@@ -102,7 +110,9 @@ public class SealingScrollItem extends Item {
 
     /** Captures a subdued beast into an empty scroll. Returns false if the beast still fights. */
     public static boolean capture(Player player, ItemStack scroll, TailedBeast beast) {
-        if (!beast.isSubdued() && !player.getAbilities().instabuild) { // creative: seal it whenever you like
+        float sealing = com.noirm.traits.Perks.get(player, com.noirm.traits.Perk.SEALING_POWER);
+        boolean masterSeal = sealing >= MASTER_SEALER && beast.getHealth() <= beast.getMaxHealth() * MASTER_CAPTURE_HEALTH;
+        if (!beast.isSubdued() && !masterSeal && !player.getAbilities().instabuild) { // creative: seal it whenever you like
             player.displayClientMessage(Component.translatable("message.noirm.scroll.not_subdued", beast.getName()), true);
             return false;
         }
@@ -143,6 +153,11 @@ public class SealingScrollItem extends Item {
                 return false;
             }
             BijuSystem.seal(player, data, tails);
+            float sealing = com.noirm.traits.Perks.get(user, com.noirm.traits.Perk.SEALING_POWER);
+            if (sealing > 0f) { // an Uzumaki's seal: the beast settles in calmer
+                data.biju().setBond(data.biju().bond() + Math.round(sealing * BOND_PER_SEALING));
+                data.markPowersDirty();
+            }
             player.sendSystemMessage(Component.translatable("message.noirm.scroll.sealed_you", BijuSystem.beastName(tails)).withStyle(ChatFormatting.GOLD));
         } else {
             return false;
@@ -151,8 +166,12 @@ public class SealingScrollItem extends Item {
             user.sendSystemMessage(Component.translatable("message.noirm.scroll.sealed_other", BijuSystem.beastName(tails), target.getDisplayName()));
         }
         effects(target, ParticleTypes.ENCHANT, SoundEvents.BEACON_POWER_SELECT);
-        if (!user.getAbilities().instabuild) {
+        float keep = com.noirm.traits.Perks.get(user, com.noirm.traits.Perk.SEALING_POWER) * SCROLL_KEPT_PER_SEALING;
+        if (!user.getAbilities().instabuild && user.getRandom().nextFloat() >= keep) {
             scroll.shrink(1);
+        } else if (!user.getAbilities().instabuild) {
+            setTails(scroll, 0); // a sealing master's scroll holds: it can be used again
+            user.displayClientMessage(Component.translatable("message.noirm.scroll.kept").withStyle(ChatFormatting.GOLD), true);
         } else {
             setTails(scroll, 0);
         }

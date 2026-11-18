@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "xp_taijutsu": 0.6,
+    "melee_damage": 0.1
+  }
+}

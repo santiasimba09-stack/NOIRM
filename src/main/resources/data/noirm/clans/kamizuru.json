@@ -1,0 +1,31 @@
+{
+  "id": "kamizuru",
+  "name": "Kamizuru",
+  "weight": 1,
+  "natures": {
+    "earth": 1.5
+  },
+  "awakening": "will",
+  "perks": {
+    "sensor": 12,
+    "dot_resist": 0.2,
+    "pill_power": 0.1,
+    "jutsu_power": 0.05,
+    "crew_respect": -0.1
+  },
+  "clan_jutsu": [
+    "noirm:clan/bee_swarm"
+  ],
+  "look": {
+    "hair": [
+      "#2a2224",
+      "#3a2618"
+    ],
+    "eyes": "#c9a445"
+  },
+  "talent_bias": {
+    "kindred_spirit": 3,
+    "pill_prodigy": 2,
+    "chakra_sensor": 2
+  }
+}

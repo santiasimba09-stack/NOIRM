@@ -1,0 +1,31 @@
+{
+  "id": "yotsuki",
+  "name": "Yotsuki",
+  "weight": 1,
+  "natures": {
+    "lightning": 1.5
+  },
+  "taijutsu_bonus": 2,
+  "awakening": "will",
+  "perks": {
+    "max_health": 4,
+    "melee_damage": 0.12,
+    "start_durability": 2,
+    "max_stamina": 20,
+    "start_control": -1
+  },
+  "look": {
+    "hair": [
+      "#f2f0ea",
+      "#e3c26a"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "heavy_handed": 3,
+    "taijutsu_genius": 3,
+    "tough_as_nails": 2,
+    "hot_blooded": 2,
+    "born_leader": 2
+  }
+}

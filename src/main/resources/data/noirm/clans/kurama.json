@@ -1,0 +1,29 @@
+{
+  "id": "kurama",
+  "name": "Kurama",
+  "weight": 1,
+  "natures": {
+    "yin": 1.5
+  },
+  "awakening": "will",
+  "perks": {
+    "genjutsu_power": 0.5,
+    "genjutsu_resist": 0.3,
+    "max_health": -4,
+    "max_stamina": -20,
+    "start_willpower": 2
+  },
+  "look": {
+    "hair": [
+      "#2b1d16",
+      "#1b1c22"
+    ],
+    "eyes": "#7a2a24"
+  },
+  "talent_bias": {
+    "genjutsu_talent": 5,
+    "frail_but_precise": 3,
+    "sickly": 2,
+    "iron_will": 2
+  }
+}

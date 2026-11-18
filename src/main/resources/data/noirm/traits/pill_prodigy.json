@@ -1,0 +1,9 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "pharmacology_xp": 1.0,
+    "pill_power": 0.15,
+    "pill_toxicity": -0.15
+  }
+}

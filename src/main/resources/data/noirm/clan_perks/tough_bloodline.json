@@ -1,0 +1,13 @@
+{
+  "kind": "positive",
+  "weight": 10,
+  "modifiers": {
+    "max_health": 4,
+    "dot_resist": 0.25,
+    "start_durability": 2
+  },
+  "talent_bias": {
+    "tough_as_nails": 3,
+    "stubborn_body": 2
+  }
+}

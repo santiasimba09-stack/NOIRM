@@ -1,0 +1,8 @@
+{
+  "kind": "negative",
+  "weight": 4,
+  "modifiers": {
+    "posture": -20,
+    "damage_taken": 0.06
+  }
+}

@@ -1,6 +1,49 @@
 {
-  "id": "uzumaki", "name": "Uzumaki", "weight": 2,
-  "natures": { "wind": 1.5, "water": 1.0 },
-  "traits": ["deep_reserves", "iron_will"],
-  "awakening": "will"
+  "id": "uzumaki",
+  "name": "Uzumaki",
+  "weight": 2,
+  "natures": {
+    "wind": 1.5,
+    "water": 1.0
+  },
+  "traits": [
+    "deep_reserves",
+    "iron_will"
+  ],
+  "awakening": "will",
+  "perks": {
+    "max_chakra": 60,
+    "chakra_pool": 0.35,
+    "chakra_regen": 0.6,
+    "health_regen": 0.15,
+    "max_health": 2,
+    "dot_resist": 0.3,
+    "strain": -0.35,
+    "pill_toxicity": -0.3,
+    "sealing_power": 0.5,
+    "sealing_cost": -0.35,
+    "beast_bond": 0.5,
+    "start_control": -2
+  },
+  "clan_jutsu": [
+    "noirm:clan/adamantine_sealing_chains"
+  ],
+  "look": {
+    "hair": [
+      "#d8352a",
+      "#b8261f",
+      "#e85a2a"
+    ],
+    "eyes": "#3a6a9a"
+  },
+  "talent_bias": {
+    "deep_reserves": 4,
+    "natural_sealer": 5,
+    "iron_will": 2,
+    "chakra_sensor": 2,
+    "quick_recovery": 2,
+    "kindred_spirit": 2,
+    "sickly": 0.3,
+    "shaky_control": 1.5
+  }
 }

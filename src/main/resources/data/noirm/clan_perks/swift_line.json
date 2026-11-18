@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 10,
+  "modifiers": {
+    "start_speed": 2,
+    "xp_speed": 0.2
+  },
+  "talent_bias": {
+    "fleet_footed": 3
+  }
+}

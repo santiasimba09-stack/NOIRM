@@ -1,0 +1,35 @@
+{
+  "id": "nara",
+  "name": "Nara",
+  "weight": 2,
+  "natures": {
+    "yin": 1.5,
+    "earth": 1.0
+  },
+  "awakening": "will",
+  "perks": {
+    "start_control": 3,
+    "xp_control": 0.4,
+    "mastery": 0.3,
+    "xp_willpower": 0.15,
+    "xp_taijutsu": -0.2,
+    "max_stamina": -10
+  },
+  "clan_jutsu": [
+    "noirm:clan/shadow_possession"
+  ],
+  "look": {
+    "hair": [
+      "#1b1c22",
+      "#2a2224"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "strategist": 5,
+    "easygoing": 4,
+    "fine_control": 2,
+    "quick_learner": 2,
+    "taijutsu_genius": 0.4
+  }
+}

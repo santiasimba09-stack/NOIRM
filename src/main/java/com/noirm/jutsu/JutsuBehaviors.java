@@ -375,7 +375,8 @@ public final class JutsuBehaviors {
             return;
         }
         float ratio = Perception.perception(target) / Perception.perception(caster);
-        float chance = Mth.clamp(1.5f - ratio, 0.15f, 1f) * Math.min(1.5f, ctx.power());
+        float chance = Mth.clamp(1.5f - ratio, 0.15f, 1f) * Math.min(1.5f, ctx.power())
+                * com.noirm.traits.Perks.genjutsuTakeMultiplier(target); // Iron Will, the Kurama, the Yamanaka
         DustParticleOptions red = new DustParticleOptions(new Vector3f(0.85f, 0.05f, 0.05f), 1.5f);
         if (caster.getRandom().nextFloat() >= chance) {
             JutsuEffects.particles(target, ParticleTypes.SMOKE, 15, 0.4, 0.02);

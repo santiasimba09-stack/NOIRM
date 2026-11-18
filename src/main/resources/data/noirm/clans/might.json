@@ -1,0 +1,35 @@
+{
+  "id": "might",
+  "name": "Might",
+  "weight": 1,
+  "natures": {},
+  "taijutsu_bonus": 3,
+  "awakening": "will",
+  "perks": {
+    "xp_taijutsu": 0.5,
+    "max_stamina": 50,
+    "stamina_regen": 0.4,
+    "melee_damage": 0.12,
+    "start_durability": 2,
+    "resolve": 0.3,
+    "jutsu_power": -0.3,
+    "jutsu_cost": 0.2
+  },
+  "look": {
+    "hair": [
+      "#141414",
+      "#1b1c22"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "taijutsu_genius": 5,
+    "late_bloomer": 4,
+    "iron_will": 3,
+    "hot_blooded": 3,
+    "born_leader": 2,
+    "genjutsu_talent": 0.2,
+    "fine_control": 0.3
+  },
+  "style": "leaf_hurricane"
+}

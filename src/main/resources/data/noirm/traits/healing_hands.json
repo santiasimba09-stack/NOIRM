@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "medical_power": 0.3,
+    "health_regen": 0.05
+  }
+}
