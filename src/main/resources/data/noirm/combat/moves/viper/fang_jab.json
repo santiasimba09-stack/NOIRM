@@ -1,0 +1,30 @@
+{
+  "animation": "noirm:viper_fang_jab",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 3,
+    "cancel_after": 1
+  },
+  "hit": {
+    "damage": 2,
+    "posture": 6,
+    "range": 2.6,
+    "arc": 80,
+    "knockback": 0.05,
+    "hitstun": 6,
+    "hitstop": 1,
+    "shake": 0.2,
+    "lunge": 0.25
+  },
+  "next": {
+    "light": "noirm:viper/fang_jab_2",
+    "heavy": "noirm:viper/striking_cobra"
+  },
+  "variants": {
+    "low": "noirm:viper/low_fang"
+  },
+  "effects": {
+    "stamina_drain": 3
+  }
+}

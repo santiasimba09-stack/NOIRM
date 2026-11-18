@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:wind_step_passing_strike",
+  "timing": {
+    "windup": 4,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 14,
+    "range": 3.0,
+    "arc": 90,
+    "knockback": 0.3,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.45,
+    "lunge": 1.0
+  },
+  "next": {
+    "light": "noirm:wind_step/gust_jab"
+  },
+  "variants": {
+    "aggressive": "noirm:wind_step/cyclone_kick"
+  }
+}

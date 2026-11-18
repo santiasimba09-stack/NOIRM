@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:drunken_fist_backhand_swing",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 12,
+    "range": 2.6,
+    "arc": 140,
+    "knockback": 0.3,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.35
+  },
+  "next": {
+    "light": "noirm:drunken_fist/falling_elbow"
+  }
+}

@@ -92,6 +92,24 @@ public final class CombatState {
     boolean dodgeCountering;
     boolean dashStrike;
 
+    // Fighting styles (the styles wave): what the style's identity changed for this fighter
+    /** The guard button as last sent (raised or not), to see a fresh press (feints and sways happen on the press). */
+    boolean guardHeld;
+    /** The current dodge's invulnerable start and perfect-dodge ticks (the style's dodge sets them). */
+    int dodgeIframes = CombatSystem.DODGE_IFRAMES;
+    int dodgePerfect = CombatSystem.PERFECT_DODGE_TICKS;
+    /** After a feint: ticks left in which the next attack comes out fast and slips through a guard. */
+    int feintTicks;
+    /** The attack in progress follows a feint (its hit pierces a guard, see {@link StyleIdentity.Feint}). */
+    boolean feintArmed;
+    /** A counter stance's parry just answered: the next attack is the style's counter, thrown at once. */
+    boolean riposte;
+    /** The combat-mode speed the style set on this fighter (1 = none), so it's only re-applied when it changes. */
+    float styleSpeed = 1f;
+    /** Feints thrown and sways made (tests and the masters' spars can count them). */
+    int feints;
+    int sways;
+
     // Sync
     private boolean dirty = true;
     int lastSyncedPosture = -1;
@@ -198,6 +216,30 @@ public final class CombatState {
     /** True while the attack in progress is a dash strike (sprinting into an attack). */
     public boolean isDashStrike() {
         return dashStrike;
+    }
+
+    /** Ticks left after a feint in which the next attack is a fast, guard-piercing follow-up. */
+    public int feintTicks() {
+        return feintTicks;
+    }
+
+    /** True while the attack in progress follows a feint. */
+    public boolean isFeintFollowUp() {
+        return feintArmed;
+    }
+
+    /** How many feints / evasive sways this fighter has made. */
+    public int feints() {
+        return feints;
+    }
+
+    public int sways() {
+        return sways;
+    }
+
+    /** The current dodge's invulnerable ticks (the style's dodge). */
+    public int dodgeIframes() {
+        return dodgeIframes;
     }
 
     public void setMaxPosture(float value) {

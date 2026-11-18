@@ -1,0 +1,31 @@
+{
+  "animation": "noirm:iron_body_iron_palm",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 8,
+    "posture": 38,
+    "range": 2.6,
+    "arc": 90,
+    "knockback": 1.2,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.9,
+    "lunge": 0.3,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:iron_body/iron_jab"
+  },
+  "variants": {
+    "aggressive": "noirm:iron_body/iron_crash",
+    "defensive": "noirm:iron_body/iron_brace"
+  },
+  "effects": {
+    "armour": 0.5
+  }
+}

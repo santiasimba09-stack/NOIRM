@@ -1,0 +1,57 @@
+{
+  "openers": {
+    "light": "noirm:monkey/swipe",
+    "heavy": "noirm:monkey/monkey_leap",
+    "launcher": "noirm:monkey/rising_monkey",
+    "forward_light": "noirm:monkey/monkey_pounce",
+    "forward_heavy": "noirm:monkey/monkey_leap",
+    "back_light": "noirm:monkey/scratch_retreat",
+    "back_heavy": "noirm:monkey/spinning_sweep"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_monkey",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_monkey_aggressive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_monkey_low",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_monkey_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:monkey/monkey_counter",
+  "identity": {
+    "footwork": "low",
+    "rhythm": "acrobatic",
+    "move_speed": 1.15,
+    "guard": {
+      "type": "standard",
+      "parry_window": 1.1,
+      "keep": 0.3,
+      "speed": 0.6
+    },
+    "dodge": {
+      "kind": "flip",
+      "speed": 1.05,
+      "ticks": 11,
+      "iframes": 7,
+      "lift": 0.32
+    },
+    "strike": {
+      "aerial": 1.2
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.025,
+    "scroll": 4
+  }
+}

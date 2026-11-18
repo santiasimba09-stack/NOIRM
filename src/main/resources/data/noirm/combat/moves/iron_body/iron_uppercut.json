@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:iron_body_iron_uppercut",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 7,
+    "posture": 30,
+    "range": 2.4,
+    "arc": 90,
+    "knockback": 0.2,
+    "hitstun": 18,
+    "hitstop": 4,
+    "shake": 0.8,
+    "lift": 0.7,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:iron_body/iron_jab"
+  },
+  "effects": {
+    "armour": 0.4
+  }
+}

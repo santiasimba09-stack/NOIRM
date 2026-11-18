@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:drunken_fist_counter_sway",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 18,
+    "range": 2.8,
+    "arc": 140,
+    "knockback": 0.5,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:drunken_fist/tipsy_hook"
+  }
+}

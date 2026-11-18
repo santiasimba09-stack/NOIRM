@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:shadow_shadow_reap",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 22,
+    "range": 2.8,
+    "arc": 160,
+    "knockback": 1.1,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:shadow/shade_jab"
+  }
+}

@@ -905,7 +905,9 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     @Override
     public ResourceLocation combatStyle() {
         if (style == null && !level().isClientSide()) {
-            style = com.noirm.combat.StyleSystem.pickForNpc(getRandom(), taijutsu, byakuganActive());
+            // By clan and class: an Akimichi leans to sumo, a strong ninja may fight Iron Body (style JSON "npc").
+            style = com.noirm.combat.StyleSystem.pickForNpc(getRandom(), taijutsu, byakuganActive(), clanId,
+                    com.noirm.bounty.NinjaClass.of(this));
         }
         return style;
     }

@@ -61,6 +61,7 @@ public final class CommandGuide {
                 .add("mode", "/noirm combat <on|off>", "/noirm combat on", false)
                 .add("style", "/noirm style", "/noirm style", false)
                 .add("style_set", "/noirm style set <style>", "/noirm style set strong_fist", true)
+                .add("style_learn", "/noirm style learn <style|all>", "/noirm style learn viper", true)
                 .add("moves", "/noirm style moves [style]", "/noirm style moves brawler", false)
                 .add("anim", "/noirm anim <animation> [ticks] [targets]", "/noirm anim noirm:quick_jab 30", true);
         section("clan")

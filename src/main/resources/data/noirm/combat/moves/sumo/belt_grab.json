@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:sumo_belt_grab",
+  "timing": {
+    "windup": 3,
+    "active": 3,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 0,
+    "posture": 0,
+    "range": 2.2,
+    "arc": 90,
+    "knockback": 0,
+    "hitstun": 0,
+    "hitstop": 1,
+    "shake": 0.2,
+    "clinch": "grab"
+  },
+  "next": {
+    "light": "noirm:sumo/belt_lift",
+    "heavy": "noirm:sumo/belt_throw",
+    "back_heavy": "noirm:sumo/sumo_crush"
+  }
+}

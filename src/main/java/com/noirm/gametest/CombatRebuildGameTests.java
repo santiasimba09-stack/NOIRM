@@ -149,7 +149,7 @@ public final class CombatRebuildGameTests {
             CombatMove light = CombatData.move(style.opener(AttackInput.LIGHT));
             if (style.playable() || sid.getPath().startsWith("weapon_")) {
                 // Fists: a 2-tick wind-up, 8 ticks in all. Weapons: even the nodachi's sweep is under a second.
-                boolean fists = style.playable();
+                boolean fists = style.playable() && !style.isWeaponStyle(); // weapon styles (the styles wave) count as weapons
                 helper.assertTrue(fists ? light.timing().windup() <= 2 && light.totalTicks() <= 8 : light.totalTicks() <= 17,
                         sid + "'s light is quick: " + light.timing());
                 CombatMove h = CombatData.move(style.opener(AttackInput.HEAVY));

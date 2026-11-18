@@ -1,0 +1,60 @@
+{
+  "openers": {
+    "light": "noirm:iron_body/iron_jab",
+    "heavy": "noirm:iron_body/iron_palm",
+    "launcher": "noirm:iron_body/iron_uppercut",
+    "forward_light": "noirm:iron_body/iron_shoulder",
+    "forward_heavy": "noirm:iron_body/iron_crash",
+    "back_light": "noirm:iron_body/iron_brace",
+    "back_heavy": "noirm:iron_body/iron_stomp"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_iron_body",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_iron_body_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_iron_body_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:iron_body/iron_counter",
+  "identity": {
+    "footwork": "wide",
+    "rhythm": "heavy",
+    "move_speed": 0.82,
+    "guard": {
+      "type": "armoured",
+      "parry_window": 0.8,
+      "keep": 0.1,
+      "posture": 0.4,
+      "armour": 0.35,
+      "speed": 0.3
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.55,
+      "ticks": 9,
+      "iframes": 4,
+      "stamina": 1.4,
+      "lift": 0.05
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.02,
+    "scroll": 3
+  },
+  "npc": {
+    "clans": {
+      "akimichi": 4,
+      "senju": 1
+    },
+    "min_class": "C"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "openers": {
+    "light": "noirm:leaf_hurricane/hurricane_jab",
+    "heavy": "noirm:leaf_hurricane/leaf_hurricane",
+    "launcher": "noirm:leaf_hurricane/rising_hurricane",
+    "forward_light": "noirm:leaf_hurricane/leaf_dash_kick",
+    "forward_heavy": "noirm:leaf_hurricane/leaf_hurricane_dive",
+    "back_light": "noirm:leaf_hurricane/hurricane_back_kick",
+    "back_heavy": "noirm:leaf_hurricane/leaf_hurricane_drop"
+  },
+  "taijutsu": 22,
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_leaf_hurricane",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_leaf_hurricane_aggressive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_leaf_hurricane_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:leaf_hurricane/hurricane_counter",
+  "identity": {
+    "footwork": "bouncing",
+    "rhythm": "spinning",
+    "move_speed": 1.15,
+    "guard": {
+      "type": "standard",
+      "parry_window": 1.2
+    },
+    "dodge": {
+      "kind": "flip",
+      "speed": 1.0,
+      "ticks": 10,
+      "iframes": 6,
+      "lift": 0.25
+    },
+    "strike": {
+      "momentum": 0.07,
+      "momentum_max": 0.35,
+      "aerial": 1.15
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.0,
+    "scroll": 0
+  },
+  "npc": {
+    "min_class": "B"
+  }
+}

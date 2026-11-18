@@ -1,0 +1,28 @@
+{
+  "animation": "noirm:shadow_hidden_palm",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 26,
+    "range": 2.6,
+    "arc": 80,
+    "knockback": 0.5,
+    "hitstun": 11,
+    "hitstop": 3,
+    "shake": 0.6,
+    "lunge": 0.4,
+    "guard_break": true
+  },
+  "next": {
+    "light": "noirm:shadow/shade_jab"
+  },
+  "variants": {
+    "aggressive": "noirm:shadow/shadow_reap",
+    "defensive": "noirm:shadow/fade_strike"
+  }
+}

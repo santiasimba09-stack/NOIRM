@@ -29,6 +29,7 @@ import java.util.List;
  * <ul>
  *   <li>{@code /noirm combat on|off} — combat mode (the R key)</li>
  *   <li>{@code /noirm style} — your style and the ones you can use · {@code style set <style>} — any style (cheats)</li>
+ *   <li>{@code /noirm style learn <style|all>} — learn a style as if a master taught it (cheats)</li>
  *   <li>{@code /noirm style moves [style]} — which input does which move</li>
  * </ul>
  */
@@ -36,6 +37,10 @@ import java.util.List;
 public final class CombatCommand {
     static final SuggestionProvider<CommandSourceStack> STYLES = (ctx, builder) ->
             SharedSuggestionProvider.suggest(Cmd.shortIds(CombatData.styles().keySet()), builder);
+
+    static final SuggestionProvider<CommandSourceStack> LEARNABLE = (ctx, builder) -> SharedSuggestionProvider.suggest(
+            java.util.stream.Stream.concat(java.util.stream.Stream.of("all"), Cmd.shortIds(CombatData.styles().entrySet().stream()
+                    .filter(e -> e.getValue().learn().required()).map(java.util.Map.Entry::getKey).toList())), builder);
 
     private CombatCommand() {}
 
@@ -50,6 +55,9 @@ public final class CombatCommand {
                         .then(Commands.literal("set").requires(s -> s.hasPermission(Cmd.CHEATS))
                                 .then(Commands.argument("style", StringArgumentType.greedyString()).suggests(STYLES)
                                         .executes(ctx -> set(ctx.getSource(), StringArgumentType.getString(ctx, "style")))))
+                        .then(Commands.literal("learn").requires(s -> s.hasPermission(Cmd.CHEATS))
+                                .then(Commands.argument("style", StringArgumentType.greedyString()).suggests(LEARNABLE)
+                                        .executes(ctx -> learn(ctx.getSource(), StringArgumentType.getString(ctx, "style")))))
                         .then(Commands.literal("moves")
                                 .executes(ctx -> moves(ctx.getSource(), StyleSystem.styleOf(Cmd.data(ctx.getSource()))))
                                 .then(Commands.argument("style", StringArgumentType.greedyString()).suggests(STYLES)
@@ -72,7 +80,7 @@ public final class CombatCommand {
             if (style == null || !style.playable()) {
                 continue;
             }
-            boolean usable = available.contains(id);
+            boolean usable = available.contains(id) || StyleSystem.canUse(data, id, style);
             String run = "/noirm style set " + Cmd.shortIds(java.util.List.of(id)).findFirst().orElse(id.toString());
             text.append("\n ").append(Component.literal((id.equals(current) ? "▶ " : usable ? "✔ " : "✖ "))
                             .withStyle(usable ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY))
@@ -80,9 +88,11 @@ public final class CombatCommand {
                             .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, run))))
                     .append(Component.literal(" " + id).withStyle(ChatFormatting.DARK_GRAY));
             if (!usable) {
-                style.missingRequirement(data.getTaijutsu(), data.identity().hasByakugan()).ifPresent(why ->
-                        text.append(Component.literal(" ").append(Component.translatable("command.noirm.style.needs." + why,
-                                Math.round(style.taijutsu()))).withStyle(ChatFormatting.RED)));
+                String why = StyleSystem.blocker(data, id, style);
+                if (!why.isEmpty()) {
+                    text.append(Component.literal(" ").append(Component.translatable("command.noirm.style.needs." + why,
+                            Math.round(style.taijutsu()))).withStyle(ChatFormatting.RED));
+                }
             }
         }
         source.sendSuccess(() -> text, false);
@@ -95,9 +105,40 @@ public final class CombatCommand {
             return Cmd.fail(source, "command.noirm.style.unknown", name);
         }
         ShinobiData data = Cmd.data(source);
-        data.setCombatStyle(id.toString());
+        CombatStyle style = CombatData.style(id);
+        if (style.learn().required()) {
+            data.styles().learn(id.toString(), StyleSystem.COMMAND); // cheats: any style, learned or not
+        }
+        if (style.isWeaponStyle()) {
+            style.weapons().forEach(moveset -> data.styles().setWeaponPick(moveset, id.toString()));
+        } else {
+            data.setCombatStyle(id.toString());
+        }
         data.markDirty();
         return Cmd.ok(source, "command.noirm.style.set", Component.translatable(StyleSystem.translationKey(id)));
+    }
+
+    /** Learns one style (or every style that must be learned) as if from a master. */
+    static int learn(CommandSourceStack source, String name) throws CommandSyntaxException {
+        net.minecraft.world.entity.player.Player player = Cmd.player(source);
+        List<ResourceLocation> ids;
+        if ("all".equals(name)) {
+            ids = CombatData.styles().entrySet().stream().filter(e -> e.getValue().learn().required())
+                    .map(java.util.Map.Entry::getKey).sorted().toList();
+        } else {
+            ResourceLocation id = Cmd.id(name);
+            if (id == null || CombatData.style(id) == null) {
+                return Cmd.fail(source, "command.noirm.style.unknown", name);
+            }
+            ids = List.of(id);
+        }
+        int learned = 0;
+        for (ResourceLocation id : ids) {
+            if (StyleSystem.grant(player, id, StyleSystem.COMMAND)) {
+                learned++;
+            }
+        }
+        return Cmd.ok(source, "command.noirm.style.learned", learned);
     }
 
     /** Each input of the style and the move it opens with. */

@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:sumo_tachiai_crash",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 30,
+    "range": 2.9,
+    "arc": 100,
+    "knockback": 1.5,
+    "hitstun": 12,
+    "hitstop": 4,
+    "shake": 0.9,
+    "lunge": 1.1,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  },
+  "effects": {
+    "armour": 0.6
+  }
+}

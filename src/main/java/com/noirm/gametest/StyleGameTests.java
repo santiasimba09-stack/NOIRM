@@ -51,8 +51,10 @@ public final class StyleGameTests {
     @GameTest(template = "empty", batch = "noirm_npc_styles")
     public static void ninjasFightInStyles(GameTestHelper helper) {
         SparringNinja hyuga = ninja(helper, 0.5f, 0.5f, TestClans.BYAKUGAN);
+        hyuga.setCombatStyle(null); // this test is about the rolled style
         helper.assertTrue(StyleSystem.GENTLE_FIST.equals(hyuga.combatStyle()), "Hyūga fight with the Gentle Fist, got " + hyuga.combatStyle());
         SparringNinja plain = ninja(helper, 2.5f, 2.5f, TestClans.PLAIN);
+        plain.setCombatStyle(null);
         helper.assertTrue(plain.combatStyle() != null && !StyleSystem.GENTLE_FIST.equals(plain.combatStyle()), "others don't");
         clearAround(helper);
     }
@@ -132,6 +134,7 @@ public final class StyleGameTests {
 
     private static SparringNinja ninja(GameTestHelper helper, float x, float z, Clan clan) {
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), x, 1f, z);
+        ninja.setCombatStyle(com.noirm.combat.CombatData.DEFAULT_STYLE); // not a rolled style (an evasive one never blocks)
         ninja.joinClan(clan);
         return ninja;
     }

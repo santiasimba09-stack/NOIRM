@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:sumo_shiko_stomp",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 28,
+    "range": 2.6,
+    "arc": 360,
+    "knockback": 0.5,
+    "hitstun": 18,
+    "hitstop": 4,
+    "shake": 1.0,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  },
+  "effects": {
+    "armour": 0.4
+  }
+}

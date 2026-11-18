@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:shadow_veil_elbow",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 12,
+    "range": 2.3,
+    "arc": 110,
+    "knockback": 0.2,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.35
+  },
+  "next": {
+    "light": "noirm:shadow/eclipse_knee",
+    "heavy": "noirm:shadow/hidden_palm"
+  }
+}

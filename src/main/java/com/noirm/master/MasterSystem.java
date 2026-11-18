@@ -175,7 +175,8 @@ public final class MasterSystem {
     /** Why {@code player} can't learn this lesson yet (null if they can, or already did). */
     public static Component lessonBlocker(ShinobiData data, ResourceLocation masterId, MasterDefinition def, MasterDefinition.Lesson lesson) {
         String key = masterId.toString();
-        if (lesson.teachesJutsu() ? JutsuData.get(lesson.jutsu()) == null : !MasterPerks.known(lesson)) {
+        if (lesson.teachesJutsu() ? JutsuData.get(lesson.jutsu()) == null
+                : lesson.teachesStyle() ? com.noirm.combat.CombatData.style(lesson.style()) == null : !MasterPerks.known(lesson)) {
             return Component.translatable("screen.noirm.master.why.unknown");
         }
         if (lesson.test() && !data.masters().passed(key)) {
@@ -263,6 +264,8 @@ public final class MasterSystem {
         if (lesson.teachesJutsu()) {
             data.jutsu().learn(lesson.jutsu(), false);
             data.jutsu().equipIfRoom(lesson.jutsu());
+        } else if (lesson.teachesStyle()) {
+            com.noirm.combat.StyleSystem.grant(player, lesson.style(), com.noirm.combat.StyleSystem.MASTER);
         } else {
             MasterPerks.granted(player, data, lesson);
         }

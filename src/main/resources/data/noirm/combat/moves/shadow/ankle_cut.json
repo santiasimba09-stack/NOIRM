@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:shadow_ankle_cut",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 4,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 2.5,
+    "posture": 10,
+    "range": 2.5,
+    "arc": 100,
+    "knockback": 0.05,
+    "hitstun": 8,
+    "hitstop": 1,
+    "shake": 0.25
+  },
+  "next": {
+    "light": "noirm:shadow/night_hook"
+  }
+}

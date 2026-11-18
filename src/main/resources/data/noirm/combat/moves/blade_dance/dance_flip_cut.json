@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:blade_dance_dance_flip_cut",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 18,
+    "range": 3.0,
+    "arc": 120,
+    "knockback": 0.2,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lift": 0.8,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:blade_dance/dance_cut"
+  }
+}

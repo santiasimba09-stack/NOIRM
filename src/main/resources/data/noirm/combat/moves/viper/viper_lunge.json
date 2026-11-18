@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:viper_viper_lunge",
+  "timing": {
+    "windup": 4,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 18,
+    "range": 3.2,
+    "arc": 70,
+    "knockback": 1.2,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6,
+    "lunge": 1.0,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:viper/fang_jab"
+  },
+  "effects": {
+    "stamina_drain": 10
+  }
+}

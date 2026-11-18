@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:blade_dance_dance_rising",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 14,
+    "range": 2.9,
+    "arc": 110,
+    "knockback": 0.1,
+    "hitstun": 14,
+    "hitstop": 2,
+    "shake": 0.5,
+    "lift": 0.5
+  },
+  "next": {
+    "light": "noirm:blade_dance/dance_whirlwind"
+  }
+}

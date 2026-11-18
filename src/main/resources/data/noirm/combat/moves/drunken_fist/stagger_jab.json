@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:drunken_fist_stagger_jab",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 4,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 10,
+    "range": 2.5,
+    "arc": 110,
+    "knockback": 0.15,
+    "hitstun": 7,
+    "hitstop": 1,
+    "shake": 0.3,
+    "lunge": 0.25
+  },
+  "next": {
+    "light": "noirm:drunken_fist/tipsy_hook",
+    "heavy": "noirm:drunken_fist/tumbling_fist"
+  },
+  "variants": {
+    "low": "noirm:drunken_fist/floor_sweep"
+  }
+}

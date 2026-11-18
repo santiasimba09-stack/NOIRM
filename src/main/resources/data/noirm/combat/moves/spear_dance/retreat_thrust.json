@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:spear_dance_retreat_thrust",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 12,
+    "range": 4.6,
+    "arc": 30,
+    "knockback": 0.6,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.4,
+    "pierce": 0.2
+  },
+  "next": {
+    "light": "noirm:spear_dance/dance_thrust"
+  },
+  "effects": {
+    "recoil": 0.7
+  }
+}

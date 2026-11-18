@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:spear_dance_dance_vault",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 16,
+    "range": 4.2,
+    "arc": 90,
+    "knockback": 0.1,
+    "hitstun": 18,
+    "hitstop": 3,
+    "shake": 0.65,
+    "lift": 0.8,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:spear_dance/dance_thrust"
+  }
+}

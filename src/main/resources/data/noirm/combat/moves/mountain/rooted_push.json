@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:mountain_rooted_push",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 22,
+    "range": 2.4,
+    "arc": 110,
+    "knockback": 1.3,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.5
+  },
+  "next": {
+    "light": "noirm:mountain/stone_palm"
+  }
+}

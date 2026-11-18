@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:wind_step_whirl_kick",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 12,
+    "range": 2.9,
+    "arc": 130,
+    "knockback": 0.3,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.35
+  },
+  "next": {
+    "light": "noirm:wind_step/gale_knee",
+    "heavy": "noirm:wind_step/tornado_heel"
+  }
+}

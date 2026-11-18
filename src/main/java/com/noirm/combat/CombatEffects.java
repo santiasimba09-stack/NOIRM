@@ -236,19 +236,60 @@ final class CombatEffects {
         feedback(entity, Feedback.Kind.POSTURE_BREAK, 0.7f);
     }
 
-    static void dodge(LivingEntity entity, float forward, float strafe, int ticks) {
+    /** A dodge: a rush of air, a puff of dust, and the style's dodge animation ({@code CombatSystem.dodgeAnimation}). */
+    static void dodge(LivingEntity entity, float forward, float strafe, int ticks, ResourceLocation roll) {
         sound(entity, NoirmSounds.SWING_HEAVY.get(), 0.4f, 1.2f);
         if (entity.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.CLOUD, entity.getX(), entity.getY() + 0.1, entity.getZ(), 6, 0.3, 0.05, 0.3, 0.02);
         }
-        // A sideways dodge is a quick side step (the dodge counter then comes in from the side); otherwise a roll.
-        ResourceLocation roll = Noirm.id(Math.abs(strafe) > Math.abs(forward) ? (strafe > 0 ? "dodge_side_left" : "dodge_side_right")
-                : forward >= 0 ? "forward_roll" : "backward_roll");
         if (entity instanceof Player) {
             NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), roll, ticks));
         } else if (entity instanceof CombatAnimated animated) {
             animated.playCombatAnimation(roll, ticks);
         }
+    }
+
+    /** A feint: the wind-up snaps back into guard with a short hiss of cloth (the "feint_pull" animation). */
+    static void feint(LivingEntity entity) {
+        sound(entity, NoirmSounds.SWING_LIGHT.get(), 0.5f, 1.6f);
+        sound(entity, SoundEvents.ARMOR_EQUIP_LEATHER, 0.7f, 1.5f);
+        ResourceLocation pull = Noirm.id("feint_pull");
+        if (entity instanceof Player) {
+            NoirmNetwork.sendToTrackingAndSelf(entity, new PlayAnimation(entity.getId(), pull, 6));
+        } else if (entity instanceof CombatAnimated animated) {
+            animated.playCombatAnimation(pull, 6);
+        }
+    }
+
+    /** The blow after a feint slips through the guard it drew: a sharp crack and a few sparks. */
+    static void feintLanded(LivingEntity attacker, LivingEntity target) {
+        sound(target, NoirmSounds.HIT_LIGHT.get(), 0.8f, 1.5f);
+        particles(target, ParticleTypes.CRIT, 6, 0.25);
+    }
+
+    /** A hit in the back: a deeper thud and a dark burst. */
+    static void backstab(LivingEntity attacker, LivingEntity target) {
+        sound(target, NoirmSounds.BODY_THUD.get(), 0.7f, 1.3f);
+        if (target.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 back = target.position().add(0, target.getBbHeight() * 0.6, 0);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0x6A2A60, 0x200818, 0.3f, 0.05f, 8), back, 6, 0.2, 0.05);
+        }
+        feedback(attacker, Feedback.Kind.HIT_DEALT, 0.4f);
+    }
+
+    /** An armoured strike shrugs a hit off: a dull clank and a puff of grit. */
+    static void armoured(LivingEntity target) {
+        sound(target, SoundEvents.ARMOR_EQUIP_IRON, 0.7f, 0.6f);
+        particles(target, ParticleTypes.ASH, 6, 0.3);
+    }
+
+    /** A pressure point: the breath knocked out (a pale burst at the chest). */
+    static void staminaStruck(LivingEntity target) {
+        if (target.level() instanceof ServerLevel level) {
+            net.minecraft.world.phys.Vec3 chest = target.position().add(0, target.getBbHeight() * 0.6, 0);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(0xF2E6B0, 0x9C7A30, 0.3f, 0.05f, 6), chest, 5, 0.15, 0.06);
+        }
+        feedback(target, Feedback.Kind.NO_STAMINA, 0.3f);
     }
 
     static void perfectDodge(LivingEntity entity) {

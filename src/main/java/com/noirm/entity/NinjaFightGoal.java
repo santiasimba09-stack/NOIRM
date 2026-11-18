@@ -97,6 +97,21 @@ class NinjaFightGoal extends Goal {
     static final float GUARD_CHANCE = 0.6f;
     static final float SHIELD_GUARD_CHANCE = 0.9f;
 
+    // ---------------------------------------------------------------- style tuning (the styles wave)
+    /** The style decides how a ninja defends: chance to guard (rather than dodge) by guard type. */
+    static final float ARMOURED_GUARD_CHANCE = 0.9f;
+    static final float COUNTER_GUARD_CHANCE = 0.85f;
+    static final float PARRY_GUARD_CHANCE = 0.7f;
+    /** A counter stance holds its guard this long, waiting to answer. */
+    static final int COUNTER_GUARD_TICKS = 24;
+    /** A feinting style feints this often per wind-up (then follows up at once). */
+    static final float FEINT_CHANCE = 0.3f;
+    /** A style with an aerial bonus jumps into its attack this often when a combo starts. */
+    static final float AERIAL_JUMP_CHANCE = 0.35f;
+    /** Light-footed styles (combat speed at least this) circle the opponent between combos. */
+    static final float CIRCLE_SPEED = 1.1f;
+    static final float CIRCLE_STRAFE = 0.55f;
+
     private static final List<List<AttackInput>> COMBOS = List.of(
             List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.LIGHT),
             List.of(AttackInput.LIGHT, AttackInput.LIGHT, AttackInput.HEAVY),
@@ -156,6 +171,10 @@ class NinjaFightGoal extends Goal {
     private boolean openerDone;
     private int guardTicks;
     private boolean reactedToCurrentWindup;
+    /** Whether this wind-up was already considered for a feint. */
+    private boolean feintConsidered;
+    /** Which way it circles (1 or -1); flips now and then. */
+    private float circleSide = 1f;
     /** Bow drawn (or crossbow loading) for this many ticks. */
     private int drawTicks;
 
@@ -261,6 +280,8 @@ class NinjaFightGoal extends Goal {
         }
 
         thinkJutsu(target, distance, false);
+        com.noirm.combat.StyleIdentity identity = com.noirm.combat.StyleSystem.identityOf(ninja);
+        styleTactics(target, distance, self, identity, busy);
         CombatState opponent = CombatStates.getIfPresent(target);
         // A perfect dodge just opened a counter window: strike now (it lands from behind or beside them).
         if (self.dodgeCounterTicks() > 0 && !self.isGuarding() && CombatSystem.canAttackNow(ninja)) {
@@ -285,6 +306,9 @@ class NinjaFightGoal extends Goal {
         }
         if (combo.isEmpty() && attackCooldown <= 0 && distance <= ATTACK_RANGE && !self.isGuarding()) {
             combo.addAll(COMBOS.get(ninja.getRandom().nextInt(COMBOS.size())));
+            if (identity.strike().aerial() > 1f && ninja.onGround() && ninja.getRandom().nextFloat() < AERIAL_JUMP_CHANCE) {
+                ninja.getJumpControl().jump(); // the Crane, the Monkey: into the air, where they hit harder
+            }
         }
         if (!combo.isEmpty() && CombatSystem.canAttackNow(ninja)) {
             boolean dashing = combo.peek() == AttackInput.FORWARD_HEAVY || combo.peek() == AttackInput.FORWARD_LIGHT;
@@ -296,6 +320,33 @@ class NinjaFightGoal extends Goal {
                     attackCooldown = 20 + ninja.getRandom().nextInt(25);
                 }
             }
+        }
+    }
+
+    // ---------------------------------------------------------------- style tactics
+
+    /**
+     * What the style changes in how a ninja moves: a feinting style sometimes cancels its wind-up and
+     * strikes at once; light-footed styles circle the opponent between combos (hit and run).
+     */
+    private void styleTactics(LivingEntity target, double distance, CombatState self, com.noirm.combat.StyleIdentity identity, boolean busy) {
+        if (self.phase() != CombatPhase.WINDUP) {
+            feintConsidered = false;
+        } else if (!feintConsidered) {
+            feintConsidered = true;
+            if (identity.feint().isPresent() && self.feintTicks() == 0 && ninja.getRandom().nextFloat() < FEINT_CHANCE
+                    && CombatSystem.tryFeint(ninja)) {
+                combo.clear();
+                combo.add(ninja.getRandom().nextBoolean() ? AttackInput.LIGHT : AttackInput.HEAVY); // the real blow, right after
+                return;
+            }
+        }
+        if (!busy && attackCooldown > 0 && combo.isEmpty() && identity.moveSpeed() >= CIRCLE_SPEED && distance < 4.5) {
+            if (ninja.getRandom().nextFloat() < 0.02f) {
+                circleSide = -circleSide;
+            }
+            ninja.getNavigation().stop();
+            ninja.getMoveControl().strafe(distance < 2.2 ? -0.5f : 0f, circleSide * CIRCLE_STRAFE);
         }
     }
 
@@ -562,7 +613,9 @@ class NinjaFightGoal extends Goal {
         if (self.phase() != CombatPhase.IDLE && self.phase() != CombatPhase.RECOVERY) {
             return;
         }
-        float chance = Math.min(0.85f, BASE_REACTION_CHANCE * Perception.slowFactor(ninja, target));
+        // Some styles are harder to read (the Drunken Fist's irregular timing).
+        float read = com.noirm.combat.StyleSystem.identityOf(target).strike().read();
+        float chance = Math.min(0.85f, BASE_REACTION_CHANCE * Perception.slowFactor(ninja, target) * read);
         if (ninja.getRandom().nextFloat() >= chance) {
             return;
         }
@@ -576,11 +629,19 @@ class NinjaFightGoal extends Goal {
             return;
         }
         boolean shield = !CombatSystem.heldShield(ninja).isEmpty();
-        if (ninja.getRandom().nextFloat() < (shield ? SHIELD_GUARD_CHANCE : GUARD_CHANCE)) {
+        com.noirm.combat.StyleIdentity.Guard guard = com.noirm.combat.StyleSystem.identityOf(ninja).guard();
+        float guardChance = shield ? SHIELD_GUARD_CHANCE : switch (guard.type()) {
+            case "armoured" -> ARMOURED_GUARD_CHANCE;
+            case "counter" -> COUNTER_GUARD_CHANCE;
+            case "parry", "high" -> PARRY_GUARD_CHANCE;
+            default -> GUARD_CHANCE;
+        };
+        if (guard.evasive() || ninja.getRandom().nextFloat() < guardChance) {
+            // (An evasive style's "guard" is a sway out of the way: setGuard does that.)
             ninja.stopUsingItem();
             drawTicks = 0;
             CombatSystem.setGuard(ninja, true);
-            guardTicks = shield ? 25 : 15;
+            guardTicks = shield ? 25 : guard.counter() ? COUNTER_GUARD_TICKS : 15;
         } else {
             float strafe = ninja.getRandom().nextBoolean() ? 0.6f : -0.6f;
             CombatSystem.requestDodge(ninja, -1f, strafe);

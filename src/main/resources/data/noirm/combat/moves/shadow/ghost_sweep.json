@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:shadow_ghost_sweep",
+  "timing": {
+    "windup": 4,
+    "active": 3,
+    "recovery": 7,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 16,
+    "range": 2.7,
+    "arc": 180,
+    "knockback": 0.2,
+    "hitstun": 14,
+    "hitstop": 2,
+    "shake": 0.4,
+    "knockdown": true
+  },
+  "next": {
+    "light": "noirm:shadow/shade_jab"
+  }
+}
