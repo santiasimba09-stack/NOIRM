@@ -13,7 +13,7 @@
   "awakening": "will",
   "perks": {
     "chakra_pool": 9.0,
-    "jinchuriki_pool": 1.0,
+    "jinchuriki_pool": 10.0,
     "chakra_regen": 2.0,
     "health_regen": 0.35,
     "max_health": 6,

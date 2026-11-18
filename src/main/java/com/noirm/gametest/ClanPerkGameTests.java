@@ -107,7 +107,7 @@ public final class ClanPerkGameTests {
             helper.assertTrue(NinjaLook.folderFor(id).equals(id), id + " has its own NPC look table");
         }
         Set<ResourceLocation> clanJutsu = new HashSet<>();
-        ClanData.canonClans().forEach(c -> clanJutsu.addAll(c.clanJutsu()));
+        ClanData.canonClans().forEach(c -> c.clanJutsu().stream().filter(ClanJutsu::isClanJutsu).forEach(clanJutsu::add));
         helper.assertTrue(clanJutsu.size() >= 8 && clanJutsu.size() <= 12, "8-12 clan jutsu, got " + clanJutsu.size());
         helper.assertTrue(Talents.all().size() >= 20 && Talents.all().size() <= 30, "20-30 talents, got " + Talents.all().size());
         Talents.all().forEach((id, t) -> t.modifiers().keySet().forEach(k -> helper.assertTrue(Perk.byKey(k) != null, id + ": " + k)));
@@ -129,8 +129,8 @@ public final class ClanPerkGameTests {
         Player uzumaki = member(helper, canon("uzumaki"));
         ShinobiData p = data(plain);
         ShinobiData u = data(uzumaki);
-        helper.assertTrue(u.getMaxChakra() >= 2 * p.getMaxChakra(), "an Uzumaki's chakra pool is huge: " + u.getMaxChakra() + " vs " + p.getMaxChakra());
-        helper.assertTrue(u.chakraRegenMultiplier() >= 1.5f * p.chakraRegenMultiplier(), "Uzumaki chakra regenerates far faster");
+        helper.assertTrue(u.getMaxChakra() >= 9 * p.getMaxChakra(), "an Uzumaki's chakra pool is huge: " + u.getMaxChakra() + " vs " + p.getMaxChakra());
+        helper.assertTrue(u.chakraRegenMultiplier() >= 2.5f * p.chakraRegenMultiplier(), "Uzumaki chakra regenerates far faster");
         // health comes back on its own
         uzumaki.setHealth(10f);
         for (int t = 0; t < 100; t++) {
@@ -145,7 +145,9 @@ public final class ClanPerkGameTests {
         // sealing: cheaper and stronger, and a faster bond with a beast
         JutsuDefinition chains = JutsuData.get(CHAINS);
         helper.assertTrue(u.jutsu().knows(CHAINS), "Uzumaki are born knowing the Adamantine Sealing Chains");
-        helper.assertTrue(JutsuCaster.cost(uzumaki, CHAINS, chains) < 0.75f * chains.chakraCost(), "sealing is cheap for them");
+        ResourceLocation flicker = Noirm.id("universal/body_flicker");
+        helper.assertTrue(Perks.jutsuCostMultiplier(uzumaki, CHAINS) < Perks.jutsuCostMultiplier(uzumaki, flicker) - 0.4f,
+                "sealing is far cheaper for them than their other jutsu");
         helper.assertTrue(Perks.jutsuPowerMultiplier(uzumaki, CHAINS, chains) >= 1.5f, "and strong");
         helper.assertTrue(JutsuCaster.checkRequirements(plain, CHAINS, chains) == JutsuCaster.Result.NOT_CLAN, "outsiders can't use clan jutsu");
         helper.assertTrue(JutsuCaster.checkRequirements(uzumaki, CHAINS, chains) == JutsuCaster.Result.OK, "Uzumaki can");
@@ -179,11 +181,12 @@ public final class ClanPerkGameTests {
 
         Player senjuPlayer = member(helper, canon("senju"));
         ShinobiData senju = data(senjuPlayer);
-        helper.assertTrue(senjuPlayer.getMaxHealth() >= 26f, "Senju vitality: " + senjuPlayer.getMaxHealth());
-        helper.assertTrue(senju.getMaxStamina() >= plain.getMaxStamina() + 40, "huge Senju stamina: " + senju.getMaxStamina());
+        helper.assertTrue(senjuPlayer.getMaxHealth() >= 36f, "Senju vitality: " + senjuPlayer.getMaxHealth());
+        helper.assertTrue(senju.getMaxStamina() >= plain.getMaxStamina() + 100, "huge Senju stamina: " + senju.getMaxStamina());
+        helper.assertTrue(senju.getMaxChakra() >= 3.5f * plain.getMaxChakra(), "and a huge chakra pool: " + senju.getMaxChakra());
         helper.assertTrue(senju.getControl() < plain.getControl(), "but rougher chakra control");
         NatureSystem.grant(senju, Nature.WOOD, Clan.SECONDARY_AFFINITY);
-        near(helper, 1.25f, senju.identity().affinity(Nature.WOOD), "Senju Wood potential");
+        near(helper, Clan.PRIMARY_AFFINITY, senju.identity().affinity(Nature.WOOD), "Senju Wood potential");
 
         ShinobiData akimichi = data(member(helper, canon("akimichi")));
         helper.assertTrue(Perks.mult(akimichi, Perk.FOOD_POWER) >= 1.5f, "food fuels the Akimichi");
@@ -191,7 +194,7 @@ public final class ClanPerkGameTests {
         helper.assertTrue(akimichi.getDurability() > plain.getDurability(), "Akimichi are tough");
 
         ShinobiData kaguya = data(member(helper, canon("kaguya")));
-        near(helper, ShinobiData.DEFAULT_STAT + 6, kaguya.getDurability(), "Kaguya durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 14, kaguya.getDurability(), "Kaguya durability");
         helper.assertTrue(Perks.get(kaguya, Perk.DAMAGE_TAKEN) < 0, "bones take the blows");
 
         ShinobiData nara = data(member(helper, canon("nara")));
@@ -199,6 +202,98 @@ public final class ClanPerkGameTests {
         helper.assertTrue(Perks.mult(nara, Perk.MASTERY) >= 1.3f, "and jutsu are learned fast");
         ShinobiData uchiha = data(member(helper, canon("uchiha")));
         helper.assertTrue(Perks.mult(uchiha, Perk.STRAIN) > 1f, "the Uchiha curse: the Mangekyō strains faster");
+        helper.succeed();
+    }
+
+    // ---------------------------------------------------------------- the big gaps (owner follow-up)
+
+    /** An Uzumaki's pool is ten times a normal shinobi's at the same Reserves, twenty with a beast; raw control is the price. */
+    @GameTest(template = "empty", batch = BATCH)
+    public static void uzumakiPoolDwarfsANormalOne(GameTestHelper helper) {
+        Player plain = member(helper, TestClans.PLAIN);
+        Player uzumaki = member(helper, canon("uzumaki"));
+        ShinobiData p = data(plain);
+        ShinobiData u = data(uzumaki);
+        for (float reserves : new float[]{10f, 30f, 60f}) {
+            p.setReserves(reserves);
+            u.setReserves(reserves);
+            TrainingSystem.applyReserves(p);
+            TrainingSystem.applyReserves(u);
+            float ratio = u.getMaxChakra() / p.getMaxChakra();
+            helper.assertTrue(ratio >= 9.5f && ratio <= 11f, "at Reserves " + reserves + " an Uzumaki has ~10x the chakra: " + ratio);
+        }
+        com.noirm.biju.BijuSystem.seal(uzumaki, u, 9);
+        TrainingSystem.applyReserves(u);
+        float jin = u.getMaxChakra() / p.getMaxChakra();
+        helper.assertTrue(jin >= 19f, "an Uzumaki jinchuriki has ~20x: " + jin);
+        // the drawbacks: raw control (cost up, genjutsu weak) that fades with CTL training; a loud chakra
+        ResourceLocation genjutsu = Noirm.id("yin/demonic_illusion");
+        ResourceLocation flicker = Noirm.id("universal/body_flicker");
+        u.setControl(6f);
+        helper.assertTrue(Perks.jutsuCostMultiplier(uzumaki, flicker) >= 1.35f, "rough control: jutsu cost more at low CTL");
+        helper.assertTrue(Perks.jutsuPowerMultiplier(uzumaki, genjutsu, JutsuData.get(genjutsu)) <= 0.25f, "and genjutsu barely work");
+        u.setControl(50f);
+        near(helper, 1f, Perks.jutsuCostMultiplier(uzumaki, flicker), "CTL 50 smooths it out");
+        near(helper, 1.75f, Perks.beaconMultiplier(uzumaki), "a loud chakra draws attention");
+        com.noirm.traits.ClanHiraishin.register();
+        helper.assertTrue(com.noirm.hiraishin.HiraishinAffinity.of(uzumaki).extraMarks() == com.noirm.traits.ClanHiraishin.UZUMAKI_EXTRA_MARKS,
+                "the Uzumaki's Flying Raijin gift: more marks");
+        helper.assertTrue(com.noirm.hiraishin.HiraishinAffinity.of(plain).extraMarks() == 0, "others have none");
+        helper.succeed();
+    }
+
+    /** The Might line: taijutsu trains four times as fast, iron will and stamina, safer Gates; almost no ninjutsu. */
+    @GameTest(template = "empty", batch = BATCH)
+    public static void mightLineTrainsTaijutsuFarFaster(GameTestHelper helper) {
+        Player plain = member(helper, TestClans.PLAIN);
+        Player might = member(helper, canon("might"));
+        ShinobiData p = data(plain);
+        ShinobiData m = data(might);
+        near(helper, 4f, Perks.statXpMultiplier(m, "taijutsu", 20), "taijutsu XP x4");
+        float beforeP = p.training().xp(TrainingSystem.Stat.TAIJUTSU);
+        float beforeM = m.training().xp(TrainingSystem.Stat.TAIJUTSU);
+        TrainingSystem.grant(plain, TrainingSystem.Stat.TAIJUTSU, 10f);
+        TrainingSystem.grant(might, TrainingSystem.Stat.TAIJUTSU, 10f);
+        float gotP = p.training().xp(TrainingSystem.Stat.TAIJUTSU) - beforeP;
+        float gotM = m.training().xp(TrainingSystem.Stat.TAIJUTSU) - beforeM;
+        helper.assertTrue(gotM >= 3.9f * gotP, "the same drill teaches a Might four times as much: " + gotM + " vs " + gotP);
+        helper.assertTrue(m.getWillpower() >= p.getWillpower() + 8, "iron will: " + m.getWillpower());
+        helper.assertTrue(m.getMaxStamina() >= p.getMaxStamina() + 150, "endless stamina: " + m.getMaxStamina());
+        helper.assertTrue(Perks.statXpMultiplier(m, "willpower", 20) >= 2f, "willpower trains twice as fast");
+        ResourceLocation gate = Noirm.id("taijutsu/gate_of_opening");
+        helper.assertTrue(m.jutsu().knows(gate), "born knowing the Gate of Opening");
+        near(helper, 0.5f, com.noirm.jutsu.ModeSystem.gateWear(might, JutsuData.get(gate).mode().orElseThrow()), "the Gates burn half as much");
+        near(helper, 1f, com.noirm.jutsu.ModeSystem.gateWear(plain, JutsuData.get(gate).mode().orElseThrow()), "for anyone else, full");
+        ResourceLocation fireball = Noirm.id("katon/great_fireball");
+        helper.assertTrue(Perks.jutsuPowerMultiplier(might, fireball, JutsuData.get(fireball)) <= 0.45f, "ninjutsu barely work for them");
+        helper.assertTrue(Perks.jutsuCostMultiplier(might, fireball) >= 1.6f, "and cost far more");
+        ResourceLocation genjutsu = Noirm.id("yin/demonic_illusion");
+        helper.assertTrue(Perks.jutsuPowerMultiplier(might, genjutsu, JutsuData.get(genjutsu)) <= 0.15f, "genjutsu hardly at all");
+        helper.succeed();
+    }
+
+    /** Every clan's drawbacks really apply. */
+    @GameTest(template = "empty", batch = BATCH)
+    public static void clanDrawbacksApply(GameTestHelper helper) {
+        Player plainPlayer = member(helper, TestClans.PLAIN);
+        ShinobiData plain = data(plainPlayer);
+        ResourceLocation fireball = Noirm.id("katon/great_fireball");
+        Player hyuga = member(helper, canon("hyuga"));
+        near(helper, 0.7f, Perks.jutsuPowerMultiplier(hyuga, fireball, JutsuData.get(fireball)), "Hyūga ninjutsu is weaker");
+        Player kurama = member(helper, canon("kurama"));
+        near(helper, 12f, kurama.getMaxHealth(), "the Kurama are frail");
+        ShinobiData akimichi = data(member(helper, canon("akimichi")));
+        helper.assertTrue(akimichi.getSpeed() < plain.getSpeed(), "the Akimichi are slow");
+        ShinobiData uchiha = data(member(helper, canon("uchiha")));
+        near(helper, 1.6f, Perks.mult(uchiha, Perk.STRAIN), "the Uchiha curse: strain x1.6");
+        ShinobiData kaguya = data(member(helper, canon("kaguya")));
+        helper.assertTrue(Perks.get(kaguya, Perk.DOT_RESIST) <= -0.5f, "the Kaguya illness");
+        ShinobiData hatake = data(member(helper, canon("hatake")));
+        helper.assertTrue(hatake.getMaxChakra() < plain.getMaxChakra(), "a Hatake's small reserves: " + hatake.getMaxChakra());
+        ShinobiData nara = data(member(helper, canon("nara")));
+        helper.assertTrue(Perks.statXpMultiplier(nara, "taijutsu", 20) <= 0.6f, "the Nara don't like hard work");
+        ShinobiData aburame = data(member(helper, canon("aburame")));
+        near(helper, 0.6f, Perks.get(aburame, Perk.FIRE_WEAKNESS), "fire burns the Aburame's insects");
         helper.succeed();
     }
 
@@ -219,6 +314,8 @@ public final class ClanPerkGameTests {
         MinecraftForge.EVENT_BUS.post(onKaguya);
         MinecraftForge.EVENT_BUS.post(onPlain);
         helper.assertTrue(onKaguya.getAmount() < onPlain.getAmount(), "a Kaguya ninja takes less damage: " + onKaguya.getAmount());
+        near(helper, -0.25f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.DAMAGE_TAKEN), "NPC combat perks count at half");
+        near(helper, 10f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
         // talents on NPCs (tests set them; elsewhere they roll by themselves)
         NpcTalents.set(plain, List.of("tough_as_nails"));
         helper.assertTrue(Perks.get(plain, Perk.MAX_HEALTH) == 4f, "an NPC's talents count");
@@ -264,7 +361,7 @@ public final class ClanPerkGameTests {
             MinecraftForge.EVENT_BUS.post(e);
             wet += e.isCanceled() ? 1 : 0;
         }
-        helper.assertTrue(wet >= 20 && wet <= 55, "in water, blows wash through a Hōzuki about 60% of the time: " + wet + "/60");
+        helper.assertTrue(wet >= 30 && wet <= 59, "in water, blows wash through a Hōzuki about 75% of the time: " + wet + "/60");
         for (int x = 0; x < 3; x++) {
             for (int z = 0; z < 3; z++) {
                 helper.setBlock(x, 1, z, Blocks.AIR);
@@ -374,7 +471,7 @@ public final class ClanPerkGameTests {
         CharacterCreator.apply(player, data, roll);
         helper.assertTrue(data.identity().clanId().equals("kaguya"), "joined the Kaguya");
         near(helper, 13f, data.getSpeed(), "Fleet-footed: +3 speed");
-        near(helper, ShinobiData.DEFAULT_STAT + 6 + 4, data.getDurability(), "Kaguya +6 and Stubborn Body +4 durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 14 + 4, data.getDurability(), "Kaguya +14 and Stubborn Body +4 durability");
         helper.assertTrue(data.talents().talents().equals(List.of("fleet_footed", "stubborn_body")), "the roll's talents are yours");
         helper.assertTrue(data.talents().version() == TalentData.CURRENT, "a new character is current");
         helper.succeed();
