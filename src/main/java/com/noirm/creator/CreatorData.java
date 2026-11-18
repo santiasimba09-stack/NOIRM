@@ -108,6 +108,16 @@ public final class CreatorData {
         rerollsUsed = 0;
     }
 
+    /** Rolls saved before talents existed get theirs (biased by the roll's clan). */
+    void fillMissingTalents(java.util.function.Function<GeneticRoll, java.util.Map<String, Float>> bias, net.minecraft.util.RandomSource random) {
+        for (int i = 0; i < rolls.size(); i++) {
+            GeneticRoll roll = rolls.get(i);
+            if (roll.talents().isEmpty()) {
+                rolls.set(i, roll.withTalents(com.noirm.traits.Talents.roll(random, bias.apply(roll))));
+            }
+        }
+    }
+
     void addRoll(GeneticRoll roll) {
         rolls.add(roll);
     }

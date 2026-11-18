@@ -96,7 +96,7 @@ public final class PillEffects {
                     .withStyle(ChatFormatting.GRAY), true);
             return Result.COOLDOWN;
         }
-        float potency = potency(pills, grade);
+        float potency = potency(pills, grade) * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.PILL_POWER); // talents
         applyInstant(player, data, def.instant(), potency);
         // A pill taken again before its crash replaces the old one (no stacking the same pill).
         removeSource(player, data, id);
@@ -109,7 +109,7 @@ public final class PillEffects {
         }
         pills.setCooldown(id, def.cooldown() * 20);
         float before = pills.toxicity();
-        pills.setToxicity(before + def.toxicity() * grade.toxicity);
+        pills.setToxicity(before + def.toxicity() * grade.toxicity * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.PILL_TOXICITY));
         sideEffects(player, before, pills.toxicity());
         pills.addSwallowed();
         pills.markDirty();
@@ -125,10 +125,11 @@ public final class PillEffects {
 
     /** Eats food {@code source}'s NOIRM effects (its hunger is vanilla's). Eating it again refreshes them. */
     public static void eat(Player player, ShinobiData data, ResourceLocation source, PillDefinition food) {
-        applyInstant(player, data, food.instant(), 1f);
+        float power = com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.FOOD_POWER); // the Akimichi, Gluttons
+        applyInstant(player, data, food.instant(), power);
         removeSource(player, data, source);
         for (PillDefinition.EffectSpec spec : food.effects()) {
-            addBoost(player, data, spec, source, 1f, false, 0, 1f);
+            addBoost(player, data, spec, source, power, false, 0, 1f);
         }
         int crashDelay = food.effectTicks();
         for (PillDefinition.EffectSpec spec : food.crash()) {

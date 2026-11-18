@@ -38,7 +38,7 @@ public final class Pharmacology {
             return 0;
         }
         float level = pills.pharmacology();
-        float total = pills.pharmacologyXp() + xp;
+        float total = pills.pharmacologyXp() + xp * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.PHARMACOLOGY_XP); // Pill Prodigy
         int gained = 0;
         while (total >= xpToNext(level) && level < PillData.MAX_PHARMACOLOGY) {
             total -= xpToNext(level);

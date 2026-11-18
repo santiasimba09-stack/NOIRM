@@ -87,6 +87,13 @@ public final class MeCommand {
         line(text, Component.translatable("message.noirm.clan.member",
                 Component.literal(identity.clanName()).withStyle(identity.isCanon() ? ChatFormatting.RED : ChatFormatting.GOLD)));
         line(text, Component.translatable("message.noirm.clan.natures", ClanSystem.natures(identity)));
+        if (!identity.perks().isEmpty()) { // what the blood gives (all of it: /noirm clan perks)
+            line(text, Component.translatable("message.noirm.clan.blood", com.noirm.traits.Perks.inline(identity.perks())));
+        }
+        if (!identity.clanJutsu().isEmpty()) {
+            line(text, Component.translatable("message.noirm.clan.clan_jutsu", com.noirm.traits.Perks.jutsuNames(identity.clanJutsu())));
+        }
+        line(text, Component.translatable("command.noirm.me.talents", com.noirm.traits.Perks.talentNames(data.talents().talents())));
         line(text, CareerCommand.summary(data.career())); // rank, points, ryo, missions done
         line(text, BountyCommand.meLine(player)); // your class (D–S): your strength, not your rank
         line(text, Component.translatable("command.noirm.me.bars", Math.round(player.getHealth()), Math.round(player.getMaxHealth()),

@@ -152,7 +152,8 @@ public final class Mangekyo {
         }
         EyeData eyes = data.eyes();
         float before = eyes.strain();
-        float taken = amount * (eyes.isTransplanted() ? TRANSPLANT_STRAIN : 1f) * com.noirm.training.Supplementary.strainMultiplier(data);
+        float taken = amount * (eyes.isTransplanted() ? TRANSPLANT_STRAIN : 1f) * com.noirm.training.Supplementary.strainMultiplier(data)
+                * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.STRAIN); // the Uchiha curse; Uzumaki longevity
         eyes.setStrain(before + taken);
         com.noirm.training.Supplementary.onStrain(player, data, before, taken);
         data.markPowersDirty();

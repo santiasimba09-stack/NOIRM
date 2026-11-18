@@ -84,11 +84,23 @@ public final class WorldClans extends SavedData {
         return tag;
     }
 
+    /**
+     * A generated clan saved before clans had perks gets a perk package, always the same one for
+     * the same clan (seeded by its id), so every world and member agree.
+     */
+    public static Clan upgrade(Clan clan) {
+        if (clan.canon() || !clan.packages().isEmpty() || !clan.perks().isEmpty() || com.noirm.traits.Talents.packages().isEmpty()) {
+            return clan;
+        }
+        return ClanGenerator.withPackages(clan, RandomSource.create(clan.id().hashCode()));
+    }
+
     /** Reads saved clans (also used by tests). */
     public static WorldClans load(CompoundTag tag) {
         WorldClans clans = new WorldClans();
         for (Tag entry : tag.getList("Custom", Tag.TAG_COMPOUND)) {
             Clan.CODEC.parse(NbtOps.INSTANCE, entry).resultOrPartial(e -> Noirm.LOGGER.error("Bad saved clan: {}", e))
+                    .map(WorldClans::upgrade)
                     .ifPresent(clans.custom::add);
         }
         return clans;

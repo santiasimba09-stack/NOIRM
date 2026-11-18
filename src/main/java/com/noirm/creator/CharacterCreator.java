@@ -105,6 +105,7 @@ public final class CharacterCreator {
     /** A player logs back in: still creating? Hold them where they are now and reopen. */
     public static void resume(ServerPlayer player, ShinobiData data) {
         CreatorData creator = data.creator();
+        creator.fillMissingTalents(r -> clanOf(player.server, r).map(Clan::talentBias).orElse(java.util.Map.of()), player.getRandom());
         if (creator.held()) {
             creator.hold(player.getX(), player.getY(), player.getZ());
         }
@@ -224,7 +225,8 @@ public final class CharacterCreator {
     public static GeneticRoll roll(ServerPlayer player) {
         RandomSource random = player.getRandom();
         Clan clan = WorldClans.get(player.server).rollForNewcomer(random);
-        return new GeneticRoll(clan.id(), stat(random), stat(random), stat(random), stat(random), stat(random));
+        return new GeneticRoll(clan.id(), stat(random), stat(random), stat(random), stat(random), stat(random),
+                com.noirm.traits.Talents.roll(random, clan.talentBias())); // personal talents, biased by the clan
     }
 
     private static int stat(RandomSource random) {
@@ -243,12 +245,19 @@ public final class CharacterCreator {
      */
     public static float[] finalStats(GeneticRoll roll, Clan clan) {
         java.util.List<ClanTrait> traits = clan == null ? java.util.List.of() : clan.traits();
+        java.util.Map<com.noirm.traits.Perk, Float> perks = com.noirm.traits.Perks.resolve(
+                clan == null ? java.util.Map.of() : clan.perks(), roll.talents()); // the blood's and the talents' starting stats
         return new float[]{
-                roll.reserves() + (traits.contains(ClanTrait.DEEP_RESERVES) ? TRAIT_STAT_BONUS : 0),
-                roll.taijutsu() + (clan == null ? 0 : clan.taijutsuBonus()) + (traits.contains(ClanTrait.FIERCE) ? FIERCE_BONUS : 0),
-                roll.speed() + (clan == null ? 0 : clan.speedBonus()) + (traits.contains(ClanTrait.SWIFT) ? SWIFT_BONUS : 0),
-                roll.control() + (traits.contains(ClanTrait.CHAKRA_FLOW) ? TRAIT_STAT_BONUS : 0),
-                roll.willpower() + (traits.contains(ClanTrait.IRON_WILL) ? TRAIT_STAT_BONUS : 0)};
+                Math.max(1f, roll.reserves() + (traits.contains(ClanTrait.DEEP_RESERVES) ? TRAIT_STAT_BONUS : 0)
+                        + perks.getOrDefault(com.noirm.traits.Perk.START_RESERVES, 0f)),
+                Math.max(1f, roll.taijutsu() + (clan == null ? 0 : clan.taijutsuBonus()) + (traits.contains(ClanTrait.FIERCE) ? FIERCE_BONUS : 0)
+                        + perks.getOrDefault(com.noirm.traits.Perk.START_TAIJUTSU, 0f)),
+                Math.max(1f, roll.speed() + (clan == null ? 0 : clan.speedBonus()) + (traits.contains(ClanTrait.SWIFT) ? SWIFT_BONUS : 0)
+                        + perks.getOrDefault(com.noirm.traits.Perk.START_SPEED, 0f)),
+                Math.max(1f, roll.control() + (traits.contains(ClanTrait.CHAKRA_FLOW) ? TRAIT_STAT_BONUS : 0)
+                        + perks.getOrDefault(com.noirm.traits.Perk.START_CONTROL, 0f)),
+                Math.max(1f, roll.willpower() + (traits.contains(ClanTrait.IRON_WILL) ? TRAIT_STAT_BONUS : 0)
+                        + perks.getOrDefault(com.noirm.traits.Perk.START_WILLPOWER, 0f))};
     }
 
     /** Joins the roll's clan (natures, starter jutsu, kekkei genkai) and sets the rolled stats. */
@@ -266,7 +275,11 @@ public final class CharacterCreator {
         data.setSpeed(stats[2]);
         data.setControl(stats[3]);
         data.setWillpower(stats[4]);
-        data.setVitality(ShinobiData.DEFAULT_STAT);
+        java.util.Map<com.noirm.traits.Perk, Float> perks = com.noirm.traits.Perks.resolve(clan.perks(), roll.talents());
+        data.setVitality(ShinobiData.DEFAULT_STAT + perks.getOrDefault(com.noirm.traits.Perk.START_VITALITY, 0f));
+        data.setDurability(ShinobiData.DEFAULT_STAT + perks.getOrDefault(com.noirm.traits.Perk.START_DURABILITY, 0f));
+        data.talents().set(roll.talents());
+        data.talents().setVersion(com.noirm.traits.TalentData.CURRENT);
         data.refill();
         data.markDirty();
         data.markPowersDirty();

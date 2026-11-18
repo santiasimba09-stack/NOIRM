@@ -141,6 +141,10 @@ public final class BeastBond {
 
     public static void changeBond(Player player, BijuData biju, int amount) {
         int before = biju.bond();
+        if (amount > 0) { // the Uzumaki and natural sealers bond faster
+            float scaled = amount * ShinobiCapability.get(player).map(d -> com.noirm.traits.Perks.mult(d, com.noirm.traits.Perk.BEAST_BOND)).orElse(1f);
+            amount = Math.max(1, Math.round(scaled));
+        }
         biju.setBond(before + amount);
         ShinobiCapability.get(player).ifPresent(ShinobiData::markPowersDirty);
         // Crossing a threshold opens up (or closes) tails.

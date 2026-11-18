@@ -41,6 +41,7 @@ public final class Noirm {
         com.noirm.pills.PillItems.register(modBus); // foods, herbs, pills and the apothecary (docs/PILLS.md)
         com.noirm.registry.NoirmMenus.register(modBus);
         com.noirm.vfx.NoirmParticles.register(modBus);
+        com.noirm.traits.PerkEffects.register(modBus); // clan technique effects (the chakra seal)
         com.noirm.sound.NoirmSounds.register(modBus); // our own synthesised sounds (tools/soundgen, docs/SOUND.md)
         com.noirm.world.Destruction.registerGameRules();
         com.noirm.movement.MovementFeel.registerGameRules();

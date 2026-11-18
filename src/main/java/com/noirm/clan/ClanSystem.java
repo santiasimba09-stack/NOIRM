@@ -31,8 +31,14 @@ public final class ClanSystem {
         data.setVitality(ShinobiData.DEFAULT_STAT);
         data.setReserves(ShinobiData.DEFAULT_STAT);
         data.setMaxStamina(ShinobiData.DEFAULT_MAX_STAMINA + (identity.has(ClanTrait.ENDURANCE) ? 30 : 0));
+        data.talents().setAppliedStamina(0f); // the blood's stamina bonus is re-added next tick
         data.setSpeed(ShinobiData.DEFAULT_STAT + clan.speedBonus() + (identity.has(ClanTrait.SWIFT) ? 3 : 0));
         data.setTaijutsu(ShinobiData.DEFAULT_STAT + clan.taijutsuBonus() + (identity.has(ClanTrait.FIERCE) ? 3 : 0));
+        data.setControl(ShinobiData.DEFAULT_STAT);
+        data.setWillpower(ShinobiData.DEFAULT_STAT);
+        data.setDurability(ShinobiData.DEFAULT_STAT);
+        com.noirm.traits.PerkEvents.addStartStats(data, clan.perks(), java.util.List.of()); // the blood's starting stats
+        data.talents().setVersion(com.noirm.traits.TalentData.CURRENT); // talents are rolled by the creator, not here
         data.refill();
         data.eyes().setSharinganStage(0);
         data.eyes().setSharinganXp(0);
@@ -48,6 +54,7 @@ public final class ClanSystem {
         if (identity.hasByakugan()) {
             starters.addAll(Byakugan.JUTSU);
         }
+        starters.addAll(clan.clanJutsu()); // the clan's secret techniques
         for (ResourceLocation id : starters) {
             data.jutsu().learn(id, false);
             data.jutsu().equipIfRoom(id);
@@ -71,6 +78,12 @@ public final class ClanSystem {
             first = false;
         }
         text.append("\n").append(Component.translatable("message.noirm.clan.traits", traits));
+        if (!identity.perks().isEmpty()) {
+            text.append("\n").append(Component.translatable("message.noirm.clan.blood", com.noirm.traits.Perks.inline(identity.perks())));
+        }
+        if (!identity.clanJutsu().isEmpty()) {
+            text.append("\n").append(Component.translatable("message.noirm.clan.clan_jutsu", com.noirm.traits.Perks.jutsuNames(identity.clanJutsu())));
+        }
         if (identity.hasSharingan()) {
             text.append("\n").append(Component.translatable("message.noirm.clan.sharingan_blood").withStyle(ChatFormatting.DARK_RED));
         }

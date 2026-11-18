@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING, NOT_CLAN }
 
     /**
      * A jutsu in progress: hand seals before a TAP jutsu (or an NPC's cast) fires, or a CHARGE or
@@ -611,7 +611,9 @@ public final class JutsuCaster {
                 data.jutsu().setCooldown(id, cooldown(caster, id, def));
                 com.noirm.arts.ArtsEvents.onJutsuCast(player, data, id, def); // fusion proof, shape Power stage, mind practice
                 int before = data.jutsu().masteryLevel(id);
-                data.jutsu().addXp(id, data.identity().has(ClanTrait.JUTSU_PRODIGY) ? 2 : 1);
+                float xp = (data.identity().has(ClanTrait.JUTSU_PRODIGY) ? 2 : 1) * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.MASTERY);
+                int whole = (int) xp;
+                data.jutsu().addXp(id, whole + (player.getRandom().nextFloat() < xp - whole ? 1 : 0)); // talents (Prodigy), clan
                 if (data.jutsu().masteryLevel(id) > before) {
                     com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id, true); // Reserves gate (playthrough)
                 }
@@ -622,8 +624,11 @@ public final class JutsuCaster {
 
     /** Nature and dōjutsu requirements (not chakra or cooldown). */
     public static Result checkRequirements(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
-        if (Byakugan.isSealed(caster)) {
+        if (Byakugan.isSealed(caster) || com.noirm.traits.PerkEffects.chakraSealed(caster)) {
             return Result.SEALED;
+        }
+        if (!com.noirm.traits.ClanJutsu.allowed(caster, id)) {
+            return Result.NOT_CLAN; // a clan's secret technique answers only to its blood
         }
         if (def.nature().isPresent() && affinity(caster, id, def) <= 0) {
             return Result.NO_NATURE;
@@ -723,6 +728,7 @@ public final class JutsuCaster {
             power *= beastBallScale(ninja.tails());
         }
         power *= com.noirm.senjutsu.SageMode.jutsuPowerMultiplier(caster); // nature energy behind every jutsu
+        power *= com.noirm.traits.Perks.jutsuPowerMultiplier(caster, id, def); // clan blood, talents (genjutsu, medical, sealing)
         return power;
     }
 
@@ -784,6 +790,7 @@ public final class JutsuCaster {
                     cost *= 0.85f;
                 }
                 cost *= com.noirm.master.MasterPerks.costMultiplier(data); // Chakra Efficiency (a master's lesson)
+                cost *= com.noirm.traits.Perks.jutsuCostMultiplier(player, id); // clan blood, talents (sealing for the Uzumaki)
                 if (data.awakening().natureSurge() && isClanNature(data, def)) {
                     cost = 0f;
                 }

@@ -83,6 +83,12 @@ public final class ShinobiData {
     private final com.noirm.pills.PillData pills = new com.noirm.pills.PillData();
     /** Your crew mates (ninjas who joined you), by UUID. */
     private final java.util.List<java.util.UUID> crew = new java.util.ArrayList<>();
+    /** Personal talents (rolled per character) and perk bookkeeping (docs/TRAITS.md). */
+    private final com.noirm.traits.TalentData talents = new com.noirm.traits.TalentData();
+
+    public com.noirm.traits.TalentData talents() {
+        return talents;
+    }
 
     public ClanIdentity identity() {
         return identity;
@@ -328,6 +334,7 @@ public final class ShinobiData {
             multiplier *= 0.5f;
         }
         multiplier *= com.noirm.pills.PillEffects.chakraRegenMultiplier(this); // foods and pills
+        multiplier *= com.noirm.traits.Perks.mult(this, com.noirm.traits.Perk.CHAKRA_REGEN); // clan blood, talents
         return biju.cloakStage() > 0 ? multiplier * 3f : multiplier;
     }
 
@@ -338,6 +345,7 @@ public final class ShinobiData {
             multiplier *= 2f;
         }
         multiplier *= com.noirm.pills.PillEffects.staminaRegenMultiplier(this); // foods and pills
+        multiplier *= com.noirm.traits.Perks.mult(this, com.noirm.traits.Perk.STAMINA_REGEN); // clan blood, talents
         return biju.cloakStage() > 0 ? multiplier * 1.5f : multiplier;
     }
 
@@ -399,6 +407,7 @@ public final class ShinobiData {
         tag.put("Arts", arts.save());
         tag.put("Creations", creations.save());
         tag.put("Pills", pills.save());
+        tag.put("Talents", talents.save());
         return tag;
     }
 
@@ -432,6 +441,7 @@ public final class ShinobiData {
         arts.load(tag.getCompound("Arts"));
         creations.load(tag.getList("Creations", net.minecraft.nbt.Tag.TAG_COMPOUND));
         pills.load(tag.getCompound("Pills"));
+        talents.load(tag.getCompound("Talents"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

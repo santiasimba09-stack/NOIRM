@@ -220,7 +220,8 @@ public final class Supplementary {
         if (value >= ShinobiData.MAX_STAT) {
             return;
         }
-        float total = data.training().xp(stat) + xp * com.noirm.pills.PillEffects.trainingXpMultiplier(data); // a training meal
+        float total = data.training().xp(stat) + xp * com.noirm.pills.PillEffects.trainingXpMultiplier(data) // a training meal
+                * com.noirm.traits.Perks.statXpMultiplier(data, stat.key().toLowerCase(java.util.Locale.ROOT), value); // talents, clan
         int gained = 0;
         while (total >= TrainingSystem.xpToNext(value) && value < ShinobiData.MAX_STAT) {
             total -= TrainingSystem.xpToNext(value);

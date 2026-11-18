@@ -69,7 +69,8 @@ public final class AwakeningSystem {
             if (data.awakening().isLockedIn()) {
                 return;
             }
-            float multiplier = data.identity().has(ClanTrait.IRON_WILL) ? 1.5f : 1f;
+            float multiplier = (data.identity().has(ClanTrait.IRON_WILL) ? 1.5f : 1f)
+                    * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.RESOLVE); // clan blood, talents
             data.awakening().setResolve(data.awakening().resolve() + amount * multiplier);
             data.markPowersDirty();
         });

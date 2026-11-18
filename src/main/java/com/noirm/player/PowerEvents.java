@@ -49,6 +49,7 @@ public final class PowerEvents {
                 Clan clan = WorldClans.get(player.server).rollForNewcomer(player.getRandom());
                 ClanSystem.assign(player, data, clan);
                 player.sendSystemMessage(ClanSystem.describe(data.identity()));
+                com.noirm.traits.PerkEvents.rollFresh(player, data); // personal talents
                 BijuSystem.maybeBornJinchuriki(player, data, player.getRandom().nextFloat(), player.getRandom());
                 player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.noirm.clan.hint"));
             }
@@ -91,7 +92,8 @@ public final class PowerEvents {
                 com.noirm.biju.BeastBond.tickSecond(player, data);
             }
             CombatStates.get(player).setMaxPosture(com.noirm.combat.CombatState.DEFAULT_MAX_POSTURE
-                    + (data.identity().has(ClanTrait.IRON_BODY) ? 30 : 0));
+                    + (data.identity().has(ClanTrait.IRON_BODY) ? 30 : 0)
+                    + com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.POSTURE)); // clan blood, talents
             if (JutsuCaster.casting(player) != null && player.tickCount % 5 == 0) {
                 data.markPowersDirty(); // keep the charge/channel bar moving
             }

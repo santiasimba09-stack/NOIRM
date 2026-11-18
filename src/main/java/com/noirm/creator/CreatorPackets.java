@@ -42,7 +42,9 @@ public final class CreatorPackets {
      * traits, kekkei genkai, and the stats (RES, TAI, SPD, CTL, WIL) before and after traits.
      */
     public record RollView(String clanName, boolean canon, String kekkeiGenkai, List<Map.Entry<Integer, Float>> natures,
-                           List<Integer> traits, int[] base, float[] stats) {
+                           List<Integer> traits, int[] base, float[] stats,
+                           String clanId, Map<com.noirm.traits.Perk, Float> perks, List<String> clanJutsu,
+                           List<com.noirm.traits.ProfileSync.TalentView> talents, int hair, int eyes) {
         static RollView of(GeneticRoll roll, Clan clan) {
             List<Map.Entry<Integer, Float>> natures = new ArrayList<>();
             List<Integer> traits = new ArrayList<>();
@@ -54,7 +56,12 @@ public final class CreatorPackets {
             }
             return new RollView(clan == null ? roll.clanId() : clan.name(), clan != null && clan.canon(),
                     clan == null ? "" : clan.kekkeiGenkai().orElse(""), natures, traits, roll.stats(),
-                    CharacterCreator.finalStats(roll, clan));
+                    CharacterCreator.finalStats(roll, clan), roll.clanId(),
+                    clan == null ? Map.of() : com.noirm.traits.ProfileSync.perks(clan.perks()),
+                    clan == null ? List.of() : clan.clanJutsu().stream().map(Object::toString).toList(),
+                    com.noirm.traits.ProfileSync.views(roll.talents()),
+                    clan == null ? -1 : clan.look().map(Clan.Look::defaultHair).orElse(-1),
+                    clan == null ? -1 : clan.look().map(Clan.Look::defaultEyes).orElse(-1));
         }
 
         /** The player's current clan and stats (appearance-only mode). */
@@ -70,7 +77,9 @@ public final class CreatorPackets {
             for (int i = 0; i < 5; i++) {
                 base[i] = Math.round(stats[i]);
             }
-            return new RollView(identity.clanName(), identity.isCanon(), kekkei, natures, traits, base, stats);
+            return new RollView(identity.clanName(), identity.isCanon(), kekkei, natures, traits, base, stats, identity.clanId(),
+                    com.noirm.traits.ProfileSync.perks(identity.perks()), identity.clanJutsu().stream().map(Object::toString).toList(),
+                    com.noirm.traits.ProfileSync.views(data.talents().talents()), -1, -1);
         }
 
         void encode(FriendlyByteBuf buf) {
@@ -88,6 +97,12 @@ public final class CreatorPackets {
                 buf.writeVarInt(base[i]);
                 buf.writeFloat(stats[i]);
             }
+            buf.writeUtf(clanId, 64);
+            com.noirm.traits.ProfileSync.writePerks(buf, perks);
+            buf.writeCollection(clanJutsu, (b, s) -> b.writeUtf(s, 256));
+            com.noirm.traits.ProfileSync.writeTalents(buf, talents);
+            buf.writeInt(hair);
+            buf.writeInt(eyes);
         }
 
         static RollView decode(FriendlyByteBuf buf) {
@@ -110,7 +125,9 @@ public final class CreatorPackets {
                 base[i] = buf.readVarInt();
                 stats[i] = buf.readFloat();
             }
-            return new RollView(name, canon, kekkei, natures, traits, base, stats);
+            return new RollView(name, canon, kekkei, natures, traits, base, stats, buf.readUtf(64),
+                    com.noirm.traits.ProfileSync.readPerks(buf), buf.readList(b -> b.readUtf(256)),
+                    com.noirm.traits.ProfileSync.readTalents(buf), buf.readInt(), buf.readInt());
         }
 
         public List<Nature> natureList() {

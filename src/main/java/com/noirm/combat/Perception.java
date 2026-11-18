@@ -94,6 +94,7 @@ public final class Perception {
         float keenEyes = entity instanceof Player player
                 && ShinobiCapability.get(player).map(d -> d.identity().has(ClanTrait.KEEN_EYES)).orElse(false) ? 1.1f : 1f;
         return Sharingan.perceptionMultiplier(entity) * keenEyes
+                * com.noirm.traits.Perks.mult(entity, com.noirm.traits.Perk.PERCEPTION) // clan blood, talents
                 * com.noirm.jutsu.ModeSystem.perceptionMultiplier(entity)
                 * AwakeningSystem.perceptionMultiplier(entity) * BijuSystem.perceptionMultiplier(entity)
                 * com.noirm.senjutsu.SageMode.perceptionMultiplier(entity)
