@@ -234,12 +234,16 @@ public final class MangekyoAbilities {
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, 1, false, false));
         if (target instanceof Mob mob) {
             mob.setTarget(null);
+            com.noirm.genjutsu.GenjutsuMinds.enter(caster, target, com.noirm.Noirm.id("mangekyo/tsukuyomi"), stun, null); // frozen in terror
         }
         target.invulnerableTime = 0;
         com.noirm.combat.ChakraReinforcement.hurt(target, caster.damageSources().indirectMagic(caster, caster), damage,
                 com.noirm.combat.ChakraReinforcement.Kind.JUTSU);
         if (target instanceof ServerPlayer player) {
-            NoirmNetwork.sendToPlayer(player, new MangekyoPackets.Tsukuyomi(stun + 40));
+            // The red-and-black world (data/noirm/genjutsu/tsukuyomi.json); the old red wash if it's missing.
+            if (!com.noirm.genjutsu.GenjutsuMinds.enter(caster, target, com.noirm.Noirm.id("mangekyo/tsukuyomi"), stun + 40, null)) {
+                NoirmNetwork.sendToPlayer(player, new MangekyoPackets.Tsukuyomi(stun + 40));
+            }
             player.displayClientMessage(Component.translatable("message.noirm.mangekyo.tsukuyomi.caught").withStyle(ChatFormatting.DARK_RED), false);
         }
         if (caster.level() instanceof ServerLevel level) {
@@ -339,6 +343,15 @@ public final class MangekyoAbilities {
     public static void kotoamatsukami(JutsuContext ctx) {
         LivingEntity caster = ctx.caster();
         LivingEntity target = lookTarget(caster, ctx.params().range(), 8);
+        if (target instanceof Player player && facing(player, caster) && !Mangekyo.isActive(player)) {
+            // A player's will can't be rewritten, but their eyes can be: for a while, their friends look like enemies.
+            int ticks = Math.round(ctx.params().duration() * 0.25f * Mth.clamp(Mangekyo.powerScale(caster), 0.5f, 1.5f));
+            if (com.noirm.genjutsu.GenjutsuMinds.enter(caster, player, ctx.id(), ticks, null)) {
+                Mangekyo.addStrain(caster, MangekyoAbility.KOTOAMATSUKAMI.strain());
+                message(caster, Component.translatable("message.noirm.genjutsu.caught", player.getDisplayName()));
+                return;
+            }
+        }
         if (!(target instanceof Mob mob)) {
             message(caster, Component.translatable(target == null ? "message.noirm.genjutsu.no_target" : "message.noirm.mangekyo.koto.not_a_mind"));
             return;

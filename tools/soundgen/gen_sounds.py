@@ -35,6 +35,8 @@ VORBIS_QUALITY = "4"  # about 64-80 kbit/s mono: clean, and small
 # How far away each group can be heard, in blocks (vanilla's default is 16).
 ATTENUATION = {
     "big.": 40,
+    "space.hiraishin": 40,
+    "space.flicker": 24,
     "nature.explosion_boom": 32,
     "nature.": 24,
     "chakra.release": 24,

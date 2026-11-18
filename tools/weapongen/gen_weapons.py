@@ -501,6 +501,41 @@ def kunai(tag=False):
     return cv
 
 
+def hiraishin_kunai():
+    """The Flying Raijin kunai (our own design): a long centre blade with two shorter prongs
+    swept forward from its base, the grip wrapped in formula paper with ink seal strokes, an iron
+    ring at the end. Three points: it reads apart from a plain kunai even at 16 px."""
+    cv = Canvas()
+
+    def formula_grip(c):
+        col = PAPER.light if c.n < 0 else PAPER.mid
+        band = c.lt * 3.6
+        if int(band) % 2 == 0 and abs(c.n) < 0.55 and (band % 1) < 0.55:
+            col = INK  # the formula's strokes
+        elif abs(c.n) > 0.8:
+            col = PAPER.dark
+        return gritty(col, c.x, c.y, 61, 0.07, 0.04, INK)
+    along(cv, *DIAG, [
+        (0.17, 0.46, 0.8, 0.8, formula_grip),
+        (0.46, 0.50, 0.95, 1.5, metal(DSTEEL, 62)),
+        (0.50, 0.70, 1.25, 1.4, blade(STEEL, 63, double=True, nicks=(0.6,))),
+        (0.70, 1.00, 1.4, 0.0, blade(STEEL, 63, double=True)),
+    ])
+    sx, sy = DIAG[0]
+    ex, ey = DIAG[1]
+    bx, by = sx + (ex - sx) * 0.5, sy + (ey - sy) * 0.5  # the base of the blade
+    for ang in (-2.0, -88.0):  # swept forward of the guard, either side of the blade (which points at -45 deg)
+        a = math.radians(ang)
+        tip = (bx + math.cos(a) * 5.6, by + math.sin(a) * 5.6)
+        along(cv, (bx, by), tip, [
+            (0.0, 0.18, 0.75, 0.6, metal(DSTEEL, 64)),
+            (0.18, 1.0, 0.6, 0.0, blade(STEEL, 65, double=True)),
+        ])
+    disc(cv, 2.5, 13.5, 1.75, ring_shader(DSTEEL), r_in=0.85)
+    outline(cv)
+    return cv
+
+
 def senbon():
     cv = Canvas()
     for off, t0, t1, salt in ((-2.0, 0.08, 0.82, 51), (0.4, 0.18, 0.98, 52), (2.6, 0.26, 0.9, 53)):
@@ -953,6 +988,7 @@ def kusarigama():
 ICONS = {
     "kunai": lambda: kunai(),
     "explosive_kunai": lambda: kunai(tag=True),
+    "hiraishin_kunai": hiraishin_kunai,
     "shuriken": shuriken,
     "fuma_shuriken": fuma_shuriken,
     "senbon": senbon,

@@ -74,8 +74,9 @@ Medical is soft green and slow; poisons are sickly violet with green specks.
 **Genjutsu counterplay:** a strong mind (perception, and WIL for players) may resist; an open
 Sharingan sees straight through; **Kai** breaks it, even while stunned, on yourself or a crew mate
 within 5 blocks; a friend's slap or use (right-click), or an NPC crew mate standing beside you for a
-second, wakes you; NPCs try their own Kai. A caught player sees a violet tint, ink at the edges and a
-slight view sway (no blindness).
+second, wakes you; NPCs try their own Kai. A caught player now sees a whole **scene** in their mind (a
+false sky, ink or water underfoot, crows, phantoms, a tree growing round them) that shatters like glass
+when broken; caught creatures visibly act on it. See `docs/GENJUTSU.md` (2026-11-18).
 
 | Jutsu | Rank | What it does |
 |---|---|---|

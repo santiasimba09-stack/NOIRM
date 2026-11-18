@@ -1,0 +1,46 @@
+{
+  "jutsu": [
+    "noirm:yin/demonic_illusion"
+  ],
+  "duration": 100,
+  "sky": {
+    "top": "#05020A",
+    "horizon": "#2A0C48",
+    "fog": "#160628",
+    "fog_start": 2,
+    "fog_end": 13
+  },
+  "ground": {
+    "kind": "ink",
+    "color": "#07040C",
+    "rim": "#6A2AA8",
+    "radius": 26
+  },
+  "tint": "#2A0A40",
+  "tint_alpha": 0.14,
+  "figures": [
+    {
+      "type": "tendril",
+      "count": 8,
+      "radius": 3.2,
+      "color": "#050208"
+    },
+    {
+      "type": "phantom",
+      "count": 1,
+      "radius": 8,
+      "motion": "close_in",
+      "color": "#0A0610"
+    }
+  ],
+  "sounds": {
+    "drone": true,
+    "heartbeat": 26,
+    "whispers": 70,
+    "muffle": 0.35,
+    "pitch": 0.85
+  },
+  "hud_flicker": 0.25,
+  "mob": "freeze",
+  "shatter": "#E0D0FF"
+}

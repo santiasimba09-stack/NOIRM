@@ -201,7 +201,8 @@ public final class NpcJutsuSets {
     }
 
     /** Behaviors an NPC's set never holds (they'd never use them: Kai comes by itself when caught, the rest is the player's). */
-    public static final java.util.Set<String> NOT_FOR_NPCS = java.util.Set.of("genjutsu_release", "reincarnation", "life_conversion");
+    public static final java.util.Set<String> NOT_FOR_NPCS = java.util.Set.of("genjutsu_release", "reincarnation", "life_conversion",
+            "hiraishin", "formula_mark"); // the Flying Raijin: only the legends who carry it (HiraishinNpc)
 
     private static ResourceLocation pick(List<Map.Entry<ResourceLocation, JutsuDefinition>> options, Map<Nature, Float> natures,
                                          List<ResourceLocation> signatures, RandomSource random) {
