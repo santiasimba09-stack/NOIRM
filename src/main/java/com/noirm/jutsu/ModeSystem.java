@@ -143,7 +143,7 @@ public final class ModeSystem {
         if (mode.healthDrain() > 0 || mode.endHealth() > 0) {
             // The Gates burn the body: health drains, and the gate slams shut before it can kill.
             float floor = endHealthOf(entity, mode);
-            float next = entity.getHealth() - mode.healthDrain() / 20f;
+            float next = entity.getHealth() - mode.healthDrain() / 20f * gateWear(entity, mode); // the Might line wears less
             if (next <= floor) {
                 entity.setHealth(Math.max(floor, Math.min(entity.getHealth(), floor)));
                 end(entity);
@@ -223,7 +223,15 @@ public final class ModeSystem {
 
     /** The health a mode ends at: its {@code end_health} share of max health, and never below 1. */
     private static float endHealthOf(LivingEntity entity, JutsuDefinition.Mode mode) {
-        return Math.max(1f, entity.getMaxHealth() * mode.endHealth());
+        return Math.max(1f, entity.getMaxHealth() * mode.endHealth() * gateWear(entity, mode));
+    }
+
+    /** How hard a gate is on this body: ×(1 − gate mastery) for the Gates (the Might line), 1 otherwise. */
+    public static float gateWear(LivingEntity entity, JutsuDefinition.Mode mode) {
+        if (mode.gate() <= 0) {
+            return 1f;
+        }
+        return Math.max(0.1f, 1f - com.noirm.traits.Perks.get(entity, com.noirm.traits.Perk.GATE_MASTERY));
     }
 
     private static Vfx.Palette paletteOf(Active active) {

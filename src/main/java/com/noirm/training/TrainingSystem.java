@@ -284,6 +284,9 @@ public final class TrainingSystem {
         // Clan blood and talents: a flat amount, then the whole pool ×(1 + chakra_pool) (the Uzumaki's huge reserves).
         float flat = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.MAX_CHAKRA);
         float pool = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.CHAKRA_POOL);
+        if (data.biju().isJinchuriki()) { // a beast's chakra on top of an already huge pool (the Uzumaki)
+            pool += com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.JINCHURIKI_POOL);
+        }
         bonus += flat + pool * (ShinobiData.DEFAULT_MAX_CHAKRA + bonus + flat);
         float applied = data.training().appliedChakraBonus();
         if (Math.abs(bonus - applied) > 1e-4) {

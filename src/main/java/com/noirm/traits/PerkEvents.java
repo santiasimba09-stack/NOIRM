@@ -317,6 +317,17 @@ public final class PerkEvents {
         }
     }
 
+    /** A loud chakra (the Uzumaki, the Senju, the Hoshigaki): mobs and beasts notice you from further away. */
+    @SubscribeEvent
+    public static void visibility(LivingEvent.LivingVisibilityEvent event) {
+        if (event.getEntity() instanceof Player player && !player.level().isClientSide()) {
+            float loud = Perks.beaconMultiplier(player);
+            if (loud > 1f) {
+                event.modifyVisibility(loud);
+            }
+        }
+    }
+
     /** Insects (or a hardy body) eat poison: poison and wither don't take hold. */
     @SubscribeEvent
     public static void effectApplicable(MobEffectEvent.Applicable event) {

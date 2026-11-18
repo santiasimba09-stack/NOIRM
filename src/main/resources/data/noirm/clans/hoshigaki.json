@@ -8,12 +8,14 @@
   "taijutsu_bonus": 1,
   "awakening": "will",
   "perks": {
-    "max_chakra": 80,
-    "chakra_pool": 0.25,
-    "chakra_regen": 0.3,
-    "melee_damage": 0.1,
-    "max_health": 2,
-    "crew_respect": -0.15
+    "chakra_pool": 5.0,
+    "chakra_regen": 1.0,
+    "melee_damage": 0.2,
+    "max_health": 6,
+    "xp_reserves": 0.3,
+    "rough_control": 0.25,
+    "crew_respect": -0.3,
+    "chakra_beacon": 0.5
   },
   "look": {
     "hair": [
