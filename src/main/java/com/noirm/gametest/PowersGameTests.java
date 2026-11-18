@@ -275,6 +275,13 @@ public final class PowersGameTests {
         caster.setSharinganStage(3);
         lookAt(caster, target);
         helper.assertTrue(JutsuCaster.npcCast(caster, Sharingan.GENJUTSU, 1f), "an Uchiha with 2+ tomoe can cast it");
+        // A genjutsu takes hold at most 95% of the time (SpiritTechniques.GENJUTSU_MAX_CHANCE): cast again
+        // straight through its behaviour (no cooldown) until it does, as a weaker mind always ends up caught.
+        var def = com.noirm.jutsu.JutsuData.get(Sharingan.GENJUTSU);
+        for (int i = 0; i < 12 && CombatStates.get(target).phase() != CombatPhase.STAGGER; i++) {
+            com.noirm.jutsu.JutsuBehaviors.get(def.behavior()).cast(new com.noirm.jutsu.JutsuContext(caster, Sharingan.GENJUTSU, def,
+                    JutsuCaster.power(caster, Sharingan.GENJUTSU, def), 1f));
+        }
         helper.assertTrue(CombatStates.get(target).phase() == CombatPhase.STAGGER, "the target is caught (stunned)");
         helper.assertTrue(target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "and dazed");
         helper.succeed();
