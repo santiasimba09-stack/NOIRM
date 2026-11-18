@@ -196,9 +196,13 @@ public final class PerkEvents {
         if (current != null && Math.abs(current.getAmount() - amount) < 1e-6 || current == null && amount == 0f) {
             return;
         }
+        double before = current == null ? 0 : current.getAmount();
         health.removeModifier(HEALTH_ID);
         if (amount != 0f) {
             health.addTransientModifier(new AttributeModifier(HEALTH_ID, "noirm_blood", amount, AttributeModifier.Operation.ADDITION));
+        }
+        if (amount > before && entity.isAlive()) {
+            entity.setHealth(entity.getHealth() + (float) (amount - before)); // more health from the blood comes filled, not as a wound
         }
         if (entity.getHealth() > entity.getMaxHealth()) {
             entity.setHealth(entity.getMaxHealth());
