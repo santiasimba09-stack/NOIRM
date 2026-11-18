@@ -736,8 +736,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         if (!roll.kekkeiGenkai().isEmpty()) {
             Component k = Component.translatable("creator.noirm.genetics.kekkei." + roll.kekkeiGenkai());
             g.drawString(font, cut(k, x + w - 5 - nx), Math.max(nx, x + w - 5 - font.width(k)), y + 12, 0xFFD06AD0, false);
-        } else if (!roll.traits().isEmpty()) {
-            String t = "+" + roll.traits().size();
+        } else if (!roll.talents().isEmpty()) {
+            Component t = Component.translatable("creator.noirm.genetics.talent_count", roll.talents().size());
             g.drawString(font, t, x + w - 5 - font.width(t), y + 12, 0xFF7FD3C8, false);
         }
         // stats
@@ -781,6 +781,12 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         if (!roll.kekkeiGenkai().isEmpty()) {
             tip.add(Component.translatable("creator.noirm.genetics.kekkei." + roll.kekkeiGenkai()).withStyle(s -> s.withColor(0xD06AD0)));
         }
+        for (ProfileSync.TalentView t : roll.talents()) { // personal talents (details on the Clan tab)
+            tip.add(Component.literal("◆ ").append(Component.translatable(Talent.translationKey(t.id()))).withStyle(s -> s.withColor(t.kind().color())));
+        }
+        if (!roll.perks().isEmpty() || !roll.talents().isEmpty()) {
+            tip.add(Component.translatable("creator.noirm.genetics.see_clan").withStyle(s -> s.withColor(0x808080)));
+        }
         for (int i = 0; i < 5; i++) {
             int bonus = Math.round(roll.stats()[i] - roll.base()[i]);
             tip.add(Component.translatable("creator.noirm.stat_line", Component.translatable("creator.noirm.stat_name." + STATS[i]),
@@ -799,6 +805,23 @@ public class CreatorScreen extends Screen implements NoirmStyled {
      * techniques, and the character's own talents (hover one for what it does). In appearance mode,
      * your current clan and talents.
      */
+    /** Where wrapped line {@code index} starts in {@code text} (by the lengths of the lines before it). */
+    private static int lineStart(String text, List<FormattedCharSequence> lines, int index) {
+        int start = 0;
+        for (int i = 0; i < index; i++) {
+            StringBuilder b = new StringBuilder();
+            lines.get(i).accept((pos, style, cp) -> {
+                b.appendCodePoint(cp);
+                return true;
+            });
+            start += b.length();
+            while (start < text.length() && text.charAt(start) == ' ') {
+                start++;
+            }
+        }
+        return start;
+    }
+
     private void drawClan(GuiGraphics g, int y, int mx, int my) {
         int x = px + 8;
         int w = pw - 16;
@@ -815,14 +838,29 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             g.drawString(font, cut(k, w / 2), x + w - Math.min(w / 2, font.width(k)), y, 0xFFD06AD0, false);
         }
         y += 12;
+        // The flavour line only gets the room the perks and talents leave (two lines at most).
+        int bottom = vy + vh - 4;
+        int perkRows = (roll.perks().size() + 1) / 2;
+        int needed = 10 + Math.max(1, perkRows) * 10 + 2 + (roll.clanJutsu().isEmpty() ? 0 : 12) + 10
+                + Math.max(1, roll.talents().size()) * 11;
+        int flavourLines = Mth.clamp((bottom - y - needed - 3) / 9, 0, 2);
         Component flavour = roll.canon() ? Component.translatable("clan.noirm." + roll.clanId() + ".desc")
                 : Component.translatable("creator.noirm.clan.generated");
         List<FormattedCharSequence> lines = font.split(flavour, w);
-        for (int i = 0; i < Math.min(2, lines.size()); i++) {
-            g.drawString(font, lines.get(i), x, y, FAINT, false);
+        for (int i = 0; i < Math.min(flavourLines, lines.size()); i++) {
+            boolean last = i == flavourLines - 1 && lines.size() > flavourLines;
+            if (last) {
+                g.drawString(font, cut(Component.literal(flavour.getString().substring(Math.min(flavour.getString().length(),
+                        lineStart(flavour.getString(), lines, i)))), w), x, y, FAINT, false);
+            } else {
+                g.drawString(font, lines.get(i), x, y, FAINT, false);
+            }
             y += 9;
         }
-        y += 3;
+        if (flavourLines > 0) {
+            hits.add(new Hit(x, y - 9 * flavourLines, w, 9 * flavourLines, null, List.of(flavour)));
+            y += 3;
+        }
         // the blood: two columns of perks
         g.drawString(font, Component.translatable("creator.noirm.clan.blood"), x, y, DIM, false);
         y += 10;
@@ -869,7 +907,13 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             g.drawString(font, cut(Component.translatable("talent.noirm.none"), w), x + 4, y, FAINT, false);
             y += 10;
         }
-        for (ProfileSync.TalentView t : roll.talents()) {
+        for (int ti = 0; ti < roll.talents().size(); ti++) {
+            ProfileSync.TalentView t = roll.talents().get(ti);
+            if (y + 10 > vy + vh - 2 && ti < roll.talents().size() - 1) {
+                g.drawString(font, "+" + (roll.talents().size() - ti), x + 4, y, FAINT, false);
+                y += 11;
+                break;
+            }
             Component tname = Component.translatable(Talent.translationKey(t.id()));
             MutableComponent mods = Component.empty();
             boolean first = true;

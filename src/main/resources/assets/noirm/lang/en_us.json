@@ -2911,5 +2911,7 @@
   "help.noirm.trait.take": "remove a talent",
   "help.noirm.trait.reroll": "roll your talents again (biased by your clan)",
   "effect.noirm.chakra_seal": "Chakra Seal",
-  "entity.noirm.ninja_hound": "%s's ninja hound"
+  "entity.noirm.ninja_hound": "%s's ninja hound",
+  "creator.noirm.genetics.talent_count": "%s talents",
+  "creator.noirm.genetics.see_clan": "The Clan tab shows the blood and the talents in full."
 }

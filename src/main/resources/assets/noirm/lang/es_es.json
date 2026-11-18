@@ -2911,5 +2911,7 @@
   "help.noirm.trait.take": "quitar un talento",
   "help.noirm.trait.reroll": "volver a tirar tus talentos (según tu clan)",
   "effect.noirm.chakra_seal": "Sello de Chakra",
-  "entity.noirm.ninja_hound": "Perro ninja de %s"
+  "entity.noirm.ninja_hound": "Perro ninja de %s",
+  "creator.noirm.genetics.talent_count": "%s talentos",
+  "creator.noirm.genetics.see_clan": "La pestaña Clan muestra la sangre y los talentos al completo."
 }
