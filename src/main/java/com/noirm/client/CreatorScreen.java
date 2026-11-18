@@ -10,6 +10,11 @@ import com.noirm.client.ui.Theme;
 import com.noirm.client.ui.Ui;
 import com.noirm.creator.CreatorData;
 import com.noirm.creator.CreatorPackets;
+import com.noirm.traits.Perk;
+import com.noirm.traits.ProfileSync;
+import com.noirm.traits.Talent;
+import net.minecraft.resources.ResourceLocation;
+import java.util.Map;
 import com.noirm.creator.PlayerLook;
 import com.noirm.creator.PlayerLook.Slot;
 import com.noirm.creator.PlayerLook.Tone;
@@ -61,7 +66,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     private static final int LABEL_W = 66;
 
     private enum Tab {
-        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), GENETICS("genetics", 1f);
+        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), GENETICS("genetics", 1f), CLAN("clan", 1f);
 
         final String key;
         final float zoom;
@@ -117,6 +122,31 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         super(Component.translatable("creator.noirm.title"));
         this.state = state;
         this.draft = ClientCreator.draft(state);
+        applyClanColours();
+    }
+
+    /** The clan the draft's colours were last set for (so a clan's red hair is only the default). */
+    private String colouredFor = "";
+
+    /**
+     * A newly chosen roll's clan sets the draft's hair (and eyes) to the clan's colours: Uzumaki red,
+     * Hyūga pale eyes. Only when the clan changes, so the player's own pick afterwards stays.
+     */
+    private void applyClanColours() {
+        if (!state.modeEnum().genetics() || state.rolls().isEmpty()) {
+            return;
+        }
+        CreatorPackets.RollView roll = state.rolls().get(Mth.clamp(state.chosen(), 0, state.rolls().size() - 1));
+        if (roll.clanId().equals(colouredFor)) {
+            return;
+        }
+        colouredFor = roll.clanId();
+        if (roll.hair() >= 0) {
+            draft.setColor(Tone.HAIR, roll.hair());
+        }
+        if (roll.eyes() >= 0) {
+            draft.setColor(Tone.EYE, roll.eyes());
+        }
     }
 
     /** The look shown on your character while the screen is open. */
@@ -130,6 +160,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         if (!state.modeEnum().genetics() && tab == Tab.GENETICS && state.rolls().isEmpty()) {
             tab = Tab.FACE;
         }
+        applyClanColours();
     }
 
     void closeFromServer() {
@@ -205,6 +236,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             case BODY -> drawBody(g, cy, mouseX, mouseY);
             case HAIR -> drawHair(g, cy, mouseX, mouseY);
             case GENETICS -> drawGenetics(g, cy, mouseX, mouseY);
+            case CLAN -> drawClan(g, cy, mouseX, mouseY);
         }
         motion.endContent(g);
         drawFooter(g, mouseX, mouseY);
@@ -333,7 +365,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             case FACE -> Tone.EYE;
             case BODY -> Tone.SKIN;
             case HAIR -> Tone.HAIR;
-            case GENETICS -> activeTone;
+            case GENETICS, CLAN -> activeTone;
         };
     }
 
@@ -758,6 +790,116 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             tip.add(Component.translatable("creator.noirm.genetics.pick").withStyle(s -> s.withColor(CHAKRA)));
         }
         hits.add(new Hit(x, y, w, h, index >= 0 ? () -> send(CreatorPackets.Action.Kind.CHOOSE, index) : null, tip));
+    }
+
+    // ---------------------------------------------------------------- clan page
+
+    /**
+     * The chosen roll's clan, plainly: what its blood gives (green helps, red costs), its secret
+     * techniques, and the character's own talents (hover one for what it does). In appearance mode,
+     * your current clan and talents.
+     */
+    private void drawClan(GuiGraphics g, int y, int mx, int my) {
+        int x = px + 8;
+        int w = pw - 16;
+        List<CreatorPackets.RollView> rolls = state.rolls();
+        if (rolls.isEmpty()) {
+            g.drawString(font, cut(Component.translatable("creator.noirm.clan.none"), w), x, y, DIM, false);
+            return;
+        }
+        CreatorPackets.RollView roll = rolls.get(Mth.clamp(state.chosen(), 0, rolls.size() - 1));
+        MutableComponent name = Component.literal(roll.clanName()).withStyle(s -> s.withBold(true));
+        g.drawString(font, cut(name, w), x, y, roll.canon() ? RED : GOLD, false);
+        if (!roll.kekkeiGenkai().isEmpty()) {
+            Component k = Component.translatable("creator.noirm.genetics.kekkei." + roll.kekkeiGenkai());
+            g.drawString(font, cut(k, w / 2), x + w - Math.min(w / 2, font.width(k)), y, 0xFFD06AD0, false);
+        }
+        y += 12;
+        Component flavour = roll.canon() ? Component.translatable("clan.noirm." + roll.clanId() + ".desc")
+                : Component.translatable("creator.noirm.clan.generated");
+        List<FormattedCharSequence> lines = font.split(flavour, w);
+        for (int i = 0; i < Math.min(2, lines.size()); i++) {
+            g.drawString(font, lines.get(i), x, y, FAINT, false);
+            y += 9;
+        }
+        y += 3;
+        // the blood: two columns of perks
+        g.drawString(font, Component.translatable("creator.noirm.clan.blood"), x, y, DIM, false);
+        y += 10;
+        List<Map.Entry<Perk, Float>> perks = new ArrayList<>(roll.perks().entrySet());
+        if (perks.isEmpty()) {
+            g.drawString(font, cut(Component.translatable("creator.noirm.clan.no_perks"), w), x + 4, y, FAINT, false);
+            y += 10;
+        }
+        int col = (w - 4) / 2;
+        int rowsUsed = (perks.size() + 1) / 2;
+        for (int i = 0; i < perks.size(); i++) {
+            Perk perk = perks.get(i).getKey();
+            float value = perks.get(i).getValue();
+            Component line = Component.translatable(perk.translationKey(), perk.format(value));
+            int cx = x + 4 + (i / Math.max(1, rowsUsed)) * col;
+            int cy = y + (i % Math.max(1, rowsUsed)) * 10;
+            g.drawString(font, cut(line, col - 4), cx, cy, perk.good(value) ? 0xFF7FD38A : 0xFFE06A5A, false);
+            hits.add(new Hit(cx, cy, col - 4, 10, null, List.of(line, Component.translatable(perk.translationKey() + ".desc")
+                    .withStyle(s -> s.withColor(0xA0A0A0)))));
+        }
+        y += rowsUsed * 10 + 2;
+        if (!roll.clanJutsu().isEmpty()) {
+            MutableComponent jutsu = Component.empty();
+            for (int i = 0; i < roll.clanJutsu().size(); i++) {
+                ResourceLocation id = ResourceLocation.tryParse(roll.clanJutsu().get(i));
+                if (id == null) {
+                    continue;
+                }
+                if (i > 0) {
+                    jutsu.append(", ");
+                }
+                jutsu.append(Component.translatable("jutsu." + id.getNamespace() + "." + id.getPath().replace('/', '.')));
+            }
+            Component line = Component.translatable("creator.noirm.clan.jutsu", jutsu);
+            g.drawString(font, cut(line, w), x, y, GOLD, false);
+            hits.add(new Hit(x, y, w, 10, null, List.of(line, Component.translatable("creator.noirm.clan.jutsu_tip")
+                    .withStyle(s -> s.withColor(0xA0A0A0)))));
+            y += 12;
+        }
+        // the character's own talents
+        g.drawString(font, Component.translatable("creator.noirm.clan.talents"), x, y, DIM, false);
+        y += 10;
+        if (roll.talents().isEmpty()) {
+            g.drawString(font, cut(Component.translatable("talent.noirm.none"), w), x + 4, y, FAINT, false);
+            y += 10;
+        }
+        for (ProfileSync.TalentView t : roll.talents()) {
+            Component tname = Component.translatable(Talent.translationKey(t.id()));
+            MutableComponent mods = Component.empty();
+            boolean first = true;
+            for (Map.Entry<Perk, Float> e : t.modifiers().entrySet()) {
+                if (!first) {
+                    mods.append(", ");
+                }
+                mods.append(Component.translatable(e.getKey().translationKey(), e.getKey().format(e.getValue()))
+                        .withStyle(s -> s.withColor(e.getKey().good(e.getValue()) ? 0x7FD38A : 0xE06A5A)));
+                first = false;
+            }
+            int nameW = Math.min(w / 2, font.width(tname) + 6);
+            g.drawString(font, cut(tname, nameW), x + 4, y, 0xFF000000 | t.kind().color(), false);
+            g.drawString(font, cut(mods, w - nameW - 8), x + 4 + nameW, y, FAINT, false);
+            List<Component> tip = new ArrayList<>();
+            tip.add(tname.copy().withStyle(s -> s.withColor(t.kind().color())));
+            tip.add(Component.translatable("talent.noirm.kind." + t.kind().getSerializedName()).withStyle(s -> s.withColor(0x808080)));
+            tip.add(Component.translatable(Talent.descriptionKey(t.id())));
+            tip.add(mods);
+            hits.add(new Hit(x, y, w, 10, null, tip));
+            y += 11;
+        }
+        y += 2;
+        for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.clan.talents_note"), w)) {
+            if (y > vy + vh - 12) {
+                break;
+            }
+            g.drawString(font, line, x, y, FAINT, false);
+            y += 9;
+        }
     }
 
     // ---------------------------------------------------------------- footer
