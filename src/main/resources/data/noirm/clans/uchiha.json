@@ -16,11 +16,16 @@
   "kekkei_genkai": "sharingan",
   "awakening": "sharingan",
   "perks": {
-    "perception": 0.1,
-    "genjutsu_power": 0.25,
-    "resolve": 0.25,
-    "mastery": 0.15,
-    "strain": 0.25
+    "perception": 0.25,
+    "genjutsu_power": 0.6,
+    "genjutsu_resist": 0.3,
+    "resolve": 0.6,
+    "mastery": 0.4,
+    "chakra_pool": 0.5,
+    "jutsu_power": 0.1,
+    "strain": 0.6,
+    "crew_respect": -0.15,
+    "max_health": -2
   },
   "look": {
     "hair": [

@@ -8,12 +8,15 @@
   "taijutsu_bonus": 2,
   "awakening": "will",
   "perks": {
-    "max_health": 6,
-    "melee_damage": 0.15,
-    "health_regen": 0.15,
-    "xp_taijutsu": 0.2,
-    "start_control": -3,
-    "genjutsu_resist": -0.2
+    "max_health": 14,
+    "melee_damage": 0.4,
+    "health_regen": 0.3,
+    "xp_taijutsu": 0.5,
+    "chakra_pool": 1.0,
+    "start_control": -6,
+    "rough_control": 0.3,
+    "genjutsu_resist": -0.5,
+    "crew_respect": -0.3
   },
   "clan_jutsu": [
     "noirm:clan/sage_frenzy"

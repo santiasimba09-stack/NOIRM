@@ -8,11 +8,11 @@
   "kekkei_genkai": "hydrification",
   "awakening": "will",
   "perks": {
-    "water_dodge": 0.6,
-    "max_chakra": 20,
-    "dot_resist": 0.15,
-    "max_health": -2,
-    "xp_speed": 0.1
+    "water_dodge": 0.75,
+    "chakra_pool": 0.5,
+    "dot_resist": 0.3,
+    "xp_speed": 0.2,
+    "max_health": -6
   },
   "clan_jutsu": [
     "noirm:clan/water_gun"

@@ -192,7 +192,7 @@ public final class WildSpawner {
                 continue;
             }
             NEXT_TRY.put(player.getUUID(), now + interval(rate));
-            if (level.getRandom().nextFloat() < chance(rate)) {
+            if (level.getRandom().nextFloat() < chance(rate) * com.noirm.traits.Perks.beaconMultiplier(player)) { // a loud chakra draws them
                 Result result = attempt(level, player.blockPosition(), playedTicks(player), level.getRandom(), MIN_DISTANCE, MAX_DISTANCE);
                 Noirm.LOGGER.debug("Wild ninja try near {}: {}", player.getName().getString(), result);
             }

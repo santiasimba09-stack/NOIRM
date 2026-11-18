@@ -3091,5 +3091,13 @@
   "help.noirm.spacetime.give": "Aprende la fórmula y el Dios del Trueno Volador, recibe 16 kunai marcados",
   "help.noirm.spacetime.legend": "Aparece frente a ti una leyenda que pelea con el Dios del Trueno Volador",
   "help.noirm.spacetime.genjutsu_list": "Lista las escenas de genjutsu",
-  "help.noirm.spacetime.genjutsu_test": "Te mete (o mete a los objetivos) en una escena de genjutsu"
+  "help.noirm.spacetime.genjutsu_test": "Te mete (o mete a los objetivos) en una escena de genjutsu",
+  "perk.noirm.jinchuriki_pool": "Con una bestia sellada: reserva de chakra %s",
+  "perk.noirm.jinchuriki_pool.desc": "Una bestia con colas sellada en ti añade esto a tu reserva de chakra.",
+  "perk.noirm.rough_control": "Control de chakra tosco %s",
+  "perk.noirm.rough_control.desc": "Tanto chakra en bruto cuesta moldearlo: con poco control (CTL) los jutsu cuestan esto de más y los genjutsu pierden el doble de poder. Entrenar el CTL hasta 50 lo elimina.",
+  "perk.noirm.chakra_beacon": "Chakra ruidoso %s",
+  "perk.noirm.chakra_beacon.desc": "Un chakra tan grande se nota desde lejos: los ninjas salvajes te encuentran más a menudo y los monstruos y bestias te ven desde más lejos.",
+  "perk.noirm.gate_mastery": "Dominio de las Ocho Puertas %s",
+  "perk.noirm.gate_mastery.desc": "Las Puertas queman menos tu cuerpo y se cierran más tarde (con menos salud)."
 }

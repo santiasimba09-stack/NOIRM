@@ -7,10 +7,11 @@
   },
   "awakening": "will",
   "perks": {
-    "genjutsu_resist": 0.15,
-    "start_willpower": 3,
-    "jutsu_cost": -0.05,
-    "crew_respect": -0.2
+    "genjutsu_resist": 0.3,
+    "start_willpower": 6,
+    "xp_willpower": 0.4,
+    "jutsu_cost": -0.1,
+    "crew_respect": -0.4
   },
   "look": {
     "hair": [

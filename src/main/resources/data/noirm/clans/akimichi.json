@@ -9,13 +9,16 @@
   "taijutsu_bonus": 2,
   "awakening": "will",
   "perks": {
-    "food_power": 0.6,
-    "max_health": 6,
-    "start_durability": 3,
-    "posture": 20,
-    "max_stamina": 20,
-    "melee_damage": 0.08,
-    "start_speed": -2
+    "food_power": 1.5,
+    "max_health": 14,
+    "start_durability": 6,
+    "posture": 50,
+    "max_stamina": 60,
+    "melee_damage": 0.3,
+    "chakra_pool": 1.0,
+    "damage_taken": -0.1,
+    "start_speed": -4,
+    "xp_speed": -0.35
   },
   "clan_jutsu": [
     "noirm:clan/multi_size"

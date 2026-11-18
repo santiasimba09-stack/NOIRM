@@ -7,11 +7,12 @@
   },
   "awakening": "will",
   "perks": {
-    "sensor": 12,
-    "dot_resist": 0.2,
-    "pill_power": 0.1,
-    "jutsu_power": 0.05,
-    "crew_respect": -0.1
+    "sensor": 24,
+    "dot_resist": 0.4,
+    "pill_power": 0.25,
+    "jutsu_power": 0.1,
+    "crew_respect": -0.15,
+    "fire_weakness": 0.3
   },
   "clan_jutsu": [
     "noirm:clan/bee_swarm"

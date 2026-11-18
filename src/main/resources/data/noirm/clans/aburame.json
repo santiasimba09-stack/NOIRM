@@ -8,11 +8,13 @@
   "awakening": "will",
   "perks": {
     "poison_immunity": 1,
-    "dot_resist": 0.3,
-    "sensor": 16,
-    "chakra_leech": 3,
-    "start_control": 1,
-    "fire_weakness": 0.25
+    "dot_resist": 0.6,
+    "sensor": 32,
+    "chakra_leech": 8,
+    "start_control": 3,
+    "chakra_pool": 0.3,
+    "fire_weakness": 0.6,
+    "xp_speed": -0.2
   },
   "clan_jutsu": [
     "noirm:clan/parasitic_swarm"

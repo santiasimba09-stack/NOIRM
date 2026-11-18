@@ -8,11 +8,13 @@
   "taijutsu_bonus": 2,
   "awakening": "will",
   "perks": {
-    "max_health": 4,
-    "melee_damage": 0.12,
-    "start_durability": 2,
-    "max_stamina": 20,
-    "start_control": -1
+    "max_health": 10,
+    "melee_damage": 0.3,
+    "start_durability": 5,
+    "max_stamina": 50,
+    "xp_taijutsu": 0.3,
+    "start_control": -3,
+    "genjutsu_power": -0.3
   },
   "look": {
     "hair": [

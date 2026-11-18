@@ -7,11 +7,12 @@
   },
   "awakening": "will",
   "perks": {
-    "genjutsu_power": 0.5,
-    "genjutsu_resist": 0.3,
-    "max_health": -4,
-    "max_stamina": -20,
-    "start_willpower": 2
+    "genjutsu_power": 1.2,
+    "genjutsu_resist": 0.6,
+    "start_willpower": 5,
+    "max_health": -8,
+    "max_stamina": -50,
+    "melee_damage": -0.25
   },
   "look": {
     "hair": [
