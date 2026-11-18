@@ -9,12 +9,15 @@
   "taijutsu_bonus": 1,
   "awakening": "will",
   "perks": {
-    "sensor": 20,
-    "start_speed": 2,
-    "xp_speed": 0.2,
-    "melee_damage": 0.08,
+    "sensor": 40,
+    "start_speed": 4,
+    "xp_speed": 0.5,
+    "melee_damage": 0.2,
+    "perception": 0.1,
     "hound": 1,
-    "start_control": -1
+    "start_control": -3,
+    "xp_control": -0.3,
+    "genjutsu_power": -0.4
   },
   "clan_jutsu": [
     "noirm:clan/fang_over_fang"

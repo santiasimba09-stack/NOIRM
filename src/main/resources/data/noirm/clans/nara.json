@@ -8,12 +8,16 @@
   },
   "awakening": "will",
   "perks": {
-    "start_control": 3,
-    "xp_control": 0.4,
-    "mastery": 0.3,
-    "xp_willpower": 0.15,
-    "xp_taijutsu": -0.2,
-    "max_stamina": -10
+    "start_control": 6,
+    "xp_control": 1.0,
+    "mastery": 0.6,
+    "xp_willpower": 0.4,
+    "start_willpower": 3,
+    "genjutsu_resist": 0.2,
+    "xp_taijutsu": -0.4,
+    "xp_speed": -0.3,
+    "max_stamina": -30,
+    "stamina_regen": -0.2
   },
   "clan_jutsu": [
     "noirm:clan/shadow_possession"

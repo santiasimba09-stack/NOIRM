@@ -3091,5 +3091,13 @@
   "help.noirm.spacetime.give": "Learn the formula and the Flying Raijin, get 16 marked kunai",
   "help.noirm.spacetime.legend": "A legend who fights with the Flying Raijin appears in front of you",
   "help.noirm.spacetime.genjutsu_list": "List the genjutsu scenes",
-  "help.noirm.spacetime.genjutsu_test": "Put yourself (or the targets) in a genjutsu scene"
+  "help.noirm.spacetime.genjutsu_test": "Put yourself (or the targets) in a genjutsu scene",
+  "perk.noirm.jinchuriki_pool": "With a beast sealed: chakra pool %s",
+  "perk.noirm.jinchuriki_pool.desc": "A tailed beast sealed inside you adds this much more to your chakra pool.",
+  "perk.noirm.rough_control": "Rough chakra control %s",
+  "perk.noirm.rough_control.desc": "So much raw chakra is hard to shape: at low chakra control (CTL) jutsu cost this much more and genjutsu lose twice as much power. Training CTL up to 50 makes it go away.",
+  "perk.noirm.chakra_beacon": "Loud chakra %s",
+  "perk.noirm.chakra_beacon.desc": "A chakra this big is easy to feel from afar: wild ninjas find you more often, and mobs and beasts notice you from further away.",
+  "perk.noirm.gate_mastery": "Eight Gates mastery %s",
+  "perk.noirm.gate_mastery.desc": "The Gates burn less of your body and close later (at a lower health line)."
 }

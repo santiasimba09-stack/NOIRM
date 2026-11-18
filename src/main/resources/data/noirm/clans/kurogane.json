@@ -8,11 +8,13 @@
   "taijutsu_bonus": 2,
   "awakening": "will",
   "perks": {
-    "melee_damage": 0.15,
-    "posture": 30,
-    "start_durability": 2,
-    "xp_taijutsu": 0.2,
-    "jutsu_power": -0.15
+    "melee_damage": 0.4,
+    "posture": 60,
+    "start_durability": 5,
+    "xp_taijutsu": 0.4,
+    "genjutsu_resist": 0.2,
+    "jutsu_power": -0.4,
+    "jutsu_cost": 0.3
   },
   "look": {
     "hair": [

@@ -15,8 +15,10 @@ import java.util.Locale;
 public enum Perk {
     /** Max chakra, flat (TrainingSystem.applyReserves). */
     MAX_CHAKRA(Kind.FLAT, false),
-    /** The whole chakra pool, ×(1 + amount) (TrainingSystem.applyReserves). */
-    CHAKRA_POOL(Kind.PERCENT, false),
+    /** The whole chakra pool, ×(1 + amount) (TrainingSystem.applyReserves): 9 = ten times a normal shinobi's. */
+    CHAKRA_POOL(Kind.TIMES, false),
+    /** With a tailed beast sealed inside, the pool grows by this much more (×(1 + pool + this)). */
+    JINCHURIKI_POOL(Kind.TIMES_MORE, false),
     /** Chakra regeneration (ShinobiData.chakraRegenMultiplier). */
     CHAKRA_REGEN(Kind.PERCENT, false),
     /** Max stamina, flat (PerkEvents). */
@@ -105,9 +107,19 @@ public enum Perk {
     /** Born with a ninja hound at your side (PerkEvents). */
     HOUND(Kind.FLAG, false),
     /** Slow below 30 in a stat (−25% XP), fast from 30 on (+60%) (TrainingSystem.grant). */
-    LATE_BLOOMER(Kind.FLAG, false);
+    LATE_BLOOMER(Kind.FLAG, false),
+    /**
+     * Raw, hard-to-control chakra: at chakra control (CTL) {@code Perks.ROUGH_FULL_BELOW} and under,
+     * jutsu cost this much more and genjutsu lose twice this much power; the penalty fades to nothing
+     * by CTL {@code Perks.ROUGH_GONE_AT} (Perks.roughControl).
+     */
+    ROUGH_CONTROL(Kind.PERCENT, true),
+    /** A chakra so loud it draws attention: wild ninjas find you this much more often, mobs and beasts notice you from further away. */
+    CHAKRA_BEACON(Kind.PERCENT, true),
+    /** The Eight Gates: health they burn and the health line they slam shut at, ×(1 − amount) (ModeSystem). */
+    GATE_MASTERY(Kind.PERCENT, false);
 
-    public enum Kind { FLAT, PERCENT, CHANCE, FLAG }
+    public enum Kind { FLAT, PERCENT, CHANCE, FLAG, TIMES, TIMES_MORE }
 
     private final Kind kind;
     private final boolean lowerIsBetter;
@@ -154,6 +166,8 @@ public enum Perk {
             case PERCENT -> (amount >= 0 ? "+" : "") + Math.round(amount * 100) + "%";
             case CHANCE -> Math.round(amount * 100) + "%";
             case FLAG -> "";
+            case TIMES -> "×" + trim(Math.round((1f + amount) * 10f) / 10f);
+            case TIMES_MORE -> "+×" + trim(Math.round(amount * 10f) / 10f);
         };
     }
 

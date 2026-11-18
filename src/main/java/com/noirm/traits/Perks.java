@@ -35,6 +35,20 @@ public final class Perks {
     public static final float BLOOMER_STAT = 30f;
     public static final float BLOOMER_SLOW = 0.25f;
     public static final float BLOOMER_FAST = 0.6f;
+    /** Rough control (the Uzumaki, the Senju, Jūgo's clan): full penalty at or below this CTL… */
+    public static final float ROUGH_FULL_BELOW = 10f;
+    /** …fading to nothing at this CTL. */
+    public static final float ROUGH_GONE_AT = 50f;
+    /** Genjutsu lose this many times the rough-control penalty (fine illusions need fine control). */
+    public static final float ROUGH_GENJUTSU = 2f;
+    /**
+     * NPC ninjas feel like their clan but don't blow up the difficulty: their raw combat perks (health,
+     * healing, damage dealt and taken, jutsu power) count at this share. Identity perks (liquid and smoke
+     * bodies, poison immunity, resistances, weaknesses) count in full.
+     */
+    public static final float NPC_COMBAT_SHARE = 0.5f;
+    private static final java.util.Set<Perk> NPC_SCALED = java.util.EnumSet.of(Perk.MAX_HEALTH, Perk.HEALTH_REGEN,
+            Perk.MELEE_DAMAGE, Perk.DAMAGE_TAKEN, Perk.JUTSU_POWER, Perk.GENJUTSU_POWER);
     /** NPC totals are rebuilt at most this often (ticks). */
     private static final int NPC_CACHE_TICKS = 40;
 
@@ -93,7 +107,9 @@ public final class Perks {
         if (entity instanceof SparringNinja ninja && !ninja.level().isClientSide()) {
             NpcCache cache = NPC.get(ninja);
             if (cache == null || ninja.tickCount - cache.tick >= NPC_CACHE_TICKS || ninja.tickCount < cache.tick) {
-                cache = new NpcCache(ninja.tickCount, resolve(clanPerks(ninja), NpcTalents.of(ninja)));
+                EnumMap<Perk, Float> totals = resolve(clanPerks(ninja), NpcTalents.of(ninja));
+                NPC_SCALED.forEach(p -> totals.computeIfPresent(p, (k, v) -> v * NPC_COMBAT_SHARE));
+                cache = new NpcCache(ninja.tickCount, totals);
                 NPC.put(ninja, cache);
             }
             return cache.totals;
@@ -149,7 +165,7 @@ public final class Perks {
         }
         float bonus = t.getOrDefault(Perk.JUTSU_POWER, 0f);
         if (GENJUTSU_BEHAVIORS.contains(def.behavior())) {
-            bonus += t.getOrDefault(Perk.GENJUTSU_POWER, 0f);
+            bonus += t.getOrDefault(Perk.GENJUTSU_POWER, 0f) - ROUGH_GENJUTSU * roughControl(caster, t);
         }
         if (id.getPath().startsWith("medical/") || MEDICAL_BEHAVIORS.contains(def.behavior())) {
             bonus += t.getOrDefault(Perk.MEDICAL_POWER, 0f);
@@ -166,8 +182,24 @@ public final class Perks {
         if (t.isEmpty()) {
             return 1f;
         }
-        float bonus = t.getOrDefault(Perk.JUTSU_COST, 0f) + (isSealing(id) ? t.getOrDefault(Perk.SEALING_COST, 0f) : 0f);
+        float bonus = t.getOrDefault(Perk.JUTSU_COST, 0f) + (isSealing(id) ? t.getOrDefault(Perk.SEALING_COST, 0f) : 0f)
+                + roughControl(caster, t);
         return Math.max(MIN_MULTIPLIER, 1f + bonus);
+    }
+
+    /** The rough-control penalty right now: full at low CTL, gone by {@link #ROUGH_GONE_AT}. Players only. */
+    public static float roughControl(LivingEntity caster, Map<Perk, Float> t) {
+        float rough = t.getOrDefault(Perk.ROUGH_CONTROL, 0f);
+        if (rough <= 0f || !(caster instanceof Player player)) {
+            return 0f;
+        }
+        float ctl = ShinobiCapability.get(player).map(ShinobiData::getControl).orElse(ShinobiData.DEFAULT_STAT);
+        return rough * net.minecraft.util.Mth.clamp((ROUGH_GONE_AT - ctl) / (ROUGH_GONE_AT - ROUGH_FULL_BELOW), 0f, 1f);
+    }
+
+    /** How much more a loud chakra draws attention: wild-ninja tries and how far mobs notice you, ×this. */
+    public static float beaconMultiplier(LivingEntity entity) {
+        return 1f + Math.max(0f, get(entity, Perk.CHAKRA_BEACON));
     }
 
     /** XP multiplier for a trained stat: all stats, that stat, Late Bloomer. */
