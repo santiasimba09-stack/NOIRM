@@ -1,8 +1,39 @@
 {
-  "id": "uchiha", "name": "Uchiha", "weight": 3,
-  "natures": { "fire": 1.5, "lightning": 1.0, "yin": 0.8 },
-  "traits": ["keen_eyes", "fierce"],
-  "speed_bonus": 1, "taijutsu_bonus": 1,
+  "id": "uchiha",
+  "name": "Uchiha",
+  "weight": 3,
+  "natures": {
+    "fire": 1.5,
+    "lightning": 1.0,
+    "yin": 0.8
+  },
+  "traits": [
+    "keen_eyes",
+    "fierce"
+  ],
+  "speed_bonus": 1,
+  "taijutsu_bonus": 1,
   "kekkei_genkai": "sharingan",
-  "awakening": "sharingan"
+  "awakening": "sharingan",
+  "perks": {
+    "perception": 0.1,
+    "genjutsu_power": 0.25,
+    "resolve": 0.25,
+    "mastery": 0.15,
+    "strain": 0.25
+  },
+  "look": {
+    "hair": [
+      "#1b1c22",
+      "#141418"
+    ],
+    "eyes": "#1e1a1f"
+  },
+  "talent_bias": {
+    "genjutsu_talent": 3,
+    "prodigy": 2,
+    "keen_eyes": 2,
+    "hot_blooded": 2,
+    "cursed_luck": 2
+  }
 }

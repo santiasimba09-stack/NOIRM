@@ -1,0 +1,15 @@
+{
+  "cast": "tap",
+  "behavior": "flurry",
+  "rank": "C",
+  "chakra_cost": 16,
+  "cooldown": 200,
+  "params": {
+    "range": 3.5,
+    "damage": 1.6,
+    "count": 8,
+    "duration": 16,
+    "knockback": 0.25,
+    "posture": 5
+  }
+}

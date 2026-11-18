@@ -1407,6 +1407,157 @@ CLANS = {
     },
 }
 
+# The other canon clans (docs/CLANS.md): the generic table with each clan's physical traits on top
+# (hair, eyes, face marks, accessories). Our own descriptions of canon looks; no franchise art.
+def clan_table(**over):
+    t = dict(CLANS["generic"])
+    t.update(over)
+    return t
+
+
+CLANS.update({
+    "nara": clan_table(
+        skin=w(SKIN, light=3, fair=4, medium=2),
+        hair_style=[["high_ponytail", 6], ["ponytail", 2], ["topknot", 2]],
+        hair_color=[["#1b1c22", 4], ["#2a2224", 3], ["#2b1d16", 3]],
+        eyes=[["narrow", 4], ["sharp", 2]], eye_color=[["#2a2a2e", 3], ["#3a2a1e", 3]],
+        brows=[["thin", 3], ["soft", 2]],
+        mark=[["none", 10], ["scar_nose", 2]], accessory=[["none", 12], ["head_bandage", 1]]),
+    "akimichi": clan_table(
+        skin=w(SKIN, fair=3, medium=3, tan=2),
+        hair_style=[["wild_mane", 4], ["long", 3], ["spiky", 2], ["shoulder_messy", 2]],
+        hair_color=[["#8a3a22", 4], ["#6a3a22", 3], ["#a8743a", 2], ["#4a3020", 1]],
+        eyes=[["round", 4], ["wide", 2]], eye_color=[["#3a2a1e", 3], ["#5a3c24", 3]],
+        brows=[["thick", 3], ["soft", 2]],
+        mark=[["swirls", 8], ["none", 2]], accessory=[["none", 12], ["head_bandage", 2]]),
+    "yamanaka": clan_table(
+        skin=w(SKIN, pale=4, light=3, fair=1),
+        hair_style=[["high_ponytail", 4], ["long", 3], ["ponytail", 3], ["side_bangs", 2]],
+        hair_color=[["#e6cf8e", 4], ["#f2e6be", 3], ["#e3c26a", 2]],
+        eyes=[["wide", 3], ["round", 3]], eye_color=[["#9ec4e8", 4], ["#8ab0c8", 3], ["#a8c8c0", 2]],
+        brows=[["thin", 3], ["soft", 3]],
+        mark=[["none", 12], ["freckles", 1]], accessory=[["none", 12], ["face_bandage", 1]]),
+    "aburame": clan_table(
+        skin=w(SKIN, pale=3, light=3, fair=2),
+        hair_style=[["spiky", 3], ["short", 3], ["messy", 2], ["buzz", 1]],
+        hair_color=[["#1b1c22", 4], ["#2a2224", 3], ["#2b1d16", 2]],
+        eyes=[["narrow", 4], ["sharp", 2]],
+        shirt=[["turtleneck", 5], ["longsleeve", 3]],
+        mark=[["none", 12]], accessory=[["shades", 10], ["none", 1]]),
+    "inuzuka": clan_table(
+        skin=w(SKIN, fair=2, medium=3, tan=3),
+        hair_style=[["wild_mane", 4], ["spiky", 4], ["messy", 3]],
+        hair_color=[["#3a2618", 4], ["#4a3020", 3], ["#2b1d16", 2]],
+        eyes=[["sharp", 5], ["narrow", 2]], eye_color=[["#3a2a1e", 3], ["#6a4a2a", 3]],
+        brows=[["fierce", 4], ["thick", 2]],
+        mark=[["fangs", 10], ["none", 1]], accessory=[["none", 12], ["head_bandage", 1]]),
+    "hatake": clan_table(
+        skin=w(SKIN, light=3, fair=3),
+        hair_style=[["spiky", 6], ["messy", 2]],
+        hair_color=[["#d8d4cc", 4], ["#b8b6b0", 3], ["#f2f0ea", 2]],
+        eyes=[["narrow", 4], ["round", 2]], eye_color=[["#2a2a2e", 3], ["#3a3a40", 2]],
+        mark=[["none", 8], ["scar_eye", 3]], accessory=[["mask", 8], ["none", 3]]),
+    "sarutobi": clan_table(
+        skin=w(SKIN, fair=3, medium=3, tan=2),
+        hair_style=[["spiky", 4], ["short", 3], ["swept", 2], ["messy", 2]],
+        hair_color=[["#3a2618", 4], ["#2a2224", 3], ["#4a3020", 2]],
+        eyes=[["round", 3], ["sharp", 3]],
+        mark=[["none", 9], ["scar_nose", 1], ["stripes", 1]]),
+    "kaguya": clan_table(
+        skin=w(SKIN, pale=6, light=2),
+        hair_style=[["long", 4], ["side_bangs", 3], ["slick_back", 2], ["ponytail", 2]],
+        hair_color=[["#f2f0ea", 5], ["#d8d4cc", 3]],
+        eyes=[["sharp", 4], ["narrow", 2]], eye_color=[["#3e6b45", 4], ["#4e8a4a", 3]],
+        mark=[["diamond", 6], ["none", 4]], accessory=[["none", 12]]),
+    "hozuki": clan_table(
+        skin=w(SKIN, pale=4, light=3),
+        hair_style=[["spiky", 3], ["messy", 3], ["long", 2], ["shoulder_messy", 2]],
+        hair_color=[["#b8c8d8", 4], ["#9ec4e8", 3], ["#d8d4cc", 3]],
+        eyes=[["sharp", 4], ["wide", 2]], eye_color=[["#8a5ab0", 4], ["#5a3a6a", 3]],
+        mark=[["fangs", 6], ["none", 4]]),
+    "yuki": clan_table(
+        skin=w(SKIN, pale=6, light=2),
+        hair_style=[["long", 5], ["hime", 3], ["side_bangs", 2], ["bun", 1]],
+        hair_color=[["#141418", 5], ["#1b1c22", 3]],
+        eyes=[["round", 3], ["wide", 3]], eye_color=[["#3a2a22", 3], ["#2a2a2e", 3]],
+        brows=[["soft", 4], ["thin", 3]],
+        mark=[["none", 12]], accessory=[["none", 10], ["mask", 1]]),
+    "chinoike": clan_table(
+        skin=w(SKIN, pale=4, light=3),
+        hair_style=[["long", 3], ["spiky", 2], ["messy", 2], ["hime", 2]],
+        hair_color=[["#2a1418", 4], ["#141418", 3], ["#3a1a1e", 2]],
+        eyes=[["sharp", 4], ["narrow", 2]], eye_color=[["#8e2b2b", 5], ["#a83030", 3]],
+        mark=[["tear_lines", 3], ["none", 6]]),
+    "kurama": clan_table(
+        skin=w(SKIN, pale=5, light=3),
+        hair_style=[["long", 4], ["side_bangs", 3], ["hime", 2], ["bun", 2]],
+        hair_color=[["#2b1d16", 4], ["#1b1c22", 3]],
+        eyes=[["wide", 3], ["round", 3]], eye_color=[["#7a2a24", 3], ["#5a3c24", 3]],
+        brows=[["soft", 4], ["thin", 2]],
+        mark=[["none", 12]], accessory=[["none", 12], ["head_bandage", 1]]),
+    "fuma": clan_table(
+        hair_style=[["spiky", 3], ["swept", 3], ["long", 2], ["topknot", 2]],
+        hair_color=[["#141418", 4], ["#2a2224", 3], ["#3a2618", 2]],
+        eyes=[["sharp", 4], ["narrow", 2]],
+        mark=[["war_paint", 2], ["none", 8]], accessory=[["mask", 2], ["none", 8]]),
+    "iburi": clan_table(
+        skin=w(SKIN, pale=6, light=2),
+        hair_style=[["messy", 3], ["shoulder_messy", 3], ["long", 2]],
+        hair_color=[["#8e9096", 4], ["#5a5c62", 3], ["#b8b6b0", 2]],
+        eyes=[["narrow", 4], ["round", 1]], eye_color=[["#7a7f86", 4], ["#5a5a62", 3]],
+        mark=[["none", 10]], accessory=[["face_bandage", 3], ["none", 6]]),
+    "jugo": clan_table(
+        skin=w(SKIN, light=3, fair=3),
+        hair_style=[["spiky", 5], ["wild_mane", 4]],
+        hair_color=[["#e07a2e", 4], ["#f0a030", 3], ["#e85a2a", 2]],
+        eyes=[["wide", 3], ["round", 3]], eye_color=[["#c9a445", 4], ["#a8743a", 2]],
+        brows=[["soft", 3], ["thick", 2]],
+        mark=[["none", 8], ["war_paint", 1]]),
+    "kamizuru": clan_table(
+        hair_style=[["messy", 3], ["spiky", 2], ["bun", 2], ["long", 2]],
+        hair_color=[["#2a2224", 4], ["#3a2618", 3], ["#c9a445", 1]],
+        eye_color=[["#c9a445", 4], ["#a8743a", 2]],
+        mark=[["stripes", 3], ["none", 6]], accessory=[["mask", 2], ["none", 8]]),
+    "yotsuki": clan_table(
+        skin=w(SKIN, brown=5, dark=4, tan=2),
+        hair_style=[["spiky", 3], ["slick_back", 3], ["short", 2], ["undercut", 2], ["buzz", 2]],
+        hair_color=[["#f2f0ea", 4], ["#e3c26a", 3], ["#d8d4cc", 2]],
+        eyes=[["sharp", 4], ["narrow", 2]], brows=[["fierce", 4], ["thick", 2]],
+        mark=[["stripes", 2], ["scar_eye", 1], ["none", 6]], accessory=[["shades", 2], ["none", 8]]),
+    "kazekage": clan_table(
+        skin=w(SKIN, light=3, fair=3),
+        hair_style=[["spiky", 3], ["messy", 3], ["short", 2], ["swept", 2]],
+        hair_color=[["#8a1e1e", 4], ["#b4462e", 3], ["#c08a48", 2]],
+        eyes=[["narrow", 4], ["sharp", 2]], eye_color=[["#3aa8a0", 4], ["#3e6b45", 3]],
+        mark=[["none", 10], ["tear_lines", 1]]),
+    "kurogane": clan_table(
+        skin=w(SKIN, fair=3, medium=3),
+        hair_style=[["topknot", 5], ["long", 2], ["slick_back", 2], ["bun", 2]],
+        hair_color=[["#141418", 4], ["#2a2224", 3], ["#3a2618", 2]],
+        eyes=[["sharp", 4], ["narrow", 2]], brows=[["fierce", 4], ["thin", 2]],
+        mark=[["scar_eye", 2], ["none", 6]], accessory=[["none", 12]]),
+    "shimura": clan_table(
+        hair_style=[["short", 3], ["swept", 3], ["slick_back", 2], ["buzz", 2]],
+        hair_color=[["#2a2224", 4], ["#5a5c62", 3], ["#141418", 2]],
+        eyes=[["narrow", 5], ["sharp", 2]],
+        mark=[["scar_eye", 1], ["none", 6]], accessory=[["face_bandage", 3], ["eyepatch", 1], ["none", 6]]),
+    "hoshigaki": clan_table(
+        skin=[["#7a8a9a", 4], ["#6a7e8e", 3], ["#8a98a4", 2]],
+        hair_style=[["spiky", 5], ["wild_mane", 3]],
+        hair_color=[["#2b3a6e", 4], ["#2f3f6a", 3], ["#2f5a3a", 1]],
+        eyes=[["narrow", 4], ["sharp", 3]], eye_color=[["#d8d4cc", 4], ["#b8b6b0", 2]],
+        mark=[["stripes", 6], ["fangs", 4]], accessory=[["none", 12]]),
+    "might": clan_table(
+        skin=w(SKIN, fair=4, medium=2),
+        hair_style=[["bowl", 8], ["short", 2]],
+        hair_color=[["#141414", 6], ["#1b1c22", 2]],
+        eyes=[["round", 5], ["wide", 2]], brows=[["thick", 8]],
+        shirt=[["turtleneck", 6], ["tee", 2]], shirt_color=[["#3e7a2e", 6], ["#2f5a3a", 2], ["#23252c", 1]],
+        pants=[["long", 6]], pants_color=[["#3e7a2e", 6], ["#2f5a3a", 2]],
+        wraps=[[1, 4], [3, 2], [0, 1]],
+        mark=[["none", 12]], accessory=[["none", 12]]),
+})
+
 # A generated clan's members share a family look (seed bits 48-63 = the clan): most of them
 # wear the family mark, and half share the family hair colour.
 FAMILY = {
@@ -1419,8 +1570,20 @@ TINTED_ACCESSORIES = ["mask"]
 
 
 
+def write_looks():
+    looks = {"_comment": "Generated by tools/skingen/gen_parts.py: appearance tables per clan folder (weights are relative).",
+             "clans": CLANS, "family": FAMILY, "tinted_accessories": TINTED_ACCESSORIES}
+    with open(os.path.join(OUT_DIR, "looks.json"), "w") as f:
+        json.dump(looks, f, indent=1)
+        f.write("\n")
+
+
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
+    if "--looks-only" in sys.argv:  # just the appearance tables (no part images)
+        write_looks()
+        print("wrote looks.json")
+        return
     parts = {"skin": part_skin(), "sandals": part_sandals(),
              "leg_wraps": part_wraps(LEGS, 6.0, 10.1), "arm_wraps": part_wraps(ARMS, 7.0, 10.9)}
     for s in SLEEVES:
@@ -1447,11 +1610,7 @@ def main():
     write_dojutsu()
     for style, fit in mangekyo_fit().items():
         print("mangekyo fit %-7s x %.4f y %.4f r %.3f visible %.3f .. %.3f" % ((style,) + fit))
-    looks = {"_comment": "Generated by tools/skingen/gen_parts.py: appearance tables per clan folder (weights are relative).",
-             "clans": CLANS, "family": FAMILY, "tinted_accessories": TINTED_ACCESSORIES}
-    with open(os.path.join(OUT_DIR, "looks.json"), "w") as f:
-        json.dump(looks, f, indent=1)
-        f.write("\n")
+    write_looks()
     print("wrote %d parts (%dx%d) to %s" % (len(parts), 64 * SCALE, 64 * SCALE, os.path.relpath(OUT_DIR, ROOT)))
 
 

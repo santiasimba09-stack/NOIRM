@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 10,
+  "modifiers": {
+    "max_chakra": 40,
+    "chakra_regen": 0.25
+  },
+  "talent_bias": {
+    "deep_reserves": 3
+  }
+}

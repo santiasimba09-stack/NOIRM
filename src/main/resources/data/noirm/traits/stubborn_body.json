@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "start_durability": 4,
+    "xp_durability": 0.5
+  }
+}

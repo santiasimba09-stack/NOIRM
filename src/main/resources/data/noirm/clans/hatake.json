@@ -1,0 +1,33 @@
+{
+  "id": "hatake",
+  "name": "Hatake",
+  "weight": 1,
+  "natures": {
+    "lightning": 1.5,
+    "earth": 1.0
+  },
+  "speed_bonus": 1,
+  "awakening": "will",
+  "perks": {
+    "mastery": 0.25,
+    "start_speed": 2,
+    "perception": 0.05,
+    "melee_damage": 0.05,
+    "hound": 1,
+    "max_chakra": -10
+  },
+  "look": {
+    "hair": [
+      "#d8d4cc",
+      "#b8b6b0"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "prodigy": 4,
+    "quick_learner": 3,
+    "strategist": 2,
+    "kindred_spirit": 2,
+    "deep_reserves": 0.5
+  }
+}

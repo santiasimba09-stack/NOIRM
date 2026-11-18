@@ -1,0 +1,13 @@
+{
+  "kind": "mixed",
+  "weight": 6,
+  "modifiers": {
+    "max_health": -4,
+    "damage_taken": 0.1,
+    "jutsu_power": 0.12,
+    "perception": 0.1
+  },
+  "excludes": [
+    "tough_as_nails"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "mixed",
+  "weight": 7,
+  "modifiers": {
+    "melee_damage": 0.12,
+    "resolve": 0.4,
+    "xp_control": -0.3
+  },
+  "excludes": [
+    "easygoing"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "stat_xp": 0.25
+  },
+  "excludes": [
+    "late_bloomer"
+  ]
+}

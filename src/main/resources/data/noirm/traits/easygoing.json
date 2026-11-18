@@ -1,0 +1,12 @@
+{
+  "kind": "mixed",
+  "weight": 5,
+  "modifiers": {
+    "stat_xp": -0.15,
+    "stamina_regen": 0.25,
+    "chakra_regen": 0.15
+  },
+  "excludes": [
+    "hot_blooded"
+  ]
+}

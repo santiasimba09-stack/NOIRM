@@ -1,0 +1,11 @@
+{
+  "cast": "channel",
+  "behavior": "shadow_bind",
+  "rank": "C",
+  "chakra_cost": 14,
+  "cooldown": 180,
+  "max_duration": 140,
+  "params": {
+    "range": 20
+  }
+}

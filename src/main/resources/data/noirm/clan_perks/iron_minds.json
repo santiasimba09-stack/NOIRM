@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "genjutsu_resist": 0.25,
+    "start_willpower": 2
+  },
+  "talent_bias": {
+    "iron_will": 3
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "behavior": "genjutsu",
+  "rank": "C",
+  "chakra_cost": 18,
+  "cooldown": 220,
+  "params": {
+    "range": 14,
+    "stun": 50,
+    "duration": 100
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "yuki",
+  "name": "Yuki",
+  "weight": 1,
+  "natures": {
+    "ice": 1.5,
+    "wind": 1.0,
+    "water": 1.0
+  },
+  "speed_bonus": 1,
+  "kekkei_genkai": "ice_release",
+  "awakening": "will",
+  "perks": {
+    "start_control": 2,
+    "perception": 0.05,
+    "xp_speed": 0.15,
+    "dot_resist": 0.1,
+    "max_health": -2
+  },
+  "look": {
+    "hair": [
+      "#141418",
+      "#1b1c22"
+    ],
+    "eyes": "#3a2a22"
+  },
+  "talent_bias": {
+    "fine_control": 3,
+    "fleet_footed": 2,
+    "healing_hands": 2,
+    "frail_but_precise": 2
+  }
+}

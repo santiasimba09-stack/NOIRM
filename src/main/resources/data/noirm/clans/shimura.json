@@ -1,0 +1,28 @@
+{
+  "id": "shimura",
+  "name": "Shimura",
+  "weight": 1,
+  "natures": {
+    "wind": 1.5
+  },
+  "awakening": "will",
+  "perks": {
+    "genjutsu_resist": 0.15,
+    "start_willpower": 3,
+    "jutsu_cost": -0.05,
+    "crew_respect": -0.2
+  },
+  "look": {
+    "hair": [
+      "#2a2224",
+      "#5a5c62"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "iron_will": 3,
+    "strategist": 3,
+    "cursed_luck": 2,
+    "born_leader": 0.4
+  }
+}
