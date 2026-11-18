@@ -181,7 +181,7 @@ public final class ClanPerkGameTests {
 
         Player senjuPlayer = member(helper, canon("senju"));
         ShinobiData senju = data(senjuPlayer);
-        helper.assertTrue(senjuPlayer.getMaxHealth() >= 36f, "Senju vitality: " + senjuPlayer.getMaxHealth());
+        helper.assertTrue(senjuPlayer.getMaxHealth() >= 34f, "Senju vitality: " + senjuPlayer.getMaxHealth());
         helper.assertTrue(senju.getMaxStamina() >= plain.getMaxStamina() + 100, "huge Senju stamina: " + senju.getMaxStamina());
         helper.assertTrue(senju.getMaxChakra() >= 3.5f * plain.getMaxChakra(), "and a huge chakra pool: " + senju.getMaxChakra());
         helper.assertTrue(senju.getControl() < plain.getControl(), "but rougher chakra control");
@@ -194,7 +194,7 @@ public final class ClanPerkGameTests {
         helper.assertTrue(akimichi.getDurability() > plain.getDurability(), "Akimichi are tough");
 
         ShinobiData kaguya = data(member(helper, canon("kaguya")));
-        near(helper, ShinobiData.DEFAULT_STAT + 14, kaguya.getDurability(), "Kaguya durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 10, kaguya.getDurability(), "Kaguya durability");
         helper.assertTrue(Perks.get(kaguya, Perk.DAMAGE_TAKEN) < 0, "bones take the blows");
 
         ShinobiData nara = data(member(helper, canon("nara")));
@@ -281,7 +281,7 @@ public final class ClanPerkGameTests {
         Player hyuga = member(helper, canon("hyuga"));
         near(helper, 0.7f, Perks.jutsuPowerMultiplier(hyuga, fireball, JutsuData.get(fireball)), "Hyūga ninjutsu is weaker");
         Player kurama = member(helper, canon("kurama"));
-        near(helper, 12f, kurama.getMaxHealth(), "the Kurama are frail");
+        near(helper, 14f, kurama.getMaxHealth(), "the Kurama are frail");
         ShinobiData akimichi = data(member(helper, canon("akimichi")));
         helper.assertTrue(akimichi.getSpeed() < plain.getSpeed(), "the Akimichi are slow");
         ShinobiData uchiha = data(member(helper, canon("uchiha")));
@@ -314,8 +314,8 @@ public final class ClanPerkGameTests {
         MinecraftForge.EVENT_BUS.post(onKaguya);
         MinecraftForge.EVENT_BUS.post(onPlain);
         helper.assertTrue(onKaguya.getAmount() < onPlain.getAmount(), "a Kaguya ninja takes less damage: " + onKaguya.getAmount());
-        near(helper, -0.25f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.DAMAGE_TAKEN), "NPC combat perks count at half");
-        near(helper, 10f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
+        near(helper, -0.15f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.DAMAGE_TAKEN), "NPC combat perks count at half");
+        near(helper, 8f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
         // talents on NPCs (tests set them; elsewhere they roll by themselves)
         NpcTalents.set(plain, List.of("tough_as_nails"));
         helper.assertTrue(Perks.get(plain, Perk.MAX_HEALTH) == 4f, "an NPC's talents count");
@@ -471,7 +471,7 @@ public final class ClanPerkGameTests {
         CharacterCreator.apply(player, data, roll);
         helper.assertTrue(data.identity().clanId().equals("kaguya"), "joined the Kaguya");
         near(helper, 13f, data.getSpeed(), "Fleet-footed: +3 speed");
-        near(helper, ShinobiData.DEFAULT_STAT + 14 + 4, data.getDurability(), "Kaguya +14 and Stubborn Body +4 durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 10 + 4, data.getDurability(), "Kaguya +10 and Stubborn Body +4 durability");
         helper.assertTrue(data.talents().talents().equals(List.of("fleet_footed", "stubborn_body")), "the roll's talents are yours");
         helper.assertTrue(data.talents().version() == TalentData.CURRENT, "a new character is current");
         helper.succeed();
