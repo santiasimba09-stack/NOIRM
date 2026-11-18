@@ -42,7 +42,9 @@ public final class JutsuBehaviors {
             Map.entry("wall", JutsuBehaviors::wall),
             Map.entry("dash_strike", JutsuBehaviors::dashStrike),
             Map.entry("substitution", JutsuBehaviors::substitution),
-            Map.entry("flicker", JutsuBehaviors::flicker),
+            Map.entry("flicker", BodyFlicker::cast),
+            Map.entry("hiraishin", com.noirm.hiraishin.HiraishinJump::cast),
+            Map.entry("formula_mark", com.noirm.hiraishin.HiraishinMarking::cast),
             Map.entry("genjutsu", JutsuBehaviors::genjutsu),
             Map.entry("stream", new Stream()),
             Map.entry("rotation", HyugaTechniques::rotation),
@@ -338,27 +340,6 @@ public final class JutsuBehaviors {
         sound(ctx.caster(), SoundEvents.ARMOR_EQUIP_LEATHER, 1f, 1.6f);
     }
 
-    /** Body Flicker: blink up to {@code range} blocks forward in a puff of smoke, stopping at walls. */
-    private static void flicker(JutsuContext ctx) {
-        LivingEntity caster = ctx.caster();
-        ServerLevel level = ctx.level();
-        Vec3 direction = ctx.flatLook();
-        Vec3 start = caster.position();
-        Vec3 end = start;
-        for (double d = 0.5; d <= ctx.params().range(); d += 0.5) {
-            Vec3 next = start.add(direction.scale(d));
-            if (!level.noCollision(caster, caster.getBoundingBox().move(next.subtract(start)))) {
-                break;
-            }
-            end = next;
-        }
-        JutsuEffects.particlesAt(level, start.add(0, 1, 0), ParticleTypes.POOF, 15, 0.3, 0.02);
-        com.noirm.vfx.Vfx.streak(level, start, end, com.noirm.vfx.Vfx.palette(nature(ctx)));
-        caster.teleportTo(end.x, end.y, end.z);
-        JutsuEffects.particlesAt(level, end.add(0, 1, 0), ParticleTypes.POOF, 10, 0.3, 0.02);
-        sound(caster, SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.8f);
-    }
-
     // ------------------------------------------------------------ genjutsu (Sharingan)
 
     /**
@@ -374,21 +355,30 @@ public final class JutsuBehaviors {
             message(caster, Component.translatable("message.noirm.genjutsu.no_target"));
             return;
         }
-        float ratio = Perception.perception(target) / Perception.perception(caster);
-        float chance = Mth.clamp(1.5f - ratio, 0.15f, 1f) * Math.min(1.5f, ctx.power())
-                * com.noirm.traits.Perks.genjutsuTakeMultiplier(target); // Iron Will, the Kurama, the Yamanaka
+        // A strong mind (perception, and willpower for players) may resist; an open Sharingan sees through
+        // (except the Sharingan's own genjutsu: eye against eye, it comes down to the mind).
+        boolean eyeGenjutsu = ctx.def().requires().isPresent();
+        if (!eyeGenjutsu && SpiritTechniques.seesThrough(target)) {
+            com.noirm.vfx.SpiritVfx.shatter(ctx.level(), target.position().add(0, target.getBbHeight() * 0.85, 0));
+            message(caster, Component.translatable("message.noirm.genjutsu.seen_through", target.getDisplayName()));
+            return;
+        }
+        float chance = SpiritTechniques.genjutsuChance(caster, target, ctx.power());
         DustParticleOptions red = new DustParticleOptions(new Vector3f(0.85f, 0.05f, 0.05f), 1.5f);
         if (caster.getRandom().nextFloat() >= chance) {
             JutsuEffects.particles(target, ParticleTypes.SMOKE, 15, 0.4, 0.02);
             message(caster, Component.translatable("message.noirm.genjutsu.resisted", target.getDisplayName()));
             return;
         }
-        CombatSystem.stun(target, p.stun());
+        // The scene in the victim's mind (data/noirm/genjutsu): the world changes around them.
+        boolean scene = com.noirm.genjutsu.GenjutsuMinds.enter(caster, target, ctx.id(), p.duration(), null);
+        boolean mob = target instanceof Mob;
+        CombatSystem.stun(target, scene && mob ? com.noirm.genjutsu.GenjutsuMinds.MOB_STUN_TICKS : p.stun());
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, p.duration(), 3, false, false));
-        if (target instanceof Mob mob) {
-            mob.setTarget(null);
+        if (target instanceof Mob m && !scene) {
+            m.setTarget(null);
         }
-        if (target instanceof Player) {
+        if (target instanceof Player && !scene) {
             target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, p.duration(), 0, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, p.stun(), 0, false, false));
         }

@@ -1,0 +1,39 @@
+{
+  "jutsu": [
+    "noirm:yin/false_surroundings"
+  ],
+  "duration": 120,
+  "sky": {
+    "top": "none",
+    "horizon": "none",
+    "fog": "#3A3448",
+    "fog_start": 10,
+    "fog_end": 42
+  },
+  "tint": "#40306A",
+  "tint_alpha": 0.06,
+  "figures": [
+    {
+      "type": "caster",
+      "count": 1,
+      "motion": "stand"
+    },
+    {
+      "type": "phantom",
+      "count": 2,
+      "radius": 5,
+      "motion": "circle",
+      "color": "#14101C"
+    }
+  ],
+  "sounds": {
+    "drone": true,
+    "whispers": 90,
+    "muffle": 0.7,
+    "pitch": 0.95
+  },
+  "hud_flicker": 0.08,
+  "mob": "attack_phantoms",
+  "hide_caster": true,
+  "shatter": "#E8E0FF"
+}

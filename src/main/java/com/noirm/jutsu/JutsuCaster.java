@@ -796,6 +796,9 @@ public final class JutsuCaster {
                 }
             }
         }
+        if ("hiraishin".equals(def.behavior())) {
+            cost *= com.noirm.hiraishin.HiraishinJump.costFactor(caster); // cheaper in the flow of a chain
+        }
         if (caster instanceof Player) {
             cost *= com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.CHAKRA_COST); // config: difficulty.chakraCost
         }
@@ -803,6 +806,9 @@ public final class JutsuCaster {
     }
 
     public static int cooldown(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
+        if ("hiraishin".equals(def.behavior())) {
+            return com.noirm.hiraishin.HiraishinJump.cooldownTicks(caster, def); // −15% per ★, the chain's reset
+        }
         int mastery = caster instanceof Player player
                 ? ShinobiCapability.get(player).map(d -> d.jutsu().masteryLevel(id)).orElse(0) : 0;
         return Math.round(def.cooldown() * (1f - 0.08f * mastery));

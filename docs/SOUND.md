@@ -103,6 +103,12 @@ About 3.3 MB for all 54 sounds (152 files), well under the 8 MB budget. Vorbis q
 | `big.genjutsu` | Warped wavering tones, ring-modulated, with a reversed tail | Genjutsu (Sharingan, Mangekyō, spirit techniques) |
 | `big.cloak` | A rising roaring surge that bursts into being | Susanoo forming, the beast cloak wrapping you (first tail), the beast taking over |
 | `big.sharingan` | A sharp piercing metallic ring and a "shing" | Sharingan opening, growing a tomoe, awakening, Mangekyō |
+| `space.hiraishin` | A razor transient, a bright metal glint gliding down, a tiny air snap; no whoosh (no travel) | Both ends of a Flying Raijin jump, a redirect, a recall |
+| `space.mark` | A dry brush tick on paper and a faint shimmering ring | A formula mark written |
+| `space.flicker` | A hard snap of displaced air, a cloth flap and a puff | Both ends of a Body Flicker |
+| `genjutsu.heartbeat` / `whispers` / `crows` | A slow heartbeat from inside the skull; wordless formant-filtered breath, reversed; rough caws and wing beats | Inside genjutsu scenes (client, `GenjutsuSceneRenderer`) |
+| `genjutsu.drone` | A low slowly beating drone (seamless loop) | Under a genjutsu scene |
+| `genjutsu.shatter` | A glass crack and a cascade of ringing shards | A genjutsu broken (Kai, a friend, a strong mind) |
 | `ui.open` / `ui.close` / `ui.tab` | A soft paper slide up / down / a short slide and tick | Every screen through the UI kit (`ScreenMotion`) |
 | `ui.hover` / `ui.click` | The tiniest wooden tick / a small firm wooden knock | Hovering (`HoverTracker`) / pressing buttons (`UiSounds.click`) |
 | `ui.rank_up` | Two taiko hits and a rising chord crowned by a bell | Promotions (exams), unlocking a nature |

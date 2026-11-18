@@ -127,6 +127,14 @@ public final class CommandGuide {
                 .add("mangekyo_ability", "/noirm mangekyo ability <left|right> <ability>", "/noirm mangekyo ability left amaterasu", true)
                 .add("mangekyo_items", "/noirm mangekyo <eye <1-3>|eyes>", "/noirm mangekyo eyes", true)
                 .add("mangekyo_npc", "/noirm mangekyo npc", "/noirm mangekyo npc", true);
+        section("spacetime")
+                .add("hiraishin", "/noirm hiraishin", "/noirm hiraishin", false)
+                .add("marks", "/noirm hiraishin marks", "/noirm hiraishin marks", false)
+                .add("clear", "/noirm hiraishin clear", "/noirm hiraishin clear", false)
+                .add("give", "/noirm hiraishin give", "/noirm hiraishin give", true)
+                .add("legend", "/noirm hiraishin legend", "/noirm hiraishin legend", true)
+                .add("genjutsu_list", "/noirm genjutsu list", "/noirm genjutsu list", false)
+                .add("genjutsu_test", "/noirm genjutsu test <scene> [targets]", "/noirm genjutsu test noirm:tsukuyomi", true);
         section("beast")
                 .add("show", "/noirm beast", "/noirm beast", false)
                 .add("seal", "/noirm biju seal <1-9>", "/noirm biju seal 9", true)

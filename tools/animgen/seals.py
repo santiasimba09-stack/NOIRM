@@ -170,6 +170,9 @@ SEQUENCES = {
     "doton/earth_flow_rampart": ["tiger", "hare", "boar", "dog", "ox"],
     "doton/added_weight_rock": ["ram", "boar", "ox"],
     "doton/falling_mountain": ["ram", "dog", "boar", "ox", "tiger"],
+    # Space-time: the formula is written with one seal; the Flying Raijin needs one (none once mastered).
+    "space_time/formula_mark": ["ram"],
+    "space_time/flying_raijin": ["ram"],
 }
 
 LEGS = dict(left_leg=(-16, 0, -9, 24), right_leg=(14, 0, 11, 22), body=dict(pos=(0, -1.2, 0)))  # a wide, grounded base

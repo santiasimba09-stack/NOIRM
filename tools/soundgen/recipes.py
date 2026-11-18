@@ -834,6 +834,135 @@ def ambient_sanctuary(rng, v):
     return loopify(highpass(x, 30, circular=True))
 
 
+# ------------------------------------------------------------------ space-time and genjutsu (2026-11-18)
+
+def hiraishin_flash(rng, v):
+    """The Flying Raijin: no travel, so no whoosh. A crisp 'tsh-ing': a razor transient, a bright
+    metallic glint gliding down a little, a tiny air snap and almost no tail. Gone in a blink."""
+    p = vary(rng, 0.03)
+    dur = 0.55
+    n = samples(dur)
+    edge = click(rng, 0.003, 5000, 16000)
+    snap = sweep_filter(white(0.07, rng), np.geomspace(9000, 2500, samples(0.07)), q=3) * env_ad(0.07, 0.001, 0.012)
+    f = 3100 * p
+    glint = modal([f, f * 1.47, f * 2.12, f * 3.3], [0.16, 0.11, 0.07, 0.04], [1, 0.55, 0.35, 0.18], dur, rng)
+    zip_ = sine(glide(5200 * p, 1900 * p, 0.09)) * env_ad(0.09, 0.001, 0.025)
+    body = thump(260 * p, 120 * p, 0.12, 0.025)
+    x = np.zeros(n)
+    place(x, edge, 0, 0.9)
+    place(x, snap, 0, 0.55)
+    place(x, zip_, samples(0.002), 0.35)
+    place(x, glint, samples(0.004), 0.38)
+    place(x, body, 0, 0.5)
+    return reverb(x, rng, 0.5, 0.12, wet=0.12, brightness=9000)
+
+
+def hiraishin_mark(rng, v):
+    """A formula mark set down: a dry brush 'tk' on paper and a faint shimmering ring of chakra."""
+    p = vary(rng, 0.05)
+    dur = 0.7
+    tick = bandpass(white(0.03, rng), 1200, 6000) * env_ad(0.03, 0.001, 0.006)
+    brush = bandpass(pink(0.12, rng), 2000, 7000) * env_ad(0.12, 0.01, 0.04) * 0.4
+    f = 1760 * p
+    shimmer = fm(f, 1.5, 0.6, dur, env_ad(dur, 0.002, 0.15)) * env_ad(dur, 0.01, 0.2) * (0.7 + 0.3 * sine(11, dur))
+    x = np.zeros(samples(dur))
+    place(x, tick, 0, 0.8)
+    place(x, brush, 0, 0.6)
+    place(x, shimmer, samples(0.02), 0.22)
+    return reverb(x, rng, 0.8, 0.25, wet=0.25, brightness=7000)
+
+
+def flicker_burst(rng, v):
+    """The Body Flicker: a short hard snap of displaced air, a cloth flap and a puff, no long whoosh."""
+    p = vary(rng, 0.06)
+    dur = 0.45
+    air = whoosh(rng, 0.16, 500 * p, 5000 * p, peak_at=0.25, q=1.2)
+    flap = bandpass(white(0.05, rng), 300, 2500) * env_ad(0.05, 0.002, 0.012)
+    puff = lowpass(brown(0.3, rng), 600) * env_ad(0.3, 0.01, 0.08)
+    x = np.zeros(samples(dur))
+    place(x, click(rng, 0.004, 1500, 9000), 0, 0.5)
+    place(x, air, 0, 0.9)
+    place(x, flap, samples(0.01), 0.5)
+    place(x, puff, samples(0.03), 0.45)
+    return reverb(x, rng, 0.4, 0.1, wet=0.1, brightness=6000)
+
+
+def genjutsu_heartbeat(rng, v):
+    """Inside the illusion: a slow, heavy heartbeat heard from inside the skull, a little too low."""
+    p = vary(rng, 0.04)
+    dur = 1.2
+    x = np.zeros(samples(dur))
+    for at, g in ((0.0, 1.0), (0.26, 0.65)):
+        place(x, thump(62 * p, 34 * p, 0.32, 0.07), samples(at), g)
+        place(x, lowpass(brown(0.1, rng), 200) * env_ad(0.1, 0.004, 0.03), samples(at), g * 0.3)
+    return reverb(lowpass(x, 500), rng, 0.9, 0.3, wet=0.3, brightness=800)
+
+
+def genjutsu_whispers(rng, v):
+    """Whispers with no words: breathy formant-filtered noise, panning in and out, reversed at the end."""
+    dur = 3.2
+    t = t_axis(dur)
+    x = np.zeros(samples(dur))
+    for _ in range(7):
+        d = rng.uniform(0.25, 0.7)
+        breath = white(d, rng)
+        f1 = rng.uniform(700, 1400)
+        voice = biquad_bandpass(breath, f1, 6) + 0.6 * biquad_bandpass(breath, f1 * rng.uniform(1.9, 2.6), 8)
+        voice *= env_points(d, [(0, 0), (d * 0.3, 1), (d * 0.6, 0.6), (d, 0)])
+        voice *= 0.6 + 0.4 * np.abs(smooth_random(d, rng, 18))
+        place(x, voice, samples(rng.uniform(0, dur - d)), rng.uniform(0.3, 0.8))
+    x *= env_swell(dur, 1.6, 1.5, 0.3)
+    tail = reverb(x, rng, 1.6, 0.6, wet=0.6, brightness=3000)[:len(x)][::-1] * 0.35
+    return reverb(mix((x, 1.0), (tail, 1.0)), rng, 1.4, 0.5, wet=0.35, brightness=3500)
+
+
+def genjutsu_crows(rng, v):
+    """A flock of crows in the illusion: rough, grainy caws and a storm of wing beats."""
+    dur = 2.6
+    x = np.zeros(samples(dur))
+    for _ in range(int(rng.integers(4, 7))):
+        d = rng.uniform(0.18, 0.32)
+        f = glide(rng.uniform(520, 700), rng.uniform(380, 480), d)
+        caw = saw(f * (1 + 0.04 * sine(28, d)), harmonics=25)
+        caw = biquad_bandpass(caw, rng.uniform(1100, 1500), 2.5) + 0.4 * saturate(caw * 0.5, 3)
+        caw *= env_points(d, [(0, 0), (0.02, 1), (d * 0.7, 0.7), (d, 0)])
+        caw = caw * (0.75 + 0.25 * np.abs(white(d, rng)))
+        place(x, caw, samples(rng.uniform(0, dur - d)), rng.uniform(0.25, 0.6))
+    wings = grains(dur, rng, 30, lambda r: lowpass(white(0.05, r), 1800) * env_ad(0.05, 0.004, 0.015) * r.uniform(0.2, 0.6))
+    x = mix((x, 1.0), (wings, 0.5))
+    return reverb(x, rng, 1.4, 0.5, wet=0.3, brightness=4000)
+
+
+def genjutsu_shatter(rng, v):
+    """The illusion breaks like glass: a bright crack, a cascade of falling shards, the world rushing back."""
+    p = vary(rng, 0.04)
+    dur = 1.6
+    n = samples(dur)
+    crack_ = click(rng, 0.006, 2500, 15000)
+    f = 2900 * p
+    shards = grains(dur, rng, 60, lambda r: modal([r.uniform(2500, 7000) * p, r.uniform(5000, 11000) * p], [0.05, 0.03], [1, 0.4], 0.12, r) * r.uniform(0.1, 0.5),
+                    density_env=lambda u: np.exp(-u * 3.0))
+    ring = modal([f, f * 1.33, f * 1.81], [0.4, 0.3, 0.2], [1, 0.6, 0.3], dur, rng)
+    rush = sweep_filter(pink(dur, rng), np.geomspace(300, 4000, n), q=0.8) * env_points(dur, [(0, 0), (0.15, 0.6), (0.6, 0.3), (dur, 0)])
+    x = mix((crack_, 1.0), (shards, 0.6), (ring, 0.25), (rush, 0.35))
+    return reverb(x, rng, 1.2, 0.4, wet=0.25, brightness=9000)
+
+
+def genjutsu_drone(rng, v):
+    """The illusion's world (a seamless loop): a low, slowly beating drone with a reversed shimmer."""
+    dur = 8.0
+    t = t_axis(dur)
+    x = 0
+    for f, a in ((41, 1.0), (61.5, 0.5), (82, 0.35), (123, 0.15)):
+        fq = round(f * dur) / dur
+        fb = round((f * 1.012) * dur) / dur
+        x = x + a * (np.sin(2 * np.pi * fq * t) + 0.7 * np.sin(2 * np.pi * fb * t))
+    air = bandpass(pink(dur, rng, circular=True), 200, 1200, circular=True) * 0.25
+    x = x * 0.2 + air * (0.6 + 0.4 * np.sin(2 * np.pi * (2 / dur) * t))
+    x = reverb(x, rng, 2.0, 0.8, wet=0.4, brightness=1500, circular=True)
+    return loopify(highpass(x, 25, circular=True))
+
+
 # ------------------------------------------------------------------ the list
 # event id -> (recipe, variants, peak dBFS, loop?)
 # Peaks: hits and impacts loud (about -1 dB, like vanilla's), UI very quiet, ambience low.
@@ -884,6 +1013,14 @@ SOUNDS = {
     "big.genjutsu": (big_genjutsu, 2, -2.5, False),
     "big.cloak": (big_cloak, 2, -1.0, False),
     "big.sharingan": (big_sharingan, 2, -2.5, False),
+    "space.hiraishin": (hiraishin_flash, 3, -1.0, False),
+    "space.mark": (hiraishin_mark, 3, -6.0, False),
+    "space.flicker": (flicker_burst, 3, -2.5, False),
+    "genjutsu.heartbeat": (genjutsu_heartbeat, 2, -3.0, False),
+    "genjutsu.whispers": (genjutsu_whispers, 2, -6.0, False),
+    "genjutsu.crows": (genjutsu_crows, 2, -3.0, False),
+    "genjutsu.shatter": (genjutsu_shatter, 2, -2.0, False),
+    "genjutsu.drone": (genjutsu_drone, 2, -8.0, True),
     "ui.open": (ui_open, 2, -14.0, False),
     "ui.close": (ui_close, 2, -15.0, False),
     "ui.hover": (ui_hover, 3, -20.0, False),

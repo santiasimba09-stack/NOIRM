@@ -25,7 +25,7 @@ public final class CombatKeys {
     public static final KeyMapping GRAB = key("grab", GLFW.GLFW_KEY_C);
     public static final KeyMapping STYLE = key("style", GLFW.GLFW_KEY_H);
     /** Opens the style picker (every style, how each plays; choose unarmed and weapon styles). */
-    public static final KeyMapping STYLE_PICKER = key("style_picker", GLFW.GLFW_KEY_Y);
+    public static final KeyMapping STYLE_PICKER = key("style_picker", GLFW.GLFW_KEY_I);
 
     private CombatKeys() {}
 

@@ -81,6 +81,15 @@ public final class NoirmSounds {
     public static final RegistryObject<SoundEvent> GENJUTSU = register("big.genjutsu");
     public static final RegistryObject<SoundEvent> CLOAK = register("big.cloak");
     public static final RegistryObject<SoundEvent> SHARINGAN = register("big.sharingan");
+    // Space-time (Flying Raijin, Body Flicker) and genjutsu scenes
+    public static final RegistryObject<SoundEvent> HIRAISHIN = register("space.hiraishin");
+    public static final RegistryObject<SoundEvent> HIRAISHIN_MARK = register("space.mark");
+    public static final RegistryObject<SoundEvent> FLICKER = register("space.flicker");
+    public static final RegistryObject<SoundEvent> GENJUTSU_HEARTBEAT = register("genjutsu.heartbeat");
+    public static final RegistryObject<SoundEvent> GENJUTSU_WHISPERS = register("genjutsu.whispers");
+    public static final RegistryObject<SoundEvent> GENJUTSU_CROWS = register("genjutsu.crows");
+    public static final RegistryObject<SoundEvent> GENJUTSU_SHATTER = register("genjutsu.shatter");
+    public static final RegistryObject<SoundEvent> GENJUTSU_DRONE = register("genjutsu.drone");
     // UI
     public static final RegistryObject<SoundEvent> UI_OPEN = register("ui.open");
     public static final RegistryObject<SoundEvent> UI_CLOSE = register("ui.close");

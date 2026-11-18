@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -200,7 +201,7 @@ public final class SpiritTechniques {
 
     /** Under any genjutsu Kai can break: these illusions, or the dazed, staggered state of the eye genjutsu. */
     public static boolean underGenjutsu(LivingEntity entity) {
-        if (CAUGHT.containsKey(entity) || entity.hasEffect(MobEffects.CONFUSION)) {
+        if (CAUGHT.containsKey(entity) || entity.hasEffect(MobEffects.CONFUSION) || com.noirm.genjutsu.GenjutsuMinds.inScene(entity)) {
             return true;
         }
         MobEffectInstance slow = entity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
@@ -236,6 +237,7 @@ public final class SpiritTechniques {
         if (!underGenjutsu(victim)) {
             return false;
         }
+        com.noirm.genjutsu.GenjutsuMinds.release(victim, true); // the scene in their mind shatters like glass
         Caught caught = CAUGHT.remove(victim);
         if (caught != null && caught.caster.isAlive()) {
             JutsuBehaviors.message(caught.caster, Component.translatable("message.noirm.genjutsu.woken", victim.getDisplayName()));
@@ -302,7 +304,11 @@ public final class SpiritTechniques {
             JutsuBehaviors.sound(target, com.noirm.sound.NoirmSounds.WOOD_BURST.get(), 1f, 0.71f);
         }
         CAUGHT.put(target, new Caught(caster, kind, now, now + ticks, damage, posture, decoy, misses));
-        vision(target, SpiritPackets.GENJUTSU, ticks + (kind == Illusion.TREE ? 10 : 0));
+        // The scene in the victim's mind (data/noirm/genjutsu); the old violet tint if there's none.
+        ResourceLocation scene = Noirm.id(kind == Illusion.TREE ? "yin/tree_binding_death" : "yin/false_surroundings");
+        if (!com.noirm.genjutsu.GenjutsuMinds.enter(caster, target, scene, ticks + (kind == Illusion.TREE ? 10 : 0), decoy)) {
+            vision(target, SpiritPackets.GENJUTSU, ticks + (kind == Illusion.TREE ? 10 : 0));
+        }
         SpiritVfx.takeHold(level, target);
         if (kind == Illusion.MIRAGE && target instanceof Mob mob) {
             turnOnAllies(mob, caster);
@@ -365,6 +371,7 @@ public final class SpiritTechniques {
 
     private static void endTree(LivingEntity victim, Caught caught, boolean strike) {
         CAUGHT.remove(victim);
+        com.noirm.genjutsu.GenjutsuMinds.release(victim, strike); // the phantom's blade breaks the tree like glass
         vision(victim, SpiritPackets.RELEASE, 0);
         if (strike) {
             treeStrike(victim, caught);
@@ -977,6 +984,9 @@ public final class SpiritTechniques {
     // ================================================================ shared
 
     static void vision(LivingEntity entity, int kind, int ticks) {
+        if (kind == SpiritPackets.RELEASE) {
+            com.noirm.genjutsu.GenjutsuMinds.release(entity, false); // the scene fades (a break already shattered it)
+        }
         if (entity instanceof ServerPlayer player) {
             NoirmNetwork.sendToPlayer(player, new SpiritPackets.Vision(kind, ticks));
         }
@@ -1023,6 +1033,7 @@ public final class SpiritTechniques {
         if (attacker == caught.caster) {
             if (caught.kind == Illusion.TREE) {
                 CAUGHT.remove(victim);
+                com.noirm.genjutsu.GenjutsuMinds.release(victim, true);
                 vision(victim, SpiritPackets.RELEASE, 0);
                 event.setAmount(event.getAmount() + caught.damage);
                 CombatSystem.addPostureDamage(victim, caught.posture);

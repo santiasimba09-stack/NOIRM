@@ -1,0 +1,18 @@
+{
+  "jutsu": [
+    "noirm:mangekyo/kotoamatsukami"
+  ],
+  "duration": 300,
+  "tint": "#300000",
+  "tint_alpha": 0.04,
+  "sounds": {
+    "drone": false,
+    "whispers": 200,
+    "muffle": 0.9,
+    "pitch": 1.0
+  },
+  "hud_flicker": 0.04,
+  "mob": "turn_on_allies",
+  "swap_allies": true,
+  "shatter": "#FFFFFF"
+}

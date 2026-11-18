@@ -1,0 +1,54 @@
+{
+  "jutsu": [
+    "noirm:sharingan/genjutsu"
+  ],
+  "duration": 100,
+  "sky": {
+    "top": "#120000",
+    "horizon": "#7A0808",
+    "fog": "#3A0204",
+    "fog_start": 3,
+    "fog_end": 15
+  },
+  "ground": {
+    "kind": "water",
+    "color": "#0A0204",
+    "rim": "#A01018",
+    "radius": 28
+  },
+  "tint": "#600000",
+  "tint_alpha": 0.1,
+  "figures": [
+    {
+      "type": "crow",
+      "count": 36,
+      "radius": 7,
+      "height": 1.5,
+      "motion": "swarm",
+      "color": "#FFFFFF"
+    },
+    {
+      "type": "caster",
+      "count": 3,
+      "radius": 5,
+      "motion": "circle"
+    },
+    {
+      "type": "eye",
+      "count": 7,
+      "radius": 34,
+      "height": 16,
+      "color": "#FF2A20"
+    }
+  ],
+  "sounds": {
+    "drone": true,
+    "heartbeat": 30,
+    "crows": 45,
+    "muffle": 0.35,
+    "pitch": 0.85
+  },
+  "hud_flicker": 0.2,
+  "mob": "wander",
+  "shatter": "#FFD8D8"
+}

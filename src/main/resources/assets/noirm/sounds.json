@@ -605,6 +605,83 @@
       }
     ]
   },
+  "space.hiraishin": {
+    "subtitle": "subtitles.noirm.space.hiraishin",
+    "sounds": [
+      {
+        "name": "noirm:space/hiraishin_1",
+        "attenuation_distance": 40
+      },
+      {
+        "name": "noirm:space/hiraishin_2",
+        "attenuation_distance": 40
+      },
+      {
+        "name": "noirm:space/hiraishin_3",
+        "attenuation_distance": 40
+      }
+    ]
+  },
+  "space.mark": {
+    "subtitle": "subtitles.noirm.space.mark",
+    "sounds": [
+      "noirm:space/mark_1",
+      "noirm:space/mark_2",
+      "noirm:space/mark_3"
+    ]
+  },
+  "space.flicker": {
+    "subtitle": "subtitles.noirm.space.flicker",
+    "sounds": [
+      {
+        "name": "noirm:space/flicker_1",
+        "attenuation_distance": 24
+      },
+      {
+        "name": "noirm:space/flicker_2",
+        "attenuation_distance": 24
+      },
+      {
+        "name": "noirm:space/flicker_3",
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "genjutsu.heartbeat": {
+    "subtitle": "subtitles.noirm.genjutsu.heartbeat",
+    "sounds": [
+      "noirm:genjutsu/heartbeat_1",
+      "noirm:genjutsu/heartbeat_2"
+    ]
+  },
+  "genjutsu.whispers": {
+    "subtitle": "subtitles.noirm.genjutsu.whispers",
+    "sounds": [
+      "noirm:genjutsu/whispers_1",
+      "noirm:genjutsu/whispers_2"
+    ]
+  },
+  "genjutsu.crows": {
+    "subtitle": "subtitles.noirm.genjutsu.crows",
+    "sounds": [
+      "noirm:genjutsu/crows_1",
+      "noirm:genjutsu/crows_2"
+    ]
+  },
+  "genjutsu.shatter": {
+    "subtitle": "subtitles.noirm.genjutsu.shatter",
+    "sounds": [
+      "noirm:genjutsu/shatter_1",
+      "noirm:genjutsu/shatter_2"
+    ]
+  },
+  "genjutsu.drone": {
+    "subtitle": "subtitles.noirm.genjutsu.drone",
+    "sounds": [
+      "noirm:genjutsu/drone_1",
+      "noirm:genjutsu/drone_2"
+    ]
+  },
   "ui.open": {
     "subtitle": "subtitles.noirm.ui.open",
     "sounds": [

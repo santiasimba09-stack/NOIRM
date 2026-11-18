@@ -1,0 +1,5 @@
+{
+  "cast": "tap", "behavior": "formula_mark", "rank": "B", "quick": true,
+  "chakra_cost": 3, "cooldown": 6,
+  "params": { "range": 6 }
+}

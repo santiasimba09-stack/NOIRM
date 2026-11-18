@@ -142,6 +142,11 @@ public final class Legendary {
         for (ResourceLocation id : signatures(entry.kind, ninja.natures().keySet(), entry.seed)) {
             ninja.teach(id);
         }
+        if (entry.kind == Kind.LIGHTNING) {
+            // The lightning legends are flashes: they carry the Flying Raijin (hiraishin/HiraishinNpc).
+            ninja.teach(com.noirm.hiraishin.HiraishinLearning.FORMULA);
+            ninja.teach(com.noirm.hiraishin.HiraishinLearning.RAIJIN);
+        }
     }
 
     /**

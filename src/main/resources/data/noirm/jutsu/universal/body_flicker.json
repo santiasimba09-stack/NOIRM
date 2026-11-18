@@ -1,5 +1,5 @@
 {
   "cast": "tap", "behavior": "flicker", "rank": "D", "starter": true, "quick": true,
-  "chakra_cost": 10, "cooldown": 40,
-  "params": { "range": 7 }
+  "chakra_cost": 10, "cooldown": 14,
+  "params": { "range": 8 }
 }

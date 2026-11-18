@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "29";
+    private static final String PROTOCOL_VERSION = "30";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -133,6 +133,8 @@ public final class NoirmNetwork {
         id = com.noirm.workshop.WorkshopPackets.register(CHANNEL, id); // the jutsu workshop and the training screen
         id = com.noirm.pills.PillPackets.register(CHANNEL, id); // foods and pills: effects, cooldowns, the apothecary
         id = com.noirm.combat.StylePackets.register(CHANNEL, id); // the style picker (protocol 28)
+        id = com.noirm.genjutsu.GenjutsuPackets.register(CHANNEL, id); // genjutsu scenes in the victim's mind
+        id = com.noirm.hiraishin.HiraishinPackets.register(CHANNEL, id); // the Flying Raijin, its marks, the Body Flicker
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

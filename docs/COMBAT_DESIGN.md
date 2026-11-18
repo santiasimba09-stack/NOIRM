@@ -525,7 +525,7 @@ The new styles are learned in play (`"learn": {"required": true}`); the old four
 - **Clans:** `StyleSystem.grant(player, styleId)` is the hook for the clan system ("your clan passes its style on").
 - `/noirm style learn <style|all>` (cheats). A learned style ignores its taijutsu requirement.
 
-### Choosing: the style picker (Y)
+### Choosing: the style picker (I; was Y, moved because the Flying Raijin marks with Y)
 Every playable style in two tabs (Unarmed, Weapons): its name, a one-line description, chips for footwork, rhythm,
 guard, dodge, speed, parry and the hooks, how you learned it or why it's locked, and **Use** (or click a row twice).
 A weapon style is picked for every weapon it lists; "<weapon>: its own moves" goes back to the weapon's own moveset.
