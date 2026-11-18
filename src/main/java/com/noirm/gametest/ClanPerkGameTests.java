@@ -318,7 +318,7 @@ public final class ClanPerkGameTests {
         near(helper, 8f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
         // talents on NPCs (tests set them; elsewhere they roll by themselves)
         NpcTalents.set(plain, List.of("tough_as_nails"));
-        helper.assertTrue(Perks.get(plain, Perk.MAX_HEALTH) == 4f, "an NPC's talents count");
+        helper.assertTrue(Math.abs(Perks.get(plain, Perk.MAX_HEALTH) - 4f * Perks.NPC_COMBAT_SHARE) < 0.01f, "an NPC's talents count (combat perks at the NPC share)");
         // clan jutsu in NPC sets
         Map<Nature, Float> earth = Map.of(Nature.EARTH, 1.0f);
         boolean bones = false;
