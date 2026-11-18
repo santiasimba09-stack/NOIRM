@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:sumo_sumo_brace",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 18,
+    "range": 2.3,
+    "arc": 110,
+    "knockback": 0.9,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.45
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari",
+    "grab": "noirm:sumo/belt_grab"
+  },
+  "effects": {
+    "armour": 0.6
+  }
+}

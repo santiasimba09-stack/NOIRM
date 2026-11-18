@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:blade_iai_sheathing_cut",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 9,
+    "posture": 30,
+    "range": 3.3,
+    "arc": 120,
+    "knockback": 0.8,
+    "hitstun": 16,
+    "hitstop": 4,
+    "shake": 0.85,
+    "lunge": 0.4,
+    "guard_break": true,
+    "knockdown": true,
+    "ender": "knockdown"
+  },
+  "next": {
+    "light": "noirm:blade_iai/draw_cut"
+  }
+}

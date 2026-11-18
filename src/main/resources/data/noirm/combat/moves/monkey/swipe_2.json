@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:monkey_swipe_2",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 4,
+    "cancel_after": 1
+  },
+  "hit": {
+    "damage": 2.5,
+    "posture": 8,
+    "range": 2.5,
+    "arc": 130,
+    "knockback": 0.1,
+    "hitstun": 6,
+    "hitstop": 1,
+    "shake": 0.25,
+    "lunge": 0.3
+  },
+  "next": {
+    "light": "noirm:monkey/tail_sweep",
+    "heavy": "noirm:monkey/rising_monkey"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:leaf_hurricane_rising_hurricane",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 18,
+    "range": 2.8,
+    "arc": 120,
+    "knockback": 0.1,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.65,
+    "lift": 0.8,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:leaf_hurricane/hurricane_jab"
+  }
+}

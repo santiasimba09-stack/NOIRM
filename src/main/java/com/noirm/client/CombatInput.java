@@ -47,6 +47,11 @@ public final class CombatInput {
         while (CombatKeys.STYLE.consumeClick()) {
             NoirmNetwork.sendToServer(new CombatInputPackets.CycleStyle());
         }
+        while (CombatKeys.STYLE_PICKER.consumeClick()) {
+            if (minecraft.screen == null) {
+                NoirmNetwork.sendToServer(new com.noirm.combat.StylePackets.Open());
+            }
+        }
         if (!ClientCombat.isCombatMode()) {
             while (CombatKeys.DODGE.consumeClick()) { }
             while (CombatKeys.GRAB.consumeClick()) { }

@@ -99,9 +99,11 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
      * @param service   the service the master performs, or "" (a service is never "learned": ask again any time)
      * @param rank      the player rank needed ({@code genin}, {@code chunin}, {@code jonin}…), or "" for none
      * @param ryo       the price in ryo (paid when you learn it, or each time for a service)
+     * @param style     the fighting style it teaches (null for none; see {@code combat.StyleSystem})
      */
     public record Lesson(String id, ResourceLocation jutsu, float taijutsu, float speed, boolean test, List<String> after,
-                         Map<ResourceLocation, Integer> mastery, float control, String perk, String service, String rank, int ryo) {
+                         Map<ResourceLocation, Integer> mastery, float control, String perk, String service, String rank, int ryo,
+                         ResourceLocation style) {
         public static final Codec<Lesson> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(Lesson::id),
                 ResourceLocation.CODEC.optionalFieldOf("jutsu").forGetter(l -> Optional.ofNullable(l.jutsu())),
@@ -114,9 +116,15 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
                 Codec.STRING.optionalFieldOf("perk", "").forGetter(Lesson::perk),
                 Codec.STRING.optionalFieldOf("service", "").forGetter(Lesson::service),
                 Codec.STRING.optionalFieldOf("rank", "").forGetter(Lesson::rank),
-                Codec.intRange(0, 1_000_000).optionalFieldOf("ryo", 0).forGetter(Lesson::ryo)
-        ).apply(i, (id, jutsu, taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo) ->
-                new Lesson(id, jutsu.orElse(null), taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo)));
+                Codec.intRange(0, 1_000_000).optionalFieldOf("ryo", 0).forGetter(Lesson::ryo),
+                ResourceLocation.CODEC.optionalFieldOf("style").forGetter(l -> Optional.ofNullable(l.style()))
+        ).apply(i, (id, jutsu, taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo, style) ->
+                new Lesson(id, jutsu.orElse(null), taijutsu, speed, test, after, mastery, control, perk, service, rank, ryo, style.orElse(null))));
+
+        /** Whether this lesson teaches a fighting style. */
+        public boolean teachesStyle() {
+            return style != null;
+        }
 
         /** Whether this lesson teaches a jutsu (not a perk or a service). */
         public boolean teachesJutsu() {
@@ -136,6 +144,9 @@ public record MasterDefinition(String name, String greeting, Optional<ResourceLo
         public String titleKey() {
             if (jutsu != null) {
                 return com.noirm.dojutsu.Sharingan.jutsuKey(jutsu);
+            }
+            if (style != null) {
+                return com.noirm.combat.StyleSystem.translationKey(style);
             }
             return isService() ? "service.noirm." + service : "perk.noirm." + perk;
         }

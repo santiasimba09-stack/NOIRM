@@ -452,3 +452,95 @@ Screenshots: `docs/screenshots/cr-armor-tooltip.jpg` (the tooltip), `cr-armor-sl
 the durability bar, zoomed), `cr-reinforcement-hud-hit.jpg` (the HUD line and a reinforced strike). No packets
 changed: the HUD works the reinforcement out from the stats and chakra it already receives, and the pools travel
 on the items themselves.
+
+## Fighting styles (the styles wave, owner's brief 2026-11-18)
+The owner: "much more styles of fighting, play with the stances, movement, guards". Fourteen new styles: ten
+unarmed and four weapon styles. Each one has its own stance and 2–3 sub-stances, footwork, guard, dodge, a 4–5 hit
+light string to an ender, a counter (the dodge counter), a dash strike and a guard break. Each one also *plays*
+differently, through a few small, data-driven hooks. Built on the existing engine (snap key poses, sub-stances,
+strings, counters, dash strikes, guard breaks); nothing was replaced.
+
+**Where it lives.** A style JSON (`data/noirm/combat/styles/<style>.json`) gained four optional objects:
+`identity` (how it plays), `learn`, `weapons` (a weapon style) and `npc` (who favours it). A move JSON gained an
+optional `effects` object. Every number is in the JSON and defaults to the old behaviour, so the Academy, Brawler,
+Strong Fist and Gentle Fist play exactly as before. Code: `combat/StyleIdentity` (the schema), `StyleSystem`
+(knowing, choosing, NPC rolls, the `grant` hook), `StyleLearning` (watching), `StyleItems` (the scroll),
+`StylePackets` + `client/StylePickerScreen` (the picker); the rules sit in `CombatSystem` next to the old ones.
+The moves, styles and animations are written by `tools/animgen/gen_styles.py` (pose builders in `stylekit.py`);
+the text comes from `tools/animgen/style_lang.py`.
+
+### The hooks
+| Hook | Where | What it does |
+|---|---|---|
+| `identity.move_speed` | style | movement speed in combat mode (NPC fighters always), ×1 by default |
+| `identity.guard.type` | style | `standard`, `high`, `parry`, `armoured`, `counter` (a parry is answered at once with the style's counter move: a 1-tick wind-up, ×1.5 and unguardable like any counter), `evasive` (no block: pressing guard is a *sway*, a dodge at 45% distance for 50% stamina) |
+| `identity.guard.parry_window` | style | × the 5-tick parry window |
+| `identity.guard.keep` / `posture` / `speed` | style | the share of a blocked hit that gets through (0.25), × the posture a block builds, movement while guarding (×0.5) |
+| `identity.guard.armour` | style | posture armour: this share of *all* posture damage is shrugged off |
+| `identity.dodge` | style | `kind` (roll, step, hop, slide, flip, sway: picks the animations `dodge_<kind>_<direction>`), `speed`, `ticks`, `iframes`, `perfect`, `stamina` (× 20), `lift`, or its own `animations` |
+| `identity.strike.backstab` / `aerial` | style | × damage from behind (attacker outside the target's front: facing · offset < −0.35) / while off the ground (posture too) |
+| `identity.strike.stamina_drain` | style | stamina knocked out of a player per hit (half through a guard); NPCs lose half as much posture instead |
+| `identity.strike.momentum` | style | + damage per hit already in the string, up to `momentum_max` |
+| `identity.strike.jitter` / `read` | style | wind-ups vary ± this many ticks; × the chance NPCs read (guard or dodge) its wind-ups |
+| `identity.feint` | style | guard pressed during your own wind-up cancels it at once (`cost` stamina); for `window` ticks the next attack winds up in ≤ `windup` ticks and, against a guard, pierces `pierce` of it and builds × `posture` |
+| `effects.armour` | move | while it winds up and strikes, hits don't stagger you, deal (1 − armour) and push ×0.3 (enders and guard breaks still land) |
+| `effects.stamina_drain` / `backstab` / `aerial` | move | on top of the style's |
+| `effects.recoil` | move | after it lands, you spring back this far: hit and run |
+
+### The styles
+"String" is the light route (✦ = ender); GB = guard break.
+
+| Style | Stance & footwork | Guard | Dodge | Identity (numbers) | String · GB · dash · counter |
+|---|---|---|---|---|---|
+| **Drunken Fist** | upright but swaying, crossed feet, gourd hand up | parry: window ×1.4, keeps 30%, posture ×0.7 | lurching step, 7 i-frames | wind-ups jitter ±2 ticks; NPCs read it ×0.5 | stagger jab › tipsy hook › falling elbow › drunken kick › gourd slam ✦ · GB gourd slam · falling lunge · counter sway |
+| **Iron Body** | wide and rooted, hands high and tight | armoured: window ×0.8, keeps 10%, posture ×0.4, armour 35%, guard speed ×0.3 | short heavy step (×0.55, 4 i-frames, ×1.4 stamina) | speed ×0.82; armoured strikes (0.4–0.6) on its heavies; 18–42 posture a hit | iron jab › cross › elbow › hammer ✦ · GB iron crash · iron crash · iron counter |
+| **Viper** | very low, bladed, the lead hand a snake's head | standard, keeps 30% | low slide (×1.2, no hop) | speed ×1.12; fast 2/2/3 jabs; drains 2 stamina a hit + 3–16 per move | fang jab › fang jab › double fang › coil strike › venom strike ✦ · GB venom strike · viper lunge · counter fang |
+| **Crane** | high, one knee up, wings spread | high: keeps 22%, window ×1.25 | hop (lift 0.38, 11 ticks, 7 i-frames) | aerial ×1.35; kicks reach 2.9–3.4 | snap kick › roundhouse › crescent › side kick › wing kick ✦ · GB axe kick · dive kick · counter kick |
+| **Mountain** | deep horse stance, palms open | counter: window ×2.2, keeps 20%, riposte on every parry | shuffle step (×0.5) | speed ×0.85; slow heavy palms; riposte 6 dmg / 30 posture (×1.5) | stone palm › rock elbow › boulder shoulder › landslide palm › mountain crush ✦ · GB mountain crush · avalanche charge · riposte |
+| **Wind Step** | upright, bouncing on the toes, hands low | evasive: guard = a sway | hop (×1.15, 7 i-frames, 5-tick perfect window, ×0.6 stamina) | speed ×1.25; light 2/2/3 strikes; recoil 0.4–0.7 on its hit-and-fade moves | gust jab › gust cross › whirl kick › gale knee › cyclone kick ✦ · GB tornado heel · hurricane dash · wind counter |
+| **Shadow** | low, bladed, a hand behind the back | standard, keeps 28% | quick slide (×1.3, 7 ticks) | backstab ×1.6; feint: 6 stamina, 14-tick window, 1-tick follow-up, pierces 60%, posture ×1.6 | shade jab › night hook › veil elbow › eclipse knee › shadow reap ✦ · GB hidden palm · phantom lunge · shadow counter |
+| **Leaf Hurricane** (taijutsu 22) | Strong Fist's palm-out stance, bouncing | standard, window ×1.2 | flips | speed ×1.15; momentum +7% a hit (max +35%); aerial ×1.15 | hurricane jab › whirlwind low › mid › high › leaf tornado ✦ · GB hurricane drop · hurricane dive · hurricane counter |
+| **Sumo** | very wide and low, palms forward | armoured: keeps 18%, posture ×0.6, armour 25% | short step (×0.6) | speed ×0.92; grab opener (C) and a belt grab in the string → belt lift, belt throw ✦, crush ✦; armoured charges | tsuppari › tsuppari › tsuppari rush › belt grab › (lift / throw) · GB oshidashi · tachiai crash · sumo counter |
+| **Monkey** | deep crouch, knuckles near the ground | standard, window ×1.1 | flips (lift 0.32, 7 i-frames) | speed ×1.15; aerial ×1.2; air swipe and double kick | swipe › swipe › tail sweep › cartwheel kick › backflip kick ✦ · GB spinning sweep · monkey leap · monkey counter |
+| **Iai** (katana, sword) | crouched, the blade back and low | counter: window ×2.0, keeps 30% | step | draws pierce 20–40% | draw cut › return cut › iai thrust › sheathing cut ✦ · GB sheathing cut · dash draw · iai counter |
+| **Blade Dance** (sword, tantō, kunai) | upright and light, blade high | parry: window ×1.3 | flips | speed ×1.12; momentum +6% (max +24%); backstab ×1.3 | dance cut › spin › rising › whirlwind ✦ · GB dance crescent · dance lunge · dance counter |
+| **Bō Wall** (staff) | square, staff across the body | high: keeps 12%, posture ×0.7, window ×1.3 | step | thrusts reach 4.0–4.2, sweeps push 0.8–1.5 | wall thrust › sweep › return › wall crash ✦ · GB wall crash · wall ram · wall counter |
+| **Spear Dance** (yari) | bouncing, the spear low and long | standard, window ×1.1 | hop (lift 0.3) | speed ×1.15; thrusts reach 4.8–5.2 with recoil 0.3–0.7 | dance thrust › spin cut › double thrust › skewer ✦ · GB skewer · dance lunge · dance counter |
+
+Sub-stances: Drunken Fist, Viper and Shadow have aggressive/defensive/low; Iron Body, Mountain, Sumo, Iai and Bō
+Wall aggressive/defensive; Crane aggressive/defensive/air; Wind Step, Leaf Hurricane, Blade Dance and Spear Dance
+aggressive/air; Monkey aggressive/low/air. Each swaps some moves (`variants`).
+
+### Learning
+The new styles are learned in play (`"learn": {"required": true}`); the old four stay free.
+- **Masters:** a lesson can teach a style (`"style": "noirm:<id>"` in the master's JSON). Might Guy teaches Iron Body
+  (taijutsu 16) and then the Leaf Hurricane (taijutsu 22); Tsubaki teaches Viper (genin, 300 ryo: pressure points);
+  Rensai teaches Shadow (genin, 300 ryo).
+- **Style scrolls** (`noirm:style_scroll`): 8% of dungeon, mineshaft, temple, outpost, stronghold, mansion, ancient
+  city, igloo, portal and treasure chests (`loot_modifiers/style_loot.json`). Reading one teaches a style you don't
+  know, picked by each style's `learn.scroll` weight (Leaf Hurricane: never; Mountain and Iai: rare).
+- **Watching and sparring:** each hit a ninja lands in a style with `learn.watch` > 0 may teach it to every player
+  within 10 blocks in combat mode (1.5–2.5% a hit), twice as likely for the one being hit. You need the style's
+  taijutsu and eyes.
+- **Clans:** `StyleSystem.grant(player, styleId)` is the hook for the clan system ("your clan passes its style on").
+- `/noirm style learn <style|all>` (cheats). A learned style ignores its taijutsu requirement.
+
+### Choosing: the style picker (Y)
+Every playable style in two tabs (Unarmed, Weapons): its name, a one-line description, chips for footwork, rhythm,
+guard, dodge, speed, parry and the hooks, how you learned it or why it's locked, and **Use** (or click a row twice).
+A weapon style is picked for every weapon it lists; "<weapon>: its own moves" goes back to the weapon's own moveset.
+H still cycles your unarmed styles. Protocol 28 (`StylePackets`: open, info, choose).
+
+### Ninjas
+`pickForNpc` rolls by `npc_weight` + `npc.clans` (Akimichi: sumo +8, Iron Body +4) and leaves out styles above the
+ninja's class (`npc.min_class`: Mountain and Leaf Hurricane need B; Iron Body, Viper, Shadow and Iai need C). Ninjas
+holding a weapon may fight in one of its weapon styles (rolled once from their UUID; the weapon's own moves weigh 4).
+`NinjaFightGoal` uses the identity: evasive styles sway instead of blocking; armoured, counter and parry styles guard
+more (counter stances hold the guard longer); feinting styles feint 30% of their wind-ups and strike right after;
+aerial styles jump into 35% of their combos; light-footed styles (speed ≥ 1.1) circle between combos; a style's
+`read` lowers the chance others react to its wind-ups.
+
+Tests: `gametest/StyleWaveGameTests` (kits, feint, parry window and riposte, posture armour and armoured strikes,
+stamina drain, backstab, aerial, sway and style dodges, scroll, master, watching and clan, weapon styles, NPC rolls,
+an NPC fighting in sumo); `CombatRebuildGameTests.strikePosesLandOnTheHitTick` checks every new move's strike pose.
+Screenshots: `docs/screenshots/st-*.jpg`.

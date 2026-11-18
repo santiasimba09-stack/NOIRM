@@ -23,9 +23,15 @@ import java.util.Optional;
  *                    sub-stance the style doesn't list is played as neutral
  * @param counter     the fast counter a well-timed dodge opens (lands behind or beside the enemy);
  *                    styles without one use {@link #DEFAULT_COUNTER}
+ * @param identity    how it plays: footwork, guard, dodge, hooks ({@link StyleIdentity}; plain by default)
+ * @param learn       how it's learned ({@link Learn}; the old styles need no learning)
+ * @param weapons     the weapon movesets it fights with ({@code ["sword", "katana"]}): a weapon style, an
+ *                    alternative to those weapons' own (chosen in the style picker); empty = an unarmed style
+ * @param npc         which ninjas favour it ({@link Npc})
  */
 public record CombatStyle(Map<AttackInput, ResourceLocation> openers, float taijutsu, boolean byakugan, int npcWeight, boolean playable,
-                          Map<SubStance, Stance> stances, Optional<ResourceLocation> counter) {
+                          Map<SubStance, Stance> stances, Optional<ResourceLocation> counter, StyleIdentity identity, Learn learn,
+                          java.util.List<String> weapons, Npc npc) {
     /** Everyone can grab: styles without their own grab use this one. */
     public static final ResourceLocation DEFAULT_GRAB = Noirm.id("clinch/grab");
     /** The dodge counter for styles without their own. */
@@ -38,8 +44,50 @@ public record CombatStyle(Map<AttackInput, ResourceLocation> openers, float taij
             Codec.intRange(0, 100).optionalFieldOf("npc_weight", 1).forGetter(CombatStyle::npcWeight),
             Codec.BOOL.optionalFieldOf("playable", true).forGetter(CombatStyle::playable),
             Codec.unboundedMap(SubStance.CODEC, Stance.CODEC).optionalFieldOf("stances", Map.of()).forGetter(CombatStyle::stances),
-            ResourceLocation.CODEC.optionalFieldOf("counter").forGetter(CombatStyle::counter)
+            ResourceLocation.CODEC.optionalFieldOf("counter").forGetter(CombatStyle::counter),
+            StyleIdentity.CODEC.optionalFieldOf("identity", StyleIdentity.DEFAULT).forGetter(CombatStyle::identity),
+            Learn.CODEC.optionalFieldOf("learn", Learn.FREE).forGetter(CombatStyle::learn),
+            Codec.STRING.listOf().optionalFieldOf("weapons", java.util.List.of()).forGetter(CombatStyle::weapons),
+            Npc.CODEC.optionalFieldOf("npc", Npc.ANY).forGetter(CombatStyle::npc)
     ).apply(i, CombatStyle::new));
+
+    /**
+     * How a style is learned (styles are learned in play, not all at once).
+     *
+     * @param required true if you must learn it first (from a master, a style scroll, watching or
+     *                 sparring someone who fights that way, or your clan); false = anyone who meets the
+     *                 taijutsu and eye requirements may use it (Academy, Brawler, Strong Fist, Gentle Fist)
+     * @param watch    the chance each hit you see a ninja land in this style teaches it to you (doubled
+     *                 when the hit is on you: a spar); 0 = it can't be picked up by watching
+     * @param scroll   how often a style scroll found as loot turns out to be this style (a weight; 0 = never)
+     */
+    public record Learn(boolean required, float watch, int scroll) {
+        public static final Learn FREE = new Learn(false, 0f, 0);
+        public static final Codec<Learn> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.BOOL.optionalFieldOf("required", true).forGetter(Learn::required),
+                Codec.floatRange(0f, 1f).optionalFieldOf("watch", 0f).forGetter(Learn::watch),
+                Codec.intRange(0, 100).optionalFieldOf("scroll", 0).forGetter(Learn::scroll)
+        ).apply(i, Learn::new));
+    }
+
+    /**
+     * Which ninjas pick the style (on top of {@code npc_weight}).
+     *
+     * @param clans    extra weight for members of these clans ({@code {"akimichi": 8}})
+     * @param minClass the weakest ninja class ({@code D}…{@code S}) that may fight this way, or "" for any
+     */
+    public record Npc(Map<String, Integer> clans, String minClass) {
+        public static final Npc ANY = new Npc(Map.of(), "");
+        public static final Codec<Npc> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.unboundedMap(Codec.STRING, Codec.intRange(0, 100)).optionalFieldOf("clans", Map.of()).forGetter(Npc::clans),
+                Codec.STRING.optionalFieldOf("min_class", "").forGetter(Npc::minClass)
+        ).apply(i, Npc::new));
+    }
+
+    /** True for a weapon style (an alternative moveset for the weapons it lists). */
+    public boolean isWeaponStyle() {
+        return !weapons.isEmpty();
+    }
 
     /**
      * One sub-stance's look.

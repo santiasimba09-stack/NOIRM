@@ -233,6 +233,35 @@ def creation_scroll():
     return draw(CREATION_T, pal, 71)
 
 
+# A style scroll: the open scroll with a little ink figure mid-kick (a fighting stance) and a blood-red seal.
+STYLE_T = [
+    "................",
+    "................",
+    ".oo.............",
+    "owwoooooooooooo.",
+    "owhohhhhhhhhhhLo",
+    "owhopppIpppppppo",
+    "owhoppIIIpIpppSo",
+    "owhopIpIIIppSSXo",
+    "owhoppppIpppSSso",
+    "owhopppIpIppppso",
+    "owhoppIpppIpppso",
+    "owhoppppppppssso",
+    "owwooooooooooooo",
+    ".oo.............",
+    "................",
+    "................",
+]
+
+
+def style_scroll():
+    pal = {
+        "w": (WOOD, 2), "h": (PAPER, 0), "p": (PAPER, 1), "s": (PAPER, 2), "L": (PAPER, 0),
+        "I": ([INK, INK, INK, INK], 0), "S": (BLOOD, 1), "X": (BLOOD, 0),
+    }
+    return draw(STYLE_T, pal, 83)
+
+
 def model(name):
     return {"parent": "minecraft:item/generated", "textures": {"layer0": "noirm:item/" + name}}
 
@@ -245,6 +274,7 @@ def main():
         icons["jutsu_scroll_" + r] = jutsu_scroll(r)
     icons["blank_scroll"] = blank_scroll()
     icons["creation_scroll"] = creation_scroll()
+    icons["style_scroll"] = style_scroll()  # the styles wave (combat.StyleItems)
     os.makedirs(TEX, exist_ok=True)
     os.makedirs(MODELS, exist_ok=True)
     for name, img in icons.items():

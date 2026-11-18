@@ -103,6 +103,12 @@
       "after": [
         "pill_lore"
       ]
+    },
+    {
+      "id": "viper_style",
+      "style": "noirm:viper",
+      "rank": "genin",
+      "ryo": 300
     }
   ]
 }

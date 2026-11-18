@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:sumo_sumo_crush",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 30,
+    "range": 2.4,
+    "arc": 120,
+    "knockback": 1.4,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.9,
+    "clinch": "release",
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  },
+  "effects": {
+    "armour": 0.4
+  }
+}

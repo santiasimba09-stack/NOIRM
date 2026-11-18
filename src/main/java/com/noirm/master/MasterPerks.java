@@ -66,6 +66,9 @@ public final class MasterPerks {
 
     /** Whether the lesson's perk or service is one we know how to give. */
     public static boolean known(MasterDefinition.Lesson lesson) {
+        if (lesson.teachesStyle()) {
+            return com.noirm.combat.CombatData.style(lesson.style()) != null; // a style lesson (combat.StyleSystem)
+        }
         return lesson.isService() ? SERVICES.contains(lesson.service()) : PERKS.contains(lesson.perk());
     }
 

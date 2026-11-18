@@ -169,8 +169,24 @@ public final class CombatSystem {
     public static final float SHIELD_DAMAGE_MULTIPLIER = 0f;
     public static final float SHIELD_POSTURE_MULTIPLIER = 0.6f;
 
+    // ---- Fighting styles (the styles wave, docs/COMBAT_DESIGN.md "Fighting styles"). The per-style numbers live in
+    // each style JSON's "identity" and each move's "effects"; these are the shared rules around them.
+
+    /** A hit lands "from behind" (backstab) when the attacker stands behind the target: facing · offset below this. */
+    public static final double BACKSTAB_DOT = -0.35;
+    /** An evasive guard's sway: a dodge this share as far as the style's own, for this share of its stamina. */
+    public static final float SWAY_DISTANCE = 0.45f;
+    public static final float SWAY_STAMINA = 0.5f;
+    /** A counter stance's riposte (a parry answered at once with the style's counter) winds up in at most this. */
+    public static final int RIPOSTE_WINDUP = 1;
+    /** Stamina drain against an NPC: this much posture per point instead. */
+    public static final float DRAIN_POSTURE_PER_STAMINA = 0.5f;
+    /** An armoured strike takes the knockback of hits that land on it × this. */
+    public static final float ARMOUR_KNOCKBACK = 0.3f;
+
     private static final UUID GUARD_SLOW_ID = UUID.fromString("6f4a3c1e-2b7d-4e0a-9c55-1d2e3f4a5b6c");
-    private static final AttributeModifier GUARD_SLOW = new AttributeModifier(GUARD_SLOW_ID, "noirm_guard", -0.5, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    /** A style's combat-mode movement speed ({@code identity.move_speed}). */
+    private static final UUID STYLE_SPEED_ID = UUID.fromString("2b8e4d61-7c3a-4f19-a0d2-5e6f7a8b9c0d");
 
     /** True while NOIRM itself is applying a hit, so the damage events don't handle it twice. */
     private static boolean applyingHit;
@@ -237,9 +253,29 @@ public final class CombatSystem {
         return false;
     }
 
-    /** Raise or lower guard. A raised request waits until the fighter is free. */
+    /**
+     * Raise or lower guard. A raised request waits until the fighter is free. The style decides what a
+     * fresh press does first: during your own wind-up a feinting style cancels the attack (a feint); an
+     * evasive style never blocks, it sways out of the way (a short dodge).
+     */
     public static void setGuard(LivingEntity entity, boolean raised) {
         CombatState state = CombatStates.get(entity);
+        boolean pressed = raised && !state.guardHeld;
+        state.guardHeld = raised;
+        if (raised) {
+            StyleIdentity identity = StyleSystem.identityOf(entity);
+            if (pressed && state.phase == CombatPhase.WINDUP && identity.feint().isPresent()
+                    && feint(entity, state, identity.feint().get())) {
+                return;
+            }
+            if (identity.guard().evasive()) {
+                state.wantsGuard = false;
+                if (pressed) {
+                    sway(entity, state, identity);
+                }
+                return;
+            }
+        }
         state.wantsGuard = raised && BijuSystem.canGuard(entity);
         if (!state.wantsGuard) {
             stopGuard(entity, state);
@@ -315,6 +351,10 @@ public final class CombatSystem {
         if (state.dodgeCounterTicks > 0 && --state.dodgeCounterTicks == 0) {
             state.dodgeCounterFrom = null;
         }
+        if (state.feintTicks > 0) {
+            state.feintTicks--;
+        }
+        updateStyleSpeed(entity, state);
         state.airTicks = entity.onGround() || entity.isInWater() ? 0 : state.airTicks + 1;
         updateSubStance(entity, state);
         if (state.postureRegenDelay > 0) {
@@ -397,8 +437,9 @@ public final class CombatSystem {
         }
         if (classify(target, state, attacker) == Outcome.GUARDED) {
             boolean shield = blocksWithShield(target, amount);
-            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : 1f), amount);
-            return amount * (shield ? SHIELD_DAMAGE_MULTIPLIER : GUARD_DAMAGE_MULTIPLIER);
+            StyleIdentity.Guard guard = StyleSystem.identityOf(target).guard();
+            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : guard.posture()), amount);
+            return amount * (shield ? SHIELD_DAMAGE_MULTIPLIER : guard.keep());
         }
         if (attacker != null) {
             addPosture(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * UNGUARDED_POSTURE_RATIO);
@@ -408,14 +449,19 @@ public final class CombatSystem {
 
     /** How an attack from {@code attacker} would resolve against {@code target} right now. */
     public static Outcome classify(LivingEntity target, CombatState state, Entity attacker) {
-        if (state.phase == CombatPhase.DODGE && state.phaseTime < DODGE_IFRAMES) {
+        if (state.phase == CombatPhase.DODGE && state.phaseTime < state.dodgeIframes) {
             return Outcome.DODGED;
         }
         if (state.guarding && attacker != null && (isFacing(target, attacker) || Byakugan.isActive(target))) {
             long sinceRaised = target.level().getGameTime() - state.guardStartTick;
-            return sinceRaised <= PARRY_WINDOW ? Outcome.PARRIED : Outcome.GUARDED;
+            return sinceRaised <= parryWindow(target) ? Outcome.PARRIED : Outcome.GUARDED;
         }
         return Outcome.HIT;
+    }
+
+    /** {@code entity}'s parry window in ticks: {@link #PARRY_WINDOW} × its style's ({@code identity.guard.parry_window}). */
+    public static int parryWindow(LivingEntity entity) {
+        return Math.round(PARRY_WINDOW * StyleSystem.identityOf(entity).guard().parryWindow());
     }
 
     /**
@@ -522,7 +568,9 @@ public final class CombatSystem {
         // A weapon in hand (kunai, staff, sword) brings its own moveset.
         ResourceLocation weapon = com.noirm.weapon.WeaponMoves.styleFor(entity.getMainHandItem());
         if (weapon != null) {
-            return weapon;
+            // ...or the weapon style the fighter chose for it (an iai katana, a reverse-grip tantō).
+            ResourceLocation alt = StyleSystem.weaponStyle(entity, com.noirm.weapon.WeaponMoves.movesetFor(entity.getMainHandItem()));
+            return alt != null && CombatData.style(alt) != null ? alt : weapon;
         }
         if (entity instanceof Player player) {
             var data = ShinobiCapability.get(player).orElse(null);
@@ -545,7 +593,7 @@ public final class CombatSystem {
         return state.phase == CombatPhase.IDLE
                 || (state.phase == CombatPhase.RECOVERY && state.phaseTime >= state.move.timing().cancelAfter())
                 // After a perfect dodge the counter cuts the roll short (once its invulnerable start is over).
-                || (state.phase == CombatPhase.DODGE && state.dodgeCounterTicks > 0 && state.phaseTime >= PERFECT_DODGE_TICKS);
+                || (state.phase == CombatPhase.DODGE && state.dodgeCounterTicks > 0 && state.phaseTime >= state.dodgePerfect);
     }
 
     static boolean canDodge(CombatState state) {
@@ -567,11 +615,15 @@ public final class CombatSystem {
         LivingEntity dodged = state.dodgeCounterTicks > 0 ? state.dodgeCounterFrom : null;
         boolean dodgeCounter = dodged != null && dodged.isAlive() && dodged.level() == entity.level()
                 && entity.distanceTo(dodged) <= DODGE_COUNTER_RANGE && state.clinchTarget == null && input != AttackInput.GRAB;
-        ResourceLocation id = dodgeCounter ? dodgeCounterMove(entity) : resolveMove(entity, from, input);
+        // A counter stance just parried: this attack is the style's counter, thrown at once (no slip: rooted).
+        boolean riposte = state.riposte && !dodgeCounter && input != AttackInput.GRAB;
+        state.riposte = false;
+        ResourceLocation id = dodgeCounter || riposte ? dodgeCounterMove(entity) : resolveMove(entity, from, input);
         CombatMove move = id == null ? null : CombatData.move(id);
         if (move == null) {
             return false;
         }
+        StyleIdentity identity = StyleSystem.identityOf(entity);
         boolean dash = !dodgeCounter && isDashInput(entity, input);
         if (dodgeCounter) {
             slipAround(entity, state, dodged);
@@ -582,9 +634,25 @@ public final class CombatSystem {
         float windup = move.timing().windup() * slow;
         if (dodgeCounter) {
             windup = Math.min(windup, DODGE_COUNTER_WINDUP);
-        } else if (dash && windup > 1f) {
-            windup = Math.max(1f, windup - DASH_STRIKE_WINDUP_CUT);
+        } else if (riposte) {
+            windup = Math.min(windup, RIPOSTE_WINDUP);
+        } else {
+            int jitter = identity.strike().jitter();
+            if (jitter > 0 && windup > 1f) {
+                // Irregular timing (the Drunken Fist): the same move never winds up the same way twice.
+                windup = Math.max(1f, windup + entity.getRandom().nextInt(jitter * 2 + 1) - jitter);
+            }
+            if (dash && windup > 1f) {
+                windup = Math.max(1f, windup - DASH_STRIKE_WINDUP_CUT);
+            }
         }
+        // Just feinted: the real attack comes out fast, and slips through the guard the feint drew.
+        boolean feintFollow = !dodgeCounter && !riposte && state.feintTicks > 0 && identity.feint().isPresent();
+        if (feintFollow) {
+            windup = Math.min(windup, identity.feint().get().windup());
+            state.feintTicks = 0;
+        }
+        state.feintArmed = feintFollow;
         // Perception focus: the defender sees this (heavy) attack coming in slow motion.
         if (target != null && slow - 1f >= PERCEPTION_FOCUS_MIN && (!PERCEPTION_FOCUS_HEAVY_ONLY || move.hit().isHeavy())) {
             state.perceivedBy = target.getId();
@@ -595,14 +663,14 @@ public final class CombatSystem {
             state.perceivedSlowdown = 0f;
         }
         // Started inside the counter window after a just-frame parry (or a perfect dodge): this attack is the counter.
-        state.counterArmed = state.counterTicks > 0 || dodgeCounter;
+        state.counterArmed = state.counterTicks > 0 || dodgeCounter || riposte;
         state.counterTicks = 0;
         state.dodgeCountering = dodgeCounter;
         state.dodgeCounterTicks = 0;
         state.dodgeCounterFrom = null;
         state.dashStrike = dash;
         CombatMove previous = from == null ? null : CombatData.move(from);
-        state.comboDepth = !dodgeCounter && previous != null && route(previous, input) != null ? state.comboDepth + 1 : 0;
+        state.comboDepth = !dodgeCounter && !riposte && previous != null && route(previous, input) != null ? state.comboDepth + 1 : 0;
 
         if (target != null) {
             Sharingan.onAttackWindup(entity, target, Math.round(windup));
@@ -739,8 +807,20 @@ public final class CombatSystem {
     }
 
     private static boolean doDodge(LivingEntity entity, CombatState state, float forward, float strafe) {
+        return doDodge(entity, state, forward, strafe, 1f, 1f, null);
+    }
+
+    /**
+     * A dodge in the fighter's style ({@code identity.dodge}: how far, how long, how invulnerable, how
+     * it looks). {@code reach} and {@code staminaShare} scale the style's distance and cost (a sway is
+     * a small dodge); {@code animation} overrides the look (null = the style's for that direction).
+     */
+    private static boolean doDodge(LivingEntity entity, CombatState state, float forward, float strafe, float reach, float staminaShare,
+                                   ResourceLocation animation) {
+        StyleIdentity.Dodge style = StyleSystem.identityOf(entity).dodge();
         if (entity instanceof Player player && !player.getAbilities().instabuild) {
-            boolean paid = ShinobiCapability.get(player).map(d -> d.tryConsumeStamina(DODGE_STAMINA_COST)).orElse(true);
+            float cost = DODGE_STAMINA_COST * style.stamina() * staminaShare;
+            boolean paid = ShinobiCapability.get(player).map(d -> d.tryConsumeStamina(cost)).orElse(true);
             if (!paid) {
                 CombatEffects.outOfStamina(entity);
                 return false;
@@ -758,17 +838,20 @@ public final class CombatSystem {
         float yaw = entity.getYRot() * Mth.DEG_TO_RAD;
         double x = strafe * Mth.cos(yaw) - forward * Mth.sin(yaw);
         double z = forward * Mth.cos(yaw) + strafe * Mth.sin(yaw);
-        double y = entity.onGround() ? 0.12 : entity.getDeltaMovement().y;
-        entity.setDeltaMovement(x * DODGE_SPEED, y, z * DODGE_SPEED);
+        double y = entity.onGround() ? style.lift() : entity.getDeltaMovement().y;
+        double speed = DODGE_SPEED * style.speed() * reach;
+        entity.setDeltaMovement(x * speed, y, z * speed);
         entity.hurtMarked = true;
 
         state.moveId = null;
         state.move = null;
         state.comboFrom = null;
         state.perfectDodgeUsed = false;
-        enterPhase(entity, state, CombatPhase.DODGE, DODGE_TICKS);
+        state.dodgeIframes = style.iframes();
+        state.dodgePerfect = style.perfect();
+        enterPhase(entity, state, CombatPhase.DODGE, style.ticks());
         com.noirm.movement.MovementFeel.noteDodge(entity); // a dodge is the roll that skips landing recovery
-        CombatEffects.dodge(entity, forward, strafe, DODGE_TICKS);
+        CombatEffects.dodge(entity, forward, strafe, style.ticks(), animation != null ? animation : dodgeAnimation(style, forward, strafe));
         TrainingSystem.onDodge(entity);
         return true;
     }
@@ -783,7 +866,9 @@ public final class CombatSystem {
         clearBuffer(state);
         AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null && speed.getModifier(GUARD_SLOW_ID) == null) {
-            speed.addTransientModifier(GUARD_SLOW);
+            // The style's guard speed: an armoured guard plods, a parry guard stays light on its feet.
+            float factor = StyleSystem.identityOf(entity).guard().speed();
+            speed.addTransientModifier(new AttributeModifier(GUARD_SLOW_ID, "noirm_guard", factor - 1f, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
         state.markDirty();
         notifyListener(entity, state);
@@ -932,23 +1017,55 @@ public final class CombatSystem {
             attackerState.counterTicks = 0;
             CombatEffects.counterHit(attacker, target);
         }
+        // The attacker's style and the move's own hooks: backstab, aerial, momentum.
+        StyleIdentity style = StyleSystem.identityOf(attacker);
+        CombatMove.Effects effects = move.effects();
+        float backstab = style.strike().backstab() * effects.backstab();
+        if (backstab > 1f && isBehind(attacker, target)) {
+            damage *= backstab;
+            CombatEffects.backstab(attacker, target);
+        }
+        float aerial = style.strike().aerial() * effects.aerial();
+        if (aerial != 1f && !attacker.onGround() && !attacker.isInWater()) {
+            damage *= aerial;
+            posture *= aerial;
+        }
+        if (style.strike().momentum() > 0f && attackerState.comboDepth > 0) {
+            damage *= 1f + Math.min(style.strike().momentumMax(), style.strike().momentum() * attackerState.comboDepth);
+        }
+        // The defender's style: an armoured strike in progress shrugs off part of the hit and doesn't flinch.
+        StyleIdentity.Guard defence = StyleSystem.identityOf(target).guard();
+        float armour = armourOf(targetState);
+        if (armour > 0f && !guardBroken) {
+            damage *= 1f - armour;
+            CombatEffects.armoured(target);
+        }
         boolean airborne = !target.onGround() && !guarded;
         if (airborne) {
             damage *= Math.max(0.5f, 1f - 0.1f * targetState.juggleHits);
         }
         if (guarded) {
             boolean shield = !gentleFist && blocksWithShield(target, damage); // Gentle Fist goes through shields
-            absorbGuardedHit(target, targetState, posture * (shield ? SHIELD_POSTURE_MULTIPLIER : 1f), damage);
-            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : shield ? SHIELD_DAMAGE_MULTIPLIER : GUARD_DAMAGE_MULTIPLIER,
-                    hit.pierce());
+            float pierce = hit.pierce();
+            if (attackerState.feintArmed && style.feint().isPresent()) {
+                // The feint drew the guard up: the real blow slips through it and rocks it harder.
+                pierce = Math.max(pierce, style.feint().get().pierce());
+                posture *= style.feint().get().posture();
+                CombatEffects.feintLanded(attacker, target);
+            }
+            absorbGuardedHit(target, targetState, posture * (shield ? SHIELD_POSTURE_MULTIPLIER : defence.posture()), damage);
+            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : shield ? SHIELD_DAMAGE_MULTIPLIER : defence.keep(), pierce);
             damage *= kept;
         } else {
             if (!guardBroken) {
                 addPosture(target, targetState, posture * UNGUARDED_POSTURE_RATIO);
             }
             boolean floored = hit.knockdown() || hit.ender() == CombatMove.Hit.Ender.KNOCKDOWN;
-            stagger(target, targetState, floored ? Math.max(hit.hitstun(), KNOCKDOWN_TICKS) : hit.hitstun());
+            if (armour <= 0f || floored) {
+                stagger(target, targetState, floored ? Math.max(hit.hitstun(), KNOCKDOWN_TICKS) : hit.hitstun());
+            }
         }
+        attackerState.feintArmed = false;
         if (hit.clinch() == CombatMove.Hit.Clinch.RELEASE && attackerState.clinchTarget == target) {
             releaseClinch(attacker, attackerState);
         }
@@ -972,7 +1089,8 @@ public final class CombatSystem {
         applyWeaponEffects(attacker, target, guarded, firstOfSwing);
 
         float yaw = attacker.getYHeadRot() * Mth.DEG_TO_RAD;
-        float knockback = (hit.knockback() + KNOCKBACK_PER_LEVEL * EnchantmentHelper.getKnockbackBonus(attacker)) * (guarded ? 0.4f : 1f);
+        float knockback = (hit.knockback() + KNOCKBACK_PER_LEVEL * EnchantmentHelper.getKnockbackBonus(attacker)) * (guarded ? 0.4f : 1f)
+                * (armour > 0f ? ARMOUR_KNOCKBACK : 1f);
         if (ender == CombatMove.Hit.Ender.SPLAT) {
             knockback = Math.max(knockback, ENDER_SPLAT_KNOCKBACK);
         }
@@ -1000,7 +1118,18 @@ public final class CombatSystem {
         if (hit.chakra() > 0) {
             drainChakra(target, targetState, hit.chakra() * (guarded ? 0.5f : 1f));
         }
+        float drain = style.strike().staminaDrain() + effects.staminaDrain();
+        if (drain > 0f) {
+            drainStamina(target, targetState, drain * (guarded ? 0.5f : 1f));
+        }
+        if (effects.recoil() > 0f) {
+            // Hit and run: spring back out of reach after it lands.
+            Vec3 back = Vec3.directionFromRotation(0, attacker.getYHeadRot()).scale(-effects.recoil());
+            attacker.setDeltaMovement(back.x, Math.max(attacker.getDeltaMovement().y, 0.12), back.z);
+            attacker.hurtMarked = true;
+        }
         target.hurtMarked = true;
+        StyleLearning.onStyleHit(attacker, target);
 
         TrainingSystem.onHitLanded(attacker, target, hit.isHeavy(), guarded);
         if (gentleFist) {
@@ -1017,7 +1146,7 @@ public final class CombatSystem {
     }
 
     private static void onDodged(LivingEntity target, CombatState state, Entity attacker) {
-        if (!state.perfectDodgeUsed && state.phaseTime < PERFECT_DODGE_TICKS) {
+        if (!state.perfectDodgeUsed && state.phaseTime < state.dodgePerfect) {
             state.perfectDodgeUsed = true;
             if (attacker instanceof LivingEntity enemy) {
                 state.dodgeCounterTicks = DODGE_COUNTER_WINDOW; // your next attack: a counter from behind or beside
@@ -1046,8 +1175,21 @@ public final class CombatSystem {
             if (attackerState.phase != CombatPhase.STAGGER) {
                 stagger(livingAttacker, attackerState, PARRY_STUN);
             }
+            riposteIfCounterStance(defender, defenderState);
         }
         focus(defender);
+    }
+
+    /** A counter stance ({@code identity.guard.type: counter}) answers a parry at once with the style's counter move. */
+    private static void riposteIfCounterStance(LivingEntity defender, CombatState state) {
+        if (!StyleSystem.identityOf(defender).guard().counter() || !state.guarding) {
+            return;
+        }
+        stopGuard(defender, state); // the guard comes back up after the counter (the button is still held)
+        state.riposte = true;
+        if (!startAttack(defender, state, AttackInput.LIGHT)) {
+            state.riposte = false;
+        }
     }
 
     /** The attack being parried is one {@code defender}'s perception is slowing (perception focus). */
@@ -1074,6 +1216,7 @@ public final class CombatSystem {
         postureBreak(attacker, attackerState);
         defenderState.counterTicks = COUNTER_TICKS;
         defenderState.counterArmed = false;
+        riposteIfCounterStance(defender, defenderState);
         focus(defender);
     }
 
@@ -1107,6 +1250,7 @@ public final class CombatSystem {
     }
 
     private static void addPosture(LivingEntity entity, CombatState state, float amount) {
+        amount *= 1f - StyleSystem.identityOf(entity).guard().armour(); // posture armour (Iron Body, sumo)
         if (amount <= 0) {
             return;
         }
@@ -1281,6 +1425,124 @@ public final class CombatSystem {
         }
         CombatEffects.chakraStruck(target);
     }
+
+    /** Pressure points (Viper): stamina knocked out of a player; an NPC, who has none, loses posture instead. */
+    public static void drainStamina(LivingEntity target, CombatState state, float amount) {
+        if (target instanceof Player player) {
+            if (!player.getAbilities().instabuild) {
+                ShinobiCapability.get(player).ifPresent(d -> {
+                    d.setStamina(Math.max(0f, d.getStamina() - amount));
+                    d.markDirty();
+                });
+            }
+        } else {
+            addPosture(target, state, amount * DRAIN_POSTURE_PER_STAMINA);
+        }
+        CombatEffects.staminaStruck(target);
+    }
+
+    /** Is {@code attacker} behind {@code target} (outside the arc it faces)? */
+    public static boolean isBehind(LivingEntity attacker, LivingEntity target) {
+        Vec3 facing = Vec3.directionFromRotation(0, target.getYHeadRot());
+        Vec3 offset = attacker.position().subtract(target.position());
+        double horizontal = Math.sqrt(offset.x * offset.x + offset.z * offset.z);
+        return horizontal > 0.01 && (facing.x * offset.x + facing.z * offset.z) / horizontal < BACKSTAB_DOT;
+    }
+
+    /** The armour of the move {@code state}'s fighter is winding up or striking with (0 = none). */
+    private static float armourOf(CombatState state) {
+        return state.move != null && (state.phase == CombatPhase.WINDUP || state.phase == CombatPhase.ACTIVE)
+                ? state.move.effects().armour() : 0f;
+    }
+
+    // ---------------------------------------------------------------- styles: feints, sways, speed
+
+    /**
+     * A feint: guard pressed during your own wind-up (a feinting style) cancels the attack at once, no
+     * recovery. For a moment after, your next attack comes out fast and slips through a raised guard.
+     */
+    private static boolean feint(LivingEntity entity, CombatState state, StyleIdentity.Feint feint) {
+        if (entity instanceof Player player && !player.getAbilities().instabuild) {
+            boolean paid = ShinobiCapability.get(player).map(d -> d.tryConsumeStamina(feint.cost())).orElse(true);
+            if (!paid) {
+                CombatEffects.outOfStamina(entity);
+                return false;
+            }
+        }
+        state.wantsGuard = false; // the press was the feint, not a guard
+        state.moveId = null;
+        state.move = null;
+        state.comboFrom = null;
+        state.counterArmed = false;
+        state.perceivedBy = -1;
+        state.perceivedSlowdown = 0f;
+        clearBuffer(state);
+        state.feintTicks = feint.window();
+        state.feints++;
+        enterPhase(entity, state, CombatPhase.IDLE, 0);
+        CombatEffects.feint(entity);
+        return true;
+    }
+
+    /** Throws a feint now if {@code entity} is winding up in a feinting style (NPCs, tests). */
+    public static boolean tryFeint(LivingEntity entity) {
+        CombatState state = CombatStates.get(entity);
+        StyleIdentity identity = StyleSystem.identityOf(entity);
+        return state.phase == CombatPhase.WINDUP && identity.feint().isPresent() && feint(entity, state, identity.feint().get());
+    }
+
+    /** An evasive guard's sway: a short, cheap dodge to the side (alternating), instead of a block. */
+    private static void sway(LivingEntity entity, CombatState state, StyleIdentity identity) {
+        if (!canDodge(state)) {
+            return;
+        }
+        float side = state.sways % 2 == 0 ? 1f : -1f;
+        ResourceLocation animation = com.noirm.Noirm.id(side > 0 ? "dodge_sway_left" : "dodge_sway_right");
+        if (doDodge(entity, state, -0.35f, side, SWAY_DISTANCE, SWAY_STAMINA, animation)) {
+            state.sways++;
+        }
+    }
+
+    /** The style's combat-mode speed ({@code identity.move_speed}), applied while in combat mode (always, for NPC fighters). */
+    private static void updateStyleSpeed(LivingEntity entity, CombatState state) {
+        float want = state.combatMode || !(entity instanceof Player) ? StyleSystem.identityOf(entity).moveSpeed() : 1f;
+        if (Math.abs(want - state.styleSpeed) < 1.0e-3f) {
+            return;
+        }
+        state.styleSpeed = want;
+        AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed == null) {
+            return;
+        }
+        speed.removeModifier(STYLE_SPEED_ID);
+        if (Math.abs(want - 1f) > 1.0e-3f) {
+            speed.addTransientModifier(new AttributeModifier(STYLE_SPEED_ID, "noirm_style", want - 1f, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
+    }
+
+    /**
+     * The dodge's animation: the style's own for that direction ({@code identity.dodge.animations}),
+     * else the kind's: {@code roll} keeps the rolls and side steps; the others play {@code dodge_<kind>_<direction>}.
+     */
+    static ResourceLocation dodgeAnimation(StyleIdentity.Dodge dodge, float forward, float strafe) {
+        String direction = Math.abs(strafe) > Math.abs(forward) ? (strafe > 0 ? "left" : "right") : forward >= 0 ? "forward" : "back";
+        ResourceLocation own = dodge.animations().get(direction);
+        if (own != null) {
+            return own;
+        }
+        if ("roll".equals(dodge.kind()) || !DODGE_KINDS.contains(dodge.kind())) {
+            return com.noirm.Noirm.id(switch (direction) {
+                case "left" -> "dodge_side_left";
+                case "right" -> "dodge_side_right";
+                case "forward" -> "forward_roll";
+                default -> "backward_roll";
+            });
+        }
+        return com.noirm.Noirm.id("dodge_" + dodge.kind() + "_" + direction);
+    }
+
+    /** Dodge kinds with their own animations ({@code dodge_<kind>_<forward|back|left|right>}). */
+    public static final java.util.Set<String> DODGE_KINDS = java.util.Set.of("step", "hop", "slide", "flip", "sway");
 
     private static void notifyListener(LivingEntity entity, CombatState state) {
         if (entity instanceof CombatListener listener) {

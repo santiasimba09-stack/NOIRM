@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:sumo_tsuppari_rush",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 16,
+    "range": 2.5,
+    "arc": 90,
+    "knockback": 0.5,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.4,
+    "lunge": 0.3
+  },
+  "next": {
+    "light": "noirm:sumo/belt_grab",
+    "heavy": "noirm:sumo/oshidashi",
+    "grab": "noirm:sumo/belt_grab"
+  }
+}

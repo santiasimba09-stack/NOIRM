@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:iron_body_iron_shoulder",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 28,
+    "range": 2.8,
+    "arc": 90,
+    "knockback": 1.0,
+    "hitstun": 11,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lunge": 0.6
+  },
+  "next": {
+    "light": "noirm:iron_body/iron_cross"
+  },
+  "effects": {
+    "armour": 0.5
+  }
+}

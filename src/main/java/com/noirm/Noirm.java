@@ -32,6 +32,7 @@ public final class Noirm {
         com.noirm.weapon.SpecialWeapons.register(modBus);
         com.noirm.weapon.NinjaBlades.register(modBus);
         com.noirm.nature.NatureItems.register(modBus); // chakra paper, nature and jutsu scrolls (+ their chest loot)
+        com.noirm.combat.StyleItems.register(modBus); // the style scroll (fighting styles found as loot)
         com.noirm.workshop.WorkshopItems.register(modBus); // blank and creation scrolls (the jutsu workshop)
         com.noirm.registry.NoirmStructures.register(modBus);
         com.noirm.mission.CareerItems.register(modBus); // the mission board, ryo pouches, mission items

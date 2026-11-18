@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:blade_iai_whirl_cut",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 7,
+    "posture": 24,
+    "range": 3.4,
+    "arc": 360,
+    "knockback": 1.0,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.8
+  },
+  "next": {
+    "light": "noirm:blade_iai/draw_cut"
+  }
+}

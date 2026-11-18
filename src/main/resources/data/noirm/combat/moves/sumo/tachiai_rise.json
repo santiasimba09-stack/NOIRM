@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:sumo_tachiai_rise",
+  "timing": {
+    "windup": 4,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 20,
+    "range": 2.4,
+    "arc": 100,
+    "knockback": 0.3,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lift": 0.7,
+    "lunge": 0.3,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  }
+}

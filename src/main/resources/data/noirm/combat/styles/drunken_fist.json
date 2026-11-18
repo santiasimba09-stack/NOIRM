@@ -1,0 +1,56 @@
+{
+  "openers": {
+    "light": "noirm:drunken_fist/stagger_jab",
+    "heavy": "noirm:drunken_fist/tumbling_fist",
+    "launcher": "noirm:drunken_fist/rising_stumble",
+    "forward_light": "noirm:drunken_fist/lurch_jab",
+    "forward_heavy": "noirm:drunken_fist/falling_lunge",
+    "back_light": "noirm:drunken_fist/backhand_swing",
+    "back_heavy": "noirm:drunken_fist/lean_away_kick"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_drunken_fist",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_drunken_fist_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_drunken_fist_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_drunken_fist_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:drunken_fist/counter_sway",
+  "identity": {
+    "footwork": "swaying",
+    "rhythm": "irregular",
+    "move_speed": 1.0,
+    "guard": {
+      "type": "parry",
+      "parry_window": 1.4,
+      "keep": 0.3,
+      "posture": 0.7
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.9,
+      "iframes": 7
+    },
+    "strike": {
+      "jitter": 2,
+      "read": 0.5
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.025,
+    "scroll": 4
+  }
+}

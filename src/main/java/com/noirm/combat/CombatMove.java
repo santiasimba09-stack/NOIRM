@@ -17,17 +17,40 @@ import java.util.Optional;
  * @param next      combo routes: which move follows when this one is followed by each input
  * @param variants  the move that comes out instead while the fighter is in a given sub-stance
  *                  (a low sweep when crouching, an air kick in the air…)
+ * @param effects   the move's own extra hooks (stamina drain, backstab, aerial, armour, recoil; see {@link Effects})
  */
 public record CombatMove(Optional<ResourceLocation> animation, Timing timing, Hit hit, Map<AttackInput, ResourceLocation> next,
-                         Map<SubStance, ResourceLocation> variants) {
+                         Map<SubStance, ResourceLocation> variants, Effects effects) {
 
     public static final Codec<CombatMove> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.optionalFieldOf("animation").forGetter(CombatMove::animation),
             Timing.CODEC.fieldOf("timing").forGetter(CombatMove::timing),
             Hit.CODEC.fieldOf("hit").forGetter(CombatMove::hit),
             Codec.unboundedMap(AttackInput.CODEC, ResourceLocation.CODEC).optionalFieldOf("next", Map.of()).forGetter(CombatMove::next),
-            Codec.unboundedMap(SubStance.CODEC, ResourceLocation.CODEC).optionalFieldOf("variants", Map.of()).forGetter(CombatMove::variants)
+            Codec.unboundedMap(SubStance.CODEC, ResourceLocation.CODEC).optionalFieldOf("variants", Map.of()).forGetter(CombatMove::variants),
+            Effects.CODEC.optionalFieldOf("effects", Effects.NONE).forGetter(CombatMove::effects)
     ).apply(i, CombatMove::new));
+
+    /**
+     * A move's own hooks, on top of its style's ({@link StyleIdentity.Strike}); all optional.
+     *
+     * @param staminaDrain stamina knocked out of a player it hits (NPCs: half as much posture)
+     * @param backstab     × damage when it lands from behind
+     * @param aerial       × damage when thrown in the air
+     * @param armour       while this move winds up and strikes, hits don't stagger you and this share of their
+     *                     damage is shrugged off (an armoured strike: Iron Body, sumo)
+     * @param recoil       after it lands, you spring this far back (blocks/tick): hit and run
+     */
+    public record Effects(float staminaDrain, float backstab, float aerial, float armour, float recoil) {
+        public static final Effects NONE = new Effects(0f, 1f, 1f, 0f, 0f);
+        public static final Codec<Effects> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.floatRange(0f, 100f).optionalFieldOf("stamina_drain", 0f).forGetter(Effects::staminaDrain),
+                Codec.floatRange(0.5f, 4f).optionalFieldOf("backstab", 1f).forGetter(Effects::backstab),
+                Codec.floatRange(0.5f, 4f).optionalFieldOf("aerial", 1f).forGetter(Effects::aerial),
+                Codec.floatRange(0f, 0.9f).optionalFieldOf("armour", 0f).forGetter(Effects::armour),
+                Codec.floatRange(0f, 2f).optionalFieldOf("recoil", 0f).forGetter(Effects::recoil)
+        ).apply(i, Effects::new));
+    }
 
     public int totalTicks() {
         return timing.windup() + timing.active() + timing.recovery();

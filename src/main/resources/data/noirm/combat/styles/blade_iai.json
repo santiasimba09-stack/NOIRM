@@ -1,0 +1,53 @@
+{
+  "openers": {
+    "light": "noirm:blade_iai/draw_cut",
+    "heavy": "noirm:blade_iai/flash_draw",
+    "launcher": "noirm:blade_iai/rising_draw",
+    "forward_light": "noirm:blade_iai/dash_draw",
+    "forward_heavy": "noirm:blade_iai/dash_draw",
+    "back_heavy": "noirm:blade_iai/whirl_cut"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_blade_iai",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_blade_iai_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_blade_iai_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:blade_iai/iai_counter",
+  "identity": {
+    "footwork": "low",
+    "rhythm": "quick_draw",
+    "move_speed": 0.95,
+    "guard": {
+      "type": "counter",
+      "parry_window": 2.0,
+      "keep": 0.3,
+      "speed": 0.45
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.85
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.015,
+    "scroll": 2
+  },
+  "weapons": [
+    "katana",
+    "sword"
+  ],
+  "npc": {
+    "min_class": "C"
+  }
+}

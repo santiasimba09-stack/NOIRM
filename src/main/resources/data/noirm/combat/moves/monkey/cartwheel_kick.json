@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:monkey_cartwheel_kick",
+  "timing": {
+    "windup": 4,
+    "active": 3,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 16,
+    "range": 2.9,
+    "arc": 160,
+    "knockback": 0.5,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.45
+  },
+  "next": {
+    "light": "noirm:monkey/backflip_kick",
+    "heavy": "noirm:monkey/spinning_sweep"
+  }
+}

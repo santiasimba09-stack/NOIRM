@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:wind_step_falling_leaf",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 12,
+    "range": 2.9,
+    "arc": 90,
+    "knockback": 0.5,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.45,
+    "lunge": 0.4
+  },
+  "next": {
+    "light": "noirm:wind_step/gust_jab"
+  }
+}

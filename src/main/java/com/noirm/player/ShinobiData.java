@@ -152,6 +152,13 @@ public final class ShinobiData {
         return masters;
     }
 
+    /** Fighting styles learned in play, and the weapon style picked per weapon ({@code combat.StyleSystem}). */
+    private final com.noirm.combat.StyleBook styles = new com.noirm.combat.StyleBook();
+
+    public com.noirm.combat.StyleBook styles() {
+        return styles;
+    }
+
     public TrainingData training() {
         return training;
     }
@@ -399,6 +406,7 @@ public final class ShinobiData {
         tag.put("Arts", arts.save());
         tag.put("Creations", creations.save());
         tag.put("Pills", pills.save());
+        tag.put("Styles", styles.save());
         return tag;
     }
 
@@ -432,6 +440,7 @@ public final class ShinobiData {
         arts.load(tag.getCompound("Arts"));
         creations.load(tag.getList("Creations", net.minecraft.nbt.Tag.TAG_COMPOUND));
         pills.load(tag.getCompound("Pills"));
+        styles.load(tag.getCompound("Styles"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

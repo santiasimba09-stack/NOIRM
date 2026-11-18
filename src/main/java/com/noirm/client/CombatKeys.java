@@ -24,6 +24,8 @@ public final class CombatKeys {
     public static final KeyMapping LOCK_ON = key("lock_on", GLFW.GLFW_KEY_Z);
     public static final KeyMapping GRAB = key("grab", GLFW.GLFW_KEY_C);
     public static final KeyMapping STYLE = key("style", GLFW.GLFW_KEY_H);
+    /** Opens the style picker (every style, how each plays; choose unarmed and weapon styles). */
+    public static final KeyMapping STYLE_PICKER = key("style_picker", GLFW.GLFW_KEY_Y);
 
     private CombatKeys() {}
 
@@ -39,5 +41,6 @@ public final class CombatKeys {
         event.register(LOCK_ON);
         event.register(GRAB);
         event.register(STYLE);
+        event.register(STYLE_PICKER);
     }
 }

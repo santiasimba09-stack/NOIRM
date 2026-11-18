@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:crane_counter_kick",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 18,
+    "range": 3.1,
+    "arc": 130,
+    "knockback": 0.6,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:crane/roundhouse"
+  }
+}

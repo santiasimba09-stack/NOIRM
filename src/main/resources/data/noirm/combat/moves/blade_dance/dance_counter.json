@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:blade_dance_dance_counter",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 7,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 20,
+    "range": 3.0,
+    "arc": 150,
+    "knockback": 0.6,
+    "hitstun": 13,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:blade_dance/dance_spin"
+  }
+}
