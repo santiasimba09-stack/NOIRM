@@ -14,7 +14,7 @@
     "xp_speed": 0.3,
     "perception": 0.15,
     "melee_damage": 0.1,
-    "hound": 1,
+    "hound": 2,
     "chakra_pool": -0.4,
     "chakra_regen": -0.2
   },

@@ -1,0 +1,13 @@
+{
+  "_doc": "Mastiff: a huge guard dog: a wide heavy head with a short muzzle, thick legs, a broad chest and hanging ears.",
+  "adult": {
+    "chest": [8.0, 7.5, 7.5], "hips": [7.0, 6.5, 7.0], "belly_drop": 0.5,
+    "f_upper": 4.0, "f_lower": 3.5, "f_paw": [3.0, 1.5, 3.25], "f_th": 3.0,
+    "b_thigh": 4.0, "b_shin": 3.0, "b_meta": 1.75, "b_paw": [3.0, 1.5, 3.25], "b_th": 3.25,
+    "neck_len": 2.0, "neck_th": 5.5, "neck_angle": 50,
+    "skull": [7.0, 6.0, 5.5], "snout": [3.75, 3.0, 3.25], "jaw": [3.5, 1.25, 2.75], "brow": 0.5,
+    "ear": [2.25, 2.0, 1.25], "ear_tip": [1.5, 1.0, 1.0], "ear_flop": 25, "ear_spread": 16, "ear_hang": 0,
+    "tail_n": 2, "tail_len": 3.5, "tail_th": 2.25, "tail_angle": -20, "tail_curl": -40,
+    "ruff": 1.6, "tufts": 1, "fang": 0.75, "mane_back": 1.0
+  }
+}

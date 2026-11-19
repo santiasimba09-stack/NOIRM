@@ -39,5 +39,7 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(NoirmEntities.WOOD_COLOSSUS.get(), WoodReleaseRenderers.ColossusRenderer::new);
         // Senjutsu: the hermit's restless spirits (a vex body for now, trailing grey-green motes).
         event.registerEntityRenderer(NoirmEntities.NATURE_SPIRIT.get(), net.minecraft.client.renderer.entity.VexRenderer::new);
+        // The Inuzuka ninja hound: our own jointed model, one per growth stage (tools/houndgen, docs/INUZUKA.md).
+        event.registerEntityRenderer(com.noirm.hound.HoundRegistry.NINJA_HOUND.get(), com.noirm.client.hound.HoundRenderer::new);
     }
 }

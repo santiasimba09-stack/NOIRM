@@ -337,6 +337,7 @@ public final class TrainingSystem {
                 gained++;
             }
             data.training().setXp(stat, total);
+            com.noirm.hound.HoundEvents.ownerTrained(player, xp); // your hound learns beside you
             if (gained > 0) {
                 setStat(data, stat, value);
                 announce(player, stat, value);

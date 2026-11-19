@@ -90,6 +90,13 @@ public final class ShinobiData {
         return talents;
     }
 
+    /** Your ninja hound (docs/INUZUKA.md): kept with you, so it follows you anywhere. */
+    private final com.noirm.hound.HoundData hound = new com.noirm.hound.HoundData();
+
+    public com.noirm.hound.HoundData hound() {
+        return hound;
+    }
+
     public ClanIdentity identity() {
         return identity;
     }
@@ -416,6 +423,7 @@ public final class ShinobiData {
         tag.put("Pills", pills.save());
         tag.put("Styles", styles.save());
         tag.put("Talents", talents.save());
+        tag.put("Hound", hound.save());
         return tag;
     }
 
@@ -451,6 +459,7 @@ public final class ShinobiData {
         pills.load(tag.getCompound("Pills"));
         styles.load(tag.getCompound("Styles"));
         talents.load(tag.getCompound("Talents"));
+        hound.load(tag.getCompound("Hound"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

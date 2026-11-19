@@ -23,7 +23,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraftforge.common.util.FakePlayer;
@@ -54,8 +53,6 @@ public final class PerkEvents {
     private static final UUID HEALTH_ID = UUID.fromString("6a8e1f3c-2b4d-4e5f-9a1b-7c3d5e7f9b21");
     /** Health regeneration only runs while the food bar is above this (a starving body doesn't heal). */
     public static final int REGEN_MIN_FOOD = 1;
-    /** The Inuzuka hound: extra max health and its name. */
-    public static final double HOUND_HEALTH = 20;
     /** Damage types that count as damage over time. */
     private static final List<net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType>> DOT =
             List.of(DamageTypes.MAGIC, DamageTypes.WITHER, DamageTypes.ON_FIRE, DamageTypes.IN_FIRE, DamageTypes.HOT_FLOOR);
@@ -217,30 +214,25 @@ public final class PerkEvents {
         }
     }
 
-    /** The Inuzuka's ninja hound: a tamed, tougher wolf that follows you from the start. */
-    public static Wolf giveHound(Player player, ShinobiData data) {
+    /**
+     * The clan's hound (docs/INUZUKA.md): Inuzuka blood starts with a ninja hound puppy at its side;
+     * a Hatake inherits a ninken summoning contract instead ({@code "hound": 2} in the clan file).
+     * Returns the puppy (null for a contract, or if it couldn't be placed).
+     */
+    public static com.noirm.hound.NinjaHound giveHound(Player player, ShinobiData data) {
         data.talents().setHoundGiven(true);
-        if (!(player.level() instanceof ServerLevel level)) {
+        if (!(player.level() instanceof ServerLevel)) {
             return null;
         }
-        Wolf wolf = EntityType.WOLF.create(level);
-        if (wolf == null) {
+        if (com.noirm.hound.Hounds.bloodHound(data) == 2) {
+            player.getInventory().add(new net.minecraft.world.item.ItemStack(com.noirm.hound.HoundRegistry.NINKEN_CONTRACT.get()));
+            player.sendSystemMessage(Component.translatable("message.noirm.clan.hound_contract").withStyle(ChatFormatting.GOLD));
             return null;
         }
-        wolf.moveTo(player.getX() + 1, player.getY(), player.getZ() + 1, player.getYRot(), 0f);
-        wolf.tame(player);
-        wolf.setCustomName(Component.translatable("entity.noirm.ninja_hound", player.getName()));
-        AttributeInstance health = wolf.getAttribute(Attributes.MAX_HEALTH);
-        if (health != null) {
-            health.addPermanentModifier(new AttributeModifier(UUID.fromString("0d7c2a51-3e4f-4b6a-8c9d-1e2f3a4b5c6d"),
-                    "noirm_ninja_hound", HOUND_HEALTH, AttributeModifier.Operation.ADDITION));
+        if (data.hound().has()) {
+            return com.noirm.hound.Hounds.find(player);
         }
-        wolf.setHealth(wolf.getMaxHealth());
-        wolf.setPersistenceRequired();
-        level.addFreshEntity(wolf);
-        level.sendParticles(ParticleTypes.CLOUD, wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 20, 0.4, 0.4, 0.4, 0.02);
-        player.sendSystemMessage(Component.translatable("message.noirm.clan.hound").withStyle(ChatFormatting.GOLD));
-        return wolf;
+        return com.noirm.hound.Hounds.grantPuppy(player, null, false);
     }
 
     // ---------------------------------------------------------------- hits

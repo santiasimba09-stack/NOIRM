@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "31";
+    private static final String PROTOCOL_VERSION = "32";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -135,6 +135,10 @@ public final class NoirmNetwork {
         id = com.noirm.combat.StylePackets.register(CHANNEL, id); // the style picker (protocol 28)
         id = com.noirm.genjutsu.GenjutsuPackets.register(CHANNEL, id); // genjutsu scenes in the victim's mind
         id = com.noirm.hiraishin.HiraishinPackets.register(CHANNEL, id); // the Flying Raijin, its marks, the Body Flicker
+        // The ninja hound panel's orders (protocol 32; the panel's view rides on SyncPowers).
+        CHANNEL.messageBuilder(com.noirm.hound.HoundPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.noirm.hound.HoundPackets.Command::encode).decoder(com.noirm.hound.HoundPackets.Command::decode)
+                .consumerMainThread(com.noirm.hound.HoundPackets.Command::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */

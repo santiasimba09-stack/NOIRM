@@ -46,6 +46,10 @@ public final class CrewPackets {
     /** Carries out a crew-wide order; returns how many crew mates took it (public for tests). */
     public static int apply(ServerPlayer player, Action action, String arg) {
         List<SparringNinja> crew = loaded(player);
+        boolean hound = com.noirm.hound.Hounds.crewOrder(player, action, arg); // your hound takes crew orders too
+        if (crew.isEmpty() && hound) {
+            return 1;
+        }
         if (crew.isEmpty()) {
             player.displayClientMessage(Component.translatable("command.noirm.crew.empty").withStyle(ChatFormatting.GRAY), true);
             return 0;
@@ -107,7 +111,7 @@ public final class CrewPackets {
     }
 
     /** The enemy under your crosshair (up to 40 blocks), not one of your own. */
-    static LivingEntity lookTarget(ServerPlayer player) {
+    public static LivingEntity lookTarget(ServerPlayer player) {
         Vec3 eye = player.getEyePosition();
         Vec3 look = player.getViewVector(1f);
         LivingEntity best = null;

@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING, NOT_CLAN }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING, NOT_CLAN, NEEDS_HOUND }
 
     /**
      * A jutsu in progress: hand seals before a TAP jutsu (or an NPC's cast) fires, or a CHARGE or
@@ -650,6 +650,9 @@ public final class JutsuCaster {
             }
             if ("gate".equals(requirement.dojutsu()) && ModeSystem.gateTier(caster) < requirement.stage()) {
                 return Result.NEEDS_GATE;
+            }
+            if ("hound".equals(requirement.dojutsu()) && !com.noirm.hound.Hounds.houndReady(caster, requirement.stage())) {
+                return Result.NEEDS_HOUND; // a hound technique: your hound, grown enough (stage 1 = puppy)
             }
         }
         if ("mode".equals(def.behavior()) && !ModeSystem.isActive(caster, id) && ModeSystem.tooHurtFor(caster, def)) {

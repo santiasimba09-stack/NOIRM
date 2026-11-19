@@ -144,7 +144,12 @@ public final class JutsuBehaviors {
             Map.entry("rock_hounds", BasicNatureTechniques::rockHounds),
             Map.entry("rampart", BasicNatureTechniques::rampart),
             Map.entry("weight_rock", BasicNatureTechniques::weightRock),
-            Map.entry("falling_mountain", BasicNatureTechniques::fallingMountain));
+            Map.entry("falling_mountain", BasicNatureTechniques::fallingMountain),
+            // The Inuzuka and their ninja hounds (hound/HoundTechniques, docs/INUZUKA.md)
+            Map.entry("fang_over_fang", com.noirm.hound.HoundTechniques::fangOverFang),
+            Map.entry("dynamic_marking", com.noirm.hound.HoundTechniques::dynamicMarking),
+            Map.entry("man_beast_clone", com.noirm.hound.HoundTechniques::manBeastClone),
+            Map.entry("two_headed_wolf", com.noirm.hound.HoundTechniques::twoHeadedWolf));
 
     private JutsuBehaviors() {}
 
@@ -468,7 +473,7 @@ public final class JutsuBehaviors {
     }
 
     /** The living thing closest to the caster's line of sight, within {@code maxAngle}°. */
-    static LivingEntity lookTarget(LivingEntity caster, double range, double maxAngle) {
+    public static LivingEntity lookTarget(LivingEntity caster, double range, double maxAngle) {
         Vec3 eye = caster.getEyePosition();
         Vec3 look = caster.getViewVector(1f);
         return caster.level().getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(range),
@@ -490,11 +495,11 @@ public final class JutsuBehaviors {
         return Math.toDegrees(Math.atan2(entity.getBbHeight() * 0.5, distance));
     }
 
-    static void sound(LivingEntity at, SoundEvent sound, float volume, float pitch) {
+    public static void sound(LivingEntity at, SoundEvent sound, float volume, float pitch) {
         at.level().playSound(null, at.getX(), at.getY(), at.getZ(), sound, SoundSource.PLAYERS, volume, pitch);
     }
 
-    static void message(LivingEntity to, Component text) {
+    public static void message(LivingEntity to, Component text) {
         if (to instanceof Player player) {
             player.displayClientMessage(text, true);
         }
