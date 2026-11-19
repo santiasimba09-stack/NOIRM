@@ -509,6 +509,13 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
         Hounds.snapshot(this);
     }
 
+    /** How long it stays down from now (ticks; for tests and commands). Only while it's down. */
+    public void setDownTicks(int ticks) {
+        if (isDown()) {
+            entityData.set(DOWN, Math.max(1, ticks));
+        }
+    }
+
     /** Gets back up with {@code healthShare} of its health. */
     public void wake(float healthShare) {
         entityData.set(DOWN, 0);

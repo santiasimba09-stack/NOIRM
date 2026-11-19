@@ -88,7 +88,11 @@ public final class Hounds {
         if (owner instanceof Player player) {
             return ShinobiCapability.get(player).map(d -> bloodHound(d) == 1).orElse(false);
         }
-        return owner instanceof SparringNinja ninja && Perks.totals(ninja).getOrDefault(Perk.HOUND, 0f) > 0f;
+        if (owner instanceof SparringNinja ninja) {
+            float v = Perks.totals(ninja).getOrDefault(Perk.HOUND, 0f);
+            return v > 0f && v < 1.5f; // a Hatake's contract hound doesn't know the Inuzuka's beast arts
+        }
+        return false;
     }
 
     public static HoundData data(Player player) {
