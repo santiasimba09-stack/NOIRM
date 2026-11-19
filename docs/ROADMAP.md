@@ -55,6 +55,9 @@ Each milestone ends with something you can play and test.
 | 3.15 | **A complete survival game** (planned) | The owner's plan in `SURVIVAL.md`: advancements and a playthrough, a config file and balance, our own sound, survival staples (food, pills, tools, crafting, economy), exploration (ruins, dungeons, beast lairs), new paths (summoning, sealing, puppets, space-time), and an endgame (Kage, wars, a rogue organisation). Single-player first. |
 | 3.16 | **Combat feel and looks** ✅ (v0.17.0) | Combat animations rebuilt on our engine (snap key poses, automatic sub-stances, 5-hit strings, dodge counters, dash strikes, guard breaks); 3D hair in 23 styles, new eyes, body builds and frames; a survival playthrough with a balance pass (`PLAYTHROUGH.md`). |
 | 3.17 | **Pills, food and chakra armour** ✅ (v0.18.0) | A pill-making craft (herbs, apothecary, pharmacology), ninja foods, chakra reinforcement over vanilla armour with chakra durability, a Water S-rank jutsu. |
+| 3.18 | **Styles, clans and space-time** ✅ (v0.19.0) | 14 new fighting styles; 26 canon clans with big gaps and real drawbacks; 29 personal talents; genjutsu as scenes in the mind; a rebuilt Body Flicker; the Flying Raijin; the Inuzuka ninja hound that grows with you. |
+| 3.19 | **Solid, full-scale jutsu** (next) | Every jutsu built from blocks and cubes, bigger and to scale, up to the Wood Dragon / Dust cube standard (`WAVE_JUTSU_VISUALS.md`). |
+| 3.20 | **A richer creator and a ninja-style UI** (next) | Many more hair styles, eyes and body types; every screen redone with a ninja feel (`WAVE_CREATOR_UI.md`). |
 | later | **Squads:** recruit characters you meet, defeat or befriend while exploring; they fight beside you and feed Resolve. Then missions, clans, nature releases, dōjutsu, tailed beasts, multiplayer polish | |
 
 ## Art without an artist

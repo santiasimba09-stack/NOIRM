@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-14 (**NOIRM APX 0.1** = v0.18.0, the owner's new baseline) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-19 (**v0.19.0**: styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound; on top of APX 0.1 = v0.18.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -72,13 +72,34 @@ The owner: "name it noirm apx 0.1 now, and we shall continue from this point for
 | **Leviathan Maelstrom** (Water S-rank) | ✅ tested; checked in client (`cr-water-*`) |
 | **Eyes, fourth pass** | ✅ checked in client (`eyes-v2-*`) |
 
+## v0.19.0 (2026-11-19)
+
+The owner's wave (`docs/WAVE_STYLES_CLANS.md`), built by parallel helpers.
+
+| Piece | State |
+|---|---|
+| **14 new fighting styles** (`COMBAT_DESIGN.md`, "Fighting styles"): own stance, guard, dodge, mechanics; learned from masters, scrolls, watching; **I** opens the picker | ✅ tested; checked in client (`st-*`) |
+| **26 canon clans** (`CLANS.md`): perks, 12 clan jutsu, clan styles; **much bigger gaps with drawbacks** (Uzumaki ×10 chakra, ×20 as jinchūriki; Might line ×4 taijutsu training) | ✅ tested; simulator: every clan reaches every rank; checked in client (`cl-*`, `cl-gaps-*`) |
+| **29 personal talents** (`TRAITS.md`): 2–4 per character, clan-biased, at most one weakness | ✅ tested; checked in client |
+| **Genjutsu scenes** (`GENJUTSU.md`): the victim sees a scene; breaking out shatters it | ✅ tested; checked in client (`gr-*`) |
+| **Body Flicker, rebuilt** (`GENJUTSU.md`): instant, blur, afterimage, no wall clipping, flicker-strike | ✅ tested; checked in client |
+| **The Flying Raijin** (`FLYING_RAIJIN.md`): marked kunai, marks by throw/touch/surface (**Y** mark, **X** jump, **U** cycle), Thunder God Slash, allies, sending jutsu away | ✅ tested; checked in client |
+| **The Inuzuka hound** (`INUZUKA.md`): a puppy that grows level by level (no fixed stages), 12 traits, 5 breeds × patterns × 16 colours, Fang Over Fang together, smell tracking, Man Beast Clone, Two-Headed Wolf, riding; knocked out, never dead; panel on **O** | ✅ tested (13 tests); checked in client (`hound-*`) |
+
+**Flaky tests** (fail now and then while the machine is busy; each passed on the next run):
+`dodgeIntoCounterLandsBehind`, `wavesRollOverAndCarry`, `ninjasCastFromTheirOwnSet`, `catchingAMobChangesWhatItDoes`.
+
 ## Next steps (in order)
 
-1. **Owner tries v0.18.0** and answers the new questions on the progress map (reinforcement numbers,
-   legends vs the simulator, pill strength, toxicity pace, herbs).
-2. **Rest of the survival staples:** smoke bombs, wire, traps; then more foods, armour and weapons to buy.
-3. **Exploration**, then **new paths**, then **endgame** (`docs/SURVIVAL.md`). Chakra wave part 3 when the owner wants it.
-4. Flaky tests still listed above; find why the old test world ran out of memory.
+1. **Owner tries v0.19.0** and answers the new questions on the progress map (Uzumaki size, fighter clans,
+   loud chakra, Might Guy, the Flying Raijin, Kotoamatsukami, hounds).
+2. **Two waves the owner asked for after v0.19.0** (they can run in parallel):
+   - **Solid, full-scale jutsu** (`docs/WAVE_JUTSU_VISUALS.md`): every jutsu built from blocks, bigger and
+     to scale; a real Dust cube and a Primitive World cylinder; a bigger statue; a much bigger Deep Forest
+     Emergence with leaves and permanent, usable wood.
+   - **A richer creator and a ninja-style UI** (`docs/WAVE_CREATOR_UI.md`): many more hair styles, eyes and
+     body types; every screen redone with a ninja feel.
+3. Rest of the survival staples (smoke bombs, wire, traps), exploration, new paths, endgame (`docs/SURVIVAL.md`).
 
 ## Code map
 
@@ -94,7 +115,7 @@ The owner: "name it noirm apx 0.1 now, and we shall continue from this point for
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 22), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 32), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
 | `com.noirm.client.ui` | The UI kit every screen and the HUD use (`docs/UI.md`): `Theme` (colours, spacing), `Ui` (panel, header and seal, card, button, toggle, segment, slider, bar, row, chip, scrollbar, text cut with "…"), `TabStrip` (text tabs, sliding underline), `ScreenMotion` (open/close/tab fades), `HoverTracker`, `Smooth`, `Anim`, `HudKit`, `HudLayout`, `NoirmStyled` + `TooltipStyle` (kit tooltips) |
 | `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
@@ -107,6 +128,9 @@ The owner: "name it noirm apx 0.1 now, and we shall continue from this point for
 | `com.noirm.world.wild` | Wild ninjas: `EncounterType`/`Encounters` (data in `data/noirm/encounters/`), `WildSpawner` (when/where, caps, danger), `WildNinjas` (groups, despawn), `WildTravelGoal`, `WildTargetGoal` |
 | `com.noirm.senjutsu` | `Meditation` (rules and constants; `isMeditating`, `natureEnergy`), `MeditationData` (saved), `MeditationEvents` (ticking, what ends it) |
 | `com.noirm.gear` | `NoirmGear` (wearable pieces), `GearItem`, `GearMaterial`, `ClanOutfits` (who wears what) |
+| `com.noirm.traits` | Clan perks and personal talents: `Perk`, `Perks` (lookups, NPC share), `TalentData`, `PerkEvents`, `ClanHiraishin` |
+| `com.noirm.hound` | The ninja hound: `NinjaHound` (entity), `HoundStage` (growth curve, milestones), `HoundData` (saved in the owner's data), `HoundSmell`, `HoundTechniques`, `HoundOrder`, `HoundPackets`, `Hounds`, `NinkenContractItem`; traits in `data/noirm/hound_traits/`, breeds in `assets/noirm/hound/breeds/` |
+| `com.noirm.genjutsu` / `com.noirm.hiraishin` | Genjutsu scenes (data in `data/noirm/genjutsu/`; client `GenjutsuSceneRenderer`); the Flying Raijin (`HiraishinPackets`, `HiraishinNpc`, `HiraishinAffinity`) |
 | `com.noirm.vfx` | `Vfx` (palettes, emitters, presets), `VfxOptions`/`VfxKind`, `NoirmParticles`; client side `VfxParticle` |
 | `com.noirm.world` | `Destruction` (craters, scorch, freeze, wall smash… and the regen queue; gamerules) |
 | `com.noirm.world.village` | `NinjaVillageStructure` (where villages go; the site check; a hidden village's core start), `VillageWardStructure` + `WardPlacement` (one start per chunk of a hidden village), `VillagePiece` (saved per chunk), `VillagePlan` + `VillagePlanner` (the layout from a seed: streets and river rasters, districts, lots, props, people; cached, indexed per chunk), `VillageBuilder` (ground, streets, street furniture; draws lots per chunk), `VillageBuildQueue` (`/noirm village`, a few chunks per tick), `Waterways` (river, canals, banks, bridges), `Fortifications` (walls and bastions, gates, Kage Rock with stairs and tunnels, cliff and spire rings, fences), `VillageAtmosphere` (tells the client which village it's in), `VillageSpawns` (no raiders inside), `LotFrame` (draw a lot front-to-the-south), `Buildings` (homes, shops, façades, rooftops), `RoundBuildings` (spires, jōnin station, rock spires), `Yards` (yards, giant tree, cemetery), `Landmarks` (Kage residence, Academy, hospital, clan district, shrine, training grounds, hot spring), `Shapes` (drums, ring eaves, medallions), `Materials` (block mixes, colourways), `VillageCanvas`, `VillagePalette` (Leaf/Sand/Snow), `VillageKind`, `VillageResidents` (spawning, alarm), `VillageRoutineGoal` (rooftop runners, patrols, trainees) |
