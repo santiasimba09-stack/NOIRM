@@ -877,7 +877,19 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             Component line = Component.translatable(perk.translationKey(), perk.format(value));
             int cx = x + 4 + (i / Math.max(1, rowsUsed)) * col;
             int cy = y + (i % Math.max(1, rowsUsed)) * 10;
-            g.drawString(font, cut(line, col - 4), cx, cy, perk.good(value) ? 0xFF7FD38A : 0xFFE06A5A, false);
+            int colour = perk.good(value) ? 0xFF7FD38A : 0xFFE06A5A;
+            int width = font.width(line);
+            if (width <= col - 4) {
+                g.drawString(font, line, cx, cy, colour, false);
+            } else {
+                // A long perk shrinks to fit (down to 3/4 size) before it is cut; hovering shows it in full.
+                float scale = Math.max(0.75f, (col - 4) / (float) width);
+                g.pose().pushPose();
+                g.pose().translate(cx, cy + (1 - scale) * 4, 0);
+                g.pose().scale(scale, scale, 1);
+                g.drawString(font, cut(line, (int) ((col - 4) / scale)), 0, 0, colour, false);
+                g.pose().popPose();
+            }
             hits.add(new Hit(cx, cy, col - 4, 10, null, List.of(line, Component.translatable(perk.translationKey() + ".desc")
                     .withStyle(s -> s.withColor(0xA0A0A0)))));
         }
