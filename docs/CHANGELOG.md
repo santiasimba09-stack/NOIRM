@@ -2,6 +2,66 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-19 — NOIRM v0.2 (= v0.19.0): styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound, v0.19.0 (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's wave (`docs/WAVE_STYLES_CLANS.md`), built by parallel helpers and merged here.
+- **Fighting styles** (`docs/COMBAT_DESIGN.md`, "Fighting styles"):
+  - 14 new styles. Unarmed: Drunken Fist, Iron Body, Viper, Crane, Mountain, Wind Step, Shadow, Leaf
+    Hurricane, Sumo, Monkey. Weapon: Iai, Blade Dance, Bo Wall, Spear Dance.
+  - Each has its own stance, guard, dodge, speed and mechanics (feints, armour, counter stance, backstab,
+    aerial bonus).
+  - Learned from masters, style scrolls and by watching. **I** opens the style picker (moved from Y).
+- **Clans that matter** (`docs/CLANS.md`):
+  - 26 canon clans with researched perks, 12 clan jutsu and clan styles; generated clans get perk
+    packages.
+  - Clan tab in the creator; `/noirm me`.
+- **Much bigger clan gaps, with drawbacks** (owner's follow-up):
+  - **Uzumaki:** chakra pool ×10 a normal ninja's at the same Reserves (×20 as a jinchūriki, about 33× a
+    Hatake), strong regen and healing, longevity, sealing ×2, and a Flying Raijin gift. Drawbacks: rough
+    control early (costly jutsu, weak genjutsu) and loud chakra (more wild encounters, beasts notice from
+    further).
+  - **Might/Lee line:** taijutsu training ×4, willpower +8 and ×2 training, stamina +150, Eight Gates at
+    half wear, born knowing the Gate of Opening. Drawbacks: jutsu −60%, genjutsu −80%, half chakra, no
+    nature.
+  - **Every other clan:** deepened the same way, with defining strengths and real weaknesses.
+  - **Balance:** raw combat perks are capped (about 1.2–1.3×), and NPCs count them at half. The simulator
+    (`--clan`, `--clans`) shows every clan reaching every rank and beating class S.
+- **Personal talents** (`docs/TRAITS.md`, `traits/`):
+  - 29 talents; 2–4 rolled per character, biased by clan but different within a clan, at most one
+    weakness.
+  - `/noirm trait`; a sensor radar for Chakra Sensor.
+- **Genjutsu scenes** (`docs/GENJUTSU.md`, `genjutsu/`):
+  - The victim's own client draws a scene: a false sky, an ink/water/blood floor, crows, phantoms, binding
+    hands, the Tsukuyomi negative with its clock, and our own sounds.
+  - Breaking out shatters it like glass. Caught mobs act on what they see.
+- **Body Flicker, rebuilt** (`jutsu/BodyFlicker`): instant, with a blur and an afterimage, no wall
+  clipping, and a flicker-strike against a locked-on target.
+- **The Flying Raijin** (`docs/FLYING_RAIJIN.md`, `hiraishin/`):
+  - Marked three-pronged kunai; marks by throw, touch and surface. **Y** marks, **X** jumps, **U** cycles
+    marks.
+  - An instant jump with a yellow flash, the Thunder God Slash, bringing allies, sending jutsu away,
+    chains.
+  - NPC users; `/noirm spacetime`.
+- **The Inuzuka ninja hound** (`docs/INUZUKA.md`, `hound/`): Inuzuka players start with a puppy; Hatake players get a Ninken contract.
+  - **Growth:** the hound grows level by level with no fixed stages (its own XP, the bond, your power).
+    Size and proportions change smoothly from a big-headed puppy to an adult taller than a horse, then
+    level off. Strength keeps rising.
+  - **Milestones:** carried on your head or in your jacket (small), Fang Over Fang together and Man Beast
+    Clone (lv 6), guard (lv 12), riding and the Two-Headed Wolf (lv 20).
+  - **Traits:** 12 (JSON), 2–3 per hound with at most one weakness.
+  - **Looks:** 5 breeds, 3 ear and 3 tail types, 6 coat patterns, 16 colours, markings, all rolled at
+    bonding.
+  - **Smell tracking:** marks hidden enemies and follows the scent.
+  - **Food and pills:** foods, bones and a hound ration pill.
+  - **Knockout, never death:** a downed hound is knocked out and recovers.
+  - **UI:** panel on **O**, a HUD line, `/noirm hound`.
+  - **NPCs:** Inuzuka NPCs bring their own hounds.
+- **Fixes:**
+  - The clan tab's long perk lines shrink to fit.
+  - Tests that failed by chance (`genjutsuStunsAWeakerMind`, `despawnRules`, `groupMatesJoinTheFight`, `theApothecaryFillsGrindsAndRefuses`)
+    now wait for or retry what they check.
+- Protocol 32. 555 game tests green twice in a row.
+
 ## 2026-11-14 — v0.18.0 named NOIRM APX 0.1, the baseline (branch `claude/keen-cray-uc2d11`, PR #1)
 
 - The owner named v0.18.0 **NOIRM APX 0.1** and the point to continue from. It was sent as

@@ -321,9 +321,17 @@ public final class PillGameTests {
         ResourceLocation stamina = id(PillItems.STAMINA_PILL);
         menu.select(player, data, stamina);
         helper.assertTrue(Apothecary.matches(menu.mortar(), ApothecaryMenu.INPUTS, PillRegistry.pill(stamina).recipe().get()), "filled from the bag");
-        data.pills().setPharmacology(60f); // never fails
+        data.pills().setPharmacology(60f); // success tops out at 97%: a ruined pill now and then, so grind again
         helper.assertTrue(menu.brew(player, data), "ground");
         ItemStack out = menu.mortar().getItem(ApothecaryMenu.OUTPUT);
+        for (int i = 0; i < 6 && !out.is(PillItems.STAMINA_PILL.get()); i++) {
+            menu.mortar().setItem(ApothecaryMenu.OUTPUT, ItemStack.EMPTY);
+            player.getInventory().add(new ItemStack(PillItems.HERB_ITEMS.get("ironmillet").get(), 2));
+            player.getInventory().add(new ItemStack(Items.SUGAR, 1));
+            menu.select(player, data, stamina);
+            helper.assertTrue(menu.brew(player, data), "ground again");
+            out = menu.mortar().getItem(ApothecaryMenu.OUTPUT);
+        }
         helper.assertTrue(out.is(PillItems.STAMINA_PILL.get()) && out.getCount() >= 3, "stamina pills out: " + out);
         helper.assertTrue(Grade.of(out).ordinal() >= Grade.REFINED.ordinal(), "a skilled hand: refined or better, got " + Grade.of(out));
         helper.assertTrue(menu.mortar().getItem(0).isEmpty() && menu.mortar().getItem(1).isEmpty(), "ingredients used up");

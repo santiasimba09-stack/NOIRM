@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-19 (**v0.19.0**: styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound; on top of APX 0.1 = v0.18.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-19 (**NOIRM v0.2** = v0.19.0: styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound; on top of APX 0.1 = v0.18.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
