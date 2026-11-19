@@ -162,8 +162,10 @@ public final class CommandGuide {
         section("hound")
                 .add("status", "/noirm hound", "/noirm hound", false)
                 .add("order", "/noirm hound order <follow|sit|guard|come|attack|track|carry|jacket|ride|pet|howl|recall>", "/noirm hound order carry", false)
-                .add("give", "/noirm hound give [white|grey|black|brown]", "/noirm hound give grey", true)
+                .add("give", "/noirm hound give [wolf|stocky|sighthound|spitz|mastiff]", "/noirm hound give spitz", true)
                 .add("stage", "/noirm hound stage <puppy|young|grown|great|giant>", "/noirm hound stage great", true)
+                .add("level", "/noirm hound level <1-999>", "/noirm hound level 25", true)
+                .add("reroll", "/noirm hound reroll", "/noirm hound reroll", true)
                 .add("bond", "/noirm hound bond <0-100>", "/noirm hound bond 80", true)
                 .add("xp", "/noirm hound xp <amount>", "/noirm hound xp 200", true)
                 .add("remove", "/noirm hound remove", "/noirm hound remove", true);
