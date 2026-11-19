@@ -46,3 +46,12 @@ the sense of it, and I want us to be the exception. Investigate all you can."
   models and sizes first. Special attention to the dog's design, skills and growth, researched to be as
   accurate as possible. (The owner wrote "Akimichi" here, but the dog is the Inuzuka clan's; treated as
   the Inuzuka.)
+
+### Hound change (owner, 2026-11-19)
+"Make the dog also have traits and many different styles, and I don't want it to be fixed by the 4
+stages of growth, just a progressive system where it keeps growing and becoming stronger."
+- **Continuous growth:** a growth level that keeps rising. Size and proportions change smoothly, then level
+  off at a sensible maximum. Strength keeps climbing with diminishing returns. Abilities unlock at
+  milestone levels, not stages.
+- **Hound traits:** 2–3 rolled per hound, with at most one weakness.
+- **Many styles:** builds or breeds, coat patterns, colours, ear and tail types, markings.
