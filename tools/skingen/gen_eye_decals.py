@@ -12,6 +12,9 @@ RES pixels per model pixel, one atlas per eye shape (anatomy.EYE_SHAPES):
         3-5 sharingan  one, two and three tomoe (full colour, drawn full-bright)
         6 byakugan  the pale, pupil-less iris (full colour, full-bright; the veins stay on the skin)
         7 rinne     reserved (empty)
+    and a second row (from y = ROW2) of iris cells with other pupils, in anatomy.PUPILS order: slit, pinprick,
+    wide, hollow (no pupil, a dull ring) and ringed (a pale ring around the pupil). The creator's "round" pupil is
+    the first row's iris.
 
 Each cell covers the texture-left eye's box: face x from EYE_XS[0] + X_FROM to + X_TO, y from EYE_Y + Y_FROM
 to + Y_TO (head-front texture pixels); the other eye is the mirror image. Keep those numbers in step with
@@ -39,7 +42,8 @@ X_FROM, X_TO = -2.25, 1.75
 Y_FROM, Y_TO = -1.65, 0.85
 CELL_W, CELL_H = 128, 80
 CELLS = 8
-ATLAS_W, ATLAS_H = 1024, 128
+ATLAS_W, ATLAS_H = 1024, 256
+ROW2 = 128
 
 WHITE = np.array(hx("#e2dcd2"), np.float32)
 WHITE_SHADE = np.array(hx("#7c726e"), np.float32)
@@ -143,8 +147,8 @@ def cell_base(shape):
     return rgb, a
 
 
-def cell_iris(shape):
-    """The iris as gray (1 = the eye colour, lighter in game), masked to the opening."""
+def cell_iris(shape, pupil="round"):
+    """The iris as gray (1 = the eye colour, lighter in game), masked to the opening, with one of the pupils."""
     s = A.EYE_SHAPES[shape]
     pale = shape == "pale"
     X, Y = grid()
@@ -165,9 +169,32 @@ def cell_iris(shape):
     g = g * (0.3 + 0.7 * np.clip((Y - top) / 0.22, 0, 1))
     if pale:
         g = np.where(d > 0.84, 0.55, np.clip(g * 0.4 + 0.6, 0, 1))
-    else:
-        pupil = aa((0.3 - d) * r)
-        g = g * (1 - pupil) + 0.03 * pupil
+    elif pupil == "round":
+        dark = aa((0.3 - d) * r)
+        g = g * (1 - dark) + 0.03 * dark
+    elif pupil == "slit":
+        # a tall thin blade, pointed at both ends
+        sx = np.abs(X - ix) / r
+        sy = np.abs(Y - iy) / r
+        dark = aa((0.11 * np.clip(1 - sy ** 2 / 0.7, 0, 1) - sx) * r * 1.4) * (sy < 0.84)
+        g = g * (1 - dark) + 0.03 * dark
+    elif pupil == "pinprick":
+        dark = aa((0.15 - d) * r)
+        g = np.where(d < 0.42, g * 1.12, g)
+        g = g * (1 - dark) + 0.03 * dark
+    elif pupil == "wide":
+        dark = aa((0.5 - d) * r)
+        g = g * (1 - dark) + 0.03 * dark
+    elif pupil == "hollow":
+        # no pupil: a flat, dull iris with a faint inner ring (a cold, empty stare)
+        g = np.where(d < 0.84, 0.62 + 0.08 * fib, g)
+        g = np.where(np.abs(d - 0.45) < 0.05, 0.42, g)
+        g = g * (0.3 + 0.7 * np.clip((Y - top) / 0.22, 0, 1))
+    elif pupil == "ringed":
+        dark = aa((0.24 - d) * r)
+        ring = aa((0.07 - np.abs(d - 0.4)) * r)
+        g = np.where(d < 0.84, g * (1 - ring) + 1.25 * ring, g)
+        g = g * (1 - dark) + 0.03 * dark
     g = np.clip(g, 0, 1)
     rgb = np.repeat((g * 255)[..., None], 3, -1).astype(np.float32)
     return rgb, disc * inside
@@ -263,6 +290,11 @@ def atlas(shape):
         x0 = i * CELL_W
         out[:CELL_H, x0:x0 + CELL_W, :3] = np.clip(rgb, 0, 255)
         out[:CELL_H, x0:x0 + CELL_W, 3] = np.clip(a, 0, 1) * 255
+    for i, pupil in enumerate(A.PUPILS):
+        rgb, a = cell_iris(shape, pupil)
+        x0 = i * CELL_W
+        out[ROW2:ROW2 + CELL_H, x0:x0 + CELL_W, :3] = np.clip(rgb, 0, 255)
+        out[ROW2:ROW2 + CELL_H, x0:x0 + CELL_W, 3] = np.clip(a, 0, 1) * 255
     img = np.round(out).astype(np.uint8)
     img[img[..., 3] == 0, :3] = 0
     return img
