@@ -75,7 +75,7 @@ public final class HoundPackets {
             }
             return new HoundSync(true, hd.name(), hd.lookBits(), hd.level(), hd.bond(), hd.xp(), hd.order().ordinal(), hd.isOut(),
                     hd.byContract(), blood, Perception.basePower(player), hd.entityId() == null ? new UUID(0, 0) : hd.entityId(),
-                    hd.traits());
+                    hd.traits().stream().map(t -> HoundTraits.get(t) != null && HoundTraits.get(t).weakness() ? "!" + t : t).toList());
         }
 
         public HoundStage stageEnum() {

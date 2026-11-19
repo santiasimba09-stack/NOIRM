@@ -32,7 +32,7 @@ public final class HoundHud {
         NinjaHound hound = ClientHound.entity();
         float hp = hound == null || hound.getMaxHealth() <= 0 ? 0f : hound.getHealth() / hound.getMaxHealth();
         HEALTH.update(hp);
-        float growth = sync.stage() * 1000f + sync.bond() + sync.xp();
+        float growth = sync.level() * 1000f + sync.bond() + sync.xp();
         GROWTH.update(growth);
         boolean hurt = hound != null && hp < 0.999f;
         boolean busy = hound != null && (hound.isDown() || hound.isFrenzied() || hound.tracking() != null || hound.isFused() || hound.isHidden());
@@ -41,7 +41,7 @@ public final class HoundHud {
             return y;
         }
         float alpha = combat || hurt || busy ? 1f : recent;
-        Component stage = Component.translatable("screen.noirm.hound.stage." + sync.stageEnum().key());
+        Component stage = Component.translatable("screen.noirm.hound.level_short", sync.level());
         Component line;
         int colour;
         if (hound == null) {

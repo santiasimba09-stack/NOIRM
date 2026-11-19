@@ -2,15 +2,14 @@ package com.noirm.client.hound;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.noirm.hound.HoundStage;
+import com.noirm.hound.HoundGrowth;
 import com.noirm.hound.NinjaHound;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
 
 /**
- * The ninja hound's animated model. It wears whichever baked {@link HoundModels.Rig} fits the hound
- * right now (its body plan, its stage, or the Two-Headed Wolf) and poses the parts by name:
+ * The ninja hound's animated model. It wears whichever built {@link HoundModels.Rig} fits the hound
+ * right now (its breed, ears and tail at its level, or the Two-Headed Wolf) and poses the parts by name:
  * <ul>
  *   <li><b>walk</b>: a trot on diagonal pairs; <b>run</b>: a gallop (front pair, then back pair),
  *   the spine flexing and the body rocking. Bigger hounds take slower, longer strides.</li>
@@ -24,8 +23,6 @@ import net.minecraft.util.Mth;
  * </ul>
  */
 public class HoundModel extends EntityModel<NinjaHound> {
-    /** Stride frequency per stage: a puppy patters, a great hound lopes. */
-    private static final float[] STRIDE = {0.95f, 0.78f, 0.64f, 0.52f, 0.44f};
     private static final float DEG = Mth.DEG_TO_RAD;
 
     private HoundModels.Rig rig;
@@ -39,7 +36,7 @@ public class HoundModel extends EntityModel<NinjaHound> {
 
     /** Picks the rig for this hound (null while the models haven't loaded). */
     public static HoundModels.Rig rigFor(NinjaHound hound) {
-        return HoundModels.get(hound.build(), hound.isFused() ? "fused" : hound.stage().key());
+        return HoundModels.get(hound.look(), hound.houndLevel(), hound.isFused());
     }
 
     @Override
@@ -62,9 +59,10 @@ public class HoundModel extends EntityModel<NinjaHound> {
         if (rig == null) {
             return;
         }
-        rig.root.getAllParts().forEach(ModelPart::resetPose);
+        rig.root.resetAll();
         float partial = age - hound.tickCount;
-        HoundStage stage = hound.stage();
+        int level = hound.houndLevel();
+        boolean puppy = level <= 5;
         boolean down = hound.isDown();
         NinjaHound.Carry carry = hound.isCarried() ? hound.carry() : NinjaHound.Carry.NONE;
 
@@ -92,7 +90,9 @@ public class HoundModel extends EntityModel<NinjaHound> {
         if (ridden || hound.isAggressive()) {
             gallop = Math.max(gallop, Mth.clamp(amount * 2f, 0f, 1f));
         }
-        float freq = STRIDE[stage.ordinal()] * (hound.isFused() ? 0.85f : 1f);
+        // A puppy patters, a great hound lopes: longer strides as it grows.
+        float shoulder = HoundGrowth.shoulder(level) * hound.size();
+        float freq = Mth.clamp(0.95f * (float) Math.pow(0.3f / shoulder, 0.6), 0.3f, 1.0f) * (hound.isFused() ? 0.85f : 1f);
         float p = limbSwing * freq;
 
         boolean sitting = hound.isInSittingPose() && a < 0.1f;
@@ -127,8 +127,8 @@ public class HoundModel extends EntityModel<NinjaHound> {
         }
 
         // Tail: up and stiff in a fight, streaming in a run, a happy wag otherwise (more with a strong bond).
-        float wag = fight ? 0.06f : (0.25f + 0.35f * hound.bond() / 100f) * (stage == HoundStage.PUPPY ? 1.4f : 1f) * (1f - 0.6f * gallop);
-        float wagSpeed = stage == HoundStage.PUPPY ? 0.9f : 0.6f;
+        float wag = fight ? 0.06f : (0.25f + 0.35f * hound.bond() / 100f) * (puppy ? 1.4f : 1f) * (1f - 0.6f * gallop);
+        float wagSpeed = puppy ? 0.9f : 0.6f;
         add("tail", fight ? -0.55f : -0.35f * gallop, Mth.sin(age * wagSpeed) * wag, 0);
         add("tail2", 0, Mth.sin(age * wagSpeed - 0.6f) * wag * 0.6f, 0);
         add("tail3", 0, Mth.sin(age * wagSpeed - 1.2f) * wag * 0.4f, 0);
@@ -316,7 +316,7 @@ public class HoundModel extends EntityModel<NinjaHound> {
     }
 
     private void add(String name, float x, float y, float z) {
-        ModelPart part = rig.part(name);
+        Bone part = rig.part(name);
         if (part != null) {
             part.xRot += x;
             part.yRot += y;
@@ -325,7 +325,7 @@ public class HoundModel extends EntityModel<NinjaHound> {
     }
 
     private void offset(String name, float x, float y, float z) {
-        ModelPart part = rig.part(name);
+        Bone part = rig.part(name);
         if (part != null) {
             part.x += x;
             part.y += y;
@@ -334,7 +334,7 @@ public class HoundModel extends EntityModel<NinjaHound> {
     }
 
     private void hide(String name) {
-        ModelPart part = rig.part(name);
+        Bone part = rig.part(name);
         if (part != null) {
             part.visible = false;
         }
@@ -346,7 +346,5 @@ public class HoundModel extends EntityModel<NinjaHound> {
             return;
         }
         rig.root.render(pose, buffer, light, overlay, r * tintR, g * tintG, b * tintB, alpha);
-        // Hidden parts come back for the next frame (resetPose doesn't touch visibility).
-        rig.root.getAllParts().forEach(part -> part.visible = true);
     }
 }

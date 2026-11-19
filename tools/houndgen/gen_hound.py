@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
-"""The Inuzuka ninja hound's models and fur (docs/INUZUKA.md).
+"""The Inuzuka ninja hound's fur and items (docs/INUZUKA.md, "How it's drawn").
 
 Writes
-    assets/noirm/hound/geometry.json
-        every body plan x growth stage (and the Two-Headed Wolf) as named, jointed boxes in
-        Minecraft model space, with each stage's render scale. The game builds its models from
-        this file (client/HoundModel) and animates the parts by name.
-    assets/noirm/textures/entity/hound/<plan>/<stage>_<coat>.png
-        the fur, painted onto each model's packed box UVs at 4 texels per model pixel.
+    assets/noirm/hound/atlas.json
+        where each box role's six faces sit on the fur atlas (see atlas.py).
+    assets/noirm/textures/entity/hound/
+        fur_young.png, fur_old.png, details_young.png, details_old.png,
+        pattern_<saddle|mask|socks|spotted|brindle>.png, marks_<blaze|chest|tail_tip|brows>.png
+        the layers the game mixes into each hound's coat (paint.py says what each channel means).
     assets/noirm/textures/item/ninken_contract.png, hound_pill.png   the two hound items
     assets/noirm/player_animation/fang_drill.json   your body spinning like a drill (Fang Over Fang)
 
-Run from the repo root:   python3 tools/houndgen/gen_hound.py [--preview out.png] [--only lean]
+The model itself is built in the game from the breed recipes in assets/noirm/hound/breeds/ and the
+hound's level (client/hound/HoundRigBuilder), so there are no model files to write here.
+
+Run from the repo root:   python3 tools/houndgen/gen_hound.py [--swatches out.png]
 Needs numpy and Pillow. All art is drawn by this code; nothing is traced or copied.
 """
 import argparse
 import json
-import zlib
-import math
 import os
 import sys
 
@@ -26,49 +27,83 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import rig as R  # noqa: E402
-from paint import COATS, Painter  # noqa: E402
+import atlas  # noqa: E402
+from paint import Layers  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 ASSETS = os.path.join(ROOT, "src/main/resources/assets/noirm")
+OUT = os.path.join(ASSETS, "textures/entity/hound")
 
-# The body plan the game uses (the others stay in the file for comparison: /summon with {Build:n}).
-CHOSEN = "lean"
-PLANS = ["lean", "classic", "heavy"]  # index = the entity's Build number
-
-
-def make(variant, stage, two_heads=False):
-    recipe = R.stage_recipe(variant, stage)
-    rg = R.build(recipe, two_heads=two_heads)
-    name = variant + "/" + ("fused" if two_heads else stage)
-    tex_w = 64 if stage in ("puppy", "young") else 128
-    geom, (tw, th) = R.export(rg, name, tex_w)
-    shoulder = R.shoulder_px(rg)
-    blocks = R.SHOULDER_BLOCKS[stage] * (1.55 if two_heads else 1.0)
-    geom["scale"] = round(blocks * 16.0 / shoulder, 4)
-    return geom
-
-
-def paint(geom, coat, stage, seed):
-    tw, th = geom["texture"]
-    p = Painter(tw, th, COATS[coat], stage, seed)
-    for part in geom["parts"]:
-        for c in part["cubes"]:
-            p.paint_cube(c)
-    return (np.clip(p.img, 0, 1) * 255).astype(np.uint8)
+PATTERNS = ["saddle", "mask", "socks", "spotted", "brindle"]
+MARKS = ["blaze", "chest", "tail_tip", "brows"]
 
 
 def save_png(arr, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    Image.fromarray(arr, "RGBA").save(path, optimize=True)
+    Image.fromarray((np.clip(arr, 0, 1) * 255).round().astype(np.uint8), "RGBA").save(path, optimize=True)
 
 
-def strip_roles(geom):
-    """The game file keeps the role (it names what a box is; handy when reading the file)."""
-    return geom
+def layers():
+    lay = Layers()
+    atlas.write(os.path.join(ASSETS, "hound/atlas.json"))
+    out = {}
+    for age, name in ((0.0, "young"), (1.0, "old")):
+        out["fur_" + name] = lay.fur(age)
+        out["details_" + name] = lay.details(age)
+    for p in PATTERNS:
+        out["pattern_" + p] = lay.pattern(p)
+    for m in MARKS:
+        out["marks_" + m] = lay.marks(m)
+    for name, img in out.items():
+        save_png(img, os.path.join(OUT, name + ".png"))
+    return out
 
 
-# ---------------------------------------------------------------------- items
+# ---------------------------------------------------------------------- the same mix as the game (for swatches)
+
+def compose(L, base, second, eye, pattern=None, marks=(), age=0.5):
+    """The game's coat mix (client/hound/HoundTextures), in numpy: for checking the layers by eye."""
+    def rgb(h):
+        return np.array([(h >> 16 & 255) / 255, (h >> 8 & 255) / 255, (h & 255) / 255])
+    fur = L["fur_young"] * (1 - age) + L["fur_old"] * age
+    shade = fur[..., 0] * 1.4
+    counter = fur[..., 1]
+    b = rgb(base)
+    col = np.broadcast_to(b, fur.shape[:2] + (3,)).copy()
+    light = b * 0.55 + rgb(0xF0E8D8) * 0.45
+    col = col * (1 - counter[..., None] * 0.8) + light * counter[..., None] * 0.8
+    if pattern:
+        p = L["pattern_" + pattern]
+        col = col * (1 - p[..., 0:1]) + rgb(second) * p[..., 0:1]
+        white = p[..., 1]
+    else:
+        white = np.zeros(fur.shape[:2])
+    for m in marks:
+        white = np.maximum(white, L["marks_" + m][..., 1])
+    col = col * (1 - white[..., None]) + rgb(0xEEEAE2) * white[..., None]
+    col = col * shade[..., None]
+    d = L["details_old"] if age > 0.5 else L["details_young"]
+    a = d[..., 3:4]
+    iris = np.abs(d[..., 3] - 254 / 255) < 0.002
+    blend = np.where(iris[..., None], rgb(eye) * d[..., 0:1] * 1.2, d[..., :3])
+    col = col * (1 - np.where(iris[..., None], 1, a)) + blend * np.where(iris[..., None], 1, a)
+    out = np.concatenate([np.clip(col, 0, 1), fur[..., 3:4]], axis=-1)
+    return out
+
+
+def swatches(L, path):
+    looks = [(0xE8E4DA, 0xC9A86C, 0xC48A2A, None, ("chest",), 0.0), (0x8F8B86, 0x3E3C3A, 0xC48A2A, "saddle", (), 1.0),
+             (0xB98A55, 0x242221, 0x5A3418, "mask", ("blaze",), 0.6), (0x242221, 0xA8743E, 0xD8B040, "socks", ("brows",), 1.0),
+             (0xE0CFA8, 0x6A4428, 0x8CB8D0, "spotted", ("tail_tip",), 0.3), (0xB98A55, 0x3E3C3A, 0x5A3418, "brindle", (), 0.8)]
+    tiles = []
+    for base, second, eye, pat, marks, age in looks:
+        img = compose(L, base, second, eye, pat, marks, age)
+        bg = np.ones_like(img[..., :3]) * 0.2
+        tiles.append(img[..., :3] * img[..., 3:4] + bg * (1 - img[..., 3:4]))
+    sheet = np.concatenate([np.concatenate(tiles[:3], axis=1), np.concatenate(tiles[3:], axis=1)], axis=0)
+    Image.fromarray((sheet * 255).astype(np.uint8)).resize((sheet.shape[1] * 2, sheet.shape[0] * 2), Image.NEAREST).save(path)
+    print("swatches:", path)
+
 
 def item_icons():
     s = 16
@@ -143,77 +178,17 @@ def fang_drill():
 
 # ---------------------------------------------------------------------- previews
 
-def preview(path, only):
-    from preview import render
-    rows = []
-    plans = [only] if only else PLANS
-    for plan in plans:
-        tiles = []
-        for stage in R.STAGES:
-            geom = make(plan, stage)
-            tex = paint(geom, "white" if plan == CHOSEN else "grey", stage, 7)
-            img = render(geom, tex, 60, 12, (220, 180), extent=1.65, scale=geom["scale"] / 1.0,
-                         centre=np.array([0, 1.25, 0]))
-            side = render(geom, tex, 90, 5, (220, 180), extent=1.65, scale=geom["scale"],
-                          centre=np.array([0, 1.25, 0]))
-            tiles.append(np.concatenate([img, side], axis=0))
-        rows.append(np.concatenate(tiles, axis=1))
-    # Close-ups of the chosen plan's grown head and the puppy.
-    sheet = np.concatenate(rows, axis=0)
-    Image.fromarray(sheet).save(path)
-    print("preview:", path)
-
-
-def closeups(path, plan, coat):
-    from preview import render
-    tiles = []
-    for stage in R.STAGES:
-        geom = make(plan, stage)
-        tex = paint(geom, coat, stage, 7)
-        tiles.append(np.concatenate([render(geom, tex, 40, 15, (260, 220)), render(geom, tex, 160, 10, (260, 220)),
-                                     render(geom, tex, 180, 5, (260, 220))], axis=0))
-    geom = make(plan, "great", two_heads=True)
-    tex = paint(geom, coat, "great", 7)
-    tiles.append(np.concatenate([render(geom, tex, 40, 15, (260, 220)), render(geom, tex, 160, 10, (260, 220)),
-                                 render(geom, tex, 180, 5, (260, 220))], axis=0))
-    Image.fromarray(np.concatenate(tiles, axis=1)).save(path)
-    print("closeups:", path)
-
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--preview")
-    ap.add_argument("--closeups")
-    ap.add_argument("--coat", default="white")
-    ap.add_argument("--only")
-    ap.add_argument("--no-write", action="store_true")
+    ap.add_argument("--swatches")
     args = ap.parse_args()
-    if args.preview:
-        preview(args.preview, args.only)
-    if args.closeups:
-        closeups(args.closeups, args.only or CHOSEN, args.coat)
-    if args.no_write:
-        return
-    out = {"chosen": CHOSEN, "plans": PLANS, "stages": R.STAGES, "coats": list(COATS), "models": {}}
-    for plan in PLANS:
-        for stage in R.STAGES:
-            geom = make(plan, stage)
-            out["models"][plan + "/" + stage] = geom
-            # Every coat for the chosen plan; the others only in white (for the comparison).
-            for coat in (COATS if plan == CHOSEN else ["white"]):
-                save_png(paint(geom, coat, stage, zlib.crc32((plan + stage + coat).encode()) & 0xffff),
-                         os.path.join(ASSETS, "textures/entity/hound", plan, stage + "_" + coat + ".png"))
-        if plan == CHOSEN:
-            geom = make(plan, "great", two_heads=True)
-            out["models"][plan + "/fused"] = geom
-            save_png(paint(geom, "white", "giant", 99), os.path.join(ASSETS, "textures/entity/hound", plan, "fused.png"))
-    path = os.path.join(ASSETS, "hound/geometry.json")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(out, f, separators=(",", ":"))
+    L = layers()
     item_icons()
     fang_drill()
-    print("wrote", path)
+    if args.swatches:
+        swatches(L, args.swatches)
+    print("wrote the hound atlas layers to", OUT)
 
 
 if __name__ == "__main__":
