@@ -5,7 +5,7 @@
     "f_upper": 5.0, "f_lower": 4.5, "f_paw": [2.25, 1.25, 2.75], "f_th": 2.0,
     "b_thigh": 5.0, "b_shin": 4.0, "b_meta": 2.75, "b_paw": [2.25, 1.25, 2.75], "b_th": 2.5,
     "neck_len": 3.5, "neck_th": 4.25, "neck_angle": 50,
-    "skull": [5.5, 5.0, 4.75], "snout": [2.75, 2.5, 4.75], "jaw": [2.5, 1.0, 4.0], "brow": 0.75,
+    "skull": [5.5, 5.0, 4.75], "snout": [2.75, 2.5, 3.75], "jaw": [2.5, 1.0, 3.0], "brow": 0.75,
     "ear": [2.25, 2.75, 1.5], "ear_tip": [1.25, 1.75, 1.0], "ear_flop": 0, "ear_spread": 10, "ear_hang": 0,
     "tail_n": 3, "tail_len": 3.0, "tail_th": 2.25, "tail_angle": -50, "tail_curl": -14,
     "ruff": 1.0, "tufts": 1, "fang": 0.75, "mane_back": 0.5

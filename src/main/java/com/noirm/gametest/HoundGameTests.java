@@ -364,7 +364,7 @@ public final class HoundGameTests {
         hound.setStage(HoundStage.GROWN);
         Vec3 side = helper.absoluteVec(new Vec3(3.5, 1, 0.5));
         hound.moveTo(side.x, side.y, side.z, 0f, 0f);
-        SparringNinja target = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 2.5f, 1f, 4.5f);
+        SparringNinja target = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 2.0f);
         target.setInvulnerable(false);
         face(player, target);
         float before = target.getHealth();
@@ -393,6 +393,7 @@ public final class HoundGameTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BONE));
         helper.assertTrue(Hounds.feed(hound, player, player.getMainHandItem()) && !hound.isDown(), "a treat wakes it at once");
         helper.assertTrue(hound.getHealth() >= hound.getMaxHealth() * NinjaHound.REVIVE_HEALTH - 0.01f, "with half its health");
+        hound.invulnerableTime = 0; // (past the vanilla hurt cooldown)
         hound.hurt(hound.damageSources().generic(), 1000f);
         helper.assertTrue(hound.isDown(), "down again");
         hound.setDownTicks(10);

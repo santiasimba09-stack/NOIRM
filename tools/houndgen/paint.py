@@ -74,8 +74,23 @@ class Layers:
     def strands(self, shade, face, age, rng):
         """Short fur strokes: darker and lighter, running down the sides and along the back."""
         fh, fw = shade.shape
-        n = int(fw * fh / (9 - 4 * age))
-        length = 2 + int(2 + 6 * age)
+        # Clumps first: a soft mottle of lighter and darker patches (fur lies in locks, not planks).
+        gh, gw = max(2, fh // 3 + 1), max(2, fw // 3 + 1)
+        coarse = rng.normal(0, 0.06 + 0.04 * age, (gh, gw))
+        mottle = np.kron(coarse, np.ones((3, 3)))[:fh, :fw]
+        mottle[1:-1, 1:-1] = (mottle[1:-1, 1:-1] * 2 + mottle[:-2, 1:-1] + mottle[2:, 1:-1] + mottle[1:-1, :-2] + mottle[1:-1, 2:]) / 6
+        shade = shade * (1 + mottle)
+        # Tuft notches: small dark V's with a lit edge above, scattered over the coat.
+        for _ in range(int(fw * fh / 40)):
+            x, y = rng.integers(1, max(2, fw - 1)), rng.integers(1, max(2, fh - 1))
+            for dx in (-1, 0, 1):
+                yy = y + (1 if dx == 0 else 0)
+                if 0 <= x + dx < fw and 0 <= yy < fh:
+                    shade[yy, x + dx] *= 0.72 - 0.08 * age
+                if 0 <= x + dx < fw and 0 <= yy - 1 < fh:
+                    shade[yy - 1, x + dx] *= 1.08
+        n = int(fw * fh / (11 - 4 * age))
+        length = 2 + int(1 + 3 * age)
         vertical = face in SIDES
         for _ in range(n):
             x, y = rng.integers(0, fw), rng.integers(0, fh)
@@ -169,17 +184,19 @@ class Layers:
                     second = (ty + ragged < 0.5).astype(float)
             elif name == "mask":
                 if role == "snout" and face != "bottom":
-                    second[:] = 1
+                    second[:] = 0.92
                 elif role == "jaw" and face in ("front", "west", "east"):
-                    second[:] = 0.8
+                    second[:] = 0.7
                 elif role == "head" and face == "front":
-                    band = (ty > 0.22 + ragged) & (ty < 0.68 + ragged)
-                    second = band.astype(float)
-                    second = np.maximum(second, ((ty > 0.6) & (np.abs(tx - 0.5) < 0.3)).astype(float))
+                    # Two patches round the eyes, joined over the bridge of the nose: the face still reads.
+                    for ex in (0.27, 0.73):
+                        patch = ((tx - ex) / 0.2) ** 2 + ((ty - 0.36) / 0.2) ** 2 + ragged < 1
+                        second = np.maximum(second, patch.astype(float) * 0.88)
+                    second = np.maximum(second, ((ty > 0.5) & (np.abs(tx - 0.5) < 0.22 + ragged)).astype(float) * 0.88)
                 elif role == "head" and face in ("west", "east"):
-                    second = ((tx < 0.45 + ragged) & (ty > 0.2) & (ty < 0.75)).astype(float)
+                    second = ((tx < 0.35 + ragged) & (ty > 0.25) & (ty < 0.7)).astype(float) * 0.85
                 elif role in ("ear", "ear_tip", "brow"):
-                    second[:] = 1 if face != "front" or role == "brow" else 0.5
+                    second[:] = 0.85 if face != "front" or role == "brow" else 0.45
             elif name == "socks":
                 if role in ("leg_lower", "paw"):
                     white[:] = 1
@@ -294,10 +311,10 @@ class Layers:
     def eyes(self, tile, age):
         """Round and bright on a puppy, a hard narrow leaf on an old hound (the eye rule in ART_STYLE)."""
         fh, fw = tile.shape[:2]
-        ew = fw * (0.17 + 0.03 * age)
-        eh = fh * (0.17 - 0.08 * age)
+        ew = fw * (0.19 + 0.02 * age)
+        eh = fh * (0.18 - 0.07 * age)
         for side, ex in ((-1, 0.27), (1, 0.73)):
-            cx, cy = fw * ex, fh * (0.44 + 0.03 * age)
+            cx, cy = fw * ex, fh * (0.40 - 0.07 * age)  # between the brow and the top of the muzzle
             yy, xx = np.mgrid[0:fh, 0:fw]
             # A dark socket round the eye.
             blob(tile, cx, cy, ew * 0.78, eh * 0.95 + 1.2, INK, 0.45)

@@ -11,13 +11,13 @@
   },
   "ears": {
     "pricked": {"set": {"ear_flop": 0, "ear_hang": 0}, "puppy": {"ear_flop": 35}},
-    "floppy": {"set": {"ear_hang": 112, "ear_flop": -8, "ear_spread": 0, "ear": [2.5, 3.75, 0.75], "ear_tip": [2.0, 1.75, 0.6]},
-               "puppy": {"ear_hang": 105, "ear_flop": -8, "ear_spread": 0, "ear": [2.25, 2.75, 0.75], "ear_tip": [1.75, 1.25, 0.6]}},
+    "floppy": {"set": {"ear_hang": 168, "ear_flop": 6, "ear_spread": 0, "ear": [2.5, 3.75, 0.75], "ear_tip": [2.0, 1.75, 0.6]},
+               "puppy": {"ear_hang": 160, "ear_flop": 6, "ear_spread": 0, "ear": [2.25, 2.75, 0.75], "ear_tip": [1.75, 1.25, 0.6]}},
     "folded": {"set": {"ear_flop": 100, "ear_hang": 0, "ear_tip": [1.5, 1.25, 0.75]}, "puppy": {"ear_flop": 90}}
   },
   "tails": {
     "straight": {},
     "curled": {"set": {"tail_angle": 72, "tail_curl": 52, "tail_n": 3}, "mult": {"tail_len": 0.85, "tail_th": 1.2}},
-    "bushy": {"set": {"tail_angle": -28, "tail_curl": -6}, "mult": {"tail_th": 1.55}}
+    "bushy": {"set": {"tail_angle": -28, "tail_curl": -6}, "mult": {"tail_th": 1.35}}
   }
 }

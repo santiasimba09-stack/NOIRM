@@ -207,7 +207,8 @@ public final class HoundRigBuilder {
         for (int s = 0; s < 2; s++) {
             String side = s == 0 ? "l" : "r";
             float sx = s == 0 ? 1 : -1;
-            float x = sx * (cw / 2 - fTh / 2 + 0.15f);
+            // Set a little inside the chest, so the shoulder doesn't stand out like a plate.
+            float x = sx * (cw / 2 - fTh / 2 - 0.2f);
             String up = "leg_f" + side;
             g.part(up, "body", x, shoulderY - hipY, chestZ - cd * 0.18f - hipJointZ, 6, 0, 0);
             g.box(up, -fTh / 2, -r.f("f_upper"), -fTh / 2 - 0.25f, fTh, r.f("f_upper") + 0.5f, fTh + 0.5f, "leg");
@@ -225,7 +226,7 @@ public final class HoundRigBuilder {
         for (int s = 0; s < 2; s++) {
             String side = s == 0 ? "l" : "r";
             float sx = s == 0 ? 1 : -1;
-            float x = sx * (hw / 2 - bTh / 2 + 0.2f);
+            float x = sx * (hw / 2 - bTh / 2 - 0.15f);
             String up = "leg_b" + side;
             g.part(up, "body", x, 0, 0, aThigh, 0, 0);
             g.box(up, -bTh / 2, -bThigh, -bTh / 2 - 0.5f, bTh, bThigh + 1f, bTh + 1f, "thigh");
@@ -310,16 +311,19 @@ public final class HoundRigBuilder {
             String side = s == 0 ? "l" : "r";
             float sx = s == 0 ? 1 : -1;
             String name = "ear" + suffix + "_" + side;
+            String t = name + "_tip";
             if (hang > 1f) {
-                // Hanging ears: from the top corners of the skull, down over its sides.
-                g.part(name, head, sx * (sw / 2 - 0.1f), sh * 0.55f - 0.6f, -sd * 0.3f, -4, 0, sx * -hang);
+                // Hanging ears: from the top corners of the skull, flat down its sides (broad face outward).
+                g.part(name, head, sx * (sw / 2 + ear[2] / 2 - 0.05f), sh * 0.55f - 0.4f, -sd * 0.3f, -4, 0, sx * -hang);
+                g.box(name, -ear[2] / 2, 0, -ear[0] / 2, ear[2], ear[1], ear[0], "ear");
+                g.part(t, name, 0, ear[1], 0, -r.f("ear_flop"), 0, 0);
+                g.box(t, -tip[2] / 2, 0, -tip[0] / 2, tip[2], tip[1], tip[0], "ear_tip");
             } else {
                 g.part(name, head, sx * (sw / 2 - ear[0] / 2 - 0.1f), sh * 0.55f - 0.25f, -sd * 0.25f, -6, 0, sx * -r.f("ear_spread"));
+                g.box(name, -ear[0] / 2, 0, -ear[2] / 2, ear[0], ear[1], ear[2], "ear");
+                g.part(t, name, 0, ear[1], 0, -r.f("ear_flop"), 0, 0);
+                g.box(t, -tip[0] / 2, 0, -tip[2] / 2, tip[0], tip[1], tip[2], "ear_tip");
             }
-            g.box(name, -ear[0] / 2, 0, -ear[2] / 2, ear[0], ear[1], ear[2], "ear");
-            String t = name + "_tip";
-            g.part(t, name, 0, ear[1], 0, -r.f("ear_flop"), 0, 0);
-            g.box(t, -tip[0] / 2, 0, -tip[2] / 2, tip[0], tip[1], tip[2], "ear_tip");
         }
         if (r.f("tufts") >= 1) {
             for (int s = 0; s < 2; s++) {
