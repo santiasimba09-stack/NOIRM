@@ -1,0 +1,6 @@
+{
+  "nature": "water", "cast": "tap", "behavior": "dome", "rank": "B",
+  "chakra_cost": 30, "cooldown": 260,
+  "unlock": { "after": "noirm:suiton/water_dragon", "mastery": 2 },
+  "params": { "radius": 3, "duration": 60 }
+}

@@ -1,0 +1,19 @@
+{
+  "nature": "earth",
+  "behavior": "pillar",
+  "rank": "C",
+  "chakra_cost": 25,
+  "cooldown": 160,
+  "unlock": {
+    "after": "noirm:doton/earth_wall",
+    "mastery": 2
+  },
+  "params": {
+    "range": 10,
+    "radius": 1.8,
+    "damage": 7,
+    "knockback": 0.9,
+    "posture": 30,
+    "block": "minecraft:packed_mud"
+  }
+}

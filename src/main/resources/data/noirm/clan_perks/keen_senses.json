@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "perception": 0.1,
+    "sensor": 16
+  },
+  "talent_bias": {
+    "chakra_sensor": 3,
+    "keen_eyes": 2
+  }
+}

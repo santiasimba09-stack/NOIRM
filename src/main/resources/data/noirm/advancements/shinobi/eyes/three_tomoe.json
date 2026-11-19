@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:redstone"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.eyes.three_tomoe.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.eyes.three_tomoe.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/eyes/sharingan",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:eyes",
+      "conditions": {
+        "key": "sharingan",
+        "min": 3
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:bo_staff"
+    },
+    {
+      "item": "noirm:ninjato"
+    },
+    {
+      "item": "noirm:chakra_blade"
+    },
+    {
+      "item": "noirm:kusarigama"
+    },
+    {
+      "item": "noirm:gale_gunbai"
+    }
+  ]
+}

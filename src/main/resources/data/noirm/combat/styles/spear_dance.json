@@ -1,0 +1,53 @@
+{
+  "openers": {
+    "light": "noirm:spear_dance/dance_thrust",
+    "heavy": "noirm:spear_dance/dance_whirl",
+    "launcher": "noirm:spear_dance/dance_vault",
+    "forward_light": "noirm:spear_dance/dance_lunge",
+    "forward_heavy": "noirm:spear_dance/dance_lunge",
+    "back_light": "noirm:spear_dance/retreat_thrust",
+    "back_heavy": "noirm:spear_dance/dance_whirl"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_spear_dance",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_spear_dance_aggressive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_spear_dance_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:spear_dance/dance_counter",
+  "identity": {
+    "footwork": "bouncing",
+    "rhythm": "hit_and_run",
+    "move_speed": 1.15,
+    "guard": {
+      "type": "standard",
+      "parry_window": 1.1,
+      "keep": 0.28,
+      "speed": 0.6
+    },
+    "dodge": {
+      "kind": "hop",
+      "speed": 1.05,
+      "ticks": 10,
+      "iframes": 6,
+      "lift": 0.3
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.02,
+    "scroll": 3
+  },
+  "weapons": [
+    "spear"
+  ]
+}

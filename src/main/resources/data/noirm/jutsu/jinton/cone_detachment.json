@@ -1,0 +1,18 @@
+{
+  "nature": "dust",
+  "behavior": "detach_cone",
+  "rank": "B",
+  "chakra_cost": 35,
+  "cooldown": 220,
+  "unlock": {
+    "after": "noirm:jinton/detachment_shell",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "radius": 2.2,
+    "damage": 10,
+    "posture": 30,
+    "knockback": 0.6
+  }
+}

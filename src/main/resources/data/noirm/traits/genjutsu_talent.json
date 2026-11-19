@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "genjutsu_power": 0.3,
+    "xp_willpower": 0.15
+  }
+}

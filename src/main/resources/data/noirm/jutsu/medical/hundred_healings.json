@@ -1,0 +1,13 @@
+{
+  "cast": "charge",
+  "behavior": "hundred_healings",
+  "rank": "S",
+  "chakra_cost": 80,
+  "cooldown": 2400,
+  "min_charge": 50,
+  "max_charge": 70,
+  "params": {
+    "duration": 600,
+    "damage": 2
+  }
+}

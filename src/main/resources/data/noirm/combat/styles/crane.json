@@ -1,0 +1,57 @@
+{
+  "openers": {
+    "light": "noirm:crane/snap_kick",
+    "heavy": "noirm:crane/beak_kick",
+    "launcher": "noirm:crane/rising_kick",
+    "forward_light": "noirm:crane/flying_kick",
+    "forward_heavy": "noirm:crane/dive_kick",
+    "back_light": "noirm:crane/push_kick",
+    "back_heavy": "noirm:crane/back_kick"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_crane",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_crane_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_crane_defensive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_crane_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:crane/counter_kick",
+  "identity": {
+    "footwork": "upright",
+    "rhythm": "kicks",
+    "move_speed": 1.05,
+    "guard": {
+      "type": "high",
+      "parry_window": 1.25,
+      "keep": 0.22,
+      "speed": 0.6
+    },
+    "dodge": {
+      "kind": "hop",
+      "speed": 0.9,
+      "ticks": 11,
+      "iframes": 7,
+      "lift": 0.38
+    },
+    "strike": {
+      "aerial": 1.35
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.025,
+    "scroll": 4
+  }
+}

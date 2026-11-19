@@ -1,0 +1,17 @@
+{
+  "nature": "lava",
+  "behavior": "projectile",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 15,
+  "cooldown": 70,
+  "params": {
+    "count": 1,
+    "speed": 1.5,
+    "damage": 6,
+    "knockback": 0.4,
+    "posture": 12,
+    "fire_seconds": 3,
+    "look": "bullet"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "openers": {
+    "light": "noirm:sword/slash",
+    "heavy": "noirm:sword/thrust",
+    "launcher": "noirm:sword/rising",
+    "forward_light": "noirm:sword/dash_thrust",
+    "forward_heavy": "noirm:sword/dash_thrust",
+    "back_heavy": "noirm:sword/finishing_slash"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_sword",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_sword_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_sword_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:sword/counter"
+}

@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:anbu_mask"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.rank.anbu.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.rank.anbu.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/rank/jonin",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:rank",
+      "conditions": {
+        "key": "anbu"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "noirm:advancement/ryo_500"
+    ]
+  }
+}

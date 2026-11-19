@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:mountain_stone_palm",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 4,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 16,
+    "range": 2.4,
+    "arc": 90,
+    "knockback": 0.3,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.4
+  },
+  "next": {
+    "light": "noirm:mountain/rock_elbow",
+    "heavy": "noirm:mountain/landslide_palm"
+  }
+}

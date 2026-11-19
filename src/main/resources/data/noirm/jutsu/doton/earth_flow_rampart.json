@@ -1,0 +1,20 @@
+{
+  "nature": "earth",
+  "behavior": "rampart",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:doton/earth_wall",
+    "mastery": 3
+  },
+  "params": {
+    "radius": 5,
+    "count": 4,
+    "range": 4.5,
+    "duration": 260,
+    "damage": 3,
+    "knockback": 1.0,
+    "posture": 20
+  }
+}

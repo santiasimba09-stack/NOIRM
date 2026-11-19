@@ -1,0 +1,17 @@
+{
+  "name": "master.noirm.stone_hermit",
+  "greeting": "master.noirm.stone_hermit.greeting",
+  "look": "sage_hermit:1",
+  "gear": { "chest": "noirm:kimono_sage", "legs": "noirm:kimono_sage_hem", "feet": "noirm:waraji" },
+  "stats": { "speed": 45, "taijutsu": 55, "vitality": 70 },
+  "trial": "meditation",
+  "test": { "hits": 45, "posture_breaks": 0, "seconds": 150 },
+  "grants_style": false,
+  "lessons": [
+    { "id": "open_to_nature", "jutsu": "noirm:senjutsu/nature_gathering" },
+    { "id": "stone_balance", "jutsu": "noirm:senjutsu/nature_purge", "control": 15,
+      "after": ["open_to_nature"], "mastery": { "noirm:senjutsu/nature_gathering": 1 } },
+    { "id": "sage_mode", "jutsu": "noirm:senjutsu/sage_mode", "control": 20, "taijutsu": 15,
+      "after": ["stone_balance"] }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:sealing_scroll"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beasts.seal.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beasts.seal.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beasts/subdue",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:beast",
+      "conditions": {
+        "event": "sealed"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

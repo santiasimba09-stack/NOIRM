@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "tsukuyomi", "rank": "S",
+  "requires": { "dojutsu": "mangekyo", "stage": 1 },
+  "chakra_cost": 40, "cooldown": 400,
+  "params": { "range": 12, "stun": 80, "duration": 200 }
+}

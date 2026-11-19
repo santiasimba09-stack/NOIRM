@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:drunken_fist_falling_lunge",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 24,
+    "range": 3.0,
+    "arc": 100,
+    "knockback": 1.2,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lunge": 1.0,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:drunken_fist/stagger_jab"
+  }
+}

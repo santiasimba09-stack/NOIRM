@@ -1,0 +1,40 @@
+{
+  "item": "noirm:blood_pill",
+  "color": "#B0201C",
+  "cooldown": 40,
+  "toxicity": 25,
+  "instant": {
+    "heal": 4
+  },
+  "effects": [
+    {
+      "type": "health_regen",
+      "amount": 1.0,
+      "seconds": 15
+    }
+  ],
+  "crash": [
+    {
+      "type": "effect",
+      "seconds": 15,
+      "effect": "minecraft:hunger"
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:bloodleaf",
+        "count": 2
+      },
+      {
+        "item": "minecraft:iron_nugget",
+        "count": 1
+      }
+    ],
+    "yield": 2,
+    "difficulty": 10,
+    "min_pharmacology": 5,
+    "unlock": "starter",
+    "xp": 18
+  }
+}

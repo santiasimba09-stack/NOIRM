@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:staff_wall_wall_vault_kick",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 18,
+    "range": 3.0,
+    "arc": 100,
+    "knockback": 0.2,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.65,
+    "lift": 0.75,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:staff_wall/wall_thrust"
+  }
+}

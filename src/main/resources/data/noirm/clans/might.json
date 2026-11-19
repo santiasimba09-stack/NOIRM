@@ -1,0 +1,45 @@
+{
+  "id": "might",
+  "name": "Might",
+  "weight": 1,
+  "natures": {},
+  "taijutsu_bonus": 3,
+  "awakening": "will",
+  "perks": {
+    "xp_taijutsu": 3.0,
+    "xp_speed": 0.5,
+    "xp_willpower": 1.0,
+    "start_willpower": 8,
+    "start_taijutsu": 4,
+    "max_stamina": 150,
+    "stamina_regen": 1.0,
+    "melee_damage": 0.3,
+    "start_durability": 4,
+    "resolve": 0.8,
+    "gate_mastery": 0.5,
+    "jutsu_power": -0.6,
+    "jutsu_cost": 0.6,
+    "genjutsu_power": -0.8,
+    "chakra_pool": -0.5
+  },
+  "look": {
+    "hair": [
+      "#141414",
+      "#1b1c22"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "taijutsu_genius": 5,
+    "late_bloomer": 4,
+    "iron_will": 3,
+    "hot_blooded": 3,
+    "born_leader": 2,
+    "genjutsu_talent": 0.2,
+    "fine_control": 0.3
+  },
+  "style": "leaf_hurricane",
+  "clan_jutsu": [
+    "noirm:taijutsu/gate_of_opening"
+  ]
+}

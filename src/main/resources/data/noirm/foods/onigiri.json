@@ -1,0 +1,11 @@
+{
+  "item": "noirm:onigiri",
+  "color": "#F2EEE0",
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 1.2,
+      "seconds": 60
+    }
+  ]
+}

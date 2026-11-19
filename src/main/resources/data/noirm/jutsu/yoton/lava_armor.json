@@ -1,0 +1,26 @@
+{
+  "nature": "lava",
+  "behavior": "mode",
+  "rank": "A",
+  "chakra_cost": 30,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:yoton/lava_globs",
+    "mastery": 2
+  },
+  "mode": {
+    "speed": -0.05,
+    "damage": 1.4,
+    "defense": 0.45,
+    "drain": 3,
+    "aura": [
+      "#FFE890",
+      "#FF5A08",
+      "#140300",
+      "#FF9800"
+    ]
+  },
+  "params": {
+    "duration": 0
+  }
+}

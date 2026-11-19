@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "genjutsu", "rank": "B",
+  "requires": { "dojutsu": "sharingan", "stage": 2 },
+  "chakra_cost": 25, "cooldown": 300,
+  "params": { "range": 12, "stun": 60, "duration": 100 }
+}

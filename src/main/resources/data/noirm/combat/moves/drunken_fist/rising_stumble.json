@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:drunken_fist_rising_stumble",
+  "timing": {
+    "windup": 4,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 18,
+    "range": 2.4,
+    "arc": 100,
+    "knockback": 0.2,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lift": 0.65,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:drunken_fist/stagger_jab"
+  }
+}

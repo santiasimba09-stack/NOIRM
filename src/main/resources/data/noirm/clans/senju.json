@@ -1,0 +1,47 @@
+{
+  "id": "senju",
+  "name": "Senju",
+  "weight": 2,
+  "natures": {
+    "earth": 1.5,
+    "water": 1.0,
+    "yang": 0.8
+  },
+  "traits": [
+    "iron_body",
+    "deep_reserves"
+  ],
+  "taijutsu_bonus": 1,
+  "awakening": "nature_surge",
+  "perks": {
+    "chakra_pool": 3.0,
+    "chakra_regen": 1.0,
+    "max_health": 14,
+    "health_regen": 0.4,
+    "max_stamina": 100,
+    "stamina_regen": 0.6,
+    "start_vitality": 6,
+    "xp_vitality": 0.5,
+    "medical_power": 0.5,
+    "combo_affinity": 0.5,
+    "beast_bond": 0.3,
+    "rough_control": 0.25,
+    "start_control": -3,
+    "chakra_beacon": 0.4
+  },
+  "look": {
+    "hair": [
+      "#3a2618",
+      "#4a3020"
+    ],
+    "eyes": "#3a2a1c"
+  },
+  "talent_bias": {
+    "healing_hands": 3,
+    "tough_as_nails": 2,
+    "deep_reserves": 2,
+    "pill_prodigy": 2,
+    "born_leader": 2,
+    "shaky_control": 1.5
+  }
+}

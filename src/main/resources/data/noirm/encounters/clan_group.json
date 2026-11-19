@@ -1,0 +1,9 @@
+{
+  "weight": 8, "night_weight": 6,
+  "min_size": 2, "max_size": 3,
+  "leader_strength": 1.2, "member_strength": 0.9,
+  "outfit": "clan",
+  "same_clan": true,
+  "min_distance": 300,
+  "defends_players": true
+}

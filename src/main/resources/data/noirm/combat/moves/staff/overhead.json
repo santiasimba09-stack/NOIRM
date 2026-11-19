@@ -1,0 +1,5 @@
+{
+  "animation": "noirm:staff_overhead",
+  "timing": { "windup": 7, "active": 3, "recovery": 8, "cancel_after": 4 },
+  "hit": { "damage": 8, "posture": 32, "range": 3.8, "arc": 70, "knockback": 0.4, "hitstun": 20, "hitstop": 4, "shake": 0.9, "knockdown": true, "ender": "knockdown", "guard_break": true }
+}

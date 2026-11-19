@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:rapid_kick",
+  "timing": {
+    "windup": 2,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 12,
+    "range": 2.6,
+    "arc": 90,
+    "knockback": 0.2,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.3,
+    "lunge": 0.2
+  },
+  "next": {
+    "light": "noirm:strong_fist/leaf_whirlwind",
+    "heavy": "noirm:strong_fist/leaf_great_flash"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "sarutobi",
+  "name": "Sarutobi",
+  "weight": 2,
+  "natures": {
+    "fire": 1.5,
+    "wind": 1.0
+  },
+  "awakening": "will",
+  "perks": {
+    "mastery": 0.5,
+    "jutsu_power": 0.25,
+    "crew_respect": 0.6,
+    "resolve": 0.4,
+    "xp_willpower": 0.4,
+    "chakra_pool": 0.5,
+    "xp_speed": -0.2
+  },
+  "look": {
+    "hair": [
+      "#3a2618",
+      "#2a2224"
+    ],
+    "eyes": "#3a2a1e"
+  },
+  "talent_bias": {
+    "born_leader": 4,
+    "quick_learner": 2,
+    "prodigy": 2,
+    "iron_will": 2
+  }
+}

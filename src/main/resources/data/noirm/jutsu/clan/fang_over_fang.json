@@ -1,0 +1,15 @@
+{
+  "cast": "tap",
+  "behavior": "fang_over_fang",
+  "rank": "C",
+  "chakra_cost": 16,
+  "cooldown": 160,
+  "params": {
+    "range": 10,
+    "damage": 2.4,
+    "duration": 14,
+    "speed": 0.75,
+    "knockback": 0.5,
+    "posture": 6
+  }
+}

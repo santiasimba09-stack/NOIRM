@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:shadow_shadow_counter",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3.5,
+    "posture": 16,
+    "range": 2.7,
+    "arc": 140,
+    "knockback": 0.4,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.55
+  },
+  "next": {
+    "light": "noirm:shadow/night_hook"
+  }
+}

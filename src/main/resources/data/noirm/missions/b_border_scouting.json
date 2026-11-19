@@ -1,0 +1,12 @@
+{
+  "type": "scout",
+  "rank": "B",
+  "reward": 600,
+  "points": 50,
+  "time_limit": 480,
+  "count": 5,
+  "min_distance": 90,
+  "max_distance": 140,
+  "ambush": "noirm:rogue_band",
+  "strength": 24
+}

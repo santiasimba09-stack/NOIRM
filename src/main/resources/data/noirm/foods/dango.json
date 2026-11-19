@@ -1,0 +1,14 @@
+{
+  "item": "noirm:dango",
+  "color": "#E8A0B0",
+  "instant": {
+    "stamina": 0.15
+  },
+  "effects": [
+    {
+      "type": "posture_recovery",
+      "amount": 2.0,
+      "seconds": 60
+    }
+  ]
+}

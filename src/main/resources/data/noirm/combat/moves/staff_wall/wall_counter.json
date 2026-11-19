@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:staff_wall_wall_counter",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 4
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 22,
+    "range": 3.8,
+    "arc": 140,
+    "knockback": 1.0,
+    "hitstun": 13,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:staff_wall/wall_sweep"
+  }
+}

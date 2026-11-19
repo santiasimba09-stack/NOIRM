@@ -1,0 +1,308 @@
+# Getting started (no experience needed)
+
+This is how to run NOIRM on your own computer.
+
+## 1. Install the tools (one time)
+
+1. **Java 17 (JDK).** Download "Temurin 17 (LTS)" from https://adoptium.net and install it.
+2. **IntelliJ IDEA Community Edition** (free) from https://www.jetbrains.com/idea/. This is the
+   editor where the code lives.
+3. **Git**, to download and update the project: https://git-scm.com/downloads.
+
+## 2. Get the project
+
+```
+git clone https://github.com/santiasimba09-stack/NOIRM.git
+```
+
+In IntelliJ: **File → Open** → choose the `NOIRM` folder → **Trust project**. The first time,
+IntelliJ downloads Minecraft and Forge and sets everything up. That takes about 5–15 minutes,
+and you can watch progress in the bottom bar.
+
+## 3. Play your mod
+
+Open the **Gradle** panel on the right side of IntelliJ, then go to
+**Tasks → forgegradle runs** and double-click **runClient**. A Minecraft window opens with NOIRM
+installed. You'll find it under *Mods* on the title screen.
+
+You can also run it from a terminal in the project folder:
+
+```
+./gradlew runClient        # macOS / Linux
+gradlew.bat runClient      # Windows
+```
+
+## Your first hour in the game (the Shinobi Handbook)
+
+When you start a new world you first make your character (the creation screen). Right after, a
+**Shinobi Handbook** appears in your bag: hold it and right-click to read it. It's the player's
+guide, in the game, in English and Spanish, with these chapters:
+
+| Chapter | What it explains |
+|---|---|
+| Welcome | how you start (an Academy student in plain clothes) and a good first day |
+| Controls | combat mode, strikes, guard, dodge, grab, jutsu keys, J, N, K... with **your own key bindings** |
+| Stats and training | the seven stats (incl. Durability), the dummy, the 30 cap, kill XP |
+| Natures and drills | chakra paper, hidden natures, the five drills, teachers |
+| Jutsu and scrolls | mastery chains, jutsu scrolls and their rank/chakra needs, nature scrolls |
+| Missions, ryo and rank | the missions board, the ryo wallet, rank points, rank-up exams |
+| Your crew | recruiting, the ally screen, crew orders, respect |
+| Masters | who teaches what, and where to find them |
+| Sage Mode | the Stone Hermit, nature energy, petrification |
+| The bingo book | ninja classes D to S, bounties, legends |
+| Tailed beasts and eyes | sealing beasts, the Byakugan, the Sharingan, eye transplants |
+
+Then a few short **tips** pop up in chat, one at a time, and tick themselves off when you do them:
+open the handbook, try combat mode (**R**) on a training dummy, find a missions board. Click
+**[Skip tips]** (or type `/noirm guide tips off`) to turn them off. Lost your handbook?
+`/noirm guide`, craft one (a book + an ink sac), or crouch and right-click any missions board with
+an empty hand.
+
+## How to test the masters (APX)
+
+There are four masters. Right-click one to talk: the screen shows their test, their lessons, what
+each lesson needs (stats, practice, **rank**, **ryo**) and why it's locked.
+
+| Master | Where | Test | Teaches |
+|---|---|---|---|
+| **Might Guy** | a Leaf capital's training ground | a spar (6 clean hits or a guard break in 90 s) | Strong Fist, the Eight Gates, Front Lotus... |
+| **Rensai the Scholar** (ninjutsu) | every hidden village's **Academy** (the middle hall; in a capital without one, the Kage residence's ground floor), and some towns (the chief's house) | a **jutsu duel**: land 4 jutsu hits in 120 s (punches don't count) | **Swift Seals** (genin, 150 ryo: seals take 60% of the time), **Nature Insight** (genin, 250 ryo: half a nature drill), one jutsu per nature you own (chūnin, 400 ryo each), **Chakra Efficiency** (jōnin, 900 ryo: up to 25% cheaper jutsu with CTL) |
+| **Tsubaki** (medical ninja) | every hidden village's **hospital** (ground floor; in a capital without one, a clinic in the home nearest the plaza), and the other towns (the inn) | **keep a patient alive** for 40 s: crouch next to them with combat mode off, your chakra flows in | **Healing Palm** (genin, 200 ryo: heal yourself or whoever you look at), **Poison Lore** (genin, 150 ryo: weaker poisons, working antidotes), **Chakra Scalpel** (chūnin, 500 ryo: your strikes cut muscles), **eye transplants** (jōnin, 1,500 ryo each) |
+| **The Stone Hermit** | a remote sanctuary (`/noirm sage rumour`) | meditate by his pool while spirits attack | nature energy, Sage Mode |
+
+Meditating (**N**) next to Rensai drills any of the five natures **twice as fast** (he has them all).
+
+**Eye transplants:** using an eye on yourself still works, but it's risky now (about 1 in 3 the eye
+is ruined, and it hurts and blinds you for a while). Bring the eye to Tsubaki instead.
+
+**Antidotes:** a glass bottle, sweet berries, a brown mushroom and bone meal. Only someone who
+learned Poison Lore mixes a working one; anyone else's comes out "botched".
+
+Quick test (cheats on): `/noirm spawn master scholar_rensai` (or `medic_tsubaki`),
+`/noirm rank set chunin`, `/noirm ryo give 2000`, `/noirm master pass scholar_rensai`, then talk to
+them. `/noirm village capital` builds a whole capital with both of them inside.
+
+## How to test combat (milestone 2)
+
+1. Run `runClient` and create a world with **cheats on**.
+2. Open the creative inventory → Spawn Eggs → **Sparring Ninja**, and place one.
+3. Press **R** to enter combat mode (the ninja accepts the challenge), then:
+
+| Key | Action |
+|---|---|
+| **R** | Combat mode on/off |
+| **Left click** | Light attack (press again quickly to combo) |
+| **Right click** (empty hand or sword) | Heavy attack |
+| **Shift + right click** | Launcher (uppercut) |
+| **Sprint + click** | Dash attack (flying knee, Dynamic Entry…) |
+| **Hold S + click** | Back attack (spinning back elbow, Leaf Whirlwind…) |
+| **C** | Grab. Grabs beat guard; then click = knee, right click = headbutt, S + click = throw. Held? **Alt** breaks free |
+| **H** | Switch fighting style: Academy, Brawler, Strong Fist (taijutsu 18), Gentle Fist (Byakugan) |
+| **Alt** (+ WASD) | Dodge, costs stamina. Dodging right as a hit lands = **perfect dodge** |
+| **Hold V** | Guard. Raising it right before a hit lands = **parry** |
+| **Z** | Lock on to the enemy you're looking at |
+| **F5** | Third-person view, to see the animations |
+| **1–4** | Cast the jutsu in your loadout (hold for charge/channel jutsu) |
+| **N** | Meditate (faster chakra, nature drills, nature energy) |
+| **K** | Crew orders |
+| **B** | Tailed-beast cloak (if you're a jinchūriki) |
+| **G** | Open your eyes: Sharingan or Byakugan (if you have one) |
+| **J** | Jutsu screen: your jutsu by nature, the loadout, and the **Nature Tree** tab |
+
+Strong hits slam people into walls behind them (and crack the wall); hits in the air keep a
+launched enemy floating (a juggle). Destruction heals itself after a while: turn it off with
+`/gamerule noirmTerrainDamage false`, or change how long it takes with `noirmTerrainRegen`.
+
+**Gore (visual only):** fighters show their wounds as they take damage: bruises from fists,
+cuts from blades, soot from fire and blasts, dirt from falls and knockdowns. The marks fade as
+health comes back. A killing blow from a blade, a crit, a blast or a heavy hit can cut off an
+arm, a leg or the head; it lies there for 5 seconds, then burns away in blue chakra flame. It
+never changes the fight (no bleeding). Turn it off with `/noirm world gore off` (or
+`/gamerule noirmGore false`).
+
+**Crew:** beat a ninja below a quarter of their health and they yield (kneel). Right-click them to
+invite them. Sneak + right-click a crew mate: wait here / follow me.
+**Tailed beasts:** once subdued, use a Sealing Scroll on them, or keep hitting to kill them.
+
+Try `/noirm stat speed 20` and `/noirm stat taijutsu 20`: the ninja's wind-ups get slower
+(perception). Or summon a strong one:
+`/summon noirm:sparring_ninja ~ ~ ~3 {Speed:25,Taijutsu:25}`.
+
+## How to test powers (milestone 3)
+
+When you first join a world you make your character; the clan you were born into comes from it,
+with its natures and traits (`/noirm clan` shows them). In combat mode, **keys 1–4** cast the jutsu in your loadout; **J** opens the jutsu
+screen. Shortcuts for testing (cheats on):
+
+| Command | What it does |
+|---|---|
+| `/noirm clan` · `/noirm clan list` | Your clan · all clans this world knows |
+| `/noirm clan set uchiha` (or `hyuga`, `uzumaki`, `senju`) | Become a canon clan |
+| `/noirm clan new` · `/noirm clan reroll` | Join a brand-new generated clan · roll like a newcomer |
+| `/noirm jutsu learn all` | Learn every jutsu (then equip them with J) |
+| `/noirm sharingan 3` | Get the Sharingan with 3 tomoe (press **G** to turn it on) |
+| `/noirm resolve 100` | Full Resolve: the next near-death hit will probably awaken you |
+| `/noirm awaken` | Awaken right now (LOCKED IN) |
+| `/noirm biju seal 9` | Become a jinchūriki (press **B** for the cloak) |
+| `/summon noirm:sparring_ninja ~ ~ ~3 {Clan:"uchiha"}` | An Uchiha ninja (Sharingan, fire jutsu) |
+
+Ideas to try: get the Sharingan to 3 tomoe, turn it on, and watch a ninja cast a jutsu (you
+copy it). Let a ninja beat you down to low health with full Resolve. Use the cloak and fight
+with it on.
+
+## How to test training, the Byakugan and tailed beasts
+
+**Training:** craft a **Training Dummy** (a hay bale on top, a hay bale in the middle with sticks
+on both sides, a stick below) or take it from the Combat tab, place it, press **R** and hit it.
+Watch the combo counter, and the Taijutsu/Speed bars in the HUD. You get faster as speed rises.
+Past 30, the dummy stops teaching: fight ninjas (stronger ones teach more). Crouch-punch the
+dummy with combat mode off to pick it up.
+
+**Byakugan:** `/noirm byakugan` (or `/noirm clan set hyuga`), then **G**. Look around: ninjas and mobs glow through
+walls. Fight with it open (Gentle Fist), and equip Rotation and 64 Palms with **J**.
+
+**Tailed beasts:**
+
+| What | How |
+|---|---|
+| Summon a beast | Spawn egg (Spawn Eggs tab) or `/summon noirm:tailed_beast ~ ~ ~5 {Tails:9}` |
+| Seal it | Beat it down until it lies down (subdued), then use a **Sealing Scroll** on it |
+| Become its jinchūriki | Use the full scroll in the air, then press **B** for the cloak |
+| Seal it into someone else | Use the full scroll on a ninja or another player |
+| Let it out again | Crouch + use the full scroll on the ground (it will attack you) |
+| Tailed Beast Ball | Equip it with **J**, turn on the cloak (**B**), hold its key to charge |
+| A jinchūriki ninja | `/summon noirm:sparring_ninja ~ ~ ~3 {Tails:4}`: beat it and its beast breaks free |
+
+## How to test the nature tree and the new jutsu
+
+1. `/noirm clan set senju` (Earth + Water).
+2. `/noirm jutsu mastery noirm:doton/earth_wall 2` and `/noirm jutsu mastery noirm:suiton/water_bullet 2`.
+   Mastering them also teaches Earth Spikes and Water Dragon (mastery chains).
+3. Press **J** → **Nature Tree**: Wood glows gold. Click it, then **Unlock**. You learn Wood
+   Binding and Deep Forest Spears.
+4. To try every jutsu: `/noirm nature add <nature>` for each nature you want, then
+   `/noirm jutsu learn all`, and equip with **J**.
+
+## Player guide: your first natures and jutsu, and how to get more
+
+**What you start with.** Your clan gives you one or two natures (fire, water, wind, earth,
+lightning…) and their first jutsu, plus Substitution and Body Flicker. Press **J** to see them
+and put up to 4 in your loadout. Keys **1–4** cast them in combat mode (**R**).
+
+**More jutsu of natures you have:**
+1. **Use them.** Every cast gives mastery (★). At ★2 a jutsu teaches the next one of its line
+   (the card shows "Master X to ★2").
+2. **Jutsu scrolls** (rank C, B, A, S): found in chests (dungeons, temples, ruins, camps,
+   shipwrecks), dropped now and then by ninjas you beat, and sold in village scroll shops (C and
+   B). Right-click to read one: you learn a jutsu of that rank **of a nature you own**. Bigger
+   ranks need more chakra: B needs Reserves 15, A 25, S 40. If nothing fits yet, you keep it.
+3. **Masters** teach their own techniques after you pass their test (Might Guy: the Eight Gates;
+   Rensai: one jutsu for each nature you own; Tsubaki: Healing Palm and the Chakra Scalpel).
+
+**A new nature (it takes days):**
+1. **Find your hidden affinity.** Craft **Chakra Paper** (2 paper + 1 lapis lazuli = 2) or buy
+   it in a scroll shop. Hold right-click: the paper reacts to your chakra (it **splits** for wind,
+   **burns** for fire, **gets wet** for water, **crinkles** for lightning, **turns to dust** for
+   earth). A second, faint reaction shows your **hidden** nature(s): those train **twice as fast**.
+2. **Do the drill.** Meditate (**N**) in the nature's setting and a bar under the crosshair fills:
+   - Wind: hold a **leaf block** · Fire: next to a **flame** (campfire, lit furnace, candle, fire, lava)
+   - Water: next to **running water** or out in the **rain** · Lightning: next to a **lightning rod**
+     or under the sky in a **thunderstorm** · Earth: on bare **stone** with stone all around (a cave)
+   
+   A drill is **3 in-game days of meditation** (about an hour of play), **1.5 days** for a hidden
+   nature. Progress is kept when you stop.
+3. **Go faster.** Study near a **crew mate** who has the nature (×1.5) or a **master** who has it
+   (×2, e.g. Rensai in a hidden village's Academy, who has all five): they even replace the setting.
+   His **Nature Insight** lesson puts half a drill behind you at once. A **Nature Scroll** (rare: chests, beaten ninjas, one per
+   scroll shop) puts a quarter of the drill behind you (never the very end).
+4. **Done:** the nature is yours at trained strength (weaker than a clan nature) with its first
+   jutsu. Then the mastery chains and jutsu scrolls open its other jutsu, and two natures can mix
+   into a kekkei genkai in **J → Nature Tree**.
+
+`/noirm drills` lists your drills, their progress and what each needs. Testing shortcuts (cheats):
+`/noirm kit scrolls` (paper, every scroll, leaves), `/noirm nature hidden earth`,
+`/noirm nature train wind 90` (then meditate holding a leaf to finish it).
+
+**Stats:** `/noirm stat vitality 30` (more hearts), `/noirm stat reserves 30` (double chakra).
+**Eyes vs mobs:** `/noirm sharingan 3`, **G**, and let a skeleton shoot at you.
+
+## How to test allies, beasts and gear (round 4)
+
+**Allies:** `/noirm ninja uchiha` spawns an Uchiha (or use a clan spawn egg from the Spawn Eggs
+tab). Beat them down until they yield, then right-click them to invite them into your crew.
+
+| What | How |
+|---|---|
+| Ally screen | Right-click a crew mate: change their armor and what they hold, their order (follow, wait, train, meditate), style and look; teach jutsu you know and pick their 4 equipped jutsu |
+| Quick wait / follow | Crouch + right-click a crew mate |
+| Make them grow | Fight together, or order **Train** next to a training dummy, or **Meditate** (chakra) |
+| Respect | Shown in the ally screen. It goes up when you win fights and give them gear, down when you hit them or let crew mates die. Too low and they leave |
+
+**Tailed beast bond:** become a jinchūriki (`/noirm biju seal 9` or seal a beast; in creative a
+Sealing Scroll works at any health). Then:
+
+| What | How |
+|---|---|
+| Draw tails | Press **B** again and again: one more tail each press, up to what you've unlocked |
+| End the cloak | Crouch + **B** |
+| Answer the beast / ask for chakra | Crouch + **B** with the cloak off |
+| See the bond and requests | `/noirm beast` (cheats: `/noirm beast bond 80`, `/noirm beast tails 9`) |
+
+**Gear:** the Combat creative tab has forehead protectors, Senju battle armor, Uchiha, Hyūga and
+Uzumaki clothes, flak vests and ANBU gear. Each piece gives armor points and has a recipe.
+
+## How to find ninja villages
+
+**See one right away:** stand on fairly open ground and type `/noirm village capital` (or `town`,
+`outpost`). Add `leaf`, `sand`, `snow`, `mist`, `cloud` or `stone` to choose the look. A capital is ~545 blocks across, so
+give it room. It's built a few chunks at a time (about a minute) and the chat tells you when it's
+done. Fly up high to see it all.
+
+**Find natural ones:** they're only built in **newly generated land**, so start a new world or
+explore far away. Then `/locate structure noirm:hidden_village` (rare: they're thousands of blocks
+apart), `noirm:ninja_town` or `noirm:ninja_outpost`, and `/tp` to the coordinates it prints.
+
+**Things to try in a hidden village:**
+- Walk through the great gate up the main avenue (street lamps, shops, signboards) to the Kage
+  residence under the Kage Rock; climb the tower's ladder to the Kage's office on the balcony.
+- Follow the river: red footbridges, stone bridges, steps down to the water, the clan district on
+  its bank.
+- Walk the lantern street (restaurants, paper lanterns strung across it) to the hot spring.
+- Look for ninjas leaping across the rooftops, patrols on the wall walk, and neighbours stopping
+  to chat (a speech bubble over their heads).
+- Find the giant tree, the spires, the jōnin station by the Academy, the cemetery with its flame,
+  koi ponds, bamboo groves and the little roadside shrines.
+- Right-click shopkeepers to trade (each shop sells different things) and anyone else to chat.
+- Stay until night: villagers go home and the street lamps switch on by themselves.
+- If a zombie wanders in, the village ninjas deal with it (villagers run home).
+- Watch for villagers sitting on benches and at tables.
+
+**The other hidden villages** (they appear in other biomes):
+- **Mist** (swamps, dark forests): islands between ring canals, moss-topped round houses, and mist
+  that closes in when you walk in.
+- **Cloud** (meadows, windswept hills): white houses with blue domes and rock spires you can climb
+  (a ladder up the back), a dish platform with a bell, little houses on top.
+- **Stone** (badlands): towers that narrow as they rise, joined by rope bridges at roof height.
+
+Village ninjas leave you alone in combat mode unless you attack someone in the village. Then
+every ninja nearby comes for you.
+
+## Useful commands
+
+| Command | What it does |
+|---|---|
+| `gradlew runClient` | Starts Minecraft with the mod |
+| `gradlew runGameTestServer` | Runs NOIRM's automated in-game tests, then exits |
+| `gradlew build` | Builds the mod file into `build/libs/noirm-<version>.jar` |
+
+To play the built jar in a normal Minecraft install, use Forge 1.20.1 (47.4.10 or newer) and
+put the jar in your `mods` folder.
+
+## Where things are
+
+```
+src/main/java/com/noirm/        the mod's code
+src/main/resources/             assets (models, textures, lang) and data (recipes, worldgen…)
+docs/                           roadmap and guides
+reference/nydo/                 NYDO's assets, for inspiration only (not part of our mod)
+```

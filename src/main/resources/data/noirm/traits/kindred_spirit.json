@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "beast_bond": 0.6,
+    "crew_respect": 0.2
+  }
+}

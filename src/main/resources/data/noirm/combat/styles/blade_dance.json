@@ -1,0 +1,59 @@
+{
+  "openers": {
+    "light": "noirm:blade_dance/dance_cut",
+    "heavy": "noirm:blade_dance/dance_crescent",
+    "launcher": "noirm:blade_dance/dance_flip_cut",
+    "forward_light": "noirm:blade_dance/dance_lunge",
+    "forward_heavy": "noirm:blade_dance/dance_lunge",
+    "back_heavy": "noirm:blade_dance/dance_whirlwind"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_blade_dance",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_blade_dance_aggressive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_blade_dance_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:blade_dance/dance_counter",
+  "identity": {
+    "footwork": "bouncing",
+    "rhythm": "flowing",
+    "move_speed": 1.12,
+    "guard": {
+      "type": "parry",
+      "parry_window": 1.3,
+      "keep": 0.3,
+      "speed": 0.6
+    },
+    "dodge": {
+      "kind": "flip",
+      "speed": 1.0,
+      "ticks": 10,
+      "iframes": 6,
+      "lift": 0.25
+    },
+    "strike": {
+      "momentum": 0.06,
+      "momentum_max": 0.24,
+      "backstab": 1.3
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.02,
+    "scroll": 3
+  },
+  "weapons": [
+    "sword",
+    "tanto",
+    "kunai"
+  ]
+}

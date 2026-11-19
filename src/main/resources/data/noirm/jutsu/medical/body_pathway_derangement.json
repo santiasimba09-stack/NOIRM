@@ -1,0 +1,17 @@
+{
+  "behavior": "derangement",
+  "rank": "A",
+  "chakra_cost": 35,
+  "cooldown": 500,
+  "unlock": {
+    "after": "noirm:medical/scalpel_strike",
+    "mastery": 2
+  },
+  "params": {
+    "range": 4,
+    "duration": 80,
+    "damage": 3,
+    "posture": 20,
+    "knockback": 0.2
+  }
+}

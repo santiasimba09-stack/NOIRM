@@ -1,0 +1,23 @@
+{
+  "nature": "fire",
+  "behavior": "projectile",
+  "rank": "A",
+  "chakra_cost": 50,
+  "cooldown": 420,
+  "unlock": {
+    "after": "noirm:katon/fire_dragon",
+    "mastery": 2
+  },
+  "params": {
+    "count": 3,
+    "spread": 36,
+    "speed": 0.6,
+    "radius": 2.5,
+    "damage": 9,
+    "knockback": 1.0,
+    "posture": 30,
+    "fire_seconds": 6,
+    "homing": 0.12,
+    "look": "dragon"
+  }
+}

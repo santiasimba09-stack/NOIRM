@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "palms", "rank": "A",
+  "requires": { "dojutsu": "byakugan", "stage": 1 },
+  "chakra_cost": 35, "cooldown": 400,
+  "params": { "range": 3.5, "damage": 1.5, "posture": 8, "knockback": 2.0, "duration": 36 }
+}

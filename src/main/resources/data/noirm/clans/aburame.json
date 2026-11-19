@@ -1,0 +1,36 @@
+{
+  "id": "aburame",
+  "name": "Aburame",
+  "weight": 2,
+  "natures": {
+    "earth": 1.5
+  },
+  "awakening": "will",
+  "perks": {
+    "poison_immunity": 1,
+    "dot_resist": 0.6,
+    "sensor": 32,
+    "chakra_leech": 8,
+    "start_control": 3,
+    "chakra_pool": 0.3,
+    "fire_weakness": 0.6,
+    "xp_speed": -0.2
+  },
+  "clan_jutsu": [
+    "noirm:clan/parasitic_swarm"
+  ],
+  "look": {
+    "hair": [
+      "#1b1c22",
+      "#2a2224"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "chakra_sensor": 3,
+    "fine_control": 2,
+    "strategist": 2,
+    "easygoing": 2,
+    "hot_blooded": 0.3
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "nature": "yin",
+  "behavior": "tree_bind",
+  "rank": "S",
+  "chakra_cost": 65,
+  "cooldown": 900,
+  "unlock": {
+    "after": "noirm:yin/false_surroundings",
+    "mastery": 3
+  },
+  "params": {
+    "range": 14,
+    "stun": 60,
+    "damage": 18,
+    "posture": 60
+  }
+}

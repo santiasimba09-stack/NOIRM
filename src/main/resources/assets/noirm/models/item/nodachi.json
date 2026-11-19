@@ -1,0 +1,121 @@
+{
+  "loader": "forge:separate_transforms",
+  "textures": {
+    "particle": "noirm:item/nodachi"
+  },
+  "base": {
+    "parent": "minecraft:item/handheld",
+    "loader": "forge:item_layers",
+    "textures": {
+      "layer0": "noirm:item/held/nodachi"
+    },
+    "display": {
+      "thirdperson_righthand": {
+        "rotation": [
+          0,
+          -90,
+          10
+        ],
+        "translation": [
+          -0.0,
+          5.34,
+          0.264
+        ],
+        "scale": [
+          0.1937,
+          1.55,
+          0.9775
+        ]
+      },
+      "thirdperson_lefthand": {
+        "rotation": [
+          0,
+          90,
+          -10
+        ],
+        "translation": [
+          0.0,
+          5.34,
+          0.264
+        ],
+        "scale": [
+          0.1937,
+          1.55,
+          0.9775
+        ]
+      },
+      "firstperson_righthand": {
+        "rotation": [
+          0.0,
+          -49.0,
+          32.0
+        ],
+        "translation": [
+          -0.165,
+          2.291,
+          -1.839
+        ],
+        "scale": [
+          0.1066,
+          0.8525,
+          0.782
+        ]
+      },
+      "firstperson_lefthand": {
+        "rotation": [
+          0.0,
+          49.0,
+          -32.0
+        ],
+        "translation": [
+          0.165,
+          2.291,
+          -1.839
+        ],
+        "scale": [
+          0.1066,
+          0.8525,
+          0.782
+        ]
+      }
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/nodachi"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/nodachi"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/nodachi"
+      }
+    },
+    "head": {
+      "parent": "minecraft:item/handheld",
+      "loader": "forge:item_layers",
+      "textures": {
+        "layer0": "noirm:item/nodachi"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "noirm:flow": 1
+      },
+      "model": "noirm:item/nodachi_flow"
+    }
+  ]
+}

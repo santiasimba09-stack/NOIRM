@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "L L",
+    "GGG",
+    "GLG"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "G": {
+      "item": "minecraft:cyan_wool"
+    }
+  },
+  "result": {
+    "item": "noirm:vest_mist"
+  }
+}

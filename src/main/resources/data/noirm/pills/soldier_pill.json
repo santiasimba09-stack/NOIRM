@@ -1,0 +1,65 @@
+{
+  "item": "noirm:soldier_pill",
+  "color": "#8A6A3A",
+  "cooldown": 60,
+  "toxicity": 35,
+  "instant": {
+    "chakra": 0.6,
+    "stamina": 1.0
+  },
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 2.0,
+      "seconds": 30
+    },
+    {
+      "type": "chakra_regen",
+      "amount": 1.5,
+      "seconds": 30
+    }
+  ],
+  "crash": [
+    {
+      "type": "effect",
+      "seconds": 30,
+      "effect": "minecraft:slowness"
+    },
+    {
+      "type": "effect",
+      "seconds": 30,
+      "effect": "minecraft:weakness"
+    },
+    {
+      "type": "stamina_regen",
+      "amount": 0.5,
+      "seconds": 30
+    },
+    {
+      "type": "chakra_regen",
+      "amount": 0.6,
+      "seconds": 30
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:ironmillet",
+        "count": 2
+      },
+      {
+        "item": "noirm:moonroot",
+        "count": 1
+      },
+      {
+        "item": "noirm:rice",
+        "count": 1
+      }
+    ],
+    "yield": 2,
+    "difficulty": 6,
+    "min_pharmacology": 1,
+    "unlock": "starter",
+    "xp": 14
+  }
+}

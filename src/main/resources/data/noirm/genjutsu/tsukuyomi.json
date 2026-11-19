@@ -1,0 +1,49 @@
+{
+  "jutsu": [
+    "noirm:mangekyo/tsukuyomi"
+  ],
+  "duration": 120,
+  "sky": {
+    "top": "#000000",
+    "horizon": "#141414",
+    "fog": "#0C0C0C",
+    "fog_start": 4,
+    "fog_end": 22,
+    "moon": "#F2F2F2",
+    "moon_size": 11,
+    "stripes": true
+  },
+  "ground": {
+    "kind": "blood",
+    "color": "#D6D6D6",
+    "rim": "#202020",
+    "radius": 34
+  },
+  "figures": [
+    {
+      "type": "post",
+      "count": 9,
+      "radius": 11,
+      "height": 6.5,
+      "color": "#C8C8C8"
+    },
+    {
+      "type": "caster",
+      "count": 5,
+      "radius": 4,
+      "motion": "circle"
+    }
+  ],
+  "sounds": {
+    "drone": true,
+    "heartbeat": 40,
+    "whispers": 120,
+    "muffle": 0.2,
+    "pitch": 0.55
+  },
+  "hud_flicker": 0.4,
+  "time_scale": 0.25,
+  "post": "invert_red",
+  "mob": "freeze",
+  "shatter": "#FF3020"
+}

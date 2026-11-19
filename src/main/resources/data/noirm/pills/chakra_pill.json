@@ -1,0 +1,40 @@
+{
+  "item": "noirm:chakra_pill",
+  "color": "#3E7FE0",
+  "cooldown": 40,
+  "toxicity": 25,
+  "instant": {
+    "chakra": 0.4
+  },
+  "effects": [
+    {
+      "type": "chakra_regen",
+      "amount": 1.6,
+      "seconds": 20
+    }
+  ],
+  "crash": [
+    {
+      "type": "chakra_regen",
+      "amount": 0.7,
+      "seconds": 20
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:moonroot",
+        "count": 2
+      },
+      {
+        "item": "minecraft:lapis_lazuli",
+        "count": 1
+      }
+    ],
+    "yield": 2,
+    "difficulty": 10,
+    "min_pharmacology": 5,
+    "unlock": "starter",
+    "xp": 18
+  }
+}

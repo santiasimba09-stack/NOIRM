@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:gold_block"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.missions.ryo_10000.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.missions.ryo_10000.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/missions/ryo_1000",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:ryo",
+      "conditions": {
+        "min": 10000
+      }
+    }
+  },
+  "rewards": {
+    "experience": 60
+  }
+}

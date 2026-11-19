@@ -1,0 +1,35 @@
+{
+  "id": "chinoike",
+  "name": "Chinoike",
+  "weight": 1,
+  "natures": {
+    "yin": 1.5,
+    "fire": 1.0
+  },
+  "kekkei_genkai": "ketsuryugan",
+  "awakening": "will",
+  "perks": {
+    "genjutsu_power": 1.0,
+    "perception": 0.2,
+    "genjutsu_resist": 0.4,
+    "start_willpower": 3,
+    "max_health": -4,
+    "strain": 0.3,
+    "crew_respect": -0.3
+  },
+  "clan_jutsu": [
+    "noirm:clan/blood_illusion"
+  ],
+  "look": {
+    "hair": [
+      "#2a1418",
+      "#141418"
+    ],
+    "eyes": "#8e2b2b"
+  },
+  "talent_bias": {
+    "genjutsu_talent": 4,
+    "cursed_luck": 2,
+    "keen_eyes": 2
+  }
+}

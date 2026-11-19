@@ -1,0 +1,16 @@
+{
+  "nature": "yang",
+  "behavior": "regen_burst",
+  "rank": "C",
+  "chakra_cost": 25,
+  "cooldown": 400,
+  "unlock": {
+    "after": "noirm:yang/mystical_palm",
+    "mastery": 1
+  },
+  "params": {
+    "damage": 6,
+    "duration": 100,
+    "effect": "regeneration:1"
+  }
+}

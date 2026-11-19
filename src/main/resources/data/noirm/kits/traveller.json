@@ -1,0 +1,17 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:cloth_mask"
+    },
+    {
+      "item": "noirm:travel_cloak"
+    },
+    {
+      "item": "noirm:hakama"
+    },
+    {
+      "item": "noirm:waraji"
+    }
+  ]
+}

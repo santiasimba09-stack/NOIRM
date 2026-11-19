@@ -1,0 +1,19 @@
+{
+  "behavior": "scalpel_strike",
+  "rank": "B",
+  "chakra_cost": 22,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:medical/chakra_scalpel",
+    "mastery": 2
+  },
+  "params": {
+    "range": 5,
+    "damage": 8,
+    "knockback": 0.2,
+    "posture": 25,
+    "stun": 10,
+    "effect": "slowness:2,weakness:1",
+    "effect_ticks": 80
+  }
+}

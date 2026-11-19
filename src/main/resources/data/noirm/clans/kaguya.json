@@ -1,0 +1,39 @@
+{
+  "id": "kaguya",
+  "name": "Kaguya",
+  "weight": 1,
+  "natures": {
+    "earth": 1.0
+  },
+  "taijutsu_bonus": 2,
+  "kekkei_genkai": "shikotsumyaku",
+  "awakening": "will",
+  "perks": {
+    "start_durability": 10,
+    "max_health": 8,
+    "damage_taken": -0.15,
+    "melee_damage": 0.25,
+    "xp_durability": 0.6,
+    "posture": 40,
+    "dot_resist": -0.5,
+    "health_regen": -0.05,
+    "jutsu_power": -0.2
+  },
+  "clan_jutsu": [
+    "noirm:clan/finger_bone_bullets"
+  ],
+  "look": {
+    "hair": [
+      "#f2f0ea",
+      "#d8d4cc"
+    ],
+    "eyes": "#3e6b45"
+  },
+  "talent_bias": {
+    "stubborn_body": 4,
+    "heavy_handed": 3,
+    "taijutsu_genius": 3,
+    "sickly": 3,
+    "hot_blooded": 2
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "genjutsu_power": 0.3,
+    "perception": 0.05
+  },
+  "talent_bias": {
+    "genjutsu_talent": 4
+  }
+}

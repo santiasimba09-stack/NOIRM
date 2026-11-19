@@ -1,0 +1,11 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "food_power": 0.35,
+    "max_stamina": 20
+  },
+  "talent_bias": {
+    "glutton": 4
+  }
+}

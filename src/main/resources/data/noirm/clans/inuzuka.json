@@ -1,0 +1,40 @@
+{
+  "id": "inuzuka",
+  "name": "Inuzuka",
+  "weight": 2,
+  "natures": {
+    "earth": 1.5
+  },
+  "speed_bonus": 1,
+  "taijutsu_bonus": 1,
+  "awakening": "will",
+  "perks": {
+    "sensor": 40,
+    "start_speed": 4,
+    "xp_speed": 0.5,
+    "melee_damage": 0.2,
+    "perception": 0.1,
+    "hound": 1,
+    "start_control": -3,
+    "xp_control": -0.3,
+    "genjutsu_power": -0.4
+  },
+  "clan_jutsu": [
+    "noirm:clan/fang_over_fang"
+  ],
+  "look": {
+    "hair": [
+      "#3a2618",
+      "#4a3020"
+    ],
+    "eyes": "#6a4a2a"
+  },
+  "talent_bias": {
+    "kindred_spirit": 4,
+    "fleet_footed": 3,
+    "hot_blooded": 3,
+    "heavy_handed": 2,
+    "taijutsu_genius": 2,
+    "strategist": 0.4
+  }
+}

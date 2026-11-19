@@ -1,0 +1,23 @@
+{
+  "nature": "lava",
+  "cast": "charge",
+  "behavior": "volcano",
+  "rank": "S",
+  "chakra_cost": 95,
+  "cooldown": 1100,
+  "min_charge": 20,
+  "max_charge": 50,
+  "unlock": {
+    "after": "noirm:yoton/melting_apparition",
+    "mastery": 3
+  },
+  "params": {
+    "range": 16,
+    "radius": 6,
+    "damage": 24,
+    "duration": 60,
+    "knockback": 1.0,
+    "posture": 70,
+    "fire_seconds": 8
+  }
+}

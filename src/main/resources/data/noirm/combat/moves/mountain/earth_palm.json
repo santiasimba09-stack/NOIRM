@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:mountain_earth_palm",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 28,
+    "range": 2.5,
+    "arc": 90,
+    "knockback": 1.0,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:mountain/stone_palm"
+  },
+  "variants": {
+    "aggressive": "noirm:mountain/mountain_crush",
+    "defensive": "noirm:mountain/rooted_push"
+  }
+}

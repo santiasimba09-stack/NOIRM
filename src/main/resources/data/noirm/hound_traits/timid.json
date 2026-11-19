@@ -1,0 +1,1 @@
+{ "weakness": true, "flee_below": 0.35, "smell": 1.1, "weight": 7, "excludes": ["brave"] }

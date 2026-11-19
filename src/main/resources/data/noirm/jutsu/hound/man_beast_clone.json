@@ -1,0 +1,12 @@
+{
+  "cast": "tap",
+  "behavior": "man_beast_clone",
+  "rank": "C",
+  "chakra_cost": 25,
+  "cooldown": 900,
+  "requires": {
+    "dojutsu": "hound",
+    "stage": 2
+  },
+  "params": {}
+}

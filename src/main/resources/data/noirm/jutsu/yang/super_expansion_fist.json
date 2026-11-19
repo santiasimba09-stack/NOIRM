@@ -1,0 +1,19 @@
+{
+  "nature": "yang",
+  "behavior": "giant_fist",
+  "rank": "A",
+  "chakra_cost": 40,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:yang/partial_multi_size",
+    "mastery": 2
+  },
+  "params": {
+    "range": 6,
+    "radius": 3.2,
+    "damage": 16,
+    "knockback": 1.4,
+    "posture": 60,
+    "stun": 20
+  }
+}

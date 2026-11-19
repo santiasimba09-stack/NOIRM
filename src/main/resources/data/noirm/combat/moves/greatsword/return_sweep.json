@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:greatsword_return",
+  "timing": { "windup": 6, "active": 3, "recovery": 8, "cancel_after": 4 },
+  "hit": { "damage": 8, "posture": 22, "range": 4.0, "arc": 200, "knockback": 0.9, "lunge": 0.2, "hitstun": 12, "hitstop": 3, "shake": 0.7 },
+  "next": { "light": "noirm:greatsword/spin", "heavy": "noirm:greatsword/cleave" }
+}

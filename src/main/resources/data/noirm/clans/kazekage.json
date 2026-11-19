@@ -1,0 +1,34 @@
+{
+  "id": "kazekage",
+  "name": "Kazekage line",
+  "weight": 1,
+  "natures": {
+    "magnet": 1.5,
+    "wind": 1.0,
+    "earth": 1.0
+  },
+  "kekkei_genkai": "magnet_release",
+  "awakening": "will",
+  "perks": {
+    "start_durability": 6,
+    "posture": 40,
+    "jutsu_power": 0.15,
+    "chakra_pool": 0.5,
+    "damage_taken": -0.1,
+    "max_stamina": -30,
+    "xp_speed": -0.2
+  },
+  "look": {
+    "hair": [
+      "#8a1e1e",
+      "#b4462e"
+    ],
+    "eyes": "#3aa8a0"
+  },
+  "talent_bias": {
+    "stubborn_body": 3,
+    "born_leader": 2,
+    "deep_reserves": 2,
+    "fine_control": 2
+  }
+}

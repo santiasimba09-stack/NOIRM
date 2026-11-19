@@ -1,0 +1,51 @@
+{
+  "openers": {
+    "light": "noirm:staff_wall/wall_thrust",
+    "heavy": "noirm:staff_wall/wall_spin",
+    "launcher": "noirm:staff_wall/wall_vault_kick",
+    "forward_light": "noirm:staff_wall/wall_ram",
+    "forward_heavy": "noirm:staff_wall/wall_ram",
+    "back_light": "noirm:staff_wall/wall_ward",
+    "back_heavy": "noirm:staff_wall/wall_ward"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_staff_wall",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_staff_wall_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_staff_wall_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:staff_wall/wall_counter",
+  "identity": {
+    "footwork": "upright",
+    "rhythm": "defensive",
+    "move_speed": 0.95,
+    "guard": {
+      "type": "high",
+      "parry_window": 1.3,
+      "keep": 0.12,
+      "posture": 0.7,
+      "speed": 0.55
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.8
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.02,
+    "scroll": 3
+  },
+  "weapons": [
+    "staff"
+  ]
+}

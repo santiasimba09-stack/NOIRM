@@ -1,0 +1,49 @@
+{
+  "openers": {
+    "light": "noirm:wind_step/gust_jab",
+    "heavy": "noirm:wind_step/passing_strike",
+    "launcher": "noirm:wind_step/updraft_kick",
+    "forward_light": "noirm:wind_step/swallow_dive",
+    "forward_heavy": "noirm:wind_step/hurricane_dash",
+    "back_light": "noirm:wind_step/hit_and_fade",
+    "back_heavy": "noirm:wind_step/tornado_heel"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_wind_step",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_wind_step_aggressive",
+      "switch": 2
+    },
+    "air": {
+      "animation": "noirm:stance_wind_step_air",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:wind_step/wind_counter",
+  "identity": {
+    "footwork": "bouncing",
+    "rhythm": "hit_and_run",
+    "move_speed": 1.25,
+    "guard": {
+      "type": "evasive"
+    },
+    "dodge": {
+      "kind": "hop",
+      "speed": 1.15,
+      "ticks": 9,
+      "iframes": 7,
+      "perfect": 5,
+      "stamina": 0.6,
+      "lift": 0.2
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.025,
+    "scroll": 4
+  }
+}

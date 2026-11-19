@@ -1,0 +1,38 @@
+{
+  "id": "yamanaka",
+  "name": "Yamanaka",
+  "weight": 2,
+  "natures": {
+    "yin": 1.5,
+    "water": 1.0
+  },
+  "awakening": "will",
+  "perks": {
+    "perception": 0.2,
+    "sensor": 40,
+    "genjutsu_power": 0.6,
+    "genjutsu_resist": 0.4,
+    "start_willpower": 4,
+    "xp_willpower": 0.4,
+    "medical_power": 0.2,
+    "max_health": -3,
+    "melee_damage": -0.1
+  },
+  "clan_jutsu": [
+    "noirm:clan/mind_disturbance"
+  ],
+  "look": {
+    "hair": [
+      "#e6cf8e",
+      "#f2e6be"
+    ],
+    "eyes": "#9ec4e8"
+  },
+  "talent_bias": {
+    "chakra_sensor": 4,
+    "genjutsu_talent": 3,
+    "iron_will": 2,
+    "healing_hands": 2,
+    "frail_but_precise": 2
+  }
+}

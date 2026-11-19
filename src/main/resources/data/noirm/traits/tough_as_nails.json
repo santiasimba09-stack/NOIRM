@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "max_health": 4,
+    "dot_resist": 0.25
+  },
+  "excludes": [
+    "frail_but_precise",
+    "sickly"
+  ]
+}

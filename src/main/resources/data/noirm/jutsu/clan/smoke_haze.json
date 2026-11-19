@@ -1,0 +1,15 @@
+{
+  "behavior": "cloud",
+  "rank": "C",
+  "chakra_cost": 18,
+  "cooldown": 240,
+  "params": {
+    "range": 4,
+    "radius": 4,
+    "duration": 120,
+    "damage": 0.5,
+    "block": "minecraft:gray_concrete_powder",
+    "effect": "minecraft:blindness:0,minecraft:slowness:0",
+    "effect_ticks": 40
+  }
+}

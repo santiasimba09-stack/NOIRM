@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:counter_heel",
+  "timing": {
+    "windup": 1,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 5,
+    "posture": 20,
+    "range": 2.8,
+    "arc": 120,
+    "knockback": 1.0,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.6
+  },
+  "next": {
+    "light": "noirm:strong_fist/straight"
+  }
+}

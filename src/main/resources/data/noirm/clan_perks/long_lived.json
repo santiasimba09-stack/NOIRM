@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "health_regen": 0.08,
+    "strain": -0.2,
+    "pill_toxicity": -0.15
+  },
+  "talent_bias": {
+    "quick_recovery": 2
+  }
+}

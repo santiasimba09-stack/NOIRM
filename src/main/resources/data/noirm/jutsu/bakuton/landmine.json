@@ -1,0 +1,15 @@
+{
+  "nature": "explosion",
+  "behavior": "pillar",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 30,
+  "cooldown": 200,
+  "params": {
+    "range": 10,
+    "radius": 2.5,
+    "damage": 9,
+    "knockback": 1.2,
+    "posture": 40
+  }
+}

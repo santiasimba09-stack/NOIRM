@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "noirm:steamed_rice"
+    },
+    {
+      "item": "noirm:steamed_rice"
+    },
+    {
+      "item": "minecraft:dried_kelp"
+    }
+  ],
+  "result": {
+    "item": "noirm:onigiri",
+    "count": 2
+  }
+}

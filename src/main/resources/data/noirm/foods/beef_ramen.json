@@ -1,0 +1,11 @@
+{
+  "item": "noirm:beef_ramen",
+  "color": "#B0502A",
+  "effects": [
+    {
+      "type": "training_xp",
+      "amount": 1.15,
+      "seconds": 180
+    }
+  ]
+}

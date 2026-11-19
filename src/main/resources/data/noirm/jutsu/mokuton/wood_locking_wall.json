@@ -1,0 +1,16 @@
+{
+  "nature": "wood",
+  "behavior": "wood_dome",
+  "rank": "B",
+  "chakra_cost": 26,
+  "cooldown": 500,
+  "unlock": {
+    "after": "noirm:mokuton/wood_binding",
+    "mastery": 2
+  },
+  "params": {
+    "radius": 3.5,
+    "duration": 100,
+    "range": 0
+  }
+}

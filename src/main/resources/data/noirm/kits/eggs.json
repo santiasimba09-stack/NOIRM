@@ -1,0 +1,19 @@
+{
+  "wear": false,
+  "items": [
+    {
+      "item": "noirm:sparring_ninja_spawn_egg",
+      "count": 8
+    },
+    {
+      "item": "noirm:tailed_beast_spawn_egg"
+    },
+    {
+      "item": "noirm:master_spawn_egg"
+    },
+    {
+      "item": "noirm:village_merchant_spawn_egg",
+      "count": 2
+    }
+  ]
+}

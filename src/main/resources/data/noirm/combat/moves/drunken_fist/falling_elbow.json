@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:drunken_fist_falling_elbow",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 16,
+    "range": 2.4,
+    "arc": 110,
+    "knockback": 0.3,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.4,
+    "lunge": 0.35
+  },
+  "next": {
+    "light": "noirm:drunken_fist/drunken_kick",
+    "heavy": "noirm:drunken_fist/gourd_slam"
+  }
+}

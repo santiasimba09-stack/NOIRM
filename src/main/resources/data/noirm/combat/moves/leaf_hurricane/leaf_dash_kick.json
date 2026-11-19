@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:leaf_hurricane_leaf_dash_kick",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 14,
+    "range": 3.1,
+    "arc": 80,
+    "knockback": 0.6,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.45,
+    "lunge": 0.8
+  },
+  "next": {
+    "light": "noirm:leaf_hurricane/whirlwind_low"
+  }
+}

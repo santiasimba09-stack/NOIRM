@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:axe_kick",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 30,
+    "range": 2.6,
+    "arc": 70,
+    "knockback": 0.3,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.8,
+    "lunge": 0.3,
+    "guard_break": true,
+    "ender": "knockdown"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "sensor": 28,
+    "perception": 0.05
+  }
+}

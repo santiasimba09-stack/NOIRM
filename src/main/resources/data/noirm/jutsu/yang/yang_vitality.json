@@ -1,0 +1,28 @@
+{
+  "nature": "yang",
+  "behavior": "mode",
+  "rank": "B",
+  "chakra_cost": 20,
+  "cooldown": 80,
+  "unlock": {
+    "after": "noirm:yang/rapid_regeneration",
+    "mastery": 2
+  },
+  "params": {
+    "duration": 0
+  },
+  "mode": {
+    "speed": 0.2,
+    "perception": 1.2,
+    "damage": 1.35,
+    "defense": 0.75,
+    "action_speed": 1.1,
+    "drain": 2.0,
+    "aura": [
+      "#FFFFF4",
+      "#FFD000",
+      "#5A3C00",
+      "#FFF4A0"
+    ]
+  }
+}

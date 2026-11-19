@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "noirm:item/tekko_kagi"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "noirm:flow": 1
+      },
+      "model": "noirm:item/tekko_kagi_flow"
+    }
+  ]
+}

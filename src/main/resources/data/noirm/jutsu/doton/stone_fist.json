@@ -1,0 +1,15 @@
+{
+  "nature": "earth",
+  "behavior": "pillar",
+  "rank": "B",
+  "chakra_cost": 26,
+  "cooldown": 160,
+  "params": {
+    "range": 11,
+    "radius": 1.4,
+    "damage": 9,
+    "knockback": 1.2,
+    "posture": 35,
+    "block": "minecraft:cobblestone"
+  }
+}

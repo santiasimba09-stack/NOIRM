@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:jutsu_scroll_c"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.jutsu.first_cast.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.jutsu.first_cast.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beginnings/handbook",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:jutsu",
+      "conditions": {
+        "event": "cast"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "kamui", "rank": "S",
+  "requires": { "dojutsu": "mangekyo", "stage": 1 },
+  "chakra_cost": 25, "cooldown": 120,
+  "params": { "range": 10, "damage": 6, "posture": 30, "duration": 40 }
+}

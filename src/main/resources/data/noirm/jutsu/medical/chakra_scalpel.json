@@ -1,0 +1,13 @@
+{
+  "behavior": "scalpel",
+  "rank": "B",
+  "quick": true,
+  "chakra_cost": 18,
+  "cooldown": 300,
+  "params": {
+    "duration": 200,
+    "damage": 3,
+    "effect": "slowness:1,weakness:0",
+    "effect_ticks": 60
+  }
+}

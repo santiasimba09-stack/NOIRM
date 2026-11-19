@@ -1,0 +1,15 @@
+{
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 22,
+  "cooldown": 160,
+  "params": {
+    "count": 6,
+    "spread": 30,
+    "speed": 1.2,
+    "damage": 1.5,
+    "homing": 0.4,
+    "effect": "minecraft:poison:0",
+    "effect_ticks": 80
+  }
+}

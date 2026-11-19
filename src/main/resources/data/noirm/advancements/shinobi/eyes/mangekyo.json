@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:mangekyo_eyes"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.eyes.mangekyo.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.eyes.mangekyo.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/eyes/three_tomoe",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:eyes",
+      "conditions": {
+        "key": "mangekyo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

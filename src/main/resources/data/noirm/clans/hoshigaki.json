@@ -1,0 +1,32 @@
+{
+  "id": "hoshigaki",
+  "name": "Hoshigaki",
+  "weight": 1,
+  "natures": {
+    "water": 1.5
+  },
+  "taijutsu_bonus": 1,
+  "awakening": "will",
+  "perks": {
+    "chakra_pool": 5.0,
+    "chakra_regen": 1.0,
+    "melee_damage": 0.2,
+    "max_health": 6,
+    "xp_reserves": 0.3,
+    "rough_control": 0.25,
+    "crew_respect": -0.3,
+    "chakra_beacon": 0.5
+  },
+  "look": {
+    "hair": [
+      "#2b3a6e",
+      "#2f3f6a"
+    ],
+    "eyes": "#d8d4cc"
+  },
+  "talent_bias": {
+    "deep_reserves": 4,
+    "heavy_handed": 3,
+    "tough_as_nails": 2
+  }
+}

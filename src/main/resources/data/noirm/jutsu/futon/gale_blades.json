@@ -1,0 +1,19 @@
+{
+  "nature": "wind",
+  "behavior": "projectile",
+  "rank": "B",
+  "chakra_cost": 22,
+  "cooldown": 120,
+  "params": {
+    "count": 3,
+    "spread": 14,
+    "speed": 2.6,
+    "damage": 5,
+    "radius": 0,
+    "knockback": 0.4,
+    "posture": 15,
+    "effect": "weakness:0",
+    "effect_ticks": 40,
+    "look": "needle"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:book"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.crew.teach.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.crew.teach.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/crew/recruit",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:crew",
+      "conditions": {
+        "event": "taught"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 60
+  }
+}

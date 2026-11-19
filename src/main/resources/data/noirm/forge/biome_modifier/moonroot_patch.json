@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#noirm:has_herb/moonroot",
+  "features": "noirm:moonroot_patch",
+  "step": "vegetal_decoration"
+}

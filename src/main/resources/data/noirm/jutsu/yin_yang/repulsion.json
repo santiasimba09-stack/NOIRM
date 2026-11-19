@@ -1,0 +1,17 @@
+{
+  "nature": "yin_yang",
+  "behavior": "repulsion",
+  "rank": "A",
+  "chakra_cost": 45,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:yin_yang/attraction",
+    "mastery": 2
+  },
+  "params": {
+    "radius": 5.5,
+    "knockback": 1.4,
+    "damage": 10,
+    "posture": 40
+  }
+}

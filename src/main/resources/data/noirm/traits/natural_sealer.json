@@ -1,0 +1,9 @@
+{
+  "kind": "positive",
+  "weight": 5,
+  "modifiers": {
+    "sealing_power": 0.4,
+    "sealing_cost": -0.25,
+    "beast_bond": 0.25
+  }
+}

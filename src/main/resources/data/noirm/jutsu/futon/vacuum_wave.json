@@ -1,0 +1,21 @@
+{
+  "nature": "wind",
+  "behavior": "wind_crescent",
+  "rank": "A",
+  "chakra_cost": 40,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:futon/vacuum_blast",
+    "mastery": 2
+  },
+  "params": {
+    "count": 14,
+    "spread": 360,
+    "range": 10,
+    "speed": 0.7,
+    "radius": 2.2,
+    "damage": 9,
+    "knockback": 1.0,
+    "posture": 35
+  }
+}

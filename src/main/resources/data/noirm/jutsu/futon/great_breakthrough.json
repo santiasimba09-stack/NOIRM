@@ -1,0 +1,17 @@
+{
+  "nature": "wind",
+  "behavior": "burst",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 200,
+  "unlock": {
+    "after": "noirm:futon/vacuum_bullets",
+    "mastery": 2
+  },
+  "params": {
+    "range": 12,
+    "damage": 5,
+    "knockback": 3.6,
+    "posture": 40
+  }
+}

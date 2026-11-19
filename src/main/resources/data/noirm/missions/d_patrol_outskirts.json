@@ -1,0 +1,9 @@
+{
+  "type": "scout",
+  "rank": "D",
+  "reward": 90,
+  "points": 10,
+  "count": 3,
+  "min_distance": 50,
+  "max_distance": 80
+}

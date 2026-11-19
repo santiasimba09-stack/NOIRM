@@ -1,0 +1,24 @@
+{
+  "nature": "water",
+  "cast": "charge",
+  "behavior": "maelstrom",
+  "rank": "S",
+  "chakra_cost": 85,
+  "cooldown": 900,
+  "min_charge": 12,
+  "max_charge": 44,
+  "unlock": {
+    "after": "noirm:suiton/great_waterfall",
+    "mastery": 2
+  },
+  "params": {
+    "range": 22,
+    "radius": 6,
+    "damage": 15,
+    "knockback": 2.4,
+    "posture": 60,
+    "stun": 10,
+    "effect": "slowness:2",
+    "effect_ticks": 60
+  }
+}

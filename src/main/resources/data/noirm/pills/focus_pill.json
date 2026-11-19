@@ -1,0 +1,51 @@
+{
+  "item": "noirm:focus_pill",
+  "color": "#B9A9F0",
+  "cooldown": 90,
+  "toxicity": 20,
+  "effects": [
+    {
+      "type": "perception",
+      "amount": 1.2,
+      "seconds": 60
+    },
+    {
+      "type": "control",
+      "amount": 0.25,
+      "seconds": 60
+    }
+  ],
+  "crash": [
+    {
+      "type": "effect",
+      "seconds": 30,
+      "effect": "minecraft:mining_fatigue"
+    },
+    {
+      "type": "perception",
+      "amount": 0.9,
+      "seconds": 30
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:mistcap",
+        "count": 2
+      },
+      {
+        "item": "noirm:moonroot",
+        "count": 1
+      },
+      {
+        "item": "minecraft:glowstone_dust",
+        "count": 1
+      }
+    ],
+    "yield": 2,
+    "difficulty": 18,
+    "min_pharmacology": 15,
+    "unlock": "perk:pill_lore",
+    "xp": 30
+  }
+}
