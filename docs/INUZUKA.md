@@ -283,6 +283,20 @@ so the same hound always looks the same:
   hound. Now all three live on as breeds (Wolfish, Stocky, Mastiff), joined by the Sighthound and
   the Spitz.
 
+### Screenshots (real client, docs/screenshots/)
+| File | Shows |
+|---|---|
+| `hound-breeds.jpg` | the five breeds at level 20, between a horse and an Inuzuka ninja |
+| `hound-lineup.jpg` | a dozen different hounds (breeds, ears, tails, patterns, colours, markings) |
+| `hound-growth-side.jpg`, `hound-growth-front.jpg` | one hound at levels 1, 3, 6, 9, 12, 16, 20, 30 and 40, side and front, with a ninja for scale |
+| `hound-growth-young.jpg` | levels 1–12 closer: the puppy turning into a gangly adolescent and then an adult |
+| `hound-pups.jpg` | puppies of each breed |
+| `hound-puppy-head.jpg` | the puppy on your head, then in your jacket |
+| `hound-ride.jpg` | riding a great hound (an Inuzuka NPC from the side; yourself from the front) |
+| `hound-fang.jpg` | Fang Over Fang: you and the hound spinning into the target |
+| `hound-poses.jpg` | sitting, knocked out on its side, a sitting spitz puppy |
+| `hound-panel.jpg`, `hound-hud.jpg` | the hound panel (a puppy and a great hound) and the HUD line |
+
 ### Where the numbers live
 - `hound/HoundGrowth`: size, proportion and strength curves, what each level costs, milestone checks.
 - `hound/HoundStage`: milestone levels.

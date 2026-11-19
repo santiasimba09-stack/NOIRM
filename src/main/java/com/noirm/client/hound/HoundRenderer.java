@@ -18,6 +18,8 @@ import net.minecraft.resources.ResourceLocation;
  * puppy sits on you.
  */
 public class HoundRenderer extends MobRenderer<NinjaHound, HoundModel> {
+    /** Set while the hound panel draws the hound (then it shows even on your own head). */
+    public static boolean inGui;
     private static final ResourceLocation MISSING = Noirm.id("textures/entity/hound/fur_young.png");
 
     public HoundRenderer(EntityRendererProvider.Context context) {
@@ -38,7 +40,7 @@ public class HoundRenderer extends MobRenderer<NinjaHound, HoundModel> {
             return; // it's wearing your shape (Man Beast Clone)
         }
         Minecraft mc = Minecraft.getInstance();
-        if (hound.isCarried() && hound.carry() == NinjaHound.Carry.HEAD && hound.getVehicle() == mc.getCameraEntity()
+        if (!inGui && hound.isCarried() && hound.carry() == NinjaHound.Carry.HEAD && hound.getVehicle() == mc.getCameraEntity()
                 && mc.options.getCameraType().isFirstPerson()) {
             return; // on your own head: out of your view in first person
         }

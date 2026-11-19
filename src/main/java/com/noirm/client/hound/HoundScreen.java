@@ -216,7 +216,7 @@ public class HoundScreen extends Screen implements NoirmStyled {
         if (Ui.in(mouseX, mouseY, x, y0, cw, y + 10 - y0)) {
             tip = Component.translatable("screen.noirm.hound.growth.desc");
         }
-        y += 11 + Theme.S2;
+        y += 11 + Theme.S1;
 
         // Abilities: lit when it has them, faint with the level they unlock at.
         y = Ui.section(g, font, x, y, cw, Component.translatable("screen.noirm.hound.abilities"), Theme.TEXT_DIM);
@@ -248,7 +248,7 @@ public class HoundScreen extends Screen implements NoirmStyled {
             }
             ax += chipW + Theme.S2;
         }
-        y += 12 + Theme.S3;
+        y += 12 + Theme.S2;
 
         // Orders.
         y = Ui.section(g, font, x, y, cw, Component.translatable("screen.noirm.hound.orders"), Theme.TEXT_DIM);
@@ -275,7 +275,7 @@ public class HoundScreen extends Screen implements NoirmStyled {
         if (sync.contract()) {
             row3.add("recall");
         }
-        for (int i = 0; i < row3.size() && y + BUTTON_H <= bottom; i++) {
+        for (int i = 0; i < row3.size() && y + BUTTON_H <= bottom + PAD - 2; i++) {
             String act = row3.get(i);
             boolean on = hound != null && ("carry".equals(act) && hound.isCarried() && hound.carry() == NinjaHound.Carry.HEAD
                     || "jacket".equals(act) && hound.isCarried() && hound.carry() == NinjaHound.Carry.JACKET);
@@ -399,7 +399,12 @@ public class HoundScreen extends Screen implements NoirmStyled {
         boolean nameVisible = hound.isCustomNameVisible();
         hound.setCustomNameVisible(false);
         g.enableScissor(cx - boxW / 2 + 1, baseY - boxH, cx + boxW / 2 - 1, baseY + boxH / 4 - 18);
-        InventoryScreen.renderEntityInInventory(g, cx, baseY, scale, pose, camera, hound);
+        HoundRenderer.inGui = true; // (drawn even while it sits on your own head)
+        try {
+            InventoryScreen.renderEntityInInventory(g, cx, baseY, scale, pose, camera, hound);
+        } finally {
+            HoundRenderer.inGui = false;
+        }
         g.disableScissor();
         hound.setCustomNameVisible(nameVisible);
         mc.crosshairPickEntity = picked;
