@@ -36,9 +36,9 @@ import net.minecraftforge.fml.common.Mod;
 public final class HoundEvents {
     /** How often (ticks) an owner's hound is checked on. */
     public static final int OWNER_CHECK_TICKS = 40;
-    /** NPC ninjas: the stage their hound has by their power. */
-    public static final float NPC_GROWN_POWER = 16f;
-    public static final float NPC_GREAT_POWER = 26f;
+    /** NPC ninjas: their hound's level follows their power (at least this level, at most the other). */
+    public static final int NPC_MIN_LEVEL = 6;
+    public static final int NPC_MAX_LEVEL = 40;
     /** The persistent tag that says an NPC's hound was handed out (and, in tests, that one may be). */
     public static final String NPC_DONE = "noirm_hound_done";
     public static final String NPC_TEST_OK = "noirm_hound_test";
@@ -157,11 +157,15 @@ public final class HoundEvents {
             return null;
         }
         float power = com.noirm.combat.Perception.basePower(ninja);
-        HoundStage stage = power >= NPC_GREAT_POWER ? HoundStage.GREAT : power >= NPC_GROWN_POWER ? HoundStage.GROWN : HoundStage.YOUNG;
+        int houndLevel = NPC_MIN_LEVEL;
+        while (houndLevel < NPC_MAX_LEVEL && HoundGrowth.powerFor(houndLevel + 1) <= power) {
+            houndLevel++;
+        }
         hound.moveTo(ninja.getX() + 0.8, ninja.getY(), ninja.getZ() + 0.8, ninja.getYRot(), 0f);
         hound.bondTo(ninja);
-        hound.setCoat(ninja.getRandom().nextInt(Hounds.COATS.length));
-        hound.setStage(stage);
+        hound.setTraits(HoundTraits.roll(ninja.getRandom()));
+        hound.setLook(HoundLook.roll(ninja.getRandom()));
+        hound.setHoundLevel(houndLevel);
         hound.setBond(40f + ninja.getRandom().nextFloat() * 40f);
         hound.setHealth(hound.getMaxHealth());
         level.addFreshEntity(hound);
@@ -179,7 +183,7 @@ public final class HoundEvents {
                 continue;
             }
             player.sendSystemMessage(Component.translatable("message.noirm.hound.litter", mate.getDisplayName()).withStyle(ChatFormatting.GOLD));
-            Hounds.grantPuppy(player, player.getRandom().nextInt(Hounds.COATS.length), false);
+            Hounds.grantPuppy(player, null, false);
             return;
         }
     }

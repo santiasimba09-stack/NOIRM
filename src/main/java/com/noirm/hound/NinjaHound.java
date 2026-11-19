@@ -53,7 +53,7 @@ import java.util.UUID;
  * A ninja hound (忍犬): a partner bound to one owner (a player, or an Inuzuka NPC ninja), growing
  * from a puppy that rides on your head to a great hound you ride into battle (docs/INUZUKA.md).
  *
- * <p>What it is, all synced to the client so the model can show it: its {@link HoundStage}, coat,
+ * <p>What it is, all synced to the client so the model can show it: its level, its look (breed and coat),
  * body plan, bond and XP, whether it is knocked out, carried, frenzied by a soldier pill, fused
  * into the Two-Headed Wolf, or hidden while it wears your shape (Man Beast Clone). Short moves
  * (a lunge, a howl, the drill spin) reach the client as entity events.
@@ -95,9 +95,10 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     public enum Carry { NONE, HEAD, JACKET }
 
-    private static final EntityDataAccessor<Byte> STAGE = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Byte> COAT = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Byte> BUILD = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> LEVEL = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> LOOK = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.INT);
+    /** Breed × traits: how big it is for its level (the client scales the model by it too). */
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> BOND = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> XP = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> DOWN = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.INT);
@@ -107,6 +108,8 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
     private static final EntityDataAccessor<Integer> FUSED = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> HIDDEN = SynchedEntityData.defineId(NinjaHound.class, EntityDataSerializers.BOOLEAN);
 
+    /** Its rolled nature (data/noirm/hound_traits/), server side. */
+    private java.util.List<String> traits = java.util.List.of();
     private LivingEntity ownerCache;
     private BlockPos guardPost;
     private int petCooldown;
@@ -137,9 +140,9 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     public static AttributeSupplier.Builder createAttributes() {
         return TamableAnimal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, HoundStage.PUPPY.maxHealth)
-                .add(Attributes.MOVEMENT_SPEED, HoundStage.PUPPY.speed)
-                .add(Attributes.ATTACK_DAMAGE, HoundStage.PUPPY.bite)
+                .add(Attributes.MAX_HEALTH, HoundGrowth.health(1))
+                .add(Attributes.MOVEMENT_SPEED, HoundGrowth.speed(1))
+                .add(Attributes.ATTACK_DAMAGE, HoundGrowth.bite(1))
                 .add(Attributes.FOLLOW_RANGE, 32.0)
                 .add(Attributes.ARMOR, 0.0);
     }
@@ -147,9 +150,9 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(STAGE, (byte) 0);
-        entityData.define(COAT, (byte) 0);
-        entityData.define(BUILD, (byte) 0);
+        entityData.define(LEVEL, 1);
+        entityData.define(LOOK, HoundLook.DEFAULT.pack());
+        entityData.define(SIZE, 1f);
         entityData.define(BOND, 0f);
         entityData.define(XP, 0f);
         entityData.define(DOWN, 0);
@@ -193,56 +196,102 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     // ================================================================ state
 
-    public HoundStage stage() {
-        return HoundStage.of(entityData.get(STAGE));
+    /** Its level: it keeps rising, and size, shape and strength follow ({@link HoundGrowth}). */
+    public int houndLevel() {
+        return Math.max(1, entityData.get(LEVEL));
     }
 
-    /** Grows (or shrinks, for commands) to {@code stage}: size, health, bite and speed follow; health keeps its share. */
-    public void setStage(HoundStage stage) {
+    /** The milestone its level has reached (puppy, young, grown, great, giant). */
+    public HoundStage stage() {
+        return HoundStage.forLevel(houndLevel());
+    }
+
+    /** Grows (or shrinks, for commands) to {@code level}: size, health, bite and speed follow; health keeps its share. */
+    public void setHoundLevel(int level) {
         float share = getMaxHealth() > 0 ? getHealth() / getMaxHealth() : 1f;
-        entityData.set(STAGE, (byte) stage.ordinal());
+        entityData.set(LEVEL, Math.max(1, level));
         applyStats();
         setHealth(Math.max(1f, getMaxHealth() * share));
         refreshDimensions();
     }
 
-    /** Max health, bite (with the bond) and speed for the stage. */
+    /** Sets the level to the start of a milestone. */
+    public void setStage(HoundStage stage) {
+        setHoundLevel(stage.minLevel);
+    }
+
+    /** Max health, bite (with the bond) and speed for its level, breed and traits. */
     public void applyStats() {
-        HoundStage s = stage();
+        int lv = houndLevel();
+        HoundLook look = look();
         AttributeInstance health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.setBaseValue(s.maxHealth);
+            health.setBaseValue(HoundGrowth.health(lv) * HoundTraits.mult(traits, HoundTraits.Trait::health));
         }
         AttributeInstance bite = getAttribute(Attributes.ATTACK_DAMAGE);
         if (bite != null) {
-            bite.setBaseValue(s.bite * (1f + BOND_BITE_BONUS * bond() / 100f));
+            bite.setBaseValue(HoundGrowth.bite(lv) * HoundTraits.mult(traits, HoundTraits.Trait::damage) * (1f + BOND_BITE_BONUS * bond() / 100f));
         }
         AttributeInstance speed = getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
-            speed.setBaseValue(s.speed * (isFrenzied() ? 1.2 : 1.0));
+            speed.setBaseValue(HoundGrowth.speed(lv) * look.breed().speed * HoundTraits.mult(traits, HoundTraits.Trait::speed)
+                    * (isFrenzied() ? 1.2 : 1.0));
         }
         AttributeInstance armour = getAttribute(Attributes.ARMOR);
         if (armour != null) {
-            armour.setBaseValue(s.ordinal() * 2.0);
+            armour.setBaseValue(HoundGrowth.armour(lv));
+        }
+        if (!level().isClientSide()) {
+            entityData.set(SIZE, look.breed().size * HoundTraits.mult(traits, HoundTraits.Trait::size));
         }
     }
 
-    public int coat() {
-        return entityData.get(COAT);
+    /** Breed × traits size multiplier. */
+    public float size() {
+        return entityData.get(SIZE);
     }
 
-    public void setCoat(int coat) {
-        entityData.set(COAT, (byte) Math.floorMod(coat, Hounds.COATS.length));
+    /** How far it smells hidden enemies (blocks): its level and its nose. */
+    public double smellRange() {
+        return HoundGrowth.smell(houndLevel()) * HoundTraits.mult(traits, HoundTraits.Trait::smell);
     }
 
-    /** The body plan (0 = the one we use; 1 and 2 are the variants we compared it with). */
-    public int build() {
-        return entityData.get(BUILD);
+    public boolean canBeCarried() {
+        return HoundGrowth.canBeCarried(houndLevel(), size());
     }
 
-    public void setBuild(int build) {
-        entityData.set(BUILD, (byte) Mth.clamp(build, 0, 2));
+    public boolean canBeRidden() {
+        return HoundGrowth.canBeRidden(houndLevel(), size());
     }
+
+    public HoundLook look() {
+        return HoundLook.unpack(entityData.get(LOOK));
+    }
+
+    public int lookBits() {
+        return entityData.get(LOOK);
+    }
+
+    public void setLook(HoundLook look) {
+        entityData.set(LOOK, look.pack());
+        applyStats();
+        refreshDimensions();
+    }
+
+    public java.util.List<String> traits() {
+        return traits;
+    }
+
+    public void setTraits(java.util.List<String> traits) {
+        this.traits = java.util.List.copyOf(traits);
+        applyStats();
+        refreshDimensions();
+    }
+
+    public boolean hasTrait(String id) {
+        return traits.contains(id);
+    }
+
 
     public float bond() {
         return entityData.get(BOND);
@@ -334,18 +383,19 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
-        if (STAGE.equals(key) || FUSED.equals(key)) {
+        if (LEVEL.equals(key) || FUSED.equals(key) || SIZE.equals(key)) {
             refreshDimensions();
         }
     }
 
     @Override
     public EntityDimensions getDimensions(Pose pose) {
-        HoundStage s = stage();
         if (isFused()) {
             return EntityDimensions.scalable(2.6f, 3.4f);
         }
-        return EntityDimensions.scalable(s.width, s.height);
+        int lv = houndLevel();
+        float size = size();
+        return EntityDimensions.scalable(HoundGrowth.width(lv, size), HoundGrowth.height(lv, size));
     }
 
     // ================================================================ owner
@@ -445,8 +495,11 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
             entityData.set(FRENZY, frenzy - 1);
             if (frenzy == 1) {
                 applyStats();
-                addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, FRENZY_CRASH_TICKS, 0));
-                addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, FRENZY_CRASH_TICKS, 0));
+                int crash = Math.round(FRENZY_CRASH_TICKS * HoundTraits.mult(traits, HoundTraits.Trait::crash));
+                if (crash > 0) {
+                    addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, crash, 0));
+                    addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, crash, 0));
+                }
             }
         }
         if (isFused()) {
@@ -457,6 +510,15 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
         }
         if (spinTicks > 0) {
             tickSpin();
+        }
+        float flee = HoundTraits.max(traits, HoundTraits.Trait::fleeBelow);
+        if (flee > 0f && getTarget() != null && getHealth() < getMaxHealth() * flee && tickCount % 10 == 0) {
+            // Timid: hurt, it breaks off the fight and runs back to you.
+            setTarget(null);
+            LivingEntity owner = getOwner();
+            if (owner != null) {
+                getNavigation().moveTo(owner, 1.4);
+            }
         }
         if (tracking != null && (!tracking.isAlive() || ++trackingTicks > 20 * 60 || tracking.level() != level())) {
             tracking = null;
@@ -488,7 +550,7 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
         if (isDown()) {
             return;
         }
-        int ticks = DOWN_TICKS - Math.round(DOWN_BOND_SAVING * bond() / 100f);
+        int ticks = Math.round((DOWN_TICKS - DOWN_BOND_SAVING * bond() / 100f) * HoundTraits.mult(traits, HoundTraits.Trait::down));
         entityData.set(DOWN, ticks);
         setTarget(null);
         getNavigation().stop();
@@ -564,7 +626,7 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
                 Vec3 push = living.position().subtract(position());
                 if (push.horizontalDistanceSqr() > 1e-4) {
                     push = push.normalize();
-                    living.knockback(0.25 + 0.1 * stage().ordinal(), -push.x, -push.z);
+                    living.knockback(0.25 + 0.4 * Math.min(1f, houndLevel() / 30f), -push.x, -push.z);
                 }
             }
             Hounds.addXp(this, damage * Hounds.XP_PER_DAMAGE);
@@ -593,7 +655,7 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     private void tickSpin() {
         spinTicks--;
-        double speed = 0.9 + 0.08 * stage().ordinal();
+        double speed = 0.9 + 0.3 * Math.min(1f, houndLevel() / 30f);
         LivingEntity target = getTarget();
         if (target != null && target.isAlive() && distanceToSqr(target) < 400) {
             // Steer a little toward the target: the two drills cross on it.
@@ -709,9 +771,9 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
                 player.displayClientMessage(Component.translatable("message.noirm.hound.still_down", (downTicks() + 19) / 20), true);
                 return InteractionResult.CONSUME;
             }
-            if (stage().canBeCarried()) {
+            if (canBeCarried()) {
                 Hounds.carry(this, player, Carry.HEAD);
-            } else if (stage().canBeRidden() || isFused()) {
+            } else if (canBeRidden() || isFused()) {
                 Hounds.ride(this, player);
             } else {
                 Hounds.pet(this, player);
@@ -804,7 +866,7 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return getPassengers().isEmpty() && (stage().canBeRidden() || isFused());
+        return getPassengers().isEmpty() && (canBeRidden() || isFused());
     }
 
     @Override
@@ -848,7 +910,7 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     @Override
     public boolean canJump() {
-        return stage().canBeRidden() || isFused();
+        return canBeRidden() || isFused();
     }
 
     @Override
@@ -863,18 +925,14 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
 
     @Override
     public float getVoicePitch() {
-        return switch (stage()) {
-            case PUPPY -> 1.6f;
-            case YOUNG -> 1.25f;
-            case GROWN -> 1.0f;
-            case GREAT -> 0.8f;
-            case GIANT -> 0.65f;
-        } * (isFused() ? 0.6f : 1f);
+        // A puppy yips, a giant rumbles: the pitch falls as it grows.
+        float shoulder = HoundGrowth.shoulder(houndLevel()) * size();
+        return Mth.clamp(1.25f / (float) Math.sqrt(shoulder / 0.6f), 0.55f, 1.7f) * (isFused() ? 0.6f : 1f);
     }
 
     @Override
     protected float getSoundVolume() {
-        return 0.6f + 0.15f * stage().ordinal();
+        return 0.6f + 0.6f * Math.min(1f, houndLevel() / 30f);
     }
 
     @Override
@@ -914,9 +972,11 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.putByte("Stage", entityData.get(STAGE));
-        tag.putByte("Coat", entityData.get(COAT));
-        tag.putByte("Build", entityData.get(BUILD));
+        tag.putInt("Level", houndLevel());
+        tag.putInt("Look", entityData.get(LOOK));
+        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
+        traits.forEach(t -> list.add(net.minecraft.nbt.StringTag.valueOf(t)));
+        tag.put("Traits", list);
         tag.putFloat("Bond", bond());
         tag.putFloat("HoundXp", xp());
         tag.putInt("Down", downTicks());
@@ -930,9 +990,17 @@ public class NinjaHound extends TamableAnimal implements PlayerRideableJumping {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        entityData.set(STAGE, tag.getByte("Stage"));
-        setCoat(tag.getByte("Coat"));
-        setBuild(tag.getByte("Build"));
+        if (tag.contains("Level")) {
+            entityData.set(LEVEL, Math.max(1, tag.getInt("Level")));
+        } else if (tag.contains("Stage")) {
+            entityData.set(LEVEL, HoundStage.of(tag.getByte("Stage")).minLevel); // an older save
+        }
+        if (tag.contains("Look")) {
+            entityData.set(LOOK, tag.getInt("Look"));
+        }
+        java.util.List<String> read = new java.util.ArrayList<>();
+        tag.getList("Traits", net.minecraft.nbt.Tag.TAG_STRING).forEach(t -> read.add(t.getAsString()));
+        traits = java.util.List.copyOf(read);
         entityData.set(BOND, tag.getFloat("Bond"));
         setXp(tag.getFloat("HoundXp"));
         entityData.set(DOWN, tag.getInt("Down"));

@@ -10,6 +10,9 @@ import com.noirm.clan.ClanSystem;
 import com.noirm.entity.SparringNinja;
 import com.noirm.hound.HoundData;
 import com.noirm.hound.HoundEvents;
+import com.noirm.hound.HoundGrowth;
+import com.noirm.hound.HoundLook;
+import com.noirm.hound.HoundTraits;
 import com.noirm.hound.HoundOrder;
 import com.noirm.hound.HoundRegistry;
 import com.noirm.hound.HoundSmell;
@@ -74,8 +77,11 @@ public final class HoundGameTests {
     }
 
     private static NinjaHound puppy(GameTestHelper helper, FakePlayer player) {
-        NinjaHound hound = Hounds.grantPuppy(player, 0, false);
+        NinjaHound hound = Hounds.grantPuppy(player, HoundLook.DEFAULT, false);
         helper.assertTrue(hound != null, "a puppy was placed");
+        // A plain, known nature so the numbers in the tests don't depend on a roll.
+        hound.setTraits(java.util.List.of("loyal"));
+        data(player).hound().setTraits(hound.traits());
         return hound;
     }
 
@@ -128,27 +134,30 @@ public final class HoundGameTests {
     // ================================================================ growth
 
     @GameTest(template = "empty", batch = "noirm_hound_growth")
-    public static void growsThroughTheStagesAsYouDo(GameTestHelper helper) {
-        FakePlayer player = owner(helper, "noirm_hound_grow", null);
+    public static void growsLevelByLevelAsYouDo(GameTestHelper helper) {
+        FakePlayer player = owner(helper, "noirm_hound_grow", "inuzuka");
         ShinobiData data = data(player);
         data.setSpeed(10f);
         data.setTaijutsu(10f);
         NinjaHound hound = puppy(helper, player);
-        hound.setXp(HoundStage.GIANT.xpNeeded);
+        hound.setXp(HoundGrowth.xpFor(60));
         hound.setBond(100f);
-        helper.assertTrue(!Hounds.checkGrowth(hound, player), "XP and bond aren't enough: it grows as you do (your power is low)");
-        helper.assertTrue(hound.stage() == HoundStage.PUPPY, "still a puppy");
-        HoundStage last = HoundStage.PUPPY;
-        for (HoundStage next : new HoundStage[]{HoundStage.YOUNG, HoundStage.GROWN, HoundStage.GREAT, HoundStage.GIANT}) {
-            data.setSpeed(next.ownerPowerNeeded);
-            data.setTaijutsu(next.ownerPowerNeeded);
-            helper.assertTrue(Hounds.checkGrowth(hound, player), "grows into " + next + " once you're strong enough");
-            helper.assertTrue(hound.stage() == next, "one stage at a time: " + hound.stage());
-            helper.assertTrue(!Hounds.checkGrowth(hound, player), "and no further than you allow");
-            helper.assertTrue(data.hound().stage() == next, "the owner's record follows");
-            last = next;
-        }
-        helper.assertTrue(last == HoundStage.GIANT && hound.stage().next() == null, "the giant is the top");
+        helper.assertTrue(!Hounds.checkGrowth(hound, player) && hound.houndLevel() == 1,
+                "XP and bond aren't enough: it grows as you do (your power is low)");
+        float power = HoundGrowth.powerFor(21);
+        data.setSpeed(power);
+        data.setTaijutsu(power);
+        helper.assertTrue(Hounds.checkGrowth(hound, player), "once you're stronger it grows");
+        helper.assertTrue(hound.houndLevel() == 21, "exactly as far as your power allows: level " + hound.houndLevel());
+        helper.assertTrue(data.hound().level() == 21, "the owner's record follows");
+        helper.assertTrue(hound.stage() == HoundStage.GREAT, "past the great-hound milestone (level 20)");
+        helper.assertTrue(data.jutsu().knows(Hounds.MAN_BEAST_CLONE) && data.jutsu().knows(Hounds.TWO_HEADED_WOLF),
+                "the milestones on the way taught the Inuzuka techniques");
+        // No hard cap on getting stronger: a strong enough owner takes it past any fixed stage.
+        data.setSpeed(HoundGrowth.powerFor(60));
+        data.setTaijutsu(HoundGrowth.powerFor(60));
+        Hounds.checkGrowth(hound, player);
+        helper.assertTrue(hound.houndLevel() == 60, "and on: level " + hound.houndLevel());
         // Bond grows with feeding and petting; XP with fights.
         NinjaHound young = puppy(helper, player);
         float bond = young.bond();
@@ -166,28 +175,132 @@ public final class HoundGameTests {
         done(helper, player);
     }
 
+    /** The curve itself: smooth, strictly rising, size bounded, strength forever (more slowly). */
+    @GameTest(template = "empty", batch = "noirm_hound_curve")
+    public static void growthIsContinuousAndBounded(GameTestHelper helper) {
+        for (int lv = 2; lv <= 40; lv++) {
+            helper.assertTrue(HoundGrowth.shoulder(lv) > HoundGrowth.shoulder(lv - 1), "size rises every level to 40: " + lv);
+            helper.assertTrue(HoundGrowth.width(lv, 1f) > HoundGrowth.width(lv - 1, 1f) && HoundGrowth.height(lv, 1f) > HoundGrowth.height(lv - 1, 1f),
+                    "the body grows every level to 40: " + lv);
+        }
+        for (int lv = 2; lv <= 300; lv++) {
+            helper.assertTrue(HoundGrowth.health(lv) > HoundGrowth.health(lv - 1) && HoundGrowth.bite(lv) > HoundGrowth.bite(lv - 1)
+                    && HoundGrowth.smell(lv) > HoundGrowth.smell(lv - 1), "strength keeps rising: " + lv);
+            helper.assertTrue(HoundGrowth.xpFor(lv) > HoundGrowth.xpFor(lv - 1) && HoundGrowth.powerFor(lv) > HoundGrowth.powerFor(lv - 1),
+                    "and each level asks for more: " + lv);
+            helper.assertTrue(HoundGrowth.shoulder(lv) <= HoundGrowth.maxShoulder() && HoundGrowth.speed(lv) < 0.37,
+                    "size and speed level off: " + lv);
+        }
+        helper.assertTrue(HoundGrowth.health(40) - HoundGrowth.health(20) < HoundGrowth.health(20) - HoundGrowth.health(1),
+                "with diminishing returns");
+        helper.assertTrue(HoundGrowth.adulthood(1) == 0f && HoundGrowth.adulthood(HoundGrowth.ADULT_LEVEL) == 1f
+                && HoundGrowth.legGrowth(6) > HoundGrowth.headGrowth(6), "puppy proportions blend into adult ones, legs first");
+        // Milestones.
+        helper.assertTrue(HoundGrowth.canBeCarried(1, 1f) && HoundGrowth.canBeCarried(5, 1f) && !HoundGrowth.canBeCarried(6, 1f),
+                "small enough to carry up to level 5");
+        helper.assertTrue(!HoundGrowth.canSpin(5) && HoundGrowth.canSpin(6), "Fang Over Fang together from level 6");
+        helper.assertTrue(!HoundGrowth.canGuard(11) && HoundGrowth.canGuard(12), "guards alone from level 12");
+        helper.assertTrue(!HoundGrowth.canBeRidden(19, 1f) && HoundGrowth.canBeRidden(20, 1f), "ridden from level 20");
+        helper.assertTrue(HoundGrowth.height(20, 1f) > EntityType.HORSE.getHeight() && HoundGrowth.width(20, 1f) >= EntityType.HORSE.getWidth() - 0.05f,
+                "at level 20 it's as big as a horse");
+        helper.assertTrue(HoundGrowth.height(1, 1f) < 0.6f, "a puppy fits on your head");
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = "noirm_hound_size")
-    public static void sizeAndStrengthScaleWithTheStage(GameTestHelper helper) {
+    public static void sizeAndStrengthFollowTheLevel(GameTestHelper helper) {
         FakePlayer player = owner(helper, "noirm_hound_size", null);
         NinjaHound hound = puppy(helper, player);
         float w = 0, hgt = 0, health = 0, bite = 0;
-        for (HoundStage s : HoundStage.values()) {
-            hound.setStage(s);
-            helper.assertTrue(hound.getBbWidth() > w && hound.getBbHeight() > hgt, s + " is bigger than the stage before");
-            helper.assertTrue(hound.getMaxHealth() > health, s + " has more health");
+        for (int lv = 1; lv <= 40; lv++) {
+            hound.setHoundLevel(lv);
+            helper.assertTrue(hound.getBbWidth() > w && hound.getBbHeight() > hgt, "level " + lv + " is bigger than the one before");
+            helper.assertTrue(hound.getMaxHealth() > health, "level " + lv + " has more health");
             double b = hound.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            helper.assertTrue(b > bite, s + " bites harder");
+            helper.assertTrue(b > bite, "level " + lv + " bites harder");
             w = hound.getBbWidth();
             hgt = hound.getBbHeight();
             health = hound.getMaxHealth();
             bite = (float) b;
         }
-        helper.assertTrue(HoundStage.PUPPY.canBeCarried() && !HoundStage.YOUNG.canBeCarried(), "only a puppy rides on you");
-        helper.assertTrue(HoundStage.GREAT.height > EntityType.HORSE.getHeight() && HoundStage.GREAT.width >= EntityType.HORSE.getWidth(),
-                "the great hound is bigger than a horse");
-        helper.assertTrue(HoundStage.GREAT.canBeRidden() && !HoundStage.GROWN.canBeRidden(), "and only it (and the giant) can be ridden");
-        helper.assertTrue(HoundStage.PUPPY.height < 0.6f, "a puppy fits on your head");
+        hound.setHoundLevel(1);
+        helper.assertTrue(hound.canBeCarried() && !hound.canBeRidden(), "a puppy rides on you");
+        hound.setHoundLevel(20);
+        helper.assertTrue(!hound.canBeCarried() && hound.canBeRidden(), "a level-20 hound carries you");
         done(helper, player);
+    }
+
+    // ================================================================ traits and looks
+
+    @GameTest(template = "empty", batch = "noirm_hound_traits")
+    public static void traitsRollAndMatter(GameTestHelper helper) {
+        helper.assertTrue(HoundTraits.all().size() >= 10, "the trait list loaded: " + HoundTraits.all().size());
+        net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(42);
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < 300; i++) {
+            java.util.List<String> rolled = HoundTraits.roll(random);
+            helper.assertTrue(rolled.size() >= 2 && rolled.size() <= 3, "2-3 traits: " + rolled);
+            long weak = rolled.stream().filter(t -> HoundTraits.get(t).weakness()).count();
+            helper.assertTrue(weak <= 1, "at most one weakness: " + rolled);
+            helper.assertTrue(!(rolled.contains("brave") && rolled.contains("timid")) && !(rolled.contains("big_boned") && rolled.contains("runt")),
+                    "no opposites together: " + rolled);
+            seen.addAll(rolled);
+        }
+        helper.assertTrue(seen.size() == HoundTraits.all().size(), "every trait turns up: " + seen);
+        java.util.List<String> again1 = HoundTraits.roll(net.minecraft.util.RandomSource.create(7));
+        java.util.List<String> again2 = HoundTraits.roll(net.minecraft.util.RandomSource.create(7));
+        helper.assertTrue(again1.equals(again2), "the same seed rolls the same traits");
+
+        FakePlayer player = owner(helper, "noirm_hound_traits", null);
+        NinjaHound hound = puppy(helper, player);
+        hound.setHoundLevel(10);
+        hound.setTraits(java.util.List.of());
+        double smell = hound.smellRange();
+        float width = hound.getBbWidth();
+        float health = hound.getMaxHealth();
+        hound.setTraits(java.util.List.of("keen_nose", "big_boned"));
+        helper.assertTrue(hound.smellRange() > smell, "Keen Nose smells farther");
+        helper.assertTrue(hound.getBbWidth() > width && hound.getMaxHealth() > health, "Big-Boned is bigger and tougher");
+        hound.setTraits(java.util.List.of("runt"));
+        helper.assertTrue(hound.getBbWidth() < width, "a Runt stays small");
+        hound.setTraits(java.util.List.of("loyal"));
+        float b0 = hound.bond();
+        Hounds.addBond(hound, 1f);
+        helper.assertTrue(hound.bond() - b0 > 1.2f, "a Loyal hound bonds faster");
+        hound.setTraits(java.util.List.of("stubborn"));
+        int ignored = 0;
+        for (int i = 0; i < 80; i++) {
+            if (Hounds.ignores(hound, player)) {
+                ignored++;
+            }
+        }
+        helper.assertTrue(ignored > 2 && ignored < 40, "a Stubborn hound sometimes ignores you: " + ignored + "/80");
+        done(helper, player);
+    }
+
+    @GameTest(template = "empty", batch = "noirm_hound_looks")
+    public static void looksAreVariedAndStable(GameTestHelper helper) {
+        net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(3);
+        java.util.Set<HoundLook.Breed> breeds = java.util.EnumSet.noneOf(HoundLook.Breed.class);
+        java.util.Set<HoundLook.Pattern> patterns = java.util.EnumSet.noneOf(HoundLook.Pattern.class);
+        java.util.Set<HoundLook.Ears> ears = java.util.EnumSet.noneOf(HoundLook.Ears.class);
+        java.util.Set<HoundLook.Tail> tails = java.util.EnumSet.noneOf(HoundLook.Tail.class);
+        java.util.Set<Integer> colours = new java.util.HashSet<>();
+        for (int i = 0; i < 400; i++) {
+            HoundLook look = HoundLook.roll(random);
+            helper.assertTrue(HoundLook.unpack(look.pack()).equals(look), "a look survives packing: " + look);
+            breeds.add(look.breed());
+            patterns.add(look.pattern());
+            ears.add(look.ears());
+            tails.add(look.tail());
+            colours.add(look.base());
+        }
+        helper.assertTrue(breeds.size() == HoundLook.Breed.values().length && patterns.size() == HoundLook.Pattern.values().length
+                && ears.size() == 3 && tails.size() == 3, "every breed, pattern, ear and tail turns up");
+        helper.assertTrue(colours.size() >= 12, "many colours: " + colours.size());
+        helper.assertTrue(HoundLook.roll(net.minecraft.util.RandomSource.create(9)).equals(HoundLook.roll(net.minecraft.util.RandomSource.create(9))),
+                "deterministic per seed");
+        helper.succeed();
     }
 
     // ================================================================ orders
@@ -306,7 +419,8 @@ public final class HoundGameTests {
         hound.setStage(HoundStage.GROWN);
         hound.setBond(55f);
         hound.setXp(500f);
-        hound.setCoat(2);
+        HoundLook look = new HoundLook(HoundLook.Breed.SPITZ, HoundLook.Ears.FLOPPY, HoundLook.Tail.CURLED, HoundLook.Pattern.SADDLE, 3, 14, 5, 2);
+        hound.setLook(look);
         String name = hound.getCustomName().getString();
         Hounds.snapshot(hound);
         // The entity's own save.
@@ -314,7 +428,7 @@ public final class HoundGameTests {
         hound.saveWithoutId(tag);
         NinjaHound copy = HoundRegistry.NINJA_HOUND.get().create(helper.getLevel());
         copy.load(tag);
-        helper.assertTrue(copy.stage() == HoundStage.GROWN && copy.coat() == 2 && Math.abs(copy.bond() - 55f) < 0.01f
+        helper.assertTrue(copy.stage() == HoundStage.GROWN && copy.look().equals(look) && copy.traits().equals(hound.traits()) && Math.abs(copy.bond() - 55f) < 0.01f
                 && Math.abs(copy.xp() - 500f) < 0.01f, "the hound's save keeps stage, coat, bond and XP");
         helper.assertTrue(player.getUUID().equals(copy.getOwnerUUID()), "and its owner");
         // The owner's save: log out, lose the entity, log back in.
@@ -323,10 +437,10 @@ public final class HoundGameTests {
         data(player).hound().clear();
         data(player).load(saved);
         HoundData hd = data(player).hound();
-        helper.assertTrue(hd.has() && hd.stage() == HoundStage.GROWN && hd.coat() == 2 && name.equals(hd.name()), "the owner's record survives a save");
+        helper.assertTrue(hd.has() && hd.stage() == HoundStage.GROWN && hd.look().equals(look) && name.equals(hd.name()), "the owner's record survives a save");
         Hounds.tickOwner(player, data(player));
         NinjaHound back = Hounds.find(player);
-        helper.assertTrue(back != null && back != hound && back.stage() == HoundStage.GROWN && back.coat() == 2
+        helper.assertTrue(back != null && back != hound && back.stage() == HoundStage.GROWN && back.look().equals(look) && back.traits().equals(java.util.List.of("loyal"))
                 && Math.abs(back.bond() - 55f) < 0.01f && name.equals(back.getCustomName().getString()), "the same hound comes back beside you");
         // Far away (or in another world) and following: it comes to you like a vanilla pet.
         Vec3 far = back.position().add(80, 0, 0);

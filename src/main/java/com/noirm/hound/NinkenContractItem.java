@@ -44,7 +44,7 @@ public class NinkenContractItem extends Item {
             if (!player.getAbilities().instabuild) {
                 player.hurt(player.damageSources().magic(), SIGN_HEALTH);
             }
-            NinjaHound hound = Hounds.grantPuppy(sp, player.getRandom().nextInt(Hounds.COATS.length), true);
+            NinjaHound hound = Hounds.grantPuppy(sp, null, true);
             if (hound == null) {
                 return InteractionResultHolder.fail(stack);
             }

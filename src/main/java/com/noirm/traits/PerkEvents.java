@@ -232,7 +232,7 @@ public final class PerkEvents {
         if (data.hound().has()) {
             return com.noirm.hound.Hounds.find(player);
         }
-        return com.noirm.hound.Hounds.grantPuppy(player, player.getRandom().nextInt(com.noirm.hound.Hounds.COATS.length), false);
+        return com.noirm.hound.Hounds.grantPuppy(player, null, false);
     }
 
     // ---------------------------------------------------------------- hits

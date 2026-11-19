@@ -58,11 +58,11 @@ public final class Hounds {
     /** Summoning a contract hound costs this much chakra. */
     public static final float SUMMON_CHAKRA = 15f;
 
-    /** The stage from which a hound can be left to guard a spot on its own. */
+    /** The milestone from which a hound can be left to guard a spot on its own. */
     public static final HoundStage GUARD_STAGE = HoundStage.GROWN;
+    /** A Gluttonous hound begs when you hold food this close (blocks). */
+    public static final double BEG_RANGE = 6.0;
 
-    /** Coats picked at bonding. */
-    public static final String[] COATS = {"white", "grey", "black", "brown"};
     /** Names for new hounds (our own list). */
     private static final String[] NAMES = {"Kaze", "Shiro", "Kuro", "Gin", "Tetsu", "Hachi", "Taro", "Sora", "Ren", "Daichi",
             "Arashi", "Hibiki", "Kumo", "Raiden", "Tobi", "Iwa"};
@@ -103,7 +103,7 @@ public final class Hounds {
      * A new puppy for {@code player} (Inuzuka at the start, a Hatake contract, a gift, a command).
      * Returns the hound, or null if it couldn't be placed.
      */
-    public static NinjaHound grantPuppy(Player player, int coat, boolean contract) {
+    public static NinjaHound grantPuppy(Player player, HoundLook look, boolean contract) {
         ShinobiData data = ShinobiCapability.get(player).orElse(null);
         if (data == null || !(player.level() instanceof ServerLevel level)) {
             return null;
@@ -115,9 +115,10 @@ public final class Hounds {
         }
         hd.clear();
         hd.setHas(true);
-        hd.setCoat(Math.floorMod(coat, COATS.length));
+        hd.setLook(look != null ? look : HoundLook.roll(player.getRandom()));
+        hd.setTraits(HoundTraits.roll(player.getRandom()));
         hd.setName(NAMES[player.getRandom().nextInt(NAMES.length)]);
-        hd.setStage(HoundStage.PUPPY);
+        hd.setLevel(1);
         hd.setContract(contract);
         hd.setOut(true);
         NinjaHound hound = spawnFromData(level, player, hd);
@@ -126,7 +127,7 @@ public final class Hounds {
             level.sendParticles(ParticleTypes.CLOUD, hound.getX(), hound.getY() + 0.3, hound.getZ(), 20, 0.4, 0.3, 0.4, 0.02);
             player.sendSystemMessage(Component.translatable(contract ? "message.noirm.hound.summoned_first" : "message.noirm.hound.puppy",
                     hound.getDisplayName()).withStyle(ChatFormatting.GOLD));
-            learnStageJutsu(player, HoundStage.PUPPY);
+            learnStageJutsu(player, 1);
         }
         return hound;
     }
@@ -140,8 +141,12 @@ public final class Hounds {
         Vec3 at = besideOwner(owner);
         hound.moveTo(at.x, at.y, at.z, owner.getYRot(), 0f);
         hound.bondTo(owner);
-        hound.setCoat(hd.coat());
-        hound.setStage(hd.stage());
+        if (hd.traits().isEmpty()) {
+            hd.setTraits(HoundTraits.roll(owner.getRandom())); // a hound from before traits finds its nature
+        }
+        hound.setTraits(hd.traits());
+        hound.setLook(hd.look());
+        hound.setHoundLevel(hd.level());
         hound.setBond(hd.bond());
         hound.setXp(hd.xp());
         hound.setOrder(hd.order() == HoundOrder.GUARD ? HoundOrder.FOLLOW : hd.order());
@@ -238,9 +243,25 @@ public final class Hounds {
             addBond(hound, BOND_PER_MINUTE);
         }
         HoundSmell.sniff(hound, owner);
+        beg(hound, owner);
         checkGrowth(hound, owner);
         if (hound.tickCount % 100 == 0) {
             snapshot(hound);
+        }
+    }
+
+    /** Gluttonous: it fixes its eyes on any food in your hand and whines for it. */
+    private static void beg(NinjaHound hound, LivingEntity owner) {
+        if (!(owner instanceof Player player) || hound.getTarget() != null || hound.isCarried()
+                || !HoundTraits.any(hound.traits(), HoundTraits.Trait::begs)) {
+            return;
+        }
+        boolean food = player.getMainHandItem().isEdible() || player.getOffhandItem().isEdible();
+        if (food && hound.distanceToSqr(player) < BEG_RANGE * BEG_RANGE) {
+            hound.getLookControl().setLookAt(player, 30f, 30f);
+            if (hound.tickCount % 100 < 20) {
+                hound.playSound(SoundEvents.WOLF_WHINE, 0.8f, hound.getVoicePitch());
+            }
         }
     }
 
@@ -258,13 +279,14 @@ public final class Hounds {
             return;
         }
         HoundData hd = data.hound();
-        boolean visible = hd.stage() != hound.stage() || Math.round(hd.bond()) != Math.round(hound.bond())
+        boolean visible = hd.level() != hound.houndLevel() || Math.round(hd.bond()) != Math.round(hound.bond())
                 || (int) hd.xp() / 5 != (int) hound.xp() / 5 || hd.order() != hound.order();
-        hd.setStage(hound.stage());
+        hd.setLevel(hound.houndLevel());
+        hd.setTraits(hound.traits());
         hd.setBond(hound.bond());
         hd.setXp(hound.xp());
         hd.setOrder(hound.order());
-        hd.setCoat(hound.coat());
+        hd.setLook(hound.look());
         hd.setHealthShare(hound.getMaxHealth() > 0 ? hound.getHealth() / hound.getMaxHealth() : 1f);
         if (hound.hasCustomName()) {
             hd.setName(hound.getCustomName().getString());
@@ -322,81 +344,98 @@ public final class Hounds {
 
     // ================================================================ growth
 
+    /** Hound XP (its traits may speed it up). */
     public static void addXp(NinjaHound hound, float amount) {
         if (amount <= 0f) {
             return;
         }
-        hound.setXp(hound.xp() + amount);
+        hound.setXp(hound.xp() + amount * HoundTraits.mult(hound.traits(), HoundTraits.Trait::xp));
     }
 
+    /** Bond (a Loyal hound bonds faster; losses aren't softened). */
     public static void addBond(NinjaHound hound, float amount) {
-        hound.setBond(hound.bond() + amount);
+        float m = amount > 0f ? HoundTraits.mult(hound.traits(), HoundTraits.Trait::bond) : 1f;
+        hound.setBond(hound.bond() + amount * m);
     }
 
-    /** What the next stage still needs: null if nothing (or there's no next stage). */
+    /** What the next level still needs: null if nothing. */
     public static Component blocker(NinjaHound hound, LivingEntity owner) {
-        HoundStage next = hound.stage().next();
-        if (next == null) {
-            return null;
-        }
-        return blocker(next, hound.xp(), hound.bond(), owner == null ? 0f : Perception.basePower(owner));
+        return blocker(hound.houndLevel() + 1, hound.xp(), hound.bond(), owner == null ? 0f : Perception.basePower(owner));
     }
 
-    public static Component blocker(HoundStage next, float xp, float bond, float ownerPower) {
-        if (xp < next.xpNeeded) {
-            return Component.translatable("screen.noirm.hound.needs_xp", Math.round(next.xpNeeded - xp));
+    public static Component blocker(int nextLevel, float xp, float bond, float ownerPower) {
+        if (xp < HoundGrowth.xpFor(nextLevel)) {
+            return Component.translatable("screen.noirm.hound.needs_xp", Math.round(HoundGrowth.xpFor(nextLevel) - xp));
         }
-        if (bond < next.bondNeeded) {
-            return Component.translatable("screen.noirm.hound.needs_bond", Math.round(next.bondNeeded));
+        if (bond < HoundGrowth.bondFor(nextLevel)) {
+            return Component.translatable("screen.noirm.hound.needs_bond", Math.round(HoundGrowth.bondFor(nextLevel)));
         }
-        if (ownerPower < next.ownerPowerNeeded) {
-            return Component.translatable("screen.noirm.hound.needs_power", Math.round(next.ownerPowerNeeded));
+        if (ownerPower < HoundGrowth.powerFor(nextLevel)) {
+            return Component.translatable("screen.noirm.hound.needs_power", Math.round(HoundGrowth.powerFor(nextLevel)));
         }
         return null;
     }
 
-    /** Grows to the next stage once XP, bond and the owner's power are all there. */
+    /** Levels up as far as XP, bond and the owner's power allow. Returns whether it grew. */
     public static boolean checkGrowth(NinjaHound hound, LivingEntity owner) {
-        HoundStage next = hound.stage().next();
-        if (next == null || hound.isFused() || hound.isHidden() || hound.isCarried() && next != HoundStage.YOUNG
-                || blocker(hound, owner) != null) {
+        if (hound.isFused() || hound.isHidden()) {
             return false;
         }
-        grow(hound, next);
-        return true;
+        boolean grew = false;
+        for (int guard = 0; guard < 200 && blocker(hound, owner) == null; guard++) {
+            grow(hound, hound.houndLevel() + 1);
+            grew = true;
+        }
+        return grew;
     }
 
-    /** Grows (or is set) to {@code stage}, with smoke, a howl and the news. */
-    public static void grow(NinjaHound hound, HoundStage stage) {
-        if (hound.isCarried() && !stage.canBeCarried()) {
-            putDown(hound);
+    /** Grows (or is set) to {@code level}, with smoke, a howl at each milestone, and the news. */
+    public static void grow(NinjaHound hound, int level) {
+        HoundStage before = hound.stage();
+        int was = hound.houndLevel();
+        hound.setHoundLevel(level);
+        if (hound.isCarried() && !hound.canBeCarried()) {
+            putDown(hound); // too big for your head now
         }
-        hound.setStage(stage);
         hound.setHealth(hound.getMaxHealth());
+        HoundStage now = hound.stage();
+        boolean milestone = now != before && level > was;
         hound.level().broadcastEntityEvent(hound, NinjaHound.EVENT_GROW);
-        hound.howl();
-        if (hound.level() instanceof ServerLevel level) {
-            level.sendParticles(ParticleTypes.CLOUD, hound.getX(), hound.getY() + hound.getBbHeight() * 0.5, hound.getZ(),
-                    30, hound.getBbWidth() * 0.6, hound.getBbHeight() * 0.4, hound.getBbWidth() * 0.6, 0.03);
+        if (milestone) {
+            hound.howl();
+        }
+        if (hound.level() instanceof ServerLevel server) {
+            server.sendParticles(ParticleTypes.CLOUD, hound.getX(), hound.getY() + hound.getBbHeight() * 0.5, hound.getZ(),
+                    milestone ? 30 : 8, hound.getBbWidth() * 0.6, hound.getBbHeight() * 0.4, hound.getBbWidth() * 0.6, 0.03);
         }
         LivingEntity owner = hound.getOwner();
         if (owner instanceof Player player) {
-            player.sendSystemMessage(Component.translatable("message.noirm.hound.grew", hound.getDisplayName(),
-                    Component.translatable("screen.noirm.hound.stage." + stage.key())).withStyle(ChatFormatting.GOLD));
-            learnStageJutsu(player, stage);
+            if (milestone) {
+                player.sendSystemMessage(Component.translatable("message.noirm.hound.milestone", hound.getDisplayName(), level,
+                        Component.translatable("screen.noirm.hound.stage." + now.key())).withStyle(ChatFormatting.GOLD));
+            } else if (level > was) {
+                player.displayClientMessage(Component.translatable("message.noirm.hound.level", hound.getDisplayName(), level)
+                        .withStyle(ChatFormatting.GOLD), true);
+            }
+            learnStageJutsu(player, level);
             snapshot(hound);
             ShinobiCapability.get(player).ifPresent(ShinobiData::markPowersDirty);
         }
     }
 
-    /** The hound techniques a stage opens (Inuzuka blood for the clan's own). */
-    public static void learnStageJutsu(Player player, HoundStage stage) {
+    /** Grows (or shrinks) to the start of a milestone. */
+    public static void grow(NinjaHound hound, HoundStage stage) {
+        grow(hound, stage.minLevel);
+    }
+
+    /** The hound techniques its level has opened (Inuzuka blood for the clan's own). */
+    public static void learnStageJutsu(Player player, int level) {
         ShinobiData data = ShinobiCapability.get(player).orElse(null);
         if (data == null) {
             return;
         }
         for (HoundStage s : HoundStage.values()) {
-            if (s.ordinal() > stage.ordinal()) {
+            if (s.minLevel > level) {
                 break;
             }
             for (ResourceLocation id : jutsuFor(s, inuzukaBlood(player))) {
@@ -451,7 +490,7 @@ public final class Hounds {
             if (hound.getHealth() >= hound.getMaxHealth() && !meat) {
                 return false;
             }
-            hound.heal((meat ? 2f : 1f) * food.getNutrition());
+            hound.heal((meat ? 2f : 1f) * food.getNutrition() * HoundTraits.mult(hound.traits(), HoundTraits.Trait::food));
             addBond(hound, meat ? BOND_PER_MEAL : BOND_PER_MEAL * 0.5f);
             took = true;
         }
@@ -481,10 +520,13 @@ public final class Hounds {
     }
 
     public static void order(NinjaHound hound, Player player, HoundOrder order) {
-        if (order == HoundOrder.GUARD && hound.stage().ordinal() < GUARD_STAGE.ordinal()) {
+        if (ignores(hound, player)) {
+            return;
+        }
+        if (order == HoundOrder.GUARD && !HoundGrowth.canGuard(hound.houndLevel())) {
             // A puppy or a youngster can't hold a post alone: it sits and waits instead.
             player.displayClientMessage(Component.translatable("message.noirm.hound.too_young_guard", hound.getDisplayName(),
-                    Component.translatable("screen.noirm.hound.stage." + GUARD_STAGE.key())), true);
+                    GUARD_STAGE.minLevel), true);
             order = HoundOrder.SIT;
         }
         if (hound.isCarried()) {
@@ -497,9 +539,21 @@ public final class Hounds {
         snapshot(hound);
     }
 
+    /** Stubborn: now and then it just doesn't listen (tells you so). */
+    public static boolean ignores(NinjaHound hound, Player player) {
+        float chance = HoundTraits.max(hound.traits(), HoundTraits.Trait::disobey);
+        if (chance > 0f && hound.getRandom().nextFloat() < chance) {
+            player.displayClientMessage(Component.translatable("message.noirm.hound.ignores", hound.getDisplayName())
+                    .withStyle(ChatFormatting.GRAY), true);
+            hound.playSound(SoundEvents.WOLF_AMBIENT, 0.8f, hound.getVoicePitch());
+            return true;
+        }
+        return false;
+    }
+
     /** A puppy hops onto your head (or into your jacket). */
     public static boolean carry(NinjaHound hound, Player player, NinjaHound.Carry mode) {
-        if (!hound.stage().canBeCarried() || hound.isDown() || player.isPassenger() && player.getVehicle() == hound) {
+        if (!hound.canBeCarried() || hound.isDown() || player.isPassenger() && player.getVehicle() == hound) {
             return false;
         }
         if (hound.isCarried()) {
@@ -540,7 +594,7 @@ public final class Hounds {
 
     /** Climb onto a great hound's back. */
     public static boolean ride(NinjaHound hound, Player player) {
-        if (!(hound.stage().canBeRidden() || hound.isFused()) || hound.isDown() || player.isPassenger()) {
+        if (!(hound.canBeRidden() || hound.isFused()) || hound.isDown() || player.isPassenger()) {
             return false;
         }
         hound.setOrder(HoundOrder.FOLLOW);
@@ -590,6 +644,9 @@ public final class Hounds {
                 return true;
             }
             case "attack" -> {
+                if (ignores(hound, player)) {
+                    return false;
+                }
                 LivingEntity target = com.noirm.ally.CrewPackets.lookTarget(player);
                 if (target == null || hound.isDown()) {
                     player.displayClientMessage(Component.translatable("command.noirm.crew.no_enemy").withStyle(ChatFormatting.GRAY), true);
@@ -643,11 +700,11 @@ public final class Hounds {
         }
     }
 
-    /** A hound technique's requirement: your hound is here, awake and at least at stage {@code stage} (1 = puppy). */
+    /** A hound technique's requirement: your hound is here, awake and past milestone {@code stage} (1 = puppy, 2 = young…). */
     public static boolean houndReady(LivingEntity caster, int stage) {
         NinjaHound hound = houndOf(caster);
         return hound != null && !hound.isDown() && hound.level() == caster.level() && hound.distanceTo(caster) <= 24
-                && hound.stage().ordinal() + 1 >= stage;
+                && hound.houndLevel() >= HoundStage.of(stage - 1).minLevel;
     }
 
     /** The crew order screen (K) speaks to your hound too. Returns whether it took the order. */

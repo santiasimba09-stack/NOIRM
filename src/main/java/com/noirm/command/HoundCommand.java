@@ -6,6 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.noirm.Noirm;
 import com.noirm.combat.Perception;
 import com.noirm.hound.HoundData;
+import com.noirm.hound.HoundGrowth;
+import com.noirm.hound.HoundLook;
+import com.noirm.hound.HoundTraits;
 import com.noirm.hound.HoundStage;
 import com.noirm.hound.Hounds;
 import com.noirm.hound.NinjaHound;
@@ -27,8 +30,9 @@ import java.util.List;
  * <ul>
  *   <li>{@code /noirm hound} — your hound: stage, bond, XP and what the next stage needs</li>
  *   <li>{@code /noirm hound order <order>} — follow, sit, guard, come, attack, track, carry, jacket, ride, pet, howl, recall</li>
- *   <li>{@code /noirm hound give [coat]} — a new puppy (cheats)</li>
- *   <li>{@code /noirm hound stage <stage>} — grow (or shrink) it to a stage (cheats)</li>
+ *   <li>{@code /noirm hound give [breed]} — a new puppy, look and traits rolled (cheats)</li>
+ *   <li>{@code /noirm hound stage <milestone>} / {@code level <n>} — grow (or shrink) it (cheats)</li>
+ *   <li>{@code /noirm hound reroll} — a new look and new traits for your hound (cheats)</li>
  *   <li>{@code /noirm hound bond <0-100>} / {@code xp <amount>} — set the bond, add XP (cheats)</li>
  *   <li>{@code /noirm hound remove} — send it away for good (cheats)</li>
  * </ul>
@@ -49,9 +53,14 @@ public final class HoundCommand {
                                 .executes(ctx -> order(ctx.getSource(), StringArgumentType.getString(ctx, "order")))))
                 .then(Commands.literal("give").requires(s -> s.hasPermission(Cmd.CHEATS))
                         .executes(ctx -> give(ctx.getSource(), null))
-                        .then(Commands.argument("coat", StringArgumentType.word())
-                                .suggests((ctx, b) -> SharedSuggestionProvider.suggest(Hounds.COATS, b))
-                                .executes(ctx -> give(ctx.getSource(), StringArgumentType.getString(ctx, "coat")))))
+                        .then(Commands.argument("breed", StringArgumentType.word())
+                                .suggests((ctx, b) -> SharedSuggestionProvider.suggest(Arrays.stream(HoundLook.Breed.values()).map(HoundLook.Breed::key), b))
+                                .executes(ctx -> give(ctx.getSource(), StringArgumentType.getString(ctx, "breed")))))
+                .then(Commands.literal("level").requires(s -> s.hasPermission(Cmd.CHEATS))
+                        .then(Commands.argument("level", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 999))
+                                .executes(ctx -> level(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "level")))))
+                .then(Commands.literal("reroll").requires(s -> s.hasPermission(Cmd.CHEATS))
+                        .executes(ctx -> reroll(ctx.getSource())))
                 .then(Commands.literal("stage").requires(s -> s.hasPermission(Cmd.CHEATS))
                         .then(Commands.argument("stage", StringArgumentType.word())
                                 .suggests((ctx, b) -> SharedSuggestionProvider.suggest(Arrays.stream(HoundStage.values()).map(HoundStage::key), b))
@@ -77,15 +86,15 @@ public final class HoundCommand {
             Hounds.snapshot(hound);
         }
         Component stage = Component.translatable("screen.noirm.hound.stage." + hd.stage().key());
-        Cmd.ok(source, "command.noirm.hound.status", hd.name(), stage, Math.round(hd.bond()), Math.round(hd.xp()));
-        HoundStage next = hd.stage().next();
-        if (next == null) {
-            return Cmd.ok(source, "command.noirm.hound.top");
+        Component breed = Component.translatable("hound.noirm.breed." + hd.look().breed().key());
+        Cmd.ok(source, "command.noirm.hound.status", hd.name(), hd.level(), stage, breed, Math.round(hd.bond()), Math.round(hd.xp()));
+        if (!hd.traits().isEmpty()) {
+            Cmd.ok(source, "command.noirm.hound.traits", String.join(", ", hd.traits().stream()
+                    .map(t -> Component.translatable("hound_trait.noirm." + t).getString()).toList()));
         }
-        Component blocker = Hounds.blocker(next, hd.xp(), hd.bond(), Perception.basePower(player));
-        Component nextName = Component.translatable("screen.noirm.hound.stage." + next.key());
-        return blocker == null ? Cmd.ok(source, "command.noirm.hound.ready", nextName)
-                : Cmd.ok(source, "command.noirm.hound.next", nextName, blocker);
+        Component blocker = Hounds.blocker(hd.level() + 1, hd.xp(), hd.bond(), Perception.basePower(player));
+        return blocker == null ? Cmd.ok(source, "command.noirm.hound.ready", hd.level() + 1)
+                : Cmd.ok(source, "command.noirm.hound.next", hd.level() + 1, blocker);
     }
 
     private static int order(CommandSourceStack source, String order) throws CommandSyntaxException {
@@ -95,13 +104,18 @@ public final class HoundCommand {
         return Hounds.command(Cmd.player(source), order) ? 1 : 0;
     }
 
-    private static int give(CommandSourceStack source, String coat) throws CommandSyntaxException {
+    private static int give(CommandSourceStack source, String breedKey) throws CommandSyntaxException {
         ServerPlayer player = Cmd.player(source);
-        int c = coat == null ? player.getRandom().nextInt(Hounds.COATS.length) : Arrays.asList(Hounds.COATS).indexOf(coat);
-        if (c < 0) {
-            return Cmd.fail(source, "command.noirm.hound.bad_coat", String.join(", ", Hounds.COATS));
+        HoundLook look = null;
+        if (breedKey != null) {
+            HoundLook.Breed breed = HoundLook.breedByKey(breedKey);
+            if (breed == null) {
+                return Cmd.fail(source, "command.noirm.hound.bad_breed",
+                        String.join(", ", Arrays.stream(HoundLook.Breed.values()).map(HoundLook.Breed::key).toList()));
+            }
+            look = HoundLook.roll(player.getRandom(), breed);
         }
-        NinjaHound hound = Hounds.grantPuppy(player, c, false);
+        NinjaHound hound = Hounds.grantPuppy(player, look, false);
         return hound == null ? Cmd.fail(source, "command.noirm.hound.no_room") : Cmd.ok(source, "command.noirm.hound.given", hound.getDisplayName());
     }
 
@@ -128,11 +142,39 @@ public final class HoundCommand {
         if (hound == null) {
             return 0;
         }
-        // Enough XP and bond to stay there, so it doesn't feel it skipped a step.
-        hound.setXp(Math.max(hound.xp(), stage.xpNeeded));
-        hound.setBond(Math.max(hound.bond(), stage.bondNeeded));
-        Hounds.grow(hound, stage);
-        return Cmd.ok(source, "command.noirm.hound.staged", hound.getDisplayName(), Component.translatable("screen.noirm.hound.stage." + stage.key()));
+        setLevel(hound, stage.minLevel);
+        return Cmd.ok(source, "command.noirm.hound.staged", hound.getDisplayName(), stage.minLevel,
+                Component.translatable("screen.noirm.hound.stage." + stage.key()));
+    }
+
+    private static int level(CommandSourceStack source, int level) throws CommandSyntaxException {
+        NinjaHound hound = live(source);
+        if (hound == null) {
+            return 0;
+        }
+        setLevel(hound, level);
+        return Cmd.ok(source, "command.noirm.hound.staged", hound.getDisplayName(), level,
+                Component.translatable("screen.noirm.hound.stage." + hound.stage().key()));
+    }
+
+    /** Enough XP and bond to stay at {@code level}, so it doesn't feel it skipped a step. */
+    private static void setLevel(NinjaHound hound, int level) {
+        hound.setXp(Math.max(hound.xp(), HoundGrowth.xpFor(level)));
+        hound.setBond(Math.max(hound.bond(), HoundGrowth.bondFor(level)));
+        Hounds.grow(hound, level);
+    }
+
+    private static int reroll(CommandSourceStack source) throws CommandSyntaxException {
+        NinjaHound hound = live(source);
+        if (hound == null) {
+            return 0;
+        }
+        hound.setLook(HoundLook.roll(hound.getRandom()));
+        hound.setTraits(HoundTraits.roll(hound.getRandom()));
+        Hounds.snapshot(hound);
+        Cmd.data(source).markPowersDirty();
+        return Cmd.ok(source, "command.noirm.hound.rerolled", hound.getDisplayName(),
+                Component.translatable("hound.noirm.breed." + hound.look().breed().key()));
     }
 
     private static int bond(CommandSourceStack source, float bond) throws CommandSyntaxException {

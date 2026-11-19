@@ -114,7 +114,7 @@ public final class HoundTechniques {
         NinjaHound hound = Hounds.houndOf(caster);
         // Riding the Two-Headed Wolf: Fang Wolf Fang, one giant drill.
         if (caster.getVehicle() instanceof NinjaHound ridden && ridden.isFused()) {
-            ridden.startSpin(ctx.flatLook(), SPIN_TICKS + 6, ridden.stage().bite * NinjaHound.FUSED_BITE * WOLF_FANG_MULT * ctx.power());
+            ridden.startSpin(ctx.flatLook(), SPIN_TICKS + 6, HoundGrowth.bite(ridden.houndLevel()) * NinjaHound.FUSED_BITE * WOLF_FANG_MULT * ctx.power());
             JutsuBehaviors.sound(caster, SoundEvents.WOLF_HOWL, 1.4f, 0.5f);
             return;
         }
@@ -130,7 +130,7 @@ public final class HoundTechniques {
         }
         JutsuBehaviors.sound(caster, SoundEvents.PLAYER_ATTACK_SWEEP, 1.0f, 0.6f);
         // The hound joins: its drill aims to cross yours on the target.
-        if (hound != null && hound.stage().canSpin() && !hound.isDown() && !hound.isHidden()
+        if (hound != null && HoundGrowth.canSpin(hound.houndLevel()) && !hound.isDown() && !hound.isHidden()
                 && hound.level() == caster.level() && hound.distanceTo(caster) <= JOIN_RANGE) {
             if (hound.isCarried()) {
                 Hounds.putDown(hound);
@@ -140,8 +140,8 @@ public final class HoundTechniques {
                 hound.setTarget(target);
             }
             Vec3 hdir = flat(aim.subtract(hound.position()));
-            hound.startSpin(hdir.lengthSqr() < 1e-4 ? dir : hdir, ticks, hound.stage().bite * HOUND_SPIN_BITE
-                    * (1f + NinjaHound.BOND_BITE_BONUS * hound.bond() / 100f));
+            float bite = (float) hound.getAttributeBaseValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+            hound.startSpin(hdir.lengthSqr() < 1e-4 ? dir : hdir, ticks, bite * HOUND_SPIN_BITE);
             Hounds.addXp(hound, 2f);
         }
     }
@@ -298,7 +298,7 @@ public final class HoundTechniques {
         }
         clone.moveTo(hound.getX(), hound.getY(), hound.getZ(), hound.getYRot(), 0f);
         clone.setOwner(caster);
-        clone.setLife(CLONE_TICKS + CLONE_TICKS_PER_STAGE * hound.stage().ordinal());
+        clone.setLife(CLONE_TICKS + CLONE_TICKS_PER_STAGE * hound.stage().ordinal() + 4 * Math.min(100, hound.houndLevel()));
         clone.setCombatStyle(Noirm.id("beast")); // on all fours, claws and fangs
         var health = clone.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH);
         if (health != null) {
@@ -346,7 +346,7 @@ public final class HoundTechniques {
     public static void twoHeadedWolf(JutsuContext ctx) {
         LivingEntity caster = ctx.caster();
         NinjaHound hound = Hounds.houndOf(caster);
-        if (hound == null || hound.isDown() || hound.isHidden() || !hound.stage().canBeRidden() || hound.distanceTo(caster) > JOIN_RANGE) {
+        if (hound == null || hound.isDown() || hound.isHidden() || !hound.canBeRidden() || hound.distanceTo(caster) > JOIN_RANGE) {
             JutsuBehaviors.message(caster, Component.translatable("message.noirm.hound.too_small"));
             return;
         }
@@ -390,7 +390,7 @@ public final class HoundTechniques {
         LivingEntity owner = hound.getOwner();
         if (owner != null) {
             owner.removeEffect(MobEffects.INVISIBILITY);
-            if (owner.getVehicle() == hound && !hound.stage().canBeRidden()) {
+            if (owner.getVehicle() == hound && !hound.canBeRidden()) {
                 owner.stopRiding();
             }
         }

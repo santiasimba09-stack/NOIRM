@@ -64,7 +64,7 @@ public final class HoundSmell {
         if (!(hound.level() instanceof ServerLevel level) || hound.isHidden()) {
             return 0;
         }
-        double range = hound.stage().smell;
+        double range = hound.smellRange();
         int found = 0;
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, hound.getBoundingBox().inflate(range),
                 e -> hidden(e) && hostile(hound, owner, e) && e.distanceToSqr(hound) <= range * range)) {
@@ -100,7 +100,7 @@ public final class HoundSmell {
         if (looked != null && !Crew.sameSide(hound, looked)) {
             return looked;
         }
-        double reach = hound.stage().smell * TRACK_REACH;
+        double reach = hound.smellRange() * TRACK_REACH;
         return hound.level().getEntitiesOfClass(LivingEntity.class, hound.getBoundingBox().inflate(reach),
                         e -> e.isAlive() && !Crew.sameSide(hound, e) && (e instanceof Enemy || e instanceof SparringNinja n && !n.isResident()))
                 .stream()
