@@ -47,7 +47,7 @@ public class HoundScreen extends Screen implements NoirmStyled {
     public static final KeyMapping KEY = new KeyMapping("key.noirm.hound_panel", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, CombatKeys.CATEGORY);
 
-    private static final int MAX_W = 360;
+    private static final int MAX_W = 410;
     private static final int MAX_H = 236;
     private static final int PAD = Theme.S5;
     private static final int BUTTON_H = 14;
@@ -182,10 +182,10 @@ public class HoundScreen extends Screen implements NoirmStyled {
         ly += 12 + Theme.S3;
         if (level <= HoundPackets.COLOUR_PICK_LEVEL && ly + 10 <= bottom) {
             // The coat colour can still be picked while you bond.
-            int sw = Math.max(5, Math.min(8, (viewW - 2) / 8));
+            int sw = Math.max(4, Math.min(8, (viewW + 1) / 16 - 1));
             for (int i = 0; i < HoundLook.COLOURS.length; i++) {
-                int bx = lx + (i % 8) * (sw + 1);
-                int by = ly + (i / 8) * (sw + 1);
+                int bx = lx + (i % 16) * (sw + 1);
+                int by = ly + (i / 16) * (sw + 1);
                 if (by + sw > bottom) {
                     break;
                 }
