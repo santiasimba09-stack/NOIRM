@@ -58,6 +58,9 @@ public final class Hounds {
     /** Summoning a contract hound costs this much chakra. */
     public static final float SUMMON_CHAKRA = 15f;
 
+    /** The stage from which a hound can be left to guard a spot on its own. */
+    public static final HoundStage GUARD_STAGE = HoundStage.GROWN;
+
     /** Coats picked at bonding. */
     public static final String[] COATS = {"white", "grey", "black", "brown"};
     /** Names for new hounds (our own list). */
@@ -474,6 +477,12 @@ public final class Hounds {
     }
 
     public static void order(NinjaHound hound, Player player, HoundOrder order) {
+        if (order == HoundOrder.GUARD && hound.stage().ordinal() < GUARD_STAGE.ordinal()) {
+            // A puppy or a youngster can't hold a post alone: it sits and waits instead.
+            player.displayClientMessage(Component.translatable("message.noirm.hound.too_young_guard", hound.getDisplayName(),
+                    Component.translatable("screen.noirm.hound.stage." + GUARD_STAGE.key())), true);
+            order = HoundOrder.SIT;
+        }
         if (hound.isCarried()) {
             putDown(hound);
         }

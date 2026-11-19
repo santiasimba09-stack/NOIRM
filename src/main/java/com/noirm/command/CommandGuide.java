@@ -159,6 +159,14 @@ public final class CommandGuide {
                 .add("respect", "/noirm crew respect <0-100>", "/noirm crew respect 80", true)
                 .add("teach", "/noirm crew teach <nature>", "/noirm crew teach water", true)
                 .add("dismiss", "/noirm crew dismiss", "/noirm crew dismiss", true);
+        section("hound")
+                .add("status", "/noirm hound", "/noirm hound", false)
+                .add("order", "/noirm hound order <follow|sit|guard|come|attack|track|carry|jacket|ride|pet|howl|recall>", "/noirm hound order carry", false)
+                .add("give", "/noirm hound give [white|grey|black|brown]", "/noirm hound give grey", true)
+                .add("stage", "/noirm hound stage <puppy|young|grown|great|giant>", "/noirm hound stage great", true)
+                .add("bond", "/noirm hound bond <0-100>", "/noirm hound bond 80", true)
+                .add("xp", "/noirm hound xp <amount>", "/noirm hound xp 200", true)
+                .add("remove", "/noirm hound remove", "/noirm hound remove", true);
         section("spawn")
                 .add("ninja", "/noirm spawn ninja <clan> [tails] [strength]", "/noirm spawn ninja uchiha 0 40", true)
                 .add("rogue", "/noirm spawn rogue [strength]", "/noirm spawn rogue 30", true)

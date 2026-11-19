@@ -75,7 +75,8 @@ public final class ShinobiHudOverlay {
             POSTURE.snap(fraction(ClientCombat.posture(), ClientCombat.maxPosture()));
         }
         y = PowerHud.drawStatus(graphics, font, minecraft, y + 2, combat);
-        PillHud.draw(graphics, font, X, y + 2, combat); // pills and foods at work, their crashes and cooldowns
+        y = PillHud.draw(graphics, font, X, y + 2, combat); // pills and foods at work, their crashes and cooldowns
+        com.noirm.client.hound.HoundHud.draw(graphics, font, X, y + 2, combat); // your ninja hound, when it matters
     }
 
     /**
