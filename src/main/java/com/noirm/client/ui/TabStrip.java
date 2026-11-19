@@ -42,14 +42,15 @@ public final class TabStrip {
             cx += tw + (even ? 0 : gap);
         }
         // The rule under all tabs, and the sliding underline.
-        g.fill(x, y + h - 1, x + w, y + h, Theme.HAIRLINE);
+        Skin.rule(g, x, y + h - 2, w, Theme.HAIRLINE);
         if (active >= 0 && active < count) {
             int ax = even ? xs[active] + 4 : xs[active];
             int aw = even ? ws[active] - 8 : ws[active];
             float lx = lineX.update(ax);
             float lw = lineW.update(aw);
             int color = accent.length == 1 ? accent[0] : accent[Math.min(active, accent.length - 1)];
-            g.fill(Math.round(lx), y + h - 2, Math.round(lx + lw), y + h, color);
+            // the active tab: a brush stroke under its label, sliding to the new tab
+            Skin.stroke(g, Math.round(lx) - 2, y + h - 4, Math.round(lw) + 4, 5, color, 1f);
         }
         for (int i = 0; i < count; i++) {
             boolean on = i == active;

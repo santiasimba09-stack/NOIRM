@@ -23,9 +23,10 @@ public final class TooltipStyle {
             if (!(Minecraft.getInstance().screen instanceof NoirmStyled)) {
                 return;
             }
-            event.setBackground(0xF0121016);
+            // dark paper with a lacquer-brown edge that fades down (the look's tooltip)
+            event.setBackground(Theme.fade(Theme.SURFACE, 0.95f));
             event.setBorderStart(Theme.IRON);
-            event.setBorderEnd(Theme.HAIRLINE);
+            event.setBorderEnd(Theme.mix(Theme.HAIRLINE, Theme.SEAL, 0.35f));
         }
     }
 }

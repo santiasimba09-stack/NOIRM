@@ -10,22 +10,22 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * The NOIRM component kit: flat, minimalist pieces in the {@link Theme} palette, drawn in code.
- * Immediate mode: call them every frame with the current state (and an eased hover amount from a
- * {@link HoverTracker}); they draw and return sizes, the screen keeps its own hit boxes.
+ * The NOIRM component kit, in the ninja look (docs/UI.md): lacquered wood frames around dark paper, wooden tag
+ * buttons, red hanko seals and ink-brush strokes, all drawn from the {@link Skin} atlas, with text and state in
+ * the {@link Theme} palette. Immediate mode: call them every frame with the current state (and an eased hover
+ * amount from a {@link HoverTracker}); they draw and return sizes, the screen keeps its own hit boxes.
  *
- * <p>Rules (docs/UI.md): flat surfaces, at most a 1-px hairline, no double frames or gradients;
- * hierarchy from text colour and spacing; accents are thin (an underline, a 1-px bar).
+ * <p>Rules (docs/UI.md): one frame per screen (the panel), flat paper inside; hierarchy from text colour and
+ * spacing; accents are brush strokes and thin bars.
  */
 public final class Ui {
     private Ui() {}
 
     // ================================================================ surfaces
 
-    /** A screen panel: a flat dark surface with a single hairline edge. */
+    /** A screen panel: the lacquered frame around dark paper (the look's panel). */
     public static void panel(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, Theme.SURFACE);
-        outline(g, x, y, w, h, Theme.HAIRLINE);
+        Skin.panel(g, x, y, w, h);
     }
 
     /** A flat fill. */
@@ -35,7 +35,7 @@ public final class Ui {
 
     /** A sunken well with no edge (3D views, slot backs). */
     public static void well(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, Theme.WELL);
+        Skin.well(g, x, y, w, h);
     }
 
     public static void outline(GuiGraphics g, int x, int y, int w, int h, int color) {
@@ -60,7 +60,7 @@ public final class Ui {
         g.drawString(font, text, x, y, color, false);
         int lx = x + font.width(text) + Theme.S3;
         if (lx < x + w) {
-            g.fill(lx, y + 4, x + w, y + 5, Theme.HAIRLINE);
+            Skin.rule(g, lx, y + 3, x + w - lx, Theme.mix(Theme.HAIRLINE, Theme.IRON, 0.5f));
         }
         return y + 12;
     }
@@ -136,9 +136,9 @@ public final class Ui {
         return lx + font.width(text);
     }
 
-    /** A screen's seal: a small rounded square in {@code color} with one glyph (忍, 任, 師…) in bone white. 13×13. */
+    /** A screen's seal: a hanko stamp in {@code color} with one glyph (忍, 任, 師…) in bone white. 13×13. */
     public static void seal(GuiGraphics g, Font font, int x, int y, String glyph, int color) {
-        roundRect(g, x, y, 13, 13, color);
+        Skin.seal(g, x - 1, y - 1, 15, color);
         textCentered(g, font, glyph, x + 7, y + 3, 0xFFF4E6D0);
     }
 
@@ -148,6 +148,7 @@ public final class Ui {
      */
     public static int header(GuiGraphics g, Font font, int x, int y, int w, String glyph, int sealColor, Component title, Component note,
                              int noteColor) {
+        Skin.headerRail(g, x - 4, y - 3, w + 8, 20);
         seal(g, font, x, y, glyph, sealColor);
         int right = x + w;
         if (note != null) {
@@ -168,11 +169,11 @@ public final class Ui {
         return Math.min(font.width(note), Math.max(w / 2, free));
     }
 
-    /** A flat card: a raised fill and, when {@code accent} isn't 0, a 1-px bar of it on the left. */
+    /** A card: a raised paper block and, when {@code accent} isn't 0, a 2-px bar of it on the left. */
     public static void card(GuiGraphics g, int x, int y, int w, int h, int accent) {
-        g.fill(x, y, x + w, y + h, Theme.RAISED);
+        Skin.card(g, x, y, w, h, 0f);
         if (accent != 0) {
-            g.fill(x, y, x + 1, y + h, accent);
+            g.fill(x + 1, y + 1, x + 3, y + h - 1, accent);
         }
     }
 
@@ -184,16 +185,11 @@ public final class Ui {
      */
     public static void button(GuiGraphics g, Font font, int x, int y, int w, int h, Component label, float hover, boolean enabled,
                               int accent, boolean primary) {
-        int base = primary && enabled ? Theme.mix(Theme.RAISED, accent, 0.18f) : Theme.RAISED;
-        int over = primary && enabled ? Theme.mix(Theme.RAISED, accent, 0.30f) : Theme.RAISED_HOVER;
-        g.fill(x, y, x + w, y + h, enabled ? Theme.mix(base, over, hover) : Theme.RAISED);
-        if (enabled) {
-            float line = primary ? 1f : hover;
-            int lw = Math.round(w * line);
-            if (lw > 0) {
-                int lx = x + (w - lw) / 2;
-                g.fill(lx, y + h - 1, lx + lw, y + h, primary ? accent : Theme.mix(Theme.darken(accent, 0.6f), accent, hover));
-            }
+        Skin.button(g, x, y, w, h, hover, enabled, primary);
+        if (enabled && !primary && hover > 0.01f) {
+            // a brush mark grows under the label with the hover
+            int lw = Math.round((w - 8) * hover);
+            Skin.stroke(g, x + (w - lw) / 2, y + h - 4, lw, 3, accent, 0.9f);
         }
         int color = !enabled ? Theme.TEXT_FAINT : Theme.mix(primary ? Theme.TEXT : Theme.mix(Theme.TEXT_DIM, Theme.TEXT, 0.6f), Theme.TEXT, hover);
         String text = fit(font, label.getString(), w - 6);
@@ -229,7 +225,7 @@ public final class Ui {
             g.fill(sx, y + 3, sx + 1, y + h - 3, Theme.HAIRLINE);
         }
         if (active) {
-            g.fill(sx, y + h - 1, sx + width, y + h, accent);
+            Skin.stroke(g, sx + 2, y + h - 3, width - 4, 3, accent, 1f);
         }
         String text = fit(font, label.getString(), width - 6);
         g.drawString(font, text, sx + (width - font.width(text)) / 2, y + (h - 8) / 2,
@@ -315,6 +311,7 @@ public final class Ui {
     public static int chip(GuiGraphics g, Font font, int x, int y, String text, int color) {
         int w = font.width(text) + 6;
         g.fill(x, y, x + w, y + 11, Theme.mix(Theme.RAISED, color, 0.16f));
+        g.fill(x, y + 10, x + w, y + 11, Theme.mix(Theme.RAISED, color, 0.45f));
         g.drawString(font, text, x + 3, y + 2, color, false);
         return w;
     }

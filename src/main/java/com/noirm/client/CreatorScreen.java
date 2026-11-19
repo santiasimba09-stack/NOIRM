@@ -49,16 +49,16 @@ import java.util.function.Consumer;
  * decides the genetics (clan rolls) and saves the look.
  */
 public class CreatorScreen extends Screen implements NoirmStyled {
-    // The blueprint's base palette ("Ash, iron and chakra") plus text and one chakra accent.
-    private static final int SOOT = 0xFF15171B;
-    private static final int CHARCOAL = 0xF01A1C21;
-    private static final int IRON = 0xFF3A4048;
-    private static final int RAISED = 0xFF22252B;
-    private static final int RAISED_HOVER = 0xFF2B2F36;
+    // The kit's palette (the ninja look: lacquer, paper and ink), with the seal's red as this screen's accent.
+    private static final int SOOT = Theme.darken(Theme.SURFACE, 0.7f);
+    private static final int IRON = Theme.IRON;
+    private static final int RAISED = Theme.RAISED;
+    private static final int RAISED_HOVER = Theme.RAISED_HOVER;
     private static final int PAPER = Theme.TEXT;
-    private static final int DIM = 0xFF9AA0A6;
-    private static final int FAINT = 0xFF6A7077;
-    private static final int CHAKRA = Theme.CHAKRA_LIGHT;
+    private static final int DIM = Theme.TEXT_DIM;
+    private static final int FAINT = Theme.TEXT_FAINT;
+    /** The selection colour: the seal's red, lifted so outlines read on dark paper. */
+    private static final int CHAKRA = 0xFFE0554A;
     private static final int GOLD = Theme.GOLD;
     private static final int RED = Theme.RED;
 
@@ -66,7 +66,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     private static final int LABEL_W = 66;
 
     private enum Tab {
-        FACE("face", 1.75f), BODY("body", 1f), HAIR("hair", 1.6f), GENETICS("genetics", 1f), CLAN("clan", 1f);
+        FACE("face", 1.75f), EYES("eyes", 2.3f), BODY("body", 1f), MARKS("marks", 1.25f), HAIR("hair", 1.6f),
+        GENETICS("genetics", 1f), CLAN("clan", 1f);
 
         final String key;
         final float zoom;
@@ -93,7 +94,10 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     private CreatorPackets.State state;
     private PlayerLook draft;
     private Tab tab = Tab.FACE;
-    private Tone activeTone = Tone.EYE;
+    private Tone activeTone = Tone.SKIN;
+    /** How far each tab's body is scrolled (GUI px), and how tall it was last frame. */
+    private final float[] scroll = new float[Tab.values().length];
+    private int contentHeight;
     private final List<Hit> hits = new ArrayList<>();
     private final List<Bar> bars = new ArrayList<>();
     private String dragBar;
@@ -223,20 +227,54 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         zoom += (zoomTarget - zoom) * Math.min(1f, 0.15f * dt);
 
         g.fill(0, 0, width, height, Theme.fade(SOOT, motion.visibility()));
+        // a faint shoji lattice across the background
+        int lattice = Theme.fade(Theme.mix(SOOT, Theme.HAIRLINE, 0.35f), motion.visibility());
+        for (int lx = 24; lx < width; lx += 48) {
+            g.fill(lx, 0, lx + 1, height, lattice);
+        }
+        for (int ly = 30; ly < height; ly += 64) {
+            g.fill(0, ly, width, ly + 1, lattice);
+        }
         motion.begin(g);
         drawAsh(g, dt, false);
         drawHeader(g, mouseX, mouseY);
         drawViewport(g, mouseX, mouseY);
         panel(g, px, vy, pw, vh);
         drawTabs(g, mouseX, mouseY);
-        int cy = vy + 20;
+        int top = contentTop();
+        int bottom = contentBottom();
+        boolean scrolls = tab != Tab.GENETICS && tab != Tab.CLAN;
+        int max = Math.max(0, contentHeight - (bottom - top));
+        scroll[tab.ordinal()] = Mth.clamp(scroll[tab.ordinal()], 0, max);
+        int cy = top - (scrolls ? Math.round(scroll[tab.ordinal()]) : 0);
+        int firstHit = hits.size();
+        int firstBar = bars.size();
         motion.beginContent(g);
-        switch (tab) {
+        if (scrolls) {
+            g.enableScissor(px + 1, top - 1, px + pw - 1, bottom);
+        }
+        int end = switch (tab) {
             case FACE -> drawFace(g, cy, mouseX, mouseY);
+            case EYES -> drawEyes(g, cy, mouseX, mouseY);
             case BODY -> drawBody(g, cy, mouseX, mouseY);
+            case MARKS -> drawMarks(g, cy, mouseX, mouseY);
             case HAIR -> drawHair(g, cy, mouseX, mouseY);
-            case GENETICS -> drawGenetics(g, cy, mouseX, mouseY);
-            case CLAN -> drawClan(g, cy, mouseX, mouseY);
+            case GENETICS -> {
+                drawGenetics(g, cy, mouseX, mouseY);
+                yield cy;
+            }
+            case CLAN -> {
+                drawClan(g, cy, mouseX, mouseY);
+                yield cy;
+            }
+        };
+        if (scrolls) {
+            g.disableScissor();
+            contentHeight = end - cy;
+            clipHits(firstHit, firstBar, top, bottom);
+            if (max > 0) {
+                Ui.scrollbar(g, px + pw - 3, top, bottom - top, Math.round(scroll[tab.ordinal()]), bottom - top, contentHeight, Theme.IRON);
+            }
         }
         motion.endContent(g);
         drawFooter(g, mouseX, mouseY);
@@ -258,10 +296,37 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         }
     }
 
-    /** A flat charcoal panel with one iron hairline. */
+    /** The options panel: the kit's panel. */
     private void panel(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, CHARCOAL);
-        g.renderOutline(x, y, w, h, IRON);
+        Ui.panel(g, x, y, w, h);
+    }
+
+    private int contentTop() {
+        return vy + 26;
+    }
+
+    private int contentBottom() {
+        return vy + vh - 9;
+    }
+
+    /** Hit boxes and bars drawn in the scrolled body are cut to what shows (and dropped when scrolled away). */
+    private void clipHits(int firstHit, int firstBar, int top, int bottom) {
+        for (int i = hits.size() - 1; i >= firstHit; i--) {
+            Hit h = hits.get(i);
+            int y0 = Math.max(h.y(), top);
+            int y1 = Math.min(h.y() + h.h(), bottom);
+            if (y1 <= y0) {
+                hits.remove(i);
+            } else if (y0 != h.y() || y1 != h.y() + h.h()) {
+                hits.set(i, new Hit(h.x(), y0, h.w(), y1 - y0, h.click(), h.tip()));
+            }
+        }
+        for (int i = bars.size() - 1; i >= firstBar; i--) {
+            Bar b = bars.get(i);
+            if (b.y() < top || b.y() + b.h() > bottom) {
+                bars.remove(i);
+            }
+        }
     }
 
     /**
@@ -270,8 +335,11 @@ public class CreatorScreen extends Screen implements NoirmStyled {
      * as a tooltip.
      */
     private void drawHeader(GuiGraphics g, int mouseX, int mouseY) {
-        g.drawString(font, title, 10, 8, PAPER, false);
-        Ui.roundRect(g, 10 + font.width(title) + 5, 11, 3, 3, Theme.SEAL);
+        // the title on a red brush swash, a hanko seal before it
+        int tw = font.width(title);
+        com.noirm.client.ui.Skin.swash(g, 20, 4, tw + 22, 15);
+        Ui.seal(g, font, 6, 5, "忍", Theme.SEAL);
+        g.drawString(font, title, 26, 8, PAPER, true);
         String key = switch (state.modeEnum()) {
             case APPEARANCE -> "creator.noirm.subtitle.appearance";
             case FULL -> "creator.noirm.subtitle.full";
@@ -288,11 +356,11 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     // ---------------------------------------------------------------- the 3D view
 
     private void drawViewport(GuiGraphics g, int mouseX, int mouseY) {
-        g.fill(vx, vy, vx + vw, vy + vh, 0xC00C0D10);
+        Ui.panel(g, vx, vy, vw, vh);
         Player player = Minecraft.getInstance().player;
-        // floor glow: a faint chakra light under the feet
+        // floor glow: a faint warm lantern light under the feet
         int floorY = vy + vh - 14;
-        g.fillGradient(vx + 1, floorY - 30, vx + vw - 1, vy + vh - 1, 0x00000000, 0x286FB3E8);
+        g.fillGradient(vx + 7, floorY - 30, vx + vw - 7, vy + vh - 7, 0x00000000, 0x30E0803A);
         if (player != null) {
             float height = draft.height();
             float base = vh * 0.41f; // not divided by height: taller characters look taller
@@ -301,15 +369,15 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             int cx = vx + vw / 2;
             int cyCenter = vy + vh / 2 + 6;
             int feetY = (int) (cyCenter + focus * scale * 0.9375f);
-            g.enableScissor(vx + 1, vy + 1, vx + vw - 1, vy + vh - 1);
+            g.enableScissor(vx + 7, vy + 7, vx + vw - 7, vy + vh - 7);
             renderCharacter(g, cx, feetY, (int) scale, player);
             g.disableScissor();
         }
         Component hint = Component.translatable("creator.noirm.hint.view");
-        Component shownHint = cut(hint, vw - 8);
-        g.drawString(font, shownHint, vx + vw / 2 - font.width(shownHint) / 2, vy + vh - 11, FAINT, false);
+        Component shownHint = cut(hint, vw - 18);
+        g.drawString(font, shownHint, vx + vw / 2 - font.width(shownHint) / 2, vy + vh - 17, FAINT, false);
         String h = String.format("%.2f×", draft.height());
-        g.drawString(font, h, vx + vw - 6 - font.width(h), vy + 6, DIM, false);
+        g.drawString(font, h, vx + vw - 10 - font.width(h), vy + 10, DIM, false);
     }
 
     /** Like {@link InventoryScreen#renderEntityInInventoryFollowsAngle}, but turned by our yaw. */
@@ -352,7 +420,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
 
     /** Text tabs with a chakra underline that slides to the active one. */
     private void drawTabs(GuiGraphics g, int mouseX, int mouseY) {
-        tabStrip.draw(g, font, px + 8, vy + 4, pw - 16, tabLabels, tab.ordinal(), new int[]{CHAKRA}, mouseX, mouseY);
+        tabStrip.draw(g, font, px + 11, vy + 9, pw - 22, tabLabels, tab.ordinal(), new int[]{CHAKRA}, mouseX, mouseY);
     }
 
     private void selectTab(Tab t) {
@@ -362,67 +430,98 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         tab = t;
         zoomTarget = t.zoom;
         activeTone = switch (t) {
-            case FACE -> Tone.EYE;
-            case BODY -> Tone.SKIN;
+            case FACE, BODY -> Tone.SKIN;
+            case EYES -> Tone.EYE;
+            case MARKS -> Tone.PAINT;
             case HAIR -> Tone.HAIR;
             case GENETICS, CLAN -> activeTone;
         };
     }
 
-    private void drawFace(GuiGraphics g, int y, int mx, int my) {
-        y = eyeShapes(g, y, mx, my);
-        y = color(g, y, Tone.EYE, mx, my);
+    private int drawFace(GuiGraphics g, int y, int mx, int my) {
+        y = colorGrid(g, y, Tone.SKIN, mx, my);
+        y = section(g, y, "creator.noirm.section.features");
+        y = option(g, y, Slot.BROWS, mx, my);
         y = option(g, y, Slot.NOSE, mx, my);
         y = option(g, y, Slot.JAW, mx, my);
         y = option(g, y, Slot.MOUTH, mx, my);
-        y = option(g, y, Slot.BROWS, mx, my);
-        fineTune(g, y + 4, mx, my);
+        return fineTune(g, y + 4, mx, my);
     }
 
-    private void drawBody(GuiGraphics g, int y, int mx, int my) {
-        y = color(g, y, Tone.SKIN, mx, my);
+    private int drawEyes(GuiGraphics g, int y, int mx, int my) {
+        y = eyeShapes(g, y, mx, my);
+        y = pupils(g, y, mx, my);
+        y = colorGrid(g, y, Tone.EYE, mx, my);
+        y = option(g, y, Slot.EYE_DETAIL, mx, my);
+        return fineTune(g, y + 4, mx, my);
+    }
+
+    private int drawBody(GuiGraphics g, int y, int mx, int my) {
+        y = colorGrid(g, y, Tone.SKIN, mx, my);
+        y = section(g, y, "creator.noirm.section.build");
         y = option(g, y, Slot.BODY, mx, my);
         y = option(g, y, Slot.FRAME, mx, my);
         y = option(g, y, Slot.MUSCLE, mx, my);
-        y = option(g, y, Slot.SCAR, mx, my);
-        y = option(g, y, Slot.WEATHERING, mx, my);
-        y = option(g, y, Slot.MARKING, mx, my);
+        y = heightRow(g, y, mx, my);
+        y = section(g, y, "creator.noirm.section.underwear");
         y = option(g, y, Slot.UNDERWEAR, mx, my);
         y = color(g, y, Tone.UNDERWEAR, mx, my);
         y = option(g, y, Slot.WRAPS, mx, my);
-        y = heightRow(g, y, mx, my);
-        fineTune(g, y + 4, mx, my);
-        y += 4 + 11 + 3 * 10 + 6; // below the fine-tune bars
-        for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.underwear_note"), pw - 16)) {
-            if (y + 9 > vy + vh - 4) {
-                break; // no room left on a small screen
-            }
-            g.drawString(font, line, px + 8, y, FAINT, false);
+        y = fineTune(g, y + 4, mx, my);
+        for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.underwear_note"), pw - 22)) {
+            g.drawString(font, line, px + 11, y, FAINT, false);
             y += 10;
         }
+        return y;
     }
 
-    private void drawHair(GuiGraphics g, int y, int mx, int my) {
+    private int drawMarks(GuiGraphics g, int y, int mx, int my) {
+        y = section(g, y, "creator.noirm.section.scars");
+        y = option(g, y, Slot.SCAR, mx, my);
+        y = option(g, y, Slot.MARKING, mx, my);
+        y = option(g, y, Slot.WEATHERING, mx, my);
+        y = section(g, y, "creator.noirm.section.paint");
+        y = option(g, y, Slot.FACE_PAINT, mx, my);
+        y = option(g, y, Slot.TATTOO, mx, my);
+        y = colorGrid(g, y, Tone.PAINT, mx, my);
+        return fineTune(g, y + 4, mx, my);
+    }
+
+    private int drawHair(GuiGraphics g, int y, int mx, int my) {
         y = hairStyles(g, y, mx, my);
         y = option(g, y, Slot.HAIR_LENGTH, mx, my);
         y = option(g, y, Slot.HAIR_VOLUME, mx, my);
         y = colorGrid(g, y, Tone.HAIR, mx, my);
-        fineTune(g, y + 2, mx, my);
+        y = section(g, y, "creator.noirm.section.dye");
+        y = option(g, y, Slot.HAIR_DYE, mx, my);
+        if (draft.get(Slot.HAIR_DYE) > 0) {
+            y = colorGrid(g, y, Tone.HAIR2, mx, my);
+        } else {
+            g.drawString(font, cut(Component.translatable("creator.noirm.dye_note"), pw - 22), px + 11, y + 1, FAINT, false);
+            y += 12;
+        }
+        return fineTune(g, y + 2, mx, my);
+    }
+
+    /** A small upper-case section label with a rule (the kit's section header). */
+    private int section(GuiGraphics g, int y, String key) {
+        return Ui.section(g, font, px + 11, y + 3, pw - 22, Component.translatable(key), FAINT) - 1;
     }
 
     private static final net.minecraft.resources.ResourceLocation HAIR_ICONS = com.noirm.Noirm.id("textures/gui/hair_styles.png");
     private static final int ICON = 48;
     private static final int ICON_COLS = 8;
+    private static final int ICON_ROWS = (Slot.HAIR.size() + ICON_COLS - 1) / ICON_COLS;
 
     /**
      * Every hair style as a small picture (drawn by tools/skingen/gen_hair.py, tinted with the chosen colour),
      * in a grid; the chosen one outlined, its name on hover.
      */
     private int hairStyles(GuiGraphics g, int y, int mx, int my) {
-        int x = px + 8;
-        int w = pw - 16;
+        int x = px + 11;
+        int w = pw - 22;
         int count = Slot.HAIR.size();
-        int tile = Mth.clamp(w / 9, 18, 30);
+        int tile = Mth.clamp(w / 11, 18, 26);
         int cols = Math.max(1, (w + 2) / (tile + 2));
         int rows = (count + cols - 1) / cols;
         int current = draft.get(Slot.HAIR);
@@ -442,7 +541,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             int v = (i / ICON_COLS) * ICON;
             com.mojang.blaze3d.systems.RenderSystem.enableBlend();
             g.setColor(r, gr, b, 1f);
-            g.blit(HAIR_ICONS, tx + 1, ty + 1, tile - 2, tile - 2, u, v, ICON, ICON, ICON * ICON_COLS, ICON * 3);
+            g.blit(HAIR_ICONS, tx + 1, ty + 1, tile - 2, tile - 2, u, v, ICON, ICON, ICON * ICON_COLS, ICON * ICON_ROWS);
             g.setColor(1f, 1f, 1f, 1f);
             if (i == current) {
                 g.renderOutline(tx - 1, ty - 1, tile + 2, tile + 2, CHAKRA);
@@ -460,13 +559,13 @@ public class CreatorScreen extends Screen implements NoirmStyled {
 
     /** All of a tone's swatches in wrapped rows (the hair's 40), and the current colour at the end. */
     private int colorGrid(GuiGraphics g, int y, Tone tone, int mx, int my) {
-        int x = px + 8;
+        int x = px + 11;
         Component label = Component.translatable("creator.noirm.tone." + tone.key());
         g.drawString(font, cut(label, LABEL_W - 4), x, y + 1, tone == activeTone ? CHAKRA : DIM, false);
         hits.add(new Hit(x, y, LABEL_W, 10, () -> activeTone = tone, null));
         int sx = x + LABEL_W;
         int size = 8;
-        int cols = Math.max(1, (px + pw - 8 - sx) / (size + 1));
+        int cols = Math.max(1, (px + pw - 11 - sx) / (size + 1));
         int[] palette = tone.palette();
         int current = draft.color(tone);
         boolean inPalette = false;
@@ -500,54 +599,92 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         return y + rows * (size + 1) + 3;
     }
 
-    private static final String[] EYE_SHAPES = {"round", "sharp", "wide", "narrow", "pale"};
-
-    /** The eye shapes as chips, each showing the eye itself (the in-game high-detail atlas, in your eye colour). */
+    /**
+     * The eye shapes as chips in rows, each showing the eye itself (the in-game high-detail atlas, in your eye
+     * colour and with your pupil).
+     */
     private int eyeShapes(GuiGraphics g, int y, int mx, int my) {
-        int x = px + 8;
-        int right = px + pw - 8;
+        int x = px + 11;
+        int right = px + pw - 11;
         g.drawString(font, cut(Component.translatable("creator.noirm.slot.eyes"), LABEL_W - 4), x, y + 5, DIM, false);
         int bx = x + LABEL_W;
-        int n = EYE_SHAPES.length;
-        int cw = Math.max(16, (right - bx - (n - 1) * 2) / n);
+        int n = Slot.EYES.size();
+        int cw = 30;
+        int cols = Math.max(1, (right - bx + 2) / (cw + 2));
+        cw = (right - bx - (cols - 1) * 2) / cols;
         int ch = 18;
         int current = draft.get(Slot.EYES);
-        int iris = SkinComposer.tint(draft.color(Tone.EYE), 186);
+        int pupil = draft.get(Slot.PUPIL);
         for (int i = 0; i < n; i++) {
-            int cx = bx + i * (cw + 2);
-            boolean over = mx >= cx && mx < cx + cw && my >= y && my < y + ch;
+            int cx = bx + (i % cols) * (cw + 2);
+            int cy = y + (i / cols) * (ch + 2);
+            boolean over = mx >= cx && mx < cx + cw && my >= cy && my < cy + ch;
             float hv = hover.get(HoverTracker.key(6, i), over);
-            g.fill(cx, y, cx + cw, y + ch, Theme.mix(RAISED, RAISED_HOVER, hv));
-            int index = Slot.EYES.indexOf(EYE_SHAPES[i]);
-            net.minecraft.resources.ResourceLocation atlas = com.noirm.Noirm.id("textures/entity/eyes/" + EYE_SHAPES[i] + ".png");
-            int ew = Math.min(cw - 2, (ch - 2) * 64 / 40);
-            int eh = ew * 40 / 64;
-            int ex = cx + (cw - ew) / 2;
-            int ey = y + (ch - eh) / 2;
-            g.fill(ex, ey, ex + ew, ey + eh, 0xFF000000 | draft.color(Tone.SKIN)); // a patch of skin under the eye
-            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-            for (int layer = 0; layer < 3; layer++) {
-                if (layer == 1) {
-                    g.setColor(((iris >> 16) & 0xFF) / 255f, ((iris >> 8) & 0xFF) / 255f, (iris & 0xFF) / 255f, 1f);
-                }
-                g.blit(atlas, ex, ey, ew, eh, layer * 64, 0, 64, 40, 512, 64);
-                g.setColor(1f, 1f, 1f, 1f);
-            }
-            if (index == current) {
-                g.renderOutline(cx - 1, y - 1, cw + 2, ch + 2, CHAKRA);
-            }
-            hits.add(new Hit(cx, y, cw, ch, () -> {
+            eyeChip(g, cx, cy, cw, ch, Slot.EYES.option(i), pupil, hv, i == current);
+            int index = i;
+            hits.add(new Hit(cx, cy, cw, ch, () -> {
                 draft.set(Slot.EYES, index);
                 changed();
             }, List.of(Component.translatable(Slot.EYES.translationKey(index)))));
         }
+        return y + ((n + cols - 1) / cols) * (ch + 2) + 2;
+    }
+
+    /** The pupils as chips: your eye shape with each pupil. */
+    private int pupils(GuiGraphics g, int y, int mx, int my) {
+        int x = px + 11;
+        int right = px + pw - 11;
+        g.drawString(font, cut(Component.translatable("creator.noirm.slot.pupil"), LABEL_W - 4), x, y + 5, DIM, false);
+        int bx = x + LABEL_W;
+        int n = Slot.PUPIL.size();
+        int cw = Math.max(16, (right - bx - (n - 1) * 2) / n);
+        int ch = 18;
+        int current = draft.get(Slot.PUPIL);
+        String shape = draft.id(Slot.EYES);
+        for (int i = 0; i < n; i++) {
+            int cx = bx + i * (cw + 2);
+            boolean over = mx >= cx && mx < cx + cw && my >= y && my < y + ch;
+            float hv = hover.get(HoverTracker.key(7, i), over);
+            eyeChip(g, cx, y, cw, ch, shape, i, hv, i == current);
+            int index = i;
+            hits.add(new Hit(cx, y, cw, ch, () -> {
+                draft.set(Slot.PUPIL, index);
+                changed();
+            }, List.of(Component.translatable(Slot.PUPIL.translationKey(index)))));
+        }
         return y + ch + 3;
+    }
+
+    /** One eye drawn from its high-detail atlas on a patch of skin: white, iris (row 2 for other pupils), lash line. */
+    private void eyeChip(GuiGraphics g, int cx, int cy, int cw, int ch, String shape, int pupil, float hv, boolean chosen) {
+        g.fill(cx, cy, cx + cw, cy + ch, Theme.mix(Theme.RAISED, Theme.RAISED_HOVER, hv));
+        net.minecraft.resources.ResourceLocation atlas = com.noirm.Noirm.id("textures/entity/eyes/" + shape + ".png");
+        int ew = Math.min(cw - 2, (ch - 2) * 64 / 40);
+        int eh = ew * 40 / 64;
+        int ex = cx + (cw - ew) / 2;
+        int ey = cy + (ch - eh) / 2;
+        g.fill(ex, ey, ex + ew, ey + eh, 0xFF000000 | draft.color(Tone.SKIN));
+        int iris = SkinComposer.tint(draft.color(Tone.EYE), 186);
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        // the atlas is 1024×256: drawn here at half size (cells 64×40, the pupil row from v 64)
+        g.blit(atlas, ex, ey, ew, eh, 0, 0, 64, 40, 512, 128);
+        g.setColor(((iris >> 16) & 0xFF) / 255f, ((iris >> 8) & 0xFF) / 255f, (iris & 0xFF) / 255f, 1f);
+        if (pupil > 0) {
+            g.blit(atlas, ex, ey, ew, eh, (pupil - 1) * 64, 64, 64, 40, 512, 128);
+        } else {
+            g.blit(atlas, ex, ey, ew, eh, 64, 0, 64, 40, 512, 128);
+        }
+        g.setColor(1f, 1f, 1f, 1f);
+        g.blit(atlas, ex, ey, ew, eh, 128, 0, 64, 40, 512, 128);
+        if (chosen) {
+            g.renderOutline(cx - 1, cy - 1, cw + 2, ch + 2, CHAKRA);
+        }
     }
 
     /** "Label   <  value  >": click the arrows (or scroll over the row) to change it. */
     private int option(GuiGraphics g, int y, Slot slot, int mx, int my) {
-        int x = px + 8;
-        int right = px + pw - 8;
+        int x = px + 11;
+        int right = px + pw - 11;
         boolean hover = mx >= x && mx < right && my >= y && my < y + ROW - 1;
         float hv = this.hover.get(HoverTracker.key(1, slot.ordinal()), hover);
         g.drawString(font, cut(Component.translatable("creator.noirm.slot." + slot.key()), LABEL_W - 4), x, y + 2,
@@ -576,7 +713,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
 
     /** "Label  ■■■■■■…": swatches; the chosen one is outlined. Clicking makes it the fine-tuned colour. */
     private int color(GuiGraphics g, int y, Tone tone, int mx, int my) {
-        int x = px + 8;
+        int x = px + 11;
         boolean active = tone == activeTone;
         Component label = Component.translatable("creator.noirm.tone." + tone.key());
         g.drawString(font, cut(label, LABEL_W - 4), x, y + 2, active ? CHAKRA : DIM, false);
@@ -585,7 +722,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         int current = draft.color(tone);
         int[] palette = tone.palette();
         int size = 9;
-        int room = (px + pw - 8 - sx) / (size + 1);
+        int room = (px + pw - 11 - sx) / (size + 1);
         boolean inPalette = false;
         for (int i = 0; i < palette.length && i < room - 1; i++) {
             int c = palette[i];
@@ -615,20 +752,17 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     }
 
     /** Hue / saturation / brightness bars for the active colour. */
-    private void fineTune(GuiGraphics g, int y, int mx, int my) {
-        if (y + 40 > vy + vh) {
-            return;
-        }
+    private int fineTune(GuiGraphics g, int y, int mx, int my) {
         Tone tone = activeTone;
-        int x = px + 8;
-        Ui.section(g, font, x, y, pw - 16, Component.translatable("creator.noirm.fine_tune",
+        int x = px + 11;
+        Ui.section(g, font, x, y, pw - 22, Component.translatable("creator.noirm.fine_tune",
                 Component.translatable("creator.noirm.tone." + tone.key())), FAINT);
         y += 11;
         float[] hsv = hsv(draft.color(tone));
         String[] names = {"creator.noirm.hue", "creator.noirm.saturation", "creator.noirm.brightness"};
         for (int i = 0; i < 3; i++) {
             int bx = x + LABEL_W;
-            int bw = px + pw - 8 - bx;
+            int bw = px + pw - 11 - bx;
             g.drawString(font, cut(Component.translatable(names[i]), LABEL_W - 4), x, y, DIM, false);
             int segments = 24;
             for (int s = 0; s < segments; s++) {
@@ -650,13 +784,14 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             }));
             y += 10;
         }
+        return y + 4;
     }
 
     private int heightRow(GuiGraphics g, int y, int mx, int my) {
-        int x = px + 8;
+        int x = px + 11;
         g.drawString(font, cut(Component.translatable("creator.noirm.height"), LABEL_W - 4), x, y + 2, DIM, false);
         int bx = x + LABEL_W;
-        int bw = px + pw - 8 - bx - 30;
+        int bw = px + pw - 11 - bx - 30;
         float t = (draft.height() - PlayerLook.MIN_HEIGHT) / (PlayerLook.MAX_HEIGHT - PlayerLook.MIN_HEIGHT);
         int mid = bx + bw / 2;
         g.fill(mid, y + 2, mid + 1, y + 8, FAINT);
@@ -673,8 +808,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     // ---------------------------------------------------------------- genetics
 
     private void drawGenetics(GuiGraphics g, int y, int mx, int my) {
-        int x = px + 8;
-        int w = pw - 16;
+        int x = px + 11;
+        int w = pw - 22;
         List<CreatorPackets.RollView> rolls = state.rolls();
         if (!state.modeEnum().genetics()) {
             for (FormattedCharSequence line : font.split(Component.translatable("creator.noirm.genetics.locked"), w)) {
@@ -691,14 +826,14 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         g.drawString(font, cut(Component.translatable("creator.noirm.genetics.rolls", seen, total), w), x, y, DIM, false);
         y += 11;
         int cardH = 31;
-        int room = vy + vh - 24 - y;
+        int room = vy + vh - 30 - y;
         int step = Math.min(cardH + 3, Math.max(22, room / Math.max(1, seen)));
         for (int i = 0; i < seen; i++) {
             rollCard(g, x, y, w, rolls.get(i), i == state.chosen(), i, mx, my);
             y += step;
         }
         // reroll button
-        int by = vy + vh - 20;
+        int by = vy + vh - 25;
         boolean can = state.rerollsLeft() > 0;
         Component label = can ? Component.translatable("creator.noirm.genetics.reroll", state.rerollsLeft())
                 : Component.translatable("creator.noirm.genetics.no_rerolls");
@@ -823,8 +958,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     }
 
     private void drawClan(GuiGraphics g, int y, int mx, int my) {
-        int x = px + 8;
-        int w = pw - 16;
+        int x = px + 11;
+        int w = pw - 22;
         List<CreatorPackets.RollView> rolls = state.rolls();
         if (rolls.isEmpty()) {
             g.drawString(font, cut(Component.translatable("creator.noirm.clan.none"), w), x, y, DIM, false);
@@ -839,7 +974,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         }
         y += 12;
         // The flavour line only gets the room the perks and talents leave (two lines at most).
-        int bottom = vy + vh - 4;
+        int bottom = vy + vh - 9;
         int perkRows = (roll.perks().size() + 1) / 2;
         int needed = 10 + Math.max(1, perkRows) * 10 + 2 + (roll.clanJutsu().isEmpty() ? 0 : 12) + 10
                 + Math.max(1, roll.talents().size()) * 11;
@@ -1124,7 +1259,13 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             zoomTarget = Mth.clamp(zoomTarget + (float) delta * 0.25f, 0.8f, 2.8f);
             return true;
         }
-        // scrolling over an option row cycles it
+        // over a tab body that's longer than the panel, the wheel scrolls it
+        if (mouseX >= px && mouseX < px + pw && mouseY >= contentTop() && mouseY < contentBottom()
+                && contentHeight > contentBottom() - contentTop() && tab != Tab.GENETICS && tab != Tab.CLAN) {
+            scroll[tab.ordinal()] -= (float) delta * 18f;
+            return true;
+        }
+        // otherwise scrolling over an option row cycles it
         for (Hit hit : hits) {
             if (hit.contains(mouseX, mouseY) && hit.tip() != null && hit.click() != null && hit.w() < pw && hit.h() == ROW - 2) {
                 hit.click().run();

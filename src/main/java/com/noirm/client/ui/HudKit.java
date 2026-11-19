@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 /**
- * HUD pieces: no panels, just shadowed captions and thin bars over the world. Values (numbers)
+ * HUD pieces: no panels, just shadowed captions and thin bars on an ink-brush smear over the world. Values (numbers)
  * fade in when they change and fade out again (see {@link Smooth#recency()}).
  */
 public final class HudKit {
@@ -42,6 +42,8 @@ public final class HudKit {
             text(g, font, value, x + w - font.width(value), y, Theme.TEXT, valueAlpha);
         }
         int barY = y + font.lineHeight + 1;
+        // an ink smear under the bar (the ninja look), so it reads over bright skies too
+        Skin.stroke(g, x - 3, barY - 1, w + 6, BAR_H + 2, 0xFF000000, 0.6f);
         Ui.bar(g, x, barY, w, BAR_H, smooth.value(), smooth.ghost(), color, TRACK);
         return y + BAR_ROW;
     }

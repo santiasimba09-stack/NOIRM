@@ -5,7 +5,9 @@ package com.noirm.client.ui;
  * The palette is the one we established (ash and iron near-blacks, bone white text, a blood-red
  * accent, gold for highlights, chakra blue and green), trimmed to a small set. See {@code docs/UI.md}.
  *
- * <p>Colours are ARGB ints, ready for {@code GuiGraphics.fill} and {@code drawString}.
+ * <p>Colours are ARGB ints, ready for {@code GuiGraphics.fill} and {@code drawString}. The surfaces follow the
+ * kit's ninja look ({@link Skin}): warm lacquer and paper browns for the chosen "shoji" look, so the flat fills
+ * a screen draws itself sit well inside the textured panels.
  */
 public final class Theme {
     private Theme() {}
@@ -13,28 +15,28 @@ public final class Theme {
     // ------------------------------------------------------------------ surfaces (ash and iron)
 
     /** The dim layer behind a screen (the world shows through). */
-    public static final int SCRIM = 0xB0060508;
+    public static final int SCRIM = Skin.pick(0xB0070505, 0xB0080604, 0xB005060A);
     /** A screen's main surface: flat ash-black. */
-    public static final int SURFACE = 0xFF121016;
+    public static final int SURFACE = Skin.pick(0xFF17141A, 0xFF2A2118, 0xFF13151D);
     /** A raised surface inside a panel: cards, list rows, inputs. */
-    public static final int RAISED = 0xFF19171E;
+    public static final int RAISED = Skin.pick(0xFF221C21, 0xFF33281D, 0xFF1C1F28);
     /** A raised surface under the mouse. */
-    public static final int RAISED_HOVER = 0xFF231F29;
+    public static final int RAISED_HOVER = Skin.pick(0xFF2E2529, 0xFF3F3224, 0xFF252935);
     /** A sunken well: bar tracks, slot backs, the 3D view. */
-    public static final int WELL = 0xFF0C0B0F;
+    public static final int WELL = Skin.pick(0xFF0C0A0D, 0xFF15100B, 0xFF0A0B10);
     /** The one hairline: panel edges and section rules. */
-    public static final int HAIRLINE = 0xFF2B2731;
+    public static final int HAIRLINE = Skin.pick(0xFF3A2C26, 0xFF4E3E2C, 0xFF2E323C);
     /** A stronger hairline (iron) for focus and hover outlines. */
-    public static final int IRON = 0xFF4A4452;
+    public static final int IRON = Skin.pick(0xFF6E5236, 0xFF7A6448, 0xFF5A5E66);
 
     // ------------------------------------------------------------------ text (bone and ash)
 
     /** Body text and values: bone/paper white. */
     public static final int TEXT = 0xFFEDE4D3;
     /** Secondary text: labels, descriptions. */
-    public static final int TEXT_DIM = 0xFF9A929F;
+    public static final int TEXT_DIM = Skin.pick(0xFFA69A92, 0xFFA89A86, 0xFF9A9CA6);
     /** Tertiary text: hints, disabled, empty states. */
-    public static final int TEXT_FAINT = 0xFF5F5967;
+    public static final int TEXT_FAINT = Skin.pick(0xFF6E625C, 0xFF7A6C5A, 0xFF5E626C);
 
     // ------------------------------------------------------------------ accents
 

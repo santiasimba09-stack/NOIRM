@@ -12,12 +12,17 @@ import net.minecraft.world.entity.player.Player;
  * drawn inflated around the same parts). Called once per model pose, after the animation.
  */
 public final class BodyShape {
-    /** Per body type: torso width, torso depth, arm thickness. */
+    /** Per body type (PlayerLook's BODY order): torso width, torso depth, arm thickness, leg thickness. */
     private static final float[][] SCALE = {
-            {1f, 1f, 1f},          // average
-            {0.93f, 0.94f, 0.9f},  // slim
-            {1.04f, 1.03f, 1.05f}, // athletic
-            {1.09f, 1.07f, 1.12f}, // broad
+            {1f, 1f, 1f, 1f},             // average
+            {0.93f, 0.94f, 0.9f, 1f},     // slim
+            {1.04f, 1.03f, 1.05f, 1f},    // athletic
+            {1.09f, 1.07f, 1.12f, 1f},    // broad
+            {0.95f, 0.95f, 0.92f, 0.96f}, // lean
+            {0.92f, 0.92f, 0.86f, 0.92f}, // wiry
+            {1.08f, 1.1f, 1.1f, 1.08f},   // stocky
+            {1.12f, 1.18f, 1.1f, 1.1f},   // heavy
+            {1.15f, 1.1f, 1.2f, 1.06f},   // hulking
     };
 
     private BodyShape() {}
@@ -38,6 +43,10 @@ public final class BodyShape {
         model.rightArm.zScale = s[2];
         model.leftArm.xScale = s[2];
         model.leftArm.zScale = s[2];
+        model.rightLeg.xScale = s[3];
+        model.rightLeg.zScale = s[3];
+        model.leftLeg.xScale = s[3];
+        model.leftLeg.zScale = s[3];
         if (type != 0) {
             float out = (s[0] - 1f) * 4f + (s[2] - 1f) * 2f; // the shoulders move with the torso's edge
             model.rightArm.x -= out;
