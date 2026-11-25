@@ -1122,7 +1122,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         // the character's own talents, with which set this is and the talent rerolls left
         g.drawString(font, Component.translatable("creator.noirm.clan.talents"), x, y, DIM, false);
         if (state.modeEnum().genetics()) {
-            String left = Component.translatable("creator.noirm.genetics.talents_left", state.talentRerollsLeft(),
+            String left = Component.translatable("creator.noirm.clan.talent_rerolls_short", state.talentRerollsLeft(),
                     com.noirm.creator.CharacterCreator.MAX_TALENT_REROLLS).getString();
             int lw = font.width(left);
             g.drawString(font, left, x + w - lw, y, state.talentRerollsLeft() > 0 ? TALENT : FAINT, false);
