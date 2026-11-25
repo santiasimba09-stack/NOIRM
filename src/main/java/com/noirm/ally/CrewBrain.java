@@ -420,6 +420,7 @@ public final class CrewBrain {
 
     /** Marks hostiles far around (they glow) and tells you how many it found. */
     public static int scout(SparringNinja ally, Player leader) {
+        com.noirm.aburame.CrewInsects.scout(ally, leader); // an Aburame also sends a real scout swarm ahead
         if (ally.tickCount % 40 != 0) {
             return 0;
         }
@@ -443,6 +444,9 @@ public final class CrewBrain {
 
     /** Heals the most hurt of you and the crew nearby, for chakra. Returns who was healed. */
     public static LivingEntity medic(SparringNinja ally, Player leader) {
+        if (com.noirm.aburame.CrewInsects.medic(ally, leader)) {
+            return leader; // an Aburame draws the poison out first
+        }
         LivingEntity patient = null;
         float worst = MEDIC_THRESHOLD;
         if (leader.isAlive() && leader.distanceTo(ally) <= MEDIC_RANGE && leader.getHealth() / leader.getMaxHealth() < worst) {

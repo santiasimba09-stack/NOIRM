@@ -53,6 +53,12 @@ public final class AburameFightGoal {
         State st = STATES.computeIfAbsent(ninja, n -> new State());
         boolean burned = ninja.getLastDamageSource() != null && ninja.tickCount - ninja.getLastHurtByMobTimestamp() < 30
                 && (ninja.getLastDamageSource().is(DamageTypeTags.IS_FIRE) || ninja.getLastDamageSource().is(DamageTypeTags.IS_EXPLOSION));
+        if (com.noirm.ally.AllyMind.shouldRetreat(ninja) && st.retreat <= 0) {
+            st.retreat = RETREAT_TICKS; // a hurt crew mate backs off under a jamming cloud
+            if (colony.rank().ordinal() >= HiveRank.CHUNIN.ordinal()) {
+                cast(ninja, JAM);
+            }
+        }
         if (burned && st.retreat <= 0) {
             st.retreat = RETREAT_TICKS;
             cast(ninja, CLONE);

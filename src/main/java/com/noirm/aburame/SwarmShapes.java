@@ -100,14 +100,18 @@ final class SwarmShapes {
                 }
             }
         }
-        if (!swarm.reported() && owner instanceof Player player) {
+        Player reader = CrewInsects.reportTo(owner);
+        if (!swarm.reported() && reader != null) {
+            Player player = reader;
             swarm.setReported(true);
             report(player, swarm, seen);
             ColonyData colony = Colony.of(owner);
             if (colony != null) {
                 colony.setScoutsFlown(colony.scoutsFlown() + 1);
             }
-            startMap(player, swarm, level);
+            if (owner == player) {
+                startMap(player, swarm, level);
+            }
         }
         drawMap(swarm, level);
     }

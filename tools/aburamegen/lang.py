@@ -331,6 +331,10 @@ for k, en, es in [("trial_start", "%s releases his insects. Drain him first.", "
     add("message.noirm.colony." + k, en, es)
 
 
+add("message.noirm.colony.crew_scout", "%s sends a scout swarm ahead.", "%s envía un enjambre explorador por delante.")
+add("message.noirm.colony.crew_draw", "%s's insects draw the poison out of you.", "Los insectos de %s te sacan el veneno.")
+
+
 def main():
     for code, idx in (("en_us", 0), ("es_es", 1), ("es_mx", 1)):
         p = os.path.join(LANG, code + ".json")
