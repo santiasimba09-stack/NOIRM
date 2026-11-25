@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
  */
 public final class JutsuCaster {
     /** What can stop a cast. Each has a message ({@code message.noirm.jutsu.<name>}). */
-    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING, NOT_CLAN, NEEDS_HOUND }
+    public enum Result { OK, EMPTY_SLOT, UNKNOWN, COOLDOWN, NO_CHAKRA, NO_NATURE, NEEDS_DOJUTSU, NEEDS_CLOAK, BUSY, SEALED, NEEDS_GATE, TOO_HURT, TOO_DEMANDING, NOT_CLAN, NEEDS_HOUND, NEEDS_COLONY, DRAINED }
 
     /**
      * A jutsu in progress: hand seals before a TAP jutsu (or an NPC's cast) fires, or a CHARGE or
@@ -141,7 +141,7 @@ public final class JutsuCaster {
 
     /** How long this jutsu's seals take before it fires: 2 ticks a seal, at most 12; 0 if it has none or is quick. */
     public static int sealPhaseTicks(ResourceLocation id, JutsuDefinition def) {
-        JutsuSeals.Sequence seals = def.quick() ? null : JutsuSeals.get(id);
+        JutsuSeals.Sequence seals = def.quick() || def.isAburame() ? null : JutsuSeals.get(id); // insects need no seals
         return seals == null || seals.seals().isEmpty() ? 0
                 : Math.min(SEAL_PHASE_MAX_TICKS, SEAL_PHASE_TICKS_PER_SEAL * seals.seals().size());
     }
@@ -319,7 +319,8 @@ public final class JutsuCaster {
             com.noirm.senjutsu.SageMode.end(player, false); // so is leaving Sage Mode
             return Result.OK;
         }
-        if (CASTING.containsKey(player) || !CombatSystem.canAct(player) && !"genjutsu_release".equals(def.behavior())) { // Kai works while stunned
+        // Kai works while stunned; insects act on their own, so an Aburame sends them even bound or stunned.
+        if (CASTING.containsKey(player) || !CombatSystem.canAct(player) && !"genjutsu_release".equals(def.behavior()) && !def.isAburame()) {
             return Result.BUSY;
         }
         Result check = checkRequirements(player, id, def);
@@ -349,7 +350,7 @@ public final class JutsuCaster {
                 data.markPowersDirty();
             }
         } else {
-            JutsuSeals.Sequence seals = def.quick() ? null : JutsuSeals.get(id);
+            JutsuSeals.Sequence seals = def.quick() || def.isAburame() ? null : JutsuSeals.get(id);
             // Charged and channelled jutsu keep their flow: the seals they form while charging are the seal phase.
             int sealTicks = seals == null ? 0 : com.noirm.master.MasterPerks.sealTicks(player, seals.ticks());
             Casting casting = new Casting(id, def, slot, paid, false, 1f, sealTicks);
@@ -380,7 +381,7 @@ public final class JutsuCaster {
             stop(entity, casting, false);
             return;
         }
-        if (CombatSystem.isStaggered(entity)) {
+        if (CombatSystem.isStaggered(entity) && !casting.def.isAburame()) { // a stagger doesn't stop insects
             if (casting.sealTicks > 0) {
                 fizzle(entity, casting); // staggered or knocked down mid-seal: the seals break
             } else {
@@ -508,7 +509,8 @@ public final class JutsuCaster {
      */
     public static boolean npcCast(LivingEntity caster, ResourceLocation id, float charge) {
         JutsuDefinition def = JutsuData.get(id);
-        if (def == null || CASTING.containsKey(caster) || !CombatSystem.canAct(caster) || checkRequirements(caster, id, def) != Result.OK) {
+        if (def == null || CASTING.containsKey(caster) || !CombatSystem.canAct(caster) && !def.isAburame()
+                || checkRequirements(caster, id, def) != Result.OK) {
             return false;
         }
         long now = caster.level().getGameTime();
@@ -597,6 +599,7 @@ public final class JutsuCaster {
                 com.noirm.vfx.Vfx.castFlourish(caster.level(), caster, com.noirm.vfx.Vfx.palette(def.nature().orElse(null)), def.rank());
             }
             behavior.cast(context);
+            com.noirm.aburame.Swarms.onJutsuCast(caster, def, power); // fire burns swarms, wind scatters them
             Sharingan.onJutsuCast(caster, id);
         } else {
             behavior.channel(context, tick);
@@ -629,6 +632,12 @@ public final class JutsuCaster {
         }
         if (!com.noirm.traits.ClanJutsu.allowed(caster, id)) {
             return Result.NOT_CLAN; // a clan's secret technique answers only to its blood
+        }
+        if (com.noirm.aburame.Drain.isDrained(caster)) {
+            return Result.DRAINED; // eaten down to nothing: no chakra to mould (docs/ABURAME.md, 2.5)
+        }
+        if (def.isAburame() && !com.noirm.aburame.Colony.canCast(caster, def)) {
+            return Result.NEEDS_COLONY; // insect techniques need a colony, a hive rank and the insects to send
         }
         if (def.nature().isPresent() && affinity(caster, id, def) <= 0) {
             return Result.NO_NATURE;

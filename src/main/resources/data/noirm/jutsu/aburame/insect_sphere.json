@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_sphere",
+  "rank": "B",
+  "chakra_cost": 12,
+  "cooldown": 300,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 3,
+    "species": "kikaichu",
+    "mode": "sphere",
+    "insects": 6000
+  },
+  "params": {
+    "range": 24
+  }
+}

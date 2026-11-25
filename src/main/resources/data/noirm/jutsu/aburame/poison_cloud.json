@@ -1,0 +1,19 @@
+{
+  "cast": "charge",
+  "behavior": "poison_cloud",
+  "rank": "A",
+  "chakra_cost": 20,
+  "cooldown": 600,
+  "min_charge": 10,
+  "max_charge": 30,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 4,
+    "species": "rinkaichu",
+    "mode": "poison",
+    "insects": 3000
+  },
+  "params": {
+    "duration": 120
+  }
+}

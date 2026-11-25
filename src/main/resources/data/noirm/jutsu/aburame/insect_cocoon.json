@@ -1,0 +1,14 @@
+{
+  "cast": "channel",
+  "behavior": "insect_cocoon",
+  "rank": "C",
+  "chakra_cost": 0,
+  "cooldown": 200,
+  "max_duration": 2400,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "none",
+    "mode": "cling"
+  }
+}

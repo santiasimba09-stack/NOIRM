@@ -308,7 +308,7 @@ public final class WoodReleaseGameTests {
         ResourceLocation id = Noirm.id(path);
         JutsuDefinition def = JutsuData.get(id);
         JutsuDefinition used = new JutsuDefinition(def.nature(), def.cast(), def.behavior(), def.chakraCost(), def.cooldown(), def.minCharge(),
-                def.maxCharge(), def.maxDuration(), def.requires(), def.starter(), def.rank(), tweak.apply(def.params()), def.unlock(), def.mode(), def.quick());
+                def.maxCharge(), def.maxDuration(), def.requires(), def.starter(), def.rank(), tweak.apply(def.params()), def.unlock(), def.mode(), def.quick(), def.hiden());
         com.noirm.jutsu.FriendlyZones.mark(caster);
         JutsuBehaviors.get(used.behavior()).cast(new JutsuContext(caster, id, used, JutsuCaster.power(caster, id, def), charge));
     }

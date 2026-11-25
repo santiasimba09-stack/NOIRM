@@ -153,12 +153,16 @@ public final class JutsuBehaviors {
 
     private JutsuBehaviors() {}
 
+    /** The Aburame's insect techniques (aburame.AburameBehaviors). */
+    private static final Map<String, JutsuBehavior> ABURAME = com.noirm.aburame.AburameBehaviors.all();
+
     public static JutsuBehavior get(String name) {
-        return BEHAVIORS.get(name);
+        JutsuBehavior b = BEHAVIORS.get(name);
+        return b != null ? b : ABURAME.get(name);
     }
 
     public static boolean exists(String name) {
-        return BEHAVIORS.containsKey(name);
+        return BEHAVIORS.containsKey(name) || ABURAME.containsKey(name);
     }
 
     // ------------------------------------------------------------ projectile: fireball, water bullet…

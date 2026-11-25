@@ -61,6 +61,7 @@ public final class ShinobiHudOverlay {
         y = HudKit.barRow(graphics, font, X, y, BAR_WIDTH, HudLabels.get("hud.noirm.ui.stamina"),
                 numbers(STAMINA, data.stamina(), data.maxStamina(), combat), valueAlpha(STAMINA, combat), STAMINA,
                 flash ? Theme.RED : STAMINA_COLOR);
+        y = com.noirm.client.aburame.ColonyHud.draw(graphics, font, X, y, BAR_WIDTH, combat); // the Aburame's colony line
         if (combat) {
             POSTURE.update(fraction(ClientCombat.posture(), ClientCombat.maxPosture()));
             y = HudKit.barRow(graphics, font, X, y, BAR_WIDTH, HudLabels.get("hud.noirm.ui.posture"),

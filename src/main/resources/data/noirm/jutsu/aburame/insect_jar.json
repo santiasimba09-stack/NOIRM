@@ -1,0 +1,15 @@
+{
+  "cast": "channel",
+  "behavior": "swarm_dome",
+  "rank": "B",
+  "chakra_cost": 4,
+  "cooldown": 240,
+  "max_duration": 120,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 3,
+    "species": "kikaichu",
+    "mode": "dome",
+    "insects": 5000
+  }
+}

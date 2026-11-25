@@ -1,0 +1,13 @@
+{
+  "cast": "tap",
+  "behavior": "living_hive",
+  "rank": "S",
+  "chakra_cost": 0,
+  "cooldown": 40,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 6,
+    "species": "none",
+    "mode": "cling"
+  }
+}

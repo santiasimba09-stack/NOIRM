@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GCG",
+    "GHG",
+    "GCG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "minecraft:clay_ball"
+    },
+    "H": {
+      "item": "noirm:insect_hive"
+    }
+  },
+  "result": {
+    "item": "noirm:breeding_jar",
+    "count": 1
+  }
+}

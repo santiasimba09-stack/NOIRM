@@ -1,0 +1,13 @@
+{
+  "cast": "tap",
+  "behavior": "jar_of_poison",
+  "rank": "S",
+  "chakra_cost": 60,
+  "cooldown": 24000,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 5,
+    "species": "none",
+    "mode": "jar"
+  }
+}

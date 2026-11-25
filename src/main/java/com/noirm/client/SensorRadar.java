@@ -26,7 +26,11 @@ public final class SensorRadar {
     /** The local player's sensing range in blocks (0 = no sense). */
     static float range() {
         PowerPackets.SyncPowers powers = ClientPowers.get();
-        return powers == null || powers.profile() == null ? 0f : powers.profile().sensor();
+        float sense = powers == null || powers.profile() == null ? 0f : powers.profile().sensor();
+        if (powers != null && powers.colony() != null && powers.colony().has()) {
+            sense = Math.max(sense, powers.colony().radar()); // Insect Radar: every swarm out is a little sensor
+        }
+        return sense;
     }
 
     static void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height) {
@@ -55,9 +59,36 @@ public final class SensorRadar {
         Vec3 me = minecraft.player.getPosition(partialTick);
         AABB area = minecraft.player.getBoundingBox().inflate(range);
         float pulse = 0.6f + 0.4f * Mth.sin((minecraft.player.tickCount + partialTick) * 0.25f);
+        // Insect Jamming (someone else's): real chakra inside the field hides behind a dozen false signals.
+        java.util.List<com.noirm.aburame.InsectSwarm> jams = minecraft.level.getEntitiesOfClass(com.noirm.aburame.InsectSwarm.class, area.inflate(24),
+                s -> s.mode() == com.noirm.aburame.SwarmMode.JAM && s.ownerEntityId() != minecraft.player.getId());
+        for (com.noirm.aburame.InsectSwarm jam : jams) {
+            for (int k = 0; k < 12; k++) {
+                double a = k * 2.399 + jam.getId();
+                double d = jam.shape() * (0.2 + 0.8 * ((k * 37 + jam.getId()) % 11) / 11.0);
+                double fx = jam.getX() + Math.cos(a + Math.sin((minecraft.player.tickCount + k * 9) * 0.05) * 0.3) * d - me.x;
+                double fz = jam.getZ() + Math.sin(a) * d - me.z;
+                double forward = fx * -Mth.sin(yaw) + fz * Mth.cos(yaw);
+                double right = fx * -Mth.cos(yaw) + fz * -Mth.sin(yaw);
+                if (forward * forward + right * right <= range * range) {
+                    int fxp = cx - (int) Math.round(right * scale);
+                    int fyp = cy - (int) Math.round(forward * scale);
+                    graphics.fill(fxp - 1, fyp - 1, fxp + 2, fyp + 2, ((int) (255 * pulse) << 24) | 0xFF6A5A);
+                }
+            }
+        }
         for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
                 e -> e != minecraft.player && e.isAlive())) {
             Vec3 at = entity.getPosition(partialTick);
+            boolean hidden = false;
+            for (com.noirm.aburame.InsectSwarm jam : jams) {
+                if (at.distanceToSqr(jam.position()) < jam.shape() * jam.shape()) {
+                    hidden = true;
+                }
+            }
+            if (hidden) {
+                continue;
+            }
             double dx = at.x - me.x;
             double dz = at.z - me.z;
             double forward = dx * -Mth.sin(yaw) + dz * Mth.cos(yaw);

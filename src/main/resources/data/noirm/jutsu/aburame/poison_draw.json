@@ -1,0 +1,17 @@
+{
+  "cast": "channel",
+  "behavior": "poison_draw",
+  "rank": "C",
+  "chakra_cost": 5,
+  "cooldown": 100,
+  "max_duration": 200,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "kikaichu",
+    "mode": "cling"
+  },
+  "params": {
+    "range": 3
+  }
+}

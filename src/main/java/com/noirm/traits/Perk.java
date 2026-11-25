@@ -109,6 +109,8 @@ public enum Perk {
     CREW_RESPECT(Kind.PERCENT, false),
     /** Born with a ninja hound at your side (PerkEvents). */
     HOUND(Kind.FLAG, false),
+    /** The body is a hive: an Aburame insect colony (aburame.ColonyEvents, docs/ABURAME.md). */
+    COLONY(Kind.FLAG, false),
     /** Slow below 30 in a stat (−25% XP), fast from 30 on (+60%) (TrainingSystem.grant). */
     LATE_BLOOMER(Kind.FLAG, false),
     /**

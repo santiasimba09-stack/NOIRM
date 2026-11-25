@@ -278,7 +278,7 @@ public final class Workshop {
     public static JutsuDefinition definition(JutsuDesign d) {
         Stats s = stats(d);
         return new JutsuDefinition(Optional.of(d.nature()), s.cast(), s.behavior(), s.cost(), s.cooldown(), s.minCharge(), s.maxCharge(),
-                60, Optional.empty(), false, s.rank(), s.params(), Optional.empty(), Optional.empty(), false);
+                60, Optional.empty(), false, s.rank(), s.params(), Optional.empty(), Optional.empty(), false, Optional.empty());
     }
 
     /** Never a form: no shape casts with a form's behaviour. */

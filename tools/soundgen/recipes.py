@@ -967,6 +967,62 @@ def genjutsu_drone(rng, v):
 # event id -> (recipe, variants, peak dBFS, loop?)
 # Peaks: hits and impacts loud (about -1 dB, like vanilla's), UI very quiet, ambience low.
 
+
+# ------------------------------------------------------------------ Aburame insects (docs/ABURAME.md)
+
+def _buzz(rng, dur, n, f_lo, f_hi, rasp):
+    """Many tiny wingbeats at once: detuned buzzing tones, each fluttering on its own, through a rasp."""
+    t = t_axis(dur)
+    x = np.zeros_like(t)
+    for _ in range(n):
+        f = rng.uniform(f_lo, f_hi)
+        drift = 1.0 + 0.03 * np.sin(2 * np.pi * rng.uniform(0.2, 0.9) * t + rng.uniform(0, 6.28))
+        ph = np.cumsum(2 * np.pi * f * drift / SR) + rng.uniform(0, 6.28)
+        tone = np.sin(ph) + 0.5 * np.sin(2 * ph) + 0.3 * np.sin(3 * ph)
+        flutter = 0.5 + 0.5 * np.sin(2 * np.pi * rng.uniform(8, 28) * t + rng.uniform(0, 6.28))
+        x += tone * flutter * rng.uniform(0.4, 1.0)
+    x /= max(1.0, np.max(np.abs(x)))
+    hiss = bandpass(white(dur, rng), 2000, 7000) * 0.25
+    return saturate(bandpass(x, f_lo * 0.8, 5000) * rasp, 2.2) + hiss
+
+
+def insect_hum_small(rng, v):
+    """A small swarm: a thin, restless rasping hum that swells in and out (2.5 s)."""
+    dur = 2.5
+    x = _buzz(rng, dur, 40, 260 * vary(rng, 0.05), 420, 1.4)
+    return fade(x * env_swell(dur, 0.5, 1.5), 0.25, 0.6)
+
+
+def insect_hum_large(rng, v):
+    """A big swarm: a deep, thick roar of thousands of wings, with a low body under it."""
+    dur = 3.0
+    x = _buzz(rng, dur, 90, 150 * vary(rng, 0.05), 330, 1.8)
+    body = lowpass(brown(dur, rng), 240) * 0.6
+    return fade((x + body) * env_swell(dur, 0.5, 1.2), 0.3, 0.7)
+
+
+def insect_itch(rng, v):
+    """Something crawling on you: tiny dry scratches."""
+    dur = 0.5
+    x = grains(dur, rng, 70, lambda r: highpass(white(0.004, r), 3000) * r.uniform(0.3, 1.0))
+    return fade(x, 0.01, 0.1)
+
+
+def insect_burst(rng, v):
+    """Insects pour out of a body: a rush of air and a buzzing swell."""
+    dur = 0.9
+    air = whoosh(rng, dur, 400, 3000, peak_at=0.3)
+    buzz = _buzz(rng, dur, 50, 220, 380, 1.5) * env_ad(dur, 0.08, 0.4)
+    return fade(air * 0.6 + buzz * 0.7, 0.005, 0.2)
+
+
+def insect_recall(rng, v):
+    """Swarms coming home: a buzz fading as it sinks back into the body."""
+    dur = 1.0
+    x = _buzz(rng, dur, 50, 240, 400, 1.4)
+    env = np.linspace(1.0, 0.0, len(x)) ** 1.5
+    return fade(lowpass(x * env, 2600), 0.02, 0.2)
+
 SOUNDS = {
     "seal.clap": (seal_clap, 4, -4.0, False),
     "seal.complete": (seal_complete, 3, -3.0, False),
@@ -1030,4 +1086,9 @@ SOUNDS = {
     "ui.mission_complete": (ui_mission_complete, 2, -3.5, False),
     "ambient.village": (ambient_village, 2, -10.0, True),
     "ambient.sanctuary": (ambient_sanctuary, 2, -10.0, True),
+    "insect.hum_small": (insect_hum_small, 3, -6.0, False),
+    "insect.hum_large": (insect_hum_large, 3, -4.0, False),
+    "insect.itch": (insect_itch, 2, -10.0, False),
+    "insect.burst": (insect_burst, 3, -4.0, False),
+    "insect.recall": (insect_recall, 2, -6.0, False),
 }

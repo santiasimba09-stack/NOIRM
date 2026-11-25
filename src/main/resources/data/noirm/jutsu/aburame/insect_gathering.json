@@ -1,0 +1,16 @@
+{
+  "cast": "tap",
+  "behavior": "insect_gathering",
+  "rank": "D",
+  "chakra_cost": 3,
+  "cooldown": 400,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "none",
+    "mode": "cling"
+  },
+  "params": {
+    "range": 16
+  }
+}

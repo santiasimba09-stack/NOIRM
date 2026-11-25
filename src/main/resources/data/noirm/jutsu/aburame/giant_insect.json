@@ -1,0 +1,13 @@
+{
+  "cast": "tap",
+  "behavior": "giant_insect",
+  "rank": "A",
+  "chakra_cost": 30,
+  "cooldown": 600,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 5,
+    "species": "none",
+    "mode": "cling"
+  }
+}

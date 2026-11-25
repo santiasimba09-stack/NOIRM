@@ -97,6 +97,13 @@ public final class ShinobiData {
         return hound;
     }
 
+    /** Your insect colony, if you're an Aburame (docs/ABURAME.md). */
+    private final com.noirm.aburame.ColonyData colony = new com.noirm.aburame.ColonyData();
+
+    public com.noirm.aburame.ColonyData colony() {
+        return colony;
+    }
+
     public ClanIdentity identity() {
         return identity;
     }
@@ -430,6 +437,7 @@ public final class ShinobiData {
         tag.put("Styles", styles.save());
         tag.put("Talents", talents.save());
         tag.put("Hound", hound.save());
+        tag.put("Colony", colony.save());
         return tag;
     }
 
@@ -466,6 +474,7 @@ public final class ShinobiData {
         styles.load(tag.getCompound("Styles"));
         talents.load(tag.getCompound("Talents"));
         hound.load(tag.getCompound("Hound"));
+        colony.load(tag.getCompound("Colony"));
         staminaRegenDelay = 0;
         dirty = true;
         powersDirty = true;

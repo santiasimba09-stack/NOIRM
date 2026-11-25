@@ -27,6 +27,7 @@ public final class Noirm {
         NoirmBlocks.register(modBus);
         NoirmEntities.register(modBus);
         com.noirm.hound.HoundRegistry.register(modBus); // the ninja hound and its items (docs/INUZUKA.md)
+        com.noirm.aburame.AburameRegistry.register(modBus); // the Aburame: swarms, hives, jars, wild insects (docs/ABURAME.md)
         NoirmItems.register(modBus);
         com.noirm.gear.NoirmGear.register(modBus);
         com.noirm.weapon.NinjaWeapons.register(modBus);

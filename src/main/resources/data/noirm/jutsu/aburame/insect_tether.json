@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_tether",
+  "rank": "D",
+  "chakra_cost": 2,
+  "cooldown": 30,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 3,
+    "species": "kikaichu",
+    "mode": "tether",
+    "insects": 400
+  },
+  "params": {
+    "range": 20
+  }
+}

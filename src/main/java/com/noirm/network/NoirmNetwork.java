@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "37";
+    private static final String PROTOCOL_VERSION = "38";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -139,6 +139,10 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(com.noirm.hound.HoundPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.noirm.hound.HoundPackets.Command::encode).decoder(com.noirm.hound.HoundPackets.Command::decode)
                 .consumerMainThread(com.noirm.hound.HoundPackets.Command::handle).add();
+        // The Aburame Swarm key and colony screens' orders (protocol 36; the colony's view rides on SyncPowers).
+        CHANNEL.messageBuilder(com.noirm.aburame.ColonyPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.noirm.aburame.ColonyPackets.Command::encode).decoder(com.noirm.aburame.ColonyPackets.Command::decode)
+                .consumerMainThread(com.noirm.aburame.ColonyPackets.Command::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */
