@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "bug_bite",
+  "rank": "A",
+  "chakra_cost": 15,
+  "cooldown": 400,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 4,
+    "species": "kidaichu",
+    "mode": "cling",
+    "insects": 300
+  },
+  "params": {
+    "range": 3
+  }
+}

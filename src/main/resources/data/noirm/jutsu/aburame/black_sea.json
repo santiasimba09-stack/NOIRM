@@ -1,0 +1,14 @@
+{
+  "cast": "tap",
+  "behavior": "black_sea",
+  "rank": "S",
+  "chakra_cost": 40,
+  "cooldown": 2400,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 6,
+    "species": "none",
+    "mode": "sea",
+    "drain": 2.0
+  }
+}

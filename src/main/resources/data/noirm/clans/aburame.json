@@ -7,17 +7,20 @@
   },
   "awakening": "will",
   "perks": {
-    "poison_immunity": 1,
+    "colony": 1,
     "dot_resist": 0.6,
-    "sensor": 32,
-    "chakra_leech": 8,
+    "sensor": 16,
+    "chakra_leech": 4,
     "start_control": 3,
     "chakra_pool": 0.3,
-    "fire_weakness": 0.6,
-    "xp_speed": -0.2
+    "fire_weakness": 0.3,
+    "xp_speed": -0.2,
+    "xp_taijutsu": -0.15,
+    "genjutsu_resist": 0.4
   },
   "clan_jutsu": [
-    "noirm:clan/parasitic_swarm"
+    "noirm:aburame/parasitic_swarm",
+    "noirm:aburame/female_insect"
   ],
   "look": {
     "hair": [

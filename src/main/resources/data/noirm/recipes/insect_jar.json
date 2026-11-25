@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "C": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "result": {
+    "item": "noirm:insect_jar",
+    "count": 1
+  }
+}

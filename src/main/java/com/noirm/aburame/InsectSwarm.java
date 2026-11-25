@@ -460,7 +460,8 @@ public class InsectSwarm extends Entity {
         Vec3 here = position().add(0, getBbHeight() / 2, 0);
         Vec3 delta = to.subtract(here);
         double step = speed * speedMul * (level().isRaining() && level().canSeeSky(blockPosition()) ? ColonyGrowth.RAIN_SLOW : 1f) / 20.0;
-        if (owner() instanceof LivingEntity o && Colony.of(o) != null && Colony.of(o).restless() && mode() == SwarmMode.RETURN) {
+        LivingEntity o = owner();
+        if (o != null && Colony.of(o) != null && Colony.of(o).restless() && mode() == SwarmMode.RETURN) {
             step *= 0.6; // a starving colony comes back slower
         }
         if (delta.length() <= Math.max(step, 0.6)) {

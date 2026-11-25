@@ -62,7 +62,7 @@ public final class RotTouch {
 
     /** Adds {@code n} stacks of Cell Rot (hosts are immune). */
     public static void infect(LivingEntity e, int n) {
-        if (!e.isAlive() || host(e) || n <= 0 || e instanceof InsectSwarm) {
+        if (!e.isAlive() || host(e) || n <= 0) {
             return;
         }
         int s = Math.min(MAX_STACKS, stacks(e) + n);
@@ -116,7 +116,7 @@ public final class RotTouch {
             level.sendParticles(SwarmFx.PURPLE, e.getX(), e.getY() + e.getBbHeight() * 0.6, e.getZ(), 2 + s, 0.25, 0.3, 0.25, 0.01);
             if (e.tickCount % 40 < 20) {
                 for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, e.getBoundingBox().inflate(SPREAD_RANGE),
-                        o -> o != e && o.isAlive() && !(o instanceof InsectSwarm))) {
+                        o -> o != e && o.isAlive())) {
                     infect(other, 1); // it spreads by touch, through clothes
                 }
             }

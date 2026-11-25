@@ -293,7 +293,7 @@ public final class ClanPerkGameTests {
         ShinobiData nara = data(member(helper, canon("nara")));
         helper.assertTrue(Perks.statXpMultiplier(nara, "taijutsu", 20) <= 0.6f, "the Nara don't like hard work");
         ShinobiData aburame = data(member(helper, canon("aburame")));
-        near(helper, 0.6f, Perks.get(aburame, Perk.FIRE_WEAKNESS), "fire burns the Aburame's insects");
+        near(helper, 0.3f, Perks.get(aburame, Perk.FIRE_WEAKNESS), "the colony carries most of the fire weakness now (docs/ABURAME.md 2.7)");
         helper.succeed();
     }
 
@@ -371,7 +371,7 @@ public final class ClanPerkGameTests {
         SparringNinja aburame = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 0.5f, 2f, 0.5f);
         aburame.joinClan(canon("aburame"));
         aburame.addEffect(new MobEffectInstance(MobEffects.POISON, 100));
-        helper.assertFalse(aburame.hasEffect(MobEffects.POISON), "the Aburame's insects eat poison");
+        helper.assertTrue(aburame.hasEffect(MobEffects.POISON), "poison immunity is earned by breeding now, not inborn (owner decision)");
         hozuki.discard();
         aburame.discard();
         helper.succeed();

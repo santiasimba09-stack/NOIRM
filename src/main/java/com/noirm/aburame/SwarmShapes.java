@@ -122,7 +122,7 @@ final class SwarmShapes {
             if (e instanceof SparringNinja ninja) {
                 ninjas++;
                 classes.merge(NinjaClass.of(ninja), 1, Integer::sum);
-                ninja.natures().keySet().forEach(n -> natures.add(n.displayName()));
+                ninja.natures().keySet().forEach(n -> natures.add(net.minecraft.network.chat.Component.translatable(n.translationKey()).getString()));
                 if (ninja.tails() > 0) {
                     beasts++;
                 }

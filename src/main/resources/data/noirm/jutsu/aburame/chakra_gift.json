@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "chakra_gift",
+  "rank": "B",
+  "chakra_cost": 0,
+  "cooldown": 300,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 4,
+    "species": "none",
+    "mode": "cling",
+    "insects": 1000
+  },
+  "params": {
+    "range": 6
+  }
+}

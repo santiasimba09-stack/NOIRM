@@ -764,5 +764,43 @@
         "stream": true
       }
     ]
+  },
+  "insect.hum_small": {
+    "subtitle": "subtitles.noirm.insect.hum_small",
+    "sounds": [
+      "noirm:insect/hum_small_1",
+      "noirm:insect/hum_small_2",
+      "noirm:insect/hum_small_3"
+    ]
+  },
+  "insect.hum_large": {
+    "subtitle": "subtitles.noirm.insect.hum_large",
+    "sounds": [
+      "noirm:insect/hum_large_1",
+      "noirm:insect/hum_large_2",
+      "noirm:insect/hum_large_3"
+    ]
+  },
+  "insect.itch": {
+    "subtitle": "subtitles.noirm.insect.itch",
+    "sounds": [
+      "noirm:insect/itch_1",
+      "noirm:insect/itch_2"
+    ]
+  },
+  "insect.burst": {
+    "subtitle": "subtitles.noirm.insect.burst",
+    "sounds": [
+      "noirm:insect/burst_1",
+      "noirm:insect/burst_2",
+      "noirm:insect/burst_3"
+    ]
+  },
+  "insect.recall": {
+    "subtitle": "subtitles.noirm.insect.recall",
+    "sounds": [
+      "noirm:insect/recall_1",
+      "noirm:insect/recall_2"
+    ]
   }
 }
