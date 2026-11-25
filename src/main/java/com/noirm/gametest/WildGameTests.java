@@ -116,6 +116,7 @@ public final class WildGameTests {
                     }
                     if ("rogue".equals(type.outfit())) {
                         helper.assertTrue(wearsChest(n, NoirmGear.ROGUE_CLOAK.get(), NoirmGear.TRAVEL_CLOAK.get(), NoirmGear.TATTERED_CLOAK.get(),
+                                NoirmGear.CLOUD_CLOAK.get(), NoirmGear.HOODED_CLOAK.get(),
                                 NoirmGear.ASSASSIN_SUIT.get(), NoirmGear.BANDOLIER.get()), name + ": rogues wear a cloak (or dress as assassins)");
                     }
                 }

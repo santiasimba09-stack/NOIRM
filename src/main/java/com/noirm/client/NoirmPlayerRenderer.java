@@ -35,6 +35,7 @@ public class NoirmPlayerRenderer extends PlayerRenderer {
         addLayer(new WeaponTrails.Layer<>(this)); // blade arcs through the air
         addLayer(new GoreMarksLayer<>(this)); // bruises, dirt, soot, cuts and blood
         addLayer(new GoreArmorLayer<>(this)); // and on worn clothes
+        addLayer(new DrapeLayer<>(this)); // capes, robe skirts, collars, hoods, hats in 3D (gear/Drapes)
         addLayer(new EyeDecalLayer<>(this)); // the high-detail eyes
         addLayer(new HairLayer<>(this)); // 3D hair from the look
         addLayer(new SageLayer<>(this)); // sage marks and eyes, the stone skin of petrification

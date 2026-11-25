@@ -36,6 +36,8 @@ public final class GearPerks {
     public static final float HEAVY_SLOW = 0.03f;
     /** Assassin's black: how far monsters can notice you, multiplied once per piece worn (two pieces: ×0.49). */
     public static final double SHADOW_VISIBILITY = 0.7;
+    /** A mask or hood over the face (not pushed aside): how far anyone notices you (×0.85). */
+    public static final double MASK_VISIBILITY = 0.85;
     /** The medic coat heals this much (half a heart)… */
     public static final float MEND_HEAL = 1f;
     /** …every this many ticks (8 s), while you're hurt. */
@@ -46,11 +48,17 @@ public final class GearPerks {
 
     private GearPerks() {}
 
-    /** Is {@code entity} wearing a piece with this perk? */
+    /** Is {@code entity} wearing a piece with this perk (a cape sewn onto the chest piece counts)? */
     public static boolean wears(LivingEntity entity, GearPerk perk) {
         for (EquipmentSlot slot : ARMOR) {
             ItemStack stack = entity.getItemBySlot(slot);
             if (stack.getItem() instanceof GearItem gear && gear.perk() == perk) {
+                if (perk == GearPerk.HIDE_NAME && MaskItem.isAside(stack)) {
+                    continue; // a mask pushed aside shows the face
+                }
+                return true;
+            }
+            if (slot == EquipmentSlot.CHEST && stack.hasTag() && Drapes.sewnCape(stack).getItem() instanceof GearItem cape && cape.perk() == perk) {
                 return true;
             }
         }
@@ -83,7 +91,7 @@ public final class GearPerks {
         return true;
     }
 
-    /** True if a mask hides this entity's name tag. */
+    /** True if a mask or hood hides this entity's face (and name tag); a mask pushed aside doesn't. */
     public static boolean hidesName(Entity entity) {
         return entity instanceof LivingEntity living && wears(living, GearPerk.HIDE_NAME);
     }
@@ -123,6 +131,9 @@ public final class GearPerks {
     @SubscribeEvent
     public static void visibility(LivingEvent.LivingVisibilityEvent event) {
         double f = shadowFactor(event.getEntity());
+        if (hidesName(event.getEntity())) {
+            f *= MASK_VISIBILITY; // a masked face is harder to pick out
+        }
         if (f < 1) {
             event.modifyVisibility(f);
         }
