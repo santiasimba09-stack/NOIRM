@@ -788,17 +788,17 @@ def part_scar_more(name):
         paint(p, "body", fn, light=False)
     elif name == "shoulder":
         def fn(f):
-            if f.name not in ("front", "right"):
+            if f.name not in ("front", "left"):
                 return None
-            pts = [(0.4, 0.8), (1.8, 2.0), (3.4, 2.4)]
-            return scar_rgb(f, stroke(f, pts, 0.3, 0.12), pts, [(1.2, 1.1, 1.0, 1.8), (2.4, 1.9, 2.3, 2.6)])
+            pts = [(0.3, 1.0), (1.9, 2.4), (3.7, 3.0)]
+            return scar_rgb(f, stroke(f, pts, 0.42, 0.18), pts, [(1.1, 1.4, 0.9, 2.2), (2.6, 2.3, 2.5, 3.1)])
         paint(p, "larm", fn, light=False)
     elif name == "belly":
         def fn(f):
             if f.name != "front":
                 return None
-            pts = [(2.6, 8.6), (4.6, 8.9), (6.2, 8.4)]
-            st = [(3.2, 8.4, 3.3, 9.1), (4.2, 8.55, 4.3, 9.25), (5.3, 8.4, 5.4, 9.1)]
+            pts = [(2.4, 7.0), (4.5, 7.4), (6.3, 6.9)]
+            st = [(3.1, 6.8, 3.2, 7.6), (4.2, 7.0, 4.3, 7.8), (5.4, 6.8, 5.5, 7.6)]
             return scar_rgb(f, stroke(f, pts, 0.34, 0.16), pts, st)
         paint(p, "body", fn, light=False)
     return p
