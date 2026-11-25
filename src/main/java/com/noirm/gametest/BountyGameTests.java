@@ -273,7 +273,7 @@ public final class BountyGameTests {
             Ryo.set(player, 0);
             SparringNinja n = BingoEvents.spawn(level, book, e, area);
             helper.assertTrue(n != null, "the rogue is here");
-            n.hurt(n.damageSources().playerAttack(player), 100000f);
+            TestHits.land(n, n.damageSources().playerAttack(player), 100000f);
             helper.assertFalse(n.isAlive(), "the rogue falls");
             helper.assertTrue(!e.active() && e.claimedBy.equals(player.getName().getString()), "the page is crossed out with who did it");
             helper.assertTrue(Ryo.balance(player) == e.bounty, "the bounty is paid: " + Ryo.balance(player) + " / " + e.bounty);
@@ -384,7 +384,7 @@ public final class BountyGameTests {
             Player player = helper.makeMockPlayer();
             SparringNinja n = BingoEvents.spawn(level, book, e, area);
             CompoundTag saved = n.saveWithoutId(new CompoundTag());
-            n.hurt(n.damageSources().playerAttack(player), 1000000f);
+            TestHits.land(n, n.damageSources().playerAttack(player), 1000000f); // a smoke body may dodge the first blow
             helper.assertTrue(!n.isAlive() && !e.active(), "the legend falls, the page is claimed");
             helper.assertTrue(BingoEvents.checkNear(level, book, area) == 0 && BingoEvents.spawn(level, book, e, area) == null, "never brought back");
             book.refresh(level, RandomSource.create(8));

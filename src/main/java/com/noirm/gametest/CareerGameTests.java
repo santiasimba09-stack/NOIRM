@@ -96,7 +96,7 @@ public final class CareerGameTests {
     private static void beat(List<SparringNinja> foes, Player by) {
         for (SparringNinja n : foes) {
             n.invulnerableTime = 0;
-            n.hurt(by == null ? n.damageSources().generic() : n.damageSources().playerAttack(by), 100000f);
+            TestHits.land(n, by == null ? n.damageSources().generic() : n.damageSources().playerAttack(by), 100000f);
             if (n.isAlive()) {
                 n.kill();
             }
@@ -515,7 +515,7 @@ public final class CareerGameTests {
         helper.assertTrue(examiner != null && examiner.getTags().contains(Exams.EXAMINER_TAG), "a chūnin examiner steps up");
         helper.assertTrue(Missions.accept(player, Noirm.id("d_errand"), board) != null, "no missions during an exam");
         examiner.invulnerableTime = 0;
-        examiner.hurt(examiner.damageSources().playerAttack(player), 100000f);
+        TestHits.land(examiner, examiner.damageSources().playerAttack(player), 100000f);
         helper.assertTrue(PlayerRank.of(player) == PlayerRank.GENIN, "worn down: you're a genin");
         helper.assertTrue(player.getInventory().items.stream().anyMatch(s -> s.is(NoirmGear.FOREHEAD_PROTECTOR_NAVY.get())), "with a forehead protector");
         helper.assertTrue(career(player).exam() == null, "the exam is over");
@@ -549,8 +549,7 @@ public final class CareerGameTests {
             opponent.invulnerableTime = 0;
             opponent.hurt(opponent.damageSources().generic(), 100000f);
             helper.assertTrue(opponent.isAlive(), "only your blows count");
-            opponent.invulnerableTime = 0;
-            opponent.hurt(opponent.damageSources().playerAttack(player), 100000f);
+            TestHits.land(opponent, opponent.damageSources().playerAttack(player), 100000f);
         }
         helper.assertTrue(PlayerRank.of(player) == PlayerRank.CHUNIN, "won the tournament: chūnin");
         cleanup(helper, 12);
@@ -587,7 +586,7 @@ public final class CareerGameTests {
         SparringNinja jonin = (SparringNinja) helper.getLevel().getEntity(exam.examiner);
         helper.assertTrue(jonin.tails() == 0 && jonin.tailsSettled(), "the jōnin examiner holds no beast");
         jonin.invulnerableTime = 0;
-        jonin.hurt(jonin.damageSources().playerAttack(player), 100000f);
+        TestHits.land(jonin, jonin.damageSources().playerAttack(player), 100000f);
         helper.assertTrue(PlayerRank.of(player) == PlayerRank.JONIN, "jōnin");
         // ANBU comes by invitation: points and three A-rank missions.
         career(player).setPoints(1000);
