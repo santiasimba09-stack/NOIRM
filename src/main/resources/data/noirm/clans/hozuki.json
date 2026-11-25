@@ -9,7 +9,7 @@
   "awakening": "will",
   "perks": {
     "water_dodge": 0.75,
-    "chakra_pool": 0.5,
+    "chakra_pool": 1.0,
     "dot_resist": 0.3,
     "xp_speed": 0.2,
     "max_health": -4

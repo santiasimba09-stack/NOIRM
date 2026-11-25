@@ -8,7 +8,7 @@
   "awakening": "will",
   "perks": {
     "genjutsu_resist": 0.3,
-    "start_willpower": 6,
+    "start_willpower": 7,
     "xp_willpower": 0.4,
     "jutsu_cost": -0.1,
     "crew_respect": -0.4

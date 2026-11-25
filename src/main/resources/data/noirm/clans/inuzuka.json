@@ -10,9 +10,9 @@
   "awakening": "will",
   "perks": {
     "sensor": 40,
-    "start_speed": 4,
+    "start_speed": 5,
     "xp_speed": 0.5,
-    "melee_damage": 0.2,
+    "melee_damage": 0.25,
     "perception": 0.1,
     "hound": 1,
     "start_control": -3,

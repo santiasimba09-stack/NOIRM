@@ -9,15 +9,16 @@
   "kekkei_genkai": "shikotsumyaku",
   "awakening": "will",
   "perks": {
-    "start_durability": 10,
-    "max_health": 8,
-    "damage_taken": -0.15,
-    "melee_damage": 0.25,
-    "xp_durability": 0.6,
-    "posture": 40,
+    "start_durability": 15,
+    "max_health": 12,
+    "damage_taken": -0.25,
+    "melee_damage": 0.4,
+    "xp_durability": 1.0,
+    "posture": 60,
     "dot_resist": -0.5,
     "health_regen": -0.05,
-    "jutsu_power": -0.2
+    "jutsu_power": -0.2,
+    "xp_taijutsu": 0.5
   },
   "clan_jutsu": [
     "noirm:clan/finger_bone_bullets"

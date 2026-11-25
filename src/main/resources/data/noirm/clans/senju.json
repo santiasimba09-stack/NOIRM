@@ -14,20 +14,20 @@
   "taijutsu_bonus": 1,
   "awakening": "nature_surge",
   "perks": {
-    "chakra_pool": 3.0,
+    "chakra_pool": 39.0,
     "chakra_regen": 1.0,
-    "max_health": 14,
-    "health_regen": 0.4,
-    "max_stamina": 100,
-    "stamina_regen": 0.6,
-    "start_vitality": 6,
-    "xp_vitality": 0.5,
-    "medical_power": 0.5,
+    "max_health": 20,
+    "health_regen": 0.6,
+    "max_stamina": 150,
+    "stamina_regen": 1.0,
+    "start_vitality": 8,
+    "xp_vitality": 0.8,
+    "medical_power": 0.8,
     "combo_affinity": 0.5,
-    "beast_bond": 0.3,
-    "rough_control": 0.25,
-    "start_control": -3,
-    "chakra_beacon": 0.4
+    "beast_bond": 0.5,
+    "chakra_beacon": 0.5,
+    "nature_xp": 1.0,
+    "mastery": 0.3
   },
   "look": {
     "hair": [
