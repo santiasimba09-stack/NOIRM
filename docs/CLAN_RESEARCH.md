@@ -35,6 +35,28 @@ summaries paraphrase them. A few facts come from the researcher's own knowledge 
 
 ---
 
+## Second pass: the bold reading (owner, 2026-11-25)
+
+The owner asked for the **generous, maximal** reading of every clan: high-end feats, what others say
+about the clan, rumours inside the story, implications, author comments, and what the names mean.
+That reading is the design fuel for the **"Part II: Bold reading"** at the end of this file. It has one
+section per clan, each with an **ultimate form**: how to unlock it, what it costs, and a huge payoff.
+Extra tags for that part:
+
+| Tag | Meaning |
+|---|---|
+| `[canon statement]` | Said or shown in a source (chapter, databook, episode) |
+| `[implication]` | Not said outright, but follows from canon facts |
+| `[name meaning]` | What the clan's name or kanji means, used as a theme |
+| `[our interpretation]` | A bold reading or invention of ours |
+
+**The rules of the bold pass.** Canon costs stay: blindness, illness, the Gates, madness, being
+hunted. Payoffs become world-scale at the top: terrain-changing ultimates, ×100 pools, cheating death,
+armies, beasts. Ultimates sit behind the hardest gates in the game (rare triggers, endgame relics,
+bosses) and carry permanent prices, so nobody gets them by accident.
+
+---
+
 ## Summary table
 
 Tiers: **S** = world-changing (canon "god-tier" bloodlines). **A** = can win a fight alone against
@@ -45,8 +67,8 @@ through weaker power (see section "Power tiers and balance" at the end).
 | Clan | Tier | Kekkei genkai / hiden | Signature game changers (proposed) | Canon costs → NOIRM costs | Unlock |
 |---|---|---|---|---|---|
 | **Uchiha** | S | Sharingan → Mangekyō → Eternal → (Rinnegan with Senju cells); Susanoo; Fire | Existing eye path, plus: fire coming-of-age rite, Izanagi/Izanami as eye-sacrificing kinjutsu, Curse of Hatred meter, tailed-beast control, Naka Shrine tablet, Rinnegan endgame | Blindness, eye loss per kinjutsu, Susanoo cell pain, hatred spiral, eye hunters, village distrust | Very hard (trauma triggers, transplants, Senju cells) |
-| **Senju** | S | Wood Release (very rare), immense life force; medical, Sage Mode affinity | Wood that builds houses, forests and bridges; tame and command tailed beasts; Strength of a Hundred seal + Creation Rebirth; seal-less healing; instant Sage Mode | Wood is near-unique (1 roll in 10); Creation Rebirth burns lifespan; cells kill most outsiders | Very hard (Wood trial, seal charging takes days) |
-| **Uzumaki** | S | Life force, longevity, fūinjutsu, Adamantine Chains (some members), healing bite (Karin), Mind's Eye of the Kagura (rare) | Chains that bind, wall off an area and pin tailed beasts; sealing jars; a jinchūriki who never loses control; heal an ally by letting them bite you; surviving killing blows | Hunted ("too dangerous to live", their village was razed), rough control, loud chakra, bite drain once per day | Hard (chains awaken in crisis; barrier needs sealing mastery) |
+| **Senju** | S | Wood Release (very rare), immense life force; medical, Sage Mode affinity | **Master of all things**: every nature at 1.0, invent jutsu (Part II); Wood that builds houses, forests and bridges; tame and command tailed beasts; Strength of a Hundred seal + Creation Rebirth; seal-less healing; instant Sage Mode | Wood is near-unique (1 roll in 10); Creation Rebirth burns lifespan; cells kill most outsiders | Very hard (Wood trial, seal charging takes days) |
+| **Uzumaki** | S | Life force, longevity, fūinjutsu, Adamantine Chains (some members), healing bite (Karin), Mind's Eye of the Kagura (rare) | Own pool **unsealed in 7 stages, ×10 → ×100** (Part II); Chains that bind, wall off an area and pin tailed beasts; sealing jars; a jinchūriki who never loses control; heal an ally by letting them bite you; surviving killing blows | Hunted ("too dangerous to live", their village was razed), rough control, loud chakra, bite drain once per day | Hard (chains awaken in crisis; barrier needs sealing mastery) |
 | **Kaguya** | S | Shikotsumyaku (rare in the clan) | A body that is an armoury: five clan "dances" (blade, spikes, whip, drill, bone forest), steel-hard bones, fortress body | Terminal illness that grows with use, bloodlust that won't retreat, only 1 member in 3 carries it | Hard (find the five dance scrolls) |
 | **Hyūga** | A+ | Byakugan, Gentle Fist (Eight Trigrams), Caged Bird Seal | Huge sight range that grows (40 → 160 blocks), the neck blind spot, tenketsu sniping, main vs branch house, Rotation reinvention, late Tenseigan quest | Blind spot, weak at range, branch seal (main house can punish, eyes sealed on death), eye thieves | Medium (born with the eye; range and Rotation are trained) |
 | **Might** (Lee line merged) | A | Eight Gates (taught, not inherited), taijutsu | Gate-by-gate unlock trials; leg weights; Night Guy as one 30 s god-mode that kills or cripples | Body tears at gates 4–7, gate 8 kills; no ninjutsu or genjutsu | Hard (gates need a master and pain trials) |
@@ -186,9 +208,10 @@ dropped them, so Hashirama, Tobirama, Madara, Kushina, Mito, Nagato and most Par
   recover from wounds and exhaustion far faster than others, enough to survive having a tailed beast
   pulled out, which kills anyone else (Kushina, ch. 501 p11).
 - **Red hair** is the standard mark of the blood (ch. 510 p17; *Naruto Quiz Book* p227).
-- **Chakra quantity.** As a child Naruto had at least **4×** the chakra of a seasoned jōnin like
-  Kakashi (ch. 315 p11). (Note for the doc owner: the "100×" in `CLANS.md`'s follow-up is fan
-  shorthand; the canon line is 4×, before counting the Nine-Tails.)
+- **Chakra quantity (owner's reading, adopted).** Naruto's **own** reserves are about **100×**
+  Kakashi's. The **4×** line (ch. 315 p11) is the figure measured while the Nine-Tails' seal was still
+  holding his chakra down and tangling it with the fox's. See "Bold reading: Uzumaki" for the
+  evidence and for how the design unseals it in stages.
 - **Chakra quality.** Kushina and Mito had an especially strong, special chakra that made them ideal
   jinchūriki (ch. 498 pp6–7; ch. 500 p4). Kushina bound the Nine-Tails inside her mind with her chains,
   so she **never once lost control** of it (ch. 501). Naruto's chakra is naturally compatible with the
@@ -1362,8 +1385,10 @@ Two more rules keep the S tier fun instead of mandatory:
    patrol, Hyūga branch defers to main, Jūgo frenzies, Root hunts eyes.
 
 ## Corrections to the current docs (found during this research)
-- `CLANS.md` follow-up quotes "Naruto has 100× Kakashi's chakra": canon says **4×** (ch. 315 p11). The
-  ×10 pool is still a fine game choice, but call it ours.
+- **100× (owner's ruling, adopted).** Naruto's own chakra is about 100× Kakashi's. The ch. 315 "4×"
+  is the **sealed** figure, held down by the Nine-Tails' seal. The design follows the 100× reading:
+  Uzumaki start at ×10 and unseal toward ×100 (see "Bold reading: Uzumaki"). The first pass called
+  100× an error; that is withdrawn.
 - `CLANS.md` research table: Chinoike as "Kagura's line" is wrong; the survivor is **Chino**
   (*Sasuke Retsuden*), and the Chinoike are from a novel and its anime adaptation, not filler.
 - Yotsuki as "Raikage line (A, Killer B)" is **fanon**; only Kiyoi is a named Yotsuki.
@@ -1383,3 +1408,479 @@ Two more rules keep the S tier fun instead of mandatory:
   Shirogane "Power" arc) are from memory plus the articles; check before quoting in game text.
 - Fourth-databook stat tables don't exist, so no official 1–5 numbers for Hashirama, Madara, Kushina,
   Mito, Nagato, Tobirama, Jūgo, Suigetsu, Karin.
+
+---
+---
+
+# Part II: Bold reading (second pass)
+
+Each clan below gets: **the maximal reading** (tagged), **bold mechanics** on top of Part I, and an
+**ultimate form** (unlock, payoff, cost). Numbers are starting points for tuning. "Pool ×N" always
+means "N times a normal shinobi's chakra at the same Reserves".
+
+---
+
+## Bold reading: Uzumaki · the maelstrom that never stops
+
+**The maximal reading**
+- **About 100× Kakashi's chakra, held down by a seal.** `[owner's ruling; our interpretation of canon]`
+  The ch. 315 "4×" was measured while the Four Symbols Seal was still holding Naruto's chakra down and
+  slowly mixing the fox's into it. Supporting canon: the seal fed the fox's chakra into his over the
+  years `[implication]`; an extra seal (Orochimaru's Five Elements Seal) wrecked his chakra control
+  until Jiraiya removed it (ch. 90–91 `[unverified page]`); his chakra became compatible with
+  Kurama's (ch. 617 p5). Later he gave the whole Allied army a share of his and Kurama's chakra, which
+  Hashirama said almost matched his own reserves (ch. 644).
+- **渦巻 "whirlpool / maelstrom"** `[name meaning]`: something that pulls everything in and never runs
+  down. Their seals are spirals. Their crest is on **every Konoha flak jacket** (DB4) `[canon
+  statement]`, so the whole village literally wears the Uzumaki seal `[our interpretation: Konoha
+  stands on Uzumaki sealing]`.
+- **"Too powerful to be allowed to exist"**: why Uzushio was razed (DB4 p36) `[canon statement]`.
+  Three great nations had to unite to kill one small clan `[implication]`.
+- **Life force that outlasts death:** they survive having a tailed beast ripped out (ch. 501)
+  `[canon]`. Nagato used the Rinnegan, the strongest eye, with no drawback as a child, and brought a
+  village's dead back to life (ch. 448–449) `[canon, unverified page]`. Karin's chakra **is medicine**,
+  enough to refill a Hokage (ch. 635) `[canon]`.
+- **Chakra that cages gods:** Kushina's chains held the Nine-Tails, and her chakra alone kept it from
+  ever taking her over (ch. 501, 503) `[canon]`. Mito's forehead diamond looks like a Strength of a
+  Hundred seal `[implication]`.
+- **Asura's heirs:** Naruto is Asura's reincarnation, and Six Paths power came to him (ch. 671–672)
+  `[canon]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **The Seven Seals of the Maelstrom.** Every Uzumaki is born with their own pool **sealed**. Pool
+   ×10 at birth (current). Each broken seal raises it, and the 7th gives **×100**:
+   | Seal broken | Trial | Pool | Regen |
+   |---|---|---|---|
+   | 1 | hit 0 chakra in a real fight and keep fighting for 30 s | ×15 | ×3 |
+   | 2 | 100 shadow clones out at once | ×20 | ×4 |
+   | 3 | chain ladder stage 3 (Chain Barrier) | ×30 | ×5 |
+   | 4 | survive a killing blow through Whirlpool Tenacity 10 times | ×45 | ×6 |
+   | 5 | seal a tailed beast (into anyone) | ×60 | ×7 |
+   | 6 | meditate 10 minutes at the Uzushio whirlpool shrine | ×80 | ×8 |
+   | 7 **Maelstrom Unbound** | defeat a jinchūriki, a Mangekyō Uchiha **and** a Wood user (any order) | **×100** | **×10** |
+   Each seal broken adds +10% loud chakra and +heat, and rough control returns (−5 CTL per seal,
+   trained away again). The pool never makes single jutsu stronger, so ×100 is endless *quantity*:
+   thousands of clones and Rasengan spam, as in canon.
+2. **A body that refuses to die.** Chakra at 0 never knocks an Uzumaki out. Whirlpool Tenacity
+   (Part I) gains a second layer: when you would die anyway, **refuse it**: 5 s collapsed, then you rise
+   with 30% health. Chance = 20% + 1% per Vitality point above 10 (max 50%), once per in-game day.
+3. **Shadow Clone legions.** Uzumaki clones cost 1/20 of the pool each (others: a fixed 30). With ×100
+   that means **hundreds** of clones (NPC cap 64 active; the rest "wait in the smoke"). Clones that
+   dispel give their XP back (canon training trick): training ×(clones/10), capped ×5.
+4. **The village wears our seal.** In a village whose flak jackets carry the swirl (Konoha-type), an
+   Uzumaki can **link the village barrier**: see everything that crosses it, and lock its gates for 60 s
+   once per day.
+5. **Seal anything.** Sealing Jars become **Sealing Scrolls of Everything**: seal a whole 9×9×9
+   structure into a scroll and unseal it elsewhere (portable houses, captured shrines), a weather
+   effect (carry a storm), or a boss below 10% health (bosses fight back: 30 s seal duel).
+6. **Living medicine.** Healing Bite works on the dying: an ally who "dies" next to you can be bitten
+   within 5 s and stands up at 30% health (counts as your daily bite, and costs you 3 max health for the day).
+
+**Ultimate form: Asura's Heir** `[our interpretation]`
+- **Unlock:** Maelstrom Unbound (seal 7) + a tailed beast sealed in you at full bond + chain stage 5.
+- **Payoff (90 s):** a golden chakra cloak; **share chakra with every ally within 64 blocks** (each
+  gets your cloak's buffs and a full pool, as Naruto did for the army); **Yang Healing** that revives
+  any downed ally and regrows lost max health (Naruto saved Guy and gave Kakashi an eye); a **beast
+  avatar** (a 15-block chakra beast you fight inside); Tailed Beast Balls cost nothing.
+- **Cost:** afterwards the beast is exhausted (no cloak for one in-game day), heat ×2 for 3 days, and
+  every hunter faction in the world learns where you are.
+- **Second ultimate (with a Rinnegan only): Samsara of Heavenly Life.** Bring back every crew mate and
+  village NPC who died in the last 10 minutes within 64 blocks. **Cost:** a normal shinobi dies; an
+  Uzumaki lives, but at **half max health for good** (Nagato's withered body) and with seal 7 re-locked.
+
+---
+
+## Bold reading: Senju · the clan of a thousand skills
+
+**The maximal reading**
+- **千手 "a thousand hands"** `[name meaning]` → Hashirama's thousand-armed statue (ch. 626) `[canon]`.
+  Also **"the clan with a thousand skills"**, masters of ninjutsu, taijutsu and genjutsu alike (DB3)
+  `[canon statement]`. **The strongest clan of the Warring States** (DB3 p338) `[canon]`.
+- **Wood = chakra turned into life** (DB3 p307) `[canon]` → the Senju are life force made flesh `[our
+  interpretation]`. Hashirama raised a forest that became a village (DB2 p279). His cells grew an army
+  of White Zetsu and woke Madara's Rinnegan (ch. 606) `[canon]`. His flesh is still alive on Danzō's arm
+  and in Yamato `[canon]`.
+- **"God of Shinobi"**: eight tailed beasts captured alone (ch. 458) `[canon]`. Madara, with the EMS
+  and the Nine-Tails, never beat him `[canon]`. He resisted the perfected Impure World Reincarnation
+  (ch. 620) `[canon]`.
+- **Inventors of the forbidden:** Tobirama created the Shadow Clone, Impure World Reincarnation and
+  Flying Thunder God (ch. 122, 641) `[canon]` → Senju genius invents jutsu `[implication]`.
+- **Love is their strength** (ch. 619) `[canon statement]`: their power grows protecting others `[our
+  interpretation]`. Senju often have immense physical strength (Naruto Mobile) `[game]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Master of all things.** A Senju can learn **every nature**: all five basic natures plus Yin and
+   Yang, at natural affinity **1.0** (other clans reach 0.5 by training). Jutsu mastery XP ×2. A jutsu
+   seen cast 3 times can be **studied** (an hour of practice at a dummy) and learned, with no Sharingan.
+   Every taijutsu style is learned at half cost. Combination natures (kekkei genkai) can be unlocked
+   from any two parts they own.
+2. **Jutsu Forge (Tobirama's gift).** A Senju with 5+ jutsu at ★5 can **invent** one: pick a base
+   behaviour plus a nature plus a modifier (size, homing, multi-cast, delay) and save it as a
+   new data jutsu with your name on it. NPC ninjas of your village can learn it from you.
+3. **Life made flesh.** Any land a Senju lives on blooms: within 32 blocks of your bed, crops grow ×2
+   and animals breed ×2. Hashirama's cells (Part I) can be **planted**: a "Sap Guardian" grows over an
+   in-game day (a white wooden humanoid that guards an area; up to 6). Echo of the Zetsu army.
+4. **Hokage's will.** Immune to mind control (Kotoamatsukami, Yamanaka possession, Impure World
+   control); genjutsu last half as long.
+5. **Love grows the power.** +4% jutsu power per crew mate within 16 blocks (max +20%). Healing jutsu
+   on allies are ×2.
+6. **Tsunade's line:** a "Hundred Strength" punch (chakra-loaded fist) that cracks a 6-block crater and
+   sends large mobs flying; **Mitotic Regeneration** on allies.
+7. **Tobirama's line:** Water Release with no water nearby at full power; Flying Thunder God unlocked
+   10 CTL earlier.
+
+**Ultimate form: Sage of the Thousand Hands** `[our interpretation]`
+- **Unlock:** Wood Blood (born or earned) + Wood ★5 + instant Sage Mode + defeat a tailed beast using
+  only Wood jutsu.
+- **Payoff:** in Sage Mode, raise **True Several Thousand Hands**: a 60-block-tall thousand-armed wooden
+  statue (a multi-block entity) that you ride on its head. 20 s of **Top Hands Strike**: a rain of giant
+  fists across a 40-block area, each one cratering the ground. Or the **Wood Human** (a 30-block wooden
+  golem) for 60 s, made to wrestle a Complete Susanoo or a tailed beast. **Bliss-Bringing Hands** puts
+  every tailed beast within 64 blocks to sleep.
+- **Cost:** all chakra, Sage Mode ends, one cell division, a 24-hour cooldown, and **the land stays
+  scarred**: the strike leaves a permanent forest of giant trees and craters (a new Valley of the End in
+  your world).
+
+---
+
+## Bold reading: Uchiha · the fan that feeds the flames
+
+**The maximal reading**
+- **うちは from 団扇 uchiwa, "paper fan"** `[name meaning]`: a fan stokes fire, and their crest is a fan.
+  Madara's war fan sent jutsu back (ch. 560s `[unverified page]`) `[canon]`. "The clan that controls
+  fire" (DB2) `[canon]`.
+- **"Heavenly eyes that see the truth of all creation"** (the Mangekyō, DB3 pp274–275) `[canon
+  statement]`.
+- **"Better to flee than fight an Uchiha one-on-one"** (ch. 257) `[canon statement]`.
+- **Power grows with emotion and loss** (ch. 619); Sasuke grew stronger mid-fight from hatred
+  (ch. 460, 478) `[canon]`. → their power has **no ceiling, only a price** `[our interpretation]`.
+- **They command tailed beasts** with their eyes (ch. 309, 501) `[canon]`. A Mangekyō ability can be
+  **programmed** to fire after the user's death (ch. 681) `[canon]`. Izanagi **rewrites reality**
+  `[canon]`.
+- **Madara with the Rinnegan** dropped meteors and cut down mountains with Perfect Susanoo (ch. 590s
+  `[unverified pages]`) `[canon]`. **Indra's descendants**: the "power" side of the Sage's legacy
+  `[canon]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Grief made permanent.** Every bonded ally (respect 80+) who dies at someone else's hand
+   **permanently** adds +5% to all eye abilities (cap +50%) and a new title ("Who lost N"). Loss is
+   power, for good.
+2. **Rage surge.** Under 30% health with the Curse of Hatred above 50: Sharingan drain is free, and
+   your next 3 jutsu hit ×2 (Sasuke's mid-fight surges).
+3. **The war fan (gunbai) heirloom.** Swing to **reflect** an incoming jutsu back (Uchiha Return),
+   once per 8 s; fanning your own fire jutsu doubles its size.
+4. **Programmed eyes.** Put one of your Mangekyō abilities into an ally, a crow or an item with a
+   trigger ("when my brother sees Madara's face", "when this crow is hurt"). It fires once, even after
+   you die.
+5. **Beast tamer of the eye.** Mangekyō: hold a tailed beast (unsealed) as a companion indefinitely
+   while the eye is open (drain 3/s). EMS: the hold ignores the eye drain.
+6. **Copy wheel unbound.** With the EMS, copied jutsu are learned at your own mastery level, not ★1.
+
+**Ultimate form: Ascension of Indra** `[our interpretation]`
+- **Unlock:** EMS + Rinnegan (Part I's Senju-cell recipe).
+- **Payoff:** **Perfect Susanoo**: a 40-block winged armoured giant; its sword cuts a **30-block line
+  through terrain** (mountains included). **Indra's Arrow**: a lightning bow shot that erases everything
+  in a 40-block line. **Heavenly Meteor** (Rinnegan): summon a meteor that craters a 20-block area, then
+  a second if the first is stopped. **Six Paths powers** (Part I).
+- **Cost:** 10 chakra/s and cell pain from second 1; each terrain-cutting swing costs 2 max health
+  until you sleep; your **destined rival** spawns: an Asura-heritage NPC (Senju or Uzumaki) who hunts you,
+  grows with you and returns every time you ascend. And you're the world's most wanted eyes.
+
+---
+
+## Bold reading: Kaguya · a body that is a weapon forge
+
+**The maximal reading**
+- **Descendants of Kaguya Ōtsutsuki**, the progenitor of chakra itself (ch. 684; DB4) `[canon]`. Her
+  **All-Killing Ash Bones** turn whatever they pierce to dust (DB4 p25) `[canon]`. The clan's power is a
+  "weaker" version (DB4 p275), and **weaker than a goddess's weapon is still terrifying**
+  `[implication]`.
+- **"The ultimate taijutsu ability"** (Orochimaru) `[canon statement]`. Feared **even by its own
+  war-crazed clan** `[canon]`. Usable **without limit** while the body holds out (ch. 212) `[canon]`.
+  Kimimaro survived 200 m of compressed sand `[canon]`. The clan believed itself **invincible**, and with
+  Shikotsumyaku "rarely meets real opposition" `[canon statement]`.
+- **かぐや "radiant night"**, the moon princess of *The Tale of the Bamboo Cutter* `[name meaning]`.
+  The forehead dots are Heian nobility marks (Kishimoto interview) `[canon statement]`: royal blood
+  `[our interpretation]`.
+- Orochimaru wanted that body; Kabuto and Orochimaru later took the power from his cells (ch. 585)
+  `[canon]` → **Kaguya bones are a legacy others will kill to harvest** `[implication]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **The bone forge.** Craft gear from your own skeleton (costs health, regrows in 60 s):
+   **Bone armour** (four pieces, diamond-level, repairs itself 1 durability/s, can't be broken by
+   anything below netherite), **bone tools** (a pickaxe that mines obsidian like stone), **infinite bone
+   arrows**, a **hollow bone flute** (sound genjutsu, Kabuto's trick, ch. 585). Bone gear can't be
+   stolen: it crumbles in anyone else's hands.
+2. **Build with your bones.** A Seedling Fern cast while crouching leaves its spikes **permanently**
+   as bone blocks (walls, towers, a fortress). A Kaguya can raise a bone keep in a minute.
+3. **Reshape the skeleton.** Toggles: longer arm bones (+1.5 reach), spinal spring (jump +3 blocks),
+   ribcage shield (an immune-to-crit chest), and so on; three at a time.
+4. **The fortress body** (Part I) becomes **unbreakable** at Bone Fever stage 0–1: knockback,
+   crushing (falling blocks, anvils, sand coffins) and suffocation deal nothing.
+5. **Royal blood calls.** Kaguya NPCs and revenants obey a Kaguya player with all five dances.
+
+**Ultimate form: Ash Bone Awakening** `[our interpretation]`
+- **Unlock:** all five dances + defeat the Kaguya Ōtsutsuki boss and take her **Ash Bone relic**.
+- **Payoff:** **All-Killing Ash Bones**: bones that, on hit, start turning the target to ash: 4% of max
+  health per second for 10 s, which can't be healed, and a target that dies to it leaves **nothing**
+  (no drops, no revival, no Izanagi). Bosses take 25% total. The relic also **halts Bone Fever** for good
+  (it can't rise any more).
+- **Cost:** every Ōtsutsuki enemy and every bone-hunter (Orochimaru-style NPCs) now hunts you; each ash
+  bone costs 5 health.
+- **Without the relic: The Last Dance.** At Bone Fever stage 4, once in your life: 3 minutes of every
+  bone free, ×2 damage and speed, no pain. Then you **die for real** (character death: the clan's
+  ending, Kimimaro's last battle). The game asks twice.
+
+---
+
+## Bold reading: Hyūga · eyes toward the sun
+
+**The maximal reading**
+- **日向 "toward the sun / a sunlit place"** `[name meaning]`: their sight reaches everywhere, like
+  sunlight.
+- **Hamura's line, keeping the Ōtsutsuki traits most purely** (official video) `[canon statement]`.
+  Konoha's **oldest and most outstanding bloodline** (DB1 p265) and its strongest clan `[canon]`.
+- **Range has no clear ceiling:** Hinata 1 km → 10 km → 20 km (ch. 58, 396; *The Last*) `[canon]`.
+  Kaguya's Byakugan covered **much of the world** `[canon]`. → with Ōtsutsuki purity, a Hyūga's sight
+  can approach that `[our interpretation]`.
+- **Gentle Fist gives complete control of the opponent's chakra** `[canon]`. The **Eight Gates are
+  tenketsu** (ch. 85), and the Byakugan sees every tenketsu → a Hyūga could open their own gates with
+  precision instead of years of pain `[implication]`.
+- **The Byakugan + Hamura's chakra = Tenseigan**, which could move the moon `[movie]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Near-total sight.** Legendary Byakugan range: **512 blocks**. **Sun's Eye** (crouch, eye open):
+   a map view of everything with chakra in range: players, mobs, NPCs, and **chest contents**. Ores show
+   as "dead spots" (no chakra) through stone. Nothing alive hides from a Hyūga.
+2. **Tenketsu dominion.** Heavy Gentle Fist blows **lock** an enemy's jutsu for 60 s (not 6), or force
+   their tenketsu open so their chakra **pours out** for 10 s. On an ally: open their tenketsu for ×2
+   regen.
+3. **Gentle Gates.** A Hyūga with Gentle Fist mastery can strike their **own** gates open (gates 1–5)
+   with half the self-damage of the Might line (they see exactly where to hit). Gates 6–8 stay Might-only.
+4. **Absolute defence.** Rotation grows to an 8-block **Heavenly Spin** dome; Hiashi-level masters can
+   hold it 3 s and reflect projectiles back at 2× speed.
+5. **Air Palm sniping.** Vacuum Palm reaches 24 blocks at full Byakugan.
+
+**Ultimate form: Tenseigan** `[movie-based; our interpretation]`
+- **Unlock:** legendary Byakugan + Hamura's chakra (from the moon Ōtsutsuki boss) + an Uzumaki-blooded
+  parent or crew partner at full bond (Hinata and Naruto's line).
+- **Payoff:** **Tenseigan Chakra Mode**: flight, 8 orbiting truth-seeking spheres (block anything,
+  including jutsu), **gravity** (pull every creature within 24 blocks to a point, or push them 30 blocks),
+  and the **Golden Wheel Rebirth Explosion**: a gravity collapse that levels a 20-block area.
+- **Cost:** 6 chakra/s; branch members can't reach it while sealed; eye thieves target you
+  constantly; the moon boss returns to take the eyes back.
+
+---
+
+## Bold reading: Might · a youth that burns the heavens
+
+**The maximal reading**
+- **Gate 8 = about 100× normal power, beyond the Five Kage** `[canon statement]`. Madara, after Night
+  Guy, said no one had ever matched Guy in taijutsu (ch. 670 `[unverified page]`) `[canon]`, and Night
+  Guy bent space itself as it travelled `[canon, unverified page]`.
+- **Lee can't use ninjutsu at all, and became a Kage-level fighter anyway** `[canon]` → effort alone can
+  break a bloodline's ceiling `[our interpretation]`. Duy took 20 years for all eight (ch. 668) `[canon]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Gate stacking for the team:** a Might at gate 6+ gives crew within 12 blocks +20% damage
+   ("Youth is contagious").
+2. **Morning Peacock** sets the area on fire; **Daytime Tiger** is a 30-block air-cannon that knocks down
+   trees and walls; **Evening Elephant** is five steps of vacuum punches that hold a boss in place.
+3. **Hard work breaks blood:** a Might or Lee who beats an S-tier clan member in a 1v1 (no gates
+   above 7) gets a permanent +5 TAI and +5 SPD once per clan.
+
+**Ultimate form: Night Guy** (Part I's gate 8, made world-scale)
+- **Payoff:** one kick dash through **80 blocks** that bends space around it (a visible warp trail),
+  dealing 500 damage to the target and 100 to everything along the path; it ignores Susanoo, shields and
+  intangibility.
+- **Cost:** death, or crippled for 7 days if a Six Paths Yang healer saves you (Part I).
+
+---
+
+## Bold reading: Akimichi · giants of the harvest road
+
+**The maximal reading**
+- **秋道 "autumn road"** `[name meaning]`: the harvest. Their power is food turned into chakra and mass.
+- **The Chilli Pill: "a hundred times the power"** (ch. 189) `[canon statement]`.
+- Chōza and Chōji grew to giant size in the war, big enough to grapple Madara-era threats `[canon,
+  unverified pages]`. **Butterfly Mode** made Chōji fly and strike at Kage level `[canon]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **True giants.** Super Multi-Size scales you up to **20 blocks tall** (the entity's scale): you step
+   over walls, crush leaves and fences, wrestle tailed beasts (grapple: hold a beast 5 s), and carry your
+   whole crew in your hands. Cost: 30 calories/s at full size.
+2. **Feast power:** eating at a feast (8+ dishes) stores up to 500 calories (a "Harvest Store").
+3. **Human Boulder** rolls through blocks softer than stone, flattening a path.
+
+**Ultimate form: Butterfly of the Harvest** `[our interpretation]`
+- **Unlock:** Calorie Control mastery (Part I) + a Harvest Store of 500.
+- **Payoff:** Butterfly Mode with no death clock: flight, wing gusts, and **Butterfly Bullet Bombing**:
+  one fist the size of a house, ×5 damage, knocking any boss 30 blocks.
+- **Cost:** the whole store, then 3 minutes at Hunger 0 and Slowness II; without mastery, the Chilli
+  pill death clock (Part I).
+
+---
+
+## Bold reading: Nara · shadows that own the night
+
+**The maximal reading**
+- **奈良**, Japan's ancient capital `[name meaning]`: an old, wise house. **IQ over 200** (ch. 107)
+  `[canon statement]`. Shikaku planned the Allied war; Shikamaru later became acting Hokage `[canon]`.
+- **A shadow can stretch through any other shadow** (ch. 107 onward) `[canon]` → **at night, every
+  shadow is theirs** `[our interpretation]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **The night belongs to the Nara.** At light level ≤ 4, shadow techniques reach anywhere within 32
+   blocks that's dark, without a line; the bind holds 3 targets for free.
+2. **Shadow Gathering:** shadows rise as solid tendrils that grab items, block projectiles and
+   carry allies.
+3. **Shōgi mind.** Once per fight, crouch-hold to **freeze time for 3 s** (single-player; in
+   multiplayer: everything slows to 20% for 3 s around you) and queue up to 3 actions that play out at
+   once.
+
+**Ultimate form: Lord of Shadows** `[our interpretation]`
+- **Unlock:** IQ trials (a clan puzzle chain in the deer forest) + Shadow mastery.
+- **Payoff:** turn the area dark (32 blocks, 30 s): every creature without a light source is bound,
+  then caught by Shadow Neck Bind (6 dmg/s).
+- **Cost:** 8 chakra/s, and you can't move during it.
+
+---
+
+## Bold reading: Yamanaka · a mind that holds the army
+
+**The maximal reading**
+- **山中 "in the mountains"** `[name meaning]`. During the war, Inoichi and Ino linked the minds of the
+  whole Allied army so everyone could hear Naruto at once (ch. 559–614 `[unverified pages]`) `[canon]`.
+  They run Konoha's barrier team (sensing the whole village) `[canon]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Mind network:** link up to 20 allies: shared vision of the linked player's targets, shared
+   precognition (if one ally has a Sharingan or Byakugan open, all get its warnings).
+2. **Possess anything**, bosses included, for 5 s (they shake you off; then you're stunned 10 s).
+3. **Body swap:** trade bodies with a beaten NPC for 2 minutes (walk into an enemy camp as one of them).
+
+**Ultimate form: Mind of the Village** `[our interpretation]`
+- **Payoff:** for 60 s, every allied NPC and player within 128 blocks fights as one mind: +30%
+  accuracy, no friendly fire, and focus-fire on your target.
+- **Cost:** your body lies inert the whole time; if it's hit, everyone linked takes the damage.
+
+---
+
+## Bold reading: Aburame · the body is a hive
+
+**The maximal reading**
+- **油女** `[name meaning]` (literally "oil woman"). Their insects eat chakra, **even jutsu** (ch. 126,
+  427) `[canon]`. Torune's nano insects could wipe out large numbers at once (Jar of Poison) `[canon]`.
+  The Aburame crushed the Kamizuru `[anime]`.
+
+**Bold mechanics `[our interpretation]`**
+1. **Hive Lord:** place insect hives that grow colonies on their own; at 3 hives, your total colony
+   can reach **500,000**.
+2. **Swarm body.** Killing blow? Become a swarm: escape as insects and re-form 10 blocks away
+   (60 s cooldown, needs 50% colony).
+3. **Eat a tailed beast:** your insects drain a beast's chakra cloak, cancelling it for 10 s.
+
+**Ultimate form: The Black Sea of Insects** `[our interpretation]`
+- **Payoff:** a 24-block storm of insects for 20 s: drains 10 chakra/s from everything inside, eats every
+  jutsu cast into it, and leaves anyone at 0 chakra paralysed.
+- **Cost:** 70% of your colony (it regrows over an in-game day).
+
+---
+
+## Bold reading: Inuzuka · the pack
+
+**The maximal reading:** **犬塚 "dog mound"** `[name meaning]`. Kiba could track scents that ninja dogs
+couldn't (ch. 364) `[canon]`. **Ultimate: Fang of the Wild Wolf.** You, your hound and all your pack (up
+to 4 summoned ninken) merge into a **10-block two-headed wolf** for 30 s whose Fang Over Fang bores
+through stone. Cost: the hound is exhausted for an in-game day. Bold extra: **pack alpha** (wolves in
+your area follow you).
+
+## Bold reading: Hatake · the white fang
+
+**The maximal reading:** **畑 "field"** `[name meaning]`. Sakumo **overshadowed all three Sannin**
+(ch. 240) `[canon]`. Kakashi copied a thousand jutsu and became Sixth Hokage `[canon]`. In the last
+battle, Obito's spirit lent him **both Mangekyō eyes and a full Susanoo** for a few minutes (ch. 690s
+`[unverified pages]`) `[canon]`. **Ultimate: Borrowed Perfect Eyes.** When a crew mate you're bonded with
+dies holding Sharingan eyes, once in your life their spirit lends you a **double Mangekyō and a
+complete Susanoo for 5 minutes**. Cost: you lose all implanted eyes afterwards. Bold extra: the
+**White Light Chakra Sabre** at full mastery cuts jutsu clean in half.
+
+## Bold reading: Sarutobi · the professor
+
+**The maximal reading:** **猿飛 "monkey jump"**, after Sarutobi Sasuke, the folklore ninja hero
+`[name meaning]`. Hiruzen was "God of Shinobi" and was said to know every jutsu in Konoha `[canon]`.
+**Ultimate: God of Shinobi (Professor's Library).** A Sarutobi can **learn any jutsu taught in their
+village** without the prerequisite chain, and fight with all five natures. Their ultimate is **Enma's
+Adamantine Prison + Five-Element Barrage**: the staff cages a boss for 8 s while you cast one jutsu
+of each nature for free. Cost: Hiruzen's death seal is the last resort (`[canon]` lineage): you can learn
+the Dead Demon Consuming Seal without the Uzumaki mask, and it kills you.
+
+## Bold reading: Jūgo's clan · the source of sage power
+
+**The maximal reading:** they are **the origin of every cursed seal**, and studying them led Orochimaru
+to senjutsu (ch. 579) `[canon]`. Jūgo took the Raikage's lariat and struck back (ch. 462) `[canon]`.
+→ **They are natural sages without training** `[our interpretation]`. **Ultimate: Sage Colossus.** Full
+Sage Transformation with the nature meter full and controlled (needs a calmer): you grow to 6 blocks, all
+shape-shifts at once, cannons and boosters, regenerating 1 health/s, for 45 s. Cost: when it ends, roll
+a 30% chance of a frenzy anyway. Bold extra: **curse-seal smith**: brand up to 3 crew mates with level-2
+seals (Part I).
+
+## Bold reading: Hoshigaki · a tailed beast without a tail
+
+**The maximal reading:** "**A tailed beast without a tail**" `[canon statement]`; chakra above all
+Akatsuki (ch. 255) `[canon]`. **干柿 "dried persimmon"** `[name meaning]`. → **Hoshigaki are walking
+tailed beasts** `[our interpretation]`. **Bold:** pool ×15 (up from ×6) with no jinchūriki needed; they
+can **absorb a sealing**: a Sealing Scroll used on them stores the chakra instead of failing.
+**Ultimate: Great Shark Sea.** A 30-block dome of water out of nothing for 60 s; inside, you're a shark
+(swim at 3× speed, bite drains 20 chakra), and every enemy drowns slowly unless they can breathe water.
+Cost: all chakra, the living sword sleeps for an in-game day.
+
+## Bold reading: Kazekage line · the desert answers
+
+**The maximal reading:** the **Third Kazekage was Suna's strongest** (DB3 p64) `[canon]`; Gaara became
+Kage at 15 and moved enough sand to stop Deidara's bombs over the village `[canon]`. **Ultimate: Desert
+Imperial Funeral.** Turn the ground within 40 blocks to sand (temporary), then crush everything standing
+on it, or raise a sand **tsunami** that buries a village quarter. With Iron Sand: **World Order**
+(spiked iron structures that grow across the area). Cost: the gourd's whole reservoir, 30 s of no
+shield, and the desert stays (the area remains sand until you sleep).
+
+## Bold reading: Yuki · endless winter
+
+**The maximal reading:** Haku's mirrors move "at the speed of light" (DB1) `[canon statement]`; a Yuki's
+presence makes snow fall (ch. 522) `[canon]`; **雪 "snow"** `[name meaning]`. **Ultimate: Endless
+Winter.** The biome around you turns to snow for 5 minutes (64 blocks): water freezes, enemies slow 30%,
+and you **teleport between any two ice surfaces** you can see. Cost: frail, and you can't heal while it
+lasts.
+
+## Bold reading: Hōzuki · the second coming of the demon
+
+**The maximal reading:** "**Second Coming of the Demon**" (Mangetsu, Suigetsu) `[canon statement]`;
+Gengetsu was the **Second Mizukage** `[canon]`; **鬼灯 "demon lantern"** `[name meaning]`. **Ultimate:
+Great Water Arm / Ocean Body.** Become a 10-block water giant for 30 s: blows pass through entirely,
+your fists are tidal waves. Cost: all hydration; lightning instantly ends it and stuns you 5 s.
+
+## Bold reading: Chinoike · the pool of blood
+
+**The maximal reading:** **血の池 "pool of blood"**, also the name of a Buddhist hell `[name meaning]`;
+the Ketsuryūgan is compared to the **Three Great Dōjutsu** `[canon statement]`. **Ultimate: Blood Hell.**
+Every bleeding creature within 16 blocks is under your control for 6 s (move, freeze, or turn their blood
+into spikes from inside). Cost: you bleed too (−4 max health until you sleep), and every Uchiha NPC in
+the world becomes hostile.
+
+## Bold reading: Kurama · genjutsu made real `[anime-only]`
+
+**The maximal reading:** Yakumo put **all of Konoha** under one illusion `[anime canon]`; **鞍馬**, the
+mountain of the tengu `[name meaning]`. **Ultimate: The Painted World.** A 64-block genjutsu where you
+repaint reality: lava rivers, falling mountains, cages, all doing real damage, for 20 s. Cost: Ido takes
+over for 60 s afterwards.
+
+## Bold reading: the smaller clans (quick bold hooks)
+
+| Clan | Maximal reading | Bold ultimate `[our interpretation]` | Cost |
+|---|---|---|---|
+| **Shimura** | Madara was shocked they joined Konoha (ch. 625) `[canon]`; Danzō ran ten Izanagi | **Ten Lives**: up to 10 implanted eyes, ten deaths undone in one fight | each eye goes blind; Uchiha hate you |
+| **Yotsuki** | "never sell out a comrade" `[canon statement]` | **Oath of Cloud**: while a crew mate lives, you can't drop below 1 health for 10 s | once per fight |
+| **Iburi** | smoke that can still touch things `[anime]` | **Smoke Wraith**: possess a whole squad (3) at once | wind kills |
+| **Kamizuru** | claimed the First Tsuchikage `[anime]`; **神鶴 "divine crane"** `[name meaning]` | **Queen's Swarm**: a giant queen bee mount whose sting paralyses | fire |
+| **Fūma** | **風魔 "wind demon"** `[name meaning]`; Uchiha blood (B-vol. 10) `[canon]` | **Dormant blood**: 1 Fūma in 50 awakens a single Sharingan after a near-death | Uchiha hunters notice |
+| **Kurogane** | **黒鉄 "black iron"** `[name meaning]` | **One Cut**: an iaidō draw that cuts any jutsu and any shield in a 10-block line | no ninjutsu ever |
