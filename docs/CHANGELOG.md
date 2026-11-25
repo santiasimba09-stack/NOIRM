@@ -2,6 +2,36 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-25 — NOIRM v0.3 (= v0.20.0): creator + Shoji UI, clan clothing, clan boosts, the Aburame (branch `claude/keen-cray-uc2d11`, PR #1)
+
+The owner's v0.3 plan (`docs/WAVE_V03.md`). Shipped on the owner's word while the Aburame were still being finished.
+- **The richer creator and the Shoji UI** (`docs/WAVE_CREATOR_UI.md`, `docs/UI.md`):
+  - **Creator content:** 38 new 3D hair styles (61 in all), hair dyes, 8 eye shapes, 6 pupils, eye details, brows,
+    16 iris colours, 5 builds, muscle levels, 14 skin tones, scars, marks, 12 face paints, 8 tattoos.
+  - **Creator layout:** 7 tabs.
+  - **The Shoji UI:** every screen and the HUD use black-lacquer wood, dark paper, red hanko seals and brush lines
+    (`tools/uigen`).
+- **Clan clothing:**
+  - **52 wearables:** an outfit for every canon clan, capes with a cloth simulation (they can be sewn onto chest
+    pieces), hoods, 9 ANBU masks (sneak+use pushes one aside), flowing gowns and skirts, the cloud cloak and a
+    straw hat.
+  - **Who gets it:** clan NPCs wear their clothes, and shops have a tailor shelf.
+- **Clan boosts** (`docs/CLANS.md`):
+  - **Pools:** the Uzumaki pool is about 100× a normal ninja's own (no staged unsealing), and the great clans are
+    raised to their canon standing. Regen scales with the pool, NPC pools are capped, and big numbers on the HUD
+    are shortened (12.4k).
+  - **Rolls:** canon clans are about 80% of rolls for players and NPCs (`data/noirm/clan_odds/canon.json`), and the
+    creator gives 5 clan rolls plus 5 separate talent rerolls.
+- **The Aburame** (`docs/ABURAME.md`, deep research first):
+  - **The colony:** a living colony you can see grow; seal-free insect techniques that spend insects.
+  - **Swarms:** swarms of voxel beetles that drain chakra and eat jutsu.
+  - **Senses:** female-insect marks, scouts and jamming.
+  - **Hives:** hives, breeding and bug collecting.
+  - **Shibi:** Shibi's trial.
+
+  Merged as a snapshot; the remaining phases follow in v0.3.1.
+- Protocol 38.
+
 ## 2026-11-19 — NOIRM v0.2 (= v0.19.0): styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound, v0.19.0 (branch `claude/keen-cray-uc2d11`, PR #1)
 
 The owner's wave (`docs/WAVE_STYLES_CLANS.md`), built by parallel helpers and merged here.

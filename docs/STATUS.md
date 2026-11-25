@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-19 (**NOIRM v0.2** = v0.19.0: styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound; on top of APX 0.1 = v0.18.0) · branch `claude/keen-cray-uc2d11`_
+_Last updated: 2026-11-25 (**NOIRM v0.3** = v0.20.0: creator + Shoji UI, clan clothing, clan boosts, the Aburame; before that **NOIRM v0.2** = v0.19.0: styles, clans, talents, genjutsu scenes, Body Flicker, Flying Raijin, clan gaps, the Inuzuka hound; on top of APX 0.1 = v0.18.0) · branch `claude/keen-cray-uc2d11`_
 
 ## Where we are
 
@@ -115,7 +115,7 @@ The owner's wave (`docs/WAVE_STYLES_CLANS.md`), built by parallel helpers.
 | `com.noirm.awakening` | `AwakeningSystem`, `AwakeningData` |
 | `com.noirm.biju` | `BijuSystem` (cloak and tails, sealing, born jinchūriki, beast names), `BijuData`, `BeastBond` (bond, requests, takeovers, chakra), `SealingScrollItem` |
 | `com.noirm.data` | `CodecJsonLoader` (generic JSON data loader) |
-| `com.noirm.network` | `NoirmNetwork` (protocol 32), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
+| `com.noirm.network` | `NoirmNetwork` (protocol 38), `VfxPackets`, `JutsuCatalogPacket`, `CombatInputPackets`, `CombatClientPackets`, `PowerPackets`, `SyncShinobiDataPacket` |
 | `com.noirm.client` | combat (`CombatKeys`, `CombatInput`, `LockOn`, `CombatCamera`, `PlayerAnimations`, `ClientCombat`), powers (`PowerKeys`, `ClientPowers`, `PowerHud`, `JutsuScreen`, `SharinganEyesLayer`), `ShinobiHudOverlay`, `VillageFog` (mist and haze inside villages), `NoirmRenderers`, `SparringNinjaRenderer`, `TrainingDummyRenderer`, `TailedBeastRenderer`, `ShadowCloneRenderer`, `BoltRenderer` (lightning), `ByakuganVision` (x-ray silhouettes, chakra points, radar), `EyeEffects` (heartbeat warning, afterimages, activation), `JutsuScreen` (cards + nature tree), `ClientJutsuCatalog` |
 | `com.noirm.client.ui` | The UI kit every screen and the HUD use (`docs/UI.md`): `Theme` (colours, spacing), `Ui` (panel, header and seal, card, button, toggle, segment, slider, bar, row, chip, scrollbar, text cut with "…"), `TabStrip` (text tabs, sliding underline), `ScreenMotion` (open/close/tab fades), `HoverTracker`, `Smooth`, `Anim`, `HudKit`, `HudLayout`, `NoirmStyled` + `TooltipStyle` (kit tooltips) |
 | `com.noirm.client.anim` | The animation engine: `HumanoidAnimator` (players and NPCs: gait, ninja run, air and landing, stance, moves, guard, flinch, lean, springs, hit-stop), `Rig` (the hierarchy: torso carries head and arms; plain Java), `KeyframeAnimation` (reads `player_animation/*.json`; easings incl. back/expo and Catmull-Rom), `SkeletonPose`, `NpcAnimations` (reload listener), `WeaponStances`. Drawn by `client/BendyModel`, `client/NoirmPlayerRenderer` (swapped in for players), `client/FirstPersonArms` |
