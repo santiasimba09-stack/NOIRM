@@ -3609,5 +3609,17 @@
   "help.noirm.aburame.bug": "un insecto salvaje a tu lado",
   "help.noirm.aburame.strain": "atrapa y cría la cepa de un insecto salvaje",
   "help.noirm.aburame.generation": "pasa generaciones (adaptación, cruces)",
-  "help.noirm.section.aburame": "Tu colonia de insectos (Aburame)"
+  "help.noirm.section.aburame": "Tu colonia de insectos (Aburame)",
+  "master.noirm.shibi": "Shibi Aburame, cabeza del clan",
+  "master.noirm.shibi.greeting": "Hasta un insecto diminuto tiene media alma. Por eso, nunca subestimes a un rival, por pequeño que sea. Demuéstrame que puedes drenarme antes de que yo te drene, sin perder más de la mitad de lo que envíes.",
+  "master.noirm.shibi.test": "La prueba: solo insectos",
+  "master.noirm.shibi.test.rules": "Drena a Shibi a 0 de chakra en %3$s s, manteniendo vivos la mitad de tus insectos",
+  "master.noirm.shibi.test.safe": "Las hojas y los jutsu no le afectan. Solo cuenta el drenaje de tus enjambres. Si te drenan, suspendes.",
+  "master.noirm.shibi.spar": "Empezar",
+  "master.noirm.shibi.spar.tip": "Empieza ahora el duelo de insectos",
+  "message.noirm.colony.trial_start": "%s libera sus insectos. Drénalo primero.",
+  "message.noirm.colony.trial_fail": "La prueba ha terminado.",
+  "message.noirm.colony.trial_drained": "Los insectos de %s te drenaron primero.",
+  "message.noirm.colony.trial_pass": "%s asiente: \"Porque respetaste incluso a los más pequeños.\" Estás a la altura de un maestro del clan.",
+  "message.noirm.colony.trial_careless": "%s: \"Ganaste, pero desperdiciaste tus insectos.\""
 }

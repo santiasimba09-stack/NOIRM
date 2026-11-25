@@ -68,7 +68,8 @@ public final class MasterSystem {
         if (def == null || data == null) {
             return Component.translatable("screen.noirm.master.why.unknown");
         }
-        if (master.isSparring() || com.noirm.senjutsu.SageTrial.trial(master) != null || com.noirm.medical.MedicTrial.trial(master) != null) {
+        if (master.isSparring() || com.noirm.senjutsu.SageTrial.trial(master) != null || com.noirm.medical.MedicTrial.trial(master) != null
+                || com.noirm.aburame.ShibiTrial.trial(master) != null) {
             return Component.translatable("screen.noirm.master.why.busy");
         }
         if (data.getTaijutsu() < def.test().minTaijutsu()) {
@@ -90,6 +91,9 @@ public final class MasterSystem {
         MasterDefinition def = master.definition();
         if (com.noirm.senjutsu.SageTrial.isTrialMaster(master)) {
             return com.noirm.senjutsu.SageTrial.start(player, master); // a test of stillness, not a spar
+        }
+        if (com.noirm.aburame.ShibiTrial.isTrialMaster(master)) {
+            return com.noirm.aburame.ShibiTrial.start(player, master); // Shibi: only insects, only drain
         }
         if (com.noirm.medical.MedicTrial.isTrialMaster(master)) {
             return com.noirm.medical.MedicTrial.start(player, master); // keep a patient alive, not a spar

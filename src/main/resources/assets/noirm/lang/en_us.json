@@ -3609,5 +3609,17 @@
   "help.noirm.aburame.bug": "a wild insect beside you",
   "help.noirm.aburame.strain": "catch and breed in a wild insect's strain",
   "help.noirm.aburame.generation": "pass generations (adaptation, crosses)",
-  "help.noirm.section.aburame": "Your insect colony (Aburame)"
+  "help.noirm.section.aburame": "Your insect colony (Aburame)",
+  "master.noirm.shibi": "Shibi Aburame, Head of the Clan",
+  "master.noirm.shibi.greeting": "Even a tiny insect has half a soul. Because of that, never underestimate an opponent, however small. Show me you can drain me before I drain you, and lose no more than half of what you send.",
+  "master.noirm.shibi.test": "The test: insects only",
+  "master.noirm.shibi.test.rules": "Drain Shibi to 0 chakra within %3$s s, keeping half your insects alive",
+  "master.noirm.shibi.test.safe": "Blades and jutsu don't touch him. Only your swarms' drain counts. If you're Drained, you fail.",
+  "master.noirm.shibi.spar": "Begin",
+  "master.noirm.shibi.spar.tip": "Start the insect duel now",
+  "message.noirm.colony.trial_start": "%s releases his insects. Drain him first.",
+  "message.noirm.colony.trial_fail": "The trial is over.",
+  "message.noirm.colony.trial_drained": "%s's insects drained you first.",
+  "message.noirm.colony.trial_pass": "%s nods: \"Because you respected even the smallest.\" You are a Clan Master's equal.",
+  "message.noirm.colony.trial_careless": "%s: \"You won, but you threw your insects away.\""
 }

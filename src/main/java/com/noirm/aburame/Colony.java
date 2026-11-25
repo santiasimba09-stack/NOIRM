@@ -208,6 +208,7 @@ public final class Colony {
             }
         }
         colony.addField(got);
+        ShibiTrial.onStudentSend(entity, got);
         changed(entity);
         return new Commit(got, jar);
     }
@@ -254,6 +255,7 @@ public final class Colony {
         }
         colony.addField(-n);
         colony.addPressure(harm, n * ColonyGrowth.PRESSURE_PER_INSECT);
+        ShibiTrial.onStudentLoss(owner, n);
         changed(owner);
     }
 

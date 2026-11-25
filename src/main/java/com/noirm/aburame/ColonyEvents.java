@@ -74,6 +74,13 @@ public final class ColonyEvents {
     }
 
     @SubscribeEvent
+    public static void serverTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            ShibiTrial.tickAll();
+        }
+    }
+
+    @SubscribeEvent
     public static void livingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.level().isClientSide() || entity instanceof Player || entity.tickCount % 20 != 0) {
@@ -147,6 +154,10 @@ public final class ColonyEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void attacked(LivingAttackEvent event) {
         LivingEntity victim = event.getEntity();
+        if (!victim.level().isClientSide() && ShibiTrial.shielded(victim)) {
+            event.setCanceled(true); // Shibi's trial: only insects and only drain
+            return;
+        }
         if (victim.level().isClientSide() || event.getSource().getEntity() == null || event.getSource().is(DamageTypeTags.IS_EXPLOSION)) {
             return;
         }
@@ -279,8 +290,4 @@ public final class ColonyEvents {
         }
     }
 
-    /** Fire on someone burns burrowed kidaichū out (BugBite checks it too); handy for tests. */
-    public static Vec3 noop() {
-        return Vec3.ZERO;
-    }
 }

@@ -311,6 +311,26 @@ for k, v in H.items():
     add("help.noirm.aburame." + k, *v)
 
 
+add("master.noirm.shibi", "Shibi Aburame, Head of the Clan", "Shibi Aburame, cabeza del clan")
+add("master.noirm.shibi.greeting",
+    "Even a tiny insect has half a soul. Because of that, never underestimate an opponent, however small. Show me you can drain me before I drain you, and lose no more than half of what you send.",
+    "Hasta un insecto diminuto tiene media alma. Por eso, nunca subestimes a un rival, por pequeño que sea. Demuéstrame que puedes drenarme antes de que yo te drene, sin perder más de la mitad de lo que envíes.")
+add("master.noirm.shibi.test", "The test: insects only", "La prueba: solo insectos")
+add("master.noirm.shibi.test.rules", "Drain Shibi to 0 chakra within %3$s s, keeping half your insects alive",
+    "Drena a Shibi a 0 de chakra en %3$s s, manteniendo vivos la mitad de tus insectos")
+add("master.noirm.shibi.test.safe", "Blades and jutsu don't touch him. Only your swarms' drain counts. If you're Drained, you fail.",
+    "Las hojas y los jutsu no le afectan. Solo cuenta el drenaje de tus enjambres. Si te drenan, suspendes.")
+add("master.noirm.shibi.spar", "Begin", "Empezar")
+add("master.noirm.shibi.spar.tip", "Start the insect duel now", "Empieza ahora el duelo de insectos")
+for k, en, es in [("trial_start", "%s releases his insects. Drain him first.", "%s libera sus insectos. Drénalo primero."),
+                  ("trial_fail", "The trial is over.", "La prueba ha terminado."),
+                  ("trial_drained", "%s's insects drained you first.", "Los insectos de %s te drenaron primero."),
+                  ("trial_pass", "%s nods: \"Because you respected even the smallest.\" You are a Clan Master's equal.",
+                   "%s asiente: \"Porque respetaste incluso a los más pequeños.\" Estás a la altura de un maestro del clan."),
+                  ("trial_careless", "%s: \"You won, but you threw your insects away.\"", "%s: \"Ganaste, pero desperdiciaste tus insectos.\"")]:
+    add("message.noirm.colony." + k, en, es)
+
+
 def main():
     for code, idx in (("en_us", 0), ("es_es", 1), ("es_mx", 1)):
         p = os.path.join(LANG, code + ".json")
