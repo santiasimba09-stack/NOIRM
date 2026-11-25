@@ -72,3 +72,7 @@ and apply it ALL in Minecraft. I'm giving you creative liberties from now on, so
   costs, not from shrinking it.
 - **Creative liberty:** invent mechanics freely where canon is silent, but stay true to the lore. Keep our
   basics: our own art, no copied assets, server-authoritative, data-driven, tests.
+- **Owner, follow-up (2026-11-25):** "The 100× statement is indeed 100×: it's that way because Kurama's
+  seal is suppressing Naruto's own chakra." Read statements like that generously, for every clan: the
+  meaning behind the words and names (Senju = "a thousand skills", master of all things), behaviours that
+  can be interpreted, the high-end feats. **Go bold; don't be shy about crazy mechanics.**
