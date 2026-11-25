@@ -569,8 +569,6 @@ public final class AburameGameTests {
         ItemStack gloves = new ItemStack(AburameRegistry.ABURAME_GLOVES.get());
         gloves.getOrCreateTag().putBoolean(AburameGlovesItem.WORN, true);
         p.getInventory().add(gloves);
-        gloves = p.getInventory().getItem(p.getInventory().findSlotMatchingItem(new ItemStack(AburameRegistry.ABURAME_GLOVES.get())) >= 0
-                ? p.getInventory().findSlotMatchingItem(new ItemStack(AburameRegistry.ABURAME_GLOVES.get())) : 0);
         for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
             if (p.getInventory().getItem(i).is(AburameRegistry.ABURAME_GLOVES.get())) {
                 gloves = p.getInventory().getItem(i); // the inventory keeps its own copy
