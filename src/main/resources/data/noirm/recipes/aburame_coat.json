@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "ABA",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:light_gray_wool"
+    },
+    "B": {
+      "item": "minecraft:spider_eye"
+    },
+    "C": {
+      "item": "minecraft:gray_wool"
+    }
+  },
+  "result": {
+    "item": "noirm:aburame_coat"
+  }
+}

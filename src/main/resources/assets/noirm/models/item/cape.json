@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "noirm:item/cape",
+    "layer1": "noirm:item/cape_overlay"
+  }
+}
