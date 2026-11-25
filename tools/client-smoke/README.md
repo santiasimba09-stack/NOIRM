@@ -20,7 +20,7 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
 4. Check `client.log` for `Exception` or `ERROR` (the OpenAL/sound errors are expected without
    `ALSOFT_DRIVERS=null`: no audio device). Stop the client by killing its `Xvfb :99` and `java` processes.
 
-`GUI_SCALE=2 tools/client-smoke/run.sh` starts at that GUI scale (0 = auto, which is 3 at 1280×720), for
+`SMOKE_FOV=-1.0` narrows the field of view (30°, about 2.3× zoom) for close-up shots of a face or hair; `GUI_SCALE=2 tools/client-smoke/run.sh` starts at that GUI scale (0 = auto, which is 3 at 1280×720), for
 checking that screens fit at other scales.
 
 Opening screens for screenshots: the spawn point moves a little each time, so don't type absolute

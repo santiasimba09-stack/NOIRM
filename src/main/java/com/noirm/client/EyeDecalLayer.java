@@ -30,7 +30,8 @@ import org.joml.Vector3f;
  * crease and highlight a hair in front, so a Mangekyō disc ({@link SharinganEyesLayer}) sits between them.
  */
 public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
-    private static final String[] SHAPES = {"round", "sharp", "wide", "narrow", "pale"};
+    /** Every eye shape the creator offers (PlayerLook's EYES order), each with its own atlas. */
+    private static final String[] SHAPES = shapes();
     private static final RenderType[] TYPES = new RenderType[SHAPES.length];
     /** The cell box, in head-front texture pixels relative to the texture-left eye (gen_eye_decals.py). */
     private static final float X0 = 0f;
@@ -38,7 +39,9 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
     private static final float Y0 = 4.5f - 1.65f;
     private static final float Y1 = 4.5f + 0.85f;
     private static final float CELL_U = 64f / 512f;
-    private static final float CELL_V = 40f / 64f;
+    private static final float CELL_V = 80f / 256f;
+    /** The second row of the atlas: the iris with the other pupils (PlayerLook's PUPIL order, after "round"). */
+    private static final float ROW2_V = 128f / 256f;
     private static final int BASE = 0;
     private static final int IRIS = 1;
     private static final int TOP = 2;
@@ -110,7 +113,12 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
             } else if (byakugan) {
                 eye(consumer, pose, normal, side, BYAKUGAN, Z_BACK, 1f, 1f, 1f, FULL_BRIGHT, overlay);
             } else {
-                eye(consumer, pose, normal, side, IRIS, Z_BACK, ir, ig, ib, light, overlay);
+                int pupil = pupil(entity);
+                if (pupil > 0) {
+                    eye(consumer, pose, normal, side, pupil - 1, ROW2_V, Z_BACK, ir, ig, ib, light, overlay);
+                } else {
+                    eye(consumer, pose, normal, side, IRIS, Z_BACK, ir, ig, ib, light, overlay);
+                }
             }
         }
         for (int side = 0; side < 2; side++) {
@@ -122,6 +130,11 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
     /** One eye's quad for one atlas cell. side 0: the texture-left eye (model x < 0); 1: its mirror. */
     private static void eye(VertexConsumer consumer, Matrix4f pose, Matrix3f normal, int side, int cell, float z,
                             float r, float g, float b, int light, int overlay) {
+        eye(consumer, pose, normal, side, cell, 0f, z, r, g, b, light, overlay);
+    }
+
+    private static void eye(VertexConsumer consumer, Matrix4f pose, Matrix3f normal, int side, int cell, float v0, float z,
+                            float r, float g, float b, int light, int overlay) {
         float u0 = cell * CELL_U;
         float u1 = u0 + CELL_U;
         float xa = side == 0 ? X0 - 4f : 4f - X0;   // the outer edge of the cell
@@ -129,10 +142,10 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
         float y0 = Y0 - 8f;
         float y1 = Y1 - 8f;
         normal.transform(0f, 0f, -1f, NRM);
-        vertex(consumer, pose, xa, y0, z, u0, 0f, r, g, b, light, overlay);
-        vertex(consumer, pose, xb, y0, z, u1, 0f, r, g, b, light, overlay);
-        vertex(consumer, pose, xb, y1, z, u1, CELL_V, r, g, b, light, overlay);
-        vertex(consumer, pose, xa, y1, z, u0, CELL_V, r, g, b, light, overlay);
+        vertex(consumer, pose, xa, y0, z, u0, v0, r, g, b, light, overlay);
+        vertex(consumer, pose, xb, y0, z, u1, v0, r, g, b, light, overlay);
+        vertex(consumer, pose, xb, y1, z, u1, v0 + CELL_V, r, g, b, light, overlay);
+        vertex(consumer, pose, xa, y1, z, u0, v0 + CELL_V, r, g, b, light, overlay);
     }
 
     private static void vertex(VertexConsumer consumer, Matrix4f pose, float x, float y, float z, float u, float v,
@@ -184,6 +197,23 @@ public class EyeDecalLayer<T extends LivingEntity, M extends HumanoidModel<T>> e
         } catch (RuntimeException e) {
             return pack(0, 0x3A2A22);
         }
+    }
+
+    private static String[] shapes() {
+        String[] out = new String[PlayerLook.Slot.EYES.size()];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = PlayerLook.Slot.EYES.option(i);
+        }
+        return out;
+    }
+
+    /** A player's chosen pupil (0 = round, the first row's iris); NPCs keep round pupils. */
+    private static int pupil(LivingEntity entity) {
+        if (entity instanceof Player player) {
+            PlayerLook look = PlayerSkins.lookFor(player);
+            return look == null ? 0 : look.get(PlayerLook.Slot.PUPIL);
+        }
+        return 0;
     }
 
     private static int shape(String id) {

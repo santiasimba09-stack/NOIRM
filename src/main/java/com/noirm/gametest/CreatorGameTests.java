@@ -173,7 +173,7 @@ public final class CreatorGameTests {
             helper.assertTrue(PlayerLook.load(look.save()).equals(look), "NBT round trip " + look);
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             look.encode(buf);
-            helper.assertTrue(buf.readableBytes() < 48, "the packet is small: " + buf.readableBytes() + " bytes");
+            helper.assertTrue(buf.readableBytes() < 64, "the packet is small (a byte per part, 3 per colour): " + buf.readableBytes() + " bytes");
             helper.assertTrue(PlayerLook.decode(buf).equals(look), "packet round trip");
         }
         // Unknown ids (an option removed in a later version) fall back instead of failing.
@@ -315,11 +315,17 @@ public final class CreatorGameTests {
                     case EYES -> {
                         paths.add(ninja + "eyes_" + id);
                         paths.add(ninja + "iris_" + id);
-                        // the dojutsu overlays are drawn per eye style, to fit its lids
-                        paths.add("textures/entity/sharingan_eyes_" + id);
-                        paths.add("textures/entity/byakugan_eyes_" + id);
+                        // the dojutsu overlays are drawn per eye style, to fit its lids (the creator wave's newer
+                        // shapes use the first style's; their high-detail atlas has the Sharingan and Byakugan)
+                        if (i < 5) {
+                            paths.add("textures/entity/sharingan_eyes_" + id);
+                            paths.add("textures/entity/byakugan_eyes_" + id);
+                        }
                     }
                     case BROWS -> paths.add(ninja + "brows_" + id);
+                    case EYE_DETAIL -> { if (!id.equals("none")) paths.add(player + "eye_" + id); }
+                    case FACE_PAINT -> { if (!id.equals("none")) paths.add(player + "paint_" + id); }
+                    case TATTOO -> { if (!id.equals("none")) paths.add(player + "tattoo_" + id); }
                     case HAIR -> { if (!id.equals("none")) paths.add(ninja + "scalp_" + com.noirm.creator.HairStyles.scalp(id)); }
                     case BODY -> { if (!id.equals("average")) paths.add(player + "build_" + id); }
                     case FRAME -> { if (id.equals("feminine")) paths.add(player + "under_top"); }

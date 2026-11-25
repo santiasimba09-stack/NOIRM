@@ -56,7 +56,9 @@ public final class CommandGuide {
                 .add("creator", "/noirm creator", "/noirm creator", false)
                 .add("creator_height", "/noirm creator height <0.85-1.15>", "/noirm creator height 1.1", false)
                 .add("creator_reroll", "/noirm creator reroll", "/noirm creator reroll", true)
-                .add("creator_skip", "/noirm creator skip", "/noirm creator skip", true);
+                .add("creator_skip", "/noirm creator skip", "/noirm creator skip", true)
+                .add("creator_set", "/noirm creator set <part> <option>", "/noirm creator set hair drill_spikes", true)
+                .add("creator_colour", "/noirm creator colour <colour> <rrggbb>", "/noirm creator colour hair2 38D0C0", true);
         section("combat")
                 .add("mode", "/noirm combat <on|off>", "/noirm combat on", false)
                 .add("style", "/noirm style", "/noirm style", false)

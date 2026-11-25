@@ -418,7 +418,8 @@ LASH = hx("#0e090b")
 LID = hx("#3e211c")
 HOOD = hx("#2a1410")      # the brow's shadow on the upper lid (laid over the skin, partly see-through)
 
-EYE_STYLES = ("round", "sharp", "wide", "narrow", "pale")
+EYE_STYLES = ("round", "sharp", "wide", "narrow", "pale")   # the shapes with their own dojutsu and sage layers
+ALL_EYES = tuple(A.EYE_SHAPES)                              # every shape (eyes_* and iris_* parts)
 
 
 def head_front(part, fn):
@@ -491,11 +492,8 @@ def upper_lid(f, cx, s):
     dirx = -1 if cx < 4 else 1
     up = lid_points(cx, s, "top", n=40)
     lid = A.crisp(stroke(f, [(x, y - s["lash"] * 0.3) for x, y in up], s["lash"] * 0.4, s["lash"]))
-    ox, oy = up[-1]
-    oy -= s["lash"] * 0.3
-    wing = A.crisp(stroke(f, [(ox - dirx * 0.15, oy), (ox + dirx * s["wing"], oy - 0.02 - s["wing"] * 0.12)],
-                          s["lash"] * 0.85, 0.14))
-    return np.maximum(lid, wing)
+    # (the old flick past the outer corner is gone: the owner's rule, nothing black runs past the eye)
+    return lid
 
 
 def visible_iris(f, cx, s):
@@ -532,9 +530,7 @@ def part_eyes(style):
             gap = lash_y - Y
             near = A.crisp(((gap > 0) & (gap < s["hood"] * 0.55) & span).astype(np.float32))
             far = A.crisp(((gap >= s["hood"] * 0.55) & (gap < s["hood"]) & span & (u > 0.12) & (u < 0.9)).astype(np.float32))
-            shade = near * 0.42 + far * 0.2
-            rgb = np.where((shade > a)[..., None], np.array(HOOD, np.float32), rgb)
-            a = np.maximum(a, shade)
+            # (no lid shadow: the owner's rule, 2026-11-12; the high-detail eye on top has none either)
             # the white: only where the iris isn't; the row under the lid in its shadow, the inner
             # corner pinker
             white = inside * (1 - iris)
@@ -568,12 +564,37 @@ BROW_SHAPES = {
     "thick":  (((-1.35, 3.24), (0.05, 2.7), (1.55, 2.84)), 0.66, 0.38),
     "fierce": (((-1.3, 3.36), (0.2, 2.72), (1.6, 2.44)), 0.54, 0.2),
     "soft":   (((-1.25, 3.16), (0.05, 2.72), (1.45, 2.88)), 0.38, 0.18),
+    # the creator wave (2026-11-19)
+    "arched":   (((-1.3, 3.28), (0.1, 2.5), (1.55, 2.98)), 0.44, 0.16),
+    "straight": (((-1.35, 3.08), (0.1, 3.0), (1.55, 2.96)), 0.5, 0.3),
+    "angled":   (((-1.25, 3.42), (0.4, 2.86), (1.65, 2.3)), 0.62, 0.12),
+    "short":    (((-0.9, 3.14), (-0.1, 2.86), (0.75, 2.86)), 0.56, 0.4),
+    "bushy":    (((-1.4, 3.2), (0.05, 2.62), (1.6, 2.8)), 0.86, 0.5),
+    "dots":     None,   # two round dots high on the brow (a noble's look)
+    "split":    (((-1.3, 3.24), (0.15, 2.74), (1.6, 2.6)), 0.58, 0.22),   # cut through by a scar line
+    "none":     None,   # shaved off
 }
+BROW_ALL = tuple(BROW_SHAPES)
 
 
 def part_brows(style):
-    pts, w_in, w_out = BROW_SHAPES[style]
     p = Part()
+    if style == "none":
+        return p
+    if style == "dots":
+        def dots(f):
+            k = f.zeros()
+            a = f.zeros()
+            for cx in A.EYE_XS:
+                sgn = -1 if cx < 4 else 1
+                cov = A.crisp(ell(f, cx + sgn * 0.05, 2.45, 0.5, 0.4))
+                lit = A.crisp(ell(f, cx, 2.35, 0.26, 0.18))
+                k = np.where(cov > a, np.where(lit > 0, -0.5, -1.4), k)
+                a = np.maximum(a, cov)
+            return k, a
+        head_front(p, dots)
+        return p
+    pts, w_in, w_out = BROW_SHAPES[style]
 
     def fn(f):
         k = f.zeros()
@@ -582,6 +603,10 @@ def part_brows(style):
             sgn = -1 if cx < 4 else 1
             ctrl = [(cx + sgn * x, y) for x, y in pts]
             cov = A.crisp(stroke(f, bezier(ctrl[0], ctrl[1], ctrl[2], 24), w_in, w_out))
+            if style == "split" and cx > 4:
+                # a clean gap where a blade once cut the brow (texture-right brow only)
+                gap = np.abs((f.X - (cx + 0.55)) + (f.Y - 2.7) * 0.35) < 0.17
+                cov = cov * (~gap)
             # a lit upper edge, a dark body; strands at the inner end
             above = A.crisp(stroke(f, bezier((ctrl[0][0], ctrl[0][1] - 0.12), (ctrl[1][0], ctrl[1][1] - 0.12),
                                             (ctrl[2][0], ctrl[2][1] - 0.08), 24), w_in * 0.45, w_out * 0.3))
@@ -938,6 +963,45 @@ def _stripes(f):
         b = stroke(f, [(0.95, 5.0), (1.1, 6.6)], 0.22, 0.05, X=X)
         return np.maximum(a, b)
     return colour_layer(f, mirrored(f, one), hx("#2f4f8a"), 0.3 * sstep(4.6, 5.4, f.Y) - 0.3 * sstep(5.5, 6.9, f.Y))
+
+
+# the creator wave (2026-11-19): small natural marks (face paint and tattoos are tinted player parts instead)
+@mark("mole")
+def _mole(f):
+    cov = A.crisp(ell(f, 6.05, 6.25, 0.13, 0.12))
+    return colour_layer(f, cov * 0.9, hx("#3e2418"))
+
+
+@mark("heavy_freckles")
+def _heavy_freckles(f):
+    cov = f.zeros()
+    rng = np.random.RandomState(77)
+    for _ in range(46):
+        x = rng.uniform(0.6, 7.4)
+        y = rng.uniform(4.9, 6.5) - 0.5 * np.exp(-((x - 4) / 1.0) ** 2)
+        if abs(x - 4) < 0.5 and y > 5.6:
+            continue
+        cov = np.maximum(cov, ell(f, x, y, rng.uniform(0.06, 0.1), 0.065) * rng.uniform(0.45, 0.8))
+    return colour_layer(f, cov, hx("#6e3e24"))
+
+
+@mark("birthmark")
+def _birthmark(f):
+    g = fbm(f.X * 1.8, f.Y * 1.8, 41)
+    blob = np.exp(-(((f.X - 1.3) / 0.95) ** 2 + ((f.Y - 6.0) / 0.75) ** 2))
+    cov = A.crisp(np.clip((blob * (0.7 + 0.6 * g) - 0.45) * 6, 0, 1)) * 0.55
+    return colour_layer(f, cov, hx("#8a3a3a"))
+
+
+@mark("blush")
+def _blush(f):
+    def one(f, X):
+        cov = f.zeros()
+        for i in range(3):
+            x = 0.9 + 0.38 * i
+            cov = np.maximum(cov, stroke(f, [(x, 5.55), (x - 0.22, 5.95)], 0.09, 0.06, X=X))
+        return cov
+    return colour_layer(f, mirrored(f, one) * 0.75, hx("#c4505a"))
 
 
 def part_mark(name):
@@ -1590,10 +1654,10 @@ def main():
         parts["shirt_" + s] = part_shirt(s)
     for s in PANTS:
         parts["pants_" + s] = part_pants(s)
-    for s in EYE_STYLES:
+    for s in ALL_EYES:
         parts["eyes_" + s] = part_eyes(s)
         parts["iris_" + s] = part_iris(s)
-    for s in BROW_STYLES:
+    for s in BROW_ALL:
         parts["brows_" + s] = part_brows(s)
     for i, name in enumerate(HAIR):
         parts["scalp_" + name] = part_hair(name, 17 + i * 7, scalp=True)

@@ -87,7 +87,7 @@ def part_jaw(name):
 # Muscle definition: the whole body redrawn (opaque) at a muscle level, over the soft base
 # ---------------------------------------------------------------------------
 
-MUSCLE = {"lean": 0.7, "defined": 1.0, "heavy": 1.35}
+MUSCLE = {"lean": 0.7, "defined": 1.0, "heavy": 1.35, "toned": 0.5, "ripped": 1.7}
 
 
 def part_muscle(name):
@@ -500,7 +500,7 @@ def part_hairlen(name):
 # Body rework (owner, 2026-11-11): the feminine frame, body types, the black top
 # ---------------------------------------------------------------------------
 
-FEM_MUSCLE = {"none": BASE_MUSCLE, "lean": 0.6, "defined": 0.85, "heavy": 1.1}
+FEM_MUSCLE = {"none": BASE_MUSCLE, "lean": 0.6, "defined": 0.85, "heavy": 1.1, "toned": 0.42, "ripped": 1.3}
 
 
 def part_fem(name):
@@ -613,6 +613,396 @@ def part_under_top():
     return p
 
 
+
+# ---------------------------------------------------------------------------
+# The creator wave (2026-11-19): more builds, scars, eye details, face paint and tattoos
+# ---------------------------------------------------------------------------
+
+MORE_BUILDS = ("lean", "wiry", "stocky", "heavy", "hulking")
+
+
+def part_build_more(name):
+    """The new body types' shading (ink deltas over the muscles; widths in client/BodyShape).
+
+    lean: long and light, a soft shadow down the flanks; wiry: ribs, tendons and veins standing out on thin
+    arms; stocky: thick lit traps and shoulders, a short square waist; heavy: a soft rounded belly and chest,
+    no sharp lines; hulking: huge lit shoulders, a deep shadow under heavy pecs, thick forearms."""
+    p = Part()
+
+    def body(f):
+        if f.name in ("top", "bottom"):
+            return None
+        X, Y = f.X, f.Y
+        dk = np.zeros_like(X)
+        cx = np.abs(X - 4)
+        if name == "lean":
+            if f.name in ("front", "back"):
+                dk = np.where((cx > 3.3) & (Y > 3.5) & (Y < 10.5), -0.55, dk)
+            elif f.side:
+                dk = np.where((f.MX < 0.5) & (Y > 3) & (Y < 10), -0.45, dk)
+        elif name == "wiry":
+            if f.side or f.name == "front":
+                lx = f.MX if f.side else np.minimum(X, f.W - X)
+                for i in range(5):
+                    y = 3.6 + 0.62 * i
+                    rib = A.crisp(stroke(f, [(0.15, y), (1.9, y + 0.4)], 0.1, 0.03, X=lx))
+                    dk = np.where(rib > 0, -1.25, dk)
+            if f.name == "front":
+                # the sternum line and a hard notch at the collarbones
+                dk = np.where(A.crisp(stroke(f, [(4, 1.0), (4, 4.4)], 0.1, 0.05)) > 0, -1.1, dk)
+                for sx in (-1, 1):
+                    clav = A.crisp(stroke(f, [(4 + 0.4 * sx, 0.9), (4 + 3.4 * sx, 0.55)], 0.1, 0.05))
+                    dk = np.where(clav > 0, -1.0, dk)
+        elif name == "stocky":
+            if f.name in ("front", "back"):
+                dk = np.where((Y < 1.6) & (cx > 0.8), 0.95, dk)
+                dk = np.where((cx > 3.3) & (Y > 6.5) & (Y < 11.5), -0.9, dk)
+                band = A.crisp(stroke(f, [(0.6, 7.6), (7.4, 7.6)], 0.12, 0.12))
+                dk = np.where((band > 0) & (f.name == "front"), -0.7, dk)
+            elif f.side:
+                dk = np.where(Y < 1.4, 0.8, dk)
+        elif name == "heavy":
+            if f.name == "front":
+                # a round belly washing out the abs, a dark crease under it, a soft fold under the chest
+                belly = np.exp(-(((X - 4) / 2.9) ** 2 + ((Y - 6.4) / 1.9) ** 2))
+                dk = np.where(belly > 0.35, 0.75, dk)
+                dk = np.where(belly > 0.75, 0.95, dk)
+                under = A.crisp(stroke(f, bezier((0.9, 6.9), (4.0, 8.6), (7.1, 6.9), 16), 0.24, 0.24))
+                dk = np.where(under > 0, -1.25, dk)
+                fold = A.crisp(stroke(f, bezier((1.2, 4.0), (2.4, 4.6), (3.6, 4.1), 12), 0.14, 0.1)
+                               + stroke(f, bezier((4.4, 4.1), (5.6, 4.6), (6.8, 4.0), 12), 0.14, 0.1))
+                dk = np.where(fold > 0, -0.9, dk)
+                dk = np.where(A.crisp(ell(f, 4.0, 6.9, 0.16, 0.2)) > 0, -1.2, dk)
+            elif f.side:
+                dk = np.where((f.MX > f.W - 1.2) & (Y > 5.5) & (Y < 10.5), 0.4, dk)
+                dk = np.where((f.MX < 0.6) & (Y > 4), -0.6, dk)
+            elif f.name == "back":
+                dk = np.where((cx > 3.0) & (Y > 7.0) & (Y < 9.5), -0.7, dk)
+        elif name == "hulking":
+            if f.name in ("front", "back"):
+                dk = np.where((Y < 1.2) & (cx > 1.0) & (cx < 3.6), 0.85, dk)
+                flank = A.crisp(((cx > 3.0) & (Y > 4.2) & (Y < 10.0)).astype(np.float32))
+                dk = np.where(flank > 0, -1.2, dk)
+                if f.name == "front":
+                    for sx in (-1, 1):
+                        pec = A.crisp(stroke(f, bezier((4 + 0.3 * sx, 4.6), (4 + 2.0 * sx, 5.1), (4 + 3.6 * sx, 3.6), 14),
+                                             0.26, 0.12))
+                        dk = np.where(pec > 0, -1.4, dk)
+            elif f.side:
+                dk = np.where(Y < 1.8, 0.9, dk)
+        return A.delta(dk)
+
+    def arm(f):
+        if f.name in ("top", "bottom"):
+            return None
+        X, Y = f.X, f.Y
+        dk = np.zeros_like(X)
+        lx = A.lateral(f) if not f.side else f.MX
+        if name == "wiry":
+            # a tendon down the forearm and a vein over it
+            vein = A.crisp(stroke(f, bezier((1.2, 5.5), (1.7, 8.0), (1.3, 11.0), 14), 0.09, 0.07, X=lx))
+            dk = np.where(vein > 0, -1.0, dk)
+            ten = A.crisp(stroke(f, [(2.6, 7.0), (2.4, 11.2)], 0.08, 0.05, X=lx))
+            dk = np.where(ten > 0, 0.8, dk)
+        elif name in ("stocky", "hulking"):
+            cap = A.crisp(stroke(f, bezier((0.2, 3.4), (2.0, 4.3), (3.8, 3.4), 12), 0.24, 0.24, X=lx))
+            dk = np.where(cap > 0, -1.3, dk)
+            dk = np.where((Y < 0.9) & (lx > 0.8), 0.6, dk)
+            if name == "hulking":
+                fore = A.crisp(stroke(f, bezier((0.4, 6.4), (2.0, 7.0), (3.6, 6.4), 12), 0.16, 0.16, X=lx))
+                dk = np.where(fore > 0, -1.1, dk)
+        elif name == "heavy":
+            dk = np.where((Y > 1.0) & (Y < 4.5) & (lx > 2.6), 0.35, dk)
+        elif name == "lean":
+            dk = np.where((lx < 0.4) & (Y > 2) & (Y < 11), -0.4, dk)
+        return A.delta(dk)
+
+    paint(p, "body", body, light=False)
+    for box in ARMS:
+        paint(p, box, arm, light=False)
+    return p
+
+
+MORE_SCARS = ("lip", "jaw", "cross", "brow", "claws", "burn", "chest_claws", "shoulder", "belly")
+
+
+def part_scar_more(name):
+    p = Part(tint=False)
+
+    def head(fn):
+        paint(p, "head", lambda f: fn(f) if f.name == "front" else None, light=False)
+
+    if name == "lip":
+        pts = [(4.75, 6.05), (4.95, 6.65), (5.1, 7.25)]
+        head(lambda f: scar_rgb(f, stroke(f, pts, 0.16, 0.1), pts))
+    elif name == "jaw":
+        pts = [(0.5, 6.6), (1.6, 7.35), (2.9, 7.75)]
+        head(lambda f: scar_rgb(f, stroke(f, pts, 0.2, 0.12), pts, [(1.3, 7.0, 1.5, 7.6), (2.2, 7.4, 2.35, 7.95)]))
+    elif name == "cross":
+        a1 = [(5.1, 5.1), (7.0, 6.9)]
+        a2 = [(7.0, 5.1), (5.1, 6.9)]
+
+        def fn(f):
+            rgb1, al1 = scar_rgb(f, stroke(f, a1, 0.2, 0.12), a1)
+            rgb2, al2 = scar_rgb(f, stroke(f, a2, 0.2, 0.12), a2)
+            return np.where((al2 > al1)[..., None], rgb2, rgb1), np.maximum(al1, al2)
+        head(fn)
+    elif name == "brow":
+        pts = [(6.0, 1.9), (6.45, 2.75), (6.85, 3.55)]
+        head(lambda f: scar_rgb(f, stroke(f, pts, 0.16, 0.1), pts))
+    elif name == "claws":
+        lines = [[(0.4 + 0.55 * i, 4.9 + 0.1 * i), (1.3 + 0.6 * i, 7.3)] for i in range(3)]
+
+        def fn(f):
+            rgb = np.zeros(f.X.shape + (3,), np.float32)
+            a = f.zeros()
+            for pts in lines:
+                r, al = scar_rgb(f, stroke(f, pts, 0.2, 0.06), pts)
+                rgb = np.where((al > a)[..., None], r, rgb)
+                a = np.maximum(a, al)
+            return rgb, a
+        head(fn)
+    elif name == "burn":
+        def fn(f):
+            g = fbm(f.X * 2.2, f.Y * 2.2, 57)
+            blob = np.exp(-(((f.X - 6.4) / 1.5) ** 2 + ((f.Y - 5.6) / 1.6) ** 2))
+            cov = np.clip((blob * (0.65 + 0.7 * g) - 0.4) * 5, 0, 1)
+            keep = 1 - sstep(0.9, 0.6, np.abs(f.Y - A.EYE_Y) / 0.9) * (np.abs(f.X - 5.75) < 1.6)   # the eye stays clear
+            cov = A.crisp(cov * keep) * 0.8
+            rgb = tone(hx("#b8705e"), 0.6 * (g - 0.5) - 0.4 * sstep(0.5, 0.9, g))
+            return rgb, cov
+        head(fn)
+    elif name == "chest_claws":
+        lines = [[(1.8 + 1.1 * i, 2.0), (3.0 + 1.1 * i, 8.4)] for i in range(3)]
+
+        def fn(f):
+            if f.name != "front":
+                return None
+            rgb = np.zeros(f.X.shape + (3,), np.float32)
+            a = f.zeros()
+            for pts in lines:
+                r, al = scar_rgb(f, stroke(f, pts, 0.32, 0.08), pts)
+                rgb = np.where((al > a)[..., None], r, rgb)
+                a = np.maximum(a, al)
+            return rgb, a
+        paint(p, "body", fn, light=False)
+    elif name == "shoulder":
+        def fn(f):
+            if f.name not in ("front", "left"):
+                return None
+            pts = [(0.3, 1.0), (1.9, 2.4), (3.7, 3.0)]
+            return scar_rgb(f, stroke(f, pts, 0.42, 0.18), pts, [(1.1, 1.4, 0.9, 2.2), (2.6, 2.3, 2.5, 3.1)])
+        paint(p, "larm", fn, light=False)
+    elif name == "belly":
+        def fn(f):
+            if f.name != "front":
+                return None
+            pts = [(2.4, 7.0), (4.5, 7.4), (6.3, 6.9)]
+            st = [(3.1, 6.8, 3.2, 7.6), (4.2, 7.0, 4.3, 7.8), (5.4, 6.8, 5.5, 7.6)]
+            return scar_rgb(f, stroke(f, pts, 0.34, 0.16), pts, st)
+        paint(p, "body", fn, light=False)
+    return p
+
+
+# Eye details (round the eye, never in it: the high-detail eye is drawn on top)
+EYE_DETAILS = ("bags", "dark_circles", "crows_feet", "red_liner", "tear_mark", "veins")
+
+
+def part_eye_detail(name):
+    tinted = name in ("bags", "dark_circles", "crows_feet", "veins")
+    p = Part(tint=tinted)
+
+    def fn(f):
+        X, Y = f.X, f.Y
+        if tinted:
+            dk = np.zeros_like(X)
+        else:
+            rgb = np.zeros(X.shape + (3,), np.float32)
+            a = np.zeros_like(X)
+        for cx in A.EYE_XS:
+            sgn = -1 if cx < 4 else 1                 # towards the outer corner
+            s = A.EYE_SHAPES["round"]
+            if name == "bags":
+                line = A.crisp(stroke(f, bezier((cx - sgn * 0.7, 5.15), (cx + sgn * 0.1, 5.45), (cx + sgn * 0.9, 5.1), 14),
+                                      0.1, 0.05))
+                dk = np.where(line > 0, -0.9, dk)
+                pad = A.crisp(np.exp(-(((X - cx) / 0.9) ** 2 + ((Y - 5.0) / 0.22) ** 2)) - 0.5 + 0.5)
+                dk = np.where((pad > 0) & (line == 0), 0.35, dk)
+            elif name == "dark_circles":
+                ring = np.exp(-(((X - cx) / 1.1) ** 2 + ((Y - 5.05) / 0.35) ** 2))
+                dk = np.where(A.crisp(ring - 0.45 + 0.5) > 0, -1.0, dk)
+            elif name == "crows_feet":
+                for ang in (-0.35, 0.0, 0.35):
+                    x0 = cx + sgn * 1.55
+                    line = A.crisp(stroke(f, [(x0, A.EYE_Y + ang * 0.2), (x0 + sgn * 0.6, A.EYE_Y + ang * 0.9)], 0.1, 0.04))
+                    dk = np.where(line > 0, -0.8, dk)
+            elif name == "veins":
+                x0 = cx + sgn * 1.75
+                line = A.crisp(stroke(f, bezier((x0, 2.9), (x0 + sgn * 0.35, 3.5), (x0 - sgn * 0.05, 4.1), 10), 0.12, 0.07))
+                dk = np.where(line > 0, -0.9, dk)
+            elif name == "red_liner":
+                # a thin red paint line under the eye, from its middle out (it stops short of the outer point)
+                xin, xout = A.corner_xs(cx, s)
+                xs = np.linspace(xin + (xout - xin) * 0.35, xin + (xout - xin) * 0.92, 12)
+                top, bottom = A.lid_curves(xs, cx, s)
+                pts = [(x, y + 0.32) for x, y in zip(xs, bottom)]
+                cov = A.crisp(stroke(f, pts, 0.12, 0.06))
+                rgb = np.where(cov[..., None] > 0, np.array(hx("#b4202a"), np.float32), rgb)
+                a = np.maximum(a, cov)
+            elif name == "tear_mark":
+                if cx > 4:
+                    continue   # one tear mark, under the texture-left eye's outer corner
+                cov = A.crisp(ell(f, cx + sgn * 1.0, 5.45, 0.17, 0.2))
+                rgb = np.where(cov[..., None] > 0, np.array(hx("#9e1a24"), np.float32), rgb)
+                a = np.maximum(a, cov)
+        if tinted:
+            return A.delta(dk)
+        return rgb, a
+    paint(p, "head", lambda f: fn(f) if f.name == "front" else None, light=False)
+    return p
+
+
+# Face paint (tinted by the paint colour: gray 128 is the colour itself, a little dry-brush grain)
+FACE_PAINT = ("eye_band", "cheek_fangs", "jaw_lines", "chin_stripe", "forehead_dot", "crescent", "cheek_bars",
+              "tear_trails", "lightning", "spiral", "brow_flames", "half_mask")
+
+
+def brush(f, cov, seed):
+    """Paint coverage with a dry-brush edge and a little grain in its tone."""
+    g = grain(f, seed)
+    k = (g - 0.5) * 0.35 - 0.25 * (fbm(f.X * 3, f.Y * 3, seed + 1) > 0.66)
+    return k, A.crisp(cov)
+
+
+def part_paint(name):
+    p = Part()
+
+    def fn(f):
+        if f.name != "front":
+            return None
+        X, Y = f.X, f.Y
+        cov = np.zeros_like(X)
+        mx = np.minimum(X, 8 - X)      # mirrored: distance from the nearer side edge
+        if name == "eye_band":
+            # a band across both eyes, ragged at the ends (the eyes themselves are drawn over it)
+            cov = (np.abs(Y - 4.35) < 0.75 + 0.18 * fbm(X * 2, Y, 3)) * (mx > 0.15)
+        elif name == "cheek_fangs":
+            for x in (1.15, 6.85):
+                cov = np.maximum(cov, stroke(f, [(x - 0.3, 5.25), (x, 6.75)], 0.38, 0.02))
+                cov = np.maximum(cov, stroke(f, [(x + 0.35, 5.3), (x + 0.15, 6.3)], 0.26, 0.02) * (x < 4))
+                cov = np.maximum(cov, stroke(f, [(x - 0.75, 5.3), (x - 0.55, 6.3)], 0.26, 0.02) * (x > 4))
+        elif name == "jaw_lines":
+            cov = stroke(f, [(0.2, 6.2), (1.4, 7.0), (2.6, 7.75)], 0.26, 0.08, X=mx)
+        elif name == "chin_stripe":
+            cov = stroke(f, [(4.0, 6.95), (4.0, 8.0)], 0.5, 0.42)
+        elif name == "forehead_dot":
+            cov = ell(f, 4.0, 3.0, 0.3, 0.32)          # between the brows, under any fringe
+        elif name == "crescent":
+            d1 = np.hypot((X - 4.0) / 0.8, (Y - 2.75) / 0.6)
+            d2 = np.hypot((X - 4.0) / 0.66, (Y - 2.45) / 0.5)
+            cov = (d1 < 1.0) & (d2 > 1.0)
+        elif name == "cheek_bars":
+            for i in range(3):
+                y = 5.25 + 0.5 * i
+                cov = np.maximum(cov, stroke(f, [(0.3, y), (1.7 - 0.2 * i, y + 0.08)], 0.36, 0.26, X=mx))
+        elif name == "tear_trails":
+            cov = stroke(f, bezier((2.05, 5.0), (2.15, 6.0), (1.85, 7.6), 12), 0.26, 0.08, X=mx)
+        elif name == "lightning":
+            pts = [(6.1, 4.95), (6.7, 5.6), (6.15, 5.85), (6.9, 6.7), (6.35, 6.95), (7.1, 7.9)]
+            cov = stroke(f, pts, 0.22, 0.1)
+        elif name == "spiral":
+            t = np.linspace(0, 2.4 * math.pi, 44)
+            r = 0.1 + 0.15 * t
+            pts = list(zip(6.4 + r * np.cos(t), 6.0 + r * np.sin(t) * 0.85))
+            cov = stroke(f, pts, 0.2, 0.26)
+        elif name == "brow_flames":
+            for x0, top in ((0.7, 1.5), (1.45, 0.9), (2.2, 1.3)):
+                cov = np.maximum(cov, stroke(f, bezier((x0 + 0.25, 2.55), (x0 - 0.1, 1.9), (x0 + 0.5, top), 10), 0.5, 0.04, X=mx))
+        elif name == "half_mask":
+            # the lower face painted, its top edge torn like a brush stroke
+            edge = 5.25 + 0.22 * fbm(X * 2.2, 1.0, 11)
+            cov = Y > edge
+        return brush(f, np.asarray(cov, np.float32), 300 + len(name))
+    paint(p, "head", fn, light=False)
+    return p
+
+
+TATTOOS = ("shoulder_seal", "arm_bands", "chest_seal", "back_crest", "flame_sleeve", "spine_marks", "rib_slashes",
+           "leg_bands")
+
+
+def part_tattoo(name):
+    p = Part()
+
+    def seal(f, cx, cy, r):
+        d = np.hypot(f.X - cx, f.Y - cy)
+        ring = np.abs(d - r) < 0.13
+        ang = np.arctan2(f.Y - cy, f.X - cx)
+        ticks = (np.abs(d - r - 0.32) < 0.18) & (np.cos(ang * 8) > 0.75)
+        t = np.linspace(0, 2.2 * math.pi, 40)
+        rr = 0.06 + r * 0.12 * t
+        spiral = stroke(f, list(zip(cx + rr * np.cos(t), cy + rr * np.sin(t))), 0.1, 0.12) > 0.5
+        return ring | ticks | spiral
+
+    def fn_body(f):
+        X, Y = f.X, f.Y
+        cov = np.zeros_like(X, dtype=bool)
+        if name == "chest_seal" and f.name == "front":
+            cov = seal(f, 4.0, 6.4, 1.9)
+        elif name == "back_crest" and f.name == "back":
+            # three blades meeting in a ring, between the shoulder blades
+            d = np.hypot(X - 4, Y - 3.6)
+            cov = np.abs(d - 0.9) < 0.14
+            for k in range(3):
+                a = -math.pi / 2 + 2 * math.pi * k / 3
+                tip = (4 + 2.2 * math.cos(a), 3.6 + 2.2 * math.sin(a))
+                cov = cov | (stroke(f, [(4 + 0.9 * math.cos(a), 3.6 + 0.9 * math.sin(a)), tip], 0.4, 0.02) > 0.5)
+        elif name == "spine_marks" and f.name == "back":
+            for i in range(6):
+                y = 1.5 + 1.5 * i
+                cov = cov | (stroke(f, [(3.4, y), (4.0, y + 0.5), (4.6, y)], 0.16, 0.16) > 0.5)
+        elif name == "rib_slashes" and (f.side or f.name == "front"):
+            lx = f.MX if f.side else np.minimum(X, f.W - X)
+            for i in range(3):
+                y = 4.4 + 0.9 * i
+                cov = cov | (stroke(f, [(0.1, y), (1.9, y - 0.6)], 0.42, 0.06, X=lx) > 0.5)
+        return brush(f, cov.astype(np.float32), 500 + len(name)) if cov.any() else None
+
+    def fn_arm(left):
+        def fn(f):
+            if f.name in ("top", "bottom"):
+                return None
+            X, Y = f.X, f.Y
+            cov = np.zeros_like(X, dtype=bool)
+            if name == "shoulder_seal" and left and (f.name == "front" or (f.side and A.is_outer(f))):
+                cov = seal(f, 2.0, 2.3, 1.25)
+            elif name == "arm_bands":
+                for y in (7.4, 8.2):
+                    cov = cov | (np.abs(Y - y) < 0.2)
+            elif name == "flame_sleeve" and not left:
+                # flames climbing from a band at the wrist: inked outlines, hollow inside
+                g = fbm(X * 1.6, Y * 0.9, 61 + (f.name == "back"))
+                top = 6.6 - 2.4 * np.abs(np.sin(X * 1.6 + 0.8 * g)) - 0.8 * g
+                flame = (Y > top) & (Y < 11.6)
+                inner = (Y > top + 0.55) & (Y < 10.6) & (np.abs(np.sin(X * 1.6 + 0.8 * g)) > 0.25)
+                cov = flame & ~inner
+            return brush(f, cov.astype(np.float32), 520 + len(name)) if cov.any() else None
+        return fn
+
+    def fn_leg(f):
+        if name != "leg_bands" or f.name in ("top", "bottom"):
+            return None
+        cov = (np.abs(f.Y - 7.2) < 0.22) | (np.abs(f.Y - 8.0) < 0.12)
+        return brush(f, cov.astype(np.float32), 540)
+
+    paint(p, "body", fn_body, light=False)
+    paint(p, "larm", fn_arm(True), light=False)
+    paint(p, "rarm", fn_arm(False), light=False)
+    for leg in LEGS:
+        paint(p, leg, fn_leg, light=False)
+    return p
+
+
 def main():
     parts = {"skin_base": part_skin_base()}
     for name in FEM_MUSCLE:
@@ -620,6 +1010,16 @@ def main():
     for name in ("slim", "athletic", "broad"):
         parts["build_" + name] = part_build(name)
     parts["under_top"] = part_under_top()
+    for name in MORE_BUILDS:
+        parts["build_" + name] = part_build_more(name)
+    for name in MORE_SCARS:
+        parts["scar_" + name] = part_scar_more(name)
+    for name in EYE_DETAILS:
+        parts["eye_" + name] = part_eye_detail(name)
+    for name in FACE_PAINT:
+        parts["paint_" + name] = part_paint(name)
+    for name in TATTOOS:
+        parts["tattoo_" + name] = part_tattoo(name)
     for name in NOSES:
         parts["nose_" + name] = feature_part(nose=name)
     for name in MOUTHS:

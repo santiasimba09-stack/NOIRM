@@ -6,6 +6,32 @@ uses one small kit in `src/main/java/com/noirm/client/ui/` (client-only). Phase 
 `MissionBoardScreen`, `MasterScreen`, `BingoBookScreen`, `HandbookScreen` and `CrewOrdersScreen`, so
 every NOIRM screen is now on the kit. New screens start from one of these (see "A new screen" below).
 
+## The ninja look (owner's brief, 2026-11-19)
+
+*"It looks good but not like something you would put in a ninja mod."* The kit now draws from a texture
+atlas instead of flat fills, so every screen and the HUD changed at once. Three looks were mocked on the
+creator and the jutsu screen (`docs/screenshots/cu-ui-directions.jpg`):
+
+| Look | What it is | Verdict |
+|---|---|---|
+| **Shoji** (chosen) | black-lacquer wood frames with brass corner caps around dark washi paper with a faint shoji lattice; header rails of lighter wood; red hanko seals; wooden tag buttons, red lacquer for the primary action; ink-brush strokes for the active tab and section rules | the most "ninja village", warm, and the most readable: light text on dark paper, the frame is quiet enough to repeat on every screen |
+| Scroll | tea-stained paper with a ragged ink edge, rolled on wooden rods with gilt caps | striking once, but the rollers on every panel get heavy and brown-on-brown lowers contrast |
+| Steel | forehead-protector plates with rivets around indigo cloth | reads as sci-fi metal more than shinobi; cold next to the game's colours |
+
+- **Where:** `client/ui/Skin` draws each piece from `textures/gui/ui/shoji.png` (256×256), made by
+  `tools/uigen/gen_ui.py` (the atlas layout is in its docstring). Edit the script and rerun it: never paint
+  the PNG by hand. Pieces are nine-sliced with the middle **tiled**, not stretched, so the pixels stay crisp
+  at any GUI scale. (Our own nine-slice: vanilla's divides by zero on some sizes.)
+- **Pieces:** `Skin.panel`, `card`, `well`, `button`, `headerRail`, `swash` (red brush behind a big title),
+  `seal` (a hanko stamp, tinted), `stroke` (a brush stroke, tinted), `rule`, `barFrame`, `corners`.
+- **Tokens follow the look:** `Theme`'s surfaces are warm lacquer and paper browns, so a screen's own flat
+  fills sit well inside the textured panels. The other looks are still in the atlas script and selectable
+  for comparison with the environment variable `NOIRM_UI_LOOK=scroll|steel` (default shoji).
+- **Behind screens:** the scrim gets an ink wash at the top and bottom edges. **HUD:** bars sit on an
+  ink-brush smear, so they read over a bright sky.
+- **Readability:** text stays bone white on dark paper; the lattice lines are faint and never under body
+  text's contrast; check every change at GUI scale 2 and auto.
+
 ## Tokens (`Theme`)
 
 All colours live in `Theme`. Don't add hex colours to a screen unless they mean something that only
@@ -34,14 +60,14 @@ clickable row). Colour maths: `Theme.mix`, `fade`, `alpha`, `darken`.
 
 | Piece | Call | Look |
 |---|---|---|
-| Panel | `Ui.panel` | flat `SURFACE` + one hairline. No double frames, rivets, gradients or paper lines. |
-| Header | `Ui.header` (+ `Ui.seal`) | one 14-px row: a 13-px seal with one glyph (忍 任 師 賞 店 令), the title in bone, a note on the right that gets whatever the title leaves (at least half; `Ui.headerNoteWidth` says if it was cut, then tooltip it) |
-| Card | `Ui.card` | a flat raised block; an optional 1-px accent bar on the left says its state (gold = you can, green = done) |
-| Section header | `Ui.section` | small UPPER-CASE label + a thin rule to the right |
-| Button | `Ui.button(..., hover, enabled, accent, primary)` | flat; an accent underline grows from the centre on hover; primary = tinted + full underline |
+| Panel | `Ui.panel` | the lacquer frame (7 px) around dark paper. Keep 11–12 px padding inside it. One frame per screen. |
+| Header | `Ui.header` (+ `Ui.seal`) | one 14-px row on a wooden header rail: a hanko seal with one glyph (忍 任 師 賞 店 令), the title in bone, a note on the right that gets whatever the title leaves (at least half; `Ui.headerNoteWidth` says if it was cut, then tooltip it) |
+| Card | `Ui.card` | a raised paper block; an optional 2-px accent bar on the left says its state (gold = you can, green = done) |
+| Section header | `Ui.section` | small UPPER-CASE label + a brush rule to the right |
+| Button | `Ui.button(..., hover, enabled, accent, primary)` | a wooden tag that lightens on hover with a brush mark growing under the label; primary = red lacquer with a gilt edge |
 | Toggle / lit pill | `Ui.toggle` | like a button, tinted while on |
-| Tabs | `TabStrip.draw` + `at()` | text only; one underline slides (eases) to the active tab |
-| Segmented control | `Ui.segment` (+ `segX/segW` for hit boxes) | equal parts, hairline separators, active = tint + underline |
+| Tabs | `TabStrip.draw` + `at()` | text over a brush rule; one brush stroke slides (eases) to the active tab; the gaps shrink before labels are cut |
+| Segmented control | `Ui.segment` (+ `segX/segW` for hit boxes) | equal parts, hairline separators, active = tint + brush stroke |
 | Slider | `Ui.slider` | 2-px track, accent fill, small bone knob |
 | Progress / stat bar | `Ui.bar` | thin, corner pixels left out (reads rounded), optional light "ghost" trail after a drop |
 | Card / list row | `Ui.row` | transparent → raised on hover; selected = tint + 1-px accent bar on the left |
@@ -49,10 +75,11 @@ clickable row). Colour maths: `Theme.mix`, `fade`, `alpha`, `darken`.
 | Scrollbar | `Ui.scrollbar` | 1-px track, 2-px thumb, only when the list overflows |
 | Text | `Ui.fit` / `Ui.text` / `Ui.wrap` / `Ui.truncated` | cut with "…"; if text is cut, show it whole as a tooltip |
 | Icon + label | `Ui.iconLabel` | glyph, gap, label |
-| Tooltips | implement `NoirmStyled` on the screen | `TooltipStyle` gives them the ash surface and an iron hairline |
-| HUD row | `HudKit.barRow` | upper-case caption + number (fades) over a 3-px bar, no panel |
+| Tooltips | implement `NoirmStyled` on the screen | `TooltipStyle` gives them dark paper and a lacquer edge fading to red |
+| HUD row | `HudKit.barRow` | upper-case caption + number (fades) over a 3-px bar on an ink smear, no panel |
 
-Screens draw flat (no text shadow). The HUD draws over the world, so it keeps text shadows but no boxes.
+Screens draw text flat (no text shadow) on the textured pieces. The HUD draws over the world, so it keeps text
+shadows and no boxes.
 
 ## Motion (`Anim`, `Smooth`, `HoverTracker`, `ScreenMotion`)
 
@@ -85,7 +112,9 @@ Screens draw flat (no text shadow). The HUD draws over the world, so it keeps te
   (`HudLayout.bottomRightMinX`) and sized to the screen so nothing runs off the edge.
 - **Hide what isn't relevant:** stats only in combat mode or for a moment when one grows; the clan
   for a few seconds after joining; eyes while active or in combat; the cloak while it matters.
-- Fewer boxes: group with whitespace and a hairline, not frames.
+- Fewer boxes: one lacquer frame (the panel), then group with whitespace, cards and brush rules, not more frames.
+- A long tab body scrolls inside the panel (the creator's tabs): clip with a scissor, cut the hit boxes to
+  what shows, wheel to scroll, a scrollbar when it overflows.
 - **Never drop text silently.** A line that's cut ends in "…"; a list that runs out of room ends its
   last visible line in "…"; either way the whole text is a tooltip under the mouse.
 - **One accent per screen:** `SEAL` red for primary actions and the active tab; `GOLD` only for "you

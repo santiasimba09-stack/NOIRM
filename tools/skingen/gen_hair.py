@@ -756,10 +756,597 @@ def style_twin_tails():
     return s
 
 
+# ---------------------------------------------------------------------------
+# The creator wave (2026-11-19): 35 more styles. Inspired by the shapes of ninja anime in general (spikes,
+# knots, buns, tails, braids), never a copy of one character's hair. They come after "none" in
+# PlayerLook.Slot.HAIR, so every older style keeps its number.
+# ---------------------------------------------------------------------------
+
+def spike_ring(s, el, n, length, width, push, depth=(1.5, 1.9), bend=-20, tip=0.0, gap=(58, 32), shade=(0.7, 1.0),
+               jitter=0.18, twist=15, span=(0, 360), segs=3):
+    """A ring of big spikes at one height, each pointing along push(p, out)."""
+    a0, a1 = span
+    for i in range(n):
+        az = a0 + (a1 - a0) * (i + 0.5 + s.r(-jitter, jitter)) / n
+        if gap is not None and face_gap(az, el, *gap):
+            continue
+        p = surface(az, el, 0.7)
+        out = outward(p)
+        d = unit(push(p, out))
+        s.spike(az, el, d, length * s.r(0.85, 1.15), width * s.r(0.92, 1.08), depth=s.r(*depth), bend=bend * s.r(0.6, 1.3),
+                tip=tip, shade=s.r(*shade), root=p, twist=s.r(-twist, twist), segs=segs)
+
+
+def style_drill_spikes():
+    s = Style("drill_spikes", "spiky", 211, "Drill spikes")
+    # a few huge twisted cones bursting back from the crown, like drill bits
+    shell(s, ROWS, radial(), length=(2.4, 3.0), lift=0.08, tip=0.35, shade=(0.5, 0.78))
+    for el, n, ln, w in ((70, 3, 7.0, 4.2), (40, 5, 7.6, 4.0), (10, 5, 6.4, 3.6)):
+        for i in range(n):
+            az = 110 + 140 * (i + 0.5) / n + s.r(-6, 6)
+            p = surface(az, el, 0.8)
+            d = unit(BACK * 1.0 + outward(p) * 0.7 + UP * 0.35)
+            s.spike(az, el, d, ln * s.r(0.9, 1.1), w, depth=w * 0.8, bend=-14, tip=0.0, shade=s.r(0.7, 1.0), root=p,
+                    segs=4, twist=s.r(30, 60))
+    bangs(s, 4, 2.8, 3.0, spread=(-45, 45), el=52, forward=0.5, bend=-6, tip=0.0)
+    sideburns(s, 2.4, 2.0, tip=0.0)
+    return s
+
+
+def style_flame_spikes():
+    s = Style("flame_spikes", "spiky", 213, "Flame spikes")
+    # tall spikes standing straight up like a flame, tips leaning back
+    shell(s, ROWS_SHORT, radial(180, 90, add=(0, -0.4, 0)), length=(2.4, 3.0), lift=0.3, tip=0.3, shade=(0.5, 0.78))
+    for el, n, ln in ((86, 3, 6.6), (66, 7, 6.2), (44, 9, 5.0), (22, 9, 3.6)):
+        spike_ring(s, el, n, ln, 3.1, lambda p, o: UP * 1.2 + o * 0.45 + BACK * 0.3, bend=-16, gap=(50, 30))
+    bangs(s, 5, 2.8, 2.6, spread=(-50, 50), el=54, droop=0.4, forward=0.6, bend=-30, tip=0.0)
+    sideburns(s, 2.2, 1.9, tip=0.0)
+    return s
+
+
+def style_porcupine():
+    s = Style("porcupine", "spiky", 217, "Porcupine")
+    # many short sharp spikes all over, pointing straight out
+    shell(s, ROWS_SHORT, radial(), length=(2.0, 2.4), lift=0.1, tip=0.4, shade=(0.5, 0.75))
+    for el, n in ((84, 4), (64, 10), (42, 13), (20, 14), (-2, 11)):
+        spike_ring(s, el, n, 2.9, 2.2, lambda p, o: o * 1.0 + UP * 0.15 + BACK * 0.15, depth=(1.2, 1.5), bend=-8,
+                   gap=(54, 30))
+    bangs(s, 6, 2.4, 2.1, spread=(-52, 52), el=52, forward=0.55, bend=-5, tip=0.0)
+    return s
+
+
+def style_windswept():
+    s = Style("windswept", "swept", 219, "Windswept")
+    # every lock blown hard to the character's right, as if running through a storm
+    wind = RIGHT * 1.0 + BACK * 0.45 + UP * 0.1
+    shell(s, ROWS, fixed(wind), length=(3.2, 4.2), lift=0.35, tip=0.1, bend=-14, twist=20)
+    for el, n, ln in ((66, 5, 5.4), (40, 7, 5.6), (14, 7, 4.6)):
+        spike_ring(s, el, n, ln, 3.0, lambda p, o: wind + o * 0.35, bend=-22, gap=(40, 36))
+    bangs(s, 5, 3.8, 2.6, spread=(-50, 50), el=52, droop=0.6, sweep=-0.9, forward=0.3, bend=-10, tip=0.0)
+    return s
+
+
+def style_crown_spikes():
+    s = Style("crown_spikes", "spiky", 223, "Crown spikes")
+    # flat on top, a ring of spikes flaring out around the crown like a crown
+    shell(s, ROWS_SHORT, radial(180, 88), length=(2.6, 3.2), lift=0.0, tip=0.4, bend=-28, shade=(0.55, 0.85))
+    spike_ring(s, 48, 12, 4.8, 3.0, lambda p, o: o * 1.1 + UP * 0.55, bend=-30, gap=(30, 60), jitter=0.05)
+    spike_ring(s, 22, 10, 3.4, 2.8, lambda p, o: o * 1.0 + DOWN * 0.1 + BACK * 0.3, bend=-20, gap=(56, 30))
+    bangs(s, 5, 3.0, 2.6, spread=(-48, 48), el=52, forward=0.4, bend=-20, tip=0.0)
+    sideburns(s, 2.4, 2.0, tip=0.0)
+    return s
+
+
+def style_bedhead():
+    s = Style("bedhead", "messy", 227, "Bedhead")
+    # short, chaotic clumps sticking out every which way
+    shell(s, ROWS_SHORT, radial(add=(0, -0.2, 0)), length=(2.2, 2.8), lift=0.5, tip=0.25, jitter=0.4, bend=20, twist=50)
+    for i in range(22):
+        az = s.r(0, 360)
+        el = s.r(0, 88)
+        if face_gap(az, el, 52, 36):
+            continue
+        p = surface(az, el, 0.7)
+        d = unit(outward(p) * 0.6 + v3(s.r(-1, 1), s.r(-0.8, 0.3), s.r(-0.6, 1)))
+        s.spike(az, el, d, s.r(2.2, 3.2), s.r(2.0, 2.8), depth=1.4, bend=s.r(-70, 70), tip=0.15, shade=s.r(0.65, 1.0),
+                root=p, twist=s.r(-40, 40))
+    bangs(s, 6, 2.8, 2.3, spread=(-55, 55), el=50, forward=0.35, bend=-40, sweep=0.1, tip=0.2)
+    sideburns(s, 2.2, 2.0, tip=0.2)
+    return s
+
+
+def style_messy_layers():
+    s = Style("messy_layers", "messy", 229, "Messy layers")
+    # three layers of choppy locks stacked down to the jaw
+    shell(s, ROWS_SHORT, radial(180, 80, add=(0, 0.25, 0)), length=(3.0, 3.6), lift=0.2, tip=0.15, jitter=0.3, twist=25)
+    for el, n, ln in ((26, 12, 3.4), (2, 12, 3.8), (-20, 9, 3.6)):
+        span = (50, 310) if el > 0 else (75, 285)
+        spike_ring(s, el, n, ln, 3.0, lambda p, o: DOWN * 1.0 + o * 0.45, bend=-18, tip=0.1, gap=None, span=span,
+                   shade=(0.55, 0.9), twist=25)
+    bangs(s, 6, 3.6, 2.6, spread=(-55, 55), el=50, forward=0.3, bend=-28, sweep=0.2, tip=0.1)
+    return s
+
+
+def style_shaggy():
+    s = Style("shaggy", "messy", 231, "Shaggy")
+    # long, uneven locks over the ears and down the nape, a heavy fringe in the eyes
+    shell(s, ROWS, radial(180, 85, add=(0, 0.45, 0)), length=(3.6, 4.4), lift=0.15, tip=0.1, jitter=0.35, twist=30,
+          bend=-10)
+    nape(s, 9, 4.6, 2.8, el=-10, tip=0.0, spread=(95, 265), out_k=0.25)
+    for side in (-1, 1):
+        for j, az in enumerate((70, 84)):
+            p = surface(az * side % 360, 16, 0.5)
+            s.spike(0, 0, unit(DOWN + v3(side * 0.25, 0, 0.1)), 4.6 - j * 0.5, 2.8, depth=1.2, bend=-12, tip=0.05,
+                    shade=0.82 - 0.1 * j, root=p)
+    bangs(s, 7, 4.2, 2.4, spread=(-56, 56), el=50, forward=0.2, bend=-14, sweep=0.15, tip=0.05)
+    return s
+
+
+def style_wolf_cut():
+    s = Style("wolf_cut", "messy", 233, "Wolf cut")
+    # choppy and full on top, thinning into long ragged points at the nape
+    shell(s, ROWS_SHORT, radial(180, 80, add=(0, 0.1, 0)), length=(3.0, 3.6), lift=0.4, tip=0.1, jitter=0.3, twist=30,
+          bend=-8)
+    for i in range(9):
+        az = 110 + 140 * (i + 0.5) / 9 + s.r(-5, 5)
+        p0 = surface(az, 6, 0.4)
+        out = outward(p0)
+        p1 = p0 + DOWN * 2.6 + out * 0.4
+        p2 = p1 + DOWN * s.r(2.4, 3.8) + out * 0.5
+        s.sheet([p0, p1, p2], s.r(2.4, 3.0), depth=0.8, tip=0.1, out=out, shade=s.r(0.55, 0.8), swing=0.5, pivot=p0, hang=True)
+    sideburns(s, 3.4, 2.2, tip=0.0)
+    bangs(s, 5, 3.6, 2.5, spread=(-50, 50), el=50, forward=0.3, bend=-24, sweep=-0.15, tip=0.0)
+    return s
+
+
+def style_mullet():
+    s = Style("mullet", "short", 237, "Mullet")
+    # short and tidy on top and the sides, long at the back
+    shell(s, ROWS_SHORT, radial(180, 70, add=(0, 0.2, 0.2)), length=(2.4, 3.0), lift=0.05, tip=0.45, bend=-32)
+    back_sheets(s, 6.0, n=5, top_el=10, width=3.4, tip=0.3, swing=0.7, spread=(120, 240), flare=0.6)
+    bangs(s, 4, 2.4, 2.6, spread=(-44, 44), el=52, forward=0.3, bend=-34, sweep=0.2, tip=0.4)
+    sideburns(s, 2.0, 1.8, tip=0.4)
+    return s
+
+
+def style_parted():
+    s = Style("parted", "short", 239, "Side part")
+    # neat and short, parted on the character's right and combed over to the left
+    shell(s, ROWS_SHORT, fixed(LEFT * 0.9 + BACK * 0.5 + DOWN * 0.25), length=(2.6, 3.2), lift=0.02, tip=0.45, bend=-30,
+          twist=4, jitter=0.08, shade=(0.66, 1.0))
+    for az, el, ln, w in ((-34, 76, 4.6, 3.2), (-12, 72, 4.4, 3.0), (10, 70, 3.8, 2.8)):
+        p = surface(az, el, 0.5)
+        s.spike(0, 0, unit(LEFT * 1.0 + BACK * 0.2 + UP * 0.1), ln, w, depth=1.4, bend=24, bend_axis=v3(0, 0, -1),
+                tip=0.3, shade=0.95, root=p, segs=3)
+    sideburns(s, 1.8, 1.7, tip=0.5)
+    nape(s, 5, 1.8, 2.6, el=-6, tip=0.5)
+    return s
+
+
+def style_crop():
+    s = Style("crop", "buzz", 241, "Textured crop")
+    # very short faded sides, a short textured top with a blunt fringe
+    shell(s, ROWS_SHORT, radial(180, 60), length=(1.2, 1.5), width=(2.8, 3.2), thick=(0.55, 0.7), lift=0.0, tip=0.8,
+          bend=-15, inset=0.42, skip=lambda az, el: face_gap(az, el, 48, 44), twist=6)
+    shell(s, [(84, 4), (66, 8, -80, 80), (66, 4, 130, 230)], radial(180, 80, add=(0, 0.1, -0.3)), length=(2.2, 2.7),
+          lift=0.3, tip=0.3, bend=-20, skip=None, twist=25, jitter=0.3)
+    bangs(s, 6, 1.8, 2.4, spread=(-42, 42), el=56, droop=0.6, forward=0.5, bend=-10, tip=0.6)
+    return s
+
+
+def style_side_shave():
+    s = Style("side_shave", "buzz", 243, "Side shave")
+    # the character's right side shaved, everything else swept long over to the left
+    shell(s, [(84, 4), (62, 9, -160, 110), (38, 8, -20, 120), (14, 6, 30, 120)], fixed(LEFT * 1.0 + DOWN * 0.5 + BACK * 0.2),
+          length=(3.6, 4.6), lift=0.18, tip=0.15, bend=-20, skip=None, twist=10)
+    for side_pts, w, sh in (([surface(-20, 64, 0.3), surface(40, 52, -0.4), v3(4.4, -5.2, -2.8), v3(4.6, -2.4, -2.6),
+                              v3(4.5, 0.2, -2.0)], 3.8, 1.0),
+                            ([surface(10, 66, 0.3), surface(70, 46, -0.4), v3(4.6, -4.0, 0.0), v3(4.7, -1.0, 0.2)], 3.4, 0.82)):
+        s.sheet(side_pts, w, depth=0.9, tip=0.3, out=v3(1, -0.2, -0.2), shade=sh, swing=0.4, pivot=side_pts[1], hang=True)
+    return s
+
+
+def style_faux_hawk():
+    s = Style("faux_hawk", "buzz", 247, "Faux hawk")
+    # short sides, the middle strip pushed up into a soft peak
+    shell(s, ROWS_SHORT, radial(180, 60), length=(1.2, 1.5), width=(2.8, 3.2), thick=(0.55, 0.7), lift=0.0, tip=0.8,
+          bend=-15, inset=0.42, skip=lambda az, el: face_gap(az, el, 48, 44), twist=6)
+    for i in range(9):
+        t = i / 8
+        el = 40 + 52 * math.sin(math.pi * min(1, t * 1.1))
+        az = 0 if t < 0.55 else 180
+        for dx in (-1.0, 1.0):
+            p = surface(az, el, 0.6) + v3(dx, 0, 0)
+            d = unit(UP * 1.0 + outward(p) * 0.4 + v3(-dx * 0.25, 0, 0.2))
+            s.spike(0, 0, d, 2.8 + 1.4 * math.sin(math.pi * t), 2.4, depth=1.5, bend=-10, tip=0.0, shade=s.r(0.7, 1.0),
+                    root=p, twist=s.r(-12, 12))
+    return s
+
+
+def style_tall_mohawk():
+    s = Style("tall_mohawk", "buzz", 251, "Tall mohawk")
+    # a towering crest of long spikes from the brow to the nape
+    for i in range(13):
+        t = i / 12
+        el = 26 + 64 * math.sin(math.pi * t)
+        az = 0 if t < 0.5 else 180
+        p = surface(az, el, 0.6)
+        d = unit(outward(p) * 1.0 + UP * 0.6 + BACK * 0.25)
+        s.spike(0, 0, d, 5.4 + 2.6 * math.sin(math.pi * t), 2.6, depth=1.9, bend=-14, tip=0.0, shade=s.r(0.7, 1.0),
+                root=p, twist=s.r(-8, 8))
+    return s
+
+
+def style_top_knot_shaved():
+    s = Style("shaved_knot", "buzz", 253, "Shaved knot")
+    # the sides shaved close, the long top gathered into a tight knot on the crown
+    shell(s, ROWS_SHORT, radial(180, 60), length=(1.2, 1.5), width=(2.8, 3.2), thick=(0.55, 0.7), lift=0.0, tip=0.8,
+          bend=-15, inset=0.42, skip=lambda az, el: face_gap(az, el, 48, 44), twist=6)
+    shell(s, [(82, 5), (62, 9)], radial(180, 82, add=(0, -0.6, 0)), length=(2.8, 3.2), lift=-0.1, tip=0.4, bend=-30,
+          skip=lambda az, el: face_gap(az, el, 60, 70), jitter=0.05, twist=4)
+    top = surface(180, 80, -0.3)
+    bun(s, top + v3(0, -1.4, 0.0), 1.5, n=9)
+    tie(s, top + v3(0, -0.2, 0.0), 0.95)
+    return s
+
+
+def style_twin_braids():
+    s = Style("twin_braids", "ponytail", 257, "Twin braids")
+    shell(s, ROWS_SHORT, radial(0, 88, add=(0, 0.3, 0.2)), length=(3.0, 3.6), lift=-0.05, tip=0.35, bend=-26)
+    for side in (-1, 1):
+        root = surface((180 - 62 * side) % 360, 6, -0.5)
+        tie(s, root + v3(side * 0.3, 0.2, 0.2), 0.95)
+        tail(s, root + v3(side * 0.4, 0.3, 0.2), 9.0, 2.3, segs=6, swing=0.9, braid=True, droop=(side * 0.2, 1, 0.1))
+    bangs(s, 6, 2.6, 2.3, spread=(-52, 52), el=52, droop=0.85, forward=0.3, bend=-26, tip=0.3)
+    return s
+
+
+def style_side_braid():
+    s = Style("side_braid", "ponytail", 259, "Side braid")
+    # gathered to the character's left and braided over the shoulder, in front
+    shell(s, ROWS_SHORT, fixed(LEFT * 0.8 + BACK * 0.7 + DOWN * 0.3), length=(3.0, 3.6), lift=-0.05, tip=0.35, bend=-26)
+    root = surface(112, 4, -0.5)
+    tie(s, root + v3(0.4, 0.4, 0.0), 1.0)
+    pts = [root + v3(0.5, 0.4, 0.0)]
+    for p in (v3(5.0, 1.5, -1.2), v3(5.3, 3.5, -2.4), v3(5.2, 5.8, -2.9), v3(5.0, 8.0, -3.0), v3(4.9, 10.0, -3.0)):
+        pts.append(p)
+    width = 2.4
+    for i in range(len(pts) - 1):
+        a, b = pts[i], pts[i + 1]
+        mid = (a + b) / 2
+        side = unit(np.cross(b - a, v3(1, 0, 0)))
+        for j, off in enumerate((-0.45, 0.45)):
+            w = width * (1 - 0.3 * i / len(pts))
+            s.add([a + side * off * width * 0.35, mid + side * off * 0.1, b - side * off * width * 0.35],
+                  [w * 0.55, w * 0.75, w * 0.45], [w * 0.55, w * 0.7, w * 0.4], out=v3(1, 0, -0.3), shade=0.9 - 0.12 * j,
+                  swing=0.5, pivot=pts[0], hang=True)
+    end = pts[-1]
+    s.add([end, end + v3(0, 1.3, 0), end + v3(0, 2.3, 0)], [width * 0.5, width * 0.7, 0.2], [width * 0.4, width * 0.5, 0.2],
+          out=v3(1, 0, -0.3), shade=0.85, tex="sheet", swing=0.5, pivot=pts[0], hang=True)
+    bangs(s, 5, 2.8, 2.4, spread=(-50, 50), el=52, droop=0.8, sweep=0.4, forward=0.3, bend=-26, tip=0.25)
+    return s
+
+
+def style_mushroom():
+    s = Style("mushroom", "bowl", 261, "Mushroom")
+    # a big rounded bowl that flares wide at the brow line and covers the ears
+    shell(s, [(84, 5), (60, 11), (36, 14), (12, 15, 50, 310), (-10, 11, 80, 280)], radial(180, 90, add=(0, 0.5, 0)),
+          length=(3.2, 3.6), width=(3.2, 3.6), lift=0.22, tip=0.9, bend=-14, jitter=0.05, twist=4, skip=None, shade=(0.6, 0.96))
+    bangs(s, 9, 2.5, 2.6, spread=(-64, 64), forward=0.3, bend=-4, tip=0.92, thick=1.2)
+    return s
+
+
+def style_curtain():
+    s = Style("curtain", "long", 263, "Curtain bangs")
+    # parted in the middle, long bangs falling to both sides of the face, jaw length
+    shell(s, ROWS_SHORT, radial(0, 86, add=(0, 0.4, 0.1)), length=(3.0, 3.6), lift=0.0, tip=0.4, bend=-24)
+    for side in (-1, 1):
+        # rooted at the parting, sheets that fall over the forehead and out past the outer brow to the cheek
+        for j, (x0, w) in enumerate(((0.5, 2.6), (1.4, 2.4))):
+            p0 = v3(side * x0, -8.4, -3.9)
+            pts = [p0, v3(side * (x0 + 1.4), -7.0, -4.55), v3(side * (x0 + 2.6), -5.3, -4.6), v3(side * 4.1, -3.4, -4.4),
+                   v3(side * 4.4, -1.4, -4.0)]
+            s.sheet(pts, w, depth=0.8, tip=0.45, out=v3(side * 0.2, -0.2, -1), shade=0.98 - 0.12 * j, cell=j)
+    side_curtains(s, 3.6, width=2.4, el=10, swing=0.5, front=True, tip=0.4)
+    nape(s, 8, 3.4, 2.7, el=-8, tip=0.1, spread=(100, 260))
+    return s
+
+
+def style_veil_bangs():
+    s = Style("veil_bangs", "swept", 267, "Veil bangs")
+    # a long sweep of fringe hiding the character's left eye, medium hair at the back
+    shell(s, ROWS, fixed(LEFT * 0.7 + BACK * 0.6 + DOWN * 0.4), length=(3.0, 3.8), lift=0.1, tip=0.2, bend=-24)
+    for p0, p1, rest, w, sh, cell in (
+            (surface(-34, 66, 0.3), surface(-4, 44, -0.5), [v3(0.6, -5.2, -4.8), v3(1.5, -3.4, -4.8), v3(2.2, -1.2, -4.6)], 3.9, 1.0, 0),
+            (surface(-12, 62, 0.3), surface(14, 40, -0.45), [v3(2.4, -4.6, -4.7), v3(3.3, -2.4, -4.5)], 3.0, 0.86, 1)):
+        s.sheet([p0, p1] + rest, w, depth=0.9, tip=0.4, out=v3(0.1, -0.2, -1), shade=sh, cell=cell)
+    back_sheets(s, 4.0, n=5, top_el=20, width=3.4, tip=0.25, swing=0.6)
+    sideburns(s, 3.0, 2.2, tip=0.0)
+    return s
+
+
+def style_drill_tails():
+    s = Style("drill_tails", "ponytail", 269, "Drill tails")
+    # twin tails wound into tight spiral drills
+    shell(s, ROWS_SHORT, radial(180, 88, add=(0, 0.3, 0)), length=(3.0, 3.6), lift=-0.05, tip=0.35, bend=-26)
+    for side in (-1, 1):
+        root = surface((180 - 70 * side) % 360, 40, -0.4)
+        tie(s, root, 1.1)
+        # a stack of cones down a slanting axis, each turned a little further: a drill
+        c = root + v3(side * 1.4, 0.6, 0.9)
+        axis = unit(v3(side * 0.25, 1.0, 0.25))
+        for k in range(6):
+            t = k / 5
+            p0 = c + axis * (k * 1.45)
+            d = unit(axis + v3(math.cos(k * 1.9) * 0.35, 0, math.sin(k * 1.9) * 0.35))
+            s.spike(0, 0, d, 2.9 - 0.9 * t, 3.0 - 1.3 * t, depth=2.6 - 1.1 * t, bend=-25, tip=0.0,
+                    shade=0.98 - 0.08 * (k % 2) - 0.12 * t, root=p0, segs=2, twist=k * 40)
+        for lock in s.locks[-6:]:
+            lock["swing"] = 0.7
+            lock["pivot"] = [round(float(x), 3) for x in root]
+            lock["hang"] = True
+    bangs(s, 6, 2.6, 2.3, spread=(-55, 55), el=52, droop=0.85, forward=0.3, bend=-26, tip=0.25)
+    return s
+
+
+def style_high_twin_tails():
+    s = Style("high_twin_tails", "ponytail", 271, "High twin tails")
+    shell(s, ROWS_SHORT, radial(0, 88, add=(0, 0.2, 0)), length=(3.0, 3.6), lift=-0.05, tip=0.35, bend=-26)
+    for side in (-1, 1):
+        root = surface((180 - 78 * side) % 360, 62, -0.4)
+        tie(s, root, 1.1)
+        tail(s, root + v3(side * 0.6, -0.2, 0.3), 10.5, 2.9, segs=7, swing=1.0, droop=(side * 0.35, 1, -0.3))
+    bangs(s, 6, 2.8, 2.3, spread=(-55, 55), el=52, droop=0.85, forward=0.3, bend=-26, tip=0.2)
+    return s
+
+
+def style_side_ponytail():
+    s = Style("side_ponytail", "ponytail", 273, "Side ponytail")
+    shell(s, ROWS_SHORT, fixed(RIGHT * 0.9 + BACK * 0.6 + DOWN * 0.2), length=(3.0, 3.6), lift=-0.05, tip=0.35, bend=-26)
+    root = surface(250, 44, -0.4)
+    tie(s, root, 1.15)
+    tail(s, root + v3(-0.6, 0.0, 0.2), 9.5, 3.0, segs=7, swing=1.0, droop=(-0.25, 1, -0.1))
+    bangs(s, 5, 2.8, 2.4, spread=(-50, 50), el=52, droop=0.8, sweep=-0.35, forward=0.3, bend=-28, tip=0.25)
+    return s
+
+
+def style_spiky_tail():
+    s = Style("spiky_tail", "spiky", 277, "Spiky tail")
+    # wild spikes pulled back into a short tail of spikes at the back of the head
+    shell(s, ROWS_SHORT, radial(0, 55, add=(0, 0.0, 1.0)), length=(3.0, 3.6), lift=0.15, tip=0.15, bend=-20, twist=25)
+    root = surface(180, 30, -0.3)
+    tie(s, root, 1.15)
+    for i in range(9):
+        a = 2 * math.pi * i / 9
+        d = unit(BACK * 1.0 + v3(math.cos(a) * 0.45, math.sin(a) * 0.45 + 0.35, 0))
+        s.spike(0, 0, d, s.r(4.0, 6.0), 2.4, depth=1.6, bend=-25, tip=0.0, shade=s.r(0.65, 1.0), root=root + v3(0, 0, 0.5),
+                twist=s.r(-20, 20))
+    spike_ring(s, 16, 6, 3.0, 2.8, lambda p, o: o * 0.9 + DOWN * 0.3, bend=-15, gap=(60, 30), span=(-90, 90))
+    bangs(s, 5, 3.4, 2.6, spread=(-55, 55), el=52, forward=0.4, bend=-10, tip=0.0)
+    return s
+
+
+def style_half_up():
+    s = Style("half_up", "long", 279, "Half up")
+    # the top tied into a small knot, the rest left long down the back
+    shell(s, ROWS_SHORT, radial(180, 80, add=(0, 0.2, 0.3)), length=(3.0, 3.6), lift=-0.02, tip=0.5, bend=-26)
+    top = surface(180, 58, -0.3)
+    bun(s, top + v3(0, -0.6, 0.8), 1.3, n=8)
+    tie(s, top + v3(0, 0, 0.3), 0.9)
+    back_sheets(s, 11.0, n=5, width=3.8, tip=0.55, swing=0.85, top_el=30)
+    side_curtains(s, 6.0, width=2.4, el=10, swing=0.6, front=True, tip=0.5)
+    bangs(s, 5, 3.0, 2.5, spread=(-48, 48), el=52, forward=0.25, bend=-18, sweep=0.12, tip=0.2)
+    return s
+
+
+def style_bun_tails():
+    s = Style("bun_tails", "bun", 281, "Buns and tails")
+    # two buns on top with long tails falling out of them
+    shell(s, ROWS_SHORT, radial(180, 88, add=(0, 0.2, 0)), length=(2.8, 3.4), lift=0.0, tip=0.35, bend=-26)
+    for side in (-1, 1):
+        c = surface(140 * side % 360, 64, -1.2) + v3(side * 0.4, -0.5, 0)
+        bun(s, c, 1.5, n=8)
+        tail(s, c + v3(side * 0.6, 1.0, 0.8), 8.5, 2.2, segs=6, swing=1.0, droop=(side * 0.2, 1, -0.25))
+    bangs(s, 6, 2.7, 2.3, spread=(-55, 55), el=52, droop=0.85, forward=0.3, bend=-25, tip=0.25)
+    return s
+
+
+def style_horn_buns():
+    s = Style("horn_buns", "bun", 283, "Horn buns")
+    # two buns wound up into points, like small horns
+    shell(s, ROWS_SHORT, radial(180, 88, add=(0, 0.2, 0)), length=(2.8, 3.4), lift=0.0, tip=0.35, bend=-26)
+    for side in (-1, 1):
+        base = surface(120 * side % 360, 70, -0.6)
+        for k in range(6):
+            a = k * 2 * math.pi / 6
+            off = v3(math.cos(a) * 0.9, 0, math.sin(a) * 0.9)
+            d = unit(UP * 1.0 + v3(side * 0.45, 0, 0) - off * 0.25)
+            s.spike(0, 0, d, 4.2, 2.0, depth=1.5, bend=-20, bend_axis=unit(np.cross(d, off + v3(0, 0.01, 0))), tip=0.0,
+                    shade=0.8 + 0.03 * k, root=base + off, segs=3)
+    bangs(s, 6, 2.7, 2.3, spread=(-55, 55), el=52, droop=0.85, forward=0.3, bend=-25, tip=0.25)
+    return s
+
+
+def style_puff():
+    s = Style("puff", "messy", 287, "Curly puff")
+    # a big round cloud of tight curls
+    for el, n in ((86, 5), (68, 10), (48, 14), (28, 16), (8, 15), (-12, 10)):
+        for i in range(n):
+            az = 360 * (i + 0.5 * (n % 2) + s.r(-0.2, 0.2)) / n
+            if face_gap(az, el, 48, 40):
+                continue
+            p = surface(az, el, -0.4)
+            out = outward(p)
+            tang = unit(np.cross(out, v3(0, 1, 0.3)))
+            s.spike(0, 0, unit(out * 0.6 + tang), s.r(2.2, 2.8), s.r(2.0, 2.4), depth=1.7, bend=s.r(180, 240),
+                    bend_axis=unit(np.cross(tang, out)), tip=0.4, shade=s.r(0.6, 1.0), root=p, segs=4)
+    for i in range(5):
+        az = -40 + 80 * (i + 0.5) / 5
+        p = surface(az, 52, 0.2)
+        s.spike(0, 0, unit(outward(p) * 0.5 + DOWN * 0.4), 2.2, 2.0, depth=1.5, bend=200, bend_axis=v3(1, 0, 0), tip=0.4,
+                shade=s.r(0.8, 1.0), root=p, segs=4)
+    return s
+
+
+def style_locs():
+    s = Style("locs", "messy", 289, "Locs")
+    # thick rope-like locs hanging down all round, to the shoulders
+    shell(s, ROWS_SHORT, radial(180, 88, add=(0, 0.6, 0)), length=(2.4, 2.8), width=(2.0, 2.4), lift=0.05, tip=0.7, bend=-20)
+    for i in range(16):
+        az = 360 * (i + 0.5) / 16 + s.r(-5, 5)
+        if face_gap(az, 20, 40, 60):
+            continue
+        p0 = surface(az, 40, 0.3)
+        out = outward(p0)
+        p1 = surface(az, 4, -0.6)
+        ln = s.r(5.5, 8.0)
+        pts = [p0, p1, p1 + DOWN * ln * 0.5 + out * 0.6, p1 + DOWN * ln + out * 0.9]
+        n = len(pts)
+        s.add(pts, [1.5] * (n - 1) + [1.1], [1.4] * (n - 1) + [1.0], out=out, shade=s.r(0.6, 0.95), swing=0.6, pivot=p1,
+              hang=True)
+    for i in range(5):
+        x = -3.0 + 6.0 * (i + 0.5) / 5
+        p = v3(x, -8.3, -3.6)
+        s.add([p, p + v3(x * 0.05, 0.4, -0.9), p + v3(x * 0.12, 2.6, -1.0)], [1.5, 1.5, 1.2], [1.4, 1.4, 1.1],
+              out=v3(0, 0, -1), shade=s.r(0.8, 1.0))
+    return s
+
+
+def style_locs_tied():
+    s = Style("locs_tied", "messy", 291, "Tied locs")
+    # locs gathered high at the back and falling from the tie
+    shell(s, ROWS_SHORT, radial(0, 50, add=(0, -0.2, 0.9)), length=(2.8, 3.2), width=(2.0, 2.4), lift=-0.05, tip=0.6, bend=-24)
+    root = surface(180, 50, -0.4)
+    tie(s, root, 1.3)
+    for i in range(7):
+        a = 2 * math.pi * i / 7
+        off = v3(math.cos(a) * 0.8, 0, math.sin(a) * 0.5)
+        p0 = root + v3(0, 0, 0.6) + off
+        pts = [p0, p0 + v3(off[0] * 0.8, -0.8, 1.6), p0 + v3(off[0] * 1.4, 2.0, 2.4), p0 + v3(off[0] * 1.6, 6.0, 2.2),
+               p0 + v3(off[0] * 1.7, 9.0, 1.8)]
+        s.add(pts, [1.4, 1.5, 1.5, 1.4, 1.0], [1.3, 1.4, 1.4, 1.3, 0.9], out=v3(0, 0, 1), shade=s.r(0.62, 0.95), swing=0.9,
+              pivot=p0, hang=True)
+    return s
+
+
+def style_ronin():
+    s = Style("ronin", "long", 293, "Ronin")
+    # long and unkempt, tied loosely low at the back, loose strands framing the face
+    shell(s, ROWS_SHORT, radial(0, 60, add=(0, 0.3, 0.9)), length=(3.2, 3.8), lift=0.1, tip=0.25, jitter=0.25, twist=18)
+    root = surface(180, -4, -0.5)
+    tie(s, root + v3(0, 0.3, 0.5), 1.1)
+    tail(s, root + v3(0, 0.4, 0.6), 8.0, 3.4, segs=6, swing=0.9, droop=(0, 1, -0.05))
+    for side in (-1, 1):
+        p0 = surface(34 * side % 360, 56, 0.5)
+        s.spike(0, 0, unit(DOWN * 1.0 + FRONT * 0.25 + v3(side * 0.3, 0, 0)), 7.0, 1.9, depth=1.0, bend=10,
+                bend_axis=v3(0, 0, side), tip=0.1, shade=0.92, root=p0, segs=4)
+    sideburns(s, 3.2, 2.0, tip=0.0)
+    return s
+
+
+def style_spiky_fringe():
+    s = Style("spiky_fringe", "spiky", 297, "Spiky fringe")
+    # short at the back, a heavy fringe of long spikes hanging over the eyes
+    shell(s, ROWS, radial(), length=(2.6, 3.2), lift=0.15, tip=0.2, shade=(0.55, 0.85))
+    for i in range(7):
+        t = (i + 0.5) / 7
+        az = -58 + 116 * t
+        x = 4.0 * math.sin(math.radians(az))
+        p = v3(x, -8.2, -4.4)
+        d = unit(DOWN * 1.0 + FRONT * 0.35 + v3(x * 0.07, 0, 0))
+        s.spike(az, 50, d, 5.0 - 1.2 * abs(t - 0.5), 2.6, depth=1.5, bend=-8, tip=0.0, shade=s.r(0.82, 1.0), root=p,
+                twist=s.r(-10, 10))
+    spike_ring(s, 30, 8, 3.8, 3.0, lambda p, o: BACK * 1.0 + o * 0.6, bend=-20, gap=(70, 40), span=(90, 270))
+    sideburns(s, 3.0, 2.0, tip=0.0)
+    return s
+
+
+def style_rat_tail():
+    s = Style("rat_tail", "short", 299, "Rat tail")
+    # short all over, one thin braid-like tail from the nape
+    shell(s, ROWS_SHORT, radial(180, 70, add=(0, 0.2, 0.2)), length=(2.2, 2.8), lift=0.05, tip=0.45, bend=-32)
+    root = surface(180, -16, -0.5)
+    tie(s, root + v3(0, 0.3, 0.4), 0.8)
+    tail(s, root + v3(0, 0.4, 0.5), 8.0, 1.5, segs=6, swing=0.9, tex="clump")
+    bangs(s, 5, 2.6, 2.6, spread=(-46, 46), el=52, forward=0.3, bend=-34, sweep=0.2, tip=0.35)
+    sideburns(s, 1.8, 1.8, tip=0.45)
+    return s
+
+
+def style_crescent():
+    s = Style("crescent", "swept", 301, "Crescent sweep")
+    # long bangs curling around both sides of the face in two crescents, medium at the back
+    shell(s, ROWS, radial(180, 80, add=(0, 0.2, 0.2)), length=(3.0, 3.6), lift=0.12, tip=0.2, bend=-24)
+    for side in (-1, 1):
+        for j, (x0, w, k) in enumerate(((1.0, 2.8, 1.0), (2.0, 2.2, 0.8))):
+            pts = [v3(side * x0, -8.4, -3.9), v3(side * (x0 + 1.9) * k + side * (1 - k) * 2.6, -6.6, -4.6),
+                   v3(side * 4.3 * k + side * (1 - k) * 4.0, -4.4, -4.55), v3(side * 4.4, -2.3, -4.35),
+                   v3(side * 3.3, -0.5, -4.45)]
+            s.sheet(pts, w, depth=0.8, tip=0.1, out=v3(side * 0.25, -0.1, -1), shade=0.98 - 0.12 * j, cell=j)
+    nape(s, 7, 3.6, 2.7, el=-8, tip=0.0)
+    return s
+
+
+def style_sweep_back_long():
+    s = Style("swept_long", "long", 303, "Swept back long")
+    # everything combed straight back off the forehead and hanging long down the back
+    shell(s, ROWS_SHORT, fixed(BACK * 1.0 + DOWN * 0.15), length=(3.4, 4.0), lift=-0.06, tip=0.3, bend=-30,
+          shade=(0.7, 1.0), skip=lambda az, el: face_gap(az, el, 50, 50), twist=4, jitter=0.08)
+    back_sheets(s, 12.0, n=5, width=3.9, tip=0.5, swing=0.85, top_el=50)
+    for side in (-1, 1):
+        p0 = surface(16 * side % 360, 60, 0.4)
+        s.sheet([p0, p0 + v3(side * 0.4, 2.0, -0.6), p0 + v3(side * 1.0, 4.0, -0.4)], 1.6, depth=0.6, tip=0.2,
+                out=v3(0, 0, -1), shade=0.9, swing=0.4, pivot=p0, hang=True)
+    return s
+
+
+def style_spiky_long():
+    s = Style("spiky_long", "spiky", 307, "Spiky long")
+    # a spiky crown and long jagged locks down the back
+    shell(s, ROWS_SHORT, radial(), length=(2.8, 3.4), lift=0.2, tip=0.1, shade=(0.55, 0.85))
+    for el, n, ln in ((70, 5, 4.8), (46, 8, 4.6)):
+        spike_ring(s, el, n, ln, 3.2, lambda p, o: o * 0.9 + UP * 0.5 + BACK * 0.6, bend=-24, gap=(50, 40))
+    for i in range(8):
+        az = 115 + 130 * (i + 0.5) / 8
+        p0 = surface(az, 20, 0.4)
+        out = outward(p0)
+        pts = [p0, p0 + DOWN * 3.0 + out * 0.8, p0 + DOWN * 7.0 + out * 0.9, p0 + DOWN * s.r(10.0, 13.0) + out * 0.6]
+        s.add(pts, [3.0, 2.8, 2.2, 0.0], [1.5, 1.3, 1.0, 0.1], out=out, shade=s.r(0.55, 0.85), swing=0.8, pivot=p0, hang=True)
+    bangs(s, 5, 3.6, 2.7, spread=(-55, 55), el=52, forward=0.45, bend=-12, tip=0.0)
+    side_curtains(s, 5.0, width=2.6, el=12, swing=0.6, front=True, tip=0.0)
+    return s
+
+
+def style_wave():
+    s = Style("wave", "swept", 309, "Ocean wave")
+    # one huge lock curling up off the forehead like a breaking wave, short sides
+    shell(s, ROWS_SHORT, fixed(BACK * 1.0 + DOWN * 0.2), length=(2.6, 3.0), lift=0.0, tip=0.4, bend=-30)
+    for az, el, ln, w, sh in ((0, 74, 6.4, 4.6, 1.0), (-26, 70, 5.2, 3.4, 0.86), (26, 70, 5.2, 3.4, 0.86)):
+        p = surface(az, el, 0.5)
+        s.spike(0, 0, unit(UP * 1.0 + FRONT * 0.35), ln, w, depth=2.0, bend=105, bend_axis=v3(1, 0, 0), tip=0.0, shade=sh,
+                root=p, segs=5)
+    nape(s, 6, 2.4, 2.6, tip=0.2)
+    sideburns(s, 2.0, 1.8, tip=0.3)
+    return s
+
+
+MORE_STYLES = [style_drill_spikes, style_flame_spikes, style_porcupine, style_windswept, style_crown_spikes,
+               style_bedhead, style_messy_layers, style_shaggy, style_wolf_cut, style_mullet, style_parted, style_crop,
+               style_side_shave, style_faux_hawk, style_tall_mohawk, style_top_knot_shaved, style_twin_braids,
+               style_side_braid, style_mushroom, style_curtain, style_veil_bangs, style_drill_tails,
+               style_high_twin_tails, style_side_ponytail, style_spiky_tail, style_half_up, style_bun_tails,
+               style_horn_buns, style_puff, style_locs, style_locs_tied, style_ronin, style_spiky_fringe,
+               style_rat_tail, style_crescent, style_sweep_back_long, style_spiky_long, style_wave]
+
+
+
 STYLES = [style_spiky, style_messy, style_short, style_swept, style_bowl, style_buzz, style_topknot, style_duck,
           style_bun, style_hime, style_ponytail, style_long, style_high_ponytail, style_braid, style_side_bangs,
           style_shoulder_messy, style_twin_buns, style_wild_mane, style_undercut, style_mohawk, style_slick_back,
           style_curly, style_twin_tails]
+# PlayerLook.Slot.HAIR order: the first styles, then "none" (bald), then the creator wave's styles
+ALL_STYLES = STYLES + MORE_STYLES
+
 
 
 # ---------------------------------------------------------------------------
@@ -910,17 +1497,20 @@ def render(style, colour, view, size=200, tex=None, scale=10.0, swing=0.0):
 ICONS = os.path.join(ASSETS, "textures/gui/hair_styles.png")
 ICON = 48
 ICON_COLS = 8
+FIRST = 23   # styles before "none" in PlayerLook.Slot.HAIR
 
 
 def icons(styles, tex):
     """The creator's style picker thumbnails: one ICON x ICON cell per style in PlayerLook's order (the last is
     bald), hair in light gray (the screen tints it with the chosen colour), the head a dark silhouette."""
-    n = len(styles) + 1
+    # PlayerLook's order: the first styles, bald, then the rest
+    styles = list(styles[:FIRST]) + [{"locks": []}] + list(styles[FIRST:])
+    n = len(styles)
     rows = (n + ICON_COLS - 1) // ICON_COLS
     sheet = np.zeros((rows * ICON, ICON_COLS * ICON, 4), np.uint8)
     big = ICON * 4
     for i in range(n):
-        st = styles[i] if i < len(styles) else {"locks": []}
+        st = styles[i]
         r = Raster(big, big / 21.0, big * 0.66)
         r.rgb[:] = 0
         view = (32, 10)
@@ -979,7 +1569,7 @@ def main():
     texture()
     os.makedirs(STYLE_DIR, exist_ok=True)
     built = []
-    for fn in STYLES:
+    for fn in ALL_STYLES:
         st = fn()
         data = st.json()
         with open(os.path.join(STYLE_DIR, st.id + ".json"), "w") as f:

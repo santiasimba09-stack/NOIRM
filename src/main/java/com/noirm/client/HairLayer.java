@@ -85,11 +85,22 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         if (cover == Cover.ALL) {
             return;
         }
-        Mesh mesh = mesh(spec);
+        // a player's dye: the second colour and how it's used (NPCs have plain hair)
+        int color = (int) (spec & 0xFFFFFF);
+        int color2 = color;
+        int dye = 0;
+        if (entity instanceof Player player) {
+            PlayerLook look = PlayerSkins.lookFor(player);
+            if (look != null) {
+                dye = look.get(PlayerLook.Slot.HAIR_DYE);
+                color2 = look.color(PlayerLook.Tone.HAIR2);
+            }
+        }
+        Mesh mesh = mesh(spec, altMode(dye));
         if (mesh == null || mesh.vertices() == 0) {
             return;
         }
-        ResourceLocation texture = HairTextures.get((int) (spec & 0xFFFFFF));
+        ResourceLocation texture = HairTextures.get(color, color2, dye);
         if (texture == null) {
             return;
         }
@@ -229,13 +240,23 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
 
     // ------------------------------------------------------------ baking
 
+    /** Which locks take the second colour, by dye: 0 none, 1 streaks, 2 split, 3 bangs (HAIR_DYE 5, 6, 7). */
+    static int altMode(int dye) {
+        return dye >= 5 && dye <= 7 ? dye - 4 : 0;
+    }
+
     static Mesh mesh(long spec) {
-        int key = (int) ((spec >>> 24) & 0xFFFFF); // style, volume, length
+        return mesh(spec, 0);
+    }
+
+    static Mesh mesh(long spec, int alt) {
+        int key = (int) ((spec >>> 24) & 0xFFFFF) | (alt << 20); // style, volume, length, which locks are dyed
         Mesh mesh = MESHES.get(key);
         if (mesh == null) {
             int styleIndex = (int) (spec >>> 32);
             HairStyles.Style style = HairStyles.get(PlayerLook.Slot.HAIR.option(styleIndex));
-            mesh = style == null ? EMPTY : bake(style, PlayerLook.volumeScale((int) ((spec >>> 28) & 15)), (int) ((spec >>> 24) & 15));
+            mesh = style == null ? EMPTY
+                    : bake(style, PlayerLook.volumeScale((int) ((spec >>> 28) & 15)), (int) ((spec >>> 24) & 15), alt);
             MESHES.put(key, mesh);
         }
         return mesh;
@@ -250,6 +271,21 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
 
     /** Bakes a style: every lock into quads, scaled by the volume, plus hair down the back for a chosen length. */
     static Mesh bake(HairStyles.Style style, float volume, int length) {
+        return bake(style, volume, length, 0);
+    }
+
+    /** True if this lock takes the second hair colour (the texture's right half) for an {@link #altMode}. */
+    static boolean dyed(Lock lock, int index, int alt) {
+        float[] p = lock.pts();
+        return switch (alt) {
+            case 1 -> Math.floorMod((index * 0x9E3779B1) >>> 7, 5) == 0;   // streaks: every few locks
+            case 2 -> p[0] > 0.2f;                                         // split: one side of the head
+            case 3 -> p[2] < -3.2f && p[1] < -5.5f;                        // bangs: locks rooted at the front hairline
+            default -> false;
+        };
+    }
+
+    static Mesh bake(HairStyles.Style style, float volume, int length, int alt) {
         List<Lock> locks = new ArrayList<>(style.locks());
         boolean hangs = locks.stream().anyMatch(Lock::hang);
         if (length > 0 && !hangs) {
@@ -263,8 +299,9 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         float[] data = new float[quadCount * 4 * STRIDE];
         int[] cursor = {0};
         boolean anySwing = false;
-        for (Lock lock : locks) {
-            bakeLock(lock, volume, data, cursor);
+        for (int i = 0; i < locks.size(); i++) {
+            Lock lock = locks.get(i);
+            bakeLock(lock, volume, data, cursor, dyed(lock, i, alt));
             anySwing |= lock.swing() > 0;
         }
         return new Mesh(data, cursor[0] / STRIDE, anySwing);
@@ -306,7 +343,7 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         return out;
     }
 
-    private static void bakeLock(Lock lock, float volume, float[] out, int[] cursor) {
+    private static void bakeLock(Lock lock, float volume, float[] out, int[] cursor, boolean dyed) {
         int n = lock.points();
         float[] p = lock.pts().clone();
         float[] w = lock.width();
@@ -368,12 +405,14 @@ public class HairLayer<T extends LivingEntity, M extends HumanoidModel<T>> exten
         total = Math.max(total, 1e-4f);
         float u0;
         float uw;
+        // the hair textures are two strand sheets side by side (HairTextures): the dyed locks use the right one
+        float half = dyed ? 0.5f : 0f;
         if (lock.sheet()) {
-            u0 = (128 + lock.cell() * 64) / 256f;
-            uw = 64 / 256f;
+            u0 = half + (128 + lock.cell() * 64) / 512f;
+            uw = 64 / 512f;
         } else {
-            u0 = lock.cell() * 32 / 256f;
-            uw = 32 / 256f;
+            u0 = half + lock.cell() * 32 / 512f;
+            uw = 32 / 512f;
         }
         float[] pivot = lock.pivot();
         for (int i = 0; i < n - 1; i++) {

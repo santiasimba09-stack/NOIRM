@@ -72,7 +72,37 @@ EYE_SHAPES = {
     # pale (the Hyuga's white eyes): steady, a pale iris without a pupil
     "pale":   dict(ein=1.1, eout=1.38, inner=0.26, outer=-0.16, up=0.52, peak=0.16, flat=0.7, down=0.3,
                    iris=0.56, shift=0.125, idy=0.0, lash=0.28, wing=0.7, hood=0.28, crease=0.34),
+    # The creator wave (2026-11-19): more shapes, every one still a sharp leaf with pointed corners, no crease,
+    # nothing past the outer point, about 2.5 model pixels wide. (Dojutsu layers on the skin fall back to the
+    # "round" fit for these; the high-detail atlas draws the Sharingan and Byakugan for every shape.)
+    # fox: the outer point lifted high, a long upswept leaf
+    "fox":    dict(ein=1.08, eout=1.44, inner=0.34, outer=-0.38, up=0.4, peak=0.14, flat=0.78, down=0.3,
+                   iris=0.44, shift=0.125, idy=0.0, lash=0.3, wing=0.8, hood=0.3, crease=0.3),
+    # hawk: the lid a hard flat line from a high inner peak, a small fierce iris
+    "hawk":   dict(ein=1.06, eout=1.46, inner=0.3, outer=-0.2, up=0.5, peak=0.1, flat=0.92, down=0.24,
+                   iris=0.38, shift=0.125, idy=0.0, lash=0.33, wing=0.85, hood=0.32, crease=0.3),
+    # hooded: a heavy lid sitting low over a steady iris (not sleepy: no line under it)
+    "hooded": dict(ein=1.1, eout=1.38, inner=0.24, outer=-0.1, up=0.34, peak=0.24, flat=0.86, down=0.26,
+                   iris=0.5, shift=0.125, idy=0.0, lash=0.34, wing=0.7, hood=0.34, crease=0.3),
+    # drooping: the outer point lower than the inner corner, calm and a little sad, still pointed
+    "drooping": dict(ein=1.1, eout=1.38, inner=0.08, outer=0.14, up=0.5, peak=0.3, flat=0.62, down=0.26,
+                     iris=0.46, shift=0.125, idy=0.0, lash=0.3, wing=0.7, hood=0.3, crease=0.3),
+    # keen: opened wide around a very small iris, white all round it
+    "keen":   dict(ein=1.1, eout=1.4, inner=0.28, outer=-0.18, up=0.58, peak=0.16, flat=0.66, down=0.36,
+                   iris=0.32, shift=0.0, idy=0.0, lash=0.28, wing=0.7, hood=0.28, crease=0.36),
+    # slit: a thin, flat blade of an eye
+    "slit":   dict(ein=1.12, eout=1.44, inner=0.26, outer=-0.18, up=0.28, peak=0.18, flat=0.88, down=0.18,
+                   iris=0.46, shift=0.125, idy=0.125, lash=0.3, wing=0.8, hood=0.32, crease=0.3),
+    # bold: a big iris filling the leaf, the lid still cutting its top
+    "bold":   dict(ein=1.1, eout=1.38, inner=0.26, outer=-0.18, up=0.56, peak=0.16, flat=0.68, down=0.32,
+                   iris=0.6, shift=0.125, idy=0.0, lash=0.3, wing=0.7, hood=0.28, crease=0.34),
+    # glare: tilted hard, opened in a stare
+    "glare":  dict(ein=1.06, eout=1.42, inner=0.4, outer=-0.32, up=0.58, peak=0.12, flat=0.6, down=0.34,
+                   iris=0.4, shift=0.125, idy=0.0, lash=0.3, wing=0.8, hood=0.3, crease=0.36),
 }
+# Pupil styles drawn in the high-detail atlas's second row (gen_eye_decals.py, client/EyeDecalLayer); "round" is the
+# iris cell of the first row.
+PUPILS = ("slit", "pinprick", "wide", "hollow", "ringed")
 
 
 def outward(x, cx):

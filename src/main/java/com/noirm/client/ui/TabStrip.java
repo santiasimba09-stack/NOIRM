@@ -18,6 +18,7 @@ public final class TabStrip {
     private int count;
     private int y;
     private int h;
+    private int gap = Theme.S5;
 
     /**
      * Draws the tabs in {x, y, w} (14 high). {@code accent} is the underline colour of each tab (or
@@ -27,12 +28,20 @@ public final class TabStrip {
         count = Math.min(MAX, labels.length);
         this.y = y;
         this.h = Theme.ROW;
-        int gap = Theme.S5;
-        int total = 0;
+        int textW = 0;
         for (int i = 0; i < count; i++) {
-            total += font.width(labels[i]);
+            textW += font.width(labels[i]);
         }
-        total += gap * (count - 1);
+        // the widest gap that lets every label show whole; only past the smallest do the tabs share evenly
+        int gap = Theme.S5;
+        for (int g2 : new int[]{Theme.S5, Theme.S4, Theme.S3, Theme.S2}) {
+            gap = g2;
+            if (textW + g2 * (count - 1) <= w) {
+                break;
+            }
+        }
+        this.gap = gap;
+        int total = textW + gap * (count - 1);
         boolean even = total > w;
         int cx = x;
         for (int i = 0; i < count; i++) {
@@ -42,14 +51,15 @@ public final class TabStrip {
             cx += tw + (even ? 0 : gap);
         }
         // The rule under all tabs, and the sliding underline.
-        g.fill(x, y + h - 1, x + w, y + h, Theme.HAIRLINE);
+        Skin.rule(g, x, y + h - 2, w, Theme.HAIRLINE);
         if (active >= 0 && active < count) {
             int ax = even ? xs[active] + 4 : xs[active];
             int aw = even ? ws[active] - 8 : ws[active];
             float lx = lineX.update(ax);
             float lw = lineW.update(aw);
             int color = accent.length == 1 ? accent[0] : accent[Math.min(active, accent.length - 1)];
-            g.fill(Math.round(lx), y + h - 2, Math.round(lx + lw), y + h, color);
+            // the active tab: a brush stroke under its label, sliding to the new tab
+            Skin.stroke(g, Math.round(lx) - 2, y + h - 4, Math.round(lw) + 4, 5, color, 1f);
         }
         for (int i = 0; i < count; i++) {
             boolean on = i == active;
@@ -70,7 +80,7 @@ public final class TabStrip {
             return -1;
         }
         for (int i = 0; i < count; i++) {
-            int pad = Theme.S5 / 2;
+            int pad = gap / 2;
             if (mx >= xs[i] - pad && mx < xs[i] + ws[i] + pad) {
                 return i;
             }
