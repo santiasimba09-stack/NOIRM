@@ -472,7 +472,7 @@ public final class ClanPerkGameTests {
         CharacterCreator.apply(player, data, roll);
         helper.assertTrue(data.identity().clanId().equals("kaguya"), "joined the Kaguya");
         near(helper, 13f, data.getSpeed(), "Fleet-footed: +3 speed");
-        near(helper, ShinobiData.DEFAULT_STAT + 10 + 4, data.getDurability(), "Kaguya +10 and Stubborn Body +4 durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 15 + 4, data.getDurability(), "Kaguya +15 and Stubborn Body +4 durability");
         helper.assertTrue(data.talents().talents().equals(List.of("fleet_footed", "stubborn_body")), "the roll's talents are yours");
         helper.assertTrue(data.talents().version() == TalentData.CURRENT, "a new character is current");
         helper.succeed();
