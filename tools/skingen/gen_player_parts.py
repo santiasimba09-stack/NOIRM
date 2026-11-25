@@ -896,10 +896,10 @@ def part_paint(name):
         elif name == "chin_stripe":
             cov = stroke(f, [(4.0, 6.95), (4.0, 8.0)], 0.5, 0.42)
         elif name == "forehead_dot":
-            cov = ell(f, 4.0, 2.05, 0.36, 0.36)
+            cov = ell(f, 4.0, 3.0, 0.3, 0.32)          # between the brows, under any fringe
         elif name == "crescent":
-            d1 = np.hypot((X - 4.0) / 1.15, (Y - 1.8) / 0.95)
-            d2 = np.hypot((X - 4.0) / 0.95, (Y - 1.3) / 0.8)
+            d1 = np.hypot((X - 4.0) / 0.8, (Y - 2.75) / 0.6)
+            d2 = np.hypot((X - 4.0) / 0.66, (Y - 2.45) / 0.5)
             cov = (d1 < 1.0) & (d2 > 1.0)
         elif name == "cheek_bars":
             for i in range(3):
@@ -948,7 +948,7 @@ def part_tattoo(name):
         X, Y = f.X, f.Y
         cov = np.zeros_like(X, dtype=bool)
         if name == "chest_seal" and f.name == "front":
-            cov = seal(f, 4.0, 6.6, 1.45)
+            cov = seal(f, 4.0, 6.4, 1.9)
         elif name == "back_crest" and f.name == "back":
             # three blades meeting in a ring, between the shoulder blades
             d = np.hypot(X - 4, Y - 3.6)
@@ -965,7 +965,7 @@ def part_tattoo(name):
             lx = f.MX if f.side else np.minimum(X, f.W - X)
             for i in range(3):
                 y = 4.4 + 0.9 * i
-                cov = cov | (stroke(f, [(0.2, y), (1.5, y - 0.5)], 0.26, 0.04, X=lx) > 0.5)
+                cov = cov | (stroke(f, [(0.1, y), (1.9, y - 0.6)], 0.42, 0.06, X=lx) > 0.5)
         return brush(f, cov.astype(np.float32), 500 + len(name)) if cov.any() else None
 
     def fn_arm(left):
@@ -974,15 +974,18 @@ def part_tattoo(name):
                 return None
             X, Y = f.X, f.Y
             cov = np.zeros_like(X, dtype=bool)
-            if name == "shoulder_seal" and left and f.side and A.is_outer(f):
-                cov = seal(f, 2.0, 2.4, 1.1)
+            if name == "shoulder_seal" and left and (f.name == "front" or (f.side and A.is_outer(f))):
+                cov = seal(f, 2.0, 2.3, 1.25)
             elif name == "arm_bands":
                 for y in (7.4, 8.2):
                     cov = cov | (np.abs(Y - y) < 0.2)
             elif name == "flame_sleeve" and not left:
+                # flames climbing from a band at the wrist: inked outlines, hollow inside
                 g = fbm(X * 1.6, Y * 0.9, 61 + (f.name == "back"))
-                tongues = Y > 5.0 - 2.6 * np.abs(np.sin(X * 1.7 + 0.6 * g)) - 1.2 * g
-                cov = tongues & (Y < 11.6)
+                top = 6.6 - 2.4 * np.abs(np.sin(X * 1.6 + 0.8 * g)) - 0.8 * g
+                flame = (Y > top) & (Y < 11.6)
+                inner = (Y > top + 0.55) & (Y < 10.6) & (np.abs(np.sin(X * 1.6 + 0.8 * g)) > 0.25)
+                cov = flame & ~inner
             return brush(f, cov.astype(np.float32), 520 + len(name)) if cov.any() else None
         return fn
 

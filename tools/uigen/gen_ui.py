@@ -189,8 +189,8 @@ def look_shoji():
     inner = paper(w, h, "#17141a", 11, fibre=0.06, mottle=0.08)
     ys, xs = np.mgrid[0:h, 0:w]
     lattice = ((xs - 7) % 25 == 0) | ((ys - 7) % 25 == 0)   # the middle (50 px) tiles: two lattice cells
-    inner = np.where(lattice[..., None], shade(inner, 0.13), inner)
-    inner = np.where((((xs - 8) % 25 == 0) | ((ys - 8) % 25 == 0))[..., None] & ~lattice[..., None], shade(inner, -0.25), inner)   # its shadow
+    inner = np.where(lattice[..., None], shade(inner, 0.06), inner)
+    inner = np.where((((xs - 8) % 25 == 0) | ((ys - 8) % 25 == 0))[..., None] & ~lattice[..., None], shade(inner, -0.12), inner)   # its shadow
     fr = wood(w, h, "#2b1b14", 12)
     fr_v = wood(w, h, "#2b1b14", 13, vertical=True)
     side = (xs < 7) | (xs >= w - 7)

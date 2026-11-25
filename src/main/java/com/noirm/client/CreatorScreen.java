@@ -521,7 +521,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         int x = px + 11;
         int w = pw - 22;
         int count = Slot.HAIR.size();
-        int tile = Mth.clamp(w / 11, 18, 26);
+        int tile = Mth.clamp(w / 8 - 2, 18, 30);   // big enough to read each style
         int cols = Math.max(1, (w + 2) / (tile + 2));
         int rows = (count + cols - 1) / cols;
         int current = draft.get(Slot.HAIR);
