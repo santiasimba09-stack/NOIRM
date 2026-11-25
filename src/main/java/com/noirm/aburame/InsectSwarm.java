@@ -67,6 +67,9 @@ public class InsectSwarm extends Entity {
     public static final int DEVOUR_PER_CHAKRA = 100, DEVOUR_GAIN = 2;
 
     private UUID ownerId;
+    /** The owner as created (fake players and others not listed in the level are still found this way). */
+    private LivingEntity ownerRef;
+    private LivingEntity targetRef;
     private UUID targetId;
     private Vec3 park;
     private int life;
@@ -107,6 +110,7 @@ public class InsectSwarm extends Entity {
         InsectSwarm swarm = new InsectSwarm(AburameRegistry.INSECT_SWARM.get(), level);
         swarm.setPos(at.x, at.y, at.z);
         swarm.ownerId = owner.getUUID();
+        swarm.ownerRef = owner;
         swarm.entityData.set(OWNER, owner.getId());
         swarm.entityData.set(SPECIES, (byte) species.ordinal());
         swarm.entityData.set(COUNT, count);
@@ -116,6 +120,7 @@ public class InsectSwarm extends Entity {
     }
 
     public void setTarget(LivingEntity target, SwarmMode onArrival) {
+        targetRef = target;
         targetId = target == null ? null : target.getUUID();
         entityData.set(TARGET, target == null ? -1 : target.getId());
         arrival = onArrival;
@@ -208,6 +213,9 @@ public class InsectSwarm extends Entity {
 
     /** The owner, if loaded in this level. */
     public LivingEntity owner() {
+        if (ownerRef != null && ownerRef.isAlive() && !ownerRef.isRemoved() && ownerRef.level() == level()) {
+            return ownerRef;
+        }
         if (ownerId == null || !(level() instanceof ServerLevel level)) {
             Entity e = level().getEntity(ownerEntityId());
             return e instanceof LivingEntity l ? l : null;
@@ -217,6 +225,9 @@ public class InsectSwarm extends Entity {
     }
 
     public LivingEntity target() {
+        if (targetRef != null && targetId != null && targetRef.getUUID().equals(targetId) && targetRef.level() == level()) {
+            return targetRef.isAlive() && !targetRef.isRemoved() ? targetRef : null;
+        }
         if (targetId == null || !(level() instanceof ServerLevel level)) {
             return null;
         }
@@ -598,7 +609,7 @@ public class InsectSwarm extends Entity {
     }
 
     /** One second of eating (2.5). */
-    void drainSecond(ServerLevel level, LivingEntity owner, LivingEntity target) {
+    public void drainSecond(ServerLevel level, LivingEntity owner, LivingEntity target) {
         ColonyData colony = Colony.of(owner);
         float vigour = colony == null ? ColonyGrowth.VIGOUR_NORMAL : colony.vigour();
         float mul = drainMul * ColonyGrowth.vigourDrain(vigour) * (mode() == SwarmMode.SPHERE ? 3f : mode() == SwarmMode.TORNADO ? 2f : 1f);
@@ -725,6 +736,7 @@ public class InsectSwarm extends Entity {
     /** Hold the swarm key on a block: park there. */
     public void parkAt(Vec3 at) {
         targetId = null;
+        targetRef = null;
         entityData.set(TARGET, -1);
         park = at;
         arrival = SwarmMode.CLOUD;

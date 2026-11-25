@@ -115,7 +115,7 @@ public class InsectHiveBlockEntity extends BlockEntity {
     }
 
     /** One second: breeding, then fire losses; tell the owner how many it holds. */
-    void secondOfLife(Level level, BlockPos pos) {
+    public void secondOfLife(Level level, BlockPos pos) {
         float rate = BREED_PER_MIN / 60f * count;
         if (flowers >= FLOWERS_NEEDED) {
             rate *= FLOWER_BONUS;

@@ -306,6 +306,7 @@ H = {
     "strain": ("catch and breed in a wild insect's strain", "atrapa y cría la cepa de un insecto salvaje"),
     "generation": ("pass generations (adaptation, crosses)", "pasa generaciones (adaptación, cruces)"),
 }
+add("help.noirm.section.aburame", "Your insect colony (Aburame)", "Tu colonia de insectos (Aburame)")
 for k, v in H.items():
     add("help.noirm.aburame." + k, *v)
 

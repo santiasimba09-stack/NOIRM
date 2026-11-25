@@ -3608,5 +3608,6 @@
   "help.noirm.aburame.species": "alberga una especie",
   "help.noirm.aburame.bug": "un insecto salvaje a tu lado",
   "help.noirm.aburame.strain": "atrapa y cría la cepa de un insecto salvaje",
-  "help.noirm.aburame.generation": "pasa generaciones (adaptación, cruces)"
+  "help.noirm.aburame.generation": "pasa generaciones (adaptación, cruces)",
+  "help.noirm.section.aburame": "Tu colonia de insectos (Aburame)"
 }
