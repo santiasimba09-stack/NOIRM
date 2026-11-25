@@ -25,7 +25,7 @@ import java.util.Optional;
 public record JutsuDefinition(Optional<Nature> nature, CastType cast, String behavior, float chakraCost, int cooldown,
                               int minCharge, int maxCharge, int maxDuration, Optional<Requirement> requires,
                               boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode,
-                              boolean quick) {
+                              boolean quick, Optional<Hiden> hiden) {
 
     public static final Codec<JutsuDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Nature.CODEC.optionalFieldOf("nature").forGetter(JutsuDefinition::nature),
@@ -42,8 +42,39 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
             Params.CODEC.optionalFieldOf("params", Params.DEFAULT).forGetter(JutsuDefinition::params),
             Unlock.CODEC.optionalFieldOf("unlock").forGetter(JutsuDefinition::unlock),
             Mode.CODEC.optionalFieldOf("mode").forGetter(JutsuDefinition::mode),
-            Codec.BOOL.optionalFieldOf("quick", false).forGetter(JutsuDefinition::quick)
+            Codec.BOOL.optionalFieldOf("quick", false).forGetter(JutsuDefinition::quick),
+            Hiden.CODEC.optionalFieldOf("hiden").forGetter(JutsuDefinition::hiden)
     ).apply(i, JutsuDefinition::new));
+
+    /** Whether this is an Aburame insect technique: no hand seals, castable while bound, never copied. */
+    public boolean isAburame() {
+        return hiden.isPresent() && "aburame".equals(hiden.get().clan());
+    }
+
+    /**
+     * A clan secret technique that works its own way ({@code "hiden": {...}}). For the Aburame
+     * (docs/ABURAME.md, 2.4): it has <b>no hand seals</b> (it fires the tick you press), it can be
+     * cast while bound or stunned, a Sharingan can't copy it, and it costs <b>insects</b>.
+     *
+     * @param clan    whose art it is ({@code "aburame"})
+     * @param rank    the hive rank it needs (1 Nestling … 6 Living Hive)
+     * @param insects insects it commits (they leave as a swarm and come back unless killed)
+     * @param share   or this share of the body colony, if that's more (Parasitic Swarm: 10%)
+     * @param species which species it sends ({@code kikaichu}, {@code kidaichu}, {@code rinkaichu}…)
+     * @param mode    the swarm's shape ({@code cling}, {@code sphere}, {@code wall}…)
+     * @param drain   drain multiplier while it clings
+     */
+    public record Hiden(String clan, int rank, int insects, float share, String species, String mode, float drain) {
+        public static final Codec<Hiden> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.optionalFieldOf("clan", "aburame").forGetter(Hiden::clan),
+                Codec.intRange(1, 6).optionalFieldOf("rank", 1).forGetter(Hiden::rank),
+                Codec.intRange(0, 1_000_000).optionalFieldOf("insects", 0).forGetter(Hiden::insects),
+                Codec.floatRange(0, 1).optionalFieldOf("share", 0f).forGetter(Hiden::share),
+                Codec.STRING.optionalFieldOf("species", "kikaichu").forGetter(Hiden::species),
+                Codec.STRING.optionalFieldOf("mode", "cling").forGetter(Hiden::mode),
+                Codec.FLOAT.optionalFieldOf("drain", 1f).forGetter(Hiden::drain)
+        ).apply(i, Hiden::new));
+    }
 
     /**
      * A state you switch on (behavior {@code "mode"}), like Lightning Armor: it lasts until you

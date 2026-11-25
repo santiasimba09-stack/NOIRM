@@ -295,6 +295,12 @@ public final class Sharingan {
                 || !isWatching(watcher, caster)) { // a self-made jutsu is only shared by its scroll or a lesson
             return false;
         }
+        com.noirm.jutsu.JutsuDefinition seen = com.noirm.jutsu.JutsuData.get(id);
+        if (seen != null && seen.isAburame()) {
+            // An insect technique has no seals to read: the eye sees the swarm, not a technique (docs/ABURAME.md, 2.4).
+            watcher.displayClientMessage(Component.translatable("message.noirm.sharingan.needs_colony"), true);
+            return false;
+        }
         ShinobiData data = ShinobiCapability.get(watcher).orElse(null);
         if (data == null || !data.jutsu().learn(id, true)) {
             return false;
