@@ -297,6 +297,9 @@ public class DrapeLayer<T extends LivingEntity, M extends HumanoidModel<T>> exte
         float bodyPitch = model.body.xRot;
         float right = (cut & 8) != 0 ? 0f : model.rightLeg.xRot - bodyPitch;
         float left = (cut & 16) != 0 ? 0f : model.leftLeg.xRot - bodyPitch;
+        // the knees: a shin folding back carries the foot behind the thigh's line
+        float rightKnee = model instanceof BendyModel<?> bk ? bk.rightShin.xRot : 0f;
+        float leftKnee = model instanceof BendyModel<?> bk2 ? bk2.leftShin.xRot : 0f;
         float lift = sim.lift(partial) * (1f - 0.6f * part.stiff());
         float flutter = sim.flutter(partial) * (1f - part.stiff());
         float time = sim.time(partial);
@@ -316,12 +319,12 @@ public class DrapeLayer<T extends LivingEntity, M extends HumanoidModel<T>> exte
                 float x = x0 * spread;
                 float z = z0 * spread;
                 float d = Math.max(0f, y - 12f);
-                float dzR = d * Mth.sin(right), dzL = d * Mth.sin(left);
+                float dzR = legZ(d, right, rightKnee), dzL = legZ(d, left, leftKnee);
                 z += wRight * dzR + (1f - wRight) * dzL;
                 if (z0 < -0.5f) { // the front wraps the leg that steps forward
-                    z = Math.min(z, Math.min(-2.6f + dzR, -2.6f + dzL) - 0.5f * (0.4f + t));
+                    z = Math.min(z, Math.min(-3.1f + dzR, -3.1f + dzL) - 0.5f * (0.4f + t));
                 } else if (z0 > 0.5f) { // the back wraps the leg left behind
-                    z = Math.max(z, Math.max(2.6f + dzR, 2.6f + dzL) + 0.5f * (0.4f + t));
+                    z = Math.max(z, Math.max(3.1f + dzR, 3.1f + dzL) + 0.5f * (0.4f + t));
                 }
                 z += lift * 0.22f * part.length() * t * t; // running blows the hem back
                 x += Mth.sin(time * 0.5f + phi * 3f) * 0.25f * flutter * t;
@@ -348,6 +351,14 @@ public class DrapeLayer<T extends LivingEntity, M extends HumanoidModel<T>> exte
                         (row + 1f) / SKIRT_ROWS, light, overlay, r, g, bl);
             }
         }
+    }
+
+    /** How far back (+) a point {@code d} pixels down the leg sits, with the hip at {@code hip} and the knee bent by {@code knee}. */
+    private static float legZ(float d, float hip, float knee) {
+        if (d <= 6f) {
+            return d * Mth.sin(hip);
+        }
+        return 6f * Mth.sin(hip) + (d - 6f) * Mth.sin(hip + knee);
     }
 
     /** A ring cell: the same as {@link #sheet} with the normal pointing out of the ring. */
@@ -556,7 +567,7 @@ public class DrapeLayer<T extends LivingEntity, M extends HumanoidModel<T>> exte
         for (int s = 0; s < strips; s++) {
             float phi = Mth.HALF_PI + (s + 0.5f) / strips * Mth.TWO_PI; // start at the back
             float cx = Mth.cos(phi), cz = Mth.sin(phi);
-            if (cz < -0.86f) {
+            if (cz < -0.55f) {
                 continue; // leave the face free
             }
             float w = 0.7f;

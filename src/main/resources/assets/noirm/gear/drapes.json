@@ -270,8 +270,7 @@
       "length": 14.4,
       "top": 3.0,
       "flare": 0.4,
-      "stiff": 0.2,
-      "open": 1.6
+      "stiff": 0.2
     },
     {
       "type": "sleeves",

@@ -685,7 +685,7 @@ def anbu_uniform():
         return None
 
     def tattoo(face, u, v, Wd, H):  # a red spiral on the outside of the upper arm
-        if face in ("right", "front") and 0.6 < v < 5.4:
+        if face == "right" and 0.6 < v < 5.4:
             cx, cy = (2.0, 2.9) if face == "right" else (2.0, 2.9)
             pts = spiral(cx, cy, 0.15, 1.5, 1.6, 0.4)
             if on_polyline(u, v, pts, 0.32):
@@ -1011,7 +1011,7 @@ DRAPES = {
     "uchiha_cape": [cape_part("uchiha_cape")],
     "senju_cape": [cape_part("senju_cape")],
     "uzumaki_cape": [cape_part("uzumaki_cape")],
-    "cloud_cloak": [collar("cloud_collar", 4.2, 3.0), skirt("cloud_skirt", length=14.4, top=3.0, flare=0.4, open_=1.6),
+    "cloud_cloak": [collar("cloud_collar", 4.2, 3.0), skirt("cloud_skirt", length=14.4, top=3.0, flare=0.4),
                     sleeves("cloud_skirt", 2.6)],
     "kasa_hat": [{"type": "hat", "texture": "kasa_hat", "width": 9.5, "height": 4.8, "length": 7.5, "panels": 16}],
     "hooded_cloak": [cape_part("hooded_cloak_cape", length=19.5, width=11.5, wrap=2.0, flare=0.3)],
