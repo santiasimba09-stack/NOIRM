@@ -11,6 +11,10 @@ import java.util.List;
  * The character creation part of a player's saved data ({@code ShinobiData.creator()}): their
  * look, whether the creation screen is open and in which {@link Mode}, whether they are held in
  * place until they finish, and the genetics rolls they've seen so far.
+ *
+ * <p>Each roll also remembers every set of talents seen for it ({@link #talentSets}): a talent reroll
+ * adds a new set to the chosen roll (same clan, same stats) and the player can switch back to any
+ * earlier one, so neither kind of reroll is ever a loss.
  */
 public final class CreatorData {
     /** What the creation screen is open for. */
@@ -41,8 +45,12 @@ public final class CreatorData {
     private double holdY;
     private double holdZ;
     private final List<GeneticRoll> rolls = new ArrayList<>();
+    /** Per roll (same index): every talent set seen for it, and which one it holds now. */
+    private final List<List<List<String>>> talentSets = new ArrayList<>();
+    private final List<Integer> talentChoice = new ArrayList<>();
     private int chosen;
     private int rerollsUsed;
+    private int talentRerollsUsed;
 
     /** The player's look, or null if they never made one (older characters: their own skin). */
     public PlayerLook look() {
@@ -104,8 +112,11 @@ public final class CreatorData {
 
     void clearRolls() {
         rolls.clear();
+        talentSets.clear();
+        talentChoice.clear();
         chosen = 0;
         rerollsUsed = 0;
+        talentRerollsUsed = 0;
     }
 
     /** Rolls saved before talents existed get theirs (biased by the roll's clan). */
@@ -113,13 +124,64 @@ public final class CreatorData {
         for (int i = 0; i < rolls.size(); i++) {
             GeneticRoll roll = rolls.get(i);
             if (roll.talents().isEmpty()) {
-                rolls.set(i, roll.withTalents(com.noirm.traits.Talents.roll(random, bias.apply(roll))));
+                GeneticRoll filled = roll.withTalents(com.noirm.traits.Talents.roll(random, bias.apply(roll)));
+                rolls.set(i, filled);
+                talentSets.set(i, new ArrayList<>(List.of(filled.talents())));
+                talentChoice.set(i, 0);
             }
         }
     }
 
     void addRoll(GeneticRoll roll) {
         rolls.add(roll);
+        talentSets.add(new ArrayList<>(List.of(roll.talents())));
+        talentChoice.add(0);
+    }
+
+    /** How many talent sets the roll at {@code index} has seen (1 = only its first). */
+    public int talentSetCount(int index) {
+        return index >= 0 && index < talentSets.size() ? talentSets.get(index).size() : 0;
+    }
+
+    /** Which of its talent sets the roll at {@code index} holds now (0-based). */
+    public int talentChoice(int index) {
+        return index >= 0 && index < talentChoice.size() ? talentChoice.get(index) : 0;
+    }
+
+    /** Every talent set the roll at {@code index} has seen. */
+    public List<List<String>> talentSets(int index) {
+        return index >= 0 && index < talentSets.size() ? List.copyOf(talentSets.get(index)) : List.of();
+    }
+
+    /** A new talent set for the chosen roll (its clan and stats stay); it now holds it. */
+    void addTalentSet(List<String> talents) {
+        if (chosen < 0 || chosen >= rolls.size()) {
+            return;
+        }
+        talentSets.get(chosen).add(List.copyOf(talents));
+        selectTalentSet(talentSets.get(chosen).size() - 1);
+    }
+
+    /** The chosen roll goes back to one of the talent sets it has seen. Returns whether it changed. */
+    boolean selectTalentSet(int set) {
+        if (chosen < 0 || chosen >= rolls.size() || set < 0 || set >= talentSets.get(chosen).size()) {
+            return false;
+        }
+        talentChoice.set(chosen, set);
+        rolls.set(chosen, rolls.get(chosen).withTalents(talentSets.get(chosen).get(set)));
+        return true;
+    }
+
+    public int talentRerollsUsed() {
+        return talentRerollsUsed;
+    }
+
+    void useTalentReroll() {
+        talentRerollsUsed++;
+    }
+
+    public int talentRerollsLeft() {
+        return Math.max(0, CharacterCreator.MAX_TALENT_REROLLS - talentRerollsUsed);
     }
 
     public int chosen() {
@@ -161,6 +223,21 @@ public final class CreatorData {
         tag.put("Rolls", list);
         tag.putInt("Chosen", chosen);
         tag.putInt("RerollsUsed", rerollsUsed);
+        ListTag sets = new ListTag();
+        for (int i = 0; i < talentSets.size(); i++) {
+            CompoundTag entry = new CompoundTag();
+            ListTag seen = new ListTag();
+            for (List<String> set : talentSets.get(i)) {
+                ListTag ids = new ListTag();
+                set.forEach(t -> ids.add(net.minecraft.nbt.StringTag.valueOf(t)));
+                seen.add(ids);
+            }
+            entry.put("Seen", seen);
+            entry.putInt("Choice", talentChoice.get(i));
+            sets.add(entry);
+        }
+        tag.put("TalentSets", sets);
+        tag.putInt("TalentRerollsUsed", talentRerollsUsed);
         return tag;
     }
 
@@ -177,5 +254,31 @@ public final class CreatorData {
         }
         chosen = tag.getInt("Chosen");
         rerollsUsed = tag.getInt("RerollsUsed");
+        talentRerollsUsed = tag.getInt("TalentRerollsUsed");
+        // Talent sets per roll; rolls saved before talent rerolls existed start with their own set.
+        talentSets.clear();
+        talentChoice.clear();
+        ListTag sets = tag.getList("TalentSets", Tag.TAG_COMPOUND);
+        for (int i = 0; i < rolls.size(); i++) {
+            List<List<String>> seen = new ArrayList<>();
+            int choice = 0;
+            if (i < sets.size()) {
+                CompoundTag entry = sets.getCompound(i);
+                for (Tag set : entry.getList("Seen", Tag.TAG_LIST)) {
+                    List<String> ids = new ArrayList<>();
+                    for (Tag id : (ListTag) set) {
+                        ids.add(id.getAsString());
+                    }
+                    seen.add(List.copyOf(ids));
+                }
+                choice = entry.getInt("Choice");
+            }
+            if (seen.isEmpty() || choice < 0 || choice >= seen.size() || !seen.get(choice).equals(rolls.get(i).talents())) {
+                seen = new ArrayList<>(List.of(rolls.get(i).talents()));
+                choice = 0;
+            }
+            talentSets.add(new ArrayList<>(seen));
+            talentChoice.add(choice);
+        }
     }
 }

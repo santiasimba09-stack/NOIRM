@@ -61,6 +61,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
     private static final int CHAKRA = 0xFFE0554A;
     private static final int GOLD = Theme.GOLD;
     private static final int RED = Theme.RED;
+    /** Talents (and their rerolls): the teal the talent count already uses. */
+    private static final int TALENT = 0xFF7FD3C8;
 
     private static final int ROW = 13;
     private static final int LABEL_W = 66;
@@ -822,9 +824,8 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             return;
         }
         int seen = rolls.size();
-        int total = seen + state.rerollsLeft();
-        g.drawString(font, cut(Component.translatable("creator.noirm.genetics.rolls", seen, total), w), x, y, DIM, false);
-        y += 11;
+        // Two counters: clan rolls (each a new clan, stats and talents) and talent rerolls (new talents, same clan).
+        y = rollCounters(g, x, y, w, seen, mx, my);
         int cardH = 31;
         int room = vy + vh - 30 - y;
         int step = Math.min(cardH + 3, Math.max(22, room / Math.max(1, seen)));
@@ -832,14 +833,43 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             rollCard(g, x, y, w, rolls.get(i), i == state.chosen(), i, mx, my);
             y += step;
         }
-        // reroll button
+        // the two reroll buttons, side by side
         int by = vy + vh - 25;
+        int half = (w - 4) / 2;
         boolean can = state.rerollsLeft() > 0;
         Component label = can ? Component.translatable("creator.noirm.genetics.reroll", state.rerollsLeft())
                 : Component.translatable("creator.noirm.genetics.no_rerolls");
-        int bw = Math.min(w, font.width(label) + 16);
-        button(g, x, by, bw, 14, label, can, mx, my, () -> send(CreatorPackets.Action.Kind.REROLL, 0),
-                List.of(Component.translatable("creator.noirm.genetics.reroll_tip", com.noirm.creator.CharacterCreator.MAX_REROLLS)));
+        button(g, x, by, half, 14, cut(label, half - 8), can, mx, my, () -> send(CreatorPackets.Action.Kind.REROLL, 0),
+                List.of(label, Component.translatable("creator.noirm.genetics.reroll_tip", com.noirm.creator.CharacterCreator.MAX_ROLLS)));
+        boolean canTalents = state.talentRerollsLeft() > 0 && !rolls.isEmpty();
+        Component talentLabel = canTalents ? Component.translatable("creator.noirm.genetics.talent_reroll", state.talentRerollsLeft())
+                : Component.translatable("creator.noirm.genetics.no_talent_rerolls");
+        button(g, x + w - half, by, half, 14, cut(talentLabel, half - 8), canTalents, mx, my,
+                () -> send(CreatorPackets.Action.Kind.TALENT_REROLL, 0),
+                List.of(talentLabel, Component.translatable("creator.noirm.genetics.talent_reroll_tip",
+                        com.noirm.creator.CharacterCreator.MAX_TALENT_REROLLS)));
+    }
+
+    /**
+     * "Clan rolls 3/5 · Talent rerolls 5/5" as two chips (how many are left of each, out of the total), so
+     * the player always sees what's left. Returns the y below them.
+     */
+    private int rollCounters(GuiGraphics g, int x, int y, int w, int seen, int mx, int my) {
+        int clanTotal = com.noirm.creator.CharacterCreator.MAX_ROLLS;
+        int talentTotal = com.noirm.creator.CharacterCreator.MAX_TALENT_REROLLS;
+        String clan = Component.translatable("creator.noirm.genetics.clan_left", state.rerollsLeft(), clanTotal - 1).getString();
+        String talents = Component.translatable("creator.noirm.genetics.talents_left", state.talentRerollsLeft(), talentTotal).getString();
+        int cw = Ui.chip(g, font, x, y, clan, state.rerollsLeft() > 0 ? CHAKRA : FAINT);
+        hits.add(new Hit(x, y, cw, 11, null, List.of(Component.translatable("creator.noirm.genetics.rolls", seen, clanTotal),
+                Component.translatable("creator.noirm.genetics.clan_left_tip"))));
+        int tx = x + cw + 4;
+        if (tx + font.width(talents) + 6 > x + w) { // too narrow: the second chip goes below
+            tx = x;
+            y += 13;
+        }
+        int tw = Ui.chip(g, font, tx, y, talents, state.talentRerollsLeft() > 0 ? TALENT : FAINT);
+        hits.add(new Hit(tx, y, tw, 11, null, List.of(Component.translatable("creator.noirm.genetics.talents_left_tip"))));
+        return y + 14;
     }
 
     private static final String[] STATS = {"res", "tai", "spd", "ctl", "wil"};
@@ -854,9 +884,14 @@ public class CreatorScreen extends Screen implements NoirmStyled {
         }
         MutableComponent name = Component.literal(roll.clanName()).withStyle(s -> s.withBold(true));
         g.drawString(font, cut(name, w - 60), x + 5, y + 3, roll.canon() ? RED : GOLD, false);
+        int pickerHit = -1;
         if (chosen) {
             Component kept = Component.translatable("creator.noirm.genetics.kept");
-            g.drawString(font, kept, x + w - 5 - font.width(kept), y + 3, CHAKRA, false);
+            int kx = x + w - 5 - font.width(kept);
+            g.drawString(font, kept, kx, y + 3, CHAKRA, false);
+            if (index >= 0 && roll.talentSets() > 1) {
+                pickerHit = talentPicker(g, kx - 4, y + 3, roll, mx, my);
+            }
         }
         // natures as coloured names, kekkei genkai, trait count
         int nx = x + 5;
@@ -931,6 +966,43 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             tip.add(Component.translatable("creator.noirm.genetics.pick").withStyle(s -> s.withColor(CHAKRA)));
         }
         hits.add(new Hit(x, y, w, h, index >= 0 ? () -> send(CreatorPackets.Action.Kind.CHOOSE, index) : null, tip));
+        if (pickerHit >= 0) { // the arrows sit on top of the card
+            addPickerHits(roll, pickerHit, y + 3);
+        }
+    }
+
+    /**
+     * "◀ 2/3 ▶" ending at {@code right}: which talent set (of those seen for this roll) it holds. Drawn
+     * now; its click areas are added after the card's ({@link #addPickerHits}). Returns its left x.
+     */
+    private int talentPicker(GuiGraphics g, int right, int y, CreatorPackets.RollView roll, int mx, int my) {
+        String count = (roll.talentSet() + 1) + "/" + roll.talentSets();
+        int arrowW = font.width("◀");
+        int width = arrowW + 3 + font.width(count) + 3 + arrowW;
+        int left = right - width;
+        boolean canBack = roll.talentSet() > 0;
+        boolean canNext = roll.talentSet() < roll.talentSets() - 1;
+        boolean overBack = mx >= left - 1 && mx < left + arrowW + 1 && my >= y - 1 && my < y + 9;
+        boolean overNext = mx >= right - arrowW - 1 && mx < right + 1 && my >= y - 1 && my < y + 9;
+        g.drawString(font, "◀", left, y, canBack ? (overBack ? PAPER : TALENT) : FAINT, false);
+        g.drawString(font, count, left + arrowW + 3, y, TALENT, false);
+        g.drawString(font, "▶", right - arrowW, y, canNext ? (overNext ? PAPER : TALENT) : FAINT, false);
+        return left;
+    }
+
+    private void addPickerHits(CreatorPackets.RollView roll, int left, int y) {
+        int arrowW = font.width("◀");
+        String count = (roll.talentSet() + 1) + "/" + roll.talentSets();
+        int right = left + arrowW + 3 + font.width(count) + 3 + arrowW;
+        List<Component> tip = List.of(Component.translatable("creator.noirm.genetics.talent_sets", roll.talentSet() + 1, roll.talentSets()));
+        hits.add(new Hit(left - 1, y - 1, right - left + 2, 10, null, tip));
+        if (roll.talentSet() > 0) {
+            hits.add(new Hit(left - 1, y - 1, arrowW + 2, 10, () -> send(CreatorPackets.Action.Kind.CHOOSE_TALENTS, roll.talentSet() - 1), tip));
+        }
+        if (roll.talentSet() < roll.talentSets() - 1) {
+            hits.add(new Hit(right - arrowW - 1, y - 1, arrowW + 2, 10,
+                    () -> send(CreatorPackets.Action.Kind.CHOOSE_TALENTS, roll.talentSet() + 1), tip));
+        }
     }
 
     // ---------------------------------------------------------------- clan page
@@ -1047,8 +1119,19 @@ public class CreatorScreen extends Screen implements NoirmStyled {
                     .withStyle(s -> s.withColor(0xA0A0A0)))));
             y += 12;
         }
-        // the character's own talents
+        // the character's own talents, with which set this is and the talent rerolls left
         g.drawString(font, Component.translatable("creator.noirm.clan.talents"), x, y, DIM, false);
+        if (state.modeEnum().genetics()) {
+            String left = Component.translatable("creator.noirm.genetics.talents_left", state.talentRerollsLeft(),
+                    com.noirm.creator.CharacterCreator.MAX_TALENT_REROLLS).getString();
+            int lw = font.width(left);
+            g.drawString(font, left, x + w - lw, y, state.talentRerollsLeft() > 0 ? TALENT : FAINT, false);
+            hits.add(new Hit(x + w - lw, y, lw, 9, null, List.of(Component.translatable("creator.noirm.genetics.talents_left_tip"))));
+            if (roll.talentSets() > 1) {
+                int pickerLeft = talentPicker(g, x + w - lw - 8, y, roll, mx, my);
+                addPickerHits(roll, pickerLeft, y);
+            }
+        }
         y += 10;
         if (roll.talents().isEmpty()) {
             g.drawString(font, cut(Component.translatable("talent.noirm.none"), w), x + 4, y, FAINT, false);

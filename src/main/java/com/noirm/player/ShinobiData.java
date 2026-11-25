@@ -341,7 +341,10 @@ public final class ShinobiData {
         jutsu.tickCooldowns();
     }
 
-    /** Reserves add 2% per point above 10; exhaustion halves recovery; a tailed beast's cloak triples it. */
+    /**
+     * Reserves add 2% per point above 10; exhaustion halves recovery; a tailed beast's cloak triples it;
+     * the blood's pool multiplier scales it (so big pools refill in the same time).
+     */
     public float chakraRegenMultiplier() {
         float multiplier = Math.max(0.5f, 1f + (reserves - DEFAULT_STAT) * TrainingSystem.REGEN_PER_RESERVES);
         if (awakening.isExhausted()) {
@@ -349,6 +352,9 @@ public final class ShinobiData {
         }
         multiplier *= com.noirm.pills.PillEffects.chakraRegenMultiplier(this); // foods and pills
         multiplier *= com.noirm.traits.Perks.mult(this, com.noirm.traits.Perk.CHAKRA_REGEN); // clan blood, talents
+        // A huge pool refills as fast as a small one: regen grows with the blood's pool (x100 for an Uzumaki),
+        // so the time to refill depends on chakra_regen, not on the size of the pool. Small pools keep normal regen.
+        multiplier *= Math.max(1f, com.noirm.traits.Perks.poolMultiplier(this));
         return biju.cloakStage() > 0 ? multiplier * 3f : multiplier;
     }
 

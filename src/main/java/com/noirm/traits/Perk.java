@@ -15,7 +15,10 @@ import java.util.Locale;
 public enum Perk {
     /** Max chakra, flat (TrainingSystem.applyReserves). */
     MAX_CHAKRA(Kind.FLAT, false),
-    /** The whole chakra pool, ×(1 + amount) (TrainingSystem.applyReserves): 9 = ten times a normal shinobi's. */
+    /**
+     * The whole chakra pool, ×(1 + amount) (TrainingSystem.applyReserves): 99 = a hundred times a normal shinobi's.
+     * Chakra regeneration grows with it, so every pool refills in the same time (ShinobiData.chakraRegenMultiplier).
+     */
     CHAKRA_POOL(Kind.TIMES, false),
     /** With a tailed beast sealed inside, the pool grows by this much more (×(1 + pool + this)). */
     JINCHURIKI_POOL(Kind.TIMES_MORE, false),
@@ -117,7 +120,11 @@ public enum Perk {
     /** A chakra so loud it draws attention: wild ninjas find you this much more often, mobs and beasts notice you from further away. */
     CHAKRA_BEACON(Kind.PERCENT, true),
     /** The Eight Gates: health they burn and the health line they slam shut at, ×(1 − amount) (ModeSystem). */
-    GATE_MASTERY(Kind.PERCENT, false);
+    GATE_MASTERY(Kind.PERCENT, false),
+    /** Meditation progress on a nature drill (NatureDrills.study): the Senju's "thousand skills". */
+    NATURE_XP(Kind.PERCENT, false),
+    /** Sharingan growth XP (Sharingan.addXp): the Uchiha's eyes grow faster. */
+    SHARINGAN_XP(Kind.PERCENT, false);
 
     public enum Kind { FLAT, PERCENT, CHANCE, FLAG, TIMES, TIMES_MORE }
 
@@ -166,7 +173,7 @@ public enum Perk {
             case PERCENT -> (amount >= 0 ? "+" : "") + Math.round(amount * 100) + "%";
             case CHANCE -> Math.round(amount * 100) + "%";
             case FLAG -> "";
-            case TIMES -> "×" + trim(Math.round((1f + amount) * 10f) / 10f);
+            case TIMES -> "×" + trim(1f + amount >= 10f ? Math.round(1f + amount) : Math.round((1f + amount) * 10f) / 10f);
             case TIMES_MORE -> "+×" + trim(Math.round(amount * 10f) / 10f);
         };
     }

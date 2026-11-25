@@ -210,8 +210,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
 
     /** Max chakra, from reserves like a player's: 100 at 10, +5 per point above. */
     public float maxChakra() {
-        return Math.max(MIN_MAX_CHAKRA, ShinobiData.DEFAULT_MAX_CHAKRA
-                + (combatReserves() - ShinobiData.DEFAULT_STAT) * com.noirm.training.TrainingSystem.CHAKRA_PER_RESERVES);
+        // Their clan's pool counts, capped (Perks.NPC_POOL_CAP): an Uzumaki ninja casts more, but not forever.
+        return Math.max(MIN_MAX_CHAKRA, (ShinobiData.DEFAULT_MAX_CHAKRA
+                + (combatReserves() - ShinobiData.DEFAULT_STAT) * com.noirm.training.TrainingSystem.CHAKRA_PER_RESERVES)
+                * com.noirm.traits.Perks.npcPoolMultiplier(this));
     }
 
     public float chakra() {

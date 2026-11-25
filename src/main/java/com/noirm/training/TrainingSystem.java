@@ -85,6 +85,12 @@ public final class TrainingSystem {
     public static final double HEALTH_PER_VITALITY = 0.5;
     /** Reserves: XP per point of chakra spent (jutsu, eyes…). */
     public static final float RESERVES_XP_PER_CHAKRA = 0.25f;
+    /**
+     * Chakra spent teaches Reserves ÷ (the blood's pool multiplier ^ this). A pool a hundred times bigger
+     * that refills a hundred times faster could otherwise burn chakra nonstop and train Reserves (and so
+     * jutsu power) far faster than anyone; at 0.5 an Uzumaki (×100) learns 1/10 per point spent.
+     */
+    public static final float SPEND_XP_POOL_EXPONENT = 0.5f;
     /** +5 max chakra per reserves point above 10 (double at 30). */
     public static final float CHAKRA_PER_RESERVES = 5f;
     /** +2% chakra regen per reserves point above 10. */
@@ -245,7 +251,8 @@ public final class TrainingSystem {
         }
         float spent = data.training().takeChakraSpent();
         if (spent > 0 && !player.getAbilities().instabuild) {
-            grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA);
+            float pool = Math.max(1f, com.noirm.traits.Perks.poolMultiplier(data));
+            grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA / (float) Math.pow(pool, SPEND_XP_POOL_EXPONENT));
         }
         Supplementary.tick(player, data);
         KillXp.tick(player, data);
@@ -283,10 +290,8 @@ public final class TrainingSystem {
         float bonus = (data.getReserves() - ShinobiData.DEFAULT_STAT) * CHAKRA_PER_RESERVES;
         // Clan blood and talents: a flat amount, then the whole pool ×(1 + chakra_pool) (the Uzumaki's huge reserves).
         float flat = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.MAX_CHAKRA);
-        float pool = com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.CHAKRA_POOL);
-        if (data.biju().isJinchuriki()) { // a beast's chakra on top of an already huge pool (the Uzumaki)
-            pool += com.noirm.traits.Perks.get(data, com.noirm.traits.Perk.JINCHURIKI_POOL);
-        }
+        // poolMultiplier counts a sealed beast's chakra on top of an already huge pool (the Uzumaki).
+        float pool = com.noirm.traits.Perks.poolMultiplier(data) - 1f;
         bonus += flat + pool * (ShinobiData.DEFAULT_MAX_CHAKRA + bonus + flat);
         float applied = data.training().appliedChakraBonus();
         if (Math.abs(bonus - applied) > 1e-4) {
