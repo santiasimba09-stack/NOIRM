@@ -55,3 +55,20 @@ stages of growth, just a progressive system where it keeps growing and becoming 
   milestone levels, not stages.
 - **Hound traits:** 2–3 rolled per hound, with at most one weakness.
 - **Many styles:** builds or breeds, coat patterns, colours, ear and tail types, markings.
+
+## Clans, round 3 (owner, 2026-11-25): each clan a game changer, lore accurate
+After the creator/UI wave. The owner: "I want those clans to each be some great game change, make it lore
+accurate. Uzumaki, Senju and Uchiha, for example, should be overpowered as f***, same with Kaguya, etc. Get into
+research: canon statements, databooks, manga pages… get as much info as possible before you start working,
+and apply it ALL in Minecraft. I'm giving you creative liberties from now on, so get creative."
+- **Research first and deeply:** databook entries and stats, canon statements, manga and anime feats, for every
+  clan. Cite sources (chapter, episode, databook) in `docs/CLANS.md`, in our own words.
+- **Every clan a game changer:** not just percentages. Each clan should change how you play: signature
+  mechanics, clan-only techniques and kekkei genkai, awakenings, unique progression, clan items, a look,
+  clan NPCs and places.
+- **The great clans are overpowered, as in canon:** Uzumaki (vitality, chakra, sealing chains), Senju
+  (Wood Release, life force, healing), Uchiha (the Sharingan's whole path), Kaguya (Shikotsumyaku). The
+  drawbacks and canon weaknesses still apply. Balance comes from how hard the power is to unlock and its
+  costs, not from shrinking it.
+- **Creative liberty:** invent mechanics freely where canon is silent, but stay true to the lore. Keep our
+  basics: our own art, no copied assets, server-authoritative, data-driven, tests.
