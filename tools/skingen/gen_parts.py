@@ -492,11 +492,8 @@ def upper_lid(f, cx, s):
     dirx = -1 if cx < 4 else 1
     up = lid_points(cx, s, "top", n=40)
     lid = A.crisp(stroke(f, [(x, y - s["lash"] * 0.3) for x, y in up], s["lash"] * 0.4, s["lash"]))
-    ox, oy = up[-1]
-    oy -= s["lash"] * 0.3
-    wing = A.crisp(stroke(f, [(ox - dirx * 0.15, oy), (ox + dirx * s["wing"], oy - 0.02 - s["wing"] * 0.12)],
-                          s["lash"] * 0.85, 0.14))
-    return np.maximum(lid, wing)
+    # (the old flick past the outer corner is gone: the owner's rule, nothing black runs past the eye)
+    return lid
 
 
 def visible_iris(f, cx, s):
@@ -533,9 +530,7 @@ def part_eyes(style):
             gap = lash_y - Y
             near = A.crisp(((gap > 0) & (gap < s["hood"] * 0.55) & span).astype(np.float32))
             far = A.crisp(((gap >= s["hood"] * 0.55) & (gap < s["hood"]) & span & (u > 0.12) & (u < 0.9)).astype(np.float32))
-            shade = near * 0.42 + far * 0.2
-            rgb = np.where((shade > a)[..., None], np.array(HOOD, np.float32), rgb)
-            a = np.maximum(a, shade)
+            # (no lid shadow: the owner's rule, 2026-11-12; the high-detail eye on top has none either)
             # the white: only where the iris isn't; the row under the lid in its shadow, the inner
             # corner pinker
             white = inside * (1 - iris)
@@ -592,8 +587,8 @@ def part_brows(style):
             a = f.zeros()
             for cx in A.EYE_XS:
                 sgn = -1 if cx < 4 else 1
-                cov = A.crisp(ell(f, cx - sgn * 0.45, 2.6, 0.42, 0.34))
-                lit = A.crisp(ell(f, cx - sgn * 0.5, 2.5, 0.22, 0.16))
+                cov = A.crisp(ell(f, cx + sgn * 0.05, 2.45, 0.5, 0.4))
+                lit = A.crisp(ell(f, cx, 2.35, 0.26, 0.18))
                 k = np.where(cov > a, np.where(lit > 0, -0.5, -1.4), k)
                 a = np.maximum(a, cov)
             return k, a

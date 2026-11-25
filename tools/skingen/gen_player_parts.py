@@ -830,15 +830,15 @@ def part_eye_detail(name):
                 dk = np.where((pad > 0) & (line == 0), 0.35, dk)
             elif name == "dark_circles":
                 ring = np.exp(-(((X - cx) / 1.1) ** 2 + ((Y - 5.05) / 0.35) ** 2))
-                dk = np.where(A.crisp(ring - 0.45 + 0.5) > 0, -0.75, dk)
+                dk = np.where(A.crisp(ring - 0.45 + 0.5) > 0, -1.0, dk)
             elif name == "crows_feet":
                 for ang in (-0.35, 0.0, 0.35):
-                    x0 = cx - sgn * 1.55
-                    line = A.crisp(stroke(f, [(x0, A.EYE_Y + ang * 0.2), (x0 - sgn * 0.55, A.EYE_Y + ang * 0.9)], 0.08, 0.03))
+                    x0 = cx + sgn * 1.55
+                    line = A.crisp(stroke(f, [(x0, A.EYE_Y + ang * 0.2), (x0 + sgn * 0.6, A.EYE_Y + ang * 0.9)], 0.1, 0.04))
                     dk = np.where(line > 0, -0.8, dk)
             elif name == "veins":
-                x0 = cx - sgn * 1.8
-                line = A.crisp(stroke(f, bezier((x0, 3.0), (x0 - sgn * 0.3, 3.6), (x0 + sgn * 0.1, 4.1), 10), 0.08, 0.05))
+                x0 = cx + sgn * 1.75
+                line = A.crisp(stroke(f, bezier((x0, 2.9), (x0 + sgn * 0.35, 3.5), (x0 - sgn * 0.05, 4.1), 10), 0.12, 0.07))
                 dk = np.where(line > 0, -0.9, dk)
             elif name == "red_liner":
                 # a thin red paint line under the eye, from its middle out (it stops short of the outer point)
@@ -850,7 +850,9 @@ def part_eye_detail(name):
                 rgb = np.where(cov[..., None] > 0, np.array(hx("#b4202a"), np.float32), rgb)
                 a = np.maximum(a, cov)
             elif name == "tear_mark":
-                cov = A.crisp(ell(f, cx - sgn * 1.2, 5.55, 0.17, 0.2))
+                if cx > 4:
+                    continue   # one tear mark, under the texture-left eye's outer corner
+                cov = A.crisp(ell(f, cx + sgn * 1.0, 5.45, 0.17, 0.2))
                 rgb = np.where(cov[..., None] > 0, np.array(hx("#9e1a24"), np.float32), rgb)
                 a = np.maximum(a, cov)
         if tinted:
