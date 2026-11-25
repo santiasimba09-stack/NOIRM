@@ -251,8 +251,7 @@ public final class TrainingSystem {
         }
         float spent = data.training().takeChakraSpent();
         if (spent > 0 && !player.getAbilities().instabuild) {
-            float pool = Math.max(1f, com.noirm.traits.Perks.poolMultiplier(data));
-            grant(player, Stat.RESERVES, spent * RESERVES_XP_PER_CHAKRA / (float) Math.pow(pool, SPEND_XP_POOL_EXPONENT));
+            grant(player, Stat.RESERVES, spendXp(data, spent));
         }
         Supplementary.tick(player, data);
         KillXp.tick(player, data);
@@ -283,6 +282,12 @@ public final class TrainingSystem {
         if (player.getHealth() > player.getMaxHealth()) {
             player.setHealth(player.getMaxHealth());
         }
+    }
+
+    /** Reserves XP for {@code spent} chakra: {@link #RESERVES_XP_PER_CHAKRA} each, softened for big pools ({@link #SPEND_XP_POOL_EXPONENT}). */
+    public static float spendXp(ShinobiData data, float spent) {
+        float pool = Math.max(1f, com.noirm.traits.Perks.poolMultiplier(data));
+        return spent * RESERVES_XP_PER_CHAKRA / (float) Math.pow(pool, SPEND_XP_POOL_EXPONENT);
     }
 
     /** Max chakra from reserves: adjusts the max by the change in bonus since last time. */

@@ -129,7 +129,7 @@ public final class ClanPerkGameTests {
         Player uzumaki = member(helper, canon("uzumaki"));
         ShinobiData p = data(plain);
         ShinobiData u = data(uzumaki);
-        helper.assertTrue(u.getMaxChakra() >= 9 * p.getMaxChakra(), "an Uzumaki's chakra pool is huge: " + u.getMaxChakra() + " vs " + p.getMaxChakra());
+        helper.assertTrue(u.getMaxChakra() >= 90 * p.getMaxChakra(), "an Uzumaki's chakra pool is huge: " + u.getMaxChakra() + " vs " + p.getMaxChakra());
         helper.assertTrue(u.chakraRegenMultiplier() >= 2.5f * p.chakraRegenMultiplier(), "Uzumaki chakra regenerates far faster");
         // health comes back on its own
         uzumaki.setHealth(10f);
@@ -183,8 +183,9 @@ public final class ClanPerkGameTests {
         ShinobiData senju = data(senjuPlayer);
         helper.assertTrue(senjuPlayer.getMaxHealth() >= 34f, "Senju vitality: " + senjuPlayer.getMaxHealth());
         helper.assertTrue(senju.getMaxStamina() >= plain.getMaxStamina() + 100, "huge Senju stamina: " + senju.getMaxStamina());
-        helper.assertTrue(senju.getMaxChakra() >= 3.5f * plain.getMaxChakra(), "and a huge chakra pool: " + senju.getMaxChakra());
-        helper.assertTrue(senju.getControl() < plain.getControl(), "but rougher chakra control");
+        helper.assertTrue(senju.getMaxChakra() >= 35f * plain.getMaxChakra(), "and a huge chakra pool: " + senju.getMaxChakra());
+        helper.assertTrue(senju.getControl() >= plain.getControl(), "no rough control (not canon: Hashirama made huge jutsu with one seal)");
+        helper.assertTrue(Perks.mult(senju, Perk.NATURE_XP) >= 2f, "a thousand skills: every nature trains twice as fast");
         NatureSystem.grant(senju, Nature.WOOD, Clan.SECONDARY_AFFINITY);
         near(helper, Clan.PRIMARY_AFFINITY, senju.identity().affinity(Nature.WOOD), "Senju Wood potential");
 
@@ -194,7 +195,7 @@ public final class ClanPerkGameTests {
         helper.assertTrue(akimichi.getDurability() > plain.getDurability(), "Akimichi are tough");
 
         ShinobiData kaguya = data(member(helper, canon("kaguya")));
-        near(helper, ShinobiData.DEFAULT_STAT + 10, kaguya.getDurability(), "Kaguya durability");
+        near(helper, ShinobiData.DEFAULT_STAT + 15, kaguya.getDurability(), "Kaguya durability");
         helper.assertTrue(Perks.get(kaguya, Perk.DAMAGE_TAKEN) < 0, "bones take the blows");
 
         ShinobiData nara = data(member(helper, canon("nara")));
@@ -207,7 +208,7 @@ public final class ClanPerkGameTests {
 
     // ---------------------------------------------------------------- the big gaps (owner follow-up)
 
-    /** An Uzumaki's pool is ten times a normal shinobi's at the same Reserves, twenty with a beast; raw control is the price. */
+    /** An Uzumaki's pool is a hundred times a normal shinobi's at the same Reserves, 150 with a beast; raw control is the price. */
     @GameTest(template = "empty", batch = BATCH)
     public static void uzumakiPoolDwarfsANormalOne(GameTestHelper helper) {
         Player plain = member(helper, TestClans.PLAIN);
@@ -220,12 +221,12 @@ public final class ClanPerkGameTests {
             TrainingSystem.applyReserves(p);
             TrainingSystem.applyReserves(u);
             float ratio = u.getMaxChakra() / p.getMaxChakra();
-            helper.assertTrue(ratio >= 9.5f && ratio <= 11f, "at Reserves " + reserves + " an Uzumaki has ~10x the chakra: " + ratio);
+            helper.assertTrue(ratio >= 95f && ratio <= 101f, "at Reserves " + reserves + " an Uzumaki has ~100x the chakra: " + ratio);
         }
         com.noirm.biju.BijuSystem.seal(uzumaki, u, 9);
         TrainingSystem.applyReserves(u);
         float jin = u.getMaxChakra() / p.getMaxChakra();
-        helper.assertTrue(jin >= 19f, "an Uzumaki jinchuriki has ~20x: " + jin);
+        helper.assertTrue(jin >= 145f, "an Uzumaki jinchuriki has ~150x: " + jin);
         // the drawbacks: raw control (cost up, genjutsu weak) that fades with CTL training; a loud chakra
         ResourceLocation genjutsu = Noirm.id("yin/demonic_illusion");
         ResourceLocation flicker = Noirm.id("universal/body_flicker");
@@ -234,7 +235,7 @@ public final class ClanPerkGameTests {
         helper.assertTrue(Perks.jutsuPowerMultiplier(uzumaki, genjutsu, JutsuData.get(genjutsu)) <= 0.25f, "and genjutsu barely work");
         u.setControl(50f);
         near(helper, 1f, Perks.jutsuCostMultiplier(uzumaki, flicker), "CTL 50 smooths it out");
-        near(helper, 1.75f, Perks.beaconMultiplier(uzumaki), "a loud chakra draws attention");
+        near(helper, 2f, Perks.beaconMultiplier(uzumaki), "a loud chakra draws attention");
         com.noirm.traits.ClanHiraishin.register();
         helper.assertTrue(com.noirm.hiraishin.HiraishinAffinity.of(uzumaki).extraMarks() == com.noirm.traits.ClanHiraishin.UZUMAKI_EXTRA_MARKS,
                 "the Uzumaki's Flying Raijin gift: more marks");
@@ -289,7 +290,7 @@ public final class ClanPerkGameTests {
         ShinobiData kaguya = data(member(helper, canon("kaguya")));
         helper.assertTrue(Perks.get(kaguya, Perk.DOT_RESIST) <= -0.5f, "the Kaguya illness");
         ShinobiData hatake = data(member(helper, canon("hatake")));
-        helper.assertTrue(hatake.getMaxChakra() < plain.getMaxChakra(), "a Hatake's small reserves: " + hatake.getMaxChakra());
+        near(helper, plain.getMaxChakra(), hatake.getMaxChakra(), "a Hatake's reserves are average (Kakashi's drain came from the implant)");
         ShinobiData nara = data(member(helper, canon("nara")));
         helper.assertTrue(Perks.statXpMultiplier(nara, "taijutsu", 20) <= 0.6f, "the Nara don't like hard work");
         ShinobiData aburame = data(member(helper, canon("aburame")));
@@ -314,8 +315,8 @@ public final class ClanPerkGameTests {
         MinecraftForge.EVENT_BUS.post(onKaguya);
         MinecraftForge.EVENT_BUS.post(onPlain);
         helper.assertTrue(onKaguya.getAmount() < onPlain.getAmount(), "a Kaguya ninja takes less damage: " + onKaguya.getAmount());
-        near(helper, -0.15f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.DAMAGE_TAKEN), "NPC combat perks count at half");
-        near(helper, 8f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
+        near(helper, -0.25f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.DAMAGE_TAKEN), "NPC combat perks count at half");
+        near(helper, 12f * Perks.NPC_COMBAT_SHARE, Perks.get(kaguya, Perk.MAX_HEALTH), "health too");
         // talents on NPCs (tests set them; elsewhere they roll by themselves)
         NpcTalents.set(plain, List.of("tough_as_nails"));
         helper.assertTrue(Math.abs(Perks.get(plain, Perk.MAX_HEALTH) - 4f * Perks.NPC_COMBAT_SHARE) < 0.01f, "an NPC's talents count (combat perks at the NPC share)");

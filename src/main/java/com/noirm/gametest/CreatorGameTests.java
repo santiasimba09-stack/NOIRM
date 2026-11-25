@@ -45,9 +45,9 @@ public final class CreatorGameTests {
         return ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
     }
 
-    /** One roll, then exactly three rerolls; every roll stays pickable and comes from the world's clan list. */
+    /** Five clan rolls in all (one, then four rerolls); every roll stays pickable and comes from the world's clan list. */
     @GameTest(template = "empty", batch = "noirm_creator")
-    public static void rollsAreLimitedToThreeRerolls(GameTestHelper helper) {
+    public static void rollsAreLimitedToFiveInAll(GameTestHelper helper) {
         FakePlayer player = newcomer(helper);
         ShinobiData data = data(player);
         CharacterCreator.beginFirstJoin(player, data);
@@ -58,12 +58,12 @@ public final class CreatorGameTests {
         for (int i = 0; i < CharacterCreator.MAX_REROLLS; i++) {
             helper.assertTrue(CharacterCreator.reroll(player, data), "reroll " + (i + 1) + " is allowed");
         }
-        helper.assertFalse(CharacterCreator.reroll(player, data), "a fourth reroll is refused");
-        helper.assertTrue(creator.rolls().size() == 1 + CharacterCreator.MAX_REROLLS, "four rolls seen");
+        helper.assertFalse(CharacterCreator.reroll(player, data), "a fifth reroll is refused");
+        helper.assertTrue(CharacterCreator.MAX_ROLLS == 5 && creator.rolls().size() == 5, "five rolls seen");
         helper.assertTrue(creator.rerollsLeft() == 0, "none left");
-        helper.assertTrue(creator.chosen() == 3, "the newest roll is picked by default");
+        helper.assertTrue(creator.chosen() == 4, "the newest roll is picked by default");
         helper.assertTrue(CharacterCreator.choose(player, data, 1), "an earlier roll can be picked");
-        helper.assertFalse(CharacterCreator.choose(player, data, 4), "a roll that doesn't exist can't");
+        helper.assertFalse(CharacterCreator.choose(player, data, 5), "a roll that doesn't exist can't");
         WorldClans clans = WorldClans.get(helper.getLevel().getServer());
         for (GeneticRoll roll : creator.rolls()) {
             helper.assertTrue(clans.find(roll.clanId()).isPresent(), "roll clan " + roll.clanId() + " is in the world's list");
