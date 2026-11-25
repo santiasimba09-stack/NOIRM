@@ -47,20 +47,62 @@ public final class Skin {
     }
 
     private static void nine(GuiGraphics g, int x, int y, int w, int h, int border, int u, int v, int uw, int vh) {
-        if (w <= 0 || h <= 0) {
-            return;
-        }
-        int b = Math.min(border, Math.min(w, h) / 2);
-        g.blitNineSliced(ATLAS, x, y, w, h, b, b, b, b, uw, vh, u, v);
+        nine(g, x, y, w, h, border, border, u, v, uw, vh);
     }
 
+    /**
+     * Nine-slicing with the middle and edges tiled (not stretched, so the paper and wood grain stay pixel-crisp).
+     * Our own, because vanilla's divides by zero on some sizes. Borders shrink to fit a small box.
+     */
     private static void nine(GuiGraphics g, int x, int y, int w, int h, int bx, int by, int u, int v, int uw, int vh) {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int ex = Math.min(bx, w / 2);
-        int ey = Math.min(by, h / 2);
-        g.blitNineSliced(ATLAS, x, y, w, h, ex, ey, ex, ey, uw, vh, u, v);
+        int l = Math.min(bx, w / 2);
+        int r = Math.min(bx, w - l);
+        int t = Math.min(by, h / 2);
+        int b = Math.min(by, h - t);
+        int cw = Math.max(1, uw - 2 * bx);   // the texture's middle
+        int ch = Math.max(1, vh - 2 * by);
+        int mw = w - l - r;
+        int mh = h - t - b;
+        // corners
+        blit(g, x, y, u, v, l, t);
+        blit(g, x + w - r, y, u + uw - r, v, r, t);
+        blit(g, x, y + h - b, u, v + vh - b, l, b);
+        blit(g, x + w - r, y + h - b, u + uw - r, v + vh - b, r, b);
+        // edges and middle, tiled
+        for (int dx = 0; dx < mw; dx += cw) {
+            int sw = Math.min(cw, mw - dx);
+            blit(g, x + l + dx, y, u + bx, v, sw, t);
+            blit(g, x + l + dx, y + h - b, u + bx, v + vh - b, sw, b);
+            for (int dy = 0; dy < mh; dy += ch) {
+                blit(g, x + l + dx, y + t + dy, u + bx, v + by, sw, Math.min(ch, mh - dy));
+            }
+        }
+        for (int dy = 0; dy < mh; dy += ch) {
+            int sh = Math.min(ch, mh - dy);
+            blit(g, x, y + t + dy, u, v + by, l, sh);
+            blit(g, x + w - r, y + t + dy, u + uw - r, v + by, r, sh);
+        }
+    }
+
+    /** Three-slice for brush strokes: the ends kept, the middle stretched, all scaled to the height. */
+    private static void hslice(GuiGraphics g, int x, int y, int w, int h, int bx, int u, int v, int uw, int vh) {
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        int l = Math.min(bx, w / 2);
+        int r = Math.min(bx, w - l);
+        g.blit(ATLAS, x, y, l, h, u, v, l, vh, 256, 256);
+        g.blit(ATLAS, x + l, y, w - l - r, h, u + bx, v, uw - 2 * bx, vh, 256, 256);
+        g.blit(ATLAS, x + w - r, y, r, h, u + uw - r, v, r, vh, 256, 256);
+    }
+
+    private static void blit(GuiGraphics g, int x, int y, int u, int v, int w, int h) {
+        if (w > 0 && h > 0) {
+            g.blit(ATLAS, x, y, u, v, w, h, 256, 256);
+        }
     }
 
     private static void tint(GuiGraphics g, int argb, float alpha) {
@@ -107,7 +149,7 @@ public final class Skin {
         nine(g, x, y, w, h, 4, 3, 0, v, 64, 16);
         if (enabled && hover > 0.01f) {
             g.setColor(1f, 1f, 1f, primary ? hover * 0.35f : hover);
-            nine(g, x, y, w, h, 4, 3, 0, primary ? 80 : 80, 64, 16);
+            nine(g, x, y, w, h, 4, 3, 0, 80, 64, 16);
             untint(g);
         }
     }
@@ -121,7 +163,7 @@ public final class Skin {
     /** A red-ink brush swash behind a title (the creator's big title). */
     public static void swash(GuiGraphics g, int x, int y, int w, int h) {
         RenderSystem.enableBlend();
-        nine(g, x, y, w, h, 8, 0, 192, 16, 64, 16);
+        hslice(g, x, y, w, h, 8, 192, 16, 64, 16);
     }
 
     /** A hanko-style seal stamp in {@code color}. */
@@ -137,7 +179,7 @@ public final class Skin {
             return;
         }
         tint(g, color, alpha);
-        nine(g, x, y, w, h, 8, 0, 64, 80, 64, 6);
+        hslice(g, x, y, w, h, 8, 64, 80, 64, 6);
         untint(g);
     }
 
@@ -147,7 +189,7 @@ public final class Skin {
             return;
         }
         tint(g, color, 1f);
-        nine(g, x, y, w, 3, 6, 0, 64, 88, 64, 3);
+        hslice(g, x, y, w, 3, 6, 64, 88, 64, 3);
         untint(g);
     }
 
