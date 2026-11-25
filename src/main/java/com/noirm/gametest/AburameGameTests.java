@@ -265,13 +265,13 @@ public final class AburameGameTests {
     public static void drainStopsAtAppetiteCap(GameTestHelper helper) {
         FakePlayer p = aburame(helper, "noirm_ab_appetite", false);
         SparringNinja t = ninja(helper, "hyuga", 1.5, 3.5);
-        InsectSwarm s = swarm(helper, p, 1000, SwarmMode.CLING);
+        InsectSwarm s = swarm(helper, p, 700, SwarmMode.CLING); // under 800: not noticed, so never shaken off
         s.setTarget(t, SwarmMode.CLING);
         for (int i = 0; i < 80; i++) {
             t.setChakra(t.maxChakra());
             s.drainSecond(helper.getLevel(), p, t);
         }
-        helper.assertTrue(s.eaten() <= 20.01f && s.eaten() > 19f, "1,000 insects eat at most 20 chakra: " + s.eaten());
+        helper.assertTrue(s.eaten() <= 14.01f && s.eaten() > 13.5f, "700 insects eat at most 14 chakra (count ÷ 50): " + s.eaten());
         t.discard();
         done(helper);
     }
@@ -569,6 +569,13 @@ public final class AburameGameTests {
         ItemStack gloves = new ItemStack(AburameRegistry.ABURAME_GLOVES.get());
         gloves.getOrCreateTag().putBoolean(AburameGlovesItem.WORN, true);
         p.getInventory().add(gloves);
+        gloves = p.getInventory().getItem(p.getInventory().findSlotMatchingItem(new ItemStack(AburameRegistry.ABURAME_GLOVES.get())) >= 0
+                ? p.getInventory().findSlotMatchingItem(new ItemStack(AburameRegistry.ABURAME_GLOVES.get())) : 0);
+        for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
+            if (p.getInventory().getItem(i).is(AburameRegistry.ABURAME_GLOVES.get())) {
+                gloves = p.getInventory().getItem(i); // the inventory keeps its own copy
+            }
+        }
         RotTouch.onMelee(p, a);
         helper.assertTrue(RotTouch.stacks(a) == 0, "gloves on: nothing leaks");
         gloves.getTag().putBoolean(AburameGlovesItem.WORN, false);
