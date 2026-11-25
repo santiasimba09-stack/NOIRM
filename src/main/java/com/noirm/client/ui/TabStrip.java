@@ -28,20 +28,20 @@ public final class TabStrip {
         count = Math.min(MAX, labels.length);
         this.y = y;
         this.h = Theme.ROW;
-        int text = 0;
+        int textW = 0;
         for (int i = 0; i < count; i++) {
-            text += font.width(labels[i]);
+            textW += font.width(labels[i]);
         }
         // the widest gap that lets every label show whole; only past the smallest do the tabs share evenly
         int gap = Theme.S5;
         for (int g2 : new int[]{Theme.S5, Theme.S4, Theme.S3, Theme.S2}) {
             gap = g2;
-            if (text + g2 * (count - 1) <= w) {
+            if (textW + g2 * (count - 1) <= w) {
                 break;
             }
         }
         this.gap = gap;
-        int total = text + gap * (count - 1);
+        int total = textW + gap * (count - 1);
         boolean even = total > w;
         int cx = x;
         for (int i = 0; i < count; i++) {

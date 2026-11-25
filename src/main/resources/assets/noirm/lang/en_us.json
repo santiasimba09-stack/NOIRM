@@ -3449,5 +3449,9 @@
   "creator.noirm.option.hair.crescent": "Crescent sweep",
   "creator.noirm.option.hair.swept_long": "Swept back long",
   "creator.noirm.option.hair.spiky_long": "Spiky long",
-  "creator.noirm.option.hair.wave": "Ocean wave"
+  "creator.noirm.option.hair.wave": "Ocean wave",
+  "command.noirm.creator.set": "Your %s is now %s.",
+  "command.noirm.creator.unknown": "No such look part or option: %s %s.",
+  "help.noirm.me.creator_set": "change one part of your look (any creator option, by its id)",
+  "help.noirm.me.creator_colour": "change one colour of your look (skin, eye, hair, hair2, paint…)"
 }

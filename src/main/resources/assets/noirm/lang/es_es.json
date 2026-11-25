@@ -3449,5 +3449,9 @@
   "creator.noirm.option.hair.crescent": "Media luna",
   "creator.noirm.option.hair.swept_long": "Largo hacia atrás",
   "creator.noirm.option.hair.spiky_long": "Largo con púas",
-  "creator.noirm.option.hair.wave": "Ola"
+  "creator.noirm.option.hair.wave": "Ola",
+  "command.noirm.creator.set": "Tu %s ahora es %s.",
+  "command.noirm.creator.unknown": "No existe esa parte u opción: %s %s.",
+  "help.noirm.me.creator_set": "cambia una parte de tu aspecto (cualquier opción del creador, por su id)",
+  "help.noirm.me.creator_colour": "cambia un color de tu aspecto (piel, ojos, pelo, segundo color, pintura…)"
 }
