@@ -139,3 +139,29 @@ redirect):
   - **Frame:** masculine or feminine. The feminine frame redraws the body (`fem_*`, at each muscle level)
     with a rounded bust, softer abs and a shaded waist, and adds a black crop top (`under_top`) to the
     boxers.
+
+## The creator wave (owner's brief, 2026-11-19: "get crazy with the hairs and eyes… a lot of choices")
+All new options are added at the end of their lists (saves store ids, the look packet stores indexes), so every
+older look is unchanged (a game test rebuilds old looks' skins against the v0.19 rules).
+- **Hair:** 38 more 3D styles (61 in all), in `gen_hair.py` after "none": drill, flame and crown spikes,
+  porcupine, windswept, bedhead, messy layers, shaggy, wolf cut, mullet, side part, textured crop, side shave,
+  faux hawk, tall mohawk, shaved knot, twin and side braids, mushroom, curtain and veil bangs, drill tails, high
+  twin tails, side ponytail, spiky tail, half up, buns with tails, horn buns, curly puff, locs (loose and tied),
+  ronin, spiky fringe, rat tail, crescent sweep, swept-back long, spiky long, ocean wave. Shapes of ninja anime
+  in general, never one character's hair. **Dyes** with a second colour: dyed tips, coloured roots, ombré,
+  highlights (drawn into the strand texture) and streaks, split, coloured bangs (locks picked in the mesh: the
+  hair texture's right half is the second colour). 18 more hair swatches.
+- **Eyes:** 8 more shapes, all sharp leaves with pointed corners, no crease, nothing past the outer point:
+  fox, hawk, hooded, drooping, keen, slit, bold, glare. **Pupils** (the atlas's second row): round, slit,
+  pinprick, wide, hollow, ringed. **Around the eyes:** tired bags, dark circles, lines, red liner, tear mark,
+  temple veins (never inside the eye: the high-detail eye is drawn on top). 8 more brows (arched, straight,
+  angled, short, bushy, dots, split, none) and 16 more iris colours. The newer shapes use the "round" fit for
+  the skin-level dōjutsu layers; their high-detail atlases carry the Sharingan and Byakugan.
+- **Bodies:** builds lean, wiry, stocky, heavy, hulking (shading in `gen_player_parts.py`, widths incl. legs in
+  `client/BodyShape`), muscle toned and ripped, 14 more skin tones (very pale to very deep, olive, golden, and
+  two unusual ones: ash grey and pale jade).
+- **Face and body details:** 9 more scars (lip, jaw, cross, brow, claw marks, burn, chest claws, shoulder,
+  stab wound), 4 more marks (mole, many freckles, birthmark, blush lines), **face paint** in a paint colour
+  (eye band, cheek fangs, jaw lines, chin stripe, forehead dot, crescent, cheek bars, tear trails, lightning,
+  spiral, brow flames, half mask) and **tattoos** (shoulder seal, arm bands, chest seal, back crest, flame
+  sleeve, spine marks, rib slashes, leg bands), all our own designs.

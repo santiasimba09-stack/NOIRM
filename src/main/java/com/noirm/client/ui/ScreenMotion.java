@@ -83,7 +83,12 @@ public final class ScreenMotion {
 
     /** The dim layer behind the screen, faded with it. */
     public void scrim(GuiGraphics g, int width, int height) {
-        g.fill(0, 0, width, height, Theme.fade(Theme.SCRIM, visibility()));
+        float v = visibility();
+        g.fill(0, 0, width, height, Theme.fade(Theme.SCRIM, v));
+        // an ink wash darkening the top and bottom edges (the ninja look)
+        int band = Math.max(12, height / 6);
+        g.fillGradient(0, 0, width, band, Theme.fade(0x90000000, v), 0x00000000);
+        g.fillGradient(0, height - band, width, height, 0x00000000, Theme.fade(0x90000000, v));
     }
 
     public void begin(GuiGraphics g) {

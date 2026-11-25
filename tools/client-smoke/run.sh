@@ -40,6 +40,7 @@ simulationDistance:5
 narrator:0
 guiScale:${GUI_SCALE:-0}
 showSubtitles:${SMOKE_SUBTITLES:-false}
+fov:${SMOKE_FOV:-0.0}
 OPTS
 LIBGL_ALWAYS_SOFTWARE=1 exec xvfb-run -n 99 -s "-screen 0 1280x720x24" ./gradlew runClient --console=plain \
   --args="--quickPlaySingleplayer smoke --width 1280 --height 720"
