@@ -10,7 +10,7 @@ import org.joml.Vector3f;
 
 /** Server-side particles and sounds for the colony (the swarms' own look is drawn by the client renderer). */
 public final class SwarmFx {
-    public static final DustParticleOptions DUST = new DustParticleOptions(new Vector3f(0.10f, 0.10f, 0.12f), 0.6f);
+    public static final DustParticleOptions DUST = new DustParticleOptions(new Vector3f(0.10f, 0.10f, 0.12f), 0.35f);
     public static final DustParticleOptions TEAL = new DustParticleOptions(new Vector3f(0.25f, 0.66f, 0.66f), 0.5f);
     public static final DustParticleOptions PURPLE = new DustParticleOptions(new Vector3f(0.42f, 0.16f, 0.48f), 0.7f);
 
@@ -23,8 +23,9 @@ public final class SwarmFx {
 
     /** Insects pour out of (or into) a body. */
     public static void pour(ServerLevel level, Entity host, int amount) {
-        int n = Math.min(40, 6 + amount / 400);
-        level.sendParticles(DUST, host.getX(), host.getY() + host.getBbHeight() * 0.6, host.getZ(), n, 0.3, 0.4, 0.3, 0.05);
+        int n = Math.min(24, 4 + amount / 600);
+        Vec3 at = host.position().add(0, host.getBbHeight() * 0.55, 0).add(host.getViewVector(1f).multiply(1, 0, 1).scale(0.9));
+        level.sendParticles(DUST, at.x, at.y, at.z, n, 0.25, 0.3, 0.25, 0.03);
     }
 
     /** Insects killed in a puff: ash for fire, a dark burst otherwise. */

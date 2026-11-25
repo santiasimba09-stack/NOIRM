@@ -64,7 +64,7 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
             n = Math.min(n, 260);
         }
         if (mode == SwarmMode.SPHERE || mode == SwarmMode.DOME || mode == SwarmMode.WALL) {
-            n = Math.max(n, 1600); // a shell needs to be dense to read as solid
+            n = Math.max(n, 2400); // a shell needs to be dense to read as solid
         }
         n = Math.max(12, Math.round(n * lod));
         float len = switch (swarm.species()) {
@@ -75,6 +75,9 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
         };
         if (dist > 20) {
             len *= 1f + (float) (dist - 20) / 40f; // far away they merge into a mass instead of vanishing
+        }
+        if (mode == SwarmMode.SPHERE || mode == SwarmMode.DOME || mode == SwarmMode.WALL || mode == SwarmMode.CLING) {
+            len *= 1.5f; // packed shoulder to shoulder, the shell reads solid
         }
         float r = ColonyGrowth.radius(count);
         float t = (swarm.tickCount + partial) / 20f;
@@ -295,7 +298,7 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
         if (h4 < 0.85f) {
             float y = h2 * hgt;
             float a = h1 * Mth.TWO_PI + t * (0.4f + h3 * 0.5f) * (h3 < 0.5f ? 1f : -1f) + y * 0.8f;
-            float rad = w * (1.0f + 0.12f * Mth.sin(t * 7f + i)) * (y > hgt * 0.8f ? 0.8f : 1f);
+            float rad = w * (1.05f + 0.25f * hash(i, 9) + 0.08f * Mth.sin(t * 7f + i)) * (y > hgt * 0.8f ? 0.8f : 1f);
             out[0] = bx + Mth.cos(a) * rad;
             out[1] = by + y + Mth.sin(t * 5f + i) * 0.03f;
             out[2] = bz + Mth.sin(a) * rad;
