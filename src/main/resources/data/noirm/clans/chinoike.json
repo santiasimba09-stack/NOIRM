@@ -9,8 +9,8 @@
   "kekkei_genkai": "ketsuryugan",
   "awakening": "will",
   "perks": {
-    "genjutsu_power": 1.0,
-    "perception": 0.2,
+    "genjutsu_power": 1.2,
+    "perception": 0.3,
     "genjutsu_resist": 0.4,
     "start_willpower": 3,
     "max_health": -4,

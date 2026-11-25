@@ -14,15 +14,16 @@
   "kekkei_genkai": "byakugan",
   "awakening": "will",
   "perks": {
-    "gentle_fist": 0.8,
-    "start_control": 5,
+    "gentle_fist": 1.0,
+    "start_control": 6,
     "xp_control": 0.5,
     "jutsu_cost": -0.2,
-    "xp_taijutsu": 0.5,
-    "perception": 0.15,
-    "genjutsu_resist": 0.25,
+    "xp_taijutsu": 0.6,
+    "perception": 0.3,
+    "genjutsu_resist": 0.3,
     "jutsu_power": -0.3,
-    "mastery": -0.2
+    "mastery": -0.2,
+    "melee_damage": 0.1
   },
   "look": {
     "hair": [

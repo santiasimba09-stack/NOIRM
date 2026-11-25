@@ -11,13 +11,14 @@
   "kekkei_genkai": "ice_release",
   "awakening": "will",
   "perks": {
-    "start_control": 4,
-    "xp_speed": 0.4,
-    "perception": 0.15,
+    "start_control": 5,
+    "xp_speed": 0.5,
+    "perception": 0.2,
     "dot_resist": 0.2,
-    "jutsu_power": 0.15,
+    "jutsu_power": 0.25,
     "max_health": -4,
-    "fire_weakness": 0.3
+    "fire_weakness": 0.3,
+    "start_speed": 2
   },
   "look": {
     "hair": [

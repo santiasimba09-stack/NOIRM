@@ -103,7 +103,7 @@ public final class PowersGameTests {
             }
         }
         int custom = clans.customClans().size();
-        helper.assertTrue(canon > rolls * 0.04 && canon < rolls * 0.18, "about 10% canon expected, got " + canon + "/" + rolls);
+        helper.assertTrue(canon > rolls * 0.72 && canon < rolls * 0.88, "about 80% canon expected, got " + canon + "/" + rolls);
         helper.assertTrue(custom > 10 && custom < rolls - canon, "custom clans should both grow and be reused, got " + custom);
         WorldClans reloaded = WorldClans.load(clans.save(new CompoundTag()));
         helper.assertTrue(reloaded.customClans().equals(clans.customClans()), "custom clans should survive save/load");
@@ -115,7 +115,7 @@ public final class PowersGameTests {
         Player player = helper.makeMockPlayer();
         ShinobiData data = data(player);
         ClanSystem.assign(player, data, ClanData.canon("uchiha").orElseThrow());
-        assertNear(helper, Clan.PRIMARY_AFFINITY, data.identity().affinity(Nature.FIRE), "Uchiha fire affinity");
+        assertNear(helper, 2f, data.identity().affinity(Nature.FIRE), "Uchiha fire affinity: fire runs in the clan (above a normal primary)");
         helper.assertTrue(data.identity().affinity(Nature.WATER) == 0, "no water for the Uchiha");
         for (ResourceLocation id : List.of(FIREBALL, CHIDORI, SUBSTITUTION, BODY_FLICKER)) {
             helper.assertTrue(data.jutsu().knows(id), "Uchiha should start with " + id);

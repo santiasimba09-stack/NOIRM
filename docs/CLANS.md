@@ -24,9 +24,9 @@ make their perks noticeable." Personal talents (part 3) are in `TRAITS.md`._
   a fixed package (seeded by the clan's id) when the world loads.
 - **Old characters** get their clan's perks and roll talents once, on their next login.
 - **See it**: the creator's new **Clan** tab, `/noirm clan perks [clan]`, and `/noirm me`.
-- **Canon clans are still ~10% of newcomers** (the owner's rule); there are now 26 of them, picked
-  by weight (Uchiha and Hyūga 3; Uzumaki, Senju, Nara, Akimichi, Yamanaka, Aburame, Inuzuka,
-  Sarutobi 2; the rest 1).
+- **Canon clans are the normal roll: 80% of newcomers** (v0.3, owner's ask; it was 10%). The 26 canon
+  clans are picked from the odds table `data/noirm/clan_odds/canon.json` (see "Round 3" below); the
+  other 20% are this world's generated clans.
 
 The perk names, what each means and where it's used are listed in `traits/Perk.java`; the numbers
 live in the JSON. "+35%" perks add to 100% (several sources are added, not multiplied).
@@ -48,18 +48,18 @@ anime); *Boruto: Naruto Next Generations*; the official databooks (*Rin no Sho*,
 | Yamanaka | Leaf | Mind Body Switch, Mind Transmission, sensing | Pale blond hair, pale blue-green eyes | Sensors; mind techniques leave the body exposed | Yin | Intelligence, interrogation, flower shop |
 | Aburame | Leaf | Kikaichū hive (chakra-eating insects) | Dark glasses, high collars, dark hair | Host insects from birth; insects drain chakra and sense; poison-wise | Earth/fire (unclear) | Trackers, quiet specialists |
 | Inuzuka | Leaf | Ninken partners; Fang Over Fang; Beast Mimicry | Red fang marks on the cheeks, wild brown hair, sharp eyes | Keen smell, feral speed | Earth (unclear) | Trackers, hunters |
-| Hatake | Leaf | White Light Chakra Sabre (Sakumo); ninken summons (Kakashi) | Silver-white spiky hair; Kakashi's mask | Prodigies; Kakashi's chakra reserves are small | Lightning, earth | Small line of geniuses |
+| Hatake | Leaf | White Light Chakra Sabre (Sakumo); ninken summons (Kakashi) | Silver-white spiky hair; Kakashi's mask | Prodigies; Kakashi's own reserves are average (the Sharingan implant drained him) | Lightning, earth | Small line of geniuses |
 | Sarutobi | Leaf | Monkey King summon; broad ninjutsu ("the Professor") | Brown hair | Long careers, teachers; the Will of Fire | Fire, wind | Hokage line (Third Hokage, Asuma, Konohamaru) |
 | Kaguya | Mist (wiped out) | Shikotsumyaku (Dead Bone Pulse): bones as weapons and armour | White hair, two red dots on the forehead, green eyes | Battle-hungry; Kimimaro's wasting illness | — (none needed) | Berserker warriors |
 | Hōzuki | Mist | Hydrification (body turns to water); Water Gun | Pale blue-white hair, purple eyes, sharp teeth | Need water to stay strong; weak to lightning | Water | Swordsmen of the Mist (Mangetsu, Suigetsu) |
 | Yuki | Mist (hunted) | Ice Release; Demonic Mirroring Ice Crystals | Long black hair, pale skin, fine features | Fast, precise | Wind + water → ice | Hunted bloodline (Haku) |
-| Chinoike | Land of Fire (exiled) | Ketsuryūgan (Blood Dragon Eye): blood genjutsu, blood manipulation | Red eyes, dark hair | Feared and exiled; a terrible lineage | Yin | Exiled clan (Kagura's line, the anime) |
+| Chinoike | Land of Fire (exiled) | Ketsuryūgan (Blood Dragon Eye): blood genjutsu, blood manipulation | Red eyes, dark hair | Feared and exiled; a terrible lineage | Yin | Exiled clan (the survivor is Chino, *Sasuke Retsuden*; not Kagura's line) |
 | Kurama | Leaf | Genjutsu so strong it feels and acts real | Usually frail | Weak bodies, prodigious illusions (Yakumo) | Yin | Illusionist house |
-| Fūma | Land of Rice / Sound | Giant shuriken; distant Uchiha kin (games, filler) | Varied | Wandering mercenaries | Wind, fire | Mercenaries |
+| Fūma | Land of Rice / Sound | Giant shuriken; distant Uchiha kin (manga canon, *Boruto* vol. 10) | Varied | Wandering mercenaries | Wind, fire | Mercenaries |
 | Iburi | Land of Fire (underground) | Smoke body (unstable) | Grey, pale, reclusive | The body can scatter in strong wind | Fire | Hidden assassins (the anime) |
 | Jūgo's clan | Unknown (hidden) | Absorb nature energy (the origin of the curse mark); Sage Transformation | Orange hair | Murderous fits; regenerate by taking in others' cells | — (sage chakra) | Feared berserkers |
 | Kamizuru | Stone | Bee swarms (aerial insects, poison stingers) | Varied | Rivals of the Aburame | Earth | Insect fighters (the anime) |
-| Yotsuki | Cloud | Lightning Release Armour; strong bodies | Dark skin, light hair | Physically powerful | Lightning | Raikage line (A, Killer B) |
+| Yotsuki | Cloud | Lightning Release Armour; strong bodies | Dark skin, light hair | Physically powerful | Lightning | Cloud fighters (only Kiyoi is a named Yotsuki; "Raikage line" is fanon) |
 | Kazekage line | Sand | Magnet Release (Iron Sand, Gold Dust); sand shields | Red or sandy hair (Gaara's family) | Kazekage bloodline; jinchūriki of Shukaku | Wind + earth → magnet | Sand's rulers |
 | Kurogane | Land of Iron | Samurai swordsmanship (Tsubaki) | Topknots, armour | Samurai mould chakra into blades, not ninjutsu | — | Samurai lineage (Boruto) |
 | Shimura | Leaf | Wind, Izanagi experiments (Danzō) | Bandages, a cane | Ruthless, secretive | Wind | Root (ANBU black ops) |
@@ -76,8 +76,9 @@ each clan's strengths and weaknesses, in our own words. Sources are titles only 
 - **Uzumaki.** Kushina and Mito sealed the Nine-Tails because Uzumaki life force and chakra are
   exceptional. Their chakra chains could hold the Nine-Tails down. Karin's chakra heals whoever bites
   her. The clan was famously long-lived, and their village fell because others feared their sealing
-  arts. In Part 2, Kakashi tells Naruto that Naruto's own chakra is about **four times** his. The
-  "a hundred times" figure fans quote counts the Nine-Tails' chakra too. Naruto's poor chakra control
+  arts. In Part 2, Kakashi tells Naruto that Naruto's chakra is about **four times** his; the owner's
+  reading (adopted, v0.3) is that this was measured while the Nine-Tails' seal held Naruto's own chakra
+  down, and his own pool is about **a hundred times** a normal ninja's. Naruto's poor chakra control
   is a running thread: he can't do the basic clone, his chakra overflows, and genjutsu never suits
   him. Sensors (Karin, the Hyūga, the Akatsuki) pick him out from far away.
 - **Might (and Rock Lee, who isn't family).** Lee can't mould chakra into ninjutsu or genjutsu at all.
@@ -102,8 +103,8 @@ each clan's strengths and weaknesses, in our own words. Sources are titles only 
   and sense. They're poison-wise, and fire burns the insects.
 - **Inuzuka.** Their sense of smell rivals a dog's. They fight beside a ninken (Akamaru) with
   Fang Over Fang. They're wild, fast and impulsive.
-- **Hatake.** Sakumo was the White Fang. Kakashi is a genius who mastered a thousand jutsu, but his
-  chakra reserves are famously small and he often collapses after battle.
+- **Hatake.** Sakumo was the White Fang. Kakashi is a genius who mastered a thousand jutsu. He often
+  collapses after battle, but that's the Sharingan implant: his own reserves are average.
 - **Sarutobi.** Hiruzen, "the Professor", knew every jutsu in the village and led it the longest. The
   family teaches and leads, and carries the Will of Fire.
 - **Kaguya.** Kimimaro turns bones into blades and armour that are nearly unbreakable. He died of an
@@ -118,7 +119,7 @@ each clan's strengths and weaknesses, in our own words. Sources are titles only 
   by taking others' cells, and they have murderous fits they can't control.
 - **Hoshigaki.** Kisame is "a tailed beast without a tail": immense chakra, Samehada, a shark body.
   People feared him.
-- **Yotsuki.** The Raikage line: huge bodies, Lightning Release Armour, raw strength.
+- **Yotsuki.** Cloud fighters with strong bodies and lightning. (Calling them the Raikage line is fanon.)
 - **Kazekage line.** Magnet Release (Iron Sand, Gold Dust) and a sand shield. Strong defence, slower
   bodies.
 - **Kurogane.** Samurai of the Land of Iron: swordsmanship and posture, no ninjutsu.
@@ -134,17 +135,118 @@ A pool **doesn't make each jutsu stronger**. Jutsu power follows the Reserves *s
 nature. The pool is how long you can keep going. That's exactly how canon treats Naruto: his jutsu
 aren't stronger per cast, but he can make hundreds of shadow clones and never runs dry.
 
-- An **Uzumaki has ×10 the pool of a normal shinobi at the same Reserves** (1030 at the start against
-  100, 2030 against 200 at Reserves 30), with ×3 chakra regeneration so it refills in about 6 minutes.
-- **An Uzumaki jinchūriki has ×20** (the beast's chakra on top).
-- **A Hatake has ×0.6** (Kakashi's small reserves), so an Uzumaki jinchūriki has about **33×** a
-  Hatake's chakra. That's far past canon's "four times" and close in spirit to the fans' "a hundred
-  times". The cloak's own boost isn't counted.
-- The price: **rough control**. At low CTL, jutsu cost up to 40% more and genjutsu lose up to 80%
-  of their power, fading out as CTL is trained to 50. A loud chakra also draws trouble: wild ninjas
-  find them 75% more often, and mobs and beasts notice them from 75% further.
+_Updated for v0.3 (the owner's ruling: the Uzumaki are simply that overpowered)._
 
-## What each clan does in NOIRM (old → new)
+- An **Uzumaki has ×100 the pool of a normal shinobi at the same Reserves** (10,000 at the start
+  against 100, 20,000 against 200 at Reserves 30). **An Uzumaki jinchūriki has ×150.**
+- **Regeneration grows with the pool.** Chakra regen is multiplied by the blood's pool multiplier, so
+  every pool refills from empty in the same time; `chakra_regen` then makes it faster. A normal ninja
+  refills in 100 s at the start, an Uzumaki (×3 regen) in about 33 s: 300 chakra a second.
+- **Training stays fair.** Chakra spent trains Reserves divided by √(pool multiplier) (an Uzumaki: ÷10),
+  so a pool that never runs dry doesn't train Reserves, and so jutsu power, a hundred times faster.
+- **Shadow clones.** Each tenfold of pool adds 2 clones per cast and to the cap (an Uzumaki: 2 + 4 per
+  cast, up to 8; a Senju ×40: +3). Chakra is still split between you and the clones.
+- **The HUD** shows big pools as "12.4k/20k"; `/noirm me` writes them out ("9,876/10,000").
+- **NPC ninjas** of a big-pool clan get their clan's pool capped at ×3 (`Perks.NPC_POOL_CAP`): an Uzumaki
+  ninja casts more often than others but still runs dry.
+- **A Hatake has ×1** now (Kakashi's own reserves are average).
+- The price stays: **rough control** (jutsu cost up to 40% more and genjutsu lose up to 80% at low CTL,
+  fading out by CTL 50) and a **loud chakra** (wild ninjas find them twice as often, mobs and beasts
+  notice them from twice as far).
+
+## Round 3 (v0.3): canon-strength clans, canon clans as the normal roll, more rolls
+
+_Owner's ask, 2026-11-25 (`WAVE_V03.md` items 3–5): simple boosts (stats and multipliers only) so every
+clan feels as strong as in canon; the great clans very strong, the Uzumaki "simply that overpowered".
+Canon costs stay. The deep mechanics (`CLAN_RESEARCH.md` Part II) come after v0.3. The Aburame are left
+to their own wave (`ABURAME.md`)._
+
+### Old → new numbers
+
+×N is the chakra pool against a normal shinobi at the same Reserves. Two new perks: **nature training**
+(`nature_xp`, nature drills move faster) and **Sharingan growth** (`sharingan_xp`).
+
+| Clan | What changed (old → new) | Canon costs kept |
+|---|---|---|
+| **Uzumaki** | pool ×10 → **×100**; jinchūriki ×20 → **×150**; regen ×3 now on a pool-scaled base (refill 33 s); healing 0.35 → 0.5 HP/s; health +6 → +10; VIT +2 → +4; vitality training +30% (new); DoT resistance 50% → 60%; sealing power ×2 → ×2.5, sealing cost −50% → −60%; beast bond ×2 → ×2.5 | rough control 40%, CTL −4, control training −25%; loud chakra +75% → +100% |
+| **Senju** | pool ×4 → **×40**; health +14 → +20; healing 0.4 → 0.6 HP/s; stamina +100 → +150, stamina regen +60% → +100%; VIT +6 → +8, vitality training +50% → +80%; medical +50% → +80%; beast bond +30% → +50%; **nature training ×2** (new: "a thousand skills"); jutsu mastery +30% (new); **rough control and CTL −3 removed** (not canon) | loud chakra +40% → +50% |
+| **Uchiha** | pool ×1.5 → ×3; **fire affinity 1.5 → 2.0**; perception +25% → +40%; genjutsu +60% → **+100%**; genjutsu resistance +30% → +40%; Resolve +60% → +80%; mastery +40% → +60%; jutsu power +10% → +20%; **Sharingan growth +50%** (new) | Mangekyō strain +60%, crew respect −15%, health −2 |
+| **Kaguya** | DUR +10 → **+15**; health +8 → +12; damage taken −15% → **−25%**; melee +25% → **+40%**; durability training +60% → +100%; taijutsu training +50% (new); posture +40 → +60 | the illness: DoT +50%, −0.05 HP/s; jutsu power −20% |
+| **Hyūga** | Gentle Fist +80% → +100%; CTL +5 → +6; taijutsu training +50% → +60%; perception +15% → +30%; genjutsu resistance +25% → +30%; melee +10% (new) | jutsu power −30%, mastery −20% |
+| **Might** | TAI +4 → +5; stamina +150 → +200 | jutsu power −60%, cost +60%, genjutsu −80%, pool ×0.5 |
+| **Jūgo's clan** | pool ×2 → ×4; health +10 → +14; melee +30% → +35%; healing 0.3 → 0.4 HP/s | CTL −6, rough control 30%, genjutsu resistance −50%, crew −30% |
+| **Hoshigaki** | pool ×6 → **×30** ("a tailed beast without a tail"); melee +20% → +25%; health +6 → +8 | rough control 25%, crew −30%, loud chakra +50% |
+| **Kazekage line** | pool ×1.5 → ×3; DUR +6 → +8; posture +40 → +50; jutsu power +15% → +20%; damage taken −10% → −15% | stamina −30, speed training −20% |
+| **Yuki** | CTL +4 → +5; SPD +2 (new); speed training +40% → +50%; jutsu power +15% → +25%; perception +15% → +20% | health −4, fire +30% |
+| **Chinoike** | genjutsu ×2 → ×2.2; perception +20% → +30% | health −4, strain +30%, crew −30% |
+| **Kurama** | genjutsu ×2.2 → ×2.5 | health −6, stamina −50, melee −15% |
+| **Nara** | CTL +6 → +7; genjutsu resistance +20% → +30% | taijutsu −40%, speed −30%, stamina −30, stamina regen −20% |
+| **Akimichi** | health +12 → +14; melee +20% → +25%; DUR +6 → +7 | SPD −4, speed training −35% |
+| **Hatake** | **pool ×0.6 → ×1, regen −20% removed** (average reserves); mastery +60% → +70% | none (canon has none) |
+| **Sarutobi** | pool ×1.5 → ×2; mastery +50% → +60%; jutsu power +25% → +30%; nature training +50% (new: "the Professor") | speed training −20% |
+| **Hōzuki** | pool ×1.5 → ×2 | health −4 |
+| **Yamanaka** | sensing 40 → 48 blocks; genjutsu +60% → +70% | health −3, melee −10% |
+| **Inuzuka** | melee +20% → +25%; SPD +4 → +5 | CTL −3, control training −30%, genjutsu −40% |
+| **Yotsuki** | health +8 → +10; melee +20% → +25% | CTL −3, genjutsu −30% |
+| **Shimura** | WIL +6 → +7 | crew −40% |
+| Aburame, Fūma, Iburi, Kamizuru, Kurogane | unchanged (Aburame: its own wave) | |
+
+**Not in v0.3:** longevity (there is no ageing yet), lightning weakness for the Hōzuki, the Uzumaki's
+chains and bite, and every other Part II mechanic.
+
+### The clan roll table (`data/noirm/clan_odds/canon.json`)
+
+80% of every roll (players' creator rolls, NPC and wild ninjas, exam opponents, bingo-book targets) is a
+canon clan; 20% is a generated clan (half of those a clan this world already knows, half brand new).
+The weights are per thousand rolls, so each one reads as a share of all rolls:
+
+| Group | Clans (share of all rolls) | Sum |
+|---|---|---|
+| Great clans | Uchiha 3.5%, Hyūga 3.5%, Senju 2.5%, Uzumaki 2.5%, Kaguya 2.0% | 14% |
+| Leaf noble and common clans | Nara 6%, Akimichi 6%, Yamanaka 6%, Inuzuka 6%, Aburame 5%, Sarutobi 4%, Hatake 2.5%, Might 2% | 37.5% |
+| Other villages and rare lines | Yotsuki 3.5%, Fūma 3.5%, Hōzuki 3%, Kamizuru 3%, Kurogane 3%, Shimura 2.5%, Yuki 2%, Kurama 1.5%, Iburi 1.5%, Kazekage line 1.4%, Chinoike 1.2%, Hoshigaki 1.2%, Jūgo's clan 1.2% | 28.5% |
+| Generated clans | | 20% |
+
+Why: the common Leaf clans are big families, so they're the usual roll; the great clans are rare but
+reachable (about 1 roll in 30–50 each, so the 5 creator rolls give about an even chance of seeing at
+least one of the five). Hunted, exiled or near-extinct lines (Yuki, Chinoike, Hoshigaki, Jūgo's,
+Kaguya) and the tiny Kazekage family are the rarest.
+
+### Rolls in the creator
+
+- **5 clan rolls** in all (the first, then 4 rerolls; it was 1 + 3). Each shows a new clan, stats and talents.
+- **5 talent rerolls**, apart from the clan rolls. Each gives the roll you're keeping a new set of
+  talents; its clan and stats stay. Every set stays too: the arrows on the card (and on the Clan tab)
+  switch back to any set you've seen. Why five: a set has a negative talent about 1 time in 6, so five
+  rerolls almost always shake it off; seeing a four-talent set or one particular talent is about a coin
+  flip (54% and 42%), so you can hope for luck but not fish for a perfect set.
+- The Genetics tab shows two counters ("Clan rerolls: 4 of 4 left", "Talent rerolls: 5 of 5 left") and
+  two buttons; the Clan tab shows the talent rerolls left beside your talents.
+
+### Simulator, before and after round 3 (hours of play; `--clans`, 60 h)
+
+| Clan | Chūnin before → after | Jōnin before → after | Class S before → after | Beat class S before → after | Fight × (player) |
+|---|---|---|---|---|---|
+| no clan | 10.2 | 20.7 | 51.0 | 53.6 | 1.00 |
+| Uzumaki | 7.3 → 5.6 | 15.0 → 11.4 | 41.4 → 35.0 | 39.6 → 31.6 | 1.10 → 1.15 |
+| Senju | 4.9 → 3.3 | 9.9 → 7.2 | 33.4 → 27.4 | 29.6 → 21.6 | 1.21 → 1.29 |
+| Kaguya | 3.6 → 2.5 | 8.1 → 4.4 | 32.2 → 23.0 | 25.6 → 15.6 | 1.28 → 1.49 |
+| Uchiha | 8.9 → 8.3 | 18.4 → 17.4 | 49.4 → 47.0 | 51.6 → 46.4 | 1.02 → 1.06 |
+| Hyūga | 8.7 → 7.6 | 18.8 → 17.0 | 47.4 → 44.2 | 51.6 → 46.4 | 0.96 → 0.99 |
+| Jūgo's clan | 4.7 → 3.6 | 9.5 → 7.3 | 32.6 → 29.8 | 27.6 → 23.6 | 1.25 → 1.33 |
+| Akimichi | 4.7 → 4.1 | 10.3 → 8.9 | 38.2 → 34.2 | 29.6 → 25.6 | 1.28 → 1.33 |
+| Hoshigaki | 6.3 → 5.6 | 12.1 → 11.2 | 37.4 → 37.5 | 33.6 → 30.4 | 1.16 → 1.21 |
+| Yotsuki | 5.4 → 4.7 | 11.9 → 10.3 | 37.8 → 33.4 | 34.4 → 29.6 | 1.17 → 1.21 |
+| Kazekage line | 8.1 → 7.3 | 16.9 → 15.2 | 47.0 → 44.2 | 45.6 → 41.6 | 1.07 → 1.11 |
+| Yamanaka | 10.2 → 10.9 | 22.6 → 22.3 | 55.7 → 54.2 | — → 59.6 | 0.96 → 0.97 |
+| Kurama | 11.6 → 11.2 | 25.0 → 23.2 | 58.2 → 55.4 | — → — | 0.93 → 0.95 |
+
+The model is melee-centred and can't see pools, genjutsu, sensing, sealing or the eyes, so the Uchiha
+and the Uzumaki play far stronger than this table says. Every clan still reaches every rank and beats
+class S (Kurama past 60 h). **NPC mix:** with 80% canon NPCs the average NPC fights ×1.04 (was ×1.00 at
+10% canon), because NPC combat perks count at half.
+
+## What each clan does in NOIRM (the first and second waves, old → new)
 
 "Start" stats are added once when the character is made. ×N is the chakra pool against a normal
 shinobi at the same Reserves.
@@ -187,14 +289,14 @@ hound that will use them.
 - **Pools are sustain, not power.** Nothing in NOIRM scales damage with max chakra. Jutsu power
   follows the Reserves stat and mastery, and chakra reinforcement follows (Reserves + CTL) / 2.
   Both are stats the clan perks don't touch (only the Uzumaki and Hoshigaki train Reserves a little
-  faster). The HUD shows the pool as a number and a bar, so 2000 reads fine.
+  faster). The HUD shows the pool as a number and a bar, and big pools read as "12.4k".
 - **Raw combat perks are capped by design** (melee, health, damage taken). The strongest bruisers
-  fight about 1.2–1.3× as well as a clanless player of the same stats. The big gaps are in
+  fight about 1.2–1.5× as well as a clanless player of the same stats (the Kaguya, since v0.3, ~1.5×). The big gaps are in
   identity: pools, training speed, control, genjutsu, the Gates, the eyes.
 - **NPC ninjas** of a clan count their raw combat perks (health, healing, damage dealt and taken,
   jutsu and genjutsu power) at **half** (`Perks.NPC_COMBAT_SHARE`). Their identity perks (liquid and
   smoke bodies, poison immunity, resistances, weaknesses) count in full. So a Kaguya ninja feels like
-  a Kaguya without beating every exam's difficulty, and canon NPCs stay about 10% of the population.
+  a Kaguya without beating every exam's difficulty, and since v0.3 most NPCs (80%) are canon-clan ninjas.
 - **The simulator** (`tools/balance/simulate.py --clans`) plays the same normal player born into each
   clan; see the table below.
 
@@ -264,6 +366,11 @@ Geniuses (jutsu power +15%, mastery +20%, max health −4).
 ## Tuning
 
 - Clan perks, clan jutsu, looks, biases: `data/noirm/clans/*.json`.
+- Which clans newcomers roll: `data/noirm/clan_odds/canon.json` (`canon_share`, weights per thousand).
+- Creator rolls: `CharacterCreator.MAX_ROLLS` (5) and `MAX_TALENT_REROLLS` (5).
+- Big pools: regen scales with the pool (`ShinobiData.chakraRegenMultiplier`), Reserves XP per chakra
+  spent ÷ pool^`TrainingSystem.SPEND_XP_POOL_EXPONENT` (0.5), clones `ShadowClone.BONUS_PER_TENFOLD` (2,
+  at most `MAX_BONUS` 4), NPC pools `Perks.NPC_POOL_CAP` (×3).
 - Packages: `data/noirm/clan_perks/*.json`; two per clan: `Talents.PACKAGES_PER_CLAN`.
 - Sealing scroll numbers: constants at the top of `SealingScrollItem`.
 - Caps: `Perks.MIN_MULTIPLIER` (0.1), `Perks.MAX_DODGE` (0.8).

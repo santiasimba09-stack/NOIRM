@@ -215,6 +215,7 @@ public final class Sharingan {
         if (amount <= 0 || eyes.sharinganStage() == 0 || eyes.sharinganStage() >= EyeData.MAX_STAGE) {
             return;
         }
+        amount = Math.max(1, Math.round(amount * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.SHARINGAN_XP))); // Uchiha eyes grow faster
         eyes.setSharinganXp(eyes.sharinganXp() + amount);
         data.markPowersDirty();
         if (eyes.sharinganXp() >= STAGE_XP[eyes.sharinganStage() + 1]) {

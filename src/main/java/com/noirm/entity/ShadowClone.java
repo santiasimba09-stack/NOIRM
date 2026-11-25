@@ -30,6 +30,21 @@ import java.util.UUID;
  */
 public class ShadowClone extends SparringNinja {
     public static final int MAX_PER_OWNER = 4;
+    /** Big pools make more clones: +{@link #BONUS_PER_TENFOLD} per cast (and in all) per tenfold pool, at most {@link #MAX_BONUS}. */
+    public static final float BONUS_PER_TENFOLD = 2f;
+    public static final int MAX_BONUS = 4;
+
+    /**
+     * Extra clones a caster's chakra pool allows: 0 for a normal pool, +2 at ×10, +4 at ×100 (an Uzumaki).
+     * Players only; NPC clones use the base count.
+     */
+    public static int bonusClones(LivingEntity caster) {
+        if (!(caster instanceof net.minecraft.world.entity.player.Player player)) {
+            return 0;
+        }
+        float pool = com.noirm.player.ShinobiCapability.get(player).map(com.noirm.traits.Perks::poolMultiplier).orElse(1f);
+        return pool <= 1f ? 0 : Math.min(MAX_BONUS, (int) Math.floor(Math.log10(pool) * BONUS_PER_TENFOLD + 1e-4));
+    }
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER = SynchedEntityData.defineId(ShadowClone.class, EntityDataSerializers.OPTIONAL_UUID);
 

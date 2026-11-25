@@ -47,6 +47,11 @@ public final class Perks {
      * bodies, poison immunity, resistances, weaknesses) count in full.
      */
     public static final float NPC_COMBAT_SHARE = 0.5f;
+    /**
+     * NPC ninjas' clan chakra pool is capped at this multiple (an Uzumaki ninja has ×3, not ×100), so a clan
+     * NPC casts a bit more often than others but can still run dry.
+     */
+    public static final float NPC_POOL_CAP = 3f;
     private static final java.util.Set<Perk> NPC_SCALED = java.util.EnumSet.of(Perk.MAX_HEALTH, Perk.HEALTH_REGEN,
             Perk.MELEE_DAMAGE, Perk.DAMAGE_TAKEN, Perk.JUTSU_POWER, Perk.GENJUTSU_POWER);
     /** NPC totals are rebuilt at most this often (ticks). */
@@ -195,6 +200,23 @@ public final class Perks {
         }
         float ctl = ShinobiCapability.get(player).map(ShinobiData::getControl).orElse(ShinobiData.DEFAULT_STAT);
         return rough * net.minecraft.util.Mth.clamp((ROUGH_GONE_AT - ctl) / (ROUGH_GONE_AT - ROUGH_FULL_BELOW), 0f, 1f);
+    }
+
+    /**
+     * How many times a normal shinobi's chakra pool this player's blood gives: 1 + chakra_pool, plus
+     * jinchuriki_pool while a beast is sealed inside (an Uzumaki: 100, an Uzumaki jinchūriki: 150). At least 0.1.
+     */
+    public static float poolMultiplier(ShinobiData data) {
+        float pool = get(data, Perk.CHAKRA_POOL);
+        if (data.biju().isJinchuriki()) {
+            pool += get(data, Perk.JINCHURIKI_POOL);
+        }
+        return Math.max(MIN_MULTIPLIER, 1f + pool);
+    }
+
+    /** An NPC ninja's clan pool multiplier: its clan's, between 1 and {@link #NPC_POOL_CAP} (never below 1 for NPCs). */
+    public static float npcPoolMultiplier(LivingEntity ninja) {
+        return net.minecraft.util.Mth.clamp(1f + get(ninja, Perk.CHAKRA_POOL), 1f, NPC_POOL_CAP);
     }
 
     /** How much more a loud chakra draws attention: wild-ninja tries and how far mobs notice you, ×this. */

@@ -137,7 +137,8 @@ public final class ShinobiHudOverlay {
         if (!combat && smooth.recency() < 0.03f) {
             return null;
         }
-        return Math.round(value) + "/" + Math.round(max);
+        // Big pools (an Uzumaki's tens of thousands) read as "12.4k/20k".
+        return com.noirm.player.BigNumbers.compact(value) + "/" + com.noirm.player.BigNumbers.compact(max);
     }
 
     /** Top centre (below boss bars): the locked-on enemy, or the last one you hit, with its posture. */

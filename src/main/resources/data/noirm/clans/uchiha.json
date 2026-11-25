@@ -3,7 +3,7 @@
   "name": "Uchiha",
   "weight": 3,
   "natures": {
-    "fire": 1.5,
+    "fire": 2.0,
     "lightning": 1.0,
     "yin": 0.8
   },
@@ -16,16 +16,17 @@
   "kekkei_genkai": "sharingan",
   "awakening": "sharingan",
   "perks": {
-    "perception": 0.25,
-    "genjutsu_power": 0.6,
-    "genjutsu_resist": 0.3,
-    "resolve": 0.6,
-    "mastery": 0.4,
-    "chakra_pool": 0.5,
-    "jutsu_power": 0.1,
+    "perception": 0.4,
+    "genjutsu_power": 1.0,
+    "genjutsu_resist": 0.4,
+    "resolve": 0.8,
+    "mastery": 0.6,
+    "chakra_pool": 2.0,
+    "jutsu_power": 0.2,
     "strain": 0.6,
     "crew_respect": -0.15,
-    "max_health": -2
+    "max_health": -2,
+    "sharingan_xp": 0.5
   },
   "look": {
     "hair": [

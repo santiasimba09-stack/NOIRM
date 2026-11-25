@@ -8,8 +8,8 @@
   "taijutsu_bonus": 2,
   "awakening": "will",
   "perks": {
-    "max_health": 8,
-    "melee_damage": 0.2,
+    "max_health": 10,
+    "melee_damage": 0.25,
     "start_durability": 5,
     "max_stamina": 50,
     "xp_taijutsu": 0.3,

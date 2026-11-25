@@ -259,13 +259,14 @@ public final class CanonTechniques {
     static void shadowClone(JutsuContext ctx) {
         LivingEntity caster = ctx.caster();
         ServerLevel level = ctx.level();
-        int count = Math.max(1, ctx.params().count());
+        int bonus = ShadowClone.bonusClones(caster); // an Uzumaki's pool makes a crowd (+4 at ×100)
+        int count = Math.max(1, ctx.params().count()) + bonus;
         if (caster instanceof Player player && !player.getAbilities().instabuild) {
             // Chakra is divided evenly between you and your clones.
             ShinobiCapability.get(player).ifPresent(d -> d.setChakra(d.getChakra() / (count + 1)));
         }
         List<ShadowClone> existing = level.getEntitiesOfClass(ShadowClone.class, caster.getBoundingBox().inflate(64), c -> c.isOwnedBy(caster));
-        for (int i = 0; i < existing.size() + count - ShadowClone.MAX_PER_OWNER; i++) {
+        for (int i = 0; i < existing.size() + count - ShadowClone.MAX_PER_OWNER - bonus; i++) {
             existing.get(i).dispel();
         }
         for (int i = 0; i < count; i++) {

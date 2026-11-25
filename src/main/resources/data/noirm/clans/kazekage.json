@@ -10,11 +10,11 @@
   "kekkei_genkai": "magnet_release",
   "awakening": "will",
   "perks": {
-    "start_durability": 6,
-    "posture": 40,
-    "jutsu_power": 0.15,
-    "chakra_pool": 0.5,
-    "damage_taken": -0.1,
+    "start_durability": 8,
+    "posture": 50,
+    "jutsu_power": 0.2,
+    "chakra_pool": 2.0,
+    "damage_taken": -0.15,
     "max_stamina": -30,
     "xp_speed": -0.2
   },

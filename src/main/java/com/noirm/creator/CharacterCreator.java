@@ -32,15 +32,27 @@ import java.util.Optional;
  *   <li><b>Genetics:</b> each roll is a clan from this world's clan list
  *       ({@link WorldClans#rollForNewcomer}, the same one villages and NPCs use) plus a blank
  *       stat spread ({@link #STAT_MIN}–{@link #STAT_MAX} each for RES, TAI, SPD, CTL and WIL) that
- *       the clan's traits then raise. You may reroll {@link #MAX_REROLLS} times; every roll you've
- *       seen stays on the list and you keep whichever one you pick (so a reroll is never a loss).</li>
+ *       the clan's traits then raise. You see up to {@link #MAX_ROLLS} rolls (the first, then
+ *       {@link #MAX_REROLLS} rerolls); every roll you've seen stays on the list and you keep whichever
+ *       one you pick (so a reroll is never a loss).</li>
+ *   <li><b>Talents</b> can be rerolled on their own, {@link #MAX_TALENT_REROLLS} times: the chosen roll
+ *       keeps its clan and stats and gets a new set of talents. Every set seen stays, and you can go
+ *       back to any of them.</li>
  *   <li><b>Finishing</b> saves the look, applies the chosen roll, sets your height (the hitbox
  *       follows) and lets you go.</li>
  * </ul>
  */
 public final class CharacterCreator {
-    /** Rerolls allowed after the first roll (so up to 4 rolls are seen). */
-    public static final int MAX_REROLLS = 3;
+    /** Clan rolls a new character sees in all: the first one plus {@link #MAX_REROLLS} rerolls. */
+    public static final int MAX_ROLLS = 5;
+    /** Rerolls allowed after the first roll (so up to {@link #MAX_ROLLS} rolls are seen). */
+    public static final int MAX_REROLLS = MAX_ROLLS - 1;
+    /**
+     * Talent rerolls, apart from the clan rolls: each gives the chosen roll a fresh set of talents
+     * (same clan, same stats). Five is enough to shake off a bad negative talent most of the time
+     * without fishing for a perfect set.
+     */
+    public static final int MAX_TALENT_REROLLS = 5;
     /** The blank stats are rolled between these (inclusive) before traits. */
     public static final int STAT_MIN = 8;
     public static final int STAT_MAX = 12;
@@ -142,6 +154,30 @@ public final class CharacterCreator {
         creator.useReroll();
         creator.addRoll(roll(player));
         creator.setChosen(creator.rolls().size() - 1);
+        sendState(player, data);
+        return true;
+    }
+
+    /** New talents for the chosen roll (its clan and stats stay), if any talent rerolls are left. */
+    public static boolean rerollTalents(ServerPlayer player, ShinobiData data) {
+        CreatorData creator = data.creator();
+        GeneticRoll roll = creator.chosenRoll();
+        if (!creator.mode().genetics() || roll == null || creator.talentRerollsLeft() <= 0) {
+            return false;
+        }
+        java.util.Map<String, Float> bias = clanOf(player.server, roll).map(Clan::talentBias).orElse(java.util.Map.of());
+        creator.useTalentReroll();
+        creator.addTalentSet(com.noirm.traits.Talents.roll(player.getRandom(), bias));
+        sendState(player, data);
+        return true;
+    }
+
+    /** The chosen roll goes back to one of the talent sets it has seen (free). */
+    public static boolean chooseTalents(ServerPlayer player, ShinobiData data, int set) {
+        CreatorData creator = data.creator();
+        if (!creator.mode().genetics() || !creator.selectTalentSet(set)) {
+            return false;
+        }
         sendState(player, data);
         return true;
     }

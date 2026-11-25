@@ -8,13 +8,14 @@
   },
   "awakening": "will",
   "perks": {
-    "mastery": 0.5,
-    "jutsu_power": 0.25,
+    "mastery": 0.6,
+    "jutsu_power": 0.3,
     "crew_respect": 0.6,
     "resolve": 0.4,
     "xp_willpower": 0.4,
-    "chakra_pool": 0.5,
-    "xp_speed": -0.2
+    "chakra_pool": 1.0,
+    "xp_speed": -0.2,
+    "nature_xp": 0.5
   },
   "look": {
     "hair": [

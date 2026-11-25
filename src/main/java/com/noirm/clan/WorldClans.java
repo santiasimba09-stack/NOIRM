@@ -21,9 +21,7 @@ import java.util.stream.Stream;
  */
 public final class WorldClans extends SavedData {
     private static final String NAME = "noirm_clans";
-    /** Chance a newcomer belongs to a canon clan. */
-    public static final float CANON_CHANCE = 0.10f;
-    /** Otherwise, chance they join a custom clan this world already knows (vs a new one). */
+    /** Otherwise (not canon, see {@link ClanOdds}), chance they join a custom clan this world already knows (vs a new one). */
     public static final float KNOWN_CLAN_CHANCE = 0.5f;
 
     private final List<Clan> custom = new ArrayList<>();
@@ -55,14 +53,18 @@ public final class WorldClans extends SavedData {
         return clan;
     }
 
-    /** Picks the clan for a newcomer: rarely canon, otherwise a known or brand-new custom clan. */
+    /**
+     * Picks the clan for a newcomer: usually canon ({@link ClanOdds}: 80%, the great clans rarer than the
+     * common ones), otherwise a known or brand-new custom clan.
+     */
     public Clan rollForNewcomer(RandomSource random) {
         List<Clan> canon = ClanData.canonClans();
-        if (!canon.isEmpty() && random.nextFloat() < CANON_CHANCE) {
-            int total = canon.stream().mapToInt(c -> Math.max(1, c.weight())).sum();
+        ClanOdds odds = ClanOdds.get();
+        if (!canon.isEmpty() && random.nextFloat() < odds.canonShare()) {
+            int total = canon.stream().mapToInt(odds::weight).sum();
             int roll = random.nextInt(total);
             for (Clan clan : canon) {
-                roll -= Math.max(1, clan.weight());
+                roll -= odds.weight(clan);
                 if (roll < 0) {
                     return clan;
                 }

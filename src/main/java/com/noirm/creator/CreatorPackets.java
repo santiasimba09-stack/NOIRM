@@ -44,8 +44,14 @@ public final class CreatorPackets {
     public record RollView(String clanName, boolean canon, String kekkeiGenkai, List<Map.Entry<Integer, Float>> natures,
                            List<Integer> traits, int[] base, float[] stats,
                            String clanId, Map<com.noirm.traits.Perk, Float> perks, List<String> clanJutsu,
-                           List<com.noirm.traits.ProfileSync.TalentView> talents, int hair, int eyes) {
+                           List<com.noirm.traits.ProfileSync.TalentView> talents, int hair, int eyes,
+                           int talentSet, int talentSets) {
         static RollView of(GeneticRoll roll, Clan clan) {
+            return of(roll, clan, 0, 1);
+        }
+
+        /** {@code talentSet} of {@code talentSets}: which of the talent sets seen for this roll it holds. */
+        static RollView of(GeneticRoll roll, Clan clan, int talentSet, int talentSets) {
             List<Map.Entry<Integer, Float>> natures = new ArrayList<>();
             List<Integer> traits = new ArrayList<>();
             if (clan != null) {
@@ -61,7 +67,8 @@ public final class CreatorPackets {
                     clan == null ? List.of() : clan.clanJutsu().stream().map(Object::toString).toList(),
                     com.noirm.traits.ProfileSync.views(roll.talents()),
                     clan == null ? -1 : clan.look().map(Clan.Look::defaultHair).orElse(-1),
-                    clan == null ? -1 : clan.look().map(Clan.Look::defaultEyes).orElse(-1));
+                    clan == null ? -1 : clan.look().map(Clan.Look::defaultEyes).orElse(-1),
+                    talentSet, Math.max(1, talentSets));
         }
 
         /** The player's current clan and stats (appearance-only mode). */
@@ -79,7 +86,7 @@ public final class CreatorPackets {
             }
             return new RollView(identity.clanName(), identity.isCanon(), kekkei, natures, traits, base, stats, identity.clanId(),
                     com.noirm.traits.ProfileSync.perks(identity.perks()), identity.clanJutsu().stream().map(Object::toString).toList(),
-                    com.noirm.traits.ProfileSync.views(data.talents().talents()), -1, -1);
+                    com.noirm.traits.ProfileSync.views(data.talents().talents()), -1, -1, 0, 1);
         }
 
         void encode(FriendlyByteBuf buf) {
@@ -103,6 +110,8 @@ public final class CreatorPackets {
             com.noirm.traits.ProfileSync.writeTalents(buf, talents);
             buf.writeInt(hair);
             buf.writeInt(eyes);
+            buf.writeVarInt(talentSet);
+            buf.writeVarInt(talentSets);
         }
 
         static RollView decode(FriendlyByteBuf buf) {
@@ -127,7 +136,7 @@ public final class CreatorPackets {
             }
             return new RollView(name, canon, kekkei, natures, traits, base, stats, buf.readUtf(64),
                     com.noirm.traits.ProfileSync.readPerks(buf), buf.readList(b -> b.readUtf(256)),
-                    com.noirm.traits.ProfileSync.readTalents(buf), buf.readInt(), buf.readInt());
+                    com.noirm.traits.ProfileSync.readTalents(buf), buf.readInt(), buf.readInt(), buf.readVarInt(), buf.readVarInt());
         }
 
         public List<Nature> natureList() {
@@ -155,19 +164,23 @@ public final class CreatorPackets {
      * Server → the player: the creation screen's state. Mode NONE closes the screen. {@code rolls}
      * holds every roll seen (genetics modes) or the current clan (appearance mode).
      */
-    public record State(int mode, boolean held, int rerollsLeft, int chosen, List<RollView> rolls, PlayerLook look) {
+    public record State(int mode, boolean held, int rerollsLeft, int chosen, List<RollView> rolls, PlayerLook look, int talentRerollsLeft) {
         public static State of(ServerPlayer player, ShinobiData data) {
             CreatorData creator = data.creator();
             List<RollView> rolls = new ArrayList<>();
             if (creator.mode().genetics()) {
-                for (GeneticRoll roll : creator.rolls()) {
-                    rolls.add(RollView.of(roll, CharacterCreator.clanOf(player.server, roll).orElse(null)));
+                List<GeneticRoll> seen = creator.rolls();
+                for (int i = 0; i < seen.size(); i++) {
+                    GeneticRoll roll = seen.get(i);
+                    rolls.add(RollView.of(roll, CharacterCreator.clanOf(player.server, roll).orElse(null),
+                            creator.talentChoice(i), creator.talentSetCount(i)));
                 }
             } else if (creator.mode() != CreatorData.Mode.NONE) {
                 rolls.add(RollView.current(data));
             }
             PlayerLook look = creator.hasLook() ? creator.look() : PlayerLook.random(player.getRandom());
-            return new State(creator.mode().ordinal(), creator.held(), creator.rerollsLeft(), creator.chosen(), rolls, look);
+            return new State(creator.mode().ordinal(), creator.held(), creator.rerollsLeft(), creator.chosen(), rolls, look,
+                    creator.talentRerollsLeft());
         }
 
         public CreatorData.Mode modeEnum() {
@@ -182,6 +195,7 @@ public final class CreatorPackets {
             buf.writeVarInt(rolls.size());
             rolls.forEach(r -> r.encode(buf));
             look.encode(buf);
+            buf.writeByte(talentRerollsLeft);
         }
 
         static State decode(FriendlyByteBuf buf) {
@@ -194,7 +208,8 @@ public final class CreatorPackets {
             for (int i = 0; i < n; i++) {
                 rolls.add(RollView.decode(buf));
             }
-            return new State(mode, held, left, chosen, rolls, PlayerLook.decode(buf));
+            PlayerLook look = PlayerLook.decode(buf);
+            return new State(mode, held, left, chosen, rolls, look, buf.readByte());
         }
 
         void handle(Supplier<NetworkEvent.Context> context) {
@@ -231,7 +246,7 @@ public final class CreatorPackets {
 
     /** Client → server: a button on the creation screen. */
     public record Action(Kind kind, int arg) {
-        public enum Kind { REROLL, CHOOSE, CANCEL }
+        public enum Kind { REROLL, CHOOSE, CANCEL, TALENT_REROLL, CHOOSE_TALENTS }
 
         void encode(FriendlyByteBuf buf) {
             buf.writeEnum(kind);
@@ -250,6 +265,8 @@ public final class CreatorPackets {
                         case REROLL -> CharacterCreator.reroll(player, data);
                         case CHOOSE -> CharacterCreator.choose(player, data, arg);
                         case CANCEL -> CharacterCreator.cancel(player, data);
+                        case TALENT_REROLL -> CharacterCreator.rerollTalents(player, data);
+                        case CHOOSE_TALENTS -> CharacterCreator.chooseTalents(player, data, arg);
                     }
                 });
             }

@@ -96,7 +96,7 @@ public final class NoirmCommand {
     private static int showStats(CommandSourceStack source) throws CommandSyntaxException {
         ShinobiData data = data(source);
         source.sendSuccess(() -> Component.translatable("command.noirm.stats",
-                Math.round(data.getChakra()), Math.round(data.getMaxChakra()),
+                com.noirm.player.BigNumbers.grouped(data.getChakra()), com.noirm.player.BigNumbers.grouped(data.getMaxChakra()),
                 Math.round(data.getStamina()), Math.round(data.getMaxStamina())), false);
         return 1;
     }

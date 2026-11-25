@@ -291,7 +291,8 @@ public final class NatureDrills {
         t.setActive(nature);
         t.setPace(pace.rate(), pace.teacher());
         float before = t.progress(nature) / secondsNeeded(nature);
-        t.setProgress(nature, t.progress(nature) + seconds * pace.rate());
+        // The blood's nature_xp (the Senju's "thousand skills") speeds every drill.
+        t.setProgress(nature, t.progress(nature) + seconds * pace.rate() * com.noirm.traits.Perks.mult(data, com.noirm.traits.Perk.NATURE_XP));
         float after = t.progress(nature) / secondsNeeded(nature);
         if (after >= 1f) {
             complete(player, data, nature);

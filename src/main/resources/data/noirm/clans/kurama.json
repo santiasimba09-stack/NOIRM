@@ -7,7 +7,7 @@
   },
   "awakening": "will",
   "perks": {
-    "genjutsu_power": 1.2,
+    "genjutsu_power": 1.5,
     "genjutsu_resist": 0.6,
     "start_willpower": 5,
     "max_health": -6,
