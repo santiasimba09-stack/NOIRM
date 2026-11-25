@@ -173,7 +173,7 @@ public final class CreatorGameTests {
             helper.assertTrue(PlayerLook.load(look.save()).equals(look), "NBT round trip " + look);
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             look.encode(buf);
-            helper.assertTrue(buf.readableBytes() < 48, "the packet is small: " + buf.readableBytes() + " bytes");
+            helper.assertTrue(buf.readableBytes() < 64, "the packet is small (a byte per part, 3 per colour): " + buf.readableBytes() + " bytes");
             helper.assertTrue(PlayerLook.decode(buf).equals(look), "packet round trip");
         }
         // Unknown ids (an option removed in a later version) fall back instead of failing.
