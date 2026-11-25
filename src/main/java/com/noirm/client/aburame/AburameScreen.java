@@ -112,7 +112,7 @@ abstract class AburameScreen extends Screen implements NoirmStyled {
         g.pose().pushPose();
         g.pose().translate(cx, cy, 150);
         g.pose().scale(size, -size, size);
-        g.pose().mulPose(Axis.XP.rotationDegrees(-28));
+        g.pose().mulPose(Axis.XP.rotationDegrees(32));
         g.pose().mulPose(Axis.YP.rotationDegrees(t * 1.2f));
         Lighting.setupForEntityInInventory();
         BeetleMesh mesh = new BeetleMesh(g.pose(), g.bufferSource().getBuffer(RenderType.entityCutoutNoCull(BeetleMesh.texture(species))),

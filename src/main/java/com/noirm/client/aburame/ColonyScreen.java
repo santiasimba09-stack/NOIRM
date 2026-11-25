@@ -78,10 +78,10 @@ public class ColonyScreen extends AburameScreen {
         ry = Ui.section(g, font, rx, ry, rw, Component.translatable("screen.noirm.colony.where"), Theme.TEXT_DIM);
         int hiveTotal = c.hives().stream().mapToInt(ColonyPackets.HiveView::count).sum();
         int col = rw / 4;
-        cell(g, rx, ry, col, "screen.noirm.colony.body", c.bodyTotal() + "/" + c.capacity(), ColonyHud.BODY);
-        cell(g, rx + col, ry, col, "screen.noirm.colony.jars", c.stored() + "/" + c.storeCap(), ColonyHud.STORED);
-        cell(g, rx + col * 2, ry, col, "screen.noirm.colony.field", String.valueOf(c.field()), ColonyHud.TEAL);
-        cell(g, rx + col * 3, ry, col, "screen.noirm.colony.hives", String.valueOf(hiveTotal), Theme.AMBER);
+        cell(g, rx, ry, col, "screen.noirm.colony.body", ColonyHud.compact(c.bodyTotal()) + "/" + ColonyHud.compact(c.capacity()), ColonyHud.BODY);
+        cell(g, rx + col, ry, col, "screen.noirm.colony.jars", ColonyHud.compact(c.stored()) + "/" + ColonyHud.compact(c.storeCap()), ColonyHud.STORED);
+        cell(g, rx + col * 2, ry, col, "screen.noirm.colony.field", ColonyHud.compact(c.field()), ColonyHud.TEAL);
+        cell(g, rx + col * 3, ry, col, "screen.noirm.colony.hives", ColonyHud.compact(hiveTotal), Theme.AMBER);
         ry += 24;
         // the rank and what's next
         ry = Ui.section(g, font, rx, ry, rw, Component.translatable("screen.noirm.colony.rank"), Theme.TEXT_DIM);

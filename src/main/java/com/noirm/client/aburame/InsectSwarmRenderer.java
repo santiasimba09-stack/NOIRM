@@ -27,11 +27,11 @@ import java.util.WeakHashMap;
  */
 public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
     /** The most beetles drawn for one swarm, and per insect (1 beetle per this many insects). */
-    public static final int MAX_BEETLES = 900;
+    public static final int MAX_BEETLES = 1600;
     public static final int SEA_BEETLES = 2400;
-    public static final int INSECTS_PER_BEETLE = 8;
+    public static final int INSECTS_PER_BEETLE = 4;
     /** A beetle's length in blocks by species. */
-    static final float LEN_KIKAICHU = 0.085f, LEN_KIDAICHU = 0.16f, LEN_RINKAICHU = 0.05f, LEN_SHOKAICHU = 0.12f;
+    static final float LEN_KIKAICHU = 0.06f, LEN_KIDAICHU = 0.16f, LEN_RINKAICHU = 0.05f, LEN_SHOKAICHU = 0.12f;
 
     /** Each swarm's smoothed flight direction (for its stream). */
     private static final Map<InsectSwarm, double[]> HEADING = new WeakHashMap<>();
@@ -62,6 +62,9 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
         int n = Math.max(24, Math.min(max, count / INSECTS_PER_BEETLE));
         if (mode == SwarmMode.JAM) {
             n = Math.min(n, 260);
+        }
+        if (mode == SwarmMode.SPHERE || mode == SwarmMode.DOME || mode == SwarmMode.WALL) {
+            n = Math.max(n, 1600); // a shell needs to be dense to read as solid
         }
         n = Math.max(12, Math.round(n * lod));
         float len = switch (swarm.species()) {
@@ -136,8 +139,20 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
                 }
             }
             case CLING -> cling(i, t, r, cy, target, here, out);
-            case SPHERE -> shell(i, n, t, Math.max(r * 0.95f, target == null ? 1.2f : target.getBbHeight() * 0.62f), cy, out, 1.6f,
-                    h1 < 0.12f ? 1.25f : 1f);
+            case SPHERE -> {
+                // A ball that swallows the target whole and sits on the ground (it never sinks into it).
+                float rad = target == null ? r : Math.max(Math.max(target.getBbWidth() * 0.95f, target.getBbHeight() * 0.62f), Math.min(r * 0.85f, 2.6f));
+                float ox = 0, oy = cy, oz = 0;
+                if (target != null) {
+                    Vec3 tp = target.getPosition(Minecraft.getInstance().getFrameTime());
+                    ox = (float) (tp.x - here.x);
+                    oz = (float) (tp.z - here.z);
+                    oy = (float) (tp.y - here.y) + Math.max(rad * 0.92f, target.getBbHeight() * 0.5f);
+                }
+                shell(i, n, t, rad, oy, out, 1.6f, h1 < 0.1f ? 1.18f : 1f);
+                out[0] += ox;
+                out[2] += oz;
+            }
             case TORNADO -> {
                 float hh = h1 * 5f - 2f;
                 float rad = 0.6f + (hh + 2f) * 0.38f + (h2 - 0.5f) * 0.25f;
@@ -277,7 +292,7 @@ public class InsectSwarmRenderer extends EntityRenderer<InsectSwarm> {
         // target's feet relative to this entity's feet
         Vec3 tp = target.getPosition(Minecraft.getInstance().getFrameTime());
         float bx = (float) (tp.x - here.x), by = (float) (tp.y - here.y), bz = (float) (tp.z - here.z);
-        if (h4 < 0.72f) {
+        if (h4 < 0.85f) {
             float y = h2 * hgt;
             float a = h1 * Mth.TWO_PI + t * (0.4f + h3 * 0.5f) * (h3 < 0.5f ? 1f : -1f) + y * 0.8f;
             float rad = w * (1.0f + 0.12f * Mth.sin(t * 7f + i)) * (y > hgt * 0.8f ? 0.8f : 1f);

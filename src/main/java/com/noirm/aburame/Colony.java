@@ -303,6 +303,10 @@ public final class Colony {
         if (nearInsectEater(player)) {
             colony.setVigour(colony.vigour() + ColonyGrowth.VIGOUR_EATER_PER_SEC);
         }
+        if (colony.livingHive() && player.level() instanceof ServerLevel level) {
+            // The Living Hive: your skin crawls, dark specks drifting off you.
+            level.sendParticles(SwarmFx.DUST, player.getX(), player.getY() + 1.0, player.getZ(), 30, 0.35, 0.6, 0.35, 0.02);
+        }
         long now = player.level().getGameTime();
         colony.marks().removeIf(m -> m.until() < now);
         if (player.tickCount % 100 < 20) {

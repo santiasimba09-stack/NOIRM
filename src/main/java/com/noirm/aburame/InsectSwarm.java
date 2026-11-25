@@ -424,7 +424,7 @@ public class InsectSwarm extends Entity {
 
     /** The dark dust around the beetles: denser for bigger swarms (client side, a few motes a tick). */
     private void clientDust() {
-        int n = Math.min(10, 1 + count() / 1500);
+        int n = Math.min(18, 2 + count() / 700);
         SwarmMode m = mode();
         float r = radius();
         net.minecraft.core.particles.ParticleOptions dust = species() == Species.RINKAICHU ? SwarmFx.PURPLE : SwarmFx.DUST;

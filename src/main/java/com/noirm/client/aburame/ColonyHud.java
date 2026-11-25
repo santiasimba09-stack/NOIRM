@@ -61,7 +61,7 @@ public final class ColonyHud {
             HudKit.text(g, font, "!", ix + 2, y, Theme.RED, (now / 300) % 2 == 0 ? 1f : 0.4f);
         }
         int barY = y + font.lineHeight + 1;
-        int full = cap + c.field();
+        int full = Math.max(cap, c.bodyTotal() + c.stored()) + c.field();
         g.fill(x, barY, x + w, barY + 2, HudKit.TRACK);
         int bw = Math.round(w * c.bodyTotal() / (float) full);
         int sw = Math.round(w * c.stored() / (float) full);
@@ -80,6 +80,14 @@ public final class ColonyHud {
             }
         }
         return y;
+    }
+
+    /** "12.5k", "250k": short numbers for tight cells. */
+    public static String compact(int n) {
+        if (n < 10000) {
+            return FMT.format(n);
+        }
+        return n < 100000 ? String.format(Locale.ROOT, "%.1fk", n / 1000f) : (n / 1000) + "k";
     }
 
     /** "12,480" */
