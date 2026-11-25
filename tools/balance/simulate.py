@@ -666,6 +666,29 @@ def clans_table(g, a, hours):
         print(f"| {cid} | " + " | ".join(cells) + f" | {final['power']} | {final['stats']['tai']}/{final['stats']['wil']} | "
               f"{clan_fight_factor():.2f} | {clan_fight_factor(NPC_COMBAT_SHARE):.2f} |")
     CLAN = {}
+    npc_mix()
+
+
+def npc_mix():
+    """The average NPC ninja's clan fight factor, with clans drawn as WorldClans does (data/noirm/clan_odds/canon.json).
+
+    Generated clans (and the share that isn't canon) count as 1.0: their perk packages are small and mixed."""
+    global CLAN
+    odds_path = os.path.join(DATA, "clan_odds", "canon.json")
+    odds = json.load(open(odds_path, encoding="utf-8")) if os.path.exists(odds_path) else {"canon_share": 0.1, "weights": {}}
+    share = float(odds.get("canon_share", 0.1))
+    weights = {}
+    for f in glob.glob(os.path.join(DATA, "clans", "*.json")):
+        cid = os.path.basename(f)[:-5]
+        weights[cid] = max(1, int(odds.get("weights", {}).get(cid, load_clan(cid).get("weight", 1))))
+    total = sum(weights.values())
+    avg = 0.0
+    for cid, w in weights.items():
+        CLAN = load_clan(cid)
+        avg += w / total * clan_fight_factor(NPC_COMBAT_SHARE)
+    CLAN = {}
+    mixed = share * avg + (1 - share)
+    print(f"\nNPC mix: {share:.0%} canon; the average canon NPC fights x{avg:.3f}, the average NPC overall x{mixed:.3f}.")
 
 
 def main():
