@@ -95,7 +95,8 @@ final class SwarmShapes {
             boolean firefly = InsectSwarm.colonyHas(owner, WildKind.FIREFLY);
             for (LivingEntity e : seen) {
                 // Marked through walls while the scout watches (fireflies leave a glow for 30 s).
-                if (e instanceof SparringNinja || e instanceof Player || e instanceof net.minecraft.world.entity.monster.Enemy) {
+                if ((e instanceof SparringNinja || e instanceof Player || e instanceof net.minecraft.world.entity.monster.Enemy)
+                        && JutsuEffects.isTarget(owner, e)) { // your own side isn't marked
                     e.addEffect(new MobEffectInstance(MobEffects.GLOWING, firefly ? 600 : 30, 0, false, false));
                 }
             }
