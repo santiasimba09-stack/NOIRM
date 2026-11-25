@@ -180,6 +180,7 @@ public final class CommandGuide {
                 .add("species", "/noirm aburame species <kikaichu|kidaichu|shokaichu|rinkaichu|kochu>", "/noirm aburame species kidaichu", true)
                 .add("bug", "/noirm aburame bug <kind>", "/noirm aburame bug firefly", true)
                 .add("strain", "/noirm aburame strain <kind>", "/noirm aburame strain scarab", true)
+                .add("incoming", "/noirm aburame incoming <water|fire|lightning|wind>", "/noirm aburame incoming water", true)
                 .add("generation", "/noirm aburame generation [count]", "/noirm aburame generation 5", true);
         section("spawn")
                 .add("ninja", "/noirm spawn ninja <clan> [tails] [strength]", "/noirm spawn ninja uchiha 0 40", true)

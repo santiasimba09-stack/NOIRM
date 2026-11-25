@@ -335,6 +335,10 @@ add("message.noirm.colony.crew_scout", "%s sends a scout swarm ahead.", "%s env√
 add("message.noirm.colony.crew_draw", "%s's insects draw the poison out of you.", "Los insectos de %s te sacan el veneno.")
 
 
+add("command.noirm.aburame.incoming", "A %s jutsu flies at you.", "Un jutsu de %s vuela hacia ti.")
+add("help.noirm.aburame.incoming", "a jutsu projectile flies at you (try a wall, a dome or Devour)", "un jutsu vuela hacia ti (prueba un muro, una c√∫pula o Devorar)")
+
+
 def main():
     for code, idx in (("en_us", 0), ("es_es", 1), ("es_mx", 1)):
         p = os.path.join(LANG, code + ".json")

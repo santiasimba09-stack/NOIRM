@@ -3623,5 +3623,7 @@
   "message.noirm.colony.trial_pass": "%s nods: \"Because you respected even the smallest.\" You are a Clan Master's equal.",
   "message.noirm.colony.trial_careless": "%s: \"You won, but you threw your insects away.\"",
   "message.noirm.colony.crew_scout": "%s sends a scout swarm ahead.",
-  "message.noirm.colony.crew_draw": "%s's insects draw the poison out of you."
+  "message.noirm.colony.crew_draw": "%s's insects draw the poison out of you.",
+  "command.noirm.aburame.incoming": "A %s jutsu flies at you.",
+  "help.noirm.aburame.incoming": "a jutsu projectile flies at you (try a wall, a dome or Devour)"
 }

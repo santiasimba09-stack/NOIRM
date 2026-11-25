@@ -82,6 +82,10 @@ public final class AburameCommand {
                         .then(Commands.argument("kind", StringArgumentType.word())
                                 .suggests((c, b) -> SharedSuggestionProvider.suggest(Arrays.stream(WildKind.collection()).map(WildKind::key), b))
                                 .executes(ctx -> strain(ctx.getSource(), StringArgumentType.getString(ctx, "kind")))))
+                .then(Commands.literal("incoming").requires(s -> s.hasPermission(Cmd.CHEATS))
+                        .then(Commands.argument("nature", StringArgumentType.word())
+                                .suggests((c, b) -> SharedSuggestionProvider.suggest(java.util.List.of("water", "fire", "lightning", "wind"), b))
+                                .executes(ctx -> incoming(ctx.getSource(), StringArgumentType.getString(ctx, "nature")))))
                 .then(Commands.literal("generation").requires(s -> s.hasPermission(Cmd.CHEATS))
                         .executes(ctx -> generation(ctx.getSource(), 1))
                         .then(Commands.argument("count", IntegerArgumentType.integer(1, 100))
@@ -204,6 +208,23 @@ public final class AburameCommand {
         c.strains().add(k.key());
         Colony.changed(Cmd.player(source));
         return Cmd.ok(source, "message.noirm.colony.jar_strain");
+    }
+
+    /** A jutsu projectile flies at you from 12 blocks ahead (to try a wall, a dome or Devour). */
+    private static int incoming(CommandSourceStack source, String natureKey) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        com.noirm.clan.Nature nature = java.util.Arrays.stream(com.noirm.clan.Nature.values())
+                .filter(n -> n.getSerializedName().equals(natureKey)).findFirst().orElse(com.noirm.clan.Nature.WATER);
+        com.noirm.jutsu.JutsuProjectile proj = com.noirm.registry.NoirmEntities.JUTSU_PROJECTILE.get().create(source.getLevel());
+        if (proj == null) {
+            return 0;
+        }
+        net.minecraft.world.phys.Vec3 at = Cmd.inFront(source, 12).add(0, 1.4, 0);
+        proj.configure(nature, 0.6f, 6f, 0.4f, 0f, 0f, nature == com.noirm.clan.Nature.FIRE ? 3 : 0);
+        proj.setPos(at.x, at.y, at.z);
+        proj.setDeltaMovement(player.getEyePosition().subtract(at).normalize().scale(0.6));
+        source.getLevel().addFreshEntity(proj);
+        return Cmd.ok(source, "command.noirm.aburame.incoming", natureKey);
     }
 
     private static int generation(CommandSourceStack source, int n) throws CommandSyntaxException {

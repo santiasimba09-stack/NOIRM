@@ -3623,5 +3623,7 @@
   "message.noirm.colony.trial_pass": "%s asiente: \"Porque respetaste incluso a los más pequeños.\" Estás a la altura de un maestro del clan.",
   "message.noirm.colony.trial_careless": "%s: \"Ganaste, pero desperdiciaste tus insectos.\"",
   "message.noirm.colony.crew_scout": "%s envía un enjambre explorador por delante.",
-  "message.noirm.colony.crew_draw": "Los insectos de %s te sacan el veneno."
+  "message.noirm.colony.crew_draw": "Los insectos de %s te sacan el veneno.",
+  "command.noirm.aburame.incoming": "Un jutsu de %s vuela hacia ti.",
+  "help.noirm.aburame.incoming": "un jutsu vuela hacia ti (prueba un muro, una cúpula o Devorar)"
 }

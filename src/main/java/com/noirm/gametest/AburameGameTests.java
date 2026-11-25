@@ -568,7 +568,7 @@ public final class AburameGameTests {
         Zombie b = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 2.5f, 2f, 2.5f);
         ItemStack gloves = new ItemStack(AburameRegistry.ABURAME_GLOVES.get());
         gloves.getOrCreateTag().putBoolean(AburameGlovesItem.WORN, true);
-        p.getInventory().add(gloves);
+        p.getInventory().setItem(9, gloves); // in the bag, not in hand (hands stay bare)
         for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
             if (p.getInventory().getItem(i).is(AburameRegistry.ABURAME_GLOVES.get())) {
                 gloves = p.getInventory().getItem(i); // the inventory keeps its own copy
