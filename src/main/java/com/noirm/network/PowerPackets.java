@@ -151,7 +151,8 @@ public final class PowerPackets {
                              int mangekyoLeft, int mangekyoRight, float mangekyoStrain, int susanooStage,
                              boolean meditating, float natureEnergy,
                              com.noirm.arts.ArtsSync arts, List<com.noirm.workshop.JutsuDesign> creations,
-                             com.noirm.traits.ProfileSync profile, com.noirm.hound.HoundPackets.HoundSync hound) {
+                             com.noirm.traits.ProfileSync profile, com.noirm.hound.HoundPackets.HoundSync hound,
+                             com.noirm.aburame.ColonyPackets.ColonySync colony) {
         /** {@link #mangekyoFlags} bits. */
         public static final int MS = 1, MS_ETERNAL = 2, MS_TRANSPLANTED = 4, MS_BLIND = 8;
 
@@ -216,7 +217,7 @@ public final class PowerPackets {
                     eyes.strain(), com.noirm.dojutsu.Susanoo.stage(player),
                     data.senjutsu().isMeditating(), data.senjutsu().natureEnergy(),
                     com.noirm.arts.ArtsSync.of(data), data.creations().list(), com.noirm.traits.ProfileSync.of(data),
-                    com.noirm.hound.HoundPackets.HoundSync.of(player, data));
+                    com.noirm.hound.HoundPackets.HoundSync.of(player, data), com.noirm.aburame.ColonyPackets.ColonySync.of(player, data));
         }
 
         public void encode(FriendlyByteBuf buf) {
@@ -262,6 +263,7 @@ public final class PowerPackets {
             buf.writeCollection(creations, (b, d) -> d.encode(b));
             profile.encode(buf);
             hound.encode(buf);
+            colony.encode(buf);
         }
 
         public static SyncPowers decode(FriendlyByteBuf buf) {
@@ -278,7 +280,8 @@ public final class PowerPackets {
                     buf.readVarInt(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readByte(), buf.readFloat(), buf.readByte(),
                     buf.readBoolean(), buf.readFloat(),
                     com.noirm.arts.ArtsSync.decode(buf), buf.readList(com.noirm.workshop.JutsuDesign::decode),
-                    com.noirm.traits.ProfileSync.decode(buf), com.noirm.hound.HoundPackets.HoundSync.decode(buf));
+                    com.noirm.traits.ProfileSync.decode(buf), com.noirm.hound.HoundPackets.HoundSync.decode(buf),
+                    com.noirm.aburame.ColonyPackets.ColonySync.decode(buf));
         }
 
         public void handle(Supplier<NetworkEvent.Context> context) {

@@ -243,6 +243,9 @@ class NinjaFightGoal extends Goal {
             CombatSystem.setGuard(ninja, false);
         }
         reactToOpponent(target, distance);
+        if (com.noirm.aburame.AburameFightGoal.tick(ninja, target, distance)) {
+            return; // an Aburame fights at range, with insects (docs/ABURAME.md, 2.11)
+        }
 
         // Badly hurt crew mates back off to recover, guard up, and only throw jutsu from range.
         if (com.noirm.ally.AllyMind.shouldRetreat(ninja)) {

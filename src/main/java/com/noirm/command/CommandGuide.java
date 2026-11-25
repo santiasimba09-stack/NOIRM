@@ -169,6 +169,18 @@ public final class CommandGuide {
                 .add("bond", "/noirm hound bond <0-100>", "/noirm hound bond 80", true)
                 .add("xp", "/noirm hound xp <amount>", "/noirm hound xp 200", true)
                 .add("remove", "/noirm hound remove", "/noirm hound remove", true);
+        section("aburame")
+                .add("status", "/noirm aburame", "/noirm aburame", false)
+                .add("recall", "/noirm aburame recall", "/noirm aburame recall", false)
+                .add("grant", "/noirm aburame grant [rinkaichu]", "/noirm aburame grant", true)
+                .add("set", "/noirm aburame set <count> [species]", "/noirm aburame set 20000 kikaichu", true)
+                .add("rank", "/noirm aburame rank <nestling|genin|chunin|jonin|clan_master|living_hive>", "/noirm aburame rank chunin", true)
+                .add("vigour", "/noirm aburame vigour <0-100>", "/noirm aburame vigour 90", true)
+                .add("adapt", "/noirm aburame adapt <fire|explosion|lightning|cold|poison|wind> <0-40>", "/noirm aburame adapt fire 20", true)
+                .add("species", "/noirm aburame species <kikaichu|kidaichu|shokaichu|rinkaichu|kochu>", "/noirm aburame species kidaichu", true)
+                .add("bug", "/noirm aburame bug <kind>", "/noirm aburame bug firefly", true)
+                .add("strain", "/noirm aburame strain <kind>", "/noirm aburame strain scarab", true)
+                .add("generation", "/noirm aburame generation [count]", "/noirm aburame generation 5", true);
         section("spawn")
                 .add("ninja", "/noirm spawn ninja <clan> [tails] [strength]", "/noirm spawn ninja uchiha 0 40", true)
                 .add("rogue", "/noirm spawn rogue [strength]", "/noirm spawn rogue 30", true)

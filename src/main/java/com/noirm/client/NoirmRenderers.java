@@ -41,5 +41,10 @@ public final class NoirmRenderers {
         event.registerEntityRenderer(NoirmEntities.NATURE_SPIRIT.get(), net.minecraft.client.renderer.entity.VexRenderer::new);
         // The Inuzuka ninja hound: our own jointed model, one per growth stage (tools/houndgen, docs/INUZUKA.md).
         event.registerEntityRenderer(com.noirm.hound.HoundRegistry.NINJA_HOUND.get(), com.noirm.client.hound.HoundRenderer::new);
+        // The Aburame (docs/ABURAME.md): swarms of voxel beetles, insect clones, the Giant Insect, wild insects.
+        event.registerEntityRenderer(com.noirm.aburame.AburameRegistry.INSECT_SWARM.get(), com.noirm.client.aburame.InsectSwarmRenderer::new);
+        event.registerEntityRenderer(com.noirm.aburame.AburameRegistry.INSECT_CLONE.get(), com.noirm.client.aburame.AburameRenderers.Clone::new);
+        event.registerEntityRenderer(com.noirm.aburame.AburameRegistry.GIANT_INSECT.get(), com.noirm.client.aburame.AburameRenderers.Giant::new);
+        event.registerEntityRenderer(com.noirm.aburame.AburameRegistry.WILD_INSECT.get(), com.noirm.client.aburame.AburameRenderers.Wild::new);
     }
 }

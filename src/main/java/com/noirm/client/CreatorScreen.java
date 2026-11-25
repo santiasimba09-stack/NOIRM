@@ -838,6 +838,7 @@ public class CreatorScreen extends Screen implements NoirmStyled {
             g.drawString(font, cut(k, w / 2), x + w - Math.min(w / 2, font.width(k)), y, 0xFFD06AD0, false);
         }
         y += 12;
+        y = com.noirm.client.aburame.NestCard.draw(g, font, x, y, w, roll); // an Aburame's nest (docs/ABURAME.md)
         // The flavour line only gets the room the perks and talents leave (two lines at most).
         int bottom = vy + vh - 4;
         int perkRows = (roll.perks().size() + 1) / 2;

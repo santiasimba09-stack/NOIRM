@@ -236,6 +236,9 @@ public final class CombatSystem {
      * in -1..1, strafe positive = left). No direction = step back.
      */
     public static boolean requestDodge(LivingEntity entity, float forward, float strafe) {
+        if (com.noirm.aburame.Drain.isDrained(entity)) {
+            return false; // eaten down to nothing: no strength left to dodge (docs/ABURAME.md)
+        }
         CombatState state = CombatStates.get(entity);
         if (state.clinchedBy != null) {
             return escapeClinch(entity, state);
@@ -954,6 +957,7 @@ public final class CombatSystem {
             applyHit(attacker, state, target, state.move, first);
             hits++;
         }
+        com.noirm.aburame.Swarms.meleeSweep(attacker, range, hit.damage()); // a swing thins any enemy swarm in its path
         if (hits > 0 && sweeping > 0 && attacker.level() instanceof net.minecraft.server.level.ServerLevel level) {
             Vec3 front = attacker.position().add(Vec3.directionFromRotation(0, attacker.getYHeadRot()).scale(1.2))
                     .add(0, attacker.getBbHeight() * 0.55, 0);

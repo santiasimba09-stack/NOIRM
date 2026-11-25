@@ -101,6 +101,12 @@ public final class NoirmSounds {
     // Ambience (client-side loops, see com.noirm.client.AmbienceLoops)
     public static final RegistryObject<SoundEvent> AMBIENT_VILLAGE = register("ambient.village");
     public static final RegistryObject<SoundEvent> AMBIENT_SANCTUARY = register("ambient.sanctuary");
+    // Aburame insects (docs/ABURAME.md): the swarm's rasping hum (two sizes, loops), the cling itch, a burst, a recall
+    public static final RegistryObject<SoundEvent> INSECT_HUM_SMALL = register("insect.hum_small");
+    public static final RegistryObject<SoundEvent> INSECT_HUM_LARGE = register("insect.hum_large");
+    public static final RegistryObject<SoundEvent> INSECT_ITCH = register("insect.itch");
+    public static final RegistryObject<SoundEvent> INSECT_BURST = register("insect.burst");
+    public static final RegistryObject<SoundEvent> INSECT_RECALL = register("insect.recall");
 
     /** What a jutsu of some nature is doing: being cast, landing, or held (a sustained sound). */
     public enum Kind { CAST, IMPACT, SUSTAIN }

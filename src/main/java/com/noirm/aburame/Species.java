@@ -50,6 +50,34 @@ public enum Species {
         return null;
     }
 
+    /** Shōkaichū come from an Aburame master after this many scouting flights. */
+    public static final int SHOKAICHU_SCOUTS = 10;
+    /** Kidaichū need this much chakra control. */
+    public static final float KIDAICHU_CONTROL = 30f;
+
+    /**
+     * Why {@code player} can't take on {@code species} now (a lang key), or null if they can. Slots open
+     * with hive rank ({@link HiveRank#speciesSlots}); kikaichū are free (and rinkaichū come only by birth).
+     */
+    public static String addBlocker(net.minecraft.world.entity.player.Player player, ColonyData colony, Species species) {
+        if (colony.hosts(species)) {
+            return "message.noirm.colony.species_already";
+        }
+        long extra = colony.hosted().stream().filter(s -> s != KIKAICHU && s != RINKAICHU).count();
+        int slots = colony.rank().speciesSlots() - 1;
+        if (extra >= slots) {
+            return "message.noirm.colony.species_no_slot";
+        }
+        float control = com.noirm.player.ShinobiCapability.get(player).map(d -> d.getControl()).orElse(0f);
+        return switch (species) {
+            case KIDAICHU -> control < KIDAICHU_CONTROL ? "message.noirm.colony.species_control" : null;
+            case SHOKAICHU -> colony.scoutsFlown() < SHOKAICHU_SCOUTS ? "message.noirm.colony.species_scouts" : null;
+            case RINKAICHU -> "message.noirm.colony.species_birth";
+            case KOCHU -> "message.noirm.colony.species_root"; // the Root path comes later (owner's decision 3)
+            default -> null;
+        };
+    }
+
     public static Species of(int ordinal) {
         Species[] all = values();
         return all[Math.max(0, Math.min(all.length - 1, ordinal))];
