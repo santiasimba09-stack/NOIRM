@@ -34,6 +34,14 @@ public final class ClanOutfits {
     public static final float SAMURAI_CHANCE = 0.07f;
     /** Chance a rogue is dressed as an assassin (black suit, half mask or hood). */
     public static final float ASSASSIN_CHANCE = 0.2f;
+    /** Chance a rogue (not an assassin) wears the black cloud cloak, often with the straw hat and its strips. */
+    public static final float CLOUD_CLOAK_CHANCE = 0.12f;
+    /** Chance a clan ninja has their clan's crest cape sewn onto their chest piece (Uchiha, Senju, Uzumaki). */
+    public static final float CLAN_CAPE_CHANCE = 0.12f;
+    /** Chance an ANBU-style patrol wears the new uniform (grey vest, arm guards, the spiral mark) instead of the plated vest. */
+    public static final float ANBU_UNIFORM_CHANCE = 0.5f;
+    /** Chance an ANBU-style patrol wears the mask pushed aside (face showing). */
+    public static final float MASK_ASIDE_CHANCE = 0.15f;
 
     private static final EquipmentSlot[] ARMOR = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
@@ -64,6 +72,44 @@ public final class ClanOutfits {
             outfit = samurai(random);
         }
         wear(ninja, outfit);
+        sewClanCape(ninja, clan.id(), random);
+    }
+
+    /**
+     * Sometimes sews the clan's crest cape onto a ninja's chest piece (Uchiha, Senju and Uzumaki
+     * have crest capes; anyone else rarely wears a plain dyed one).
+     */
+    public static void sewClanCape(SparringNinja ninja, String clanId, RandomSource r) {
+        ItemStack chest = ninja.getItemBySlot(EquipmentSlot.CHEST);
+        if (chest.isEmpty() || chest.getItem() instanceof CapeItem || !Drapes.sewnCape(chest).isEmpty()) {
+            return;
+        }
+        Item cape = switch (clanId) {
+            case "uchiha" -> NoirmGear.UCHIHA_CAPE.get();
+            case "senju" -> NoirmGear.SENJU_CAPE.get();
+            case "uzumaki" -> NoirmGear.UZUMAKI_CAPE.get();
+            default -> null;
+        };
+        float chance = CLAN_CAPE_CHANCE;
+        if (cape == null) {
+            cape = NoirmGear.CAPE.get();
+            chance = 0.03f;
+        }
+        if (r.nextFloat() < chance) {
+            sew(chest, new ItemStack(cape), r);
+        }
+    }
+
+    /** Sews {@code cape} onto {@code chest} (a dyeable cape gets one of a few muted colours). */
+    public static void sew(ItemStack chest, ItemStack cape, RandomSource r) {
+        if (chest.isEmpty()) {
+            return;
+        }
+        if (cape.getItem() instanceof net.minecraft.world.item.DyeableLeatherItem dye) {
+            int[] muted = {0x8E1C20, 0x2A3550, 0x3A4A2E, 0x5A4632, 0x2B2B30, 0x6B5A7A};
+            dye.setColor(cape, muted[r.nextInt(muted.length)]);
+        }
+        chest.getOrCreateTag().put(Drapes.SEWN_CAPE, cape.save(new net.minecraft.nbt.CompoundTag()));
     }
 
     private static void wear(SparringNinja ninja, Map<EquipmentSlot, Item> outfit) {
@@ -83,15 +129,23 @@ public final class ClanOutfits {
         if (r.nextFloat() < ASSASSIN_CHANCE) {
             return assassin(r);
         }
+        if (r.nextFloat() < CLOUD_CLOAK_CHANCE) { // the black cloak with red clouds, often under the straw hat
+            out.put(EquipmentSlot.CHEST, NoirmGear.CLOUD_CLOAK.get());
+            out.put(EquipmentSlot.HEAD, r.nextFloat() < 0.6f ? NoirmGear.KASA_HAT.get() : NoirmGear.FOREHEAD_PROTECTOR_SLASHED.get());
+            out.put(EquipmentSlot.FEET, r.nextFloat() < 0.5f ? NoirmGear.WARAJI.get() : NoirmGear.JIKA_TABI.get());
+            return out;
+        }
         float cloak = r.nextFloat();
-        out.put(EquipmentSlot.CHEST, cloak < 0.55f ? NoirmGear.ROGUE_CLOAK.get()
-                : cloak < 0.8f ? NoirmGear.TATTERED_CLOAK.get() : NoirmGear.TRAVEL_CLOAK.get());
+        out.put(EquipmentSlot.CHEST, cloak < 0.45f ? NoirmGear.ROGUE_CLOAK.get()
+                : cloak < 0.65f ? NoirmGear.TATTERED_CLOAK.get()
+                : cloak < 0.8f ? NoirmGear.HOODED_CLOAK.get() : NoirmGear.TRAVEL_CLOAK.get());
         float head = r.nextFloat();
         Item hat = head < 0.32f ? NoirmGear.FOREHEAD_PROTECTOR_SLASHED.get()
                 : head < 0.5f ? NoirmGear.STRAW_HAT.get()
                 : head < 0.62f ? NoirmGear.ONI_MASK.get()
                 : head < 0.7f ? NoirmGear.CLOTH_MASK.get()
-                : head < 0.82f ? NoirmGear.TATTERED_HOOD.get()
+                : head < 0.76f ? NoirmGear.TATTERED_HOOD.get()
+                : head < 0.82f ? NoirmGear.TRAVEL_HOOD.get()
                 : head < 0.9f ? NoirmGear.HALF_MASK.get()
                 : null;
         if (hat != null) {
@@ -152,9 +206,20 @@ public final class ClanOutfits {
         }
         ninja.setGearRolled(true);
         wear(ninja, outfit);
-        if (outfit.get(EquipmentSlot.CHEST) == NoirmGear.ANBU_ARMOR.get()) {
+        if (isAnbu(outfit.get(EquipmentSlot.CHEST))) {
             com.noirm.weapon.NinjaArsenal.armAnbu(ninja, r); // ANBU carry the short tantō
+            if (r.nextFloat() < MASK_ASIDE_CHANCE) {
+                MaskItem.setAside(ninja.getItemBySlot(EquipmentSlot.HEAD), true); // off duty: the mask pushed aside
+            }
         }
+        if ("KAGE".equals(role) && r.nextFloat() < 0.6f) {
+            sew(ninja.getItemBySlot(EquipmentSlot.CHEST), new ItemStack(NoirmGear.KAGE_CAPE.get()), r); // the Kage's cape over the robe
+        }
+    }
+
+    /** The two ANBU chest pieces (the plated vest and the uniform). */
+    public static boolean isAnbu(Item chest) {
+        return chest == NoirmGear.ANBU_ARMOR.get() || chest == NoirmGear.ANBU_UNIFORM.get();
     }
 
     /** What a village resident of {@code role} ("GUARD", "PATROL", "KAGE") wears; empty for other roles. */
@@ -164,15 +229,17 @@ public final class ClanOutfits {
             case "KAGE" -> {
                 out.put(EquipmentSlot.HEAD, kageHat(palette));
                 out.put(EquipmentSlot.CHEST, NoirmGear.KAGE_ROBE.get());
-                out.put(EquipmentSlot.LEGS, NoirmGear.SHINOBI_PANTS.get());
+                out.put(EquipmentSlot.LEGS, r.nextFloat() < 0.6f ? NoirmGear.KAGE_ROBE_HEM.get() : NoirmGear.SHINOBI_PANTS.get());
                 out.put(EquipmentSlot.FEET, NoirmGear.SHINOBI_SANDALS.get());
             }
             case "PATROL" -> {
                 if (r.nextFloat() < ANBU_PATROL_CHANCE) {
                     var masks = NoirmGear.animalMasks();
                     out.put(EquipmentSlot.HEAD, masks.get(r.nextInt(masks.size())).get());
-                    out.put(EquipmentSlot.CHEST, NoirmGear.ANBU_ARMOR.get());
-                    out.put(EquipmentSlot.LEGS, r.nextFloat() < 0.3f ? NoirmGear.ASSASSIN_PANTS.get() : NoirmGear.SHINOBI_PANTS.get());
+                    boolean uniform = r.nextFloat() < ANBU_UNIFORM_CHANCE;
+                    out.put(EquipmentSlot.CHEST, uniform ? NoirmGear.ANBU_UNIFORM.get() : NoirmGear.ANBU_ARMOR.get());
+                    out.put(EquipmentSlot.LEGS, uniform ? NoirmGear.ANBU_PANTS.get()
+                            : r.nextFloat() < 0.3f ? NoirmGear.ASSASSIN_PANTS.get() : NoirmGear.SHINOBI_PANTS.get());
                     out.put(EquipmentSlot.FEET, r.nextFloat() < 0.4f ? NoirmGear.JIKA_TABI.get() : NoirmGear.TABI.get());
                 } else {
                     guard(out, palette, r);
@@ -238,13 +305,25 @@ public final class ClanOutfits {
         }
         switch (clanId) {
             case "senju" -> {
-                if (r.nextFloat() < 0.6f) {
+                float chest = r.nextFloat();
+                if (chest < 0.5f) { // the old red battle armour
                     out.put(EquipmentSlot.CHEST, NoirmGear.SENJU_CHESTPLATE.get());
                     if (r.nextFloat() < 0.6f) {
                         out.put(EquipmentSlot.LEGS, NoirmGear.SENJU_LEGGINGS.get());
                     }
                     out.put(EquipmentSlot.FEET, r.nextFloat() < 0.6f ? NoirmGear.SENJU_BOOTS.get() : NoirmGear.SHINOBI_SANDALS.get());
-                } else if (r.nextFloat() < 0.4f) {
+                } else if (chest < 0.78f) { // the red-plated warring-states armour: chest and shoulder plates, thigh plates
+                    out.put(EquipmentSlot.CHEST, NoirmGear.SENJU_PLATE_ARMOR.get());
+                    if (r.nextFloat() < 0.75f) {
+                        out.put(EquipmentSlot.LEGS, NoirmGear.SENJU_THIGH_PLATES.get());
+                    }
+                    out.put(EquipmentSlot.FEET, r.nextFloat() < 0.5f ? NoirmGear.SENJU_BOOTS.get() : NoirmGear.JIKA_TABI.get());
+                } else if (chest < 0.92f) {
+                    out.put(EquipmentSlot.CHEST, NoirmGear.SENJU_ROBE.get()); // the lighter robe
+                    if (r.nextFloat() < 0.5f) {
+                        out.put(EquipmentSlot.LEGS, NoirmGear.HAKAMA.get());
+                    }
+                } else {
                     out.put(EquipmentSlot.CHEST, NoirmGear.FLAK_VEST.get());
                 }
                 if (r.nextFloat() < 0.4f) {
@@ -252,11 +331,20 @@ public final class ClanOutfits {
                 }
             }
             case "uchiha" -> {
-                if (r.nextFloat() < 0.1f) {
+                float chest = r.nextFloat();
+                if (chest < 0.1f) {
                     out.put(EquipmentSlot.CHEST, NoirmGear.BATTLE_KIMONO.get()); // dressed for war
                     out.put(EquipmentSlot.LEGS, NoirmGear.BATTLE_HAKAMA.get());
+                } else if (chest < 0.22f) { // the warring-states armour, red over black
+                    out.put(EquipmentSlot.CHEST, NoirmGear.UCHIHA_WAR_ARMOR.get());
+                    out.put(EquipmentSlot.LEGS, NoirmGear.UCHIHA_WAR_TASSETS.get());
+                } else if (chest < 0.62f) {
+                    out.put(EquipmentSlot.CHEST, NoirmGear.UCHIHA_COLLAR_SHIRT.get()); // the high collar and the fan
+                    if (r.nextFloat() < 0.6f) {
+                        out.put(EquipmentSlot.LEGS, NoirmGear.UCHIHA_PANTS.get());
+                    }
                 } else {
-                    if (r.nextFloat() < 0.7f) {
+                    if (r.nextFloat() < 0.75f) {
                         out.put(EquipmentSlot.CHEST, NoirmGear.UCHIHA_TUNIC.get());
                     }
                     if (r.nextFloat() < 0.6f) {
@@ -268,11 +356,15 @@ public final class ClanOutfits {
                 }
             }
             case "hyuga" -> {
-                if (r.nextFloat() < 0.1f) {
+                float chest = r.nextFloat();
+                if (chest < 0.1f) {
                     out.put(EquipmentSlot.CHEST, NoirmGear.FORMAL_ROBE.get()); // the main house's formal robe
                     out.put(EquipmentSlot.LEGS, NoirmGear.FORMAL_ROBE_HEM.get());
+                } else if (chest < 0.35f) {
+                    out.put(EquipmentSlot.CHEST, NoirmGear.HYUGA_GOWN.get()); // the long pale robe
+                    out.put(EquipmentSlot.LEGS, NoirmGear.HYUGA_GOWN_HEM.get());
                 } else {
-                    if (r.nextFloat() < 0.7f) {
+                    if (r.nextFloat() < 0.75f) {
                         out.put(EquipmentSlot.CHEST, NoirmGear.HYUGA_ROBE.get());
                     }
                     if (r.nextFloat() < 0.65f) {
@@ -284,16 +376,97 @@ public final class ClanOutfits {
                 }
             }
             case "uzumaki" -> {
-                if (r.nextFloat() < 0.65f) {
+                float chest = r.nextFloat();
+                if (chest < 0.35f) {
                     out.put(EquipmentSlot.CHEST, NoirmGear.UZUMAKI_COAT.get());
+                } else if (chest < 0.65f) {
+                    out.put(EquipmentSlot.CHEST, NoirmGear.UZUMAKI_VEST.get()); // the swirl on the back
+                } else if (chest < 0.85f) {
+                    out.put(EquipmentSlot.CHEST, NoirmGear.UZUSHIO_ROBE.get()); // the old Whirlpool robe
+                    if (r.nextFloat() < 0.7f) {
+                        out.put(EquipmentSlot.LEGS, NoirmGear.UZUSHIO_ROBE_HEM.get());
+                    }
                 }
-                if (r.nextFloat() < 0.5f) {
+                if (!out.containsKey(EquipmentSlot.LEGS) && r.nextFloat() < 0.5f) {
                     out.put(EquipmentSlot.LEGS, NoirmGear.SHINOBI_PANTS.get());
                 }
                 if (r.nextFloat() < 0.4f) {
                     out.put(EquipmentSlot.HEAD, headband(r, 1, 0, 1));
                 }
             }
+            case "aburame" -> {
+                // long high-collared coats that hide the face, hoods, round dark glasses
+                out.put(EquipmentSlot.CHEST, r.nextFloat() < 0.6f ? NoirmGear.ABURAME_COAT.get() : NoirmGear.ABURAME_FIELD_COAT.get());
+                float head = r.nextFloat();
+                out.put(EquipmentSlot.HEAD, head < 0.4f ? NoirmGear.ABURAME_HOOD.get() : head < 0.9f ? NoirmGear.ABURAME_GLASSES.get()
+                        : NoirmGear.FOREHEAD_PROTECTOR_NAVY.get());
+                out.put(EquipmentSlot.LEGS, NoirmGear.SHINOBI_PANTS.get());
+            }
+            case "nara" -> clanPiece(out, r, NoirmGear.NARA_VEST.get(), 0.65f, NoirmGear.SHINOBI_PANTS.get());
+            case "akimichi" -> clanPiece(out, r, NoirmGear.AKIMICHI_ARMOR.get(), 0.65f, NoirmGear.SHINOBI_PANTS.get());
+            case "inuzuka" -> clanPiece(out, r, NoirmGear.INUZUKA_FUR_COAT.get(), 0.6f, NoirmGear.SHINOBI_PANTS.get());
+            case "yamanaka" -> clanPiece(out, r, NoirmGear.YAMANAKA_WRAP.get(), 0.65f, NoirmGear.BANDAGE_LEGGINGS.get());
+            case "kaguya" -> clanPiece(out, r, NoirmGear.KAGUYA_ROBE.get(), 0.65f, NoirmGear.KAGUYA_ROBE_HEM.get());
+            case "hoshigaki" -> clanPiece(out, r, r.nextFloat() < 0.6f ? NoirmGear.HOSHIGAKI_CLOAK.get() : NoirmGear.VEST_MIST.get(), 0.7f,
+                    NoirmGear.SHINOBI_PANTS.get());
+            case "chinoike" -> clanPiece(out, r, NoirmGear.CHINOIKE_ROBE.get(), 0.65f, NoirmGear.HAKAMA.get());
+            case "yotsuki" -> clanPiece(out, r, NoirmGear.YOTSUKI_HARNESS.get(), 0.65f, NoirmGear.SHINOBI_PANTS.get());
+            case "kazekage" -> clanPiece(out, r, r.nextFloat() < 0.6f ? NoirmGear.SAND_GOURD.get() : NoirmGear.VEST_SAND.get(), 0.7f,
+                    NoirmGear.SHINOBI_PANTS.get());
+            case "shimura" -> {
+                clanPiece(out, r, NoirmGear.ROOT_ROBE.get(), 0.65f, NoirmGear.SHINOBI_PANTS.get());
+                if (r.nextFloat() < 0.12f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.ANBU_MASK.get()); // Root wears the mask too
+                }
+            }
+            case "might" -> {
+                if (r.nextFloat() < 0.75f) { // the green jumpsuit and the orange leg warmers
+                    out.put(EquipmentSlot.CHEST, r.nextFloat() < 0.4f ? NoirmGear.FLAK_VEST.get() : NoirmGear.MIGHT_JUMPSUIT.get());
+                    out.put(EquipmentSlot.LEGS, NoirmGear.MIGHT_JUMPSUIT_LEGS.get());
+                    out.put(EquipmentSlot.FEET, NoirmGear.MIGHT_LEG_WARMERS.get());
+                }
+                if (r.nextFloat() < 0.5f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.FOREHEAD_PROTECTOR_RED.get());
+                }
+            }
+            case "yuki", "hozuki" -> {
+                if (r.nextFloat() < ("yuki".equals(clanId) ? 0.45f : 0.2f)) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.HUNTER_MASK.get()); // the Mist's hunter mask
+                } else if (r.nextFloat() < 0.4f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.FOREHEAD_PROTECTOR_MIST.get());
+                }
+                float chest = r.nextFloat();
+                out.put(EquipmentSlot.CHEST, chest < 0.4f ? NoirmGear.VEST_MIST.get()
+                        : "yuki".equals(clanId) && chest < 0.75f ? NoirmGear.KIMONO_INDIGO.get() : NoirmGear.HAORI.get());
+                out.put(EquipmentSlot.LEGS, NoirmGear.SHINOBI_PANTS.get());
+            }
+            case "hatake" -> {
+                if (r.nextFloat() < 0.6f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.CLOTH_MASK.get()); // the cloth mask over the lower face
+                }
+                clanPiece(out, r, r.nextFloat() < 0.6f ? NoirmGear.FLAK_VEST.get() : NoirmGear.JONIN_VEST.get(), 0.6f, NoirmGear.SHINOBI_PANTS.get());
+            }
+            case "sarutobi" -> {
+                if (r.nextFloat() < 0.4f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.HEAD_WRAP_PROTECTOR.get());
+                }
+                clanPiece(out, r, r.nextFloat() < 0.5f ? NoirmGear.FLAK_VEST.get() : NoirmGear.BATTLE_KIMONO.get(), 0.65f,
+                        NoirmGear.SHINOBI_PANTS.get());
+            }
+            case "kurama" -> clanPiece(out, r, NoirmGear.KIMONO_PLUM.get(), 0.6f, NoirmGear.KIMONO_PLUM_HEM.get());
+            case "fuma", "iburi", "kamizuru" -> {
+                if (r.nextFloat() < 0.35f) {
+                    out.put(EquipmentSlot.HEAD, NoirmGear.TRAVEL_HOOD.get());
+                }
+                clanPiece(out, r, NoirmGear.HOODED_CLOAK.get(), 0.5f, NoirmGear.SHINOBI_PANTS.get());
+            }
+            case "kurogane" -> {
+                if (r.nextFloat() < 0.6f) {
+                    return samurai(r);
+                }
+                clanPiece(out, r, NoirmGear.HAORI.get(), 0.6f, NoirmGear.HAKAMA.get());
+            }
+            case "jugo" -> clanPiece(out, r, NoirmGear.HAORI.get(), 0.55f, NoirmGear.SHINOBI_PANTS.get());
             default -> {
                 if (r.nextFloat() < 0.05f) {
                     out.put(EquipmentSlot.HEAD, NoirmGear.ANBU_MASK.get());
@@ -356,6 +529,25 @@ public final class ClanOutfits {
             out.put(EquipmentSlot.FEET, NoirmGear.SHINOBI_SANDALS.get());
         }
         return out;
+    }
+
+    /**
+     * A clan's own piece ({@code chest}, with {@code legs} under it) at {@code chance}, otherwise a
+     * flak vest now and then; plus sometimes a forehead protector.
+     */
+    private static void clanPiece(Map<EquipmentSlot, Item> out, RandomSource r, Item chest, float chance, Item legs) {
+        if (r.nextFloat() < chance) {
+            out.put(EquipmentSlot.CHEST, chest);
+            if (r.nextFloat() < 0.7f) {
+                out.put(EquipmentSlot.LEGS, legs);
+            }
+        } else if (r.nextFloat() < 0.4f) {
+            out.put(EquipmentSlot.CHEST, NoirmGear.FLAK_VEST.get());
+            out.put(EquipmentSlot.LEGS, NoirmGear.SHINOBI_PANTS.get());
+        }
+        if (!out.containsKey(EquipmentSlot.HEAD) && r.nextFloat() < 0.35f) {
+            out.put(EquipmentSlot.HEAD, headband(r, 2, 1, 1));
+        }
     }
 
     /** A forehead protector, weighted navy : black : red. */

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "B B"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:orange_wool"
+    },
+    "B": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "item": "noirm:might_leg_warmers"
+  }
+}

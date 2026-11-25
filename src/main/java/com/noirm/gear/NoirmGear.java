@@ -43,7 +43,7 @@ public final class NoirmGear {
     public static final RegistryObject<Item> UZUMAKI_COAT = piece("uzumaki_coat", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "uzumaki");
     // Village forces
     public static final RegistryObject<Item> FLAK_VEST = piece("flak_vest", GearMaterial.FLAK, ArmorItem.Type.CHESTPLATE, "flak");
-    public static final RegistryObject<Item> ANBU_MASK = piece("anbu_mask", GearMaterial.ANBU, ArmorItem.Type.HELMET, "anbu_mask", GearPerk.HIDE_NAME, 0f);
+    public static final RegistryObject<Item> ANBU_MASK = animalMask("anbu_mask", GearMaterial.ANBU);
     public static final RegistryObject<Item> ANBU_ARMOR = piece("anbu_armor", GearMaterial.ANBU, ArmorItem.Type.CHESTPLATE, "anbu");
     // Everyday
     public static final RegistryObject<Item> SHINOBI_PANTS = piece("shinobi_pants", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "shinobi");
@@ -51,10 +51,10 @@ public final class NoirmGear {
 
     // ---- The second set (textures: tools/gear/more_gear.py) ----
     // Masks: hide your name tag.
-    public static final RegistryObject<Item> MASK_WOLF = mask("mask_wolf", GearMaterial.PORCELAIN);
-    public static final RegistryObject<Item> MASK_HAWK = mask("mask_hawk", GearMaterial.PORCELAIN);
-    public static final RegistryObject<Item> MASK_BOAR = mask("mask_boar", GearMaterial.PORCELAIN);
-    public static final RegistryObject<Item> MASK_CRANE = mask("mask_crane", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_WOLF = animalMask("mask_wolf", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_HAWK = animalMask("mask_hawk", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_BOAR = animalMask("mask_boar", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_CRANE = animalMask("mask_crane", GearMaterial.PORCELAIN);
     public static final RegistryObject<Item> ONI_MASK = mask("oni_mask", GearMaterial.PORCELAIN);
     public static final RegistryObject<Item> CLOTH_MASK = mask("cloth_mask", GearMaterial.CLOTH);
     // Headgear
@@ -134,9 +134,88 @@ public final class NoirmGear {
     public static final RegistryObject<Item> BATTLE_KIMONO = piece("battle_kimono", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "battle_kimono");
     public static final RegistryObject<Item> BATTLE_HAKAMA = piece("battle_hakama", GearMaterial.PADDED, ArmorItem.Type.LEGGINGS, "battle_kimono");
 
+    // ---- v0.3 clan wear (textures, drapes, icons, recipes: tools/gear/clan_wear.py; 3D cloth: Drapes) ----
+    // Uchiha: the high-collar shirt with the fan crest and arm warmers; the warring-states armour
+    public static final RegistryObject<Item> UCHIHA_COLLAR_SHIRT = piece("uchiha_collar_shirt", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "uchiha_collar_shirt");
+    public static final RegistryObject<Item> UCHIHA_WAR_ARMOR = piece("uchiha_war_armor", GearMaterial.SENJU, ArmorItem.Type.CHESTPLATE, "uchiha_war_armor");
+    public static final RegistryObject<Item> UCHIHA_WAR_TASSETS = piece("uchiha_war_tassets", GearMaterial.SENJU, ArmorItem.Type.LEGGINGS, "uchiha_war_armor");
+    // Uzumaki: the swirl vest, the Uzushio robe
+    public static final RegistryObject<Item> UZUMAKI_VEST = piece("uzumaki_vest", GearMaterial.FLAK, ArmorItem.Type.CHESTPLATE, "uzumaki_vest");
+    public static final RegistryObject<Item> UZUSHIO_ROBE = piece("uzushio_robe", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "uzushio_robe");
+    public static final RegistryObject<Item> UZUSHIO_ROBE_HEM = piece("uzushio_robe_hem", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "uzushio_robe");
+    // Aburame: long high-collared coats, the hood with dark glasses, the glasses
+    public static final RegistryObject<Item> ABURAME_COAT = piece("aburame_coat", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "aburame_coat");
+    public static final RegistryObject<Item> ABURAME_FIELD_COAT = piece("aburame_field_coat", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "aburame_field_coat");
+    public static final RegistryObject<Item> ABURAME_HOOD = mask("aburame_hood", GearMaterial.CLOTH);
+    public static final RegistryObject<Item> ABURAME_GLASSES = piece("aburame_glasses", GearMaterial.CLOTH, ArmorItem.Type.HELMET, "aburame_glasses");
+    // Senju: red-plated warring-states armour (chest and shoulder plates, thigh plates) and a lighter robe
+    public static final RegistryObject<Item> SENJU_PLATE_ARMOR = piece("senju_plate_armor", GearMaterial.SENJU, ArmorItem.Type.CHESTPLATE, "senju_plate_armor");
+    public static final RegistryObject<Item> SENJU_THIGH_PLATES = piece("senju_thigh_plates", GearMaterial.SENJU, ArmorItem.Type.LEGGINGS, "senju_plate_armor");
+    public static final RegistryObject<Item> SENJU_ROBE = piece("senju_robe", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "senju_robe");
+    // The other clans: one recognisable piece each
+    public static final RegistryObject<Item> HYUGA_GOWN = piece("hyuga_gown", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "hyuga_gown");
+    public static final RegistryObject<Item> HYUGA_GOWN_HEM = piece("hyuga_gown_hem", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "hyuga_gown");
+    public static final RegistryObject<Item> NARA_VEST = piece("nara_vest", GearMaterial.JONIN, ArmorItem.Type.CHESTPLATE, "nara_vest");
+    public static final RegistryObject<Item> AKIMICHI_ARMOR = piece("akimichi_armor", GearMaterial.JONIN, ArmorItem.Type.CHESTPLATE, "akimichi_armor");
+    public static final RegistryObject<Item> INUZUKA_FUR_COAT = piece("inuzuka_fur_coat", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "inuzuka_fur_coat");
+    public static final RegistryObject<Item> KAGUYA_ROBE = piece("kaguya_robe", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "kaguya_robe");
+    public static final RegistryObject<Item> KAGUYA_ROBE_HEM = piece("kaguya_robe_hem", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "kaguya_robe");
+    public static final RegistryObject<Item> HOSHIGAKI_CLOAK = piece("hoshigaki_cloak", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "hoshigaki_cloak", GearPerk.SWIFT, 0f);
+    public static final RegistryObject<Item> YAMANAKA_WRAP = piece("yamanaka_wrap", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "yamanaka_wrap");
+    public static final RegistryObject<Item> MIGHT_JUMPSUIT = piece("might_jumpsuit", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "might_jumpsuit");
+    public static final RegistryObject<Item> MIGHT_JUMPSUIT_LEGS = piece("might_jumpsuit_legs", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "might_jumpsuit");
+    public static final RegistryObject<Item> MIGHT_LEG_WARMERS = piece("might_leg_warmers", GearMaterial.CLOTH, ArmorItem.Type.BOOTS, "might_leg_warmers");
+    public static final RegistryObject<Item> HUNTER_MASK = animalMask("hunter_mask", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> SAND_GOURD = piece("sand_gourd", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "sand_gourd");
+    public static final RegistryObject<Item> ROOT_ROBE = piece("root_robe", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "root_robe");
+    public static final RegistryObject<Item> CHINOIKE_ROBE = piece("chinoike_robe", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "chinoike_robe");
+    public static final RegistryObject<Item> YOTSUKI_HARNESS = piece("yotsuki_harness", GearMaterial.FLAK, ArmorItem.Type.CHESTPLATE, "yotsuki_harness");
+    // Capes: worn alone or sewn onto a chest piece (CapeSewingRecipe)
+    public static final RegistryObject<Item> CAPE = cape("cape", true);
+    public static final RegistryObject<Item> KAGE_CAPE = cape("kage_cape", false);
+    public static final RegistryObject<Item> TRAVEL_CAPE = cape("travel_cape", false);
+    public static final RegistryObject<Item> ROGUE_CAPE = cape("rogue_cape", false);
+    public static final RegistryObject<Item> UCHIHA_CAPE = cape("uchiha_cape", false);
+    public static final RegistryObject<Item> SENJU_CAPE = cape("senju_cape", false);
+    public static final RegistryObject<Item> UZUMAKI_CAPE = cape("uzumaki_cape", false);
+    // The cloud cloak (long, black, high collar, red clouds) and the straw travel hat with strips; a hooded travel cloak
+    public static final RegistryObject<Item> CLOUD_CLOAK = piece("cloud_cloak", GearMaterial.PADDED, ArmorItem.Type.CHESTPLATE, "cloud_cloak", GearPerk.SWIFT, 0f);
+    public static final RegistryObject<Item> KASA_HAT = piece("kasa_hat", GearMaterial.CLOTH, ArmorItem.Type.HELMET, "kasa_hat");
+    public static final RegistryObject<Item> HOODED_CLOAK = piece("hooded_cloak", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "hooded_cloak", GearPerk.SWIFT, 0f);
+    public static final RegistryObject<Item> TRAVEL_HOOD = mask("travel_hood", GearMaterial.CLOTH);
+    // ANBU: four more animal masks, the uniform (grey vest, arm guards, the spiral mark) and trousers
+    public static final RegistryObject<Item> MASK_CAT = animalMask("mask_cat", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_FOX = animalMask("mask_fox", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_DOG = animalMask("mask_dog", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> MASK_BIRD = animalMask("mask_bird", GearMaterial.PORCELAIN);
+    public static final RegistryObject<Item> ANBU_UNIFORM = piece("anbu_uniform", GearMaterial.ANBU, ArmorItem.Type.CHESTPLATE, "anbu_uniform");
+    public static final RegistryObject<Item> ANBU_PANTS = piece("anbu_pants", GearMaterial.ANBU, ArmorItem.Type.LEGGINGS, "anbu_uniform");
+    // Gowns and robes that flow over the legs
+    public static final RegistryObject<Item> KAGE_ROBE_HEM = piece("kage_robe_hem", GearMaterial.ROBE, ArmorItem.Type.LEGGINGS, "kage_robe_hem");
+    public static final RegistryObject<Item> PRIESTESS_GOWN = piece("priestess_gown", GearMaterial.ROBE, ArmorItem.Type.CHESTPLATE, "priestess_gown");
+    public static final RegistryObject<Item> PRIESTESS_GOWN_HEM = piece("priestess_gown_hem", GearMaterial.ROBE, ArmorItem.Type.LEGGINGS, "priestess_gown");
+    public static final RegistryObject<Item> MEDIC_GOWN = piece("medic_gown", GearMaterial.CLOTH, ArmorItem.Type.CHESTPLATE, "medic_gown", GearPerk.MENDING, 0f);
+    public static final RegistryObject<Item> MEDIC_GOWN_HEM = piece("medic_gown_hem", GearMaterial.CLOTH, ArmorItem.Type.LEGGINGS, "medic_gown");
+
+    /** The cape-sewing recipe (a chest piece + a cape). */
+    private static final DeferredRegister<net.minecraft.world.item.crafting.RecipeSerializer<?>> SERIALIZERS =
+            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Noirm.MOD_ID);
+    public static final RegistryObject<net.minecraft.world.item.crafting.RecipeSerializer<CapeSewingRecipe>> CAPE_SEWING =
+            SERIALIZERS.register("cape_sewing", () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(CapeSewingRecipe::new));
+
+    /** The v0.3 clan wear, in creative-tab order. */
+    public static List<RegistryObject<Item>> clanWear() {
+        return ALL.subList(ALL.indexOf(UCHIHA_COLLAR_SHIRT), ALL.indexOf(MEDIC_GOWN_HEM) + 1);
+    }
+
+    /** Every cape (they can be sewn onto chest pieces). */
+    public static List<RegistryObject<Item>> capes() {
+        return List.of(CAPE, KAGE_CAPE, TRAVEL_CAPE, ROGUE_CAPE, UCHIHA_CAPE, SENJU_CAPE, UZUMAKI_CAPE);
+    }
+
     /** The armor wave's pieces (round 16), in creative-tab order. */
     public static List<RegistryObject<Item>> armorWave() {
-        return ALL.subList(ALL.indexOf(MESH_SHIRT), ALL.size());
+        return ALL.subList(ALL.indexOf(MESH_SHIRT), ALL.indexOf(BATTLE_HAKAMA) + 1);
     }
 
     /** The samurai-style set (helmet, chest, legs, feet). */
@@ -146,7 +225,7 @@ public final class NoirmGear {
 
     /** The animal masks ANBU-style patrols wear (the first one is the original ANBU mask). */
     public static List<RegistryObject<Item>> animalMasks() {
-        return List.of(ANBU_MASK, MASK_WOLF, MASK_HAWK, MASK_BOAR, MASK_CRANE);
+        return List.of(ANBU_MASK, MASK_WOLF, MASK_HAWK, MASK_BOAR, MASK_CRANE, MASK_CAT, MASK_FOX, MASK_DOG, MASK_BIRD);
     }
 
     private NoirmGear() {}
@@ -165,12 +244,27 @@ public final class NoirmGear {
         return piece(id, material, ArmorItem.Type.HELMET, id, GearPerk.HIDE_NAME, 0f);
     }
 
+    /** A face mask that can be worn pushed aside ({@link MaskItem}). */
+    private static RegistryObject<Item> animalMask(String id, GearMaterial material) {
+        RegistryObject<Item> item = ITEMS.register(id, () -> new MaskItem(material, id, new Item.Properties()));
+        ALL.add(item);
+        return item;
+    }
+
+    private static RegistryObject<Item> cape(String id, boolean dyeable) {
+        RegistryObject<Item> item = ITEMS.register(id, () -> dyeable ? new CapeItem.Dyeable(GearMaterial.CLOTH, id, new Item.Properties())
+                : new CapeItem(GearMaterial.CLOTH, id, new Item.Properties()));
+        ALL.add(item);
+        return item;
+    }
+
     private static RegistryObject<Item> heavy(String id, ArmorItem.Type type) {
         return piece(id, GearMaterial.SAMURAI, type, id, GearPerk.HEAVY, GearPerks.HEAVY_SLOW);
     }
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
+        SERIALIZERS.register(modBus);
     }
 
     @SubscribeEvent

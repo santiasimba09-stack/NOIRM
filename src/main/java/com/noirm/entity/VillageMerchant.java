@@ -398,6 +398,14 @@ public class VillageMerchant extends AbstractVillager {
                 offers.add(sell(10, new ItemStack(NoirmItems.SEALING_SCROLL.get()), 4));
                 offers.add(sell(1, new ItemStack(Items.ARROW, 16), 16));
                 offers.add(sell(6, new ItemStack(NoirmGear.FLAK_VEST.get()), 4));
+                // the tailor's shelf (v0.3 clan wear): capes, a hood, the straw hat, gowns
+                offers.add(sell(3, new ItemStack(NoirmGear.CAPE.get()), 4));
+                offers.add(sell(4, new ItemStack(NoirmGear.TRAVEL_CAPE.get()), 4));
+                offers.add(sell(5, new ItemStack(NoirmGear.HOODED_CLOAK.get()), 3));
+                offers.add(sell(3, new ItemStack(NoirmGear.TRAVEL_HOOD.get()), 4));
+                offers.add(sell(3, new ItemStack(NoirmGear.KASA_HAT.get()), 4));
+                offers.add(sell(6, new ItemStack(NoirmGear.MEDIC_GOWN.get()), 3));
+                offers.add(sell(5, new ItemStack(NoirmGear.PRIESTESS_GOWN.get()), 3));
                 offers.add(buy(new ItemStack(Items.WHEAT, 20)));
                 offers.add(buy(new ItemStack(Items.IRON_INGOT, 4)));
                 offers.add(buy(new ItemStack(Items.COAL, 12)));

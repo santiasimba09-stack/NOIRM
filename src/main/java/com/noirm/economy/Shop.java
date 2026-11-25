@@ -62,6 +62,10 @@ public final class Shop {
         EXTRAS.put(NinjaWeapons.CHAKRA_BLADE, 1500);
         EXTRAS.put(NoirmGear.ANBU_MASK, 400);
         EXTRAS.put(NoirmGear.ANBU_ARMOR, 900);
+        EXTRAS.put(NoirmGear.ANBU_UNIFORM, 900);
+        EXTRAS.put(NoirmGear.ANBU_PANTS, 500);
+        EXTRAS.put(NoirmGear.KAGE_CAPE, 1200);
+        EXTRAS.put(NoirmGear.KAGE_ROBE_HEM, 1500);
         EXTRAS.put(NoirmGear.KAGE_HAT_RED, 1500);
         EXTRAS.put(NoirmGear.KAGE_ROBE, 3000);
     }

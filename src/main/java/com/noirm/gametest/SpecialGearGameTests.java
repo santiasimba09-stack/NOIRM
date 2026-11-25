@@ -123,7 +123,7 @@ public final class SpecialGearGameTests {
         Set<Item> masks = new HashSet<>();
         for (int i = 0; i < 200; i++) {
             Map<EquipmentSlot, Item> patrol = ClanOutfits.residentOutfit("PATROL", VillagePalette.MIST, r);
-            if (patrol.get(EquipmentSlot.CHEST) == NoirmGear.ANBU_ARMOR.get()) {
+            if (ClanOutfits.isAnbu(patrol.get(EquipmentSlot.CHEST))) {
                 anbu++;
                 masks.add(patrol.get(EquipmentSlot.HEAD));
             }
@@ -136,6 +136,7 @@ public final class SpecialGearGameTests {
                 rogueCloaks++;
             } else {
                 helper.assertTrue(chest == NoirmGear.TRAVEL_CLOAK.get() || chest == NoirmGear.TATTERED_CLOAK.get()
+                        || chest == NoirmGear.CLOUD_CLOAK.get() || chest == NoirmGear.HOODED_CLOAK.get()
                         || chest == NoirmGear.ASSASSIN_SUIT.get() || chest == NoirmGear.BANDOLIER.get(),
                         "rogues wear cloaks (or dress as assassins), got " + chest);
             }

@@ -68,7 +68,8 @@ public final class GearGameTests {
             if (any) {
                 dressed++;
             }
-            if (ninja.getItemBySlot(EquipmentSlot.CHEST).is(NoirmGear.SENJU_CHESTPLATE.get())) {
+            if (ninja.getItemBySlot(EquipmentSlot.CHEST).is(NoirmGear.SENJU_CHESTPLATE.get())
+                    || ninja.getItemBySlot(EquipmentSlot.CHEST).is(NoirmGear.SENJU_PLATE_ARMOR.get())) {
                 redArmor++;
             }
             helper.assertTrue(NinjaLook.folder(ninja.outfit()).equals("senju"), "a Senju look: " + ninja.outfit());
