@@ -210,6 +210,36 @@ Forge persistent data; they don't strain.
 - Not yet: a medical-ninja ally doing the surgery; taking a player's eyes; Kamui's own dimension;
   Susanoo as a real model.
 
+## 4d. Crew mates' eyes and fused natures (owner: "give them a Sharingan; make them fuse natures")
+
+**A Sharingan for a crew mate** (`ally/CrewEyes`, saved with the ninja: tomoe in its `Sharingan` tag,
+growth and "implanted" in `AllyState`):
+
+| Way | What it takes |
+|---|---|
+| Transplant | Sneak + right-click them holding a `sharingan_eye`, click the red 眼 chip on their screen (shown when you carry an eye they'd take), or `/noirm crew eye`. Safe, but costs them 4 health and a few seconds dazed; +10 respect. Refused: a Hyūga (the Byakugan rejects it), a Mangekyō eye (too much), an eye no stronger than theirs, respect below 20 |
+| Awakening (Uchiha crew mates) | Seeing you or another crew mate hit below 30% health by an enemy, within 24 blocks and in sight: a dormant Uchiha crew mate opens 1 tomoe. (The old NPC routes still work: badly hurt themselves in a fight, a comrade falling) |
+| Growth | Open eyes grow like yours: +1/s fighting a real foe and +2 per hit landed (× the foe's strength, 0.5–3; the dummy teaches nothing), +60 when a comrade is near death (once per 30 s). 300 for 2 tomoe (brings the genjutsu), 1,200 for 3 |
+
+A transplanted eye on someone not born Uchiha is always open (like a player's implant) and stays when
+their clan is re-applied.
+
+**Fusion lessons** (`ally/CrewFusion`): a crew mate fuses a combined nature from parts they own, even
+when you lack it (you guide, they work). Natures tab → a combined nature with a green **+** → "Guide the
+fusion", or `/noirm crew fuse <nature>`. Only the elemental mixes; one fusion at a time (beside a normal
+lesson). Base 4 Minecraft days of full-pace study (Train/Meditate, half pace otherwise, ×2 while you
+meditate with them, paused beyond 16 blocks); Dust ×1.5. By who they are:
+
+| They are | Pace | Example |
+|---|---|---|
+| Gifted (their clan has a knack) | ×3 | Senju → Wood, Yuki → Ice, Kazekage → Magnet |
+| Born with both parts | ×1 | an Uzumaki (Wind + Water) → Ice |
+| A part was taught to them | ×0.35 | a Hozuki taught Earth → Wood |
+| Missing a part | can't start | |
+
+At the end: the nature at their weakest part's strength (at most 1.0) and its starting jutsu; kept
+across clan re-joins like a taught nature.
+
 ## 5. Awakening (owner: Resolve, identity-based)
 
 - **Resolve** (0–100, visible in combat mode) builds from damage dealt (more against stronger

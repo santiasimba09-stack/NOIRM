@@ -32,7 +32,9 @@ public final class AllyPackets {
 
     /** How a nature looks from the ally screen's Natures tab (one per {@link com.noirm.clan.Nature}). */
     public static final int NATURE_OWNED = 0, NATURE_LEARNING = 1, NATURE_TEACHABLE = 2, NATURE_NEEDS_PARTS = 3,
-            NATURE_YOU_LACK = 4, NATURE_BUSY = 5, NATURE_QUEUED = 6;
+            NATURE_YOU_LACK = 4, NATURE_BUSY = 5, NATURE_QUEUED = 6,
+            /** You lack it, but they could fuse it themselves ({@link CrewFusion}); they're fusing it now. */
+            NATURE_FUSABLE = 7, NATURE_FUSING = 8;
     /** Lesson pace flags (bits of {@link Lesson#flags}). */
     public static final int PACE_STUDYING = 1, PACE_NEAR = 2, PACE_FIGHTING = 4, PACE_MASTERED = 8, PACE_TEACHER_HAS = 16, PACE_TOGETHER = 32;
 
@@ -42,7 +44,7 @@ public final class AllyPackets {
      */
     public record Extra(String clan, float chakra, float maxChakra, String weaponStyle, int range, int jutsuUse,
                         byte[] natureStatus, float[] natureAffinity, Lesson lesson, int occupation, int behaviour,
-                        byte[] queue, int pendingJutsu, float natureEnergy, int carried) {
+                        byte[] queue, int pendingJutsu, float natureEnergy, int carried, Fusion fusion, Eyes eyes) {
         static Extra of(ServerPlayer player, SparringNinja ally) {
             com.noirm.clan.Nature[] all = com.noirm.clan.Nature.values();
             byte[] status = new byte[all.length];
@@ -59,6 +61,11 @@ public final class AllyPackets {
                     case "screen.noirm.ally.nature.why.busy" -> NATURE_BUSY;
                     default -> NATURE_YOU_LACK;
                 });
+                if (nature == state.fusion()) {
+                    status[nature.ordinal()] = NATURE_FUSING;
+                } else if (status[nature.ordinal()] == NATURE_YOU_LACK && CrewFusion.blocker(ally, nature).isEmpty()) {
+                    status[nature.ordinal()] = NATURE_FUSABLE;
+                }
             }
             NatureTeaching.Pace pace = NatureTeaching.pace(ally, player);
             int flags = (pace.studying() ? PACE_STUDYING : 0) | (pace.near() ? PACE_NEAR : 0) | (pace.fighting() ? PACE_FIGHTING : 0)
@@ -75,7 +82,8 @@ public final class AllyPackets {
             int carried = state.carried().stream().mapToInt(net.minecraft.world.item.ItemStack::getCount).sum();
             return new Extra(clan, ally.chakra(), ally.maxChakra(), weapon == null ? "" : weapon.getPath(),
                     state.range().ordinal(), state.jutsuUse().ordinal(), status, affinity, lesson, state.occupation().ordinal(),
-                    state.behaviour().ordinal(), queue, state.pendingJutsu().size(), state.natureEnergy(), carried);
+                    state.behaviour().ordinal(), queue, state.pendingJutsu().size(), state.natureEnergy(), carried,
+                    Fusion.of(player, ally), Eyes.of(player, ally));
         }
 
         void encode(FriendlyByteBuf buf) {
@@ -101,6 +109,11 @@ public final class AllyPackets {
             buf.writeVarInt(pendingJutsu);
             buf.writeFloat(natureEnergy);
             buf.writeVarInt(carried);
+            fusion.encode(buf);
+            buf.writeVarInt(eyes.stage());
+            buf.writeFloat(eyes.progress());
+            buf.writeBoolean(eyes.implanted());
+            buf.writeVarInt(eyes.offer());
         }
 
         static Extra decode(FriendlyByteBuf buf) {
@@ -117,7 +130,72 @@ public final class AllyPackets {
             }
             Lesson lesson = new Lesson(buf.readVarInt() - 1, buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readVarInt());
             return new Extra(clan, chakra, max, weapon, range, use, status, affinity, lesson, buf.readVarInt(), buf.readVarInt(),
-                    buf.readByteArray(64), buf.readVarInt(), buf.readFloat(), buf.readVarInt());
+                    buf.readByteArray(64), buf.readVarInt(), buf.readFloat(), buf.readVarInt(), Fusion.decode(buf),
+                    new Eyes(buf.readVarInt(), buf.readFloat(), buf.readBoolean(), buf.readVarInt()));
+        }
+    }
+
+    /** Fusion pace flags (bits of {@link Fusion#flags}). */
+    public static final int FUSE_STUDYING = 1, FUSE_NEAR = 2, FUSE_TOGETHER = 4;
+
+    /**
+     * Their fusion lesson ({@link CrewFusion}): which nature (-1 = none), seconds done and needed, the
+     * pace and why ({@code FUSE_*} bits), and for every nature how they'd come to it
+     * ({@link CrewFusion.Kind} ordinal: none, gifted, born, taught).
+     */
+    public record Fusion(int nature, float seconds, float needed, float rate, int flags, byte[] kinds) {
+        public static final Fusion NONE = new Fusion(-1, 0f, 1f, 0f, 0, new byte[0]);
+
+        static Fusion of(ServerPlayer player, SparringNinja ally) {
+            com.noirm.clan.Nature[] all = com.noirm.clan.Nature.values();
+            byte[] kinds = new byte[all.length];
+            for (com.noirm.clan.Nature nature : all) {
+                kinds[nature.ordinal()] = (byte) CrewFusion.kind(ally, nature).ordinal();
+            }
+            com.noirm.clan.Nature current = ally.allyState().fusion();
+            if (current == null) {
+                return new Fusion(-1, 0f, 1f, 0f, 0, kinds);
+            }
+            CrewFusion.Pace pace = CrewFusion.pace(ally, player);
+            int flags = (pace.studying() ? FUSE_STUDYING : 0) | (pace.near() ? FUSE_NEAR : 0) | (pace.together() ? FUSE_TOGETHER : 0);
+            return new Fusion(current.ordinal(), ally.allyState().fusionSeconds(), CrewFusion.secondsNeeded(current), pace.rate(), flags, kinds);
+        }
+
+        public boolean has(int flag) {
+            return (flags & flag) != 0;
+        }
+
+        /** How they'd come to {@code nature}. */
+        public CrewFusion.Kind kind(com.noirm.clan.Nature nature) {
+            int k = nature.ordinal() < kinds.length ? kinds[nature.ordinal()] : 0;
+            return CrewFusion.Kind.values()[Math.max(0, Math.min(CrewFusion.Kind.values().length - 1, k))];
+        }
+
+        void encode(FriendlyByteBuf buf) {
+            buf.writeVarInt(nature + 1);
+            buf.writeFloat(seconds);
+            buf.writeFloat(needed);
+            buf.writeFloat(rate);
+            buf.writeVarInt(flags);
+            buf.writeByteArray(kinds);
+        }
+
+        static Fusion decode(FriendlyByteBuf buf) {
+            return new Fusion(buf.readVarInt() - 1, buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readVarInt(), buf.readByteArray(64));
+        }
+    }
+
+    /**
+     * Their Sharingan ({@link CrewEyes}): tomoe (0 = none), the share of the way to the next, whether it
+     * was transplanted, and the tomoe of an eye you carry that they'd take (0 = none).
+     */
+    public record Eyes(int stage, float progress, boolean implanted, int offer) {
+        public static final Eyes NONE = new Eyes(0, 0f, false, 0);
+
+        static Eyes of(ServerPlayer player, SparringNinja ally) {
+            net.minecraft.world.item.ItemStack eye = CrewEyes.eyeFor(player, ally);
+            com.noirm.dojutsu.MangekyoTransplant.EyeInfo info = eye.isEmpty() ? null : com.noirm.dojutsu.MangekyoTransplant.EyeInfo.of(eye);
+            return new Eyes(ally.activeSharinganStage(), CrewEyes.progress(ally), ally.allyState().eyeImplanted(), info == null ? 0 : info.stage());
         }
     }
 
@@ -322,7 +400,7 @@ public final class AllyPackets {
     }
 
     public enum Action { ORDER, STYLE, OUTFIT_NEXT, OUTFIT_PREV, TEACH, DISMISS, EQUIP, NATURE_TEACH, NATURE_STOP, RANGE, JUTSU_USE,
-        OCCUPATION, BEHAVIOUR, TEACH_ALL, NATURE_DEQUEUE, COME, FALL_BACK }
+        OCCUPATION, BEHAVIOUR, TEACH_ALL, NATURE_DEQUEUE, COME, FALL_BACK, FUSE_START, FUSE_STOP, GIVE_EYE }
 
     public record Command(int entityId, Action action, String arg) {
         public void encode(FriendlyByteBuf buf) {
@@ -421,6 +499,21 @@ public final class AllyPackets {
                 }
             }
             case NATURE_STOP -> NatureTeaching.stop(ally);
+            case FUSE_START -> {
+                com.noirm.clan.Nature nature = AllyState.nature(arg);
+                if (nature != null) {
+                    CrewFusion.start(player, ally, nature);
+                }
+            }
+            case FUSE_STOP -> CrewFusion.stop(ally);
+            case GIVE_EYE -> {
+                net.minecraft.world.item.ItemStack eye = CrewEyes.eyeFor(player, ally);
+                if (eye.isEmpty()) {
+                    player.displayClientMessage(Component.translatable("message.noirm.crew_eye.none", ally.getDisplayName()), true);
+                } else {
+                    CrewEyes.giveEye(player, ally, eye);
+                }
+            }
             case RANGE -> {
                 for (Tactics.Range range : Tactics.Range.values()) {
                     if (range.name().equals(arg)) {

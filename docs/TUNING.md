@@ -112,6 +112,15 @@ Ranges are "safe" in the sense that nothing breaks; outside them, things still w
 | Breeding speed | same class → `BREED_SHARE_PER_MIN`, `BREED_FLAT_PER_MIN` | Share of the colony and flat insects added per minute | — | code (rebuild) |
 | An insect technique's cost | `data/noirm/jutsu/aburame/<jutsu>.json` → `hiden.insects`, `hiden.share` | Insects it spends (flat, or a share of the colony) | — | data + `/reload` |
 
+### Crew mates' eyes and fusions
+
+| Wish | File and key | What the number means | Safe range | Apply |
+|---|---|---|---|---|
+| Fusion lessons faster or slower | constants at the top of `com.noirm.ally.CrewFusion` → `FUSION_SECONDS` (4800), `APTITUDE_RATE` (3), `BORN_RATE` (1), `TAUGHT_RATE` (0.35) | Seconds of full-pace study (1,200 = a Minecraft day); pace multipliers by who they are | — | code (rebuild) |
+| Which clan is gifted for which mix | same class → `APTITUDE` | Clan id → natures (Senju → Wood…) | — | code (rebuild) |
+| A crew mate's Sharingan grows faster | constants at the top of `com.noirm.ally.CrewEyes` → `FIGHT_XP_PER_SECOND`, `HIT_XP`, `DANGER_XP`; tomoe thresholds `Sharingan.STAGE_XP` | Growth points (300 for 2 tomoe, 1,200 for 3) | — | code (rebuild) |
+| When "near death" awakens an Uchiha crew mate | `CrewEyes.DANGER_HEALTH` (0.3), `DANGER_RANGE` (24) | Share of max health; blocks | — | code (rebuild) |
+
 ## Telling Claude what you changed
 
 If a number you found feels right, tell Claude the file, the key and the new value so it goes into the mod for
