@@ -62,3 +62,18 @@ Quick runner: one system's tests in 2–3 min instead of about 4 min × 2 for th
 - **Got in the way:** the full suite is flaky on a reused test world (different tests each run); comparing with
   `main` needed a separate worktree run. Suggestion: `test.sh --fresh` that moves `run/world` aside. The wiki page
   for the canon quote refused automated fetches.
+
+### Shukaku, the One-Tail (2026-11-26, branch `claude/wave-shukaku`)
+| Who | Tokens | Tool calls | Time | Notes |
+|---|---|---|---|---|
+| One session, no helpers | not visible to itself | ~140 | ~2 h | first test of the three creature skills |
+
+- **Quick runner:** 4 targeted runs (24, 4, 21 and 21 tests); one red (an idle-habit test: vanilla ticks goals every
+  other tick, fixed by timing by game time), the rest green.
+- **Full suite:** twice in a row, 639/639 both times (one earlier full run was stopped when the design changed).
+- **Client smoke:** twice (biped and quadruped); no renderer errors; the AI Shukaku fought and killed the test player.
+- **Rework:** one jaw-sign bug (caught in the offline preview) and one **design rework**: the owner's reference notes
+  arrived mid-task (hunched quadruped, plated tail, swirls), so the model, gait, idles and AI were rebuilt once.
+- **Helped:** `preview.py --anim` (caught the jaw sign and checked the rear-up in seconds), `bbmodel.py`, the
+  quick runner, the design skill's brief template. **Got in the way:** the skills had no rule for autonomous runs
+  ("wait for the owner") and didn't ask about the gait up front; both now fixed in the skills.
