@@ -2,7 +2,7 @@
 
 Newest first. One entry per working session or PR.
 
-## 2026-11-26 — the Hyūga wave (branch `claude/wave-hyuga`, draft PR; protocol 41)
+## 2026-11-26 — NOIRM v0.5 (= v0.22.0): the Hyūga wave (PR #6; protocol 41)
 
 The owner's brief (`docs/WAVE_HYUGA.md`): make the Hyūga the Leaf's strongest clan without building anything new.
 - **Clan perks:** TAI +3 → +5, SPD +1 → +2, CTL +6 → +12, Gentle Fist +100% → +150%, CTL/taijutsu training → +100%,
