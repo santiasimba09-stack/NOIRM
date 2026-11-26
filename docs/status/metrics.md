@@ -46,3 +46,19 @@ Quick runner: one system's tests in 2–3 min instead of about 4 min × 2 for th
   (both picked 39, the merge was textually clean, so nothing flagged it). Suggestion: `protocol.py check` against the
   base branch in the merge skill. The helper also notes: squash onto the base commit hash, not the branch name
   (the branch moved under it).
+
+### The Hyūga wave (2026-11-26, branch `claude/wave-hyuga`)
+| Who | Tokens | Tool calls | Time | Notes |
+|---|---|---|---|---|
+| One session, no helpers | not visible to itself | ~110 | ~2.5 h | numbers/data wave + two mid-wave additions (Gentle Fist arts, Byakugan lag) |
+
+- **Quick runner:** 3 targeted runs (37, 26 and 6 tests), all green.
+- **Full suite:** 3 complete runs plus one first half (4 suite passes in all): 627/629, 632/635, 633/635 on a fresh world; every failure passed on
+  a targeted rerun (flamebombsticksandburns failed only on the reused `run/world`, fixed by a fresh world). A
+  4th pass was stopped at the owner's request ("deliver the new version") — the "twice green in a row" bar was **not** met.
+- **Rework:** one compile error (a variable name clash); no red quick runs.
+- **Helped:** `test.sh <words>`, `lang.py add` (9 keys), `protocol.py`, docsec.py, the add-clan-perk skill; a game test
+  that times the x-ray scan gave a real before/after number without a GPU.
+- **Got in the way:** the full suite is flaky on a reused test world (different tests each run); comparing with
+  `main` needed a separate worktree run. Suggestion: `test.sh --fresh` that moves `run/world` aside. The wiki page
+  for the canon quote refused automated fetches.

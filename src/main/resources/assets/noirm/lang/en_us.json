@@ -3910,5 +3910,14 @@
   "message.noirm.clone.too_tired": "Too tired to hold another clone",
   "message.noirm.clone.feint": "Feint! %s struck a clone and is wide open",
   "message.noirm.clone.no_clone": "No clone of yours nearby",
-  "item.noirm.training_weights": "Training Weights"
+  "item.noirm.training_weights": "Training Weights",
+  "perk.noirm.parry_window": "Parry window %s",
+  "perk.noirm.parry_window.desc": "A longer window to parry right after raising your guard.",
+  "perk.noirm.guard": "Guard %s",
+  "perk.noirm.guard.desc": "Less damage and posture get through your guard.",
+  "message.noirm.gentle_fist.legs": "Leg points closed: they slow down",
+  "message.noirm.gentle_fist.arms": "Arm points closed: their blows weaken",
+  "message.noirm.gentle_fist.chest": "Chest points struck: their chakra pours out",
+  "message.noirm.gentle_fist.burst": "Chakra burst: their jutsu broke",
+  "message.noirm.gentle_fist.palm_parry": "Palm parry: sent it back"
 }

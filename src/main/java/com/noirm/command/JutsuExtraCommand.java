@@ -65,7 +65,7 @@ public final class JutsuExtraCommand {
                                 .then(Commands.argument("slot", IntegerArgumentType.integer(1, JutsuBook.SLOTS))
                                         .executes(ctx -> unequip(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "slot") - 1))))
                         .then(Commands.literal("mastery").requires(s -> s.hasPermission(Cmd.CHEATS))
-                                .then(Commands.literal("all").then(Commands.argument("level", IntegerArgumentType.integer(0, JutsuBook.MAX_MASTERY))
+                                .then(Commands.literal("all").then(Commands.argument("level", IntegerArgumentType.integer(0, JutsuBook.ABSOLUTE_MAX_MASTERY))
                                         .executes(ctx -> masteryAll(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "level"))))))
                         .then(Commands.literal("ready").requires(s -> s.hasPermission(Cmd.CHEATS)).executes(ctx -> ready(ctx.getSource()))))
                 .then(Commands.literal("nature").requires(s -> s.hasPermission(Cmd.CHEATS))
@@ -149,8 +149,8 @@ public final class JutsuExtraCommand {
     static int masteryAll(CommandSourceStack source, int level) throws CommandSyntaxException {
         ServerPlayer player = Cmd.player(source);
         ShinobiData data = Cmd.data(source);
-        int xp = level <= 0 ? 0 : JutsuBook.xpForLevel(level);
         for (ResourceLocation id : List.copyOf(data.jutsu().known())) {
+            int xp = level <= 0 ? 0 : JutsuBook.xpForLevel(Math.min(level, JutsuBook.maxMastery(id))); // each jutsu's own ceiling
             data.jutsu().addXp(id, xp - data.jutsu().xp(id));
             NatureSystem.checkMasteryUnlocks(player, data, id);
         }

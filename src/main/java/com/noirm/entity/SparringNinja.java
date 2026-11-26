@@ -365,7 +365,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
     }
 
     public int jutsuMastery(ResourceLocation id) {
-        return com.noirm.jutsu.JutsuBook.levelFor(jutsuXp.getOrDefault(id, 0));
+        return com.noirm.jutsu.JutsuBook.levelFor(jutsuXp.getOrDefault(id, 0), com.noirm.jutsu.JutsuBook.maxMastery(id));
     }
 
     public void addJutsuXp(ResourceLocation id, int amount) {

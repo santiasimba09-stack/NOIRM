@@ -19,9 +19,18 @@ import java.util.Set;
  */
 public final class JutsuBook {
     public static final int SLOTS = 4;
-    /** Mastery XP needed for levels 1–5. */
-    private static final int[] LEVEL_XP = {10, 30, 60, 100, 150};
-    public static final int MAX_MASTERY = LEVEL_XP.length;
+    /**
+     * Mastery XP (casts) needed for levels 1–10. Levels 1–5 are unchanged from before wave "Hyūga", so old saves keep
+     * their ★; levels 6–10 exist only for jutsu with a higher {@code max_mastery} (the Hyūga techniques) and need far
+     * more casts: ★5 = 150 casts, Lv 10 = 1150.
+     */
+    private static final int[] LEVEL_XP = {10, 30, 60, 100, 150, 250, 400, 600, 850, 1150};
+    /** The usual ceiling: a jutsu without {@code max_mastery} stops here (★5, as before). */
+    public static final int DEFAULT_MAX_MASTERY = 5;
+    /** The highest ceiling any jutsu can have ({@code "max_mastery": 10}). */
+    public static final int ABSOLUTE_MAX_MASTERY = LEVEL_XP.length;
+    /** Kept for old callers: the usual ceiling. */
+    public static final int MAX_MASTERY = DEFAULT_MAX_MASTERY;
 
     private final Map<ResourceLocation, Integer> mastery = new LinkedHashMap<>();
     private final Set<ResourceLocation> copied = new HashSet<>();
@@ -76,9 +85,15 @@ public final class JutsuBook {
         mastery.computeIfPresent(id, (k, v) -> v + amount);
     }
 
-    /** 0 (new) to {@link #MAX_MASTERY}. */
+    /** 0 (new) to the jutsu's own ceiling ({@link #maxMastery}). */
     public int masteryLevel(ResourceLocation id) {
-        return levelFor(xp(id));
+        return levelFor(xp(id), maxMastery(id));
+    }
+
+    /** A jutsu's mastery ceiling: its JSON's {@code max_mastery}, or {@link #DEFAULT_MAX_MASTERY}. */
+    public static int maxMastery(ResourceLocation id) {
+        JutsuDefinition def = id == null ? null : JutsuData.get(id);
+        return def == null ? DEFAULT_MAX_MASTERY : def.maxMastery();
     }
 
     /** XP needed to reach a mastery level (0 for level 0). */
@@ -86,9 +101,16 @@ public final class JutsuBook {
         return level <= 0 ? 0 : LEVEL_XP[Math.min(level, LEVEL_XP.length) - 1];
     }
 
+    /** The level this much XP gives a jutsu with the usual ceiling. */
     public static int levelFor(int xp) {
+        return levelFor(xp, DEFAULT_MAX_MASTERY);
+    }
+
+    /** The level this much XP gives, capped at {@code max}. */
+    public static int levelFor(int xp, int max) {
+        int cap = Math.max(0, Math.min(max, LEVEL_XP.length));
         int level = 0;
-        while (level < LEVEL_XP.length && xp >= LEVEL_XP[level]) {
+        while (level < cap && xp >= LEVEL_XP[level]) {
             level++;
         }
         return level;

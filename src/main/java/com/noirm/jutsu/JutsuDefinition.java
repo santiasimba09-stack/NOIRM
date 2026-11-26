@@ -21,13 +21,52 @@ import java.util.Optional;
  * @param rank       E–S, for display
  * @param unlock     learned automatically once another jutsu reaches a mastery level
  * @param quick      a reflex jutsu (Substitution, Body Flicker): it fires at once, skipping its hand seals
+ * @param extra      {@code chakra_free} and {@code max_mastery} (wave "Hyūga"), see {@link Extra}
  */
 public record JutsuDefinition(Optional<Nature> nature, CastType cast, String behavior, float chakraCost, int cooldown,
                               int minCharge, int maxCharge, int maxDuration, Optional<Requirement> requires,
                               boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode,
-                              boolean quick, Optional<Hiden> hiden) {
+                              boolean quick, Optional<Hiden> hiden, Extra extra) {
 
-    public static final Codec<JutsuDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
+    /** The sixteen-field form (a codec group holds at most sixteen): no extras. */
+    public JutsuDefinition(Optional<Nature> nature, CastType cast, String behavior, float chakraCost, int cooldown,
+                           int minCharge, int maxCharge, int maxDuration, Optional<Requirement> requires,
+                           boolean starter, String rank, Params params, Optional<Unlock> unlock, Optional<Mode> mode,
+                           boolean quick, Optional<Hiden> hiden) {
+        this(nature, cast, behavior, chakraCost, cooldown, minCharge, maxCharge, maxDuration, requires, starter, rank, params,
+                unlock, mode, quick, hiden, Extra.DEFAULT);
+    }
+
+    /** Lowest and highest {@code max_mastery} a jutsu can have; {@link JutsuBook#DEFAULT_MAX_MASTERY} when unset. */
+    public static final int MIN_MAX_MASTERY = 1;
+
+    /**
+     * Wave "Hyūga" (docs/WAVE_HYUGA.md).
+     *
+     * @param chakraFree a body art (the Hyūga's Gentle Fist techniques): it costs <b>no chakra</b>, needs <b>no
+     *                   Reserves</b> to unlock, its power follows the <b>Taijutsu</b> stat instead of Reserves, and the
+     *                   clan's {@code jutsu_power} perk (weak ninjutsu) doesn't apply to it
+     * @param maxMastery its mastery ceiling (default {@link JutsuBook#DEFAULT_MAX_MASTERY}, at most
+     *                   {@link JutsuBook#ABSOLUTE_MAX_MASTERY}); levels past 5 need far more casts
+     */
+    public record Extra(boolean chakraFree, int maxMastery) {
+        public static final Extra DEFAULT = new Extra(false, JutsuBook.DEFAULT_MAX_MASTERY);
+        public static final com.mojang.serialization.MapCodec<Extra> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.BOOL.optionalFieldOf("chakra_free", false).forGetter(Extra::chakraFree),
+                Codec.intRange(MIN_MAX_MASTERY, JutsuBook.ABSOLUTE_MAX_MASTERY).optionalFieldOf("max_mastery", JutsuBook.DEFAULT_MAX_MASTERY)
+                        .forGetter(Extra::maxMastery)
+        ).apply(i, Extra::new));
+    }
+
+    public boolean chakraFree() {
+        return extra.chakraFree();
+    }
+
+    public int maxMastery() {
+        return extra.maxMastery();
+    }
+
+    private static final com.mojang.serialization.MapCodec<JutsuDefinition> BASE = RecordCodecBuilder.mapCodec(i -> i.group(
             Nature.CODEC.optionalFieldOf("nature").forGetter(JutsuDefinition::nature),
             CastType.CODEC.optionalFieldOf("cast", CastType.TAP).forGetter(JutsuDefinition::cast),
             Codec.STRING.fieldOf("behavior").forGetter(JutsuDefinition::behavior),
@@ -45,6 +84,15 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
             Codec.BOOL.optionalFieldOf("quick", false).forGetter(JutsuDefinition::quick),
             Hiden.CODEC.optionalFieldOf("hiden").forGetter(JutsuDefinition::hiden)
     ).apply(i, JutsuDefinition::new));
+
+    public static final Codec<JutsuDefinition> CODEC = Codec.mapPair(BASE, Extra.MAP_CODEC)
+            .xmap(pair -> pair.getFirst().withExtra(pair.getSecond()), def -> com.mojang.datafixers.util.Pair.of(def, def.extra()))
+            .codec();
+
+    public JutsuDefinition withExtra(Extra newExtra) {
+        return new JutsuDefinition(nature, cast, behavior, chakraCost, cooldown, minCharge, maxCharge, maxDuration, requires,
+                starter, rank, params, unlock, mode, quick, hiden, newExtra);
+    }
 
     /** Whether this is an Aburame insect technique: no hand seals, castable while bound, never copied. */
     public boolean isAburame() {
@@ -135,7 +183,7 @@ public record JutsuDefinition(Optional<Nature> nature, CastType cast, String beh
     public record Unlock(Optional<net.minecraft.resources.ResourceLocation> afterJutsu, int mastery, Optional<String> stat, float value) {
         public static final Codec<Unlock> CODEC = RecordCodecBuilder.create(i -> i.group(
                 net.minecraft.resources.ResourceLocation.CODEC.optionalFieldOf("after").forGetter(Unlock::afterJutsu),
-                Codec.intRange(1, 5).optionalFieldOf("mastery", 2).forGetter(Unlock::mastery),
+                Codec.intRange(1, JutsuBook.ABSOLUTE_MAX_MASTERY).optionalFieldOf("mastery", 2).forGetter(Unlock::mastery),
                 Codec.STRING.optionalFieldOf("stat").forGetter(Unlock::stat),
                 Codec.FLOAT.optionalFieldOf("value", 0f).forGetter(Unlock::value)
         ).apply(i, Unlock::new));

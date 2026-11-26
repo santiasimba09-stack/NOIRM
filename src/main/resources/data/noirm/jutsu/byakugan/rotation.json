@@ -1,6 +1,6 @@
 {
   "cast": "tap", "behavior": "rotation", "rank": "A",
   "requires": { "dojutsu": "byakugan", "stage": 1 },
-  "chakra_cost": 30, "cooldown": 240,
+  "chakra_cost": 0, "chakra_free": true, "max_mastery": 10, "cooldown": 240,
   "params": { "radius": 3.5, "knockback": 1.8, "posture": 30, "damage": 2, "duration": 16 }
 }

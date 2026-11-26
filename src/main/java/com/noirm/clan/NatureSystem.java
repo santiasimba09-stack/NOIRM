@@ -196,6 +196,9 @@ public final class NatureSystem {
 
     /** The Reserves a jutsu of this rank needs (the same as a scroll of that rank). */
     public static float reservesFor(JutsuDefinition def) {
+        if (def.chakraFree()) {
+            return 0f; // a body art needs no chakra pool (the Hyūga's techniques, docs/WAVE_HYUGA.md)
+        }
         return com.noirm.nature.JutsuLearning.RESERVES_FOR_RANK[com.noirm.nature.JutsuLearning.rankIndex(def.rank())];
     }
 

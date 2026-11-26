@@ -25,6 +25,15 @@ _Clan research (A tier). Source tags and NOIRM numbers: [`_overview.md`](_overvi
   (ch. 103 pp8–20; ch. 197).
 - **Tenseigan** (Hamura's moon line, Toneri) `[movie: The Last]`.
 
+### "The strongest clan in Konoha": where it comes from (checked 2026-11-26, wave "Hyūga")
+- **Sourced:** the First Databook calls the Hyūga Konoha's **oldest and most outstanding bloodline**
+  (名門中の名門, DB1 p265), and the manga has Kumo admit it struggled against them in an earlier war (ch. 614 p3).
+  The Gentle Fist is described as the village's strongest taijutsu style (Narutopedia, *Gentle Fist*).
+- **Not confirmed:** the flat words "the strongest clan in Konoha" are widely quoted (the Narutopedia clan intro,
+  fan rankings), but we couldn't find a manga page or databook line that says exactly that. The wiki page refused
+  our fetch, and search turned up only secondary sites. Treat the wording as `[unverified, fandom wording]` until
+  someone checks the Narutopedia footnote or the databook. Our design follows it anyway, as the owner asked.
+
 ## 2. Databook profile
 Neji 21 → 27, Hinata 14 → 21.5, Hiashi 30 (taijutsu 5, seals 5). Genjutsu stays at 2.
 

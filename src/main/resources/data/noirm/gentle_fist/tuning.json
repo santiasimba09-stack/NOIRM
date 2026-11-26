@@ -1,0 +1,15 @@
+{
+  "legs_below": 0.42,
+  "arms_above": 0.72,
+  "region_ticks": 100,
+  "legs_max_level": 2,
+  "arms_max_level": 1,
+  "chest_points": 1.5,
+  "bleed_share": 0.25,
+  "bleed_seconds": 4,
+  "burst_heavy_only": false,
+  "reopen_per_second": 2,
+  "reopen_seal_speed": 2.0,
+  "palm_parry_window": 2.0,
+  "palm_parry_speed": 1.2
+}

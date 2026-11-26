@@ -707,11 +707,11 @@ public final class JutsuCaster {
         if (def.nature().isPresent() && usesWater(def.nature().get()) && nearWater(caster)) {
             power *= WATER_SOURCE_BONUS; // water jutsu are far stronger with water to draw from
         }
-        boolean taijutsu = isTaijutsu(id);
+        boolean taijutsu = isTaijutsu(id) || def.chakraFree(); // body arts (the Hyūga's) follow the body, not chakra
         if (!(caster instanceof Player) && caster instanceof com.noirm.combat.CombatStats stats) {
             power *= chakraPower(taijutsu ? stats.combatTaijutsu() : stats.combatReserves());
             if (caster instanceof com.noirm.entity.SparringNinja ninja) {
-                power *= 1f + MASTERY_POWER * ninja.jutsuMastery(id);
+                power *= masteryPower(ninja.jutsuMastery(id));
             }
         }
         if (caster instanceof Player player) {
@@ -719,7 +719,7 @@ public final class JutsuCaster {
             if (data != null) {
                 // Taijutsu techniques hit as hard as your body is trained, not your chakra.
                 power *= chakraPower(taijutsu ? data.getTaijutsu() : data.getReserves());
-                power *= 1f + MASTERY_POWER * data.jutsu().masteryLevel(id);
+                power *= masteryPower(data.jutsu().masteryLevel(id));
                 if (!com.noirm.workshop.JutsuDesign.isCreation(id)) {
                     power *= com.noirm.arts.ShapeTraining.canonPower(data, def); // a shape you've trained
                 }
@@ -772,8 +772,28 @@ public final class JutsuCaster {
         return id.getPath().startsWith("taijutsu/");
     }
 
-    /** +15% power per mastery level. */
+    /** +15% power per mastery level up to ★5... */
     public static final float MASTERY_POWER = 0.15f;
+    /** ...and +10% per level past it (levels 6–10: only jutsu with {@code max_mastery} above 5). Lv 10 = +125%. */
+    public static final float HIGH_MASTERY_POWER = 0.10f;
+    /** Cost and cooldown: −8% per level up to ★5 (−40%)... */
+    public static final float MASTERY_SAVING = 0.08f;
+    /** ...and −4% per level past it: Lv 10 = −60%. */
+    public static final float HIGH_MASTERY_SAVING = 0.04f;
+
+    /** The power multiplier at a mastery level: 1.75 at ★5 (as before), 2.25 at Lv 10. */
+    public static float masteryPower(int level) {
+        int low = Math.min(level, JutsuBook.DEFAULT_MAX_MASTERY);
+        int high = Math.max(0, level - JutsuBook.DEFAULT_MAX_MASTERY);
+        return 1f + MASTERY_POWER * Math.max(0, low) + HIGH_MASTERY_POWER * high;
+    }
+
+    /** The cost and cooldown multiplier at a mastery level: 0.6 at ★5 (as before), 0.4 at Lv 10. */
+    public static float masterySaving(int level) {
+        int low = Math.min(level, JutsuBook.DEFAULT_MAX_MASTERY);
+        int high = Math.max(0, level - JutsuBook.DEFAULT_MAX_MASTERY);
+        return Math.max(0.1f, 1f - MASTERY_SAVING * Math.max(0, low) - HIGH_MASTERY_SAVING * high);
+    }
     /** Extra chakra poured in while charging, as a fraction of the cost, spread over the full charge. */
     public static final float CHARGE_EXTRA_COST = 0.75f;
 
@@ -791,11 +811,14 @@ public final class JutsuCaster {
     }
 
     public static float cost(LivingEntity caster, ResourceLocation id, JutsuDefinition def) {
+        if (def.chakraFree()) {
+            return 0f; // a body art (the Hyūga's Gentle Fist techniques): no chakra at all (docs/WAVE_HYUGA.md)
+        }
         float cost = def.chakraCost() * (1.5f - 0.5f * affinity(caster, id, def)) * com.noirm.training.Supplementary.costMultiplier(caster);
         if (caster instanceof Player player) {
             ShinobiData data = ShinobiCapability.get(player).orElse(null);
             if (data != null) {
-                cost *= 1f - 0.08f * data.jutsu().masteryLevel(id);
+                cost *= masterySaving(data.jutsu().masteryLevel(id));
                 if (!com.noirm.workshop.JutsuDesign.isCreation(id)) {
                     cost *= com.noirm.arts.ShapeTraining.canonCost(data, def); // a shape you've trained
                 }
@@ -824,7 +847,7 @@ public final class JutsuCaster {
         }
         int mastery = caster instanceof Player player
                 ? ShinobiCapability.get(player).map(d -> d.jutsu().masteryLevel(id)).orElse(0) : 0;
-        return Math.round(def.cooldown() * (1f - 0.08f * mastery));
+        return Math.round(def.cooldown() * masterySaving(mastery));
     }
 
     private static boolean isClanNature(ShinobiData data, JutsuDefinition def) {

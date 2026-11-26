@@ -123,7 +123,7 @@ public final class PowerPackets {
     // ================================================================ server → client
 
     /** One learned jutsu, as the HUD and loadout screen need it. */
-    public record JutsuEntry(ResourceLocation id, String rank, int nature, int mastery, boolean copied, int maxCooldown) {
+    public record JutsuEntry(ResourceLocation id, String rank, int nature, int mastery, boolean copied, int maxCooldown, int maxMastery) {
         void encode(FriendlyByteBuf buf) {
             buf.writeResourceLocation(id);
             buf.writeUtf(rank);
@@ -131,10 +131,11 @@ public final class PowerPackets {
             buf.writeByte(mastery);
             buf.writeBoolean(copied);
             buf.writeVarInt(maxCooldown);
+            buf.writeByte(maxMastery);
         }
 
         static JutsuEntry decode(FriendlyByteBuf buf) {
-            return new JutsuEntry(buf.readResourceLocation(), buf.readUtf(8), buf.readByte(), buf.readByte(), buf.readBoolean(), buf.readVarInt());
+            return new JutsuEntry(buf.readResourceLocation(), buf.readUtf(8), buf.readByte(), buf.readByte(), buf.readBoolean(), buf.readVarInt(), buf.readByte());
         }
     }
 
@@ -187,7 +188,7 @@ public final class PowerPackets {
                 JutsuDefinition def = JutsuData.get(id);
                 if (def != null) {
                     learned.add(new JutsuEntry(id, def.rank(), def.nature().map(Nature::ordinal).orElse(-1),
-                            book.masteryLevel(id), book.isCopied(id), JutsuCaster.cooldown(player, id, def)));
+                            book.masteryLevel(id), book.isCopied(id), JutsuCaster.cooldown(player, id, def), def.maxMastery()));
                 }
             }
             List<String> loadout = new ArrayList<>();

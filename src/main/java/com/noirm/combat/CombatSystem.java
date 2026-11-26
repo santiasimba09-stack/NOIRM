@@ -441,8 +441,9 @@ public final class CombatSystem {
         if (classify(target, state, attacker) == Outcome.GUARDED) {
             boolean shield = blocksWithShield(target, amount);
             StyleIdentity.Guard guard = StyleSystem.identityOf(target).guard();
-            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : guard.posture()), amount);
-            return amount * (shield ? SHIELD_DAMAGE_MULTIPLIER : guard.keep());
+            float sturdy = guardKept(target);
+            absorbGuardedHit(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * (shield ? SHIELD_POSTURE_MULTIPLIER : guard.posture()) * sturdy, amount);
+            return amount * (shield ? SHIELD_DAMAGE_MULTIPLIER : guard.keep()) * sturdy;
         }
         if (attacker != null) {
             addPosture(target, state, amount * VANILLA_POSTURE_PER_DAMAGE * UNGUARDED_POSTURE_RATIO);
@@ -462,9 +463,19 @@ public final class CombatSystem {
         return Outcome.HIT;
     }
 
+    /**
+     * The {@code guard} perk (the Hyūga): the share of damage and posture a guard still lets through, 1 without it
+     * (+0.3 → 0.7). Gentle Fist and pierce aren't affected: what a guard can't stop it can't stop.
+     */
+    public static float guardKept(LivingEntity entity) {
+        float bonus = com.noirm.traits.Perks.get(entity, com.noirm.traits.Perk.GUARD);
+        return Math.max(com.noirm.traits.Perks.MIN_MULTIPLIER, 1f - bonus);
+    }
+
     /** {@code entity}'s parry window in ticks: {@link #PARRY_WINDOW} × its style's ({@code identity.guard.parry_window}). */
     public static int parryWindow(LivingEntity entity) {
-        return Math.round(PARRY_WINDOW * StyleSystem.identityOf(entity).guard().parryWindow());
+        return Math.round(PARRY_WINDOW * StyleSystem.identityOf(entity).guard().parryWindow()
+                * com.noirm.traits.Perks.mult(entity, com.noirm.traits.Perk.PARRY_WINDOW)); // clan blood (the Hyūga), talents
     }
 
     /**
@@ -1074,8 +1085,9 @@ public final class CombatSystem {
                 posture *= style.feint().get().posture();
                 CombatEffects.feintLanded(attacker, target);
             }
-            absorbGuardedHit(target, targetState, posture * (shield ? SHIELD_POSTURE_MULTIPLIER : defence.posture()), damage);
-            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : shield ? SHIELD_DAMAGE_MULTIPLIER : defence.keep(), pierce);
+            float sturdy = guardKept(target); // the guard perk (Hyūga): a sturdier guard
+            absorbGuardedHit(target, targetState, posture * (shield ? SHIELD_POSTURE_MULTIPLIER : defence.posture()) * sturdy, damage);
+            float kept = Math.max(gentleFist ? Byakugan.GENTLE_FIST_GUARD : (shield ? SHIELD_DAMAGE_MULTIPLIER : defence.keep()) * sturdy, pierce);
             damage *= kept;
         } else {
             if (!guardBroken) {

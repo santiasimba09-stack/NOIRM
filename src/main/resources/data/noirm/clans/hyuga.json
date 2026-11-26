@@ -9,21 +9,24 @@
     "keen_eyes",
     "chakra_flow"
   ],
-  "speed_bonus": 1,
-  "taijutsu_bonus": 3,
+  "speed_bonus": 2,
+  "taijutsu_bonus": 5,
   "kekkei_genkai": "byakugan",
   "awakening": "will",
   "perks": {
-    "gentle_fist": 1.0,
-    "start_control": 6,
-    "xp_control": 0.5,
-    "jutsu_cost": -0.2,
-    "xp_taijutsu": 0.6,
-    "perception": 0.3,
-    "genjutsu_resist": 0.3,
-    "jutsu_power": -0.3,
-    "mastery": -0.2,
-    "melee_damage": 0.1
+    "gentle_fist": 1.5,
+    "start_control": 12,
+    "xp_control": 1.0,
+    "xp_taijutsu": 1.0,
+    "jutsu_cost": -0.3,
+    "perception": 0.6,
+    "sensor": 32,
+    "parry_window": 0.5,
+    "guard": 0.3,
+    "posture": 30,
+    "genjutsu_resist": 0.5,
+    "melee_damage": 0.25,
+    "jutsu_power": -0.3
   },
   "look": {
     "hair": [

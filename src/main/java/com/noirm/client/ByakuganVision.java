@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -43,10 +42,27 @@ public final class ByakuganVision {
     private static final double POINTS_RANGE = 16;
     private static final int ORE_COLOR = 0x50FFD27A;
     private static final int CONTAINER_COLOR = 0x5070FF90;
-    private static final int MAX_XRAY_BLOCKS = 160;
-    /** Blocks the x-ray found on the last scan (refreshed every second): {x, y, z, color}. */
-    private static final java.util.List<int[]> XRAY = new java.util.ArrayList<>();
-    private static long lastScan = Long.MIN_VALUE;
+    // ---------------------------------------------------------------- performance caps (wave "Hyūga": the lag fix)
+    /**
+     * Full see-through silhouettes (each one re-runs the entity's whole renderer) for at most this many bodies, the
+     * nearest, within {@link #SILHOUETTE_RANGE}. Before the fix it was <b>every</b> living thing in sight, every frame.
+     */
+    public static final int MAX_SILHOUETTES = 20;
+    public static final double SILHOUETTE_RANGE = 48;
+    /** Everyone else in sight gets a cheap glowing chakra core (one quad), at most this many. */
+    public static final int MAX_CORES = 80;
+    /** Chakra points are drawn on at most this many bodies (the nearest). */
+    public static final int MAX_POINT_BODIES = 8;
+    /** The radar shows at most this many dots. */
+    public static final int MAX_RADAR_DOTS = 96;
+    /** Who is in sight is looked up this often (ticks), not every frame, and kept sorted nearest first. */
+    public static final int TARGET_REFRESH_TICKS = 5;
+
+    /** Living things in sight, nearest first (refreshed every {@link #TARGET_REFRESH_TICKS}). */
+    private static java.util.List<LivingEntity> targets = java.util.List.of();
+    private static long lastTargets = Long.MIN_VALUE / 2;
+    /** The x-ray, scanned a slice per tick ({@link com.noirm.dojutsu.XRayScanner}). */
+    private static final com.noirm.dojutsu.XRayScanner XRAY = new com.noirm.dojutsu.XRayScanner();
 
     /** The local player's chakra control, as last synced. */
     private static float control() {
@@ -69,6 +85,38 @@ public final class ByakuganVision {
 
     private ByakuganVision() {}
 
+    /** Per client tick: refresh who's in sight and advance the x-ray scan a slice. Nothing per frame. */
+    @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
+    public static final class ByakuganTicker {
+        private ByakuganTicker() {}
+
+        @SubscribeEvent
+        public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
+            if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) {
+                return;
+            }
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.level == null || minecraft.player == null || !ClientPowers.localByakuganActive()) {
+                if (!targets.isEmpty() || XRAY.scanning() || !XRAY.finds().isEmpty()) {
+                    targets = java.util.List.of();
+                    XRAY.reset();
+                }
+                return;
+            }
+            long now = minecraft.level.getGameTime();
+            if (now - lastTargets >= TARGET_REFRESH_TICKS || now < lastTargets) {
+                lastTargets = now;
+                double sight = sight();
+                var me = minecraft.player;
+                java.util.List<LivingEntity> found = new java.util.ArrayList<>(minecraft.level.getEntitiesOfClass(LivingEntity.class,
+                        me.getBoundingBox().inflate(sight), e -> e != me && e.isAlive() && e.distanceToSqr(me) <= sight * sight));
+                found.sort(java.util.Comparator.comparingDouble(e -> e.distanceToSqr(me)));
+                targets = found;
+            }
+            XRAY.step(minecraft.level, minecraft.player.blockPosition(), Byakugan.xrayRange(control()), now);
+        }
+    }
+
     @Mod.EventBusSubscriber(modid = Noirm.MOD_ID, value = Dist.CLIENT)
     public static final class World {
         private World() {}
@@ -90,26 +138,44 @@ public final class ByakuganVision {
             buffers.endBatch(); // draw anything pending normally first
             double sight = sight();
             double pointsRange = POINTS_RANGE + (sight - Byakugan.SIGHT_RANGE) / 4;
-            AABB area = minecraft.player.getBoundingBox().inflate(sight);
-            for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
-                    e -> e != minecraft.player && e.isAlive() && !e.isInvisible())) {
-                EntityRenderer<? super LivingEntity> renderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
+            Silhouettes friendly = new Silhouettes(buffers, SILHOUETTE_COLOR);
+            Silhouettes hostile = new Silhouettes(buffers, HOSTILE_COLOR);
+            VertexConsumer glow = buffers.getBuffer(XRayType.SILHOUETTE);
+            int silhouettes = 0;
+            int cores = 0;
+            int pointBodies = 0;
+            for (LivingEntity entity : targets) { // nearest first: the caps keep the closest, most relevant ones
+                if (entity.isRemoved() || !entity.isAlive() || entity.isInvisible() || entity.level() != minecraft.level) {
+                    continue;
+                }
                 double x = Mth.lerp(partialTick, entity.xOld, entity.getX()) - cam.x;
                 double y = Mth.lerp(partialTick, entity.yOld, entity.getY()) - cam.y;
                 double z = Mth.lerp(partialTick, entity.zOld, entity.getZ()) - cam.z;
-                float yaw = Mth.lerp(partialTick, entity.yRotO, entity.getYRot());
-                int color = entity instanceof net.minecraft.world.entity.monster.Enemy ? HOSTILE_COLOR : SILHOUETTE_COLOR;
+                boolean enemy = entity instanceof net.minecraft.world.entity.monster.Enemy;
+                double distance = entity.distanceTo(minecraft.player);
                 poseStack.pushPose();
                 poseStack.translate(x, y, z);
-                try {
-                    renderer.render(entity, yaw, partialTick, poseStack, new Silhouettes(buffers, color), 0xF000F0);
-                } catch (RuntimeException ignored) {
-                    // A modded renderer that can't draw this way just isn't shown.
-                }
-                if (entity.distanceTo(minecraft.player) <= pointsRange) {
-                    float bodyYaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-                    drawChakraPoints(entity, bodyYaw, camera, poseStack.last().pose(), buffers.getBuffer(XRayType.SILHOUETTE),
-                            minecraft.level.getGameTime() + partialTick);
+                if (silhouettes < MAX_SILHOUETTES && distance <= SILHOUETTE_RANGE) {
+                    silhouettes++;
+                    EntityRenderer<? super LivingEntity> renderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
+                    float yaw = Mth.lerp(partialTick, entity.yRotO, entity.getYRot());
+                    try {
+                        renderer.render(entity, yaw, partialTick, poseStack, enemy ? hostile : friendly, 0xF000F0);
+                    } catch (RuntimeException ignored) {
+                        // A modded renderer that can't draw this way just isn't shown.
+                    }
+                    if (pointBodies < MAX_POINT_BODIES && distance <= pointsRange) {
+                        pointBodies++;
+                        float bodyYaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+                        drawChakraPoints(entity, bodyYaw, camera, poseStack.last().pose(), glow,
+                                minecraft.level.getGameTime() + partialTick);
+                    }
+                } else if (cores < MAX_CORES) {
+                    cores++; // far away: just the chakra core, one quad
+                    int c = enemy ? HOSTILE_COLOR : SILHOUETTE_COLOR;
+                    float size = Math.max(0.25f, entity.getBbHeight() * 0.25f);
+                    quad(glow, poseStack.last().pose(), 0, entity.getBbHeight() * 0.6f, 0, camera.getLeftVector(), camera.getUpVector(),
+                            size, c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, 0xC0);
                 }
                 poseStack.popPose();
             }
@@ -158,39 +224,14 @@ public final class ByakuganVision {
 
     /**
      * X-ray: ores (gold) and containers (green) within {@link Byakugan#xrayRange} drawn as faint boxes through stone.
-     * The area is rescanned once a second.
+     * Scanned a slice per client tick by {@link com.noirm.dojutsu.XRayScanner}; only the nearest finds are drawn.
      */
     private static void drawXRay(Minecraft minecraft, Vec3 cam, Matrix4f pose, VertexConsumer out) {
-        long now = minecraft.level.getGameTime();
-        if (now - lastScan >= 20 || now < lastScan) {
-            lastScan = now;
-            XRAY.clear();
-            int r = (int) Math.ceil(Byakugan.xrayRange(control()));
-            net.minecraft.core.BlockPos centre = minecraft.player.blockPosition();
-            net.minecraft.core.BlockPos.MutableBlockPos at = new net.minecraft.core.BlockPos.MutableBlockPos();
-            for (int dx = -r; dx <= r && XRAY.size() < MAX_XRAY_BLOCKS; dx++) {
-                for (int dy = -r; dy <= r && XRAY.size() < MAX_XRAY_BLOCKS; dy++) {
-                    for (int dz = -r; dz <= r && XRAY.size() < MAX_XRAY_BLOCKS; dz++) {
-                        if (dx * dx + dy * dy + dz * dz > r * r) {
-                            continue;
-                        }
-                        at.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
-                        var state = minecraft.level.getBlockState(at);
-                        if (state.is(net.minecraftforge.common.Tags.Blocks.ORES)) {
-                            XRAY.add(new int[]{at.getX(), at.getY(), at.getZ(), ORE_COLOR});
-                        } else if (state.hasBlockEntity()
-                                && minecraft.level.getBlockEntity(at) instanceof net.minecraft.world.Container) {
-                            XRAY.add(new int[]{at.getX(), at.getY(), at.getZ(), CONTAINER_COLOR});
-                        }
-                    }
-                }
-            }
-        }
-        for (int[] b : XRAY) {
-            float x0 = (float) (b[0] - cam.x) + 0.1f;
-            float y0 = (float) (b[1] - cam.y) + 0.1f;
-            float z0 = (float) (b[2] - cam.z) + 0.1f;
-            box(out, pose, x0, y0, z0, x0 + 0.8f, y0 + 0.8f, z0 + 0.8f, b[3]);
+        for (com.noirm.dojutsu.XRayScanner.Find b : XRAY.finds()) { // scanned a slice per tick, nearest first, capped
+            float x0 = (float) (b.x() - cam.x) + 0.1f;
+            float y0 = (float) (b.y() - cam.y) + 0.1f;
+            float z0 = (float) (b.z() - cam.z) + 0.1f;
+            box(out, pose, x0, y0, z0, x0 + 0.8f, y0 + 0.8f, z0 + 0.8f, b.container() ? CONTAINER_COLOR : ORE_COLOR);
         }
     }
 
@@ -251,9 +292,11 @@ public final class ByakuganVision {
         double radarRange = sight();
         double scale = radius / radarRange;
         Vec3 me = minecraft.player.getPosition(partialTick);
-        AABB area = minecraft.player.getBoundingBox().inflate(radarRange);
-        for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
-                e -> e != minecraft.player && e.isAlive())) {
+        int dots = 0;
+        for (LivingEntity entity : targets) { // the per-tick list, nearest first
+            if (entity.isRemoved() || !entity.isAlive() || ++dots > MAX_RADAR_DOTS) {
+                continue;
+            }
             Vec3 at = entity.getPosition(partialTick);
             double dx = at.x - me.x;
             double dz = at.z - me.z;
@@ -414,7 +457,7 @@ public final class ByakuganVision {
     /** A translucent, no-depth-test, color-only render type. Subclassing gives access to the shard constants. */
     private static final class XRayType extends RenderType {
         static final RenderType SILHOUETTE = RenderType.create("noirm_byakugan_silhouette", DefaultVertexFormat.POSITION_COLOR,
-                VertexFormat.Mode.QUADS, 4096, false, true,
+                VertexFormat.Mode.QUADS, 4096, false, false, // no per-frame sorting: it's a flat glow
                 CompositeState.builder()
                         .setShaderState(POSITION_COLOR_SHADER)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
