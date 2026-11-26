@@ -1,0 +1,40 @@
+# Builds NOIRM and runs every game test on GitHub's machines (free, no Claude usage).
+# A green check on a commit = it compiles and all game tests pass.
+name: Build and game tests
+
+on:
+  push:
+    branches: [main, "claude/**"]
+    paths-ignore: ["docs/**", "*.md", "release/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        run: ./gradlew build -x test --no-daemon
+      - name: Game tests
+        run: ./gradlew runGameTestServer --no-daemon 2>&1 | tee gametest.log
+      - name: Summary
+        if: always()
+        run: |
+          grep -E "required tests (passed|failed)|failed!" gametest.log | tail -40 >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Keep the log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gametest-log
+          path: gametest.log
