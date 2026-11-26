@@ -95,7 +95,7 @@ public final class CanonGameTests {
     }
 
     @GameTest(template = "empty", batch = "noirm_clones", timeoutTicks = 40)
-    public static void shadowClonesTakeHitsThenVanish(GameTestHelper helper) {
+    public static void shadowClonesPopAfterOneSolidHit(GameTestHelper helper) {
         floor(helper);
         SparringNinja caster = ninja(helper, 1.5f, 1.5f, TestClans.PLAIN);
         run(caster, "universal/shadow_clone", 1f);
@@ -104,11 +104,11 @@ public final class CanonGameTests {
         ShadowClone clone = clones.get(0);
         helper.assertTrue(clone.isOwnedBy(caster), "they belong to the caster");
         helper.assertTrue(clone.getMaxHealth() >= ShadowClone.MIN_HEALTH, "a clone has a real body");
-        clone.hurt(clone.damageSources().generic(), 3f);
-        helper.assertFalse(clone.isRemoved(), "it takes a hit like the real thing");
+        clone.hurt(clone.damageSources().generic(), ShadowClone.SOLID_HIT * 0.5f);
+        helper.assertFalse(clone.isRemoved(), "a graze leaves it standing");
         clone.invulnerableTime = 0;
-        clone.hurt(clone.damageSources().generic(), 500f);
-        helper.assertTrue(clone.isRemoved(), "and a finishing blow dispels it");
+        clone.hurt(clone.damageSources().generic(), ShadowClone.SOLID_HIT + 1f);
+        helper.assertTrue(clone.isRemoved(), "one solid hit dispels it");
         clones.forEach(ShadowClone::dispel);
         clearAround(helper);
     }

@@ -216,6 +216,7 @@ public final class Supplementary {
         if (xp <= 0f || player.level().isClientSide()) {
             return;
         }
+        CloneTraining.onOwnerXp(player, stat, xp); // idle shadow clones train alongside you
         float value = stat(data, stat);
         if (value >= ShinobiData.MAX_STAT) {
             return;

@@ -58,6 +58,12 @@ public final class ModeSystem {
         JutsuDefinition.Mode mode = ctx.def().mode().orElse(JutsuDefinition.Mode.NONE);
         int duration = ctx.params().duration();
         long until = duration > 0 ? caster.level().getGameTime() + duration : Long.MAX_VALUE;
+        if (mode.gate() > 0) {
+            // The Gates: a time limit from DUR, WIL, TAI, VIT and Resolve, or none once the body is trained (EightGates).
+            long limit = EightGates.limitTicks(caster, mode.gate());
+            until = limit == Long.MAX_VALUE ? Long.MAX_VALUE : caster.level().getGameTime() + limit;
+            EightGates.announceOpen(caster, mode.gate(), limit);
+        }
         int mastery = caster instanceof Player player
                 ? ShinobiCapability.get(player).map(d -> d.jutsu().masteryLevel(ctx.id())).orElse(0) : 1;
         Active active = new Active(ctx.id(), ctx.def(), mode, until, 1f + MASTERY_STRENGTH * mastery);
@@ -76,8 +82,8 @@ public final class ModeSystem {
         }
         if (mode.gate() > 0) {
             // A gate bursts open: a shockwave and a roar of wind around the body.
+            // (No quake any more: the owner asked for no screen shake from the Gates.)
             Vfx.shockwave(caster.level(), caster.position().add(0, 0.1, 0), paletteOf(active), 2.5f + mode.gate());
-            Vfx.quake(caster.level(), caster.position(), 0.25f * mode.gate(), 10);
             caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.WIND_GUST.get(), SoundSource.PLAYERS, 1f, 0.77f);
         } else {
             caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), com.noirm.sound.NoirmSounds.LIGHTNING_SNAP.get(), SoundSource.PLAYERS, 0.8f, 1.26f);
@@ -129,7 +135,13 @@ public final class ModeSystem {
         }
         if (!entity.isAlive() || entity.level().getGameTime() > active.until()) {
             end(entity);
+            if (entity.isAlive() && active.mode().gate() > 0) {
+                EightGates.slamShut(entity, active.mode().gate()); // time's up: worn out for a while, no damage
+            }
             return;
+        }
+        if (active.mode().gate() > 0 && active.until() != Long.MAX_VALUE) {
+            EightGates.tickWarning(entity, active.until() - entity.level().getGameTime());
         }
         if (entity instanceof Player player && !player.getAbilities().instabuild) {
             boolean paid = ShinobiCapability.get(player).map(d -> d.tryConsumeChakra(active.mode().drain() / 20f)).orElse(false);
@@ -139,21 +151,9 @@ public final class ModeSystem {
                 return;
             }
         }
+        // The Gates used to burn health here (health_drain / end_health); since the clones wave they have a
+        // time limit instead (EightGates), so there's no self-damage and no hurt shake.
         JutsuDefinition.Mode mode = active.mode();
-        if (mode.healthDrain() > 0 || mode.endHealth() > 0) {
-            // The Gates burn the body: health drains, and the gate slams shut before it can kill.
-            float floor = endHealthOf(entity, mode);
-            float next = entity.getHealth() - mode.healthDrain() / 20f * gateWear(entity, mode); // the Might line wears less
-            if (next <= floor) {
-                entity.setHealth(Math.max(floor, Math.min(entity.getHealth(), floor)));
-                end(entity);
-                if (entity instanceof Player player) {
-                    player.displayClientMessage(Component.translatable("message.noirm.mode.body_spent"), true);
-                }
-                return;
-            }
-            entity.setHealth(next);
-        }
         Nature nature = active.def().nature().orElse(null);
         Vfx.Palette palette = paletteOf(active);
         if (entity.tickCount % 2 == 0) {
@@ -213,22 +213,22 @@ public final class ModeSystem {
     }
 
     /**
-     * Whether {@code entity} is too hurt to open this mode: modes that end at low health (the
-     * Gates) can't start at or below that line.
+     * Whether {@code entity} can't open this mode right now: a gate won't reopen while the body is still worn out
+     * from the last one slamming shut ({@link EightGates#wornOut}).
      */
     public static boolean tooHurtFor(LivingEntity entity, JutsuDefinition def) {
         JutsuDefinition.Mode mode = def.mode().orElse(null);
-        return mode != null && mode.endHealth() > 0 && entity.getHealth() <= endHealthOf(entity, mode) + 0.5f;
-    }
-
-    /** The health a mode ends at: its {@code end_health} share of max health, and never below 1. */
-    private static float endHealthOf(LivingEntity entity, JutsuDefinition.Mode mode) {
-        return Math.max(1f, entity.getMaxHealth() * mode.endHealth() * gateWear(entity, mode));
+        return mode != null && mode.gate() > 0 && EightGates.wornOut(entity);
     }
 
     /** How hard a gate is on this body: ×(1 − gate mastery) for the Gates (the Might line), 1 otherwise. */
     public static float gateWear(LivingEntity entity, JutsuDefinition.Mode mode) {
-        if (mode.gate() <= 0) {
+        return gateWear(entity, mode.gate());
+    }
+
+    /** {@link #gateWear(LivingEntity, JutsuDefinition.Mode)} for a gate tier. */
+    public static float gateWear(LivingEntity entity, int gate) {
+        if (gate <= 0) {
             return 1f;
         }
         return Math.max(0.1f, 1f - com.noirm.traits.Perks.get(entity, com.noirm.traits.Perk.GATE_MASTERY));

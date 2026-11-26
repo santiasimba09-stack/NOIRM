@@ -27,8 +27,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * What the open Byakugan shows: every living thing within {@link Byakugan#SIGHT_RANGE} drawn as a
- * glowing blue chakra silhouette, <b>through walls</b>, plus a pale vignette at the screen edges.
+ * What the open Byakugan shows: every living thing within its sight (40 blocks at CTL 10, growing with chakra control,
+ * see {@link Byakugan#sightRange}) drawn as a glowing blue chakra silhouette, <b>through walls</b>, plus a pale
+ * vignette at the screen edges. Closed chakra points show dark red (all red while sealed), and close by the eye
+ * sees ores and containers through stone (x-ray, {@link Byakugan#xrayRange}).
  *
  * <p>How: each entity's normal renderer is run again into a buffer that turns every model quad
  * into one translucent color drawn with depth testing off. Text, shadows and glowing layers
@@ -37,10 +39,24 @@ import net.minecraftforge.fml.common.Mod;
 public final class ByakuganVision {
     private static final int SILHOUETTE_COLOR = 0x6FA8CCFF;
     private static final int HOSTILE_COLOR = 0x6FFF9080;
-    /** Chakra points are drawn on bodies this close (further away they'd just be noise). */
+    /** Chakra points are drawn on bodies this close (further away they'd just be noise), plus a quarter of the extra sight. */
     private static final double POINTS_RANGE = 16;
-    /** The radar covers this many blocks around you. */
-    private static final double RADAR_RANGE = 40;
+    private static final int ORE_COLOR = 0x50FFD27A;
+    private static final int CONTAINER_COLOR = 0x5070FF90;
+    private static final int MAX_XRAY_BLOCKS = 160;
+    /** Blocks the x-ray found on the last scan (refreshed every second): {x, y, z, color}. */
+    private static final java.util.List<int[]> XRAY = new java.util.ArrayList<>();
+    private static long lastScan = Long.MIN_VALUE;
+
+    /** The local player's chakra control, as last synced. */
+    private static float control() {
+        var stats = ClientShinobiData.get();
+        return stats == null ? 10f : stats.control();
+    }
+
+    private static double sight() {
+        return Byakugan.sightRange(control());
+    }
     /**
      * Where the chakra points (tenketsu) sit on a humanoid, as (sideways, height, forward) for a
      * 0.6 × 1.8 body. Canon has 361; these are the ones big enough to read at a glance.
@@ -72,7 +88,9 @@ public final class ByakuganVision {
             PoseStack poseStack = event.getPoseStack();
             MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
             buffers.endBatch(); // draw anything pending normally first
-            AABB area = minecraft.player.getBoundingBox().inflate(Byakugan.SIGHT_RANGE);
+            double sight = sight();
+            double pointsRange = POINTS_RANGE + (sight - Byakugan.SIGHT_RANGE) / 4;
+            AABB area = minecraft.player.getBoundingBox().inflate(sight);
             for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
                     e -> e != minecraft.player && e.isAlive() && !e.isInvisible())) {
                 EntityRenderer<? super LivingEntity> renderer = minecraft.getEntityRenderDispatcher().getRenderer(entity);
@@ -88,13 +106,14 @@ public final class ByakuganVision {
                 } catch (RuntimeException ignored) {
                     // A modded renderer that can't draw this way just isn't shown.
                 }
-                if (entity.distanceTo(minecraft.player) <= POINTS_RANGE) {
+                if (entity.distanceTo(minecraft.player) <= pointsRange) {
                     float bodyYaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
                     drawChakraPoints(entity, bodyYaw, camera, poseStack.last().pose(), buffers.getBuffer(XRayType.SILHOUETTE),
                             minecraft.level.getGameTime() + partialTick);
                 }
                 poseStack.popPose();
             }
+            drawXRay(minecraft, cam, poseStack.last().pose(), buffers.getBuffer(XRayType.SILHOUETTE));
             // Vanilla's NO_DEPTH_TEST shard only works if depth testing is already off; mid-level it's on.
             RenderSystem.disableDepthTest();
             buffers.endBatch(XRayType.SILHOUETTE);
@@ -119,6 +138,8 @@ public final class ByakuganVision {
         boolean humanoid = height > 1.2f && height < 2.6f && entity.getBbWidth() < 1.2f;
         float[][] points = humanoid ? TENKETSU : new float[][]{{0, height / 1.8f * 1.1f, 0}};
         float scale = humanoid ? height / 1.8f : 1f;
+        // Gentle Fist: the points the local player closed go dark red (all of them while sealed).
+        int closed = Math.round(ClientPowers.closedShare(entity.getId(), (long) time) * points.length);
         for (int i = 0; i < points.length; i++) {
             float[] p = points[i];
             float x = p[0] * width * sideX + p[2] * width * frontX;
@@ -127,7 +148,65 @@ public final class ByakuganVision {
             float pulse = 0.6f + 0.4f * Mth.sin(time * 0.25f + i * 1.7f);
             float size = (humanoid ? 0.045f : 0.18f) * (0.8f + 0.4f * pulse);
             int alpha = (int) (200 * pulse) + 55;
-            quad(out, pose, x, y, z, left, up, size, 0xE0, 0xF8, 0xFF, alpha);
+            if (i < closed) {
+                quad(out, pose, x, y, z, left, up, size * 1.15f, 0xB0, 0x18, 0x20, 230);
+            } else {
+                quad(out, pose, x, y, z, left, up, size, 0xE0, 0xF8, 0xFF, alpha);
+            }
+        }
+    }
+
+    /**
+     * X-ray: ores (gold) and containers (green) within {@link Byakugan#xrayRange} drawn as faint boxes through stone.
+     * The area is rescanned once a second.
+     */
+    private static void drawXRay(Minecraft minecraft, Vec3 cam, Matrix4f pose, VertexConsumer out) {
+        long now = minecraft.level.getGameTime();
+        if (now - lastScan >= 20 || now < lastScan) {
+            lastScan = now;
+            XRAY.clear();
+            int r = (int) Math.ceil(Byakugan.xrayRange(control()));
+            net.minecraft.core.BlockPos centre = minecraft.player.blockPosition();
+            net.minecraft.core.BlockPos.MutableBlockPos at = new net.minecraft.core.BlockPos.MutableBlockPos();
+            for (int dx = -r; dx <= r && XRAY.size() < MAX_XRAY_BLOCKS; dx++) {
+                for (int dy = -r; dy <= r && XRAY.size() < MAX_XRAY_BLOCKS; dy++) {
+                    for (int dz = -r; dz <= r && XRAY.size() < MAX_XRAY_BLOCKS; dz++) {
+                        if (dx * dx + dy * dy + dz * dz > r * r) {
+                            continue;
+                        }
+                        at.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                        var state = minecraft.level.getBlockState(at);
+                        if (state.is(net.minecraftforge.common.Tags.Blocks.ORES)) {
+                            XRAY.add(new int[]{at.getX(), at.getY(), at.getZ(), ORE_COLOR});
+                        } else if (state.hasBlockEntity()
+                                && minecraft.level.getBlockEntity(at) instanceof net.minecraft.world.Container) {
+                            XRAY.add(new int[]{at.getX(), at.getY(), at.getZ(), CONTAINER_COLOR});
+                        }
+                    }
+                }
+            }
+        }
+        for (int[] b : XRAY) {
+            float x0 = (float) (b[0] - cam.x) + 0.1f;
+            float y0 = (float) (b[1] - cam.y) + 0.1f;
+            float z0 = (float) (b[2] - cam.z) + 0.1f;
+            box(out, pose, x0, y0, z0, x0 + 0.8f, y0 + 0.8f, z0 + 0.8f, b[3]);
+        }
+    }
+
+    private static void box(VertexConsumer out, Matrix4f pose, float x0, float y0, float z0, float x1, float y1, float z1, int argb) {
+        int a = argb >>> 24;
+        int r = argb >> 16 & 0xFF;
+        int g = argb >> 8 & 0xFF;
+        int b = argb & 0xFF;
+        float[][] faces = {
+                {x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1}, {x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0},
+                {x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0}, {x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1},
+                {x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0}, {x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1}};
+        for (float[] f : faces) {
+            for (int v = 0; v < 4; v++) {
+                out.vertex(pose, f[v * 3], f[v * 3 + 1], f[v * 3 + 2]).color(r, g, b, a).endVertex();
+            }
         }
     }
 
@@ -169,9 +248,10 @@ public final class ByakuganVision {
         }
         graphics.fill(cx, cy - radius + 2, cx + 1, cy - radius + 6, 0xA0FFFFFF); // where you face
         float yaw = Mth.lerp(partialTick, minecraft.player.yRotO, minecraft.player.getYRot()) * Mth.DEG_TO_RAD;
-        double scale = radius / RADAR_RANGE;
+        double radarRange = sight();
+        double scale = radius / radarRange;
         Vec3 me = minecraft.player.getPosition(partialTick);
-        AABB area = minecraft.player.getBoundingBox().inflate(RADAR_RANGE);
+        AABB area = minecraft.player.getBoundingBox().inflate(radarRange);
         for (LivingEntity entity : minecraft.level.getEntitiesOfClass(LivingEntity.class, area,
                 e -> e != minecraft.player && e.isAlive())) {
             Vec3 at = entity.getPosition(partialTick);
@@ -179,7 +259,7 @@ public final class ByakuganVision {
             double dz = at.z - me.z;
             double forward = dx * -Mth.sin(yaw) + dz * Mth.cos(yaw);
             double right = dx * -Mth.cos(yaw) + dz * -Mth.sin(yaw);
-            if (forward * forward + right * right > RADAR_RANGE * RADAR_RANGE) {
+            if (forward * forward + right * right > radarRange * radarRange) {
                 continue;
             }
             int x = cx - (int) Math.round(right * scale);

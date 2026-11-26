@@ -103,6 +103,30 @@ public final class ClientPowers {
         VISUALS.put(packet.entityId(), packet);
     }
 
+    /** Closed chakra points per entity id: {closed, game time the info expires, game time the seal ends}. */
+    private static final java.util.Map<Integer, long[]> TENKETSU = new java.util.HashMap<>();
+
+    public static void tenketsu(PowerPackets.Tenketsu packet) {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        long now = level == null ? 0 : level.getGameTime();
+        TENKETSU.put(packet.entityId(), new long[]{packet.closed(), now + com.noirm.dojutsu.Byakugan.POINTS_RESET_TICKS, now + packet.sealedTicks()});
+        if (TENKETSU.size() > 256) {
+            TENKETSU.entrySet().removeIf(e -> e.getValue()[1] < now && e.getValue()[2] < now);
+        }
+    }
+
+    /** Share of {@code entityId}'s chakra points closed, 0..1 (1 while sealed), as last heard. */
+    public static float closedShare(int entityId, long now) {
+        long[] info = TENKETSU.get(entityId);
+        if (info == null) {
+            return 0f;
+        }
+        if (now < info[2]) {
+            return 1f;
+        }
+        return now > info[1] ? 0f : Math.min(1f, info[0] / (float) com.noirm.dojutsu.Byakugan.SEAL_POINTS);
+    }
+
     public static void precognition(PowerPackets.Precognition packet) {
         EyeEffects.onWarning(packet);
     }

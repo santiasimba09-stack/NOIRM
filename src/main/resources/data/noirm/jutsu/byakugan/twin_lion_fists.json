@@ -1,0 +1,7 @@
+{
+  "cast": "tap", "behavior": "lion_fists", "rank": "A", "quick": true,
+  "requires": { "dojutsu": "byakugan", "stage": 1 },
+  "chakra_cost": 40, "cooldown": 900,
+  "unlock": { "after": "noirm:byakugan/sixty_four_palms", "mastery": 1 },
+  "params": { "duration": 300 }
+}

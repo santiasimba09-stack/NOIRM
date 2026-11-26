@@ -242,8 +242,18 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         jutsuCasts++;
     }
 
+    /** {@link #onJutsuCast()} knowing which jutsu (a shadow clone remembers it for its owner). */
+    public void onJutsuCast(net.minecraft.resources.ResourceLocation id) {
+        onJutsuCast();
+    }
+
+    /** Whether chakra comes back on its own (a shadow clone only has the share it was made with). */
+    protected boolean regeneratesChakra() {
+        return true;
+    }
+
     private void tickChakra() {
-        if (chakra >= 0 && chakra < maxChakra()) {
+        if (regeneratesChakra() && chakra >= 0 && chakra < maxChakra()) {
             setChakra(chakra + CHAKRA_REGEN_PER_TICK * (getTarget() == null ? CHAKRA_REGEN_RESTING : 1f));
         }
     }
@@ -483,6 +493,7 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         }
         com.noirm.ally.AllyMind.support(this, player);
         com.noirm.ally.NatureTeaching.tick(this, player);
+        com.noirm.ally.CrewFusion.tick(this, player); // a combined nature they're fusing themselves
         // Who to fight, where to be, and their job (follow / guard / patrol / train / meditate…).
         com.noirm.ally.CrewBrain.tick(this, player);
     }
@@ -550,6 +561,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         if (level().isClientSide()) {
             // (The client doesn't know the leader: a crew mate offered food is being fed, not eaten by you.)
             boolean feeding = inCrew() && !player.isShiftKeyDown() && com.noirm.ally.AllyFood.isFood(player.getItemInHand(hand), this);
+            // (Sneak + an eye in hand: giving them the eye, not operating on yourself.)
+            feeding |= inCrew() && player.isShiftKeyDown() && player.getItemInHand(hand).getItem() instanceof com.noirm.dojutsu.SharinganEyeItem;
             return feeding || isYielded() || player.getUUID().equals(leader) ? net.minecraft.world.InteractionResult.SUCCESS
                     : super.mobInteract(player, hand);
         }
@@ -561,6 +574,10 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
             // Food in hand: feed them (sneak still gives orders, anything else opens their screen).
             if (!player.isShiftKeyDown() && com.noirm.ally.AllyFood.isFood(player.getItemInHand(hand), this)) {
                 com.noirm.ally.AllyFood.feed(this, player, hand);
+                return net.minecraft.world.InteractionResult.CONSUME;
+            }
+            if (player.isShiftKeyDown() && player.getItemInHand(hand).getItem() instanceof com.noirm.dojutsu.SharinganEyeItem) {
+                com.noirm.ally.CrewEyes.giveEye(player, this, player.getItemInHand(hand)); // a Sharingan for them
                 return net.minecraft.world.InteractionResult.CONSUME;
             }
             if (player.isShiftKeyDown()) {
@@ -587,7 +604,8 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         natures.clear();
         natures.putAll(clan.natures());
         allyState.learned().forEach(natures::putIfAbsent); // natures their leader taught them
-        entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : 0));
+        int implanted = allyState.eyeImplanted() ? entityData.get(SHARINGAN) : 0; // an eye you gave them stays
+        entityData.set(SHARINGAN, (byte) (clan.hasSharingan() ? 1 + getRandom().nextInt(3) : implanted));
         // Hyūga fight with the Byakugan open (its techniques can be in their set).
         entityData.set(BYAKUGAN, clan.hasByakugan());
         rebuildJutsu(); // a personal, limited set: see the section at the end

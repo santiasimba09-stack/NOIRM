@@ -91,7 +91,7 @@ public final class ThreatSense {
         if (foresight || allAround) {
             for (Mob mob : player.level().getEntitiesOfClass(Mob.class, area, m -> m.isAlive() && m.getTarget() == player)) {
                 int ticks = imminentAttack(mob, player);
-                if (ticks >= 0 && (foresight || isBehind(player, mob))) {
+                if (ticks >= 0 && (foresight || isBehind(player, mob) && !Byakugan.inBlindSpot(player, mob))) {
                     warn(player, mob, ticks, warned, now, REWARN_TICKS);
                 }
             }

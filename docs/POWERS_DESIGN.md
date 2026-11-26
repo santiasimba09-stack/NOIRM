@@ -210,6 +210,36 @@ Forge persistent data; they don't strain.
 - Not yet: a medical-ninja ally doing the surgery; taking a player's eyes; Kamui's own dimension;
   Susanoo as a real model.
 
+## 4d. Crew mates' eyes and fused natures (owner: "give them a Sharingan; make them fuse natures")
+
+**A Sharingan for a crew mate** (`ally/CrewEyes`, saved with the ninja: tomoe in its `Sharingan` tag,
+growth and "implanted" in `AllyState`):
+
+| Way | What it takes |
+|---|---|
+| Transplant | Sneak + right-click them holding a `sharingan_eye`, click the red 眼 chip on their screen (shown when you carry an eye they'd take), or `/noirm crew eye`. Safe, but costs them 4 health and a few seconds dazed; +10 respect. Refused: a Hyūga (the Byakugan rejects it), a Mangekyō eye (too much), an eye no stronger than theirs, respect below 20 |
+| Awakening (Uchiha crew mates) | Seeing you or another crew mate hit below 30% health by an enemy, within 24 blocks and in sight: a dormant Uchiha crew mate opens 1 tomoe. (The old NPC routes still work: badly hurt themselves in a fight, a comrade falling) |
+| Growth | Open eyes grow like yours: +1/s fighting a real foe and +2 per hit landed (× the foe's strength, 0.5–3; the dummy teaches nothing), +60 when a comrade is near death (once per 30 s). 300 for 2 tomoe (brings the genjutsu), 1,200 for 3 |
+
+A transplanted eye on someone not born Uchiha is always open (like a player's implant) and stays when
+their clan is re-applied.
+
+**Fusion lessons** (`ally/CrewFusion`): a crew mate fuses a combined nature from parts they own, even
+when you lack it (you guide, they work). Natures tab → a combined nature with a green **+** → "Guide the
+fusion", or `/noirm crew fuse <nature>`. Only the elemental mixes; one fusion at a time (beside a normal
+lesson). Base 4 Minecraft days of full-pace study (Train/Meditate, half pace otherwise, ×2 while you
+meditate with them, paused beyond 16 blocks); Dust ×1.5. By who they are:
+
+| They are | Pace | Example |
+|---|---|---|
+| Gifted (their clan has a knack) | ×3 | Senju → Wood, Yuki → Ice, Kazekage → Magnet |
+| Born with both parts | ×1 | an Uzumaki (Wind + Water) → Ice |
+| A part was taught to them | ×0.35 | a Hozuki taught Earth → Wood |
+| Missing a part | can't start | |
+
+At the end: the nature at their weakest part's strength (at most 1.0) and its starting jutsu; kept
+across clan re-joins like a taught nature.
+
 ## 5. Awakening (owner: Resolve, identity-based)
 
 - **Resolve** (0–100, visible in combat mode) builds from damage dealt (more against stronger
@@ -321,6 +351,26 @@ equipped. Tuning: constants in `jutsu/NpcJutsuSets`.
 - How: a mixin gives the top water block a thin solid skin (just above the visible water) for
   whoever can walk on it; the rule only reads what the client also knows, so movement agrees.
 - Tuning: constants at the top of `chakra/WaterWalking`.
+
+## 13. The clones-and-training wave (2026-11-26)
+
+- **Shadow clones** (`entity/ShadowClone`, `jutsu/CanonTechniques.shadowClone`): chakra split evenly (each clone
+  casts from its share, no regen; leftovers return); one solid hit (≥1.5) pops it; memories (hit XP, chakra spent →
+  Reserves, jutsu used → mastery, an enemy seen far away) return on dispel and add mental fatigue
+  (`training/CloneTraining`). Idle clones near you train alongside you (80% each) and beat on a nearby training
+  dummy. Multi Shadow Clone (up to 24 for a ×100 pool, 12 at ×10), Clone Swap, clone-assisted Rasengan (×1.5), and a
+  feint (an enemy that pops a clone near you reels for 0.8 s).
+- **Training:** training weights (body-stat XP ×1.5, 20% slower), leaf-on-forehead focus and tree climbing (crouch into
+  a trunk; any wall from CTL 30) train CTL up to the drill cap; fatigue fades faster while meditating or sleeping.
+- **Eight Gates** (`jutsu/EightGates`): no self-damage or quake; a time limit from DUR/WIL/TAI/VIT and Resolve; no limit
+  once the four stats average 35 (gate 1) / 45 (gate 2); slamming shut leaves you slow and weak and unable to reopen
+  for 8 s per tier.
+- **Byakugan / Gentle Fist** (`dojutsu/Byakugan`, `jutsu/HyugaTechniques`): sight 40 → 120 blocks with CTL, a 20° blind
+  spot behind the neck that closes at CTL 60, x-ray of ores and containers, closed points shown dark red; Gentle Fist
+  keeps 90% through a guard, adds 60% internal damage that ignores armour, more points per hit with CTL, closed points
+  choke chakra regen and a seal empties chakra, ends modes and closes eyes for 15 s. New: 128 Palms, Air Palm, Twin
+  Lion Fists.
+- **Tailed beasts:** a spawn egg per beast (`biju/BeastEggItem`); `/noirm beast spawn <1-9>` already existed.
 
 ## Where to tune
 

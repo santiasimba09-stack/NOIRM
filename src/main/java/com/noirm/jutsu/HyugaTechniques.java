@@ -31,15 +31,25 @@ import java.util.WeakHashMap;
  *   <li><b>Eight Trigrams 64 Palms</b> ({@code palms}): strike the enemy in front in six
  *       accelerating waves (2, 4, 8, 16, 32, 64 palms) over {@code duration} ticks. The target
  *       is held in place, takes {@code damage} and {@code posture} per wave, has its chakra
- *       points closed (usually sealing its jutsu), and the last palm sends it flying.</li>
+ *       points closed (usually sealing its jutsu), and the last palm sends it flying. {@code count} sets the
+ *       number of waves: 7 is <b>128 Palms</b> (… 64, 128).</li>
+ *   <li><b>Air Palm</b> ({@code air_palm}): a blast of compressed chakra from the palm at the first enemy in
+ *       {@code range}: damage, knockback, internal damage that ignores armour, and {@code count} points closed.</li>
+ *   <li><b>Twin Lion Fists</b> ({@code lion_fists}): chakra lions wrap both fists for {@code duration} ticks; every
+ *       Gentle Fist hit closes {@link Byakugan#LION_FISTS_MULTIPLIER}× the points and deals as much more internal
+ *       damage.</li>
  * </ul>
+ * Every palm also strikes inside the body (internal damage, {@link Byakugan#INTERNAL_DAMAGE}).
  */
 public final class HyugaTechniques {
     private static final DustParticleOptions CHAKRA = new DustParticleOptions(new Vector3f(0.6f, 0.8f, 1f), 1.2f);
-    private static final int[] WAVES = {2, 4, 8, 16, 32, 64};
+    private static final int[] WAVES = {2, 4, 8, 16, 32, 64, 128, 256};
+    /** Waves when the JSON gives no {@code count} (it defaults to 1): 6, up to 64 palms. */
+    private static final int DEFAULT_WAVES = 6;
 
     private static final Map<LivingEntity, Spin> SPINS = new WeakHashMap<>();
     private static final Map<LivingEntity, Palms> PALMS = new WeakHashMap<>();
+    private static final Map<LivingEntity, Long> LIONS = new WeakHashMap<>();
 
     private HyugaTechniques() {}
 
@@ -139,14 +149,76 @@ public final class HyugaTechniques {
             }
             return;
         }
+        int waves = p.count() > 1 ? Mth.clamp(p.count(), 1, WAVES.length) : DEFAULT_WAVES; // count defaults to 1: 64 Palms
         Palms palms = new Palms(target, caster.level().getGameTime(), p.duration(), p.damage() * ctx.power(),
-                p.posture() * ctx.power(), p.knockback());
+                p.posture() * ctx.power(), p.knockback(), waves);
         PALMS.put(caster, palms);
         CombatSystem.stun(target, p.duration() + 10);
         caster.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, p.duration(), 4, false, false));
         caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.EVOKER_PREPARE_ATTACK, SoundSource.PLAYERS, 0.8f, 1.6f);
         if (caster instanceof Player player) {
             player.displayClientMessage(Component.translatable("message.noirm.palms.start"), true);
+        }
+    }
+
+    // ---------------------------------------------------------------- Air Palm
+
+    static void airPalm(JutsuContext ctx) {
+        JutsuDefinition.Params p = ctx.params();
+        LivingEntity caster = ctx.caster();
+        Vec3 look = caster.getLookAngle();
+        Vec3 from = caster.getEyePosition().add(look.scale(0.6));
+        LivingEntity target = JutsuBehaviors.lookTarget(caster, p.range(), 20);
+        double reach = target != null ? target.distanceTo(caster) : p.range();
+        if (caster.level() instanceof ServerLevel level) {
+            com.noirm.vfx.Vfx.Palette chakra = new com.noirm.vfx.Vfx.Palette(0xFFFFFF, 0x9FE0FF, 0x0A2A6A, 0xE0F8FF);
+            for (double d = 0; d < reach; d += 0.5) {
+                Vec3 at = from.add(look.scale(d));
+                com.noirm.vfx.Vfx.one(level, com.noirm.vfx.Vfx.glow(chakra.mid(), chakra.edge(), 0.5f, 0.15f, 5), at, look.scale(0.4));
+            }
+            level.sendParticles(ParticleTypes.SWEEP_ATTACK, from.x, from.y, from.z, 1, 0, 0, 0, 0);
+        }
+        caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1f, 0.6f);
+        if (target == null) {
+            return;
+        }
+        JutsuEffects.hit(caster, target, p.damage() * ctx.power(), p.knockback(), p.posture() * ctx.power(), 0, target.position().subtract(caster.position()));
+        Byakugan.internalDamage(caster, target, p.damage() * ctx.power() * Byakugan.INTERNAL_DAMAGE);
+        Byakugan.closePoints(caster, target, Math.max(1, p.count()), p.count() * 1.5f);
+    }
+
+    // ---------------------------------------------------------------- Twin Lion Fists
+
+    static void lionFists(JutsuContext ctx) {
+        LivingEntity caster = ctx.caster();
+        LIONS.put(caster, caster.level().getGameTime() + Math.max(20, ctx.params().duration()));
+        caster.level().playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 0.7f, 1.5f);
+        if (caster instanceof Player player) {
+            player.displayClientMessage(Component.translatable("message.noirm.lion_fists.on"), true);
+        }
+    }
+
+    /** True while the Twin Lion Fists burn on {@code entity}'s hands. */
+    public static boolean lionFistsActive(LivingEntity entity) {
+        Long until = LIONS.get(entity);
+        return until != null && entity.level().getGameTime() <= until;
+    }
+
+    private static void tickLions(LivingEntity entity) {
+        if (!lionFistsActive(entity) || !entity.isAlive()) {
+            LIONS.remove(entity);
+            return;
+        }
+        if (entity.tickCount % 2 != 0 || !(entity.level() instanceof ServerLevel level)) {
+            return;
+        }
+        // A blue chakra lion's head around each fist.
+        com.noirm.vfx.Vfx.Palette chakra = new com.noirm.vfx.Vfx.Palette(0xFFFFFF, 0x6FC8FF, 0x0A2A6A, 0xBFEFFF);
+        float yaw = entity.yBodyRot * Mth.DEG_TO_RAD;
+        for (int side = -1; side <= 1; side += 2) {
+            Vec3 hand = entity.position().add(-Mth.cos(yaw) * 0.38 * side - Mth.sin(yaw) * 0.3, entity.getBbHeight() * 0.5,
+                    -Mth.sin(yaw) * 0.38 * side + Mth.cos(yaw) * 0.3);
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.glow(chakra.mid(), chakra.edge(), 0.55f, 0.2f, 6), hand, 3, 0.12, 0.02);
         }
     }
 
@@ -171,6 +243,9 @@ public final class HyugaTechniques {
         if (palms != null) {
             tickPalms(entity, palms);
         }
+        if (LIONS.containsKey(entity)) {
+            tickLions(entity);
+        }
     }
 
     private static void tickPalms(LivingEntity caster, Palms palms) {
@@ -180,12 +255,12 @@ public final class HyugaTechniques {
             PALMS.remove(caster);
             return;
         }
-        int interval = Math.max(1, palms.duration / WAVES.length);
-        if (elapsed % interval != 0 || palms.wave >= WAVES.length) {
+        int interval = Math.max(1, palms.duration / palms.waves);
+        if (elapsed % interval != 0 || palms.wave >= palms.waves) {
             return;
         }
         int count = WAVES[palms.wave++];
-        boolean last = palms.wave == WAVES.length;
+        boolean last = palms.wave == palms.waves;
         caster.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, target.getEyePosition());
         Vec3 direction = target.position().subtract(caster.position());
         if (last) {
@@ -195,7 +270,8 @@ public final class HyugaTechniques {
             // target out of reach after a few waves, so the technique rarely finished.
             CombatSystem.withoutVanillaKnockback(() -> JutsuEffects.hit(caster, target, palms.damage, 0, palms.posture, 0, direction));
         }
-        Byakugan.closePoints(caster, target, Math.max(1, count / 4), count * 0.4f);
+        Byakugan.internalDamage(caster, target, palms.damage * Byakugan.INTERNAL_DAMAGE); // every wave strikes inside
+        Byakugan.closePoints(caster, target, Math.max(1, count / 2), count * 0.6f);
         if (!last) {
             CombatSystem.stun(target, interval + 6);
         }
@@ -223,9 +299,11 @@ public final class HyugaTechniques {
         final float damage;
         final float posture;
         final float knockback;
+        final int waves;
         int wave;
 
-        Palms(LivingEntity target, long start, int duration, float damage, float posture, float knockback) {
+        Palms(LivingEntity target, long start, int duration, float damage, float posture, float knockback, int waves) {
+            this.waves = waves;
             this.target = target;
             this.start = start;
             this.duration = duration;

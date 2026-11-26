@@ -539,7 +539,7 @@ public final class JutsuCaster {
         if (caster instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
             ninja.addJutsuXp(id, 1);
-            ninja.onJutsuCast();
+            ninja.onJutsuCast(id);
         }
     }
 
@@ -665,7 +665,7 @@ public final class JutsuCaster {
             }
         }
         if ("mode".equals(def.behavior()) && !ModeSystem.isActive(caster, id) && ModeSystem.tooHurtFor(caster, def)) {
-            return Result.TOO_HURT; // the Gates won't open on a body that's already spent
+            return Result.TOO_HURT; // a gate won't reopen while the body is worn out from the last one (EightGates)
         }
         if (com.noirm.workshop.Workshop.castBlocker(caster, id) != null) {
             return Result.TOO_DEMANDING; // a creation heavier than your Reserves, CTL and mastery can carry
@@ -740,6 +740,7 @@ public final class JutsuCaster {
             power *= beastBallScale(ninja.tails());
         }
         power *= com.noirm.senjutsu.SageMode.jutsuPowerMultiplier(caster); // nature energy behind every jutsu
+        power *= com.noirm.entity.ShadowClone.comboPower(caster, id); // a clone helping shape the Rasengan
         power *= com.noirm.traits.Perks.jutsuPowerMultiplier(caster, id, def); // clan blood, talents (genjutsu, medical, sealing)
         return power;
     }

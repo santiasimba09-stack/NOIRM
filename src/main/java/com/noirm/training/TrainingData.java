@@ -29,6 +29,26 @@ public final class TrainingData {
     private boolean wasLockedIn;
     /** What you've done in the current fight, for kill XP ({@link KillXp}; not saved). */
     private final FightLog fight = new FightLog();
+    /** Mental fatigue from shadow clones' memories (CloneTraining), 0..100. */
+    private float cloneFatigue;
+    /** Weighted training (WeightedTraining): seconds worn in total, for its message. */
+    private int weightTicks;
+
+    public float cloneFatigue() {
+        return cloneFatigue;
+    }
+
+    public void setCloneFatigue(float value) {
+        cloneFatigue = Math.max(0f, value);
+    }
+
+    public int weightTicks() {
+        return weightTicks;
+    }
+
+    public void setWeightTicks(int ticks) {
+        weightTicks = Math.max(0, ticks);
+    }
 
     public FightLog fight() {
         return fight;
@@ -116,6 +136,7 @@ public final class TrainingData {
         tag.putFloat("AppliedChakraBonus", appliedChakraBonus);
         tag.putFloat("ControlXp", controlXp);
         tag.putFloat("WillpowerXp", willpowerXp);
+        tag.putFloat("CloneFatigue", cloneFatigue);
         return tag;
     }
 
@@ -127,6 +148,7 @@ public final class TrainingData {
         appliedChakraBonus = tag.getFloat("AppliedChakraBonus");
         controlXp = Math.max(0f, tag.getFloat("ControlXp"));
         willpowerXp = Math.max(0f, tag.getFloat("WillpowerXp"));
+        cloneFatigue = Math.max(0f, tag.getFloat("CloneFatigue"));
         sprintTicks = 0;
         pressureSpent = 0f;
         waterTicks = 0;

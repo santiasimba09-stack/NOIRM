@@ -26,4 +26,23 @@ Quick runner: one system's tests in 2–3 min instead of about 4 min × 2 for th
 610 tests in about 5 min, free.
 
 ## After the tooling wave
-(fill in for the clones-and-training wave)
+### The clones-and-training wave (2026-11-26, branch `claude/wave-clones`)
+| Who | Tokens | Tool calls | Time | Notes |
+|---|---|---|---|---|
+| Crew helper (Sharingan + fusion lessons) | 280k | 74 | 29 min | strongest model (design + UI); ran its own full suite twice |
+| Coordinator (clones, training, Gates, beasts, Byakugan, merge, docs) | not reported to itself | ~110 | one session | built six of the seven items directly |
+
+- **Helpers:** 1 (the cap was 2). Doing the rest in the coordinator avoided briefing and merge costs; the one helper's
+  merge was clean apart from both sides bumping the protocol to 39 (fixed with one more bump, to 40).
+- **Full-suite runs:** 2 by the coordinator at the end (plus the helper's 2). No mid-wave full runs.
+- **Quick runner:** 7 runs (gates/eggs, Hyuga ×4, clones, plus fixes), 1–25 tests each, about 2–3 min each.
+- **Rework:** three red quick runs, each found in one look at the 3-line summary: the JSON `count` default (1)
+  shrinking 64 Palms to one wave; the clone/gate tests needing NPC stats pinned; the internal damage being parried and
+  shoving the target (fixed with a new `CombatSystem.unblockable`).
+- **What helped:** `test.sh <words>` + `gtsummary.py` (the biggest win), `lang.py add` (59 keys, no hand JSON),
+  `protocol.py`, the codemap, docsec.py, the skills' checklists (add-jutsu: behaviour labels, seals; add-entity
+  wasn't needed).
+- **What got in the way:** the protocol "bump once per branch" rule doesn't cover two branches bumping in parallel
+  (both picked 39, the merge was textually clean, so nothing flagged it). Suggestion: `protocol.py check` against the
+  base branch in the merge skill. The helper also notes: squash onto the base commit hash, not the branch name
+  (the branch moved under it).

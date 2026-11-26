@@ -17,6 +17,8 @@ public final class ClientShinobiData {
         latest = packet;
         com.noirm.player.Movement.clientSpeed = packet.speed();
         com.noirm.chakra.WaterWalking.clientChakra = packet.chakra();
+        com.noirm.training.ChakraDrills.clientChakra = packet.chakra();
+        com.noirm.training.ChakraDrills.clientControl = packet.control();
     }
 
     /** The latest values, or null before the server has sent any (e.g. on the title screen). */
