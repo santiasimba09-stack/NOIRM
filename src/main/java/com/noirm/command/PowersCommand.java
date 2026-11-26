@@ -197,7 +197,7 @@ public final class PowersCommand {
                                         .executes(ctx -> learn(ctx.getSource(), ResourceLocationArgument.getId(ctx, "jutsu")))))
                         .then(Commands.literal("mastery").requires(s -> s.hasPermission(CHEATS))
                                 .then(Commands.argument("jutsu", ResourceLocationArgument.id()).suggests(JUTSU)
-                                        .then(Commands.argument("level", IntegerArgumentType.integer(0, JutsuBook.MAX_MASTERY))
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(0, JutsuBook.ABSOLUTE_MAX_MASTERY))
                                                 .executes(ctx -> setMastery(ctx.getSource(), ResourceLocationArgument.getId(ctx, "jutsu"),
                                                         IntegerArgumentType.getInteger(ctx, "level"))))))
                         .then(Commands.literal("equip").requires(s -> s.hasPermission(CHEATS))
@@ -339,7 +339,7 @@ public final class PowersCommand {
         ServerPlayer player = source.getPlayerOrException();
         ShinobiData data = data(source);
         data.jutsu().learn(id, false);
-        int xp = level <= 0 ? 0 : JutsuBook.xpForLevel(level);
+        int xp = level <= 0 ? 0 : JutsuBook.xpForLevel(Math.min(level, JutsuBook.maxMastery(id))); // the jutsu's own ceiling
         data.jutsu().addXp(id, xp - data.jutsu().xp(id));
         com.noirm.clan.NatureSystem.checkMasteryUnlocks(player, data, id);
         data.markPowersDirty();

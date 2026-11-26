@@ -3,6 +3,10 @@
 
   python3 tools/dev/protocol.py            print the current protocol
   python3 tools/dev/protocol.py bump       raise it by one (do this once per branch that changes packets)
+  python3 tools/dev/protocol.py check [base]
+                                           compare with the base branch's value (default origin/main): warns
+                                           when packets changed but the number isn't higher, or when it equals
+                                           the base's (two branches picking the same number). Exit 1 on a warning.
   python3 tools/dev/protocol.py resolve    after a merge conflict on that line: keep the higher of the two
                                            numbers plus one (both branches changed packets) and `git add` the file
                                            if no other conflict is left in it
@@ -33,6 +37,37 @@ def main(argv):
         new = int(m.group(2)) + 1
         open(PATH, 'w', encoding='utf-8').write(LINE.sub(lambda x: f'{x.group(1)}{new}{x.group(3)}', text, count=1))
         print(f'protocol {m.group(2)} -> {new}')
+        return 0
+    if cmd == 'check':
+        base = argv[1] if len(argv) > 1 else 'origin/main'
+        m = LINE.search(text)
+        if not m:
+            print('conflicted (run: protocol.py resolve)')
+            return 1
+        ours = int(m.group(2))
+        got = subprocess.run(['git', 'show', f'{base}:{REL}'], cwd=ROOT, capture_output=True, text=True)
+        if got.returncode != 0:
+            print(f'could not read {REL} on {base}: {got.stderr.strip()}')
+            return 1
+        bm = LINE.search(got.stdout)
+        theirs = int(bm.group(2)) if bm else -1
+        diff = subprocess.run(['git', 'diff', '--name-only', f'{base}...HEAD', '--', 'src/main/java/com/noirm/network/'],
+                              cwd=ROOT, capture_output=True, text=True).stdout.split()
+        dirty = subprocess.run(['git', 'diff', '--name-only', 'HEAD', '--', 'src/main/java/com/noirm/network/'],
+                               cwd=ROOT, capture_output=True, text=True).stdout.split()
+        packets = sorted(set(f for f in diff + dirty if not f.endswith('NoirmNetwork.java')))
+        print(f'protocol: this branch {ours}, {base} {theirs}')
+        if ours < theirs:
+            print(f'WARNING: lower than {base}. Run protocol.py bump (or resolve after merging {base}).')
+            return 1
+        if packets and ours == theirs:
+            print('WARNING: network files changed but PROTOCOL_VERSION equals the base. Run: protocol.py bump')
+            for f in packets:
+                print('  changed:', f)
+            return 1
+        if ours > theirs + 1:
+            print(f'note: more than one above {base}; fine after a merge, otherwise one bump per branch is enough')
+        print('OK')
         return 0
     if cmd == 'resolve':
         block = re.compile(r'<<<<<<< [^\n]*\n(.*?)=======\n(.*?)>>>>>>> [^\n]*\n', re.S)

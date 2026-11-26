@@ -60,38 +60,38 @@ public final class Byakugan {
     /** What a Hyūga starts with (the rest unlock through mastery, see their JSON). */
     public static final List<ResourceLocation> JUTSU = List.of(ROTATION, SIXTY_FOUR_PALMS);
 
-    /** Chakra per tick while open: 0.6/s (regen is 1/s). */
-    public static final float DRAIN_PER_TICK = 0.03f;
+    /** Chakra per tick while open. Wave "Hyūga": 0 (was 0.03 = 0.6/s): the eye is the clan's birthright, not a jutsu. */
+    public static final float DRAIN_PER_TICK = 0f;
     /** How far the eye sees at CTL 10 (chakra silhouettes, the radar). */
-    public static final double SIGHT_RANGE = 40;
+    public static final double SIGHT_RANGE = 64; // wave "Hyūga": was 40
     /** Blocks of sight per CTL point above 10, up to {@link #MAX_SIGHT}. */
-    public static final double SIGHT_PER_CONTROL = 1.5;
-    public static final double MAX_SIGHT = 120;
+    public static final double SIGHT_PER_CONTROL = 3; // was 1.5
+    public static final double MAX_SIGHT = 256; // was 120
     /** X-ray (ores, containers) radius at CTL 10, per CTL point above 10, and at most. */
-    public static final double XRAY_RANGE = 8;
-    public static final double XRAY_PER_CONTROL = 0.2;
-    public static final double MAX_XRAY = 20;
+    public static final double XRAY_RANGE = 12; // was 8
+    public static final double XRAY_PER_CONTROL = 0.3; // was 0.2
+    public static final double MAX_XRAY = 32; // was 20
     /** The blind spot: half-angle of the cone right behind you that the eye misses, at CTL 10. */
     public static final float BLIND_SPOT_DEGREES = 20f;
     /** CTL at which the blind spot is closed for good (it narrows evenly until then). */
-    public static final float BLIND_SPOT_CLOSED_AT = 60f;
-    public static final float GENTLE_FIST_POSTURE = 1.8f;
-    /** Gentle Fist hurts through a guard: 90% gets through (the usual is 25%). It strikes inside the body. */
-    public static final float GENTLE_FIST_GUARD = 0.9f;
+    public static final float BLIND_SPOT_CLOSED_AT = 45f; // was 60 (the blind spot itself stays: a canon cost)
+    public static final float GENTLE_FIST_POSTURE = 2.2f; // was 1.8
+    /** Gentle Fist hurts through a guard: all of it gets through (was 90%; the usual is 25%). It strikes inside the body. */
+    public static final float GENTLE_FIST_GUARD = 1.0f;
     /** Every Gentle Fist hit also deals this share of its damage again as internal damage that ignores armour. */
-    public static final float INTERNAL_DAMAGE = 0.6f;
-    public static final float GENTLE_FIST_CHAKRA = 8f;
+    public static final float INTERNAL_DAMAGE = 0.8f; // was 0.6
+    public static final float GENTLE_FIST_CHAKRA = 12f; // was 8
     /** Chakra points closed per light hit (heavies close twice as many)… */
-    public static final int POINTS_PER_HIT = 3;
+    public static final int POINTS_PER_HIT = 4; // was 3
     /** …plus one more per this many CTL points above 10 (tenketsu targeting: a trained eye strikes true). */
-    public static final float CONTROL_PER_EXTRA_POINT = 15f;
+    public static final float CONTROL_PER_EXTRA_POINT = 10f; // was 15
     /** Closed points needed to seal someone's chakra, and for how long (ticks). */
     public static final int SEAL_POINTS = 24;
-    public static final int SEAL_TICKS = 300;
+    public static final int SEAL_TICKS = 400; // was 300 (15 s → 20 s)
     /** Closed points reopen if no Gentle Fist lands for this long. */
-    public static final int POINTS_RESET_TICKS = 300;
+    public static final int POINTS_RESET_TICKS = 400; // was 300
     /** Twin Lion Fists: points closed and internal damage are multiplied by this while they burn. */
-    public static final float LION_FISTS_MULTIPLIER = 2.5f;
+    public static final float LION_FISTS_MULTIPLIER = 3f; // was 2.5
 
     private static final DustParticleOptions CHAKRA = new DustParticleOptions(new Vector3f(0.55f, 0.75f, 1f), 0.9f);
     private static final Map<LivingEntity, Points> POINTS = new WeakHashMap<>();
@@ -113,7 +113,7 @@ public final class Byakugan {
 
     /** Every server tick for players: the open eye drains chakra. */
     public static void tick(ServerPlayer player, ShinobiData data) {
-        if (!data.eyes().isByakuganActive() || data.awakening().isLockedIn() || player.getAbilities().instabuild) {
+        if (DRAIN_PER_TICK <= 0f || !data.eyes().isByakuganActive() || data.awakening().isLockedIn() || player.getAbilities().instabuild) {
             return;
         }
         if (!data.tryConsumeChakra(DRAIN_PER_TICK)) {

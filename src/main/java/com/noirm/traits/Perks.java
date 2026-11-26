@@ -53,7 +53,8 @@ public final class Perks {
      */
     public static final float NPC_POOL_CAP = 3f;
     private static final java.util.Set<Perk> NPC_SCALED = java.util.EnumSet.of(Perk.MAX_HEALTH, Perk.HEALTH_REGEN,
-            Perk.MELEE_DAMAGE, Perk.DAMAGE_TAKEN, Perk.JUTSU_POWER, Perk.GENJUTSU_POWER);
+            Perk.MELEE_DAMAGE, Perk.DAMAGE_TAKEN, Perk.JUTSU_POWER, Perk.GENJUTSU_POWER,
+            Perk.PARRY_WINDOW, Perk.GUARD); // a Hyūga ninja's guard is good, not a wall (wave "Hyūga")
     /** NPC totals are rebuilt at most this often (ticks). */
     private static final int NPC_CACHE_TICKS = 40;
 
@@ -168,7 +169,8 @@ public final class Perks {
         if (t.isEmpty()) {
             return 1f;
         }
-        float bonus = t.getOrDefault(Perk.JUTSU_POWER, 0f);
+        // A body art (chakra_free: the Hyūga's techniques) isn't ninjutsu: the clan's weak-ninjutsu penalty skips it.
+        float bonus = def.chakraFree() ? 0f : t.getOrDefault(Perk.JUTSU_POWER, 0f);
         if (GENJUTSU_BEHAVIORS.contains(def.behavior())) {
             bonus += t.getOrDefault(Perk.GENJUTSU_POWER, 0f) - ROUGH_GENJUTSU * roughControl(caster, t);
         }

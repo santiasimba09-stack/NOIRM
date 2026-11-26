@@ -101,6 +101,10 @@ public enum Perk {
     BEAST_BOND(Kind.PERCENT, false),
     /** Gentle Fist: chakra drained and points closed per hit (Byakugan.gentleFist). */
     GENTLE_FIST(Kind.PERCENT, false),
+    /** A longer parry window (+0.5 = 50% longer). Read in {@code CombatSystem.parryWindow}. Wave "Hyūga". */
+    PARRY_WINDOW(Kind.PERCENT, false),
+    /** A sturdier guard: less damage and posture get through a guard (+0.3 = 30% less). Read in {@code CombatSystem}. */
+    GUARD(Kind.PERCENT, false),
     /** Affinity added to a combined nature when it's unlocked (NatureSystem.grant). */
     COMBO_AFFINITY(Kind.FLAT, false),
     /** Resolve built in fights (AwakeningSystem.addResolve). */

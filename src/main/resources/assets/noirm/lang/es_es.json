@@ -3910,5 +3910,9 @@
   "message.noirm.clone.too_tired": "Demasiado cansado para sostener otro clon",
   "message.noirm.clone.feint": "¡Finta! %s golpeó a un clon y quedó expuesto",
   "message.noirm.clone.no_clone": "No tienes un clon cerca",
-  "item.noirm.training_weights": "Pesas de entrenamiento"
+  "item.noirm.training_weights": "Pesas de entrenamiento",
+  "perk.noirm.parry_window": "Ventana de parada %s",
+  "perk.noirm.parry_window.desc": "Más tiempo para parar justo al alzar la guardia.",
+  "perk.noirm.guard": "Guardia %s",
+  "perk.noirm.guard.desc": "Menos daño y postura atraviesan tu guardia."
 }

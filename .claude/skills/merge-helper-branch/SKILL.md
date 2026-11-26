@@ -18,6 +18,9 @@ names the `noirm-lang` driver; this sets its command in `.git/config`, shared by
      `git add`s it). Keys changed differently on both sides are listed (ours kept): fix those by hand.
    - **PROTOCOL_VERSION** (`network/NoirmNetwork.java`): `python3 tools/dev/protocol.py resolve`. Rule: both branches
      bumped → one above the higher number, so the merged jar never shares a number with either branch's jar.
+     Before merging (and after), run `python3 tools/dev/protocol.py check [base]` (default `origin/main`): it warns
+     when the branch's number isn't above the base's although network files changed (two branches picked the same
+     number last wave). A warning exits 1.
    - **Generated files** (`docs/COMMANDS.md`, animations, textures): don't hand-merge; rerun the generator
      (`python3 tools/docs/gen_commands.py`, the `tools/*gen` script) after the code merge.
    - **Docs** (STATUS, CHANGELOG): the coordinator's own; keep main's version and add the helper's news by hand.

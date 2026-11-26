@@ -284,7 +284,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         Ui.textRight(g, font, rank, x + w - 5, y + 4, known ? Theme.darken(GOLD, 0.85f) : Theme.darken(LOCKED, 0.8f));
         String line;
         if (known) {
-            line = castSymbol(info.cast()) + " " + Math.round(info.chakraCost()) + "✦  " + stars(card.known().mastery())
+            line = castSymbol(info.cast()) + " " + Math.round(info.chakraCost()) + "✦  " + stars(card.known())
                     + (card.known().copied() ? " ◉" : "");
         } else {
             line = "🔒 " + unlockText(info);
@@ -386,7 +386,7 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         y = wrap(g, Component.translatable("screen.noirm.jutsu.details.cost", Math.round(info.chakraCost()),
                 String.format(Locale.ROOT, "%.1f", info.cooldown() / 20f)), x, y, w, Theme.CHAKRA_LIGHT) + 3;
         if (known != null) {
-            y = wrap(g, Component.translatable("screen.noirm.jutsu.details.mastery", stars(known.mastery())), x, y, w, GOLD) + 1;
+            y = wrap(g, Component.translatable("screen.noirm.jutsu.details.mastery", stars(known)), x, y, w, GOLD) + 1;
         } else {
             y = wrap(g, Component.literal("🔒 " + unlockText(info)), x, y, w, NO) + 1;
             Component scroll = ClientNatureTraining.scrollHint(info); // other routes: jutsu scrolls
@@ -678,8 +678,16 @@ public class JutsuScreen extends Screen implements NoirmStyled {
         return best;
     }
 
-    private static String stars(int mastery) {
-        return "★".repeat(Math.max(0, mastery)) + "☆".repeat(Math.max(0, JutsuBook.MAX_MASTERY - mastery));
+    /** ★★★☆☆ for the usual five levels; "Lv 7/10" for a jutsu with a higher ceiling (the Hyūga techniques). */
+    private static String stars(PowerPackets.JutsuEntry entry) {
+        return stars(entry.mastery(), entry.maxMastery());
+    }
+
+    static String stars(int mastery, int max) {
+        if (max > JutsuBook.DEFAULT_MAX_MASTERY) {
+            return "Lv " + Math.max(0, mastery) + "/" + max;
+        }
+        return "★".repeat(Math.max(0, mastery)) + "☆".repeat(Math.max(0, max - mastery));
     }
 
     private static String castName(int cast) {
