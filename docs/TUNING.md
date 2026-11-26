@@ -86,6 +86,17 @@ Ranges are "safe" in the sense that nothing breaks; outside them, things still w
 | Terrain damage and regrowth | config `world.terrainDestruction`, `world.terrainRegenScale` | On/off; 0.5 = regrows twice as fast | 0.05–100 | config |
 | Gore | config `gore.enabled`, `gore.intensity` | On/off; how fast wounds build and limbs sever | 0–3 | config |
 
+### Creatures (summons and beasts with their own models)
+
+| Wish | File and key | What the number means | Safe range | Apply |
+|---|---|---|---|---|
+| Shukaku bigger or smaller | config `creatures.shukakuScale` | 1.0 = a 1.35 × 2.3 block hitbox (the model is about 3 blocks long); the default 1.3 ≈ 3 blocks tall (canon is building-sized; above ~2.3 the single hitbox gets clumsy) | 0.5–4 | config (an existing Shukaku resizes within 5 s) |
+| Shukaku's tail: snappier or floppier | `TAIL_STIFFNESS` 45 and `TAIL_DAMPING` 8 at the top of `com.noirm.client.beast.ShukakuRenderer` | spring stiffness / damping: higher stiffness = snappier, higher damping = less wobble | 30–80 / 6–12 | code (rebuild) |
+| Creature detail distance (LOD) | `LOD0_DISTANCE` 24 and `LOD1_DISTANCE` 64 in `com.noirm.client.model.CreatureRig` | blocks (divided by the creature's size): full detail nearer than the first, no tail springs/blinks beyond it, minimal beyond the second | 8–64 / 32–160 | code (rebuild) |
+| How often Shukaku idles (sniff, shake off sand, cackle, yawn) | `BeastIdleGoal` lines in `TailedBeast.registerGoals` | duration, then min and max gap, in ticks (20 = 1 s) | gaps 100–2000 | code (rebuild) |
+| Shukaku's charge speed | `CHARGE_SPEED` 1.6 in `com.noirm.entity.BeastFightGoal` | × its walking speed when it charges on all fours | 1–2.5 | code (rebuild) |
+| Air Bullet frequency / wind-up | `DRUM_TICKS` 20, `DRUM_FIRE` 14 and `drumCooldown` (120–200) in `com.noirm.entity.BeastFightGoal`; its damage is `data/noirm/jutsu/futon/vacuum_bullets.json` | ticks | — | code / data + `/reload` |
+
 ### Training and progression
 
 | Wish | File and key | What the number means | Safe range | Apply |

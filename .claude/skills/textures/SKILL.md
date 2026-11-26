@@ -16,6 +16,7 @@ Run every script from the repository root.
 | Worn gear, clan clothing, drapes | `tools/gear/gen_gear.py`, `more_gear.py`, `armor_wave.py`, `clan_wear.py`, `drape_art.py` | `textures/models/armor/`, item icons |
 | Weapon icons, held models, weapon moves | `tools/weapongen/gen_weapons.py`, `gen_held.py`, `gen_moves.py`, `gen_blade_anims.py` | `textures/item/`, `data/noirm/weapons/stats.json`, moves |
 | Animations (moves, styles, seals) | `tools/animgen/gen_anims.py`, `gen_styles.py`, `seals.py` (`motion.py` = the authoring kit) | `assets/noirm/player_animation/`, `data/noirm/jutsu_seals/` |
+| Creatures from the entity skills (Shukaku first) | `tools/beastgen/gen_<id>.py` (model + texture + glow from one script; skill `noirm-entity-textures`) | `models/bb/<id>.bbmodel`, `textures/entity/beast/<id>.png`, `<id>_glow.png` |
 | Hound fur atlas and layers | `tools/houndgen/gen_hound.py` (`atlas.py`, `paint.py`) | `assets/noirm/hound/atlas.json`, `textures/entity/hound/` |
 | Aburame beetles, items, data | `tools/aburamegen/gen_art.py`, `gen_data.py`, `gen_jutsu.py`, `clan_perks.py`, `lang.py` | `textures/entity/aburame/`, Aburame JSON |
 | Blockbench models from code | `tools/models/export_beetle.py` (skill `blockbench-model`) | `assets/noirm/models/bb/*.bbmodel` |

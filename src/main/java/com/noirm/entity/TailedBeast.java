@@ -28,6 +28,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -55,7 +56,9 @@ import org.joml.Vector3f;
  * hitting and kill it (its chakra scatters, to reform some day). If you do neither, it gets back
  * up, angry.
  *
- * <p>Placeholder art: the vanilla hoglin model scaled up (see {@code TailedBeastRenderer}).
+ * <p>Art: the One-Tail is Shukaku, our own Blockbench creature ({@code docs/entities/shukaku.md}, drawn by
+ * {@code client/beast/ShukakuRenderer}); the other eight still use the zoglin placeholder. Every beast carries a synced
+ * {@link Mood} and {@link #ACTION} so a renderer can animate what the server decides.
  */
 public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, CombatListener, JutsuUser, HoglinBase {
     public static final ResourceLocation STYLE = Noirm.id("beast");
@@ -65,7 +68,32 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
 
     private static final EntityDataAccessor<Byte> TAILS = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> SUBDUED = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> MOOD = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> ACTION_ID = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> ACTION_START = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.INT);
     private static final byte ATTACK_EVENT = 4;
+    /** Shukaku's hitbox at scale 1 (blocks; a hunched quadruped, its body about 3 long); {@code creatures.shukakuScale} multiplies it. */
+    public static final float SHUKAKU_WIDTH = 1.35f, SHUKAKU_HEIGHT = 2.3f;
+    /** A mood holds at least this long before it can change (no flicker). */
+    static final int MOOD_HOLD = 30;
+    /** No target and no player near for this long: calm again. */
+    static final int CALM_AFTER = 600;
+
+    /** How the beast feels: the renderer turns it into a posture, a breathing rate and eyes (docs/entities/shukaku.md). */
+    public enum Mood { CALM, ALERT, ANGRY, MANIC, TIRED, SUBDUED;
+        public static Mood of(int id) {
+            return id >= 0 && id < values().length ? values()[id] : CALM;
+        }
+    }
+
+    /** What the beast is doing right now (an idle habit, an attack wind-up, the belly drum). */
+    public static final byte ACTION_NONE = 0, ACTION_CLAW = 1, ACTION_DRUM = 2, ACTION_LAUGH = 3, ACTION_SNIFF = 4,
+            ACTION_SHAKE = 5, ACTION_YAWN = 6, ACTION_ROAR = 7;
+
+    private int moodHeld;
+    private boolean wasOnGround = true;
+    private int quietTicks;
+    private boolean poofed;
 
     private int subduedTicks;
     private int attackAnimation;
@@ -110,12 +138,20 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         super.defineSynchedData();
         entityData.define(TAILS, (byte) 1);
         entityData.define(SUBDUED, false);
+        entityData.define(MOOD, (byte) 0);
+        entityData.define(ACTION_ID, ACTION_NONE);
+        entityData.define(ACTION_START, 0);
     }
 
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new BeastFightGoal(this));
+        // Idle habits (docs/entities/shukaku.md): each runs only when calm and sets ACTION for the renderer.
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SNIFF, 60, 200, 500, true));
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SHAKE, 30, 400, 800, true));
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_LAUGH, 36, 400, 800, true));
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_YAWN, 40, 600, 1200, true));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.6));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 16f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
@@ -143,12 +179,110 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
     }
 
     public float scale() {
-        return scaleFor(tails());
+        return isShukaku() ? shukakuScale() : scaleFor(tails());
+    }
+
+    /** The One-Tail has its own model and shape: an upright tanuki, narrower and taller than the placeholder. */
+    public boolean isShukaku() {
+        return tails() == 1;
+    }
+
+    /** {@code creatures.shukakuScale} (config), read when the size is refreshed, not every tick. */
+    public static float shukakuScale() {
+        return com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.SHUKAKU_SCALE);
     }
 
     @Override
     public EntityDimensions getDimensions(Pose pose) {
+        if (isShukaku()) {
+            return EntityDimensions.scalable(SHUKAKU_WIDTH, SHUKAKU_HEIGHT).scale(shukakuScale());
+        }
         return super.getDimensions(pose).scale(scale());
+    }
+
+    // ---------------------------------------------------------------- mood and actions (synced, for the renderer)
+
+    public Mood mood() {
+        return Mood.of(entityData.get(MOOD));
+    }
+
+    public byte action() {
+        return entityData.get(ACTION_ID);
+    }
+
+    /** Game time the current action started. */
+    public int actionStart() {
+        return entityData.get(ACTION_START);
+    }
+
+    public void setAction(byte action) {
+        if (action() != action || action != ACTION_NONE) {
+            entityData.set(ACTION_ID, action);
+            entityData.set(ACTION_START, (int) level().getGameTime());
+        }
+    }
+
+    public void clearAction(byte action) {
+        if (action() == action) {
+            entityData.set(ACTION_ID, ACTION_NONE);
+        }
+    }
+
+    /** For tests: every idle habit is ready to start now. */
+    public void readyIdleHabits() {
+        goalSelector.getAvailableGoals().forEach(g -> {
+            if (g.getGoal() instanceof BeastIdleGoal idle) {
+                idle.readyNow();
+            }
+        });
+    }
+
+    /** Server, every tick (public for tests): picks the mood from what is happening (the brief's triggers), holding each for {@link #MOOD_HOLD}. */
+    public void updateMood() {
+        Mood now = mood();
+        Mood next = wantedMood(now);
+        if (moodHeld > 0) {
+            moodHeld--;
+        }
+        if (next != now && (moodHeld <= 0 || next == Mood.SUBDUED)) {
+            entityData.set(MOOD, (byte) next.ordinal());
+            moodHeld = MOOD_HOLD;
+            if (next == Mood.ANGRY && now != Mood.MANIC && action() == ACTION_NONE) {
+                setAction(ACTION_ROAR); // the intimidation display; BeastIdleGoal-free, it just plays once
+            }
+        }
+        if (action() == ACTION_ROAR && level().getGameTime() - actionStart() > 30) {
+            clearAction(ACTION_ROAR);
+        }
+    }
+
+    private Mood wantedMood(Mood now) {
+        if (isSubdued()) {
+            return Mood.SUBDUED;
+        }
+        LivingEntity target = getTarget();
+        if (target != null && target.isAlive()) {
+            quietTicks = 0;
+            if (target.getHealth() < target.getMaxHealth() * 0.3f) {
+                return Mood.MANIC; // it smells blood
+            }
+            boolean hurtLately = getLastHurtByMob() != null && tickCount - getLastHurtByMobTimestamp() < 60;
+            if (hurtLately || distanceTo(target) < getBbWidth() / 2 + 5.5) {
+                return Mood.ANGRY;
+            }
+            return getHealth() < getMaxHealth() * 0.35f ? Mood.TIRED : Mood.ALERT;
+        }
+        if (getHealth() < getMaxHealth() * 0.35f) {
+            return Mood.TIRED;
+        }
+        if (level().getNearestPlayer(this, 12) != null) {
+            quietTicks = 0;
+            return Mood.ALERT;
+        }
+        if (now == Mood.CALM || ++quietTicks > CALM_AFTER) {
+            return Mood.CALM;
+        }
+        return now == Mood.ANGRY || now == Mood.MANIC ? Mood.ALERT : now;
     }
 
     @Override
@@ -239,11 +373,19 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         if (attackAnimation > 0) {
             attackAnimation--;
         }
+        if (isShukaku() && tickCount % 100 == 7 && Math.abs(getBbWidth() - SHUKAKU_WIDTH * shukakuScale()) > 0.01f) {
+            refreshDimensions(); // creatures.shukakuScale changed (config reload)
+        }
         if (level().isClientSide()) {
             chakraAura();
             return;
         }
         Threat.tick(this); // turn on whoever is hurting it most
+        if (!poofed) {
+            poofed = true;
+            summonPoof();
+        }
+        updateMood();
         if (tickCount % 100 == 1) {
             CombatStates.get(this).setMaxPosture(150f + 25f * tails());
         }
@@ -257,7 +399,21 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         }
     }
 
+    /** It arrives in a puff of smoke (sand-coloured for Shukaku), sized to the beast. */
+    private void summonPoof() {
+        if (level() instanceof ServerLevel level) {
+            int colour = isShukaku() ? 0xD8C090 : 0xE8E8E8;
+            float size = getBbWidth();
+            com.noirm.vfx.Vfx.burst(level, com.noirm.vfx.Vfx.smoke(colour, 1.2f + size * 0.6f, 30), position().add(0, getBbHeight() * 0.4, 0),
+                    (int) (16 + 10 * size), getBbWidth() * 0.6, 0.08);
+        }
+    }
+
     private void chakraAura() {
+        if (isShukaku()) {
+            sandAura();
+            return;
+        }
         if (isSubdued() || random.nextInt(2) != 0) {
             return;
         }
@@ -266,6 +422,43 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         double w = getBbWidth() * 0.6;
         level().addParticle(dust, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight(),
                 getZ() + (random.nextDouble() - 0.5) * w * 2, 0, 0.02, 0);
+    }
+
+    /** Shukaku's aura: sand dusting off it, thicker when angry; sand pours while it moves, swipes and shakes; a cloud when it lands. */
+    private void sandAura() {
+        boolean landed = onGround() && !wasOnGround;
+        wasOnGround = onGround();
+        if (isSubdued()) {
+            return;
+        }
+        if (landed || action() == ACTION_SHAKE && random.nextInt(2) == 0 || attackAnimation > 6) {
+            sandBurst(landed ? 24 : 6);
+        }
+        Mood mood = mood();
+        int chance = mood == Mood.ANGRY || mood == Mood.MANIC ? 1 : 3;
+        double w = getBbWidth() * 0.6;
+        if (random.nextInt(chance) == 0) {
+            DustParticleOptions sand = new DustParticleOptions(new Vector3f(0.82f, 0.68f, 0.45f), 1.2f);
+            level().addParticle(sand, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.6,
+                    getZ() + (random.nextDouble() - 0.5) * w * 2, 0, -0.01, 0);
+        }
+        if (walkAnimation.speed() > 0.3f && random.nextInt(2) == 0) {
+            net.minecraft.core.particles.BlockParticleOption grains = new net.minecraft.core.particles.BlockParticleOption(
+                    ParticleTypes.FALLING_DUST, net.minecraft.world.level.block.Blocks.SAND.defaultBlockState());
+            level().addParticle(grains, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.7,
+                    getZ() + (random.nextDouble() - 0.5) * w * 2, 0, 0, 0);
+        }
+    }
+
+    /** A puff of sand around the body (client). */
+    private void sandBurst(int count) {
+        net.minecraft.core.particles.BlockParticleOption sand = new net.minecraft.core.particles.BlockParticleOption(
+                ParticleTypes.BLOCK, net.minecraft.world.level.block.Blocks.SAND.defaultBlockState());
+        double w = getBbWidth() * 0.8;
+        for (int i = 0; i < count; i++) {
+            level().addParticle(sand, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.5,
+                    getZ() + (random.nextDouble() - 0.5) * w * 2, (random.nextDouble() - 0.5) * 0.3, 0.1, (random.nextDouble() - 0.5) * 0.3);
+        }
     }
 
     // ---------------------------------------------------------------- combat
@@ -287,12 +480,20 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
 
     @Override
     public float jutsuAffinity(Nature nature) {
-        return 0f;
+        return isShukaku() && nature == Nature.WIND ? 1f : 0f; // Shukaku: the Drilling Air Bullet
     }
 
     @Override
     public void onCombatStateChanged(CombatState state) {
-        if (state.phase() == CombatPhase.ACTIVE && !level().isClientSide()) {
+        if (level().isClientSide()) {
+            return;
+        }
+        if (state.phase() == CombatPhase.WINDUP) {
+            setAction(ACTION_CLAW); // the renderer raises the claws for the whole wind-up
+        } else if (state.phase() == CombatPhase.IDLE || state.phase() == CombatPhase.STAGGER) {
+            clearAction(ACTION_CLAW);
+        }
+        if (state.phase() == CombatPhase.ACTIVE) {
             attackAnimation = 10;
             level().broadcastEntityEvent(this, ATTACK_EVENT);
         }
@@ -321,6 +522,7 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         tag.putInt("Tails", tails());
         tag.putBoolean("Subdued", isSubdued());
         tag.putInt("SubduedTicks", subduedTicks);
+        tag.putBoolean("Poofed", true);
     }
 
     @Override
@@ -337,6 +539,7 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         }
         entityData.set(SUBDUED, tag.getBoolean("Subdued"));
         subduedTicks = tag.getInt("SubduedTicks");
+        poofed = tag.getBoolean("Poofed"); // reloaded from the save: no arrival puff
     }
 
     @Override

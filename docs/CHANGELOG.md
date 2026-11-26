@@ -2,6 +2,36 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-26 — Shukaku, the One-Tail (v0.23.0, branch `claude/wave-shukaku`; protocol 41, unchanged)
+
+The first creature made with the three creature skills (a test of them, the owner's request).
+- **Shukaku** replaces the zoglin look for beast #1 only (the other eight keep the placeholder). Our own Blockbench
+  model (`models/bb/shukaku.bbmodel`, 34 bones, 83 cubes) and ink-style texture + glowing eyes (768 px, 64 px/block),
+  all drawn by `tools/beastgen/gen_shukaku.py`. Brief with verified canon anchors: `docs/entities/shukaku.md`.
+- **A beast (owner's reference notes):** hunched and top-heavy on all fours, long arms as front legs, a huge tail of
+  sand plates arching over its back, swirl/stripe markings and black eye patches, sandstone grain. It walks in
+  diagonal pairs, gallops when it charges, prowls in circles around its prey, and rears up only to roar, swipe or drum.
+- **Alive:** moods (calm, alert, angry, manic, tired, subdued) synced from the server and blended into posture; planted
+  paws and body bob; breathing, seeded blinks, ear flicks; eased head look; spring-driven tail; hurt rock;
+  idle habits (sniffing the ground, shaking off sand, cackling, yawning) as AI goals; a rearing roar when it turns
+  angry; sand pouring off it, a sand cloud when it lands; an arrival puff and scale-in. Two Blockbench clips (`drum`, `laugh`) the owner can edit.
+- **Signature move:** the Drilling Air Bullet: it drums its belly twice (a 14-tick wind-up you can hear), then fires
+  three wind bullets (`futon/vacuum_bullets`). Shukaku has wind affinity.
+- **Size:** hitbox 1.35 × 2.3 × `creatures.shukakuScale` (new config, default 1.3: about 3 blocks tall, 4 long).
+- **Code:** `TailedBeast` gains a synced mood and action for every beast; `entity/BeastIdleGoal`;
+  `client/model/CreatureRig` (shared creature maths) and `client/beast/ShukakuRenderer` + `ShukakuMotion`;
+  `BakedBbModel.animate(name, seconds, weight)` for blending clips. 4 new game tests (`ShukakuGameTests`).
+- **Skills improved** after using them (see the PR): the canon anchors, a "no owner in the loop" rule, reuse an existing
+  entity, rotation signs, the every-other-tick goal gotcha, config reload, the template script and `CreatureRig`.
+
+## 2026-11-26 — Creature skills (branch `claude/entity-skills`)
+
+- Three new skills for making living creatures (summons, tailed beasts, bosses), used in order:
+  `noirm-entity-design` (canon research, manga first; bone tree, scale, moods, idle life → `docs/entities/<id>.md`),
+  `noirm-entity-textures` (`.bbmodel` + 64 px/block ink-style texture and glow mask from `tools/beastgen/`),
+  `noirm-entity-animation` (vanilla procedural animation on `BakedBbModel`, moods, idle AI, configurable scale,
+  multi-part hitboxes, glow, aura, summon smoke, LOD). Docs only; no code changed.
+
 ## 2026-11-26 — NOIRM v0.5 (= v0.22.0): the Hyūga wave (PR #6; protocol 41)
 
 The owner's brief (`docs/WAVE_HYUGA.md`): make the Hyūga the Leaf's strongest clan without building anything new.

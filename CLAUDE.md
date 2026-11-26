@@ -10,7 +10,8 @@ personal meaning to the owner, so keep it.
    docs your task needs (big ones a section at a time: `python3 tools/dev/docsec.py docs/X.md "heading"`).
 2. **The skill for your task** in `.claude/skills/<name>/SKILL.md`: `helper-rules` (every helper), `add-jutsu`,
    `add-entity`, `add-command`, `add-clan-perk`, `game-tests`, `blockbench-model`, `textures`, `client-shot`,
-   `merge-helper-branch`, `release`. They are short checklists pointing at the real files and scripts.
+   `merge-helper-branch`, `release`, and the creature pipeline `noirm-entity-design` →
+   `noirm-entity-textures` → `noirm-entity-animation` (summons, beasts, bosses). They are short checklists pointing at the real files and scripts.
 3. `docs/STATUS.md` (a 3 KB dashboard) when planning or briefing; `docs/COMBAT_DESIGN.md` /
    `docs/POWERS_DESIGN.md` before combat or powers work.
 

@@ -72,6 +72,14 @@ public final class BakedBbModel {
      * position keyframes in pixels, scale as a multiplier. Returns false if there is no such animation.
      */
     public boolean animate(String name, float seconds) {
+        return animate(name, seconds, 1f);
+    }
+
+    /**
+     * Like {@link #animate(String, float)}, with every channel scaled by {@code weight} (0 = no effect, 1 = full), so a
+     * clip can blend in and out over the procedural pose underneath it.
+     */
+    public boolean animate(String name, float seconds, float weight) {
         BbModel.Animation a = source.animations.get(name);
         if (a == null) {
             return false;
@@ -85,21 +93,21 @@ public final class BakedBbModel {
             float[] r = BbGeometry.sample(track.rotation(), t);
             if (r != null) {
                 // Blockbench's preview: x and y rotation keyframes turn the other way from the group rotation fields.
-                p.xRot -= (float) Math.toRadians(r[0]);
-                p.yRot -= (float) Math.toRadians(r[1]);
-                p.zRot += (float) Math.toRadians(r[2]);
+                p.xRot -= (float) Math.toRadians(r[0]) * weight;
+                p.yRot -= (float) Math.toRadians(r[1]) * weight;
+                p.zRot += (float) Math.toRadians(r[2]) * weight;
             }
             float[] pos = BbGeometry.sample(track.position(), t);
             if (pos != null) {
-                p.x -= pos[0];
-                p.y += pos[1];
-                p.z += pos[2];
+                p.x -= pos[0] * weight;
+                p.y += pos[1] * weight;
+                p.z += pos[2] * weight;
             }
             float[] s = BbGeometry.sample(track.scale(), t);
             if (s != null) {
-                p.scaleX *= s[0];
-                p.scaleY *= s[1];
-                p.scaleZ *= s[2];
+                p.scaleX *= 1f + (s[0] - 1f) * weight;
+                p.scaleY *= 1f + (s[1] - 1f) * weight;
+                p.scaleZ *= 1f + (s[2] - 1f) * weight;
             }
         }
         return true;

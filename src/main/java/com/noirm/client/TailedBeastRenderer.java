@@ -3,22 +3,37 @@ package com.noirm.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.noirm.Noirm;
+import com.noirm.client.beast.ShukakuRenderer;
 import com.noirm.entity.TailedBeast;
 import net.minecraft.client.model.HoglinModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Placeholder art until we have an artist: the vanilla zoglin, scaled up with the beast's tails
- * (see {@link TailedBeast#scaleFor}). A subdued beast lies on its side.
+ * The One-Tail is drawn as Shukaku ({@link ShukakuRenderer}, our own Blockbench creature). The other beasts keep the
+ * placeholder until they get theirs: the vanilla zoglin, scaled up with the beast's tails (see
+ * {@link TailedBeast#scaleFor}). A subdued beast lies on its side.
  */
 public class TailedBeastRenderer extends MobRenderer<TailedBeast, HoglinModel<TailedBeast>> {
     private static final ResourceLocation TEXTURE = Noirm.vanillaId("textures/entity/hoglin/zoglin.png");
 
+    private final ShukakuRenderer shukaku;
+
     public TailedBeastRenderer(EntityRendererProvider.Context context) {
         super(context, new HoglinModel<>(context.bakeLayer(ModelLayers.HOGLIN)), 0.9f);
+        shukaku = new ShukakuRenderer(context);
+    }
+
+    @Override
+    public void render(TailedBeast beast, float yaw, float partial, PoseStack stack, MultiBufferSource buffers, int light) {
+        if (beast.isShukaku() && shukaku.renderBeast(beast, yaw, partial, stack, buffers, light)) {
+            shadowRadius = shukaku.shadowRadius();
+            return;
+        }
+        super.render(beast, yaw, partial, stack, buffers, light);
     }
 
     @Override

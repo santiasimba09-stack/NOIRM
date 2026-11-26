@@ -44,6 +44,7 @@ the part you need: `python3 tools/dev/docsec.py docs/X.md` prints the outline, `
 | `SOUND.md` | 12 | Our synthesised sounds (`tools/soundgen`). |
 | `UI.md` | 11 | The UI kit and the Shoji look. Any screen or HUD work. |
 | `ART_STYLE.md` | 13 | Art rules for every generator. Any texture work (skill `textures`). |
+| `entities/<id>.md` | 4-6 | Creature briefs (skill `noirm-entity-design`): canon anchors, bone tree, moods, idle life. `entities/shukaku.md` is the first. Before touching that creature. |
 | `RESEARCH.md` | 10 | General canon research notes. |
 
 ## Reference and how-to
