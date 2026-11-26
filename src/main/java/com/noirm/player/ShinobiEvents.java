@@ -50,7 +50,12 @@ public final class ShinobiEvents {
             return;
         }
         ShinobiCapability.get(player).ifPresent(data -> {
+            float chakraBefore = data.getChakra();
             data.tick();
+            float flow = com.noirm.dojutsu.Byakugan.chakraFlow(player); // Gentle Fist: closed points choke the regen
+            if (flow < 1f && data.getChakra() > chakraBefore) {
+                data.setChakra(chakraBefore + (data.getChakra() - chakraBefore) * flow);
+            }
             TrainingSystem.tick(player, data);
             if (data.consumeDirty()) {
                 NoirmNetwork.sendToPlayer(player, SyncShinobiDataPacket.of(data));

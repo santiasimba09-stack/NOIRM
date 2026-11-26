@@ -93,7 +93,9 @@ public final class ByakuganGameTests {
         helper.runAfterDelay(CombatSystem.PARRY_WINDOW + 4, () -> CombatSystem.requestAttack(attacker, AttackInput.LIGHT));
         helper.succeedWhen(() -> {
             helper.assertTrue(target.getHealth() < NINJA_HEALTH, "blocked jab hasn't landed yet");
-            assertNear(helper, NINJA_HEALTH - 3f * Byakugan.GENTLE_FIST_GUARD, target.getHealth(), "Gentle Fist keeps half its damage through a guard");
+            float throughGuard = 3f * Byakugan.GENTLE_FIST_GUARD;
+            helper.assertTrue(target.getHealth() <= NINJA_HEALTH - throughGuard - 0.2f,
+                    "Gentle Fist keeps almost all its damage through a guard, plus internal damage: " + target.getHealth());
             helper.assertTrue(Byakugan.closedPoints(target) > 0, "Gentle Fist closes chakra points");
         });
     }
@@ -105,7 +107,7 @@ public final class ByakuganGameTests {
         SparringNinja plain = ninja(helper, 0.5f, 2.0f, TestClans.PLAIN);
         face(attacker, hyuga);
         face(hyuga, attacker);
-        hyuga.setYHeadRot(hyuga.getYHeadRot() + 180f); // back turned
+        hyuga.setYHeadRot(hyuga.getYHeadRot() + 135f); // back turned (but not dead behind: that's the blind spot)
         plain.setYHeadRot(hyuga.getYHeadRot());
         CombatSystem.setGuard(hyuga, true);
         CombatSystem.setGuard(plain, true);
@@ -116,6 +118,19 @@ public final class ByakuganGameTests {
                     "the Byakugan blocks attacks from behind");
             helper.assertTrue(CombatSystem.classify(plain, plainState, attacker) == CombatSystem.Outcome.HIT,
                     "without it, a turned back gets hit");
+            // The blind spot: dead behind the neck the eye doesn't see, until chakra control closes it.
+            hyuga.setCombatStats(hyuga.combatSpeed(), 10f); // an untrained eye (an NPC's CTL follows its taijutsu)
+            face(hyuga, attacker);
+            hyuga.setYRot(hyuga.getYRot() + 180f); // dead behind
+            hyuga.setYBodyRot(hyuga.getYRot());
+            hyuga.setYHeadRot(hyuga.getYRot());
+            helper.assertTrue(Byakugan.inBlindSpot(hyuga, attacker), "dead behind is the blind spot");
+            helper.assertTrue(CombatSystem.classify(hyuga, hyugaState, attacker) == CombatSystem.Outcome.HIT,
+                    "an attack from the blind spot gets through");
+            hyuga.setCombatStats(hyuga.combatSpeed(), Byakugan.BLIND_SPOT_CLOSED_AT + 1); // an NPC's CTL follows its taijutsu
+            helper.assertFalse(Byakugan.inBlindSpot(hyuga, attacker), "a trained eye has no blind spot");
+            helper.assertTrue(CombatSystem.classify(hyuga, hyugaState, attacker) == CombatSystem.Outcome.GUARDED,
+                    "and guards that too");
             helper.succeed();
         });
     }
@@ -133,6 +148,61 @@ public final class ByakuganGameTests {
         helper.assertTrue(JutsuCaster.checkRequirements(target, fireball, JutsuData.get(fireball)) == JutsuCaster.Result.SEALED,
                 "a sealed ninja can't cast");
         helper.succeed();
+    }
+
+    /** Range and the blind spot follow chakra control; internal damage ignores armour (wave clones). */
+    @GameTest(template = "empty")
+    public static void theEyeGrowsWithControlAndTheFistIgnoresArmour(GameTestHelper helper) {
+        assertNear(helper, (float) Byakugan.SIGHT_RANGE, (float) Byakugan.sightRange(10f), "40 blocks at the start");
+        helper.assertTrue(Byakugan.sightRange(50f) > Byakugan.sightRange(10f), "more CTL, more range");
+        assertNear(helper, (float) Byakugan.MAX_SIGHT, (float) Byakugan.sightRange(500f), "up to the cap");
+        helper.assertTrue(Byakugan.blindSpotDegrees(10f) > 0f && Byakugan.blindSpotDegrees(Byakugan.BLIND_SPOT_CLOSED_AT) == 0f,
+                "the blind spot closes with CTL");
+        helper.assertTrue(Byakugan.xrayRange(30f) > Byakugan.xrayRange(10f), "the x-ray reaches further too");
+        SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);
+        SparringNinja armoured = ninja(helper, 1.5f, 2.0f, TestClans.PLAIN);
+        armoured.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NETHERITE_CHESTPLATE));
+        armoured.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NETHERITE_LEGGINGS));
+        float before = armoured.getHealth();
+        Byakugan.internalDamage(attacker, armoured, 6f);
+        helper.assertTrue(before - armoured.getHealth() >= 4.5f, "internal damage goes straight through netherite: " + (before - armoured.getHealth()));
+        helper.succeed();
+    }
+
+    /** Closed points choke a player's chakra; a seal empties it (wave clones). */
+    @GameTest(template = "empty")
+    public static void closedPointsShutOffChakra(GameTestHelper helper) {
+        SparringNinja attacker = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);
+        Player player = helper.makeMockPlayer();
+        ShinobiData data = ShinobiCapability.get(player).orElseThrow(IllegalStateException::new);
+        data.setChakra(data.getMaxChakra());
+        helper.assertTrue(Byakugan.chakraFlow(player) == 1f, "chakra flows freely");
+        Byakugan.closePoints(attacker, player, Byakugan.SEAL_POINTS / 2, 0f);
+        helper.assertTrue(Byakugan.chakraFlow(player) < 0.6f, "half the points closed: regen falls: " + Byakugan.chakraFlow(player));
+        Byakugan.closePoints(attacker, player, Byakugan.SEAL_POINTS, 0f);
+        helper.assertTrue(Byakugan.isSealed(player) && Byakugan.chakraFlow(player) == 0f, "sealed: no flow at all");
+        helper.assertTrue(data.getChakra() <= 0.01f, "and the chakra is emptied: " + data.getChakra());
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "noirm_air_palm", timeoutTicks = 60)
+    public static void airPalmAndLionFists(GameTestHelper helper) {
+        SparringNinja hyuga = ninja(helper, 1.5f, 0.5f, TestClans.BYAKUGAN);
+        SparringNinja target = ninja(helper, 1.5f, 4.5f, TestClans.PLAIN);
+        face(hyuga, target);
+        helper.assertTrue(JutsuCaster.npcCast(hyuga, Byakugan.AIR_PALM, 1f), "the Air Palm");
+        helper.assertTrue(target.getHealth() < NINJA_HEALTH, "hits from range");
+        helper.assertTrue(Byakugan.closedPoints(target) > 0, "and closes points");
+        helper.assertTrue(JutsuData.get(Byakugan.HUNDRED_TWENTY_EIGHT_PALMS).params().count() == 7, "128 Palms is seven waves");
+        SparringNinja dummy = ninja(helper, 0.5f, 1.5f, TestClans.PLAIN);
+        Byakugan.gentleFist(hyuga, dummy, false);
+        int plain = Byakugan.closedPoints(dummy);
+        helper.assertTrue(JutsuCaster.npcCast(hyuga, Byakugan.TWIN_LION_FISTS, 1f), "the Twin Lion Fists");
+        helper.assertTrue(HyugaTechniques.lionFistsActive(hyuga), "burning on both fists");
+        SparringNinja other = ninja(helper, 2.5f, 1.5f, TestClans.PLAIN);
+        Byakugan.gentleFist(hyuga, other, false);
+        helper.assertTrue(Byakugan.closedPoints(other) >= plain * 2, "each palm closes far more points: " + Byakugan.closedPoints(other) + " vs " + plain);
+        clearKnockedAway(helper);
     }
 
     @GameTest(template = "empty", batch = SPIN_BATCH)
@@ -162,7 +232,7 @@ public final class ByakuganGameTests {
                 return;
             }
             helper.assertTrue(target.getHealth() < NINJA_HEALTH, "the palms should hurt");
-            helper.assertTrue(Byakugan.isSealed(target), "64 palms close enough points to seal");
+            helper.assertTrue(Byakugan.isSealed(target), "64 palms close enough points to seal: closed " + Byakugan.closedPoints(target) + ", hp " + target.getHealth() + ", dist " + target.distanceTo(hyuga));
             clearKnockedAway(helper);
         });
     }

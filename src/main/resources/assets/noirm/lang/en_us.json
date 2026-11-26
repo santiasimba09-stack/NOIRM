@@ -3849,5 +3849,11 @@
   "item.noirm.tailed_beast_6_spawn_egg": "Tailed Beast Spawn Egg (6)",
   "item.noirm.tailed_beast_7_spawn_egg": "Tailed Beast Spawn Egg (7)",
   "item.noirm.tailed_beast_8_spawn_egg": "Tailed Beast Spawn Egg (8)",
-  "item.noirm.tailed_beast_9_spawn_egg": "Tailed Beast Spawn Egg (9)"
+  "item.noirm.tailed_beast_9_spawn_egg": "Tailed Beast Spawn Egg (9)",
+  "jutsu.noirm.byakugan.hundred_twenty_eight_palms": "Eight Trigrams 128 Palms",
+  "jutsu.noirm.byakugan.air_palm": "Eight Trigrams Air Palm",
+  "jutsu.noirm.byakugan.twin_lion_fists": "Gentle Step Twin Lion Fists",
+  "screen.noirm.jutsu.behavior.air_palm": "Air palm",
+  "screen.noirm.jutsu.behavior.lion_fists": "Lion fists",
+  "message.noirm.lion_fists.on": "Twin Lion Fists: every palm closes far more points"
 }

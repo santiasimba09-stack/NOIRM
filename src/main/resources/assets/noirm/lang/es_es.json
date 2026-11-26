@@ -3849,5 +3849,11 @@
   "item.noirm.tailed_beast_6_spawn_egg": "Huevo generador de bestia con cola (6)",
   "item.noirm.tailed_beast_7_spawn_egg": "Huevo generador de bestia con cola (7)",
   "item.noirm.tailed_beast_8_spawn_egg": "Huevo generador de bestia con cola (8)",
-  "item.noirm.tailed_beast_9_spawn_egg": "Huevo generador de bestia con cola (9)"
+  "item.noirm.tailed_beast_9_spawn_egg": "Huevo generador de bestia con cola (9)",
+  "jutsu.noirm.byakugan.hundred_twenty_eight_palms": "Ocho Trigramas: 128 Palmas",
+  "jutsu.noirm.byakugan.air_palm": "Ocho Trigramas: Palma de Vacío",
+  "jutsu.noirm.byakugan.twin_lion_fists": "Paso Suave: Puños de los Leones Gemelos",
+  "screen.noirm.jutsu.behavior.air_palm": "Palma de aire",
+  "screen.noirm.jutsu.behavior.lion_fists": "Puños de león",
+  "message.noirm.lion_fists.on": "Puños de los Leones Gemelos: cada palma cierra muchos más puntos"
 }

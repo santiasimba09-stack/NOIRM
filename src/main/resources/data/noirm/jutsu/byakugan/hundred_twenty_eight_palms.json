@@ -1,0 +1,7 @@
+{
+  "cast": "tap", "behavior": "palms", "rank": "S",
+  "requires": { "dojutsu": "byakugan", "stage": 1 },
+  "chakra_cost": 50, "cooldown": 600,
+  "unlock": { "after": "noirm:byakugan/sixty_four_palms", "mastery": 2 },
+  "params": { "range": 3.5, "damage": 1.6, "posture": 10, "knockback": 2.6, "duration": 44, "count": 7 }
+}

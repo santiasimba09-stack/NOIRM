@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** NOIRM's network channel: every packet between server and client is registered here. */
 public final class NoirmNetwork {
     /** Bump this when packets change, so mismatched client/server versions refuse to connect. */
-    private static final String PROTOCOL_VERSION = "38";
+    private static final String PROTOCOL_VERSION = "39";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Noirm.id("main"),
@@ -143,6 +143,10 @@ public final class NoirmNetwork {
         CHANNEL.messageBuilder(com.noirm.aburame.ColonyPackets.Command.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.noirm.aburame.ColonyPackets.Command::encode).decoder(com.noirm.aburame.ColonyPackets.Command::decode)
                 .consumerMainThread(com.noirm.aburame.ColonyPackets.Command::handle).add();
+        // Gentle Fist: closed chakra points, for the Byakugan's point sight (wave clones).
+        CHANNEL.messageBuilder(PowerPackets.Tenketsu.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerPackets.Tenketsu::encode).decoder(PowerPackets.Tenketsu::decode)
+                .consumerMainThread(PowerPackets.Tenketsu::handle).add();
     }
 
     /** Sends to every player within {@code radius} blocks of {@code at}. */
