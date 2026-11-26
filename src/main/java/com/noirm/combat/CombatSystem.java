@@ -455,7 +455,7 @@ public final class CombatSystem {
         if (state.phase == CombatPhase.DODGE && state.phaseTime < state.dodgeIframes) {
             return Outcome.DODGED;
         }
-        if (state.guarding && attacker != null && (isFacing(target, attacker) || Byakugan.isActive(target))) {
+        if (state.guarding && attacker != null && (isFacing(target, attacker) || Byakugan.sees(target, attacker))) {
             long sinceRaised = target.level().getGameTime() - state.guardStartTick;
             return sinceRaised <= parryWindow(target) ? Outcome.PARRIED : Outcome.GUARDED;
         }
@@ -489,6 +489,23 @@ public final class CombatSystem {
             hit.run();
         } finally {
             quietKnockback = was;
+        }
+    }
+
+    /**
+     * Runs {@code hit} as damage no guard, parry or dodge can stop and with no vanilla push: the Gentle Fist's
+     * internal damage, which lands inside the body after the palm already connected.
+     */
+    public static void unblockable(Runnable hit) {
+        boolean was = applyingHit;
+        boolean quiet = quietKnockback;
+        applyingHit = true;
+        quietKnockback = true;
+        try {
+            hit.run();
+        } finally {
+            applyingHit = was;
+            quietKnockback = quiet;
         }
     }
 
@@ -1137,7 +1154,7 @@ public final class CombatSystem {
 
         TrainingSystem.onHitLanded(attacker, target, hit.isHeavy(), guarded);
         if (gentleFist) {
-            Byakugan.gentleFist(attacker, target, hit.isHeavy());
+            Byakugan.gentleFist(attacker, target, hit.isHeavy(), damage); // internal damage, closed points, chakra shut off
         }
         int hitstop = Math.min(MAX_HITSTOP, guarded ? hit.hitstop() / 2 : splatted ? hit.hitstop() + WALL_SPLAT_HITSTOP : hit.hitstop());
         attackerState.hitstop = Math.max(attackerState.hitstop, hitstop);

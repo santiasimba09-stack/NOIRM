@@ -48,6 +48,26 @@ public final class BijuGameTests {
         cleanUp(helper);
     }
 
+    /** Every beast has its own spawn egg that spawns exactly that beast (wave clones). */
+    @GameTest(template = "empty", batch = BEAST_BATCH)
+    public static void eachBeastHasItsOwnSpawnEgg(GameTestHelper helper) {
+        floor(helper);
+        helper.assertTrue(NoirmItems.BEAST_SPAWN_EGGS.size() == 9, "nine beast eggs");
+        for (int tails = 1; tails <= 9; tails++) {
+            var egg = (com.noirm.biju.BeastEggItem) NoirmItems.BEAST_SPAWN_EGGS.get(tails - 1).get();
+            helper.assertTrue(egg.tails() == tails, "egg " + tails + " is for the " + tails + "-tails");
+            ItemStack stack = new ItemStack(egg); // as from /give: no tag yet
+            egg.stamp(stack);
+            helper.assertTrue(stack.getTag().getCompound("EntityTag").getInt("Tails") == tails, "the egg writes its tail count");
+        }
+        ItemStack three = NoirmItems.BEAST_SPAWN_EGGS.get(2).get().getDefaultInstance();
+        TailedBeast beast = (TailedBeast) NoirmEntities.TAILED_BEAST.get().spawn(helper.getLevel(), three, null,
+                helper.absolutePos(new BlockPos(1, 1, 1)), net.minecraft.world.entity.MobSpawnType.SPAWN_EGG, false, false);
+        helper.assertTrue(beast != null && beast.tails() == 3, "the Three-Tails egg spawns the Three-Tails");
+        beast.setNoAi(true);
+        cleanUp(helper);
+    }
+
     @GameTest(template = "empty", batch = BEAST_BATCH)
     public static void beastsAreSubduedThenSealedOrKilled(GameTestHelper helper) {
         floor(helper);

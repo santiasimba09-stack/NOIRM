@@ -1,0 +1,7 @@
+{
+  "cast": "tap", "behavior": "air_palm", "rank": "B", "quick": true,
+  "requires": { "dojutsu": "byakugan", "stage": 1 },
+  "chakra_cost": 15, "cooldown": 80,
+  "unlock": { "after": "noirm:byakugan/rotation", "mastery": 1 },
+  "params": { "range": 10, "damage": 5, "posture": 25, "knockback": 2.2, "count": 4 }
+}

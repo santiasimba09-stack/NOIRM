@@ -92,6 +92,11 @@ Ranges are "safe" in the sense that nothing breaks; outside them, things still w
 | More ryo | config `progression.ryoRewards` | Missions and bounties | 0–10 | config |
 | One clan trains a stat faster | `data/noirm/clans/<clan>.json` → `perks.xp_taijutsu` (or `xp_speed`, `xp_reserves`…) | +fraction (`3.0` = ×4) | −0.9…5 | data + `/reload` |
 | The solo-drill cap (30) and XP per hit, dodge, parry | constants at the top of `com.noirm.training.TrainingSystem` (`DRILL_CAP`, `HIT_XP`, `PARRY_XP`…) | XP points | — | code (rebuild) |
+| Shadow clone training: share each idle clone banks, fatigue per clone/XP, tired/exhausted lines, decay | constants at the top of `com.noirm.training.CloneTraining` (`CLONE_TRAIN_SHARE` 0.8, `FATIGUE_PER_CLONE` 3, `TIRED_AT` 40, `EXHAUSTED_AT` 75, `NO_CLONES_AT` 95) | shares and fatigue points (0–100) | — | code (rebuild) |
+| Shadow clones: solid hit, feint stun, Rasengan bonus, Multi cap, chakra per clone | constants at the top of `com.noirm.entity.ShadowClone` (`SOLID_HIT` 1.5, `FEINT_STUN_TICKS` 16, `RASENGAN_CLONE_BONUS` 1.5, `MULTI_MAX` 24, `MIN_CHAKRA_SHARE` 10) | damage, ticks, multipliers, counts | — | code (rebuild) |
+| Training weights, leaf and climbing drills | `com.noirm.training.WeightedTraining` (`XP_MULTIPLIER` 1.5, `SLOW` 0.2), `ChakraDrills` (`LEAF_XP`, `CLIMB_XP`, `WALL_CONTROL` 30) | multipliers, XP | — | code (rebuild) |
+| Eight Gates time limit | constants at the top of `com.noirm.jutsu.EightGates` (`BASE_SECONDS`, seconds per DUR/WIL/TAI/VIT point, `RESOLVE_BONUS_SECONDS`, `TIER_COST`, `UNLIMITED_AVERAGE` 35/45…) | seconds; the stat average with no limit | — | code (rebuild) |
+| Byakugan and Gentle Fist | constants at the top of `com.noirm.dojutsu.Byakugan` (`SIGHT_PER_CONTROL`, `BLIND_SPOT_DEGREES`, `GENTLE_FIST_GUARD` 0.9, `INTERNAL_DAMAGE` 0.6, `SEAL_TICKS` 300…); jutsu numbers in `data/noirm/jutsu/byakugan/*.json` | shares, ticks, blocks | — | code / data + `/reload` |
 | Pills stronger | config `medicine.pillStrength`; one pill: `data/noirm/pills/<pill>.json` | Multiplier; the pill's own boosts | 0.1–5 | config / data + `/reload` |
 
 ### The Inuzuka hound
@@ -111,6 +116,15 @@ Ranges are "safe" in the sense that nothing breaks; outside them, things still w
 | Jar, gourd and hive sizes | same class → `JAR_CAPACITY`, `GOURD_CAPACITY`, `HIVE_CAPACITY`, `MAX_HIVES` | Insects each holds | — | code (rebuild) |
 | Breeding speed | same class → `BREED_SHARE_PER_MIN`, `BREED_FLAT_PER_MIN` | Share of the colony and flat insects added per minute | — | code (rebuild) |
 | An insect technique's cost | `data/noirm/jutsu/aburame/<jutsu>.json` → `hiden.insects`, `hiden.share` | Insects it spends (flat, or a share of the colony) | — | data + `/reload` |
+
+### Crew mates' eyes and fusions
+
+| Wish | File and key | What the number means | Safe range | Apply |
+|---|---|---|---|---|
+| Fusion lessons faster or slower | constants at the top of `com.noirm.ally.CrewFusion` → `FUSION_SECONDS` (4800), `APTITUDE_RATE` (3), `BORN_RATE` (1), `TAUGHT_RATE` (0.35) | Seconds of full-pace study (1,200 = a Minecraft day); pace multipliers by who they are | — | code (rebuild) |
+| Which clan is gifted for which mix | same class → `APTITUDE` | Clan id → natures (Senju → Wood…) | — | code (rebuild) |
+| A crew mate's Sharingan grows faster | constants at the top of `com.noirm.ally.CrewEyes` → `FIGHT_XP_PER_SECOND`, `HIT_XP`, `DANGER_XP`; tomoe thresholds `Sharingan.STAGE_XP` | Growth points (300 for 2 tomoe, 1,200 for 3) | — | code (rebuild) |
+| When "near death" awakens an Uchiha crew mate | `CrewEyes.DANGER_HEALTH` (0.3), `DANGER_RANGE` (24) | Share of max health; blocks | — | code (rebuild) |
 
 ## Telling Claude what you changed
 

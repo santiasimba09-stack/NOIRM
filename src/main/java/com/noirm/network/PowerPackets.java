@@ -311,6 +311,24 @@ public final class PowerPackets {
     }
 
     /** Sharingan precognition: {@code attackerId} will strike in about {@code ticks}. */
+    /** Gentle Fist: how many of {@code entityId}'s chakra points are closed, and ticks left sealed (the Byakugan's point sight). */
+    public record Tenketsu(int entityId, int closed, int sealedTicks) {
+        public void encode(FriendlyByteBuf buf) {
+            buf.writeVarInt(entityId);
+            buf.writeVarInt(closed);
+            buf.writeVarInt(sealedTicks);
+        }
+
+        public static Tenketsu decode(FriendlyByteBuf buf) {
+            return new Tenketsu(buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
+        }
+
+        public void handle(Supplier<NetworkEvent.Context> context) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPowers.tenketsu(this));
+            context.get().setPacketHandled(true);
+        }
+    }
+
     public record Precognition(int attackerId, int ticks) {
         public void encode(FriendlyByteBuf buf) {
             buf.writeVarInt(attackerId);

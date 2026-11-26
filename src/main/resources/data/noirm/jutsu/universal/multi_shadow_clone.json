@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "shadow_clone", "rank": "A",
+  "chakra_cost": 40, "cooldown": 900,
+  "unlock": { "after": "noirm:universal/shadow_clone", "mastery": 3 },
+  "params": { "count": 24, "duration": 900 }
+}

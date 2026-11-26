@@ -68,6 +68,12 @@ public final class CrewCommand {
                 .then(Commands.literal("attack").executes(ctx -> attack(ctx.getSource())))
                 .then(Commands.literal("lesson").then(Commands.argument("nature", StringArgumentType.word()).suggests(JutsuExtraCommand.NATURES)
                         .executes(ctx -> lesson(ctx.getSource(), StringArgumentType.getString(ctx, "nature")))))
+                .then(Commands.literal("fuse").then(Commands.argument("nature", StringArgumentType.word()).suggests(JutsuExtraCommand.NATURES)
+                        .executes(ctx -> fuse(ctx.getSource(), StringArgumentType.getString(ctx, "nature")))))
+                .then(Commands.literal("eye").executes(ctx -> eye(ctx.getSource())))
+                .then(Commands.literal("sharingan").requires(s -> s.hasPermission(Cmd.CHEATS))
+                        .then(Commands.argument("tomoe", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
+                                .executes(ctx -> sharingan(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "tomoe")))))
                 .then(Commands.literal("teachjutsu")
                         .then(Commands.literal("all").executes(ctx -> teachJutsu(ctx.getSource(), null)))
                         .then(Commands.argument("jutsu", net.minecraft.commands.arguments.ResourceLocationArgument.id())
@@ -225,6 +231,47 @@ public final class CrewCommand {
             }
         }
         return Cmd.ok(source, "command.noirm.crew.lesson_started", started, Component.translatable(nature.translationKey()));
+    }
+
+    /** Every crew mate who can starts fusing a combined nature of their own parts (ally/CrewFusion). */
+    static int fuse(CommandSourceStack source, String name) throws CommandSyntaxException {
+        Nature nature = JutsuExtraCommand.nature(name);
+        if (nature == null) {
+            return Cmd.fail(source, "command.noirm.nature.unknown", name);
+        }
+        ServerPlayer player = Cmd.player(source);
+        int started = 0;
+        for (SparringNinja ninja : members(player)) {
+            if (com.noirm.ally.CrewFusion.start(player, ninja, nature)) {
+                started++;
+            }
+        }
+        return Cmd.ok(source, "command.noirm.crew.fusion_started", started, Component.translatable(nature.translationKey()));
+    }
+
+    /** Gives the crew mate you're looking at the Sharingan eye you carry (ally/CrewEyes). */
+    static int eye(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = Cmd.player(source);
+        SparringNinja ninja = Cmd.lookedAt(player, SparringNinja.class, 24);
+        if (ninja == null || !player.getUUID().equals(ninja.leaderId())) {
+            return Cmd.fail(source, "command.noirm.crew.no_mate");
+        }
+        net.minecraft.world.item.ItemStack stack = com.noirm.ally.CrewEyes.eyeFor(player, ninja);
+        if (stack.isEmpty()) {
+            return Cmd.fail(source, "message.noirm.crew_eye.none", ninja.getDisplayName());
+        }
+        return com.noirm.ally.CrewEyes.giveEye(player, ninja, stack).success() ? 1 : 0;
+    }
+
+    /** Sets every crew mate's Sharingan (cheats; for testing). */
+    static int sharingan(CommandSourceStack source, int tomoe) throws CommandSyntaxException {
+        return each(source, "command.noirm.crew.sharingan", ninja -> {
+            if (tomoe > 0 && !com.noirm.ally.CrewEyes.bornUchiha(ninja)) {
+                ninja.allyState().setEyeImplanted(true);
+            }
+            ninja.allyState().setEyeXp(0f);
+            com.noirm.ally.CrewEyes.setStage(ninja, tomoe);
+        }, tomoe);
     }
 
     /** Teaches everyone a jutsu of yours (or all you can), queuing its nature first where needed. */
