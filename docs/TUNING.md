@@ -92,6 +92,11 @@ Ranges are "safe" in the sense that nothing breaks; outside them, things still w
 | More ryo | config `progression.ryoRewards` | Missions and bounties | 0–10 | config |
 | One clan trains a stat faster | `data/noirm/clans/<clan>.json` → `perks.xp_taijutsu` (or `xp_speed`, `xp_reserves`…) | +fraction (`3.0` = ×4) | −0.9…5 | data + `/reload` |
 | The solo-drill cap (30) and XP per hit, dodge, parry | constants at the top of `com.noirm.training.TrainingSystem` (`DRILL_CAP`, `HIT_XP`, `PARRY_XP`…) | XP points | — | code (rebuild) |
+| Shadow clone training: share each idle clone banks, fatigue per clone/XP, tired/exhausted lines, decay | constants at the top of `com.noirm.training.CloneTraining` (`CLONE_TRAIN_SHARE` 0.8, `FATIGUE_PER_CLONE` 3, `TIRED_AT` 40, `EXHAUSTED_AT` 75, `NO_CLONES_AT` 95) | shares and fatigue points (0–100) | — | code (rebuild) |
+| Shadow clones: solid hit, feint stun, Rasengan bonus, Multi cap, chakra per clone | constants at the top of `com.noirm.entity.ShadowClone` (`SOLID_HIT` 1.5, `FEINT_STUN_TICKS` 16, `RASENGAN_CLONE_BONUS` 1.5, `MULTI_MAX` 24, `MIN_CHAKRA_SHARE` 10) | damage, ticks, multipliers, counts | — | code (rebuild) |
+| Training weights, leaf and climbing drills | `com.noirm.training.WeightedTraining` (`XP_MULTIPLIER` 1.5, `SLOW` 0.2), `ChakraDrills` (`LEAF_XP`, `CLIMB_XP`, `WALL_CONTROL` 30) | multipliers, XP | — | code (rebuild) |
+| Eight Gates time limit | constants at the top of `com.noirm.jutsu.EightGates` (`BASE_SECONDS`, seconds per DUR/WIL/TAI/VIT point, `RESOLVE_BONUS_SECONDS`, `TIER_COST`, `UNLIMITED_AVERAGE` 35/45…) | seconds; the stat average with no limit | — | code (rebuild) |
+| Byakugan and Gentle Fist | constants at the top of `com.noirm.dojutsu.Byakugan` (`SIGHT_PER_CONTROL`, `BLIND_SPOT_DEGREES`, `GENTLE_FIST_GUARD` 0.9, `INTERNAL_DAMAGE` 0.6, `SEAL_TICKS` 300…); jutsu numbers in `data/noirm/jutsu/byakugan/*.json` | shares, ticks, blocks | — | code / data + `/reload` |
 | Pills stronger | config `medicine.pillStrength`; one pill: `data/noirm/pills/<pill>.json` | Multiplier; the pill's own boosts | 0.1–5 | config / data + `/reload` |
 
 ### The Inuzuka hound

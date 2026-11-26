@@ -1,5 +1,5 @@
 {
-  "cast": "tap", "behavior": "clone_swap", "rank": "C", "quick": true,
+  "cast": "tap", "behavior": "clone_swap", "rank": "B", "quick": true,
   "chakra_cost": 5, "cooldown": 60,
   "unlock": { "after": "noirm:universal/shadow_clone", "mastery": 1 },
   "params": { "range": 24 }

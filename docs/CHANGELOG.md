@@ -2,6 +2,19 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-26 — The clones-and-training wave (branch `claude/wave-clones`, protocol 40)
+
+The owner's queued requests (`docs/WAVE_NEXT.md`).
+- **Shadow clones closer to canon:** split chakra, one-hit pop, memories and mental fatigue, scouting, clones training
+  on dummies, Multi Shadow Clone (up to 24), Clone Swap, clone-assisted Rasengan, feints.
+- **Training:** clone training (N clones ≈ N× the learning, paid in fatigue), training weights, leaf focus and tree
+  climbing drills.
+- **Crew mates:** a Sharingan by transplant or awakening; fusion lessons (a Senju mate learns Wood Release).
+- **Eight Gates:** no self-damage or screen shake; a time limit from DUR/WIL/TAI/VIT/Resolve; no limit from mid-game.
+- **Tailed beasts:** nine spawn eggs, one per beast.
+- **Gentle Fist and Byakugan:** internal damage through armour and guards, chakra shut-off, CTL-scaled range, blind
+  spot, x-ray, point sight; 128 Palms, Air Palm, Twin Lion Fists.
+
 ## 2026-11-25 — NOIRM v0.3 (= v0.20.0): creator + Shoji UI, clan clothing, clan boosts, the Aburame (branch `claude/keen-cray-uc2d11`, PR #1)
 
 The owner's v0.3 plan (`docs/WAVE_V03.md`). Shipped on the owner's word while the Aburame were still being finished.

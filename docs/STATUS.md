@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-26 · branch `claude/keen-cray-uc2d11` · protocol 38 · a short dashboard: history lives in
+_Last updated: 2026-11-26 · branch `claude/wave-clones` · protocol 40 · a short dashboard: history lives in
 [`status/history.md`](status/history.md) and [`CHANGELOG.md`](CHANGELOG.md)._
 
 **Progress map:** https://claude.ai/artifact/2vipQQ4goqPot6eTa3xMQp (page source `docs/progress-map/index.html`; its data
@@ -16,15 +16,15 @@ Inuzuka hound) on top of NOIRM APX 0.1 (= v0.18.0, the baseline). Details: [`CHA
 
 ## In progress
 
-- **The tooling wave** (2026-11-26): project skills (`.claude/skills/`), the Blockbench model loader and offline
-  preview (`tools/models/`), the quick test runner, log summariser and lang tool (`tools/dev/`), slimmer docs
-  ([`INDEX.md`](INDEX.md)), the tuning guide ([`TUNING.md`](TUNING.md)).
+- **The clones-and-training wave** (2026-11-26, branch `claude/wave-clones`, draft PR): all seven owner requests from
+  [`WAVE_NEXT.md`](WAVE_NEXT.md) are built and tested: canon shadow clones and clone training, weights and chakra
+  control drills, crew Sharingan and fusion lessons, the Eight Gates' time limit, a spawn egg per beast, an
+  overpowered Gentle Fist and a better Byakugan. Summary: [`CHANGELOG.md`](CHANGELOG.md), design notes:
+  [`POWERS_DESIGN.md`](POWERS_DESIGN.md) §13 and §4d. Waiting for the owner's playtest and the release.
 
 ## Next steps (in order)
 
-1. **The owner's queued requests** ([`WAVE_NEXT.md`](WAVE_NEXT.md)): shadow clones, deeper training, crew Sharingan
-   and fused natures, the Eight Gates without self-damage, tailed-beast spawning, an overpowered Gentle Fist, a better
-   Byakugan.
+1. **Release** the clones-and-training wave, then write the owner's tooling review (`status/metrics.md`).
 2. **On hold:** the remaining Aburame phases (v0.3.1, [`ABURAME.md`](ABURAME.md)), the complex clan work
    ([`clans/README.md`](clans/README.md)), the solid-jutsu wave ([`WAVE_JUTSU_VISUALS.md`](WAVE_JUTSU_VISUALS.md)).
 3. Later: the rest of the survival staples, exploration, new paths, endgame ([`SURVIVAL.md`](SURVIVAL.md)).

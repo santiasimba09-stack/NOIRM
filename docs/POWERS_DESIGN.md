@@ -352,6 +352,26 @@ equipped. Tuning: constants in `jutsu/NpcJutsuSets`.
   whoever can walk on it; the rule only reads what the client also knows, so movement agrees.
 - Tuning: constants at the top of `chakra/WaterWalking`.
 
+## 13. The clones-and-training wave (2026-11-26)
+
+- **Shadow clones** (`entity/ShadowClone`, `jutsu/CanonTechniques.shadowClone`): chakra split evenly (each clone
+  casts from its share, no regen; leftovers return); one solid hit (≥1.5) pops it; memories (hit XP, chakra spent →
+  Reserves, jutsu used → mastery, an enemy seen far away) return on dispel and add mental fatigue
+  (`training/CloneTraining`). Idle clones near you train alongside you (80% each) and beat on a nearby training
+  dummy. Multi Shadow Clone (up to 24 for a ×100 pool, 12 at ×10), Clone Swap, clone-assisted Rasengan (×1.5), and a
+  feint (an enemy that pops a clone near you reels for 0.8 s).
+- **Training:** training weights (body-stat XP ×1.5, 20% slower), leaf-on-forehead focus and tree climbing (crouch into
+  a trunk; any wall from CTL 30) train CTL up to the drill cap; fatigue fades faster while meditating or sleeping.
+- **Eight Gates** (`jutsu/EightGates`): no self-damage or quake; a time limit from DUR/WIL/TAI/VIT and Resolve; no limit
+  once the four stats average 35 (gate 1) / 45 (gate 2); slamming shut leaves you slow and weak and unable to reopen
+  for 8 s per tier.
+- **Byakugan / Gentle Fist** (`dojutsu/Byakugan`, `jutsu/HyugaTechniques`): sight 40 → 120 blocks with CTL, a 20° blind
+  spot behind the neck that closes at CTL 60, x-ray of ores and containers, closed points shown dark red; Gentle Fist
+  keeps 90% through a guard, adds 60% internal damage that ignores armour, more points per hit with CTL, closed points
+  choke chakra regen and a seal empties chakra, ends modes and closes eyes for 15 s. New: 128 Palms, Air Palm, Twin
+  Lion Fists.
+- **Tailed beasts:** a spawn egg per beast (`biju/BeastEggItem`); `/noirm beast spawn <1-9>` already existed.
+
 ## Where to tune
 
 - Clans: `data/noirm/clans/*.json`, `ClanGenerator`, `WorldClans` (chances).
