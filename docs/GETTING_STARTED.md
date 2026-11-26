@@ -298,6 +298,15 @@ every ninja nearby comes for you.
 To play the built jar in a normal Minecraft install, use Forge 1.20.1 (47.4.10 or newer) and
 put the jar in your `mods` folder.
 
+## Change numbers yourself, edit models
+
+- **Numbers** (more chakra, longer Gates, fewer wild ninjas, faster training…): `docs/TUNING.md` says which file and
+  key, a safe range, and how to apply it (the config file, or a data file in a world tuning pack plus `/reload`).
+- **Models:** creature models in `src/main/resources/assets/noirm/models/bb/` are Blockbench files. Install Blockbench
+  (free, blockbench.net), File → Open Model, edit, File → Save Model, and send the file back (and the texture PNG if you
+  painted it). In game, F3+T reloads models.
+- **Reporting a problem:** what I did → what happened → what I expected.
+
 ## Where things are
 
 ```

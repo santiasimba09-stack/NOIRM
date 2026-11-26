@@ -1,6 +1,7 @@
 package com.noirm.client.aburame;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.noirm.Noirm;
 import com.noirm.aburame.GiantInsect;
 import com.noirm.aburame.InsectClone;
@@ -8,12 +9,15 @@ import com.noirm.aburame.Species;
 import com.noirm.aburame.WildInsect;
 import com.noirm.aburame.WildKind;
 import com.noirm.client.ShadowCloneRenderer;
+import com.noirm.client.model.BakedBbModel;
+import com.noirm.client.model.BbModels;
 import com.noirm.entity.SparringNinja;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -21,6 +25,10 @@ import net.minecraft.util.Mth;
 public final class AburameRenderers {
     public static final ResourceLocation GIANT = Noirm.id("textures/entity/aburame/giant_insect.png");
     public static final ResourceLocation WILD = Noirm.id("textures/entity/aburame/wild.png");
+    /** The Giant Insect's Blockbench model ({@code models/bb/giant_insect.bbmodel}). */
+    public static final ResourceLocation MODEL = Noirm.id("giant_insect");
+    /** BeetleMesh's baked face shading, by Blockbench side (north = head, east/west, south = tail, up, down). */
+    private static final float[] BEETLE_SHADE = {0.85f, 0.75f, 0.7f, 0.75f, 1f, 0.55f};
 
     private AburameRenderers() {}
 
@@ -64,13 +72,32 @@ public final class AburameRenderers {
         @Override
         public void render(GiantInsect bug, float yaw, float partial, PoseStack stack, MultiBufferSource buffers, int light) {
             stack.pushPose();
-            float rot = Mth.rotLerp(partial, bug.yRotO, bug.getYRot()) * Mth.DEG_TO_RAD;
+            float yawDeg = Mth.rotLerp(partial, bug.yRotO, bug.getYRot());
+            float rot = yawDeg * Mth.DEG_TO_RAD;
             float fx = -Mth.sin(rot), fz = Mth.cos(rot);
-            BeetleMesh mesh = new BeetleMesh(stack, buffers.getBuffer(RenderType.entityCutoutNoCull(GIANT)), light);
             boolean flying = !bug.onGround();
             boolean flap = flying && (bug.tickCount & 1) == 0;
             float bob = flying ? Mth.sin((bug.tickCount + partial) * 0.3f) * 0.08f : 0f;
-            mesh.beetle(0, 0.75f + bob, 0, fx, 0, fz, 2.8f, flap || !flying && (bug.tickCount / 20) % 7 == 0);
+            boolean wingsOpen = flap || !flying && (bug.tickCount / 20) % 7 == 0;
+            // The Blockbench model (assets/noirm/models/bb/giant_insect.bbmodel, made by tools/models/export_beetle.py
+            // from the mesh below, so it looks the same). The hand-written mesh stays as the fallback.
+            BakedBbModel model = BbModels.get(MODEL);
+            if (model != null) {
+                stack.translate(0, bob, 0);
+                stack.mulPose(Axis.YP.rotationDegrees(180f - yawDeg));
+                model.resetPose();
+                BakedBbModel.Part wings = model.part("wings");
+                if (wings != null) {
+                    wings.visible = wingsOpen;
+                }
+                model.render(stack, buffers.getBuffer(RenderType.entityCutoutNoCull(GIANT)), light, OverlayTexture.NO_OVERLAY,
+                        1f, 1f, 1f, 1f, BEETLE_SHADE);
+                stack.popPose();
+                super.render(bug, yaw, partial, stack, buffers, light);
+                return;
+            }
+            BeetleMesh mesh = new BeetleMesh(stack, buffers.getBuffer(RenderType.entityCutoutNoCull(GIANT)), light);
+            mesh.beetle(0, 0.75f + bob, 0, fx, 0, fz, 2.8f, wingsOpen);
             // legs: six little beetle-boxes pointing down and out
             for (int i = 0; i < 6; i++) {
                 float side = i < 3 ? 1 : -1;

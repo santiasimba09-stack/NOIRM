@@ -158,7 +158,7 @@ _Updated for v0.3 (the owner's ruling: the Uzumaki are simply that overpowered).
 
 _Owner's ask, 2026-11-25 (`WAVE_V03.md` items 3–5): simple boosts (stats and multipliers only) so every
 clan feels as strong as in canon; the great clans very strong, the Uzumaki "simply that overpowered".
-Canon costs stay. The deep mechanics (`CLAN_RESEARCH.md` Part II) come after v0.3. The Aburame are left
+Canon costs stay. The deep mechanics (Part II of each `docs/clans/<clan>.md`) come after v0.3. The Aburame are left
 to their own wave (`ABURAME.md`)._
 
 ### Old → new numbers
