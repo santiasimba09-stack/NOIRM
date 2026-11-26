@@ -6,11 +6,13 @@ personal meaning to the owner, so keep it.
 
 ## Read first (and only this, unless the task needs more)
 
-1. **`docs/STATUS.md`**: current milestone, what's in progress, next steps, the code map, decisions, open questions.
-2. `docs/ROADMAP.md`: the vision and milestone list. Read it when planning.
-3. `docs/COMBAT_DESIGN.md` / `docs/POWERS_DESIGN.md`: design and decisions for combat, and for
-   clans, jutsu, Sharingan, awakening and biju. Read the matching one before working on those.
-4. `docs/CHANGELOG.md`: history. Read it only if you need to know when or why something changed.
+1. **`docs/INDEX.md`**: one line per doc, what it's for and when to read it, with sizes. Then open only the
+   docs your task needs (big ones a section at a time: `python3 tools/dev/docsec.py docs/X.md "heading"`).
+2. **The skill for your task** in `.claude/skills/<name>/SKILL.md`: `helper-rules` (every helper), `add-jutsu`,
+   `add-entity`, `add-command`, `add-clan-perk`, `game-tests`, `blockbench-model`, `textures`, `client-shot`,
+   `merge-helper-branch`, `release`. They are short checklists pointing at the real files and scripts.
+3. `docs/STATUS.md` (a 3 KB dashboard) when planning or briefing; `docs/COMBAT_DESIGN.md` /
+   `docs/POWERS_DESIGN.md` before combat or powers work.
 
 **Don't explore `reference/nydo/` wholesale.** It's about 1,200 JSON files, some of them several MB.
 Start from `reference/nydo/README.md` (the index and system summary), then open only the
@@ -33,16 +35,25 @@ by keyword, using a narrow pattern and limited output. It's 625 KB.
 | Command | Use |
 |---|---|
 | `./gradlew build` | Compile and package (`build/libs/noirm-<ver>.jar`). The first run takes about 4 minutes. |
-| `./gradlew runGameTestServer` | Headless server that runs the `@GameTest`s in `com.noirm.gametest` and exits non-zero on failure. Use it to verify features. |
+| `tools/dev/test.sh <words>` | **The quick runner:** only the game tests whose name, batch or class contains a word (`hound`, `a,b`, `=exact`), then a 3-line summary. Use it after each change. |
+| `tools/dev/test.sh --twice` | The full suite twice in a row (the bar before a release or at the end of a helper task). Plain `./gradlew runGameTestServer` still works. |
+| `python3 tools/dev/gtsummary.py <log>` | Pass/fail counts and failure lines from any game-test log. |
+| `python3 tools/dev/lang.py check` / `add KEY en es [es_mx]` / `resolve` | The three lang files: sync check, add a key to all three, 3-way merge after a conflict (`install-driver` once per clone makes git do it). |
+| `python3 tools/dev/protocol.py bump` / `resolve` | PROTOCOL_VERSION: bump once per branch that changes packets; resolve a merge conflict (higher + 1). |
+| `python3 tools/dev/codemap.py [word] [-d]` / `-r` | A compact, fresh code map (packages → classes); `-r` lists data and asset folders. |
+| `python3 tools/dev/docsec.py <doc> ["heading"]` | A big doc's outline, or one section. |
+| `python3 tools/models/preview.py <model>.bbmodel` | Draws a Blockbench model to a small PNG from 4 angles in under a second (no Minecraft). |
+| `python3 tools/dev/tuning_pack.py <world> data/noirm/...` | Copies data files into a world's tuning data pack (owner tuning, `docs/TUNING.md`). |
 | `./gradlew runClient` | Launches the game. It needs a display, so the owner runs it locally. |
-| `tools/client-smoke/run.sh` | Runs the **real client off-screen** (Xvfb) in a test arena. Drive it with `xinput.py` and take screenshots. See its README. Use it for anything client-side (HUD, input, rendering, animations). |
+| `tools/client-smoke/run.sh` | Runs the **real client off-screen** (Xvfb) in a test arena (skill `client-shot`). Use it for client-side checks (a renderer doesn't crash, a HUD shows). Screenshots are optional self-checks only, never deliverables: the owner tests builds. |
 
-Run the build in the background, because Gradle's first setup is slow. A green
-`runGameTestServer` is the bar for "works". Add a game test for each new mechanic where you can, using
+Run Gradle in the background under `flock /tmp/noirm-gradle-heavy.lock` (the test script does). A green
+game-test run is the bar for "works": your own tests with the quick runner while working, the full suite twice at the
+end. Add a game test for each new mechanic where you can, using
 `template = "empty"` (our `data/noirm/structures/empty.nbt`, since Forge 1.20.1 ships none).
 Tests in one batch run side by side, a few blocks apart: give any test where fighters swing,
 knock things back or spawn big entities its own `batch`, and remove anything it throws out of
-its 3×3 area (cleanup only clears entities inside it). Leftovers break later tests.
+its 3×3 area (cleanup only clears entities inside it). Leftovers break later tests. More: skill `game-tests`.
 
 ## Code conventions
 
@@ -66,18 +77,22 @@ its 3×3 area (cleanup only clears entities inside it). Leftovers break later te
   subscriber classes distinct names (`VignetteRegistration`, …).
 - New command: register it under `/noirm` in the right `command/*Command` class, add it to
   `CommandGuide` (syntax, example, cheats) with a `help.noirm.<section>.<key>` text in all three lang
-  files, then run `python3 tools/docs/gen_commands.py`. A game test parses every example.
+  files (`tools/dev/lang.py add`), then run `python3 tools/docs/gen_commands.py`. A game test parses every example.
+  Data reloads need no command: vanilla `/reload` refreshes every `data/noirm/` loader (skill `add-command`).
 - New jutsu: add JSON under `data/noirm/jutsu/` using an existing behavior (`JutsuBehaviors`),
   plus a `jutsu.noirm.<path>` name in the lang files. New player data goes in a sub-object of
-  `ShinobiData` and is synced via `PowerPackets.SyncPowers`.
+  `ShinobiData` and is synced via `PowerPackets.SyncPowers`. Recipes: skills `add-jutsu`, `add-entity`, `add-clan-perk`.
+- Entity models: prefer Blockbench `.bbmodel` files in `assets/noirm/models/bb/` (the owner can edit them), loaded by
+  `client/model/BbModels` (skill `blockbench-model`). Numbers the owner may tune get a row in `docs/TUNING.md`.
 
 ## Keeping context fresh (required)
 
 At the end of every working session, before the final commit:
 
-1. Update **`docs/STATUS.md`**: what's done, what's in progress, the next steps, and any new
-   decisions or open questions. Keep it short; it's a dashboard, not a diary.
-2. Add an entry to **`docs/CHANGELOG.md`**: date, PR or branch, and a few bullets on what changed.
+1. Update **`docs/STATUS.md`**: what's done, what's in progress, the next steps. Keep it short; it's a dashboard,
+   not a diary (old release tables go to `docs/status/history.md`, decisions to `docs/DECISIONS.md`, open
+   questions to the progress map). Add new docs to `docs/INDEX.md`.
+2. Add an entry to **`docs/CHANGELOG.md`**: date, PR or branch, and a few bullets on what changed (skill `release`).
 3. If the vision or milestones changed, update `docs/ROADMAP.md`.
 4. Update the **progress map** (https://claude.ai/artifact/2vipQQ4goqPot6eTa3xMQp, page source
    `docs/progress-map/index.html`) through the artifact's database (`ArtifactData`, version-pinned):
