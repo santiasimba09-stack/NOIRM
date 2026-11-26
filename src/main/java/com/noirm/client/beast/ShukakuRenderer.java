@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 /**
- * Shukaku, the One-Tail (docs/entities/shukaku.md): our Blockbench model {@code models/bb/shukaku.bbmodel} (drawn by
+ * Shukaku, the One-Tail (docs/entities/shukaku.md): a hunched beast on all fours, our Blockbench model {@code models/bb/shukaku.bbmodel} (drawn by
  * {@code tools/beastgen/gen_shukaku.py}) brought to life in layers, every frame:
  * mood posture → walk (planted feet, body bob) → breathing, blinks, ear flicks → look → action (Blockbench clips
  * "drum" and "laugh", the rest procedural) → springs on the tail, ears and belly → hurt rock. Then the colour pass
@@ -30,7 +30,7 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
     /** Tail springs (docs/TUNING.md): stiffer = snappier tail, more damping = less wobble. */
     static final float TAIL_STIFFNESS = 45f, TAIL_DAMPING = 8f;
     private static final float EYE_H = 3.4f;
-    private static final String[] TAIL = {"tail1", "tail2", "tail3", "tail4", "tail5", "tail6"};
+    private static final String[] TAIL = {"tail1", "tail2", "tail3", "tail4", "tail5", "tail6", "tail7"};
 
     private BakedBbModel cachedModel;
     private BakedBbModel.Part body, belly, chest, head, jaw, brow, lidL, lidR, earL, earR, earTipL, earTipR, armL, armR,
@@ -127,11 +127,11 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
                            float grin, float breathRate, float breathAmp, float glow) {}
 
     private static final Posture CALM = new Posture(0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0.25f, 1f, 0.7f);
-    private static final Posture ALERT = new Posture(-0.05f, -0.1f, 0.15f, -0.15f, 0.05f, 1f, 0f, 0f, 0.35f, 1f, 0.85f);
-    private static final Posture ANGRY = new Posture(0.32f, 0.22f, 0.25f, 0.6f, 0.35f, 0.7f, 1f, 0.08f, 0.6f, 1.2f, 1f);
-    private static final Posture MANIC = new Posture(-0.08f, -0.15f, 0.4f, -0.1f, 0.3f, 1f, 0.3f, 0.3f, 0.55f, 1.2f, 1f);
-    private static final Posture TIRED = new Posture(0.28f, 0.35f, -0.3f, 0.5f, -0.05f, 0.45f, 0f, 0.05f, 0.18f, 1.7f, 0.4f);
-    private static final Posture SUBDUED = new Posture(0.1f, 0.2f, -0.4f, 0.6f, -0.1f, 0f, 0f, 0.1f, 0.12f, 1.5f, 0f);
+    private static final Posture ALERT = new Posture(-0.04f, -0.12f, 0.12f, -0.15f, 0.04f, 1f, 0f, 0f, 0.35f, 1f, 0.85f);
+    private static final Posture ANGRY = new Posture(0.1f, 0.15f, 0.2f, 0.6f, 0.15f, 0.7f, 1f, 0.12f, 0.6f, 1.2f, 1f);
+    private static final Posture MANIC = new Posture(-0.06f, -0.12f, 0.3f, -0.1f, 0.12f, 1f, 0.3f, 0.35f, 0.55f, 1.2f, 1f);
+    private static final Posture TIRED = new Posture(0.08f, 0.35f, -0.25f, 0.5f, 0f, 0.45f, 0f, 0.05f, 0.18f, 1.7f, 0.4f);
+    private static final Posture SUBDUED = new Posture(0.05f, 0.2f, -0.35f, 0.6f, 0f, 0f, 0f, 0.1f, 0.12f, 1.5f, 0f);
 
     private static Posture postureFor(Mood mood) {
         return switch (mood) {
@@ -163,6 +163,8 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
         // tail) and raises a forward one (head, jaw): so "lean forward" is -body.xRot, "head down" -head.xRot and
         // "jaw open" -jaw.xRot.
         body.xRot -= m.lean;
+        armL.xRot += m.lean; // fore paws stay under the shoulders (and on the ground) when the front dips
+        armR.xRot += m.lean;
         head.xRot -= m.headDown - m.lean * 0.6f; // the head stays level-ish while the body leans
         brow.y -= m.brow * 0.6f;
         brow.xRot -= m.brow * 0.25f;
@@ -173,33 +175,49 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
         earR.xRot += m.earBack;
     }
 
-    // ---------------------------------------------------------------- 2. walk: planted feet, body bob, swinging arms
+    // ---------------------------------------------------------------- 2. walk on all fours: planted paws, body bob
 
+    /**
+     * A beast's gait: the long arms are front legs. Walking moves diagonal pairs together (left hind with right fore);
+     * fast (a charge) it gallops: both fore paws, then both hind paws, the body rocking. Swinging limbs fold to lift the
+     * paw; planted ones stay straight; paws stay level.
+     */
     private void walk(TailedBeast beast, ShukakuMotion m, float partial, float scale) {
         float speed = Math.min(1f, beast.walkAnimation.speed(partial));
+        m.lastBob = 0f;
         if (speed < 0.01f) {
             return;
         }
-        // driven by the distance walked, not by time, so the feet keep in step with the ground; big = slower stride
-        float phase = beast.walkAnimation.position(partial) * 0.55f / Mth.sqrt(Math.max(0.5f, scale));
-        float s = Mth.sin(phase), c = Mth.cos(phase);
-        float stride = 0.55f * speed;
-        legL.xRot += s * stride;
-        legR.xRot -= s * stride;
-        // the swinging leg folds its knee to lift the foot; the stance leg stays straight
-        shinL.xRot -= Math.max(0f, c) * 0.8f * speed;
-        shinR.xRot -= Math.max(0f, -c) * 0.8f * speed;
-        footL.xRot -= legL.xRot + shinL.xRot; // the foot stays level
-        footR.xRot -= legR.xRot + shinR.xRot;
-        // weight: down on each footfall, roll toward the stance side; the head counter-bobs to stay steady
-        float bob = Math.abs(c);
-        body.y -= bob * 1.2f * speed;
-        body.zRot += s * 0.07f * speed;
-        head.y += bob * 0.5f * speed;
-        head.zRot -= s * 0.05f * speed;
-        armL.xRot -= s * 0.35f * speed;
-        armR.xRot += s * 0.35f * speed;
+        // driven by the distance walked, not by time, so the paws keep in step with the ground; big = slower stride
+        float phase = beast.walkAnimation.position(partial) * 0.5f / Mth.sqrt(Math.max(0.5f, scale));
+        float gallop = Mth.clamp((speed - 0.7f) / 0.25f, 0f, 1f);
+        float stride = 0.5f * speed;
+        // walk: LH with RF, RH with LF; gallop: fore pair together, hind pair half a cycle later
+        float lh = phase, rh = phase + Mth.PI * (1f - gallop);
+        float lf = phase + Mth.PI * (1f - gallop) + Mth.PI * gallop * 0.5f, rf = phase + Mth.PI * gallop * 0.5f;
+        limb(legL, shinL, footL, lh, stride, speed, 1f);
+        limb(legR, shinR, footR, rh, stride, speed, 1f);
+        limb(armL, forearmL, handL, lf, stride * 0.9f, speed, 1f);
+        limb(armR, forearmR, handR, rf, stride * 0.9f, speed, 1f);
+        // weight: the body dips on each footfall and rolls toward the planted side; a gallop rocks it front to back
+        float bob = Math.abs(Mth.cos(phase));
+        body.y -= bob * 1.0f * speed;
+        body.zRot += Mth.sin(phase) * 0.05f * speed * (1f - gallop);
+        float rockAngle = Mth.sin(phase + 0.6f) * 0.12f * gallop;
+        body.xRot += rockAngle;
+        armL.xRot -= rockAngle; // the fore paws stay under the shoulders while the body rocks
+        armR.xRot -= rockAngle;
+        head.y += bob * 0.4f * speed;  // the head stays steady, the eyes on the prey
+        head.xRot -= rockAngle * 0.7f;
         m.lastBob = bob * speed;
+    }
+
+    /** One leg: the upper bone swings, the lower bone folds back while it swings forward, the paw stays level. */
+    private static void limb(BakedBbModel.Part upper, BakedBbModel.Part lower, BakedBbModel.Part paw, float phase, float stride, float speed, float fold) {
+        float sw = Mth.sin(phase);
+        upper.xRot += sw * stride;
+        lower.xRot -= Math.max(0f, Mth.cos(phase)) * 0.7f * speed * fold;
+        paw.xRot -= sw * stride - Math.max(0f, Mth.cos(phase)) * 0.7f * speed * fold;
     }
 
     // ---------------------------------------------------------------- 3. idle life: breathing, blinks, ear flicks
@@ -272,48 +290,49 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
 
     private void play(BakedBbModel model, TailedBeast beast, ShukakuMotion m, byte action, float s, float w, float t) {
         switch (action) {
-            case TailedBeast.ACTION_DRUM -> model.animate("drum", s, w);
+            case TailedBeast.ACTION_DRUM -> model.animate("drum", s, w); // rears up, pounds the belly, the mouth gapes
             case TailedBeast.ACTION_LAUGH -> {
-                model.animate("laugh", s % 1.8f, w);
-                m.hurtFlash = Math.max(m.hurtFlash, 0.5f * w); // squints with laughter
-            }
-            case TailedBeast.ACTION_CLAW -> {
-                // wind-up: both claws raised high and back; strike: they rake down and forward (attackAnimation 10 → 0)
-                float strike = beast.getAttackAnimationRemainingTicks() / 10f;
-                float raise = strike > 0f ? 0.5f + 1.4f * strike : 1.9f * CreatureRig.smooth(s / 0.3f);
-                armR.xRot += raise * w;
-                armL.xRot += raise * w * 0.8f;
-                armR.zRot += 0.3f * w;
-                armL.zRot -= 0.3f * w;
-                body.xRot += (strike > 0f ? -0.25f * strike : 0.15f) * w;
-                jaw.xRot -= 0.35f * w;
-            }
-            case TailedBeast.ACTION_SCRATCH -> {
-                // the right claw across the belly, scratching fast; head tilted, eyes half shut with pleasure
-                armR.xRot += 0.5f * w;
-                armR.zRot -= 0.55f * w;
-                forearmR.xRot += (0.7f + 0.3f * Mth.sin(t * 22f)) * w;
-                forearmR.yRot -= 0.4f * w;
-                head.zRot += 0.18f * w;
+                model.animate("laugh", s % 1.8f, w); // the manic cackle
                 m.hurtFlash = Math.max(m.hurtFlash, 0.5f * w);
             }
-            case TailedBeast.ACTION_SIFT -> {
-                // bends, scoops sand with both hands, lifts them and lets it trickle (particles: TailedBeast.sandAura)
-                float scoop = CreatureRig.smooth(Math.min(1f, s / 0.8f)) - CreatureRig.smooth((s - 1.4f) / 0.6f) * 0.6f;
-                body.xRot -= 0.35f * scoop * w;
-                armL.xRot += 1.2f * scoop * w;
-                armR.xRot += 1.2f * scoop * w;
-                armL.zRot += 0.25f * w;
-                armR.zRot -= 0.25f * w;
-                handL.xRot -= 0.5f * w;
-                handR.xRot -= 0.5f * w;
-                head.xRot -= 0.3f * scoop * w;
+            case TailedBeast.ACTION_CLAW -> {
+                // wind-up: rears up off the fore paws, one claw raised high; strike: it rakes down as the body drops
+                float strike = beast.getAttackAnimationRemainingTicks() / 10f;
+                float rear = strike > 0f ? 0.45f * strike : 0.45f * CreatureRig.smooth(s / 0.3f);
+                body.xRot += rear * w;
+                armL.xRot -= rear * w * 0.8f; // the other paw reaches down for the ground
+                float raise = strike > 0f ? 0.2f + 2.2f * strike : 2.4f * CreatureRig.smooth(s / 0.3f);
+                armR.xRot += raise * w;
+                armR.zRot += 0.25f * w;
+                forearmR.xRot += 0.4f * w;
+                head.xRot -= rear * 0.6f * w;
+                jaw.xRot -= 0.45f * w;
+            }
+            case TailedBeast.ACTION_SNIFF -> {
+                // nose to the ground, short quick sniffs, the head sweeping slowly side to side, ears forward
+                float down = CreatureRig.envelope(s, 3f);
+                head.xRot -= 0.55f * down * w;
+                chest.xRot -= 0.12f * down * w;
+                head.yRot += 0.3f * Mth.sin(s * 1.6f) * down * w;
+                head.y += 0.35f * Mth.sin(s * 30f) * down * w;
+                earL.xRot -= 0.3f * down * w;
+                earR.xRot -= 0.3f * down * w;
+            }
+            case TailedBeast.ACTION_SHAKE -> {
+                // shakes the sand off like a wet dog: the body twists fast, the head the other way, ears flapping
+                float shake = CreatureRig.envelope(s, 1.5f) * Mth.sin(s * 38f);
+                body.zRot += 0.22f * shake * w;
+                head.zRot -= 0.3f * shake * w;
+                chest.yRot += 0.12f * shake * w;
+                earL.zRot -= 0.5f * shake * w;
+                earR.zRot -= 0.5f * shake * w;
+                m.hurtFlash = Math.max(m.hurtFlash, CreatureRig.envelope(s, 1.5f) * w);
             }
             case TailedBeast.ACTION_YAWN -> {
                 // a slow yawn, eyes shut... then it shakes it off (Shukaku hates sleep)
                 float open = CreatureRig.envelope(s, 1.3f);
-                jaw.xRot -= 0.75f * open * w;
-                head.xRot += 0.35f * open * w;
+                jaw.xRot -= 0.8f * open * w;
+                head.xRot += 0.3f * open * w;
                 m.hurtFlash = Math.max(m.hurtFlash, open * w);
                 if (s > 1.3f) {
                     float shake = Math.max(0f, 1f - (s - 1.3f) / 0.6f);
@@ -321,15 +340,15 @@ public final class ShukakuRenderer extends EntityRenderer<TailedBeast> {
                 }
             }
             case TailedBeast.ACTION_ROAR -> {
-                // anticipation (a crouch), then jaw wide, arms spread: the intimidation display
-                float crouch = CreatureRig.envelope(s, 0.3f), roar = CreatureRig.envelope(s - 0.25f, 1.2f);
-                body.xRot += (0.12f * crouch - 0.2f * roar) * w;
-                jaw.xRot -= 0.8f * roar * w;
-                head.xRot += 0.25f * roar * w;
-                armR.zRot += 0.7f * roar * w;
-                armL.zRot -= 0.7f * roar * w;
-                armR.xRot += 0.4f * roar * w;
-                armL.xRot += 0.4f * roar * w;
+                // anticipation (a crouch), then it rears onto its hind legs, arms wide, the mouth gaping; then drops
+                float crouch = CreatureRig.envelope(s, 0.3f), roar = CreatureRig.envelope(s - 0.25f, 1.25f);
+                body.xRot += (-0.1f * crouch + 0.75f * roar) * w;
+                head.xRot -= 0.45f * roar * w; // keeps the gaping mouth on the prey
+                jaw.xRot -= 0.95f * roar * w;
+                armR.zRot += 0.8f * roar * w;
+                armL.zRot -= 0.8f * roar * w;
+                armR.xRot += 0.6f * roar * w;
+                armL.xRot += 0.6f * roar * w;
                 m.earBack = Math.max(m.earBack, 0.8f * roar);
             }
             default -> { }

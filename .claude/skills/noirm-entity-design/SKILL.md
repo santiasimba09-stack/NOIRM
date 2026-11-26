@@ -32,7 +32,11 @@ the features a fan would name if asked to describe it.
    `grounded-research` skill when available. Record the source next to each anchor in the brief. If the
    manga and the anime differ, take the manga and note the difference. If something can't be confirmed,
    write "unverified" and ask the owner. Don't invent it.
-3. The roster below is a **starting checklist**. Its details are the points to check, not the final word.
+3. **Pin down how it stands and moves first** (biped or quadruped, which limbs carry the weight, how it rears or
+   coils) and its overall posture (hunched, upright, coiled): ask the owner for reference images if wiki text leaves it
+   open. Wiki pages describe colours and markings well but rarely the gait; Shukaku's first pass was built upright
+   from the wiki and had to be rebuilt as a hunched quadruped once the owner's references arrived.
+4. The roster below is a **starting checklist**. Its details are the points to check, not the final word.
 
 ### Roster (verify before use)
 **Tailed beasts** (boss and partner forms; tails = power tier, as in `TailedBeast.scaleFor`)

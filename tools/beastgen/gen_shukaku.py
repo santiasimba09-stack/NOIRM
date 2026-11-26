@@ -40,6 +40,8 @@ def hx(s):
 # ink, shadow, base, light, highlight (hue-shifted: shadows cooler, lights warmer)
 PALETTE = {
     'fur': [hx('2A1C14'), hx('8E6A45'), hx('C9A46A'), hx('E2C48C'), hx('F2E2BC')],
+    'belly': [hx('2A1C14'), hx('A4825A'), hx('D9BC86'), hx('ECD6A6'), hx('F6EACA')],
+    'plate': [hx('241812'), hx('7E5E3E'), hx('B8935E'), hx('D6B47E'), hx('EAD3A4')],
     'mark': [hx('14162A'), hx('1E2240'), hx('2A2F55'), hx('3B4373'), hx('4A5488')],
     'mouth': [hx('140A0A'), hx('2A1212'), hx('3A1818'), hx('4A2020'), hx('5A2828')],
     'bone': [hx('3A3226'), hx('BDB49A'), hx('E6E0CC'), hx('F8F4E8'), hx('FFFFFF')],
@@ -49,10 +51,14 @@ EYE_SCLERA, EYE_IRIS, EYE_IRIS_LIGHT, EYE_PUPIL = hx('0E0C10'), hx('E8C030'), hx
 GLOW_IRIS = hx('FFD84A')
 LIGHT = np.array([-0.45, 0.75, -0.5]); LIGHT /= np.linalg.norm(LIGHT)  # above, front, the model's left (-x)
 
-# Eye centres on the face (x, y), panel size; used by both the eye panels and the rings painted around them.
-EYES = {'l': (-3.6, 39.2), 'r': (3.6, 39.2)}
-EYE_W, EYE_H = 4.8, 3.4
-HEAD_FRONT = -10.0
+# Eye centres on the face (x, y), panel size; used by both the eye panels and the black patches painted around them.
+# Small, mean eyes set low in a head sunk between the shoulders (owner's reference notes, 2026-11-26).
+EYES = {'l': (-3.4, 27.4), 'r': (3.4, 27.4)}
+EYE_W, EYE_H = 4.0, 2.8
+HEAD_FRONT = -26.0
+TAIL_N = 7
+TAIL_CURL = [-80, -22, -20, -18, -16, -13, -10]  # negative x lifts a chain that points back (+z): up, over, forward
+TAIL_LEN = 6.0
 
 # ---------------------------------------------------------------- the model (bone tree from the brief)
 
@@ -64,7 +70,14 @@ def cube(group, name, frm, to, mat='fur', rotation=(0, 0, 0), origin=None, sides
                       sides=sides, contact=set(contact)))
 
 
+def tail_half(i):
+    return 6.2 * (0.9 ** i)
+
+
 def build_groups(doc):
+    """A hunched quadruped: hind legs under the hips, long thick arms as front legs, the head sunk between the
+    shoulders, one huge plated tail arching over the back. Front toward -z, y up; legs hang from root so the body can
+    rear up on them."""
     g = {}
 
     def grp(name, origin, parent=None, rotation=(0, 0, 0)):
@@ -72,51 +85,50 @@ def build_groups(doc):
         return name
 
     grp('root', [0, 0, 0])
-    grp('body', [0, 13, 0], 'root')
-    grp('belly', [0, 18, -1], 'body')
-    grp('chest', [0, 27, 0], 'body')
-    grp('head', [0, 32, -1], 'chest')
-    grp('jaw', [0, 32, -7], 'head')
-    grp('brow', [0, 41.5, -10], 'head')
+    grp('body', [0, 15, 7], 'root')          # pivots over the hind legs: + x rears the front up
+    grp('belly', [0, 15, -2], 'body')
+    grp('chest', [0, 26, -6], 'body')
+    grp('head', [0, 26, -16], 'chest')
+    grp('jaw', [0, 21.5, -21], 'head')
+    grp('brow', [0, 30, -26], 'head')
     for s, sx in (('l', -1), ('r', 1)):
         ex, ey = EYES[s]
         grp('eye_' + s, [ex, ey, HEAD_FRONT], 'head')
         grp('lid_' + s, [ex, ey + EYE_H / 2, HEAD_FRONT - 0.3], 'head')
-        grp('ear_' + s, [5 * sx, 43, -1.5], 'head', rotation=(0, 0, 14 * sx))
-        grp('ear_' + s + '_tip', [5.6 * sx, 46, -1.5], 'ear_' + s)
-        grp('arm_' + s, [9.5 * sx, 30, -1], 'chest', rotation=(8, 0, 16 * sx))
-        grp('forearm_' + s, [10.5 * sx, 22.5, -1], 'arm_' + s, rotation=(28, 0, -6 * sx))
-        grp('hand_' + s, [10.5 * sx, 15.5, -2], 'forearm_' + s, rotation=(10, 0, 0))
-        grp('leg_' + s, [5 * sx, 12, 1], 'body')
-        grp('shin_' + s, [5.5 * sx, 5.5, 1], 'leg_' + s)
-        grp('foot_' + s, [5.5 * sx, 1.8, 0.5], 'shin_' + s)
-    curl = [-14, -14, -20, -24, -26, -24]  # negative x lifts a chain that points back (+z)
-    for i in range(6):
-        z0 = 6 + 4.5 * i
-        grp('tail%d' % (i + 1), [0, 11, z0], 'root' if i == 0 else 'tail%d' % i, rotation=(curl[i], 0, 0))
+        grp('ear_' + s, [6.5 * sx, 31, -19.5], 'head', rotation=(0, 0, 28 * sx))
+        grp('ear_' + s + '_tip', [7.2 * sx, 34.5, -19.5], 'ear_' + s)
+        grp('arm_' + s, [11 * sx, 28, -10], 'chest', rotation=(0, 0, 4 * sx))
+        grp('forearm_' + s, [11.5 * sx, 16, -10], 'arm_' + s)
+        grp('hand_' + s, [11.5 * sx, 3.5, -10.5], 'forearm_' + s)
+        grp('leg_' + s, [7.5 * sx, 15, 8], 'root')
+        grp('shin_' + s, [8 * sx, 7, 9], 'leg_' + s)
+        grp('foot_' + s, [8 * sx, 2.5, 8], 'shin_' + s)
+    for i in range(TAIL_N):
+        z0 = 12 + TAIL_LEN * i
+        grp('tail%d' % (i + 1), [0, 16, z0], 'body' if i == 0 else 'tail%d' % i, rotation=(TAIL_CURL[i], 0, 0))
     return g
 
 
 def build_cubes():
-    # torso: pelvis, the big round belly (core + front bulge), the chest; the belly is the biggest mass
-    cube('body', 'pelvis', [-8.5, 7, -6], [8.5, 13.5, 7], contact={'down'})
-    cube('belly', 'belly', [-10, 9, -10], [10, 27, 7])
-    cube('belly', 'belly_front', [-8, 11, -12.5], [8, 25, -9.5])
-    cube('belly', 'belly_side_l', [-11, 12, -7], [-9.5, 24, 4])
-    cube('belly', 'belly_side_r', [9.5, 12, -7], [11, 24, 4])
-    cube('belly', 'belly_low', [-7, 9.5, -11.5], [7, 12, -9.5])
-    cube('belly', 'belly_top', [-7.5, 26.5, -9], [7.5, 28, 4])
-    cube('chest', 'chest', [-8.5, 25, -7.5], [8.5, 33, 6])
-    cube('chest', 'hump', [-7, 21, 5.5], [7, 31, 8.5])
-    # head: skull, muzzle that steps down, nose, jaw, mouth inside, brow ridge, cheeks
-    cube('head', 'skull', [-8, 31, HEAD_FRONT], [8, 44, 4], contact={'down'})
-    cube('head', 'cheek_l', [-9.5, 32, -8.5], [-7.5, 38, 1])
-    cube('head', 'cheek_r', [7.5, 32, -8.5], [9.5, 38, 1])
-    cube('head', 'muzzle', [-6, 32, -13.5], [6, 37, -9.5])
-    cube('head', 'nose', [-1.6, 36, -14.2], [1.6, 37.6, -13.2], mat='nose')
-    cube('head', 'mouth_inside', [-5.4, 30.4, -12.6], [5.4, 32.4, -8], mat='mouth')
-    cube('jaw', 'jaw', [-5.5, 29.5, -13], [5.5, 32.2, -7])
-    cube('brow', 'brow', [-7.5, 41, -10.9], [7.5, 42.6, -9.6])
+    # torso: haunches at the back, a huge round belly slung low, a top-heavy chest and shoulder hump in front
+    cube('body', 'pelvis', [-8.5, 10, 1], [8.5, 22, 13])
+    cube('belly', 'belly', [-11, 7.5, -10], [11, 25, 5])
+    cube('belly', 'belly_low', [-9, 6, -8], [9, 8, 3], mat='belly')
+    cube('belly', 'belly_front', [-8.5, 9, -12], [8.5, 22, -9.5], mat='belly')
+    cube('belly', 'belly_side_l', [-12.2, 10, -7], [-10.5, 22, 2])
+    cube('belly', 'belly_side_r', [10.5, 10, -7], [12.2, 22, 2])
+    cube('chest', 'chest', [-12, 18, -16], [12, 33, -4], contact={'down'})
+    cube('chest', 'hump', [-9.5, 30, -13], [9.5, 37, 0])
+    cube('chest', 'back', [-9, 22, -4], [9, 30, 4])
+    # head: low and wide, a broad muzzle, a jaw that opens very wide, a dark mouth
+    cube('head', 'skull', [-8, 20, HEAD_FRONT], [8, 32, -14], contact={'south'})
+    cube('head', 'cheek_l', [-9.5, 20.5, -24.5], [-7.5, 27, -16])
+    cube('head', 'cheek_r', [7.5, 20.5, -24.5], [9.5, 27, -16])
+    cube('head', 'muzzle', [-7, 21, -30], [7, 26, -25.5])
+    cube('head', 'nose', [-1.7, 25, -30.8], [1.7, 26.6, -29.8], mat='nose')
+    cube('head', 'mouth_inside', [-6.4, 18.6, -29], [6.4, 21.4, -21.5], mat='mouth')
+    cube('jaw', 'jaw', [-6.5, 17.5, -29.6], [6.5, 21.2, -21])
+    cube('brow', 'brow', [-7.5, 29.2, -26.9], [7.5, 30.8, -25.6])
     for s, sx in (('l', -1), ('r', 1)):
         ex, ey = EYES[s]
         cube('eye_' + s, 'eye_' + s, [ex - EYE_W / 2, ey - EYE_H / 2, HEAD_FRONT - 0.2], [ex + EYE_W / 2, ey + EYE_H / 2, HEAD_FRONT - 0.05],
@@ -124,36 +136,45 @@ def build_cubes():
         # the eyelid rests above the eye (under the brow); code slides it down to blink
         cube('lid_' + s, 'lid_' + s, [ex - EYE_W / 2 - 0.2, ey + EYE_H / 2, HEAD_FRONT - 0.45],
              [ex + EYE_W / 2 + 0.2, ey + EYE_H / 2 + EYE_H + 0.2, HEAD_FRONT - 0.25])
-        x0, x1 = sorted([3.2 * sx, 7.4 * sx])
-        cube('ear_' + s, 'ear_' + s, [x0, 42.5, -3], [x1, 46.5, 0])
-        x0, x1 = sorted([4.4 * sx, 6.8 * sx])
-        cube('ear_' + s + '_tip', 'ear_' + s + '_tip', [x0, 46, -2.5], [x1, 49.5, -0.5])
-        # arms: shoulder, forearm, hand with three claws
-        x0, x1 = sorted([8.4 * sx, 12.6 * sx])
-        cube('arm_' + s, 'arm_' + s, [x0, 22, -3], [x1, 31, 1], contact={'up'})
-        x0, x1 = sorted([8.7 * sx, 12.3 * sx])
-        cube('forearm_' + s, 'forearm_' + s, [x0, 15, -3.2], [x1, 23, 0.6])
-        x0, x1 = sorted([8.4 * sx, 12.6 * sx])
-        cube('hand_' + s, 'hand_' + s, [x0, 12.4, -4.6], [x1, 15.8, 0.2])
-        for k, cx in enumerate((8.9, 10.1, 11.3)):
-            x0, x1 = sorted([cx * sx, (cx + 0.9) * sx])
-            cube('hand_' + s, 'claw_%s%d' % (s, k), [x0, 11, -5.8], [x1, 13.2, -4.4], mat='bone')
-        # legs: haunch, shin, foot with toe claws
-        x0, x1 = sorted([1.5 * sx, 9.5 * sx])
-        cube('leg_' + s, 'leg_' + s, [x0, 4.5, -3.5], [x1, 13, 5.5])
-        x0, x1 = sorted([3 * sx, 8 * sx])
-        cube('shin_' + s, 'shin_' + s, [x0, 1.5, -2], [x1, 6.5, 3.5])
-        x0, x1 = sorted([2.5 * sx, 8.5 * sx])
-        cube('foot_' + s, 'foot_' + s, [x0, 0, -5.5], [x1, 2.3, 3.5], contact={'down'})
-        for k, cx in enumerate((3.0, 4.9, 6.8)):
-            x0, x1 = sorted([cx * sx, (cx + 1.1) * sx])
-            cube('foot_' + s, 'toe_%s%d' % (s, k), [x0, 0, -6.7], [x1, 1.3, -5.4], mat='bone')
-    # one thick tail: six segments, ~11 % thinner each, overlapping 1 px
-    for i in range(6):
-        z0 = 6 + 4.5 * i
-        h = 4.8 * (0.89 ** i)
-        cube('tail%d' % (i + 1), 'tail%d' % (i + 1), [-h, 11 - h, z0], [h, 11 + h, z0 + 5.5],
-             contact={'north'} if i == 0 else ())
+        x0, x1 = sorted([5 * sx, 9 * sx])
+        cube('ear_' + s, 'ear_' + s, [x0, 30.5, -21], [x1, 34.5, -18])
+        x0, x1 = sorted([6 * sx, 8.4 * sx])
+        cube('ear_' + s + '_tip', 'ear_' + s + '_tip', [x0, 34, -20.5], [x1, 37.5, -18.5])
+        # long, thick arms that reach the ground: shoulder, forearm, a big paw with five claws
+        x0, x1 = sorted([8.2 * sx, 14.2 * sx])
+        cube('arm_' + s, 'arm_' + s, [x0, 15, -13.5], [x1, 31, -6], contact={'up'})
+        x0, x1 = sorted([8.6 * sx, 14.2 * sx])
+        cube('forearm_' + s, 'forearm_' + s, [x0, 3, -13.5], [x1, 17, -7])
+        x0, x1 = sorted([7.8 * sx, 15 * sx])
+        cube('hand_' + s, 'hand_' + s, [x0, 0, -16.5], [x1, 3.8, -7.5], contact={'down'})
+        for k in range(5):
+            cx = 8.1 + k * 1.42
+            x0, x1 = sorted([cx * sx, (cx + 1.0) * sx])
+            cube('hand_' + s, 'claw_%s%d' % (s, k), [x0, 0, -19], [x1, 2.2, -16.3], mat='bone')
+        # short, thick hind legs
+        x0, x1 = sorted([3 * sx, 12.5 * sx])
+        cube('leg_' + s, 'leg_' + s, [x0, 6.5, 2.5], [x1, 18, 13.5])
+        x0, x1 = sorted([4.5 * sx, 11.5 * sx])
+        cube('shin_' + s, 'shin_' + s, [x0, 2, 5], [x1, 8, 12])
+        x0, x1 = sorted([4 * sx, 12 * sx])
+        cube('foot_' + s, 'foot_' + s, [x0, 0, 1.5], [x1, 2.8, 12], contact={'down'})
+        for k in range(4):
+            cx = 4.3 + k * 1.95
+            x0, x1 = sorted([cx * sx, (cx + 1.2) * sx])
+            cube('foot_' + s, 'toe_%s%d' % (s, k), [x0, 0, -0.2], [x1, 1.5, 1.6], mat='bone')
+    # one enormous tail, as big as the body: a core per segment shingled with sand plates (top and both sides)
+    for i in range(TAIL_N):
+        z0 = 12 + TAIL_LEN * i
+        h = tail_half(i)
+        g = 'tail%d' % (i + 1)
+        cube(g, g, [-h, 16 - h, z0], [h, 16 + h, z0 + TAIL_LEN + 1], contact={'north'} if i == 0 else ())
+        # plates overlap the next segment and flare outward, like stacked slabs
+        cube(g, g + '_plate_t', [-h - 0.7, 16 + h - 0.4, z0 + 0.6], [h + 0.7, 16 + h + 1.1, z0 + TAIL_LEN + 1.6], mat='plate',
+             rotation=(-10, 0, 0), origin=[0, 16 + h, z0 + 0.6])
+        cube(g, g + '_plate_l', [-h - 1.1, 16 - h * 0.7, z0 + 0.6], [-h + 0.4, 16 + h * 0.8, z0 + TAIL_LEN + 1.6], mat='plate',
+             rotation=(0, 10, 0), origin=[-h, 16, z0 + 0.6])
+        cube(g, g + '_plate_r', [h - 0.4, 16 - h * 0.7, z0 + 0.6], [h + 1.1, 16 + h * 0.8, z0 + TAIL_LEN + 1.6], mat='plate',
+             rotation=(0, -10, 0), origin=[h, 16, z0 + 0.6])
 
 
 # ---------------------------------------------------------------- UV packing (shelf packer, per-face UV)
@@ -247,59 +268,68 @@ def dilate(mask, r=1):
 
 # ---------------------------------------------------------------- markings (3D functions of the rest-pose point)
 
+def spiral(a, b, ca, cb, turns=2.2, size=4.5, width=0.55):
+    """A spiral 'comma' on a face plane: (a, b) coordinates around a centre, `turns` turns out to `size`."""
+    da, db = a - ca, b - cb
+    r = np.hypot(da, db)
+    th = np.arctan2(db, da)
+    pitch = size / turns
+    k = (r - pitch * (th + np.pi) / (2 * np.pi)) % pitch
+    return (r < size) & ((k < width) | (k > pitch - width * 0.3)) | (r < width * 1.2)
+
+
 def markings(c, P):
+    """Dark navy seal markings (the identity read): swirls and commas, flame streaks, stripes across the limbs and
+    belly, spirals on the shoulders and forehead, black eye patches, a dark mark on every tail plate."""
     x, y, z = P[..., 0], P[..., 1], P[..., 2]
-    g = c['group']
+    g, name = c['group'], c['name']
     m = np.zeros(x.shape, dtype=bool)
-    if g.startswith('tail'):
+    if '_plate' in name:
+        # one dark comma-shaped mark in the middle of each plate
         i = int(g[4:]) - 1
-        zc = 6 + 4.5 * i + 2.75
-        ang = np.arctan2(y - 11, x)
-        band = np.abs(z - zc) < 0.6 + 0.4 * np.sin(ang * 3 + i)
-        m |= band
-        # crescents on top between the bands
-        m |= (np.abs(z - zc + 2.25) < 0.45) & (y > 11 + 1.5)
-        if i == 5:
-            m |= z > 6 + 4.5 * 5 + 3.6  # a dark tip
+        zc = 12 + TAIL_LEN * i + TAIL_LEN * 0.55
+        if name.endswith('_t'):
+            m |= np.hypot((x) / 2.2, (z - zc) / 1.6) < 1.0
+            m &= ~(np.hypot((x - 0.9) / 1.3, (z - zc + 0.6) / 1.0) < 0.8)
+        else:
+            m |= np.hypot((y - 16) / 1.8, (z - zc) / 1.5) < 1.0
+            m &= ~(np.hypot((y - 16.8) / 1.0, (z - zc + 0.5) / 0.9) < 0.8)
+    elif g.startswith('tail'):
+        m |= False  # the core shows only in the gaps: plain sand
     elif g == 'belly':
-        # the seal "sun" on the belly front: rings and rays, and wavy bands round the sides
-        r = np.hypot(x, (y - 18) * 1.1)
+        # stripes that curve down across the belly, and a comma on each flank
         front = z < -8.5
-        ang = np.arctan2(y - 18, x)
-        m |= front & (np.abs(r - 6.2) < 0.55 + 0.25 * np.sin(ang * 6))
-        m |= front & (r < 2.2) & (r > 1.3)
-        m |= front & (r > 7.2) & (r < 9.6) & (np.abs(((ang / (2 * np.pi) * 8) % 1.0) - 0.5) < 0.07)
-        side = ~front
-        m |= side & (np.sin(y * 0.6 + 1.6 * np.sin(z * 0.35)) > 0.9)
-        m |= side & (np.abs(x) > 9.4) & ((np.round(y) % 3 == 0) & (np.abs(z % 3 - 1.5) < 0.5))  # dot rows
-    elif g in ('chest', 'body'):
-        m |= np.sin(y * 0.7 + 1.2 * np.sin(x * 0.4) + z * 0.15) > 0.9
-        m |= (z > 6) & (np.abs(x) < 1.0 + 0.4 * np.sin(y))  # the spine line down the back
+        m |= front & (np.sin(y * 0.62 - 0.022 * x * x) > 0.82)
+        side = np.abs(x) > 10.4
+        m |= side & spiral(z, y, -2.5, 16, turns=1.6, size=4.2)
+        m |= ~front & ~side & (np.sin(z * 0.5 + 2 * np.sin(x * 0.3) + y * 0.2) > 0.85)
+    elif g == 'body':
+        m |= np.sin(z * 0.55 + 2.0 * np.sin(x * 0.35) + y * 0.1) > 0.84   # flame streaks over the haunches
+    elif g == 'chest':
+        # the shoulder spirals, and flame streaks along the hump
+        shoulder = np.abs(x) > 11.5
+        m |= shoulder & spiral(z, y, -10, 26, turns=2.0, size=5.5)
+        m |= ~shoulder & (y > 30) & (np.sin(x * 0.7 + z * 0.35) > 0.8)
+        m |= ~shoulder & (y <= 30) & (z > -4) & (np.sin(y * 0.7 + x * 0.3) > 0.85)
     elif g == 'head':
         for s, (ex, ey) in EYES.items():
-            # dark rings round the eyes (an ellipse a little bigger than the eye)
-            d = np.hypot((x - ex) / (EYE_W / 2 + 1.0), (y - ey) / (EYE_H / 2 + 0.9))
-            m |= (z < -6) & (d < 1.0) & (d > 0.62)
-            # tear streaks down the cheeks, tapering to a point
-            t = (ey - EYE_H / 2 - y)
-            m |= (z < -6) & (t > 0) & (t < 4.5) & (np.abs(x - ex * 1.25) < 0.9 * (1 - t / 4.5))
-        # forehead crest: a wavy V with a dot
-        fy = 42.8 - np.abs(x) * 0.35
-        m |= (z < -6) & (np.abs(y - fy - 0.4 * np.sin(x * 1.3)) < 0.45) & (np.abs(x) < 6.5)
-        m |= (z < -6) & (np.hypot(x, y - 43.3) < 0.6)
-        # bands over the crown and the back of the head
-        m |= (y > 43.5) & (np.sin(x * 0.9 + z * 0.4) > 0.88)
-        m |= (z > 0) & (np.sin(y * 0.9 + x * 0.3) > 0.85)
-        # cheeks: two curved stripes
-        m |= (np.abs(x) > 7.4) & (np.sin(y * 1.1 + z * 0.5) > 0.85)
+            # black eye patches (filled), a bit bigger than the eye and drawn up at the outer corner
+            d = np.hypot((x - ex) / (EYE_W / 2 + 1.3), (y - ey - 0.15 * (x - ex) * np.sign(ex)) / (EYE_H / 2 + 1.0))
+            m |= (z < -24) & (d < 1.0)
+        # a spiral on the forehead
+        m |= (z < -24) & spiral(x, y, 0, 30.6, turns=1.6, size=2.4, width=0.45)
+        # flame streaks back over the crown and cheeks
+        m |= (y > 31.5) & (np.sin(x * 0.9 + z * 0.45) > 0.8)
+        m |= (np.abs(x) > 7.4) & (np.sin(y * 1.1 + z * 0.6) > 0.8)
+        m |= (z > -16) & (np.sin(y * 0.9 + x * 0.4) > 0.82)
     elif g.startswith(('arm', 'forearm', 'leg', 'shin')):
-        m |= np.sin(y * 0.9 + 0.8 * np.sin(z * 0.6)) > 0.86
-        m |= (np.round(y * 0.8) % 4 == 1) & (np.abs(((np.arctan2(z, x) * 4) % 1.0) - 0.5) < 0.12)
+        # stripes across the limbs, wavy like flames
+        m |= np.sin(y * 0.95 + 0.9 * np.sin(z * 0.6 + x * 0.3)) > 0.8
     elif g.startswith('ear'):
         if g.endswith('tip'):
-            m |= y > 47.8
-    elif g in ('jaw',):
-        m |= (z > -10) & (np.sin(x * 0.9) > 0.6)
+            m |= y > 35.3
+    elif g == 'jaw':
+        m |= (z > -27) & (np.sin(x * 0.9) > 0.65)
     return m
 
 
@@ -351,12 +381,17 @@ def paint_face(ci, c, side, tw, th):
     lam = np.clip(N @ LIGHT, -1, 1)
     pal = PALETTE[c['mat']]
     rgb[:] = cel(pal, lam, rng, highlight=c['mat'] != 'mouth')
-    if c['mat'] == 'fur':
-        s = streaks(rng, th, tw)
-        rgb *= (1 + (s - 0.5)[..., None] * 0.35)
-        rgb[s < 0.33] = rgb[s < 0.33] * 0.9
-        tips = (s > 0.68)
-        rgb[tips] = rgb[tips] * 0.8 + pal[4] * 0.2
+    if c['mat'] in ('fur', 'belly', 'plate'):
+        # packed sand / sandstone: short smeared strands plus a speckle of dark and light grains
+        s = streaks(rng, th, tw, length=3)
+        rgb *= (1 + (s - 0.5)[..., None] * 0.22)
+        speck = rng.random((th, tw))
+        rgb[speck < 0.06] = rgb[speck < 0.06] * 0.78
+        rgb[speck > 0.95] = rgb[speck > 0.95] * 0.7 + pal[4] * 0.3
+        if c['mat'] == 'plate':
+            # slab strata: a couple of thin ink cracks across each plate
+            strata = (np.abs(((V * 3.2 + 0.15 * np.sin(U * 9)) % 1.0) - 0.5) < 0.03)
+            rgb[strata] = rgb[strata] * 0.55 + pal[0] * 0.45
         m = markings(c, P)
         if c['name'] == 'muzzle':
             m[:] = False
@@ -370,7 +405,7 @@ def paint_face(ci, c, side, tw, th):
         rgb[hatch] = rgb[hatch] * 0.5 + pal[0] * 0.5
     # the mouth: a jagged, concave grin - dark inside, zig-zag teeth, no tongue
     if c['name'] == 'muzzle' and side == 'north':
-        mouth_top = 0.52
+        mouth_top = 0.42
         rgb[V > mouth_top] = PALETTE['mouth'][1]
         tooth = (V > mouth_top) & (V < mouth_top + 0.38 * (1 - np.abs(((U * 7) % 1.0) - 0.5) * 2))
         rgb[tooth] = PALETTE['bone'][2]
@@ -402,9 +437,7 @@ def paint_face(ci, c, side, tw, th):
     thick = 4 if side in c['contact'] else 0
     if thick:
         edge |= (xx < thick) | (xx >= tw - thick) | (yy < thick) | (yy >= th - thick)
-    if side == 'down' or c['name'] == 'mouth_inside':
-        pass
-    if side in ('up', 'north') and c['mat'] == 'fur':
+    if side in ('up', 'north') and c['mat'] in ('fur', 'belly'):
         gaps = rng.random((th, tw)) > 0.0
         # break the line in a few short runs
         run = np.zeros((th, tw), dtype=bool)
@@ -437,37 +470,40 @@ def add_animation(doc, groups, name, length, tracks, loop='once'):
 
 
 def animations(doc, groups):
+    """Keyframe x and y are inverted (Blockbench's convention): body x -50 rears the front up 50 degrees, head x +35
+    tips the nose down to keep the eyes on the target, jaw x +40 opens the mouth."""
     c = 'catmullrom'
-    # Drilling Air Bullet: anticipation (lean back, right arm up), two pounds on the belly, the mouth opens, settle.
+    # Drilling Air Bullet: rears up off its front paws, pounds the belly twice, the mouth gapes, then drops back down.
     add_animation(doc, groups, 'drum', 1.0, {
-        'body': [(0, 'rotation', (0, 0, 0), c), (0.2, 'rotation', (8, 0, 0), c), (0.35, 'rotation', (-4, 0, 0), c),
-                 (0.55, 'rotation', (6, 0, 0), c), (0.7, 'rotation', (-6, 0, 0), c), (1.0, 'rotation', (0, 0, 0), c)],
-        'arm_r': [(0, 'rotation', (0, 0, 0), c), (0.2, 'rotation', (-70, 0, -20), c), (0.32, 'rotation', (-15, 0, 10), 'linear'),
-                  (0.5, 'rotation', (-70, 0, -20), c), (0.62, 'rotation', (-15, 0, 10), 'linear'), (1.0, 'rotation', (0, 0, 0), c)],
-        'arm_l': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-20, 0, 15), c), (1.0, 'rotation', (0, 0, 0), c)],
-        'belly': [(0, 'scale', (1, 1, 1), c), (0.32, 'scale', (1.06, 0.94, 0.94), 'linear'), (0.4, 'scale', (1, 1, 1), c),
-                  (0.62, 'scale', (1.08, 0.92, 0.92), 'linear'), (0.72, 'scale', (1, 1, 1), c)],
-        'head': [(0, 'rotation', (0, 0, 0), c), (0.25, 'rotation', (-12, 0, 0), c), (0.7, 'rotation', (10, 0, 0), c),
+        'body': [(0, 'rotation', (0, 0, 0), c), (0.2, 'rotation', (-50, 0, 0), c), (0.7, 'rotation', (-46, 0, 0), c),
+                 (0.88, 'rotation', (6, 0, 0), c), (1.0, 'rotation', (0, 0, 0), c)],
+        'head': [(0, 'rotation', (0, 0, 0), c), (0.2, 'rotation', (38, 0, 0), c), (0.7, 'rotation', (30, 0, 0), c),
                  (1.0, 'rotation', (0, 0, 0), c)],
-        'jaw': [(0, 'rotation', (0, 0, 0), c), (0.6, 'rotation', (0, 0, 0), c), (0.72, 'rotation', (35, 0, 0), c),
-                (0.9, 'rotation', (30, 0, 0), c), (1.0, 'rotation', (0, 0, 0), c)],
+        'arm_r': [(0, 'rotation', (0, 0, 0), c), (0.18, 'rotation', (-45, 0, 15), c), (0.3, 'rotation', (35, 0, -28), 'linear'),
+                  (0.45, 'rotation', (-45, 0, 15), c), (0.58, 'rotation', (35, 0, -28), 'linear'), (1.0, 'rotation', (0, 0, 0), c)],
+        'arm_l': [(0, 'rotation', (0, 0, 0), c), (0.25, 'rotation', (-45, 0, -15), c), (0.37, 'rotation', (35, 0, 28), 'linear'),
+                  (0.52, 'rotation', (-45, 0, -15), c), (0.64, 'rotation', (35, 0, 28), 'linear'), (1.0, 'rotation', (0, 0, 0), c)],
+        'belly': [(0, 'scale', (1, 1, 1), c), (0.3, 'scale', (1.07, 0.93, 0.93), 'linear'), (0.4, 'scale', (1, 1, 1), c),
+                  (0.58, 'scale', (1.08, 0.92, 0.92), 'linear'), (0.68, 'scale', (1, 1, 1), c)],
+        'jaw': [(0, 'rotation', (0, 0, 0), c), (0.6, 'rotation', (0, 0, 0), c), (0.7, 'rotation', (42, 0, 0), c),
+                (0.86, 'rotation', (36, 0, 0), c), (1.0, 'rotation', (0, 0, 0), c)],
     })
-    # Laugh: rocks back, jaw flaps, the belly shakes, arms out - proud and loud.
+    # Cackle: half rears, throws its head back, jaw flapping, arms flailing out, the belly shaking.
     keys_jaw, keys_belly, keys_body = [], [], []
     for n in range(9):
         t = round(0.2 + n * 0.15, 3)
-        keys_jaw.append((t, 'rotation', (28 if n % 2 == 0 else 10, 0, 0), c))  # + opens: keyframe x is inverted
+        keys_jaw.append((t, 'rotation', (32 if n % 2 == 0 else 12, 0, 0), c))
         keys_belly.append((t, 'scale', ((1.05, 0.96, 1.05) if n % 2 == 0 else (0.98, 1.02, 0.98)), c))
-        keys_body.append((t, 'rotation', ((-10 if n % 2 == 0 else -6), 0, (3 if n % 4 == 0 else -3)), c))
+        keys_body.append((t, 'rotation', ((-26 if n % 2 == 0 else -20), 0, (3 if n % 4 == 0 else -3)), c))
     add_animation(doc, groups, 'laugh', 1.8, {
         'body': [(0, 'rotation', (0, 0, 0), c)] + keys_body + [(1.8, 'rotation', (0, 0, 0), c)],
         'jaw': [(0, 'rotation', (0, 0, 0), c)] + keys_jaw + [(1.8, 'rotation', (0, 0, 0), c)],
         'belly': [(0, 'scale', (1, 1, 1), c)] + keys_belly + [(1.8, 'scale', (1, 1, 1), c)],
-        'head': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-20, 0, 0), c), (1.5, 'rotation', (-14, 0, 0), c),
+        'head': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-5, 0, 0), c), (1.5, 'rotation', (2, 0, 0), c),
                  (1.8, 'rotation', (0, 0, 0), c)],
-        'arm_l': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-25, 0, 35), c), (1.5, 'rotation', (-25, 0, 30), c),
+        'arm_l': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-35, 0, -40), c), (1.5, 'rotation', (-30, 0, -32), c),
                   (1.8, 'rotation', (0, 0, 0), c)],
-        'arm_r': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-25, 0, -35), c), (1.5, 'rotation', (-25, 0, -30), c),
+        'arm_r': [(0, 'rotation', (0, 0, 0), c), (0.3, 'rotation', (-35, 0, 40), c), (1.5, 'rotation', (-30, 0, 32), c),
                   (1.8, 'rotation', (0, 0, 0), c)],
     })
 

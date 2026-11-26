@@ -178,7 +178,7 @@ public final class NoirmConfig {
         b.pop();
 
         b.comment("Creatures: sizes of the beasts and summons that have their own models (docs/entities/).").push("creatures");
-        SHUKAKU_SCALE.spec = b.comment("Shukaku's size: 1.0 = 1.3 x 2.7 blocks; the default 1.3 makes it about 3.5 blocks tall. Canon is building-sized.")
+        SHUKAKU_SCALE.spec = b.comment("Shukaku's size: 1.0 = a 1.35 x 2.3 block hitbox; the default 1.3 makes it about 3 blocks tall and 4 long. Canon is building-sized.")
                 .defineInRange("shukakuScale", 1.3, 0.5, 4.0);
         b.pop();
         SPEC = b.build();

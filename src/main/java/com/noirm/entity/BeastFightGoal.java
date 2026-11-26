@@ -28,6 +28,8 @@ final class BeastFightGoal extends Goal {
     static final int BALL_CHARGE = 30;
     /** Shukaku's Drilling Air Bullet: two belly pounds, then the wind ball leaves its mouth (the "drum" clip is 20 ticks). */
     static final int DRUM_TICKS = 20, DRUM_FIRE = 14;
+    /** Shukaku's charge on all fours (navigation speed multiplier). */
+    static final double CHARGE_SPEED = 1.6;
     static final ResourceLocation AIR_BULLET = com.noirm.Noirm.id("futon/vacuum_bullets");
     private static final DustParticleOptions DARK = new DustParticleOptions(new Vector3f(0.2f, 0.02f, 0.3f), 2f);
 
@@ -37,6 +39,8 @@ final class BeastFightGoal extends Goal {
     private int charging = -1;
     private int drumCooldown = 60;
     private int drumming = -1;
+    private int circleDir = 1;
+    private int circleTicks;
 
     BeastFightGoal(TailedBeast beast) {
         this.beast = beast;
@@ -102,6 +106,8 @@ final class BeastFightGoal extends Goal {
         boolean busy = self.phase() != CombatPhase.IDLE;
         if (busy || distance <= reach - 0.3) {
             beast.getNavigation().stop();
+        } else if (beast.isShukaku()) {
+            prowlOrCharge(target, distance, reach);
         } else {
             beast.getNavigation().moveTo(target, 1.0);
         }
@@ -121,6 +127,24 @@ final class BeastFightGoal extends Goal {
             if (CombatSystem.requestAttack(beast, input)) {
                 attackCooldown = 20 + beast.getRandom().nextInt(25);
             }
+        }
+    }
+
+    /**
+     * Shukaku hunts like a beast: while its claws aren't ready it prowls in a circle around its prey at a few blocks,
+     * now and then switching direction; once they are, it charges on all fours (a gallop in the renderer).
+     */
+    private void prowlOrCharge(LivingEntity target, double distance, double reach) {
+        if (attackCooldown > 0 && distance < reach + 9) {
+            if (--circleTicks <= 0) {
+                circleTicks = 40 + beast.getRandom().nextInt(60);
+                circleDir = beast.getRandom().nextBoolean() ? 1 : -1;
+            }
+            double angle = Math.atan2(beast.getZ() - target.getZ(), beast.getX() - target.getX()) + 0.5 * circleDir;
+            double radius = Math.max(reach + 2.5, Math.min(distance, reach + 6));
+            beast.getNavigation().moveTo(target.getX() + Math.cos(angle) * radius, target.getY(), target.getZ() + Math.sin(angle) * radius, 0.8);
+        } else {
+            beast.getNavigation().moveTo(target, CHARGE_SPEED);
         }
     }
 

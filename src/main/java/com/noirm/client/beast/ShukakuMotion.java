@@ -17,7 +17,7 @@ import java.util.UUID;
  * postures live here, keyed by entity id). Dropped when the entity leaves the client level.
  */
 public final class ShukakuMotion {
-    static final int TAIL = 6;
+    static final int TAIL = 7;
     private static final Int2ObjectMap<ShukakuMotion> STATE = new Int2ObjectOpenHashMap<>();
 
     final long seed;

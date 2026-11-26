@@ -80,12 +80,12 @@ public final class ShukakuGameTests {
         floor(helper);
         TailedBeast beast = helper.spawn(NoirmEntities.TAILED_BEAST.get(), 1.5f, 1f, 1.5f);
         beast.setTails(1);
-        beast.setAction(TailedBeast.ACTION_SCRATCH);
-        helper.assertTrue(beast.action() == TailedBeast.ACTION_SCRATCH && beast.actionStart() == (int) helper.getLevel().getGameTime(),
+        beast.setAction(TailedBeast.ACTION_SNIFF);
+        helper.assertTrue(beast.action() == TailedBeast.ACTION_SNIFF && beast.actionStart() == (int) helper.getLevel().getGameTime(),
                 "an action carries its start time");
         beast.clearAction(TailedBeast.ACTION_LAUGH);
-        helper.assertTrue(beast.action() == TailedBeast.ACTION_SCRATCH, "clearing another action leaves this one");
-        beast.clearAction(TailedBeast.ACTION_SCRATCH);
+        helper.assertTrue(beast.action() == TailedBeast.ACTION_SNIFF, "clearing another action leaves this one");
+        beast.clearAction(TailedBeast.ACTION_SNIFF);
         helper.assertTrue(beast.action() == TailedBeast.ACTION_NONE, "cleared");
         beast.readyIdleHabits();
         boolean[] seen = {false};
@@ -107,7 +107,7 @@ public final class ShukakuGameTests {
         BbModel model = BbModel.fromClasspath("/assets/noirm/models/bb/shukaku.bbmodel");
         helper.assertTrue(model != null, "models/bb/shukaku.bbmodel is in the mod");
         for (String bone : new String[]{"body", "belly", "chest", "head", "jaw", "brow", "lid_l", "lid_r", "ear_l", "ear_r_tip",
-                "arm_l", "forearm_r", "hand_l", "leg_r", "shin_l", "foot_r", "tail1", "tail6"}) {
+                "arm_l", "forearm_r", "hand_l", "leg_r", "shin_l", "foot_r", "tail1", "tail7"}) {
             helper.assertTrue(model.bone(bone) != null, "bone " + bone);
         }
         helper.assertTrue(model.animations.containsKey("drum") && model.animations.containsKey("laugh"), "the drum and laugh clips");

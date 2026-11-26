@@ -72,8 +72,8 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
     private static final EntityDataAccessor<Byte> ACTION_ID = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Integer> ACTION_START = SynchedEntityData.defineId(TailedBeast.class, EntityDataSerializers.INT);
     private static final byte ATTACK_EVENT = 4;
-    /** Shukaku's hitbox at scale 1 (blocks); {@code creatures.shukakuScale} multiplies it. */
-    public static final float SHUKAKU_WIDTH = 1.3f, SHUKAKU_HEIGHT = 2.7f;
+    /** Shukaku's hitbox at scale 1 (blocks; a hunched quadruped, its body about 3 long); {@code creatures.shukakuScale} multiplies it. */
+    public static final float SHUKAKU_WIDTH = 1.35f, SHUKAKU_HEIGHT = 2.3f;
     /** A mood holds at least this long before it can change (no flicker). */
     static final int MOOD_HOLD = 30;
     /** No target and no player near for this long: calm again. */
@@ -87,10 +87,11 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
     }
 
     /** What the beast is doing right now (an idle habit, an attack wind-up, the belly drum). */
-    public static final byte ACTION_NONE = 0, ACTION_CLAW = 1, ACTION_DRUM = 2, ACTION_LAUGH = 3, ACTION_SCRATCH = 4,
-            ACTION_SIFT = 5, ACTION_YAWN = 6, ACTION_ROAR = 7;
+    public static final byte ACTION_NONE = 0, ACTION_CLAW = 1, ACTION_DRUM = 2, ACTION_LAUGH = 3, ACTION_SNIFF = 4,
+            ACTION_SHAKE = 5, ACTION_YAWN = 6, ACTION_ROAR = 7;
 
     private int moodHeld;
+    private boolean wasOnGround = true;
     private int quietTicks;
     private boolean poofed;
 
@@ -147,8 +148,8 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new BeastFightGoal(this));
         // Idle habits (docs/entities/shukaku.md): each runs only when calm and sets ACTION for the renderer.
-        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SCRATCH, 50, 300, 600, false));
-        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SIFT, 60, 400, 800, true));
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SNIFF, 60, 200, 500, true));
+        goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_SHAKE, 30, 400, 800, true));
         goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_LAUGH, 36, 400, 800, true));
         goalSelector.addGoal(4, new BeastIdleGoal(this, ACTION_YAWN, 40, 600, 1200, true));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.6));
@@ -423,10 +424,15 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
                 getZ() + (random.nextDouble() - 0.5) * w * 2, 0, 0.02, 0);
     }
 
-    /** Shukaku's aura: drifting sand, thicker when it is angry; a sand trickle while it sifts. */
+    /** Shukaku's aura: sand dusting off it, thicker when angry; sand pours while it moves, swipes and shakes; a cloud when it lands. */
     private void sandAura() {
+        boolean landed = onGround() && !wasOnGround;
+        wasOnGround = onGround();
         if (isSubdued()) {
             return;
+        }
+        if (landed || action() == ACTION_SHAKE && random.nextInt(2) == 0 || attackAnimation > 6) {
+            sandBurst(landed ? 24 : 6);
         }
         Mood mood = mood();
         int chance = mood == Mood.ANGRY || mood == Mood.MANIC ? 1 : 3;
@@ -436,13 +442,22 @@ public class TailedBeast extends PathfinderMob implements Enemy, CombatStats, Co
             level().addParticle(sand, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.6,
                     getZ() + (random.nextDouble() - 0.5) * w * 2, 0, -0.01, 0);
         }
-        if (action() == ACTION_SIFT || walkAnimation.speed() > 0.3f && random.nextInt(3) == 0) {
+        if (walkAnimation.speed() > 0.3f && random.nextInt(2) == 0) {
             net.minecraft.core.particles.BlockParticleOption grains = new net.minecraft.core.particles.BlockParticleOption(
                     ParticleTypes.FALLING_DUST, net.minecraft.world.level.block.Blocks.SAND.defaultBlockState());
-            double fx = -Math.sin(Math.toRadians(yBodyRot)), fz = Math.cos(Math.toRadians(yBodyRot));
-            double reach = action() == ACTION_SIFT ? getBbWidth() * 0.55 : 0;
-            level().addParticle(grains, getX() + fx * reach + (random.nextDouble() - 0.5) * w,
-                    getY() + (action() == ACTION_SIFT ? getBbHeight() * 0.35 : 0.1), getZ() + fz * reach + (random.nextDouble() - 0.5) * w, 0, 0, 0);
+            level().addParticle(grains, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.7,
+                    getZ() + (random.nextDouble() - 0.5) * w * 2, 0, 0, 0);
+        }
+    }
+
+    /** A puff of sand around the body (client). */
+    private void sandBurst(int count) {
+        net.minecraft.core.particles.BlockParticleOption sand = new net.minecraft.core.particles.BlockParticleOption(
+                ParticleTypes.BLOCK, net.minecraft.world.level.block.Blocks.SAND.defaultBlockState());
+        double w = getBbWidth() * 0.8;
+        for (int i = 0; i < count; i++) {
+            level().addParticle(sand, getX() + (random.nextDouble() - 0.5) * w * 2, getY() + random.nextDouble() * getBbHeight() * 0.5,
+                    getZ() + (random.nextDouble() - 0.5) * w * 2, (random.nextDouble() - 0.5) * 0.3, 0.1, (random.nextDouble() - 0.5) * 0.3);
         }
     }
 
