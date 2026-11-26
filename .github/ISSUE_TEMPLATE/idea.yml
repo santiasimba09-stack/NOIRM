@@ -1,0 +1,15 @@
+name: Idea
+description: Something new for the mod, or a change you'd like.
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why, or references
+      description: Canon references, how it should feel, examples.

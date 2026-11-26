@@ -1,0 +1,35 @@
+name: Bug or something that feels wrong
+description: Something broke, looks wrong or plays badly.
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which jar were you playing? (e.g. v0.3)
+    validations:
+      required: true
+  - type: textarea
+    id: did
+    attributes:
+      label: What I did
+      description: The steps, as exactly as you remember.
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What I expected
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: A screenshot, the crash report, or the latest.log from your .minecraft/logs folder, if you have them.

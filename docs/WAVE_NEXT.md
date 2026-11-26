@@ -18,3 +18,11 @@ token cost).
 7. **A better Byakugan.**
 
 On hold: the remaining Aburame phases (v0.3.1), the complex clan work, the solid-jutsu wave.
+
+## Owner's instruction for this cycle (2026-11-26)
+After the tooling wave, then the clones-and-training wave:
+1. **Release the new version.**
+2. **Stop and write a short review for the owner:** did the tooling changes (skills, Blockbench pipeline, slim docs,
+   quick tests, GitHub CI and releases, one session per wave, fewer helpers, cheaper model for routine work) really
+   make development better and cheaper? Back it with numbers where possible (usage, time, failed runs, rework). Say
+   what didn't work and why, and how to improve it.

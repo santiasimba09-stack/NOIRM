@@ -32,6 +32,12 @@ jobs:
         if: always()
         run: |
           grep -E "required tests (passed|failed)|failed!" gametest.log | tail -40 >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Test jar for this build
+        uses: actions/upload-artifact@v4
+        with:
+          name: noirm-test-jar
+          path: build/libs/noirm-*.jar
+          retention-days: 14
       - name: Keep the log on failure
         if: failure()
         uses: actions/upload-artifact@v4

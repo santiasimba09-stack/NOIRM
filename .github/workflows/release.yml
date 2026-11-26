@@ -1,0 +1,56 @@
+# Publishes a GitHub Release with the jar whenever main gets a new mod_version (gradle.properties),
+# or when started by hand (Actions > Release > Run workflow). The tag (v<mod_version>) is created here,
+# so jars no longer need to be committed into the repository.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths: ["gradle.properties"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the version
+        id: v
+        run: |
+          ver=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          echo "tag=v$ver" >> "$GITHUB_OUTPUT"
+          # The newest CHANGELOG heading is the release title; its entry is the notes.
+          title=$(grep -m1 '^## ' docs/CHANGELOG.md | sed 's/^## //')
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          awk '/^## /{n++} n==1' docs/CHANGELOG.md > notes.md
+      - name: Skip if this version is already released
+        id: exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ steps.v.outputs.tag }}" >/dev/null 2>&1; then echo "yes=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-java@v4
+        if: steps.exists.outputs.yes != '1'
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.exists.outputs.yes != '1'
+      - name: Build
+        if: steps.exists.outputs.yes != '1'
+        run: |
+          ./gradlew build -x test --no-daemon
+          jar=$(ls build/libs/noirm-*.jar | grep -v -- '-sources' | head -1)
+          cp "$jar" "noirm-${{ steps.v.outputs.tag }}.jar"
+      - uses: softprops/action-gh-release@v2
+        if: steps.exists.outputs.yes != '1'
+        with:
+          tag_name: ${{ steps.v.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.v.outputs.title }}
+          body_path: notes.md
+          files: noirm-${{ steps.v.outputs.tag }}.jar
