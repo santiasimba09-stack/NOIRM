@@ -43,7 +43,7 @@ Inuzuka hound) on top of NOIRM APX 0.1 (= v0.18.0, the baseline). Details: [`CHA
 Fail now and then while the machine is busy; each passed on the next run (none root-caused):
 `woodlockingwallclosesthensplinters`, `outpostisbuilt`, `vacuumwavecutsallaround`, `despawnrules` (mostly on a freshly
 generated test world), `groupmatesjointhefight`, `dodgeIntoCounterLandsBehind`, `wavesRollOverAndCarry`,
-`ninjasCastFromTheirOwnSet`, `catchingAMobChangesWhatItDoes`.
+`ninjasCastFromTheirOwnSet`, `catchingAMobChangesWhatItDoes`, `aHurtNinjaSwallowsABloodPill`.
 
 ## Where the rest went
 
