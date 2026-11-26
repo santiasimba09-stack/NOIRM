@@ -318,6 +318,9 @@ equipped. Tuning: constants in `jutsu/NpcJutsuSets`.
   cost, no Reserves gate, power follows Taijutsu) with **mastery up to Lv 10** (`"max_mastery": 10`), each level
   widening Rotation, lengthening it, adding palm points and Air Palm reach. Air Palm unlocks at Rotation ★2, Twin Lion
   Fists at 64 Palms ★3, 128 Palms at 64 Palms ★5. Details: `docs/WAVE_HYUGA.md`, numbers: `docs/TUNING.md`.
+  **Gentle Fist arts** (`dojutsu/GentleFistArts`): aimed tenketsu strikes (legs / chest / arms), organ strikes
+  (internal bleeding), chakra burst (breaks hand seals), reopening one's own points, palm parry. The eye's client view
+  is capped and cached for speed (`client/ByakuganVision`, `dojutsu/XRayScanner`).
 
 ## 10. Tailed beasts (owner: be born one, fight them, seal them into yourself or others)
 

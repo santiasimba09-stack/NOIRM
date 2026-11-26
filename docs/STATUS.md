@@ -19,7 +19,8 @@ Inuzuka hound) on top of NOIRM APX 0.1 (= v0.18.0, the baseline). Details: [`CHA
 - **The Hyūga wave** (2026-11-26, branch `claude/wave-hyuga`, draft PR): the Hyūga as the Leaf's strongest clan, with
   nothing new built. Big clan perk raise (CTL +12, TAI +5, Gentle Fist ×2.5, parry and guard perks), a stronger
   Byakugan (free to keep open, 64-256 block sight) and Gentle Fist, every Hyūga technique **chakra-free** with no
-  Reserves gate, and **mastery up to Lv 10** for them (`max_mastery` in jutsu JSON). Brief: [`WAVE_HYUGA.md`](WAVE_HYUGA.md).
+  Reserves gate, and **mastery up to Lv 10** for them (`max_mastery` in jutsu JSON). New Gentle Fist arts (aimed
+  tenketsu, organ bleeding, chakra burst, reopening points, palm parry) and the **Byakugan lag fixed**. Brief: [`WAVE_HYUGA.md`](WAVE_HYUGA.md).
   Waiting for the owner's playtest.
 - NOIRM v0.4 (the clones-and-training wave) is merged on main ([`CHANGELOG.md`](CHANGELOG.md)).
 

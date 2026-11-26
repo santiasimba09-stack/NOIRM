@@ -18,7 +18,12 @@ The owner's brief (`docs/WAVE_HYUGA.md`): make the Hyūga the Leaf's strongest c
   Air Palm reach, Lion Fists length). The jutsu screen shows "Lv 7/10". Old saves keep their ★. Unlocks: Air Palm ★2,
   Twin Lion Fists ★3, 128 Palms ★5.
 - **Tooling:** `python3 tools/dev/protocol.py check [base]` warns when PROTOCOL_VERSION isn't above the base branch's.
-- 4 new game tests (`HyugaWaveGameTests`).
+- **Gentle Fist arts (owner's mid-wave addition):** targeted tenketsu (legs slow, arms weaken, chest drains),
+  organ strikes (internal bleeding), chakra burst (breaks seals), reopening one's own points, palm parry (turns
+  projectiles back). Numbers in `data/noirm/gentle_fist/tuning.json`.
+- **Byakugan lag fixed:** silhouettes capped to the nearest 20, others drawn as a one-quad core, targets cached per
+  5 ticks, x-ray scanned a slice per tick (a ~19 ms one-frame spike → ~1.6 ms per tick over 12 ticks).
+- 10 new game tests (`HyugaWaveGameTests`, `GentleFistArtsGameTests`).
 
 ## 2026-11-26 — NOIRM v0.4 (= v0.21.0): the tooling wave and the clones-and-training wave (PRs #3, #4; protocol 40)
 
