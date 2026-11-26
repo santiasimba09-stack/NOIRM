@@ -1,7 +1,7 @@
 # NOIRM v0.3 plan (owner, 2026-11-25)
 
 The owner's order: build these, **deliver v0.3**, and only then start the complex clan work from
-`docs/CLAN_RESEARCH.md` (Part II).
+`docs/clans/` (Part II of each clan file).
 
 ## In v0.3
 1. **The richer creator and ninja UI** (`docs/WAVE_CREATOR_UI.md`), finished.
@@ -39,7 +39,7 @@ The owner's order: build these, **deliver v0.3**, and only then start the comple
     Indra path must come from a reincarnation mechanic and be **super hard to get** (extremely rare, never a
     normal clan ultimate).
 - **Removed:** the Seven Seals of the Maelstrom. The Uzumaki are simply overpowered, as in canon.
-- Everything else in `CLAN_RESEARCH.md` Part II is the menu to pick from, clan by clan.
+- Everything else in the clan files' Part II (`docs/clans/`) is the menu to pick from, clan by clan.
 
 ## The owner's Aburame material (summary, from the Spanish wiki and an article)
 - One of Konoha's four noble clans and a founding clan. They use chakra-eating insects that live **inside

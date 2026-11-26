@@ -235,7 +235,7 @@ The shape is clear: strong ninjutsu and brains, **weak body** (taijutsu and stre
 
 ### 1.9 The Kamizuru (the rivals)
 
-- **Canon** `[anime-only]` (ep. 148–151, the Bikōchū Search Mission; our `CLAN_RESEARCH.md` said ep. 136–141,
+- **Canon** `[anime-only]` (ep. 148–151, the Bikōchū Search Mission; our clan research (`docs/clans/kamizuru.md`) said ep. 136–141,
   which is wrong):
   - a once-revered **bee-using clan of Iwagakure**, who claimed the First Tsuchikage as one of them;
   - they led an Iwa attack on Konoha and were **crushed by the Aburame**, losing their status;
@@ -272,7 +272,7 @@ The shape is clear: strong ninjutsu and brains, **weak body** (taijutsu and stre
 
 ### 1.11 Corrections to our earlier docs
 
-- The Kamizuru episodes are **148–151**, not 136–141 (`CLAN_RESEARCH.md`).
+- The Kamizuru episodes are **148–151**, not 136–141 (`docs/clans/kamizuru.md`).
 - Shino's kidaichū ate the **Ten-Tails'** clones, not the Eight-Tails' (the owner's question).
 - "Hundreds of thousands" of insects is a **game** line; canon says "tens of thousands" per body. Hives and
   gourds can still take us to hundreds of thousands, as our own reading.
@@ -841,7 +841,7 @@ Every new entity needs a renderer, and a client launch is the only check (game t
 - `ab-outfit-front.png`, `ab-outfit-side.png` (coat, hood, glasses, gourd)
 
 ### Docs and progress map
-`STATUS.md`, `CHANGELOG.md`, `CLANS.md` (perk changes), `CLAN_RESEARCH.md` (the corrections in 1.11),
+`STATUS.md`, `CHANGELOG.md`, `CLANS.md` (perk changes), `docs/clans/balance.md` (the corrections in 1.11),
 `COMMANDS.md` (generated), and the progress map: the `systems` doc "Aburame colony", plus the owner questions
 below.
 
