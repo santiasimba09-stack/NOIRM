@@ -1,0 +1,42 @@
+# Fast checks on every push and pull request: valid JSON, lang files in sync.
+name: Data checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every JSON file parses
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          bad = []
+          for p in pathlib.Path("src/main/resources").rglob("*.json"):
+              try:
+                  json.loads(p.read_text(encoding="utf-8"))
+              except Exception as e:
+                  bad.append(f"{p}: {e}")
+          print("\n".join(bad) or "all JSON files parse")
+          sys.exit(1 if bad else 0)
+          PY
+      - name: The three lang files have the same keys
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          base = "src/main/resources/assets/noirm/lang/"
+          langs = {n: set(json.load(open(base + n + ".json", encoding="utf-8"))) for n in ("en_us", "es_es", "es_mx")}
+          ok = True
+          for n, keys in langs.items():
+              for m, other in langs.items():
+                  missing = other - keys
+                  if missing:
+                      ok = False
+                      print(f"{n} is missing {len(missing)} keys that {m} has, e.g. {sorted(missing)[:5]}")
+          print("lang files in sync" if ok else "")
+          sys.exit(0 if ok else 1)
+          PY
