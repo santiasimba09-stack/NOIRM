@@ -131,18 +131,38 @@ public final class NatureDrillGameTests {
         helper.succeed();
     }
 
+    /**
+     * The test world is a real world about 60 blocks down: lava, an aquifer's flowing water or a fire left by an earlier
+     * test can sit inside a drill's reach (fire looks 4 blocks out, past the 3x3 test area). Clear them first.
+     */
+    private static void clearStraySettings(GameTestHelper helper, FakePlayer player) {
+        BlockPos at = player.blockPosition();
+        int r = Math.max(NatureDrills.FIRE_RANGE, NatureDrills.ROD_RANGE) + 1;
+        for (BlockPos p : BlockPos.betweenClosed(at.offset(-r, -2, -r), at.offset(r, 4, r))) {
+            net.minecraft.world.level.block.state.BlockState s = helper.getLevel().getBlockState(p);
+            if (s.is(net.minecraft.tags.BlockTags.FIRE) || !s.getFluidState().isEmpty() || s.is(Blocks.LIGHTNING_ROD)
+                    || s.getBlock() instanceof net.minecraft.world.level.block.CampfireBlock
+                    || s.getBlock() instanceof net.minecraft.world.level.block.AbstractFurnaceBlock
+                    || s.getBlock() instanceof net.minecraft.world.level.block.AbstractCandleBlock) {
+                helper.getLevel().setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+            }
+        }
+    }
+
     /** Every drill: only its own setting moves it, while meditating; hidden natures go twice as fast; finishing gives the nature and its starter. */
-    @GameTest(template = "empty", batch = "noirm_nature_drills", timeoutTicks = 200)
+    @GameTest(template = "empty", batch = "noirm_nature_drills_each", timeoutTicks = 200) // own batch: it clears blocks around it
     public static void eachDrillProgressesAndGrantsTheNature(GameTestHelper helper) {
         helper.getLevel().setWeatherParameters(6000, 0, false, false); // clear skies: rain would count as running water
         FakePlayer player = student(helper);
         ShinobiData data = data(player);
         data.natureTraining().setHidden(List.of(Nature.EARTH));
+        clearStraySettings(helper, player);
         BlockPos side = new BlockPos(0, 1, 0);
         BlockPos side2 = new BlockPos(2, 1, 2);
         for (Nature nature : NatureDrills.TRAINABLE) {
             // Nothing set up: no drill moves.
-            helper.assertTrue(NatureDrills.current(player, data) == null, "no setting, no drill (before " + nature + ")");
+            NatureDrills.Pace stray = NatureDrills.current(player, data);
+            helper.assertTrue(stray == null, "no setting, no drill (before " + nature + "; found " + (stray == null ? "" : stray.nature()) + ")");
             // Build the setting.
             switch (nature) {
                 case WIND -> player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.OAK_LEAVES));
