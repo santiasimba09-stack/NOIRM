@@ -2,7 +2,7 @@
 
 Newest first. One entry per working session or PR.
 
-## 2026-11-26 — The clones-and-training wave (branch `claude/wave-clones`, protocol 40)
+## 2026-11-26 — NOIRM v0.4 (= v0.21.0): the tooling wave and the clones-and-training wave (PRs #3, #4; protocol 40)
 
 The owner's queued requests (`docs/WAVE_NEXT.md`).
 - **Shadow clones closer to canon:** split chakra, one-hit pop, memories and mental fatigue, scouting, clones training
@@ -14,6 +14,10 @@ The owner's queued requests (`docs/WAVE_NEXT.md`).
 - **Tailed beasts:** nine spawn eggs, one per beast.
 - **Gentle Fist and Byakugan:** internal damage through armour and guards, chakra shut-off, CTL-scaled range, blind
   spot, x-ray, point sight; 128 Palms, Air Palm, Twin Lion Fists.
+- **Tooling (no gameplay change):** project skills in `.claude/skills/`, Blockbench models (the Giant Insect is the
+  first), an offline model preview, slim docs (`docs/INDEX.md`), a quick test runner, lang and protocol tools, `docs/TUNING.md`,
+  GitHub CI and automatic releases.
+- 625 game tests green twice; GitHub CI green.
 
 ## 2026-11-25 — NOIRM v0.3 (= v0.20.0): creator + Shoji UI, clan clothing, clan boosts, the Aburame (branch `claude/keen-cray-uc2d11`, PR #1)
 
