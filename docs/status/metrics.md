@@ -66,11 +66,13 @@ Quick runner: one system's tests in 2–3 min instead of about 4 min × 2 for th
 ### Shukaku, the One-Tail (2026-11-26, branch `claude/wave-shukaku`)
 | Who | Tokens | Tool calls | Time | Notes |
 |---|---|---|---|---|
-| One session, no helpers | not visible to itself | ~140 | ~2 h | first test of the three creature skills |
+| One session, no helpers | not visible to itself | ~150 | ~2.5 h | first test of the three creature skills |
 
 - **Quick runner:** 4 targeted runs (24, 4, 21 and 21 tests); one red (an idle-habit test: vanilla ticks goals every
   other tick, fixed by timing by game time), the rest green.
-- **Full suite:** twice in a row, 639/639 both times (one earlier full run was stopped when the design changed).
+- **Full suite:** three passes on the final code: 639/639, 638/639 (`aHurtNinjaSwallowsABloodPill`), 638/639
+  (`amaterasuBurnsThroughWater`); each failure passed when rerun alone and neither touches beasts, so the strict
+  "twice green in a row" bar was **not** met (one earlier run was stopped when the design changed).
 - **Client smoke:** twice (biped and quadruped); no renderer errors; the AI Shukaku fought and killed the test player.
 - **Rework:** one jaw-sign bug (caught in the offline preview) and one **design rework**: the owner's reference notes
   arrived mid-task (hunched quadruped, plated tail, swirls), so the model, gait, idles and AI were rebuilt once.
