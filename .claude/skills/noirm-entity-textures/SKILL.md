@@ -12,6 +12,9 @@ exists, make one first. Its outputs:
 - `tools/beastgen/gen_<id>.py`, the script that writes all of them. Art here is **drawn by scripts**.
   Never hand-edit a generated PNG (repo skill `textures`).
 
+**Template:** `tools/beastgen/gen_shukaku.py` does all of this for Shukaku (bone tree → cubes → shelf-packed per-face
+UVs → ink painting → glow → Blockbench clips). Copy it and change the tables; don't start from a blank file.
+
 Read first: the repo skills `blockbench-model` (the format rules, `tools/models/bbmodel.py`, `preview.py`) and
 `textures`, plus `docs/ART_STYLE.md`. Reuse `tools/skingen/pixlib.py` (`Canvas`, `tone`, `mix`, `hx`) or numpy+PIL.
 Owner references are mood only, and so is anything from the anime or manga: draw our own pixels, never trace or sample.
@@ -58,6 +61,10 @@ Paint every face from a shared set of rules, so the whole creature looks like on
   - interior ink lines for anatomy and markings (eye rims, mouth line, muscle separation, scale or plate edges),
     drawn with a pressure taper: thick in the middle, thin at the ends, like a brush.
   - Lines break here and there (1–2 texel gaps) on the lit side. That keeps it inked, not vector-clean.
+- **Markings as 3D functions:** give every texel its rest-pose model point (bilinear over the face corners from
+  `bbmodel.corners`) and paint markings from functions of that point (bands by `z` along a tail, rings around a
+  belly centre, eye rings by distance to the eye). They then line up across faces and between cubes for free.
+  A cube's "form normal" (face normal bent toward the cube centre) gives rounded cel bands on plain boxes.
 - **Raw texture:** seeded grain (±4–6 % value noise), dry-brush streaks that follow the form (fur flows from the
   head to the tail, along the limbs, down the cheeks), short ink hatching in the shadow tone, occasional scuffs and
   scars. Keep the noise *inside* the tone bands so the cel shapes still read.
@@ -68,7 +75,8 @@ Paint every face from a shared set of rules, so the whole creature looks like on
   - slug = translucent-looking, done with lighter edges and a sheen band;
   - shells and armour = plates with hard highlights and chipped edges;
   - cloth = folds with dark crevices (see `ART_STYLE.md` Clothing).
-- **Eyes** follow the ART_STYLE eye rule: sharp, never round or bubbly. Beast eyes get slit or canon pupils, a dark
+- **Eyes** follow the ART_STYLE eye rule: sharp, never round or bubbly. A thin eye panel (only its front face) with
+  alpha outside the almond gives sharp corners at any resolution; the renderer's cutout pass drops the rest. Beast eyes get slit or canon pupils, a dark
   rim and **one** small highlight. Paint them at full texel density.
 - **Readability test:** downscale the front preview to 32 px tall. The silhouette, the eyes and the main markings
   must still read. If they don't, the ink and value contrast is too weak.

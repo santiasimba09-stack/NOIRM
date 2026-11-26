@@ -109,6 +109,8 @@ public final class NoirmConfig {
     public static final Value<Double> RYO_REWARDS = value("progression.ryoRewards", 1.0);
     // ---------------------------------------------------------------- medicine (foods and pills)
     public static final Value<Double> PILL_STRENGTH = value("medicine.pillStrength", 1.0);
+    // ---------------------------------------------------------------- creatures (docs/entities/)
+    public static final Value<Double> SHUKAKU_SCALE = value("creatures.shukakuScale", 1.3);
 
     public static final ForgeConfigSpec SPEC;
 
@@ -173,6 +175,11 @@ public final class NoirmConfig {
         b.comment("Medicine: pills from the apothecary, shops and loot (docs/PILLS.md).").push("medicine");
         PILL_STRENGTH.spec = b.comment("How strong pills are: their boosts and refills (1.0 = normal). Crashes and toxicity are not scaled.")
                 .defineInRange("pillStrength", 1.0, 0.1, 5.0);
+        b.pop();
+
+        b.comment("Creatures: sizes of the beasts and summons that have their own models (docs/entities/).").push("creatures");
+        SHUKAKU_SCALE.spec = b.comment("Shukaku's size: 1.0 = 1.3 x 2.7 blocks; the default 1.3 makes it about 3.5 blocks tall. Canon is building-sized.")
+                .defineInRange("shukakuScale", 1.3, 0.5, 4.0);
         b.pop();
         SPEC = b.build();
     }

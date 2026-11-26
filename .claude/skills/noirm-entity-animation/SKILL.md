@@ -35,17 +35,20 @@ egg). On top of that:
 - **Mood logic** in `aiStep`/`tick`: switch on the brief's triggers (target nearby → alert, hurt or target in
   reach → angry, low health or long fight → tired, nothing for 30 s → calm). Add a minimum hold time, so moods
   don't flicker.
-- **Idle AI goals** (owner asked for them): one small `Goal` per idle action from the brief (sniff the ground,
+- **Idle AI goals** (owner asked for them; template `entity/BeastIdleGoal`): one small `Goal` per idle action from the brief (sniff the ground,
   groom, sit or lie down, look around, yawn, pipe puff, coil up, tongue-flick, wander with the summoner or the
   pack). Each goal runs only when calm and not targeting, has a seeded random cooldown, sets `ACTION` +
   `ACTION_START` when it starts, holds the mob still if the action needs it, and clears the action when it ends.
   Packs: followers keep 2–5 blocks from a leader and copy the leader's mood with a delay.
+  **Gotcha:** vanilla calls a running goal's `tick()` only every other tick unless `requiresUpdateEveryTick()`, so
+  time durations by game time (`endsAt = gameTime + duration`), not by counting `tick()` calls.
 - Combat goals reuse the existing patterns (`BeastFightGoal`, `NinjaFightGoal`). Each attack sets an `ACTION` with
   a **wind-up** of at least 6 ticks before damage (anticipation the player can read), then recovery.
 - **Configurable scale:** add `<id>Scale` (default from the brief, with min/max) to `config/NoirmConfig` in the
   common/server spec, because hitboxes depend on it. Apply it with `refreshDimensions()` and `getDimensions(pose)`
-  scaled. Read the config once on spawn and on `/reload` events, not every tick. Add a row to `docs/TUNING.md`.
-- **Multi-part hitboxes** above about 6 blocks: Forge `net.minecraftforge.entity.PartEntity<T>` children (head,
+  scaled. `getDimensions` only runs on a refresh, so reading the config there is cheap; vanilla `/reload` does **not**
+  reload configs (the file watcher does), so re-check the size every ~100 ticks and refresh if it changed. Add a row to `docs/TUNING.md`.
+- **Multi-part hitboxes** (only when the default size is above about 6 blocks; skip otherwise): Forge `net.minecraftforge.entity.PartEntity<T>` children (head,
   body, tail segments) placed each tick from the root's yaw and the bone positions in the brief, with
   `isMultipartEntity()` true and `getParts()` overridden. Damage on a part forwards to the root (head ×1.5).
   Keep the root box small enough to path.
@@ -77,11 +80,19 @@ if (lod == 0) CreatureRig.secondary(model, motion, dt); // springs on chains & s
 CreatureRig.reactions(model, motion, dt);      // hurt flinch spring, impact rock
 // render colour, then glow
 ```
-Put the reusable maths in **one shared class** (`client/anim/CreatureRig` or `client/model/CreatureRig`). Each creature
+Put the reusable maths in **one shared class**: it exists now, `client/model/CreatureRig` (`approach`, `Spring`,
+`Blinker`, `Twitch`, `envelope`, `lod`); add to it rather than starting another. (`client/anim` is the player
+animation engine; keep creatures out of it.) Worked example: `client/beast/ShukakuRenderer` + `ShukakuMotion`. Each creature
 then supplies only a small profile: bone names, amplitudes, gait type and mood postures. Build the helper once,
 with the first creature, and reuse it for every one after.
 
 ### Layers in detail
+**Rotation signs (get these right first; a wrong sign was this skill's first bug).** `Part.xRot` > 0 tips a part's
+top backwards, swings a hanging limb (arm, leg) forward, lowers a chain that points back (tail) and raises a part that
+points forward (head nose-up, jaw shut). So lean forward = `-body.xRot`, head down = `-head.xRot`, jaw open =
+`-jaw.xRot`, tail up = `-tail.xRot`. For a model facing -z, `+x` is the creature's right; `yRot` > 0 turns it to its
+left. Blockbench **keyframes** invert x and y (`BakedBbModel.animate`), so a jaw-open keyframe is `x = +30`.
+
 **Base pose + mood.** Each mood has a posture: head height, spine curve, tail carriage, ear angle, eye
 openness, breathing rate and speed. Blend the current posture toward the target with
 `p += (target - p) * (1 - exp(-dt / 0.35))`. Never snap. Angry: head low and forward, shoulders up, ears back,
@@ -117,7 +128,8 @@ Giants turn slowly and lead with the eyes.
 
 **Actions.** Play the Blockbench clip named after the action (`model.animate(name, seconds since ACTION_START)`),
 authored in the `.bbmodel` with anticipation, action, follow-through and settle. Blend it in over 0.15 s and
-out over 0.25 s by mixing its pose with the procedural pose per bone (store both, lerp). If a clip doesn't exist yet,
+out over 0.25 s with `model.animate(name, seconds, weight)` (every channel scaled by the weight, on top of the
+procedural pose); keep the previous action playing with a falling weight while the new one rises. If a clip doesn't exist yet,
 write it procedurally with the same 4 beats.
 
 **Secondary motion (springs).** For every chain (tails, tentacles, snake body when idle, ears, manes, cloth,

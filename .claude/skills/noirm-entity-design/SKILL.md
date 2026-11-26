@@ -38,7 +38,7 @@ the features a fan would name if asked to describe it.
 **Tailed beasts** (boss and partner forms; tails = power tier, as in `TailedBeast.scaleFor`)
 | # | Name | Body plan & anchors to check | Nature / tie |
 |---|---|---|---|
-| 1 | Shukaku | tanuki, sand-coloured body covered in dark blue-indigo seal markings, one thick tail, odd star-like pupils | sand, wind; Gaara |
+| 1 | Shukaku | upright tanuki, huge belly, sand-coloured, seal markings (manga black, anime dark blue), one thick tail, black sclera + yellow iris + four-point star pupil with four dots, jagged tongueless mouth (verified, `docs/entities/shukaku.md`) | sand, wind (belly-drum Air Bullet); Gaara |
 | 2 | Matatabi | big cat of blue-black flame, two tails, mismatched eyes | fire; Yugito Nii |
 | 3 | Isobu | turtle/shellfish, spiked coral-like shell, three tails, crustacean limbs | water, coral; Yagura |
 | 4 | Son Gokū | ape, red fur, four tails, muscular, lava | lava (fire+earth); Rōshi |
@@ -143,5 +143,12 @@ Effects: emissive / aura / summon poof
 Attacks & AI (boss phases):
 Open questions for the owner:
 ```
-Add the doc to `docs/INDEX.md`. Show the owner the brief and the open questions **before** moving on, and
-wait for their answers. Then call `noirm-entity-textures`, then `noirm-entity-animation`.
+Add the doc to `docs/INDEX.md` (one row covers `entities/<id>.md`). Show the owner the brief and the open questions
+**before** moving on, and wait for their answers. In a helper or autonomous task (no owner in the loop), don't wait:
+give each open question a stated default in the brief, build with the defaults, and list the questions in your report.
+Then call `noirm-entity-textures`, then `noirm-entity-animation`.
+
+**The creature already exists in code** (a tailed beast, the hound, a summon with a placeholder look): don't make a new
+`EntityType`. Keep the entity and its systems (spawn eggs, commands, sealing, tests), add the brief's moods and
+actions to it, and have its renderer draw the new model for that variant only (Shukaku: `TailedBeast.isShukaku()`,
+`TailedBeastRenderer` → `client/beast/ShukakuRenderer`).
