@@ -292,6 +292,7 @@ public final class HyugaTechniques {
         if (LIONS.containsKey(entity)) {
             tickLions(entity);
         }
+        com.noirm.dojutsu.GentleFistArts.tick(entity); // internal bleeding, reopening one's own points
     }
 
     private static void tickPalms(LivingEntity caster, Palms palms) {

@@ -150,9 +150,11 @@ public final class Byakugan {
         if (damage > 0f) {
             internalDamage(attacker, target, damage * INTERNAL_DAMAGE * lion);
         }
+        // Where the palm landed (legs, chest, arms), organ strikes, chakra burst: GentleFistArts (wave "Hyūga").
+        float region = GentleFistArts.onGentleFist(attacker, target, heavy, damage);
         int perHit = POINTS_PER_HIT + extraPoints(controlOf(attacker));
-        int points = Math.round((heavy ? perHit * 2 : perHit) * art * lion);
-        closePoints(attacker, target, points, (heavy ? GENTLE_FIST_CHAKRA * 2 : GENTLE_FIST_CHAKRA) * art * lion);
+        int points = Math.round((heavy ? perHit * 2 : perHit) * art * lion * region);
+        closePoints(attacker, target, points, (heavy ? GENTLE_FIST_CHAKRA * 2 : GENTLE_FIST_CHAKRA) * art * lion * region);
     }
 
     /** Extra points per hit from chakra control (tenketsu targeting). */
@@ -295,6 +297,36 @@ public final class Byakugan {
         long now = target.level().getGameTime();
         int sealed = (int) Math.max(0, state.sealedUntil - now);
         NoirmNetwork.sendToTrackingAndSelf(target, new PowerPackets.Tenketsu(target.getId(), state.closed, sealed));
+    }
+
+    /**
+     * Reopening tenketsu (GentleFistArts): forces {@code points} of {@code entity}'s own closed points back open, and a
+     * seal on it wears off {@code sealSpeed} times as fast (called every tick; {@code points} is non-zero once a second).
+     */
+    public static void reopen(LivingEntity entity, int points, float sealSpeed) {
+        Points state = POINTS.get(entity);
+        if (state == null) {
+            return;
+        }
+        long now = entity.level().getGameTime();
+        boolean changed = false;
+        if (now < state.sealedUntil && sealSpeed > 1f) {
+            state.sealedUntil -= Math.round(sealSpeed - 1f); // one extra tick of the seal gone per tick (×2)
+            changed = true;
+        }
+        if (points > 0 && state.closed > 0 && now - state.lastHit <= POINTS_RESET_TICKS) {
+            state.closed = Math.max(0, state.closed - points);
+            changed = true;
+        }
+        if (changed && (entity.tickCount % 20 == 0 || now >= state.sealedUntil)) {
+            sync(entity, state);
+        }
+    }
+
+    /** Ticks left on {@code entity}'s seal (0 = not sealed). */
+    public static int sealTicksLeft(LivingEntity entity) {
+        Points state = POINTS.get(entity);
+        return state == null ? 0 : (int) Math.max(0, state.sealedUntil - entity.level().getGameTime());
     }
 
     /** How many chakra points are closed right now. */

@@ -3914,5 +3914,10 @@
   "perk.noirm.parry_window": "Ventana de parada %s",
   "perk.noirm.parry_window.desc": "Más tiempo para parar justo al alzar la guardia.",
   "perk.noirm.guard": "Guardia %s",
-  "perk.noirm.guard.desc": "Menos daño y postura atraviesan tu guardia."
+  "perk.noirm.guard.desc": "Menos daño y postura atraviesan tu guardia.",
+  "message.noirm.gentle_fist.legs": "Puntos de las piernas cerrados: se frena",
+  "message.noirm.gentle_fist.arms": "Puntos de los brazos cerrados: sus golpes se debilitan",
+  "message.noirm.gentle_fist.chest": "Puntos del pecho golpeados: su chakra se escapa",
+  "message.noirm.gentle_fist.burst": "Estallido de chakra: su jutsu se rompió",
+  "message.noirm.gentle_fist.palm_parry": "Parada de palma: devuelto"
 }

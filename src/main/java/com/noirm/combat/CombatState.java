@@ -149,6 +149,11 @@ public final class CombatState {
         return guarding;
     }
 
+    /** Game time the guard was last raised (the parry window counts from here). */
+    public long guardStartTick() {
+        return guardStartTick;
+    }
+
     public float posture() {
         return posture;
     }
