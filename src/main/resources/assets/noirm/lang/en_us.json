@@ -3899,5 +3899,16 @@
   "jutsu.noirm.byakugan.twin_lion_fists": "Gentle Step Twin Lion Fists",
   "screen.noirm.jutsu.behavior.air_palm": "Air palm",
   "screen.noirm.jutsu.behavior.lion_fists": "Lion fists",
-  "message.noirm.lion_fists.on": "Twin Lion Fists: every palm closes far more points"
+  "message.noirm.lion_fists.on": "Twin Lion Fists: every palm closes far more points",
+  "jutsu.noirm.universal.multi_shadow_clone": "Multi Shadow Clone Jutsu",
+  "jutsu.noirm.universal.clone_swap": "Clone Swap",
+  "screen.noirm.jutsu.behavior.clone_swap": "Swap with a clone",
+  "message.noirm.clone.memories": "A clone's memories return: +%s XP",
+  "message.noirm.clone.scouted": "Your clone saw %s near %s, %s, %s",
+  "message.noirm.clone.tired": "Your mind is tired from your clones' memories: chakra comes back slower",
+  "message.noirm.clone.exhausted": "Mentally exhausted: rest or meditate before more clone training",
+  "message.noirm.clone.too_tired": "Too tired to hold another clone",
+  "message.noirm.clone.feint": "Feint! %s struck a clone and is wide open",
+  "message.noirm.clone.no_clone": "No clone of yours nearby",
+  "item.noirm.training_weights": "Training Weights"
 }

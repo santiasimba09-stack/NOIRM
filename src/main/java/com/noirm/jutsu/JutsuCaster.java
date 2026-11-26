@@ -539,7 +539,7 @@ public final class JutsuCaster {
         if (caster instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onJutsuCast(ninja, def.chakraCost());
             ninja.addJutsuXp(id, 1);
-            ninja.onJutsuCast();
+            ninja.onJutsuCast(id);
         }
     }
 
@@ -740,6 +740,7 @@ public final class JutsuCaster {
             power *= beastBallScale(ninja.tails());
         }
         power *= com.noirm.senjutsu.SageMode.jutsuPowerMultiplier(caster); // nature energy behind every jutsu
+        power *= com.noirm.entity.ShadowClone.comboPower(caster, id); // a clone helping shape the Rasengan
         power *= com.noirm.traits.Perks.jutsuPowerMultiplier(caster, id, def); // clan blood, talents (genjutsu, medical, sealing)
         return power;
     }

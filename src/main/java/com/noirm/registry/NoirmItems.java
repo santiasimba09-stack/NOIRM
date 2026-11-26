@@ -40,6 +40,10 @@ public final class NoirmItems {
                     BEAST_EGG_COLORS[t - 1][0], BEAST_EGG_COLORS[t - 1][1], new Item.Properties())))
             .toList();
 
+    /** Training weights: slower, but body-stat XP ×1.5 while carried (training/WeightedTraining). */
+    public static final RegistryObject<Item> TRAINING_WEIGHTS = ITEMS.register("training_weights",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
     /** A bowl of ramen from a village stand: a filling meal (gives the bowl back). */
     public static final RegistryObject<Item> RAMEN = ITEMS.register("ramen",
             () -> new net.minecraft.world.item.BowlFoodItem(new Item.Properties().stacksTo(16)
@@ -86,6 +90,7 @@ public final class NoirmItems {
             event.accept(RAMEN);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(TRAINING_DUMMY);
+            event.accept(TRAINING_WEIGHTS);
             event.accept(SEALING_SCROLL);
             event.accept(com.noirm.dojutsu.MangekyoTransplant.EyeInfo.sharingan(3, "").toStack());
         }

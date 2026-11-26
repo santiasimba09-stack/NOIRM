@@ -155,7 +155,9 @@ public final class TrainingSystem {
                 }
             });
         } else if (attacker instanceof com.noirm.entity.ShadowClone clone) {
-            clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f));
+            // A clone learns from its own hits like you would (a dummy only up to the drill cap), and hands it back.
+            float factor = clone.ownerEntity() instanceof Player owner ? opponentFactor(owner, target, Stat.TAIJUTSU) : 1f;
+            clone.storeXp((HIT_XP + (heavy ? HEAVY_HIT_BONUS : 0f)) * (guarded ? GUARDED_FACTOR : 1f) * factor);
         } else if (attacker instanceof com.noirm.entity.SparringNinja ninja) {
             com.noirm.ally.AllyTraining.onHitLanded(ninja, target, heavy, guarded);
         }
@@ -330,10 +332,12 @@ public final class TrainingSystem {
     /** Adds XP and raises the stat for every threshold crossed. */
     public static void grant(Player player, Stat stat, float baseXp) {
         float xp = baseXp * com.noirm.config.NoirmConfig.f(com.noirm.config.NoirmConfig.TRAINING_SPEED) // config: progression.trainingSpeed
-                * com.noirm.pills.PillEffects.trainingXpMultiplier(player); // a training meal (foods)
+                * com.noirm.pills.PillEffects.trainingXpMultiplier(player) // a training meal (foods)
+                * WeightedTraining.xpMultiplier(player, stat); // training weights
         if (xp <= 0f) {
             return;
         }
+        CloneTraining.onOwnerXp(player, stat, baseXp); // idle shadow clones train alongside you
         ShinobiCapability.get(player).ifPresent(data -> {
             float value = stat(data, stat);
             if (value >= ShinobiData.MAX_STAT) {

@@ -72,6 +72,7 @@ SEQUENCES = {
     "raiton/chain_discharge": ["ox", "hare", "dog", "monkey"],
     "universal/substitution": ["ram", "boar", "ox", "dog", "snake"],
     "universal/shadow_clone": ["clone"],
+    "universal/multi_shadow_clone": ["clone", "clone"],
     "universal/body_flicker": ["ram"],
     "yin/shadow_imitation": ["rat"],
     # clan secret techniques (docs/CLANS.md)

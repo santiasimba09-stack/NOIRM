@@ -242,8 +242,18 @@ public class SparringNinja extends PathfinderMob implements CombatStats, CombatL
         jutsuCasts++;
     }
 
+    /** {@link #onJutsuCast()} knowing which jutsu (a shadow clone remembers it for its owner). */
+    public void onJutsuCast(net.minecraft.resources.ResourceLocation id) {
+        onJutsuCast();
+    }
+
+    /** Whether chakra comes back on its own (a shadow clone only has the share it was made with). */
+    protected boolean regeneratesChakra() {
+        return true;
+    }
+
     private void tickChakra() {
-        if (chakra >= 0 && chakra < maxChakra()) {
+        if (regeneratesChakra() && chakra >= 0 && chakra < maxChakra()) {
             setChakra(chakra + CHAKRA_REGEN_PER_TICK * (getTarget() == null ? CHAKRA_REGEN_RESTING : 1f));
         }
     }

@@ -52,11 +52,15 @@ public final class ShinobiEvents {
         ShinobiCapability.get(player).ifPresent(data -> {
             float chakraBefore = data.getChakra();
             data.tick();
-            float flow = com.noirm.dojutsu.Byakugan.chakraFlow(player); // Gentle Fist: closed points choke the regen
+            float flow = com.noirm.dojutsu.Byakugan.chakraFlow(player) // Gentle Fist: closed points choke the regen
+                    * com.noirm.training.CloneTraining.regenMultiplier(data); // a mind tired by clones' memories
             if (flow < 1f && data.getChakra() > chakraBefore) {
                 data.setChakra(chakraBefore + (data.getChakra() - chakraBefore) * flow);
             }
             TrainingSystem.tick(player, data);
+            com.noirm.training.CloneTraining.tick(player, data);
+            com.noirm.training.WeightedTraining.tick(player, data);
+            com.noirm.training.ChakraDrills.tick(player, data);
             if (data.consumeDirty()) {
                 NoirmNetwork.sendToPlayer(player, SyncShinobiDataPacket.of(data));
             }

@@ -3899,5 +3899,16 @@
   "jutsu.noirm.byakugan.twin_lion_fists": "Paso Suave: Puños de los Leones Gemelos",
   "screen.noirm.jutsu.behavior.air_palm": "Palma de aire",
   "screen.noirm.jutsu.behavior.lion_fists": "Puños de león",
-  "message.noirm.lion_fists.on": "Puños de los Leones Gemelos: cada palma cierra muchos más puntos"
+  "message.noirm.lion_fists.on": "Puños de los Leones Gemelos: cada palma cierra muchos más puntos",
+  "jutsu.noirm.universal.multi_shadow_clone": "Jutsu Multiclones de Sombra",
+  "jutsu.noirm.universal.clone_swap": "Cambio con Clon",
+  "screen.noirm.jutsu.behavior.clone_swap": "Cambiar con un clon",
+  "message.noirm.clone.memories": "Vuelven los recuerdos de un clon: +%s XP",
+  "message.noirm.clone.scouted": "Tu clon vio a %s cerca de %s, %s, %s",
+  "message.noirm.clone.tired": "Tu mente está cansada por los recuerdos de tus clones: el chakra vuelve más lento",
+  "message.noirm.clone.exhausted": "Agotamiento mental: descansa o medita antes de entrenar con más clones",
+  "message.noirm.clone.too_tired": "Demasiado cansado para sostener otro clon",
+  "message.noirm.clone.feint": "¡Finta! %s golpeó a un clon y quedó expuesto",
+  "message.noirm.clone.no_clone": "No tienes un clon cerca",
+  "item.noirm.training_weights": "Pesas de entrenamiento"
 }

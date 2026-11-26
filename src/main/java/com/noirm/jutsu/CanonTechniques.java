@@ -256,17 +256,35 @@ public final class CanonTechniques {
 
     // ---------------------------------------------------------------- Shadow Clone
 
+    /**
+     * Shadow Clone and Multi Shadow Clone. The chakra is split evenly between you and every clone (each clone gets its
+     * share and no more). {@code count} is how many you try for: a big pool adds more ({@link ShadowClone#bonusClones}),
+     * and the Multi version ({@code count} above {@link ShadowClone#MAX_PER_OWNER}) makes a crowd if your pool is huge.
+     * Fewer come out if your chakra can't give each one {@link ShadowClone#MIN_CHAKRA_SHARE}. A mind worn out by clones'
+     * memories can't make any.
+     */
     static void shadowClone(JutsuContext ctx) {
         LivingEntity caster = ctx.caster();
         ServerLevel level = ctx.level();
+        if (caster instanceof Player player && com.noirm.training.CloneTraining.tooTiredForClones(player)) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.noirm.clone.too_tired"), true);
+            return;
+        }
         int bonus = ShadowClone.bonusClones(caster); // an Uzumaki's pool makes a crowd (+4 at ×100)
-        int count = Math.max(1, ctx.params().count()) + bonus;
+        int cap = maxClones(caster, ctx.params().count());
+        int count = Math.min(cap, Math.max(1, ctx.params().count()) + bonus);
+        float chakra = chakraOf(caster);
+        if (chakra >= 0) {
+            count = Math.max(1, Math.min(count, (int) (chakra / ShadowClone.MIN_CHAKRA_SHARE) - 1));
+        }
+        float share = chakra >= 0 ? chakra / (count + 1) : -1f;
         if (caster instanceof Player player && !player.getAbilities().instabuild) {
-            // Chakra is divided evenly between you and your clones.
-            ShinobiCapability.get(player).ifPresent(d -> d.setChakra(d.getChakra() / (count + 1)));
+            ShinobiCapability.get(player).ifPresent(d -> d.setChakra(share)); // chakra is divided evenly
+        } else if (caster instanceof com.noirm.entity.SparringNinja ninja && !(caster instanceof ShadowClone)) {
+            ninja.setChakra(share);
         }
         List<ShadowClone> existing = level.getEntitiesOfClass(ShadowClone.class, caster.getBoundingBox().inflate(64), c -> c.isOwnedBy(caster));
-        for (int i = 0; i < existing.size() + count - ShadowClone.MAX_PER_OWNER - bonus; i++) {
+        for (int i = 0; i < existing.size() + count - cap; i++) {
             existing.get(i).dispel();
         }
         for (int i = 0; i < count; i++) {
@@ -274,19 +292,79 @@ public final class CanonTechniques {
             if (clone == null) {
                 continue;
             }
-            double angle = Math.toRadians(caster.getYRot()) + (i - (count - 1) / 2.0) * 1.2 + Math.PI / 2;
-            Vec3 at = caster.position().add(Math.cos(angle) * 1.6, 0, Math.sin(angle) * 1.6);
+            double ring = count > 6 ? 1.6 + (i / 8) * 1.2 : 1.6;
+            double step = count > 6 ? Math.PI * 2 / Math.min(8, count) : 1.2;
+            double angle = Math.toRadians(caster.getYRot()) + (count > 6 ? i * step : (i - (count - 1) / 2.0) * step) + Math.PI / 2;
+            Vec3 at = caster.position().add(Math.cos(angle) * ring, 0, Math.sin(angle) * ring);
             if (!level.noCollision(clone, clone.getType().getAABB(at.x, at.y, at.z))) {
                 at = caster.position();
             }
             clone.moveTo(at.x, at.y, at.z, caster.getYRot(), 0f);
             clone.setOwner(caster);
             clone.setLife(ctx.params().duration());
+            if (share >= 0) {
+                clone.setChakraShare(share);
+            }
             level.addFreshEntity(clone);
             level.sendParticles(ParticleTypes.POOF, at.x, at.y + 1, at.z, 25, 0.3, 0.6, 0.3, 0.03);
             Vfx.burst(level, Vfx.smoke(0xE8E8E8, 0.8f, 30), at.add(0, 1, 0), 8, 0.4, 0.03);
         }
         level.playSound(null, caster.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 1f, 0.5f);
+    }
+
+    /** The caster's chakra (players and NPCs), or −1 if it has none to split. */
+    private static float chakraOf(LivingEntity caster) {
+        if (caster instanceof Player player) {
+            return player.getAbilities().instabuild ? -1f : ShinobiCapability.get(player).map(d -> d.getChakra()).orElse(-1f);
+        }
+        return caster instanceof com.noirm.entity.SparringNinja ninja ? ninja.chakra() : -1f;
+    }
+
+    /**
+     * How many clones {@code caster} can hold at once: {@link ShadowClone#MAX_PER_OWNER} plus the pool bonus; the Multi
+     * Shadow Clone ({@code requested} above that) up to {@link ShadowClone#MULTI_MAX} for a pool of ×100 (an Uzumaki),
+     * half that at ×10, and no more than the plain jutsu for a normal pool.
+     */
+    public static int maxClones(LivingEntity caster, int requested) {
+        int base = ShadowClone.MAX_PER_OWNER + ShadowClone.bonusClones(caster);
+        if (requested <= ShadowClone.MAX_PER_OWNER) {
+            return base;
+        }
+        float pool = caster instanceof Player player
+                ? ShinobiCapability.get(player).map(com.noirm.traits.Perks::poolMultiplier).orElse(1f)
+                : caster instanceof com.noirm.entity.SparringNinja ninja ? com.noirm.traits.Perks.npcPoolMultiplier(ninja) : 1f;
+        int multi = (int) (ShadowClone.MULTI_MAX * Math.min(1f, (float) Math.log10(Math.max(1f, pool)) / 2f)); // ×10: half, ×100: all
+        return Math.max(base, Math.min(ShadowClone.MULTI_MAX, Math.min(requested, multi)));
+    }
+
+    /**
+     * Clone Swap: trade places in a puff of smoke with the clone you're looking at (or the nearest one), so whatever
+     * was coming at you finds the clone instead.
+     */
+    static void cloneSwap(JutsuContext ctx) {
+        LivingEntity caster = ctx.caster();
+        ServerLevel level = ctx.level();
+        double range = Math.max(4, ctx.params().range());
+        List<ShadowClone> clones = level.getEntitiesOfClass(ShadowClone.class, caster.getBoundingBox().inflate(range),
+                c -> c.isAlive() && c.isOwnedBy(caster));
+        if (clones.isEmpty()) {
+            if (caster instanceof Player player) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.noirm.clone.no_clone"), true);
+            }
+            return;
+        }
+        Vec3 look = caster.getLookAngle();
+        ShadowClone pick = clones.stream().max(java.util.Comparator.comparingDouble(
+                c -> look.dot(c.position().subtract(caster.position()).normalize()) - c.distanceTo(caster) * 0.01)).orElseThrow();
+        Vec3 mine = caster.position();
+        Vec3 theirs = pick.position();
+        float yaw = caster.getYRot();
+        caster.teleportTo(theirs.x, theirs.y, theirs.z);
+        caster.fallDistance = 0;
+        pick.moveTo(mine.x, mine.y, mine.z, yaw, 0f);
+        level.sendParticles(ParticleTypes.POOF, mine.x, mine.y + 1, mine.z, 20, 0.3, 0.6, 0.3, 0.03);
+        level.sendParticles(ParticleTypes.POOF, theirs.x, theirs.y + 1, theirs.z, 20, 0.3, 0.6, 0.3, 0.03);
+        level.playSound(null, caster.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 1f, 0.8f);
     }
 
     // ---------------------------------------------------------------- ticking

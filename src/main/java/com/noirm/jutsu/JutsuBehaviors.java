@@ -50,6 +50,7 @@ public final class JutsuBehaviors {
             Map.entry("rotation", HyugaTechniques::rotation),
             Map.entry("palms", HyugaTechniques::palms),
             Map.entry("air_palm", HyugaTechniques::airPalm),
+            Map.entry("clone_swap", CanonTechniques::cloneSwap),
             Map.entry("lion_fists", HyugaTechniques::lionFists),
             Map.entry("bind", ElementalBehaviors::bind),
             Map.entry("pillar", ElementalBehaviors::pillar),
