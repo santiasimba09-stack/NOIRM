@@ -3,3 +3,7 @@
 # are changed when only line endings change.
 src/generated/**/.cache/cache text eol=lf
 src/generated/**/*.json text eol=lf
+
+# The three lang files merge key by key (tools/dev/lang.py). Run `python3 tools/dev/lang.py install-driver` once per clone;
+# without it git falls back to its normal text merge.
+src/main/resources/assets/noirm/lang/*.json merge=noirm-lang

@@ -6,7 +6,8 @@
   "mixins": [
     "BlockStateBaseMixin",
     "LivingEntityArmourMixin",
-    "ItemStackWearMixin"
+    "ItemStackWearMixin",
+    "GameTestRegistryMixin"
   ],
   "client": [
     "AbstractClientPlayerMixin"

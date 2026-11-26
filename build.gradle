@@ -103,6 +103,9 @@ minecraft {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             property 'forge.enabledGameTestNamespaces', mod_id
+            // The quick runner: ./gradlew runGameTestServer -PnoirmTests=hound (or tools/dev/test.sh hound)
+            // runs only the matching tests (gametest/TestFilter). Unset = the full suite.
+            property 'noirm.tests', (project.findProperty('noirmTests') ?: '').toString()
         }
 
         data {
