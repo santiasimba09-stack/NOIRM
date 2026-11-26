@@ -16,7 +16,7 @@ the part you need: `python3 tools/dev/docsec.py docs/X.md` prints the outline, `
 |---|---|---|
 | `ROADMAP.md` | 10 | The vision and milestones. When planning a wave. |
 | `WAVE_NEXT.md` | 2 | The owner's queued requests (next build). When planning. |
-| `WAVE_V03.md`, `WAVE_STYLES_CLANS.md`, `WAVE_CREATOR_UI.md`, `WAVE_JUTSU_VISUALS.md`, `CHAKRA_WAVE.md` | 2-24 | One owner brief per wave (what was asked, in the owner's words). When working on that wave. |
+| `WAVE_V03.md`, `WAVE_STYLES_CLANS.md`, `WAVE_CREATOR_UI.md`, `WAVE_JUTSU_VISUALS.md`, `CHAKRA_WAVE.md`, `WAVE_HYUGA.md` | 2-24 | One owner brief per wave (what was asked, in the owner's words). When working on that wave. |
 | `BLUEPRINT.md` | 7 | The owner's master blueprint ("guides, doesn't erase"). Before rebuilding a system. |
 | `APX.md`, `SURVIVAL.md`, `PLAYTHROUGH.md` | 4-17 | APX 0.1 decisions; the survival plan; the survival playthrough and balance findings. Balance or survival work. |
 | `CHANGELOG.md` | 7 | What changed in recent versions (v0.2 on). Only to know when/why something changed. |

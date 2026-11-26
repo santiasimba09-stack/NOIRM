@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-26 · branch `claude/wave-clones` · protocol 40 · a short dashboard: history lives in
+_Last updated: 2026-11-26 · branch `claude/wave-hyuga` · protocol 41 · a short dashboard: history lives in
 [`status/history.md`](status/history.md) and [`CHANGELOG.md`](CHANGELOG.md)._
 
 **Progress map:** https://claude.ai/artifact/2vipQQ4goqPot6eTa3xMQp (page source `docs/progress-map/index.html`; its data
@@ -16,15 +16,17 @@ Inuzuka hound) on top of NOIRM APX 0.1 (= v0.18.0, the baseline). Details: [`CHA
 
 ## In progress
 
-- **The clones-and-training wave** (2026-11-26, branch `claude/wave-clones`, draft PR): all seven owner requests from
-  [`WAVE_NEXT.md`](WAVE_NEXT.md) are built and tested: canon shadow clones and clone training, weights and chakra
-  control drills, crew Sharingan and fusion lessons, the Eight Gates' time limit, a spawn egg per beast, an
-  overpowered Gentle Fist and a better Byakugan. Summary: [`CHANGELOG.md`](CHANGELOG.md), design notes:
-  [`POWERS_DESIGN.md`](POWERS_DESIGN.md) §13 and §4d. Waiting for the owner's playtest and the release.
+- **The Hyūga wave** (2026-11-26, branch `claude/wave-hyuga`, draft PR): the Hyūga as the Leaf's strongest clan, with
+  nothing new built. Big clan perk raise (CTL +12, TAI +5, Gentle Fist ×2.5, parry and guard perks), a stronger
+  Byakugan (free to keep open, 64-256 block sight) and Gentle Fist, every Hyūga technique **chakra-free** with no
+  Reserves gate, and **mastery up to Lv 10** for them (`max_mastery` in jutsu JSON). Brief: [`WAVE_HYUGA.md`](WAVE_HYUGA.md).
+  Waiting for the owner's playtest.
+- NOIRM v0.4 (the clones-and-training wave) is merged on main ([`CHANGELOG.md`](CHANGELOG.md)).
 
 ## Next steps (in order)
 
-1. **Release** the clones-and-training wave, then write the owner's tooling review (`status/metrics.md`).
+1. **Playtest and release** the Hyūga wave; then the owner's next request ([`WAVE_NEXT.md`](WAVE_NEXT.md)).
+   Later idea for the Hyūga (needs new content, so not in this wave): main and branch houses, the caged-bird seal.
 2. **On hold:** the remaining Aburame phases (v0.3.1, [`ABURAME.md`](ABURAME.md)), the complex clan work
    ([`clans/README.md`](clans/README.md)), the solid-jutsu wave ([`WAVE_JUTSU_VISUALS.md`](WAVE_JUTSU_VISUALS.md)).
 3. Later: the rest of the survival staples, exploration, new paths, endgame ([`SURVIVAL.md`](SURVIVAL.md)).

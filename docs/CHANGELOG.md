@@ -2,6 +2,24 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-26 — the Hyūga wave (branch `claude/wave-hyuga`, draft PR; protocol 41)
+
+The owner's brief (`docs/WAVE_HYUGA.md`): make the Hyūga the Leaf's strongest clan without building anything new.
+- **Clan perks:** TAI +3 → +5, SPD +1 → +2, CTL +6 → +12, Gentle Fist +100% → +150%, CTL/taijutsu training → +100%,
+  perception +30% → +60%, sensor 32, posture +30, melee +25%, genjutsu resistance +50%, mastery −20% removed; new perk
+  keys **`parry_window`** (+50%) and **`guard`** (+30%). NPCs get those two at half (`Perks.NPC_COMBAT_SHARE`).
+- **Byakugan:** free to keep open; sight 40 → 64 (+3/CTL, max 256); x-ray 8 → 12 (max 32); blind spot gone at CTL 45
+  (was 60). **Gentle Fist:** posture ×2.2, guards stop nothing, internal damage 80%, 4 points per hit (+1 per 10 CTL),
+  seal 20 s, Twin Lion Fists ×3; wider aim cones for the palms and Air Palm (the eye guides the palm).
+- **Chakra-free techniques:** new jutsu JSON flag `"chakra_free": true` (no cost, no Reserves gate, power from
+  Taijutsu, no clan `jutsu_power` penalty) on all five Byakugan techniques.
+- **Mastery up to 10:** new jutsu JSON key `"max_mastery"` (default 5 = the old ceiling). Levels 6–10 take 250–1150
+  casts, +10% power and −4% cooldown each, plus per-level technique gains (Rotation radius and length, palm points,
+  Air Palm reach, Lion Fists length). The jutsu screen shows "Lv 7/10". Old saves keep their ★. Unlocks: Air Palm ★2,
+  Twin Lion Fists ★3, 128 Palms ★5.
+- **Tooling:** `python3 tools/dev/protocol.py check [base]` warns when PROTOCOL_VERSION isn't above the base branch's.
+- 4 new game tests (`HyugaWaveGameTests`).
+
 ## 2026-11-26 — NOIRM v0.4 (= v0.21.0): the tooling wave and the clones-and-training wave (PRs #3, #4; protocol 40)
 
 The owner's queued requests (`docs/WAVE_NEXT.md`).
