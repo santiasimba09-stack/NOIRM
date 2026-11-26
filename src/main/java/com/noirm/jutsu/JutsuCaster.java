@@ -665,7 +665,7 @@ public final class JutsuCaster {
             }
         }
         if ("mode".equals(def.behavior()) && !ModeSystem.isActive(caster, id) && ModeSystem.tooHurtFor(caster, def)) {
-            return Result.TOO_HURT; // the Gates won't open on a body that's already spent
+            return Result.TOO_HURT; // a gate won't reopen while the body is worn out from the last one (EightGates)
         }
         if (com.noirm.workshop.Workshop.castBlocker(caster, id) != null) {
             return Result.TOO_DEMANDING; // a creation heavier than your Reserves, CTL and mastery can carry

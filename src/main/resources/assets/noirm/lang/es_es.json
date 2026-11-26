@@ -3835,5 +3835,19 @@
   "message.noirm.colony.crew_scout": "%s envía un enjambre explorador por delante.",
   "message.noirm.colony.crew_draw": "Los insectos de %s te sacan el veneno.",
   "command.noirm.aburame.incoming": "Un jutsu de %s vuela hacia ti.",
-  "help.noirm.aburame.incoming": "un jutsu vuela hacia ti (prueba un muro, una cúpula o Devorar)"
+  "help.noirm.aburame.incoming": "un jutsu vuela hacia ti (prueba un muro, una cúpula o Devorar)",
+  "message.noirm.gates.open": "Puerta abierta: %s segundos",
+  "message.noirm.gates.open_unlimited": "Puerta abierta: tu cuerpo la aguanta",
+  "message.noirm.gates.closing": "La puerta se cierra: %s",
+  "message.noirm.gates.spent": "La puerta se cierra de golpe: agotado %s segundos",
+  "item.noirm.beast_spawn_egg": "Huevo generador de %s",
+  "item.noirm.tailed_beast_1_spawn_egg": "Huevo generador de bestia con cola (1)",
+  "item.noirm.tailed_beast_2_spawn_egg": "Huevo generador de bestia con cola (2)",
+  "item.noirm.tailed_beast_3_spawn_egg": "Huevo generador de bestia con cola (3)",
+  "item.noirm.tailed_beast_4_spawn_egg": "Huevo generador de bestia con cola (4)",
+  "item.noirm.tailed_beast_5_spawn_egg": "Huevo generador de bestia con cola (5)",
+  "item.noirm.tailed_beast_6_spawn_egg": "Huevo generador de bestia con cola (6)",
+  "item.noirm.tailed_beast_7_spawn_egg": "Huevo generador de bestia con cola (7)",
+  "item.noirm.tailed_beast_8_spawn_egg": "Huevo generador de bestia con cola (8)",
+  "item.noirm.tailed_beast_9_spawn_egg": "Huevo generador de bestia con cola (9)"
 }

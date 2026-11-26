@@ -138,14 +138,16 @@ public final class MasterGameTests {
     }
 
     @GameTest(template = "empty", batch = "noirm_master_gates", timeoutTicks = 120)
-    public static void gatesDrainHealthAndCloseAtLowHealth(GameTestHelper helper) {
+    public static void gatesHaveATimeLimitNotSelfDamage(GameTestHelper helper) {
         floor(helper);
         SparringNinja ninja = helper.spawnWithNoFreeWill(NoirmEntities.SPARRING_NINJA.get(), 1.5f, 1f, 1.5f);
         ninja.joinClan(TestClans.PLAIN);
         ninja.sealBeast(0);
         ninja.setInvulnerable(false);
+        ninja.setCombatStats(10f, 10f); // an untrained body: the base time limit
         var lotus = JutsuData.get(LOTUS);
         helper.assertTrue(JutsuCaster.checkRequirements(ninja, LOTUS, lotus) == JutsuCaster.Result.NEEDS_GATE, "the Lotus needs a gate open");
+        helper.assertFalse(com.noirm.jutsu.EightGates.unlimited(ninja, 1), "an untrained body has a time limit");
         helper.assertTrue(JutsuCaster.npcCast(ninja, GATE_1, 1f), "open the Gate of Opening");
         helper.assertTrue(ModeSystem.gateTier(ninja) == 1, "gate tier 1 is open");
         helper.assertTrue(ModeSystem.damageMultiplier(ninja) > 1.4f && ModeSystem.actionSpeed(ninja) > 1.2f, "harder, faster taijutsu");
@@ -154,17 +156,26 @@ public final class MasterGameTests {
                 "the Morning Peacock needs the second tier");
         float full = ninja.getHealth();
         helper.runAfterDelay(40, () -> {
-            helper.assertTrue(ninja.getHealth() < full, "the gate burns health: " + ninja.getHealth() + " of " + full);
-            ninja.setHealth(ninja.getMaxHealth() * 0.26f);
-            helper.runAfterDelay(40, () -> {
-                helper.assertTrue(ModeSystem.gateTier(ninja) == 0, "the gate closed at low health");
-                helper.assertTrue(ninja.isAlive() && ninja.getHealth() >= ninja.getMaxHealth() * 0.25f - 0.01f,
-                        "before it could kill: " + ninja.getHealth());
-                helper.assertTrue(JutsuCaster.checkRequirements(ninja, GATE_1, JutsuData.get(GATE_1)) == JutsuCaster.Result.TOO_HURT,
-                        "and won't open again on a spent body");
-                helper.assertTrue(JutsuData.get(GATE_2).mode().orElseThrow().gate() == 2, "the Gate of Limit is tier 2");
-                clearAround(helper);
-            });
+            helper.assertTrue(ninja.getHealth() >= full, "the gate no longer burns health: " + ninja.getHealth() + " of " + full);
+            ModeSystem.end(ninja);
+            // A trained body: the limit grows, and past the line it's gone.
+            float base = com.noirm.jutsu.EightGates.limitSeconds(ninja, 1);
+            ninja.setCombatStats(10f, 25f);
+            float trained = com.noirm.jutsu.EightGates.limitSeconds(ninja, 1);
+            helper.assertTrue(trained > base, "training lengthens the gate: " + base + "s -> " + trained + "s");
+            helper.assertTrue(com.noirm.jutsu.EightGates.limitSeconds(ninja, 2) < trained, "the second gate is harder to hold");
+            ninja.setCombatStats(10f, com.noirm.jutsu.EightGates.UNLIMITED_AVERAGE[1] + 1);
+            helper.assertTrue(com.noirm.jutsu.EightGates.unlimited(ninja, 1), "a trained body holds the first gate with no limit");
+            helper.assertTrue(com.noirm.jutsu.EightGates.limitTicks(ninja, 1) == Long.MAX_VALUE, "no time limit");
+            // Time's up: the gate slams shut without hurting, and can't reopen until the body recovers.
+            ninja.setCombatStats(10f, 10f);
+            com.noirm.jutsu.EightGates.slamShut(ninja, 1);
+            helper.assertTrue(ninja.getHealth() >= full, "slamming shut doesn't hurt");
+            helper.assertTrue(JutsuCaster.checkRequirements(ninja, GATE_1, JutsuData.get(GATE_1)) == JutsuCaster.Result.TOO_HURT,
+                    "and won't open again on a worn-out body");
+            com.noirm.jutsu.EightGates.rest(ninja);
+            helper.assertTrue(JutsuData.get(GATE_2).mode().orElseThrow().gate() == 2, "the Gate of Limit is tier 2");
+            clearAround(helper);
         });
     }
 

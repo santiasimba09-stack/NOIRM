@@ -3835,5 +3835,19 @@
   "message.noirm.colony.crew_scout": "%s sends a scout swarm ahead.",
   "message.noirm.colony.crew_draw": "%s's insects draw the poison out of you.",
   "command.noirm.aburame.incoming": "A %s jutsu flies at you.",
-  "help.noirm.aburame.incoming": "a jutsu projectile flies at you (try a wall, a dome or Devour)"
+  "help.noirm.aburame.incoming": "a jutsu projectile flies at you (try a wall, a dome or Devour)",
+  "message.noirm.gates.open": "Gate open: %s seconds",
+  "message.noirm.gates.open_unlimited": "Gate open: your body can hold it",
+  "message.noirm.gates.closing": "The gate is closing: %s",
+  "message.noirm.gates.spent": "The gate slams shut: worn out for %s seconds",
+  "item.noirm.beast_spawn_egg": "%s Spawn Egg",
+  "item.noirm.tailed_beast_1_spawn_egg": "Tailed Beast Spawn Egg (1)",
+  "item.noirm.tailed_beast_2_spawn_egg": "Tailed Beast Spawn Egg (2)",
+  "item.noirm.tailed_beast_3_spawn_egg": "Tailed Beast Spawn Egg (3)",
+  "item.noirm.tailed_beast_4_spawn_egg": "Tailed Beast Spawn Egg (4)",
+  "item.noirm.tailed_beast_5_spawn_egg": "Tailed Beast Spawn Egg (5)",
+  "item.noirm.tailed_beast_6_spawn_egg": "Tailed Beast Spawn Egg (6)",
+  "item.noirm.tailed_beast_7_spawn_egg": "Tailed Beast Spawn Egg (7)",
+  "item.noirm.tailed_beast_8_spawn_egg": "Tailed Beast Spawn Egg (8)",
+  "item.noirm.tailed_beast_9_spawn_egg": "Tailed Beast Spawn Egg (9)"
 }

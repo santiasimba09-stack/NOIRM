@@ -31,6 +31,15 @@ public final class NoirmItems {
     public static final RegistryObject<Item> TAILED_BEAST_SPAWN_EGG = ITEMS.register("tailed_beast_spawn_egg",
             () -> new ForgeSpawnEggItem(NoirmEntities.TAILED_BEAST, 0xD9661E, 0x3B1D0E, new Item.Properties()));
 
+    /** One spawn egg per tailed beast (1–9 tails), colored after each beast. */
+    private static final int[][] BEAST_EGG_COLORS = {
+            {0xC9A86A, 0x5A3D1E}, {0x3A6FD8, 0x101C3A}, {0x7A8C78, 0xC0402A}, {0xB8402A, 0x5C2A1A}, {0xE8E2D4, 0x7A5A3A},
+            {0xD8E8D0, 0x7AA0A0}, {0x6FB04A, 0x2A4A6A}, {0x7A4A6A, 0xE0D8C8}, {0xE07A20, 0x5A1A0A}};
+    public static final java.util.List<RegistryObject<Item>> BEAST_SPAWN_EGGS = java.util.stream.IntStream.rangeClosed(1, 9)
+            .mapToObj(t -> ITEMS.register("tailed_beast_" + t + "_spawn_egg", () -> (Item) new com.noirm.biju.BeastEggItem(t,
+                    BEAST_EGG_COLORS[t - 1][0], BEAST_EGG_COLORS[t - 1][1], new Item.Properties())))
+            .toList();
+
     /** A bowl of ramen from a village stand: a filling meal (gives the bowl back). */
     public static final RegistryObject<Item> RAMEN = ITEMS.register("ramen",
             () -> new net.minecraft.world.item.BowlFoodItem(new Item.Properties().stacksTo(16)
@@ -70,6 +79,7 @@ public final class NoirmItems {
                 event.accept(egg);
             }
             event.accept(TAILED_BEAST_SPAWN_EGG);
+            BEAST_SPAWN_EGGS.forEach(egg -> event.accept(egg.get().getDefaultInstance()));
             event.accept(VILLAGE_MERCHANT_SPAWN_EGG);
             event.accept(MASTER_SPAWN_EGG);
         } else if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
