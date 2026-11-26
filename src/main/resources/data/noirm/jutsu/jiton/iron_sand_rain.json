@@ -1,0 +1,21 @@
+{
+  "nature": "magnet",
+  "behavior": "needle_rain",
+  "rank": "A",
+  "chakra_cost": 45,
+  "cooldown": 360,
+  "unlock": {
+    "after": "noirm:jiton/iron_sand_arm",
+    "mastery": 2
+  },
+  "params": {
+    "range": 16,
+    "radius": 3,
+    "count": 22,
+    "duration": 33,
+    "damage": 2.5,
+    "posture": 6,
+    "effect": "slowness:0",
+    "effect_ticks": 40
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  W",
+    " S ",
+    "S  "
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:cobweb"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "noirm:bug_net",
+    "count": 1
+  }
+}

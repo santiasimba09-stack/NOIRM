@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_jam",
+  "rank": "B",
+  "chakra_cost": 10,
+  "cooldown": 900,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 3,
+    "species": "kikaichu",
+    "mode": "jam",
+    "insects": 4000
+  },
+  "params": {
+    "duration": 600
+  }
+}

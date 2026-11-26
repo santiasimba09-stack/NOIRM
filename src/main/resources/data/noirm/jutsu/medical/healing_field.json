@@ -1,0 +1,15 @@
+{
+  "behavior": "healing_field",
+  "rank": "A",
+  "chakra_cost": 45,
+  "cooldown": 700,
+  "unlock": {
+    "after": "noirm:medical/poison_extraction",
+    "mastery": 2
+  },
+  "params": {
+    "radius": 4,
+    "duration": 160,
+    "damage": 4
+  }
+}

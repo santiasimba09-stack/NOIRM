@@ -1,0 +1,31 @@
+{
+  "openers": {
+    "light": "noirm:tanto/slash",
+    "heavy": "noirm:tanto/stab",
+    "launcher": "noirm:tanto/rising",
+    "forward_light": "noirm:tanto/shadow_step",
+    "forward_heavy": "noirm:tanto/shadow_step",
+    "back_light": "noirm:tanto/cut_2"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_tanto",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_tanto_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_tanto_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_tanto_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:tanto/counter"
+}

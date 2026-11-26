@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 6,
+  "modifiers": {
+    "sealing_power": 0.3,
+    "sealing_cost": -0.2,
+    "beast_bond": 0.2
+  },
+  "talent_bias": {
+    "natural_sealer": 4
+  }
+}

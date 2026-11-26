@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:spear_dance_dance_whirl",
+  "timing": {
+    "windup": 6,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 22,
+    "range": 4.4,
+    "arc": 360,
+    "knockback": 1.1,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7
+  },
+  "next": {
+    "light": "noirm:spear_dance/dance_thrust"
+  },
+  "variants": {
+    "aggressive": "noirm:spear_dance/skewer"
+  }
+}

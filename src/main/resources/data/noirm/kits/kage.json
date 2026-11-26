@@ -1,0 +1,17 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:kage_hat_red"
+    },
+    {
+      "item": "noirm:kage_robe"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:shinobi_sandals"
+    }
+  ]
+}

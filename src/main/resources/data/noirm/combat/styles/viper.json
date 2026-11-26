@@ -1,0 +1,58 @@
+{
+  "openers": {
+    "light": "noirm:viper/fang_jab",
+    "heavy": "noirm:viper/striking_cobra",
+    "launcher": "noirm:viper/rising_fang",
+    "forward_light": "noirm:viper/lunging_fang",
+    "forward_heavy": "noirm:viper/viper_lunge",
+    "back_light": "noirm:viper/recoil_strike",
+    "back_heavy": "noirm:viper/tail_sweep"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_viper",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_viper_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_viper_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_viper_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:viper/counter_fang",
+  "identity": {
+    "footwork": "low",
+    "rhythm": "fast",
+    "move_speed": 1.12,
+    "guard": {
+      "type": "standard",
+      "keep": 0.3
+    },
+    "dodge": {
+      "kind": "slide",
+      "speed": 1.2,
+      "ticks": 9,
+      "iframes": 6,
+      "lift": 0.0
+    },
+    "strike": {
+      "stamina_drain": 2
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.02,
+    "scroll": 3
+  },
+  "npc": {
+    "min_class": "C"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_clone",
+  "rank": "C",
+  "chakra_cost": 8,
+  "cooldown": 160,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "kikaichu",
+    "mode": "cling",
+    "insects": 2500
+  },
+  "params": {
+    "range": 40
+  }
+}

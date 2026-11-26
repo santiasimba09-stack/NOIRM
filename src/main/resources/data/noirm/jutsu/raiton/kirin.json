@@ -1,0 +1,20 @@
+{
+  "nature": "lightning",
+  "behavior": "strike",
+  "rank": "S",
+  "chakra_cost": 80,
+  "cooldown": 900,
+  "unlock": {
+    "after": "noirm:raiton/false_darkness",
+    "mastery": 2
+  },
+  "params": {
+    "range": 30,
+    "radius": 6,
+    "damage": 40,
+    "knockback": 2.5,
+    "posture": 100,
+    "stun": 30,
+    "duration": 30
+  }
+}

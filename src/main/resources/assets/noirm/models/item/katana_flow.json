@@ -1,0 +1,16 @@
+{
+  "parent": "minecraft:item/handheld",
+  "loader": "forge:item_layers",
+  "textures": {
+    "layer0": "noirm:item/katana",
+    "layer1": "noirm:item/katana_glow"
+  },
+  "forge_data": {
+    "layers": {
+      "1": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  }
+}

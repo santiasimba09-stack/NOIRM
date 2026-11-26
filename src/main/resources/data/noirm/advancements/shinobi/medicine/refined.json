@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:chakra_pill"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.medicine.refined.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.medicine.refined.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/medicine/brew",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:medicine",
+      "conditions": {
+        "event": "brewed",
+        "min": 2
+      }
+    }
+  },
+  "rewards": {
+    "experience": 40,
+    "loot": [
+      "noirm:advancement/soldier_pills"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "openers": {
+    "light": "noirm:sumo/tsuppari",
+    "heavy": "noirm:sumo/harite",
+    "launcher": "noirm:sumo/tachiai_rise",
+    "forward_light": "noirm:sumo/tachiai",
+    "forward_heavy": "noirm:sumo/tachiai_crash",
+    "back_light": "noirm:sumo/sumo_brace",
+    "back_heavy": "noirm:sumo/shiko_stomp",
+    "grab": "noirm:sumo/belt_grab"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_sumo",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_sumo_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_sumo_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:sumo/sumo_counter",
+  "identity": {
+    "footwork": "wide",
+    "rhythm": "grapple",
+    "move_speed": 0.92,
+    "guard": {
+      "type": "armoured",
+      "keep": 0.18,
+      "posture": 0.6,
+      "armour": 0.25,
+      "speed": 0.4
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.6,
+      "ticks": 9,
+      "iframes": 4,
+      "stamina": 1.2,
+      "lift": 0.04
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.025,
+    "scroll": 3
+  },
+  "npc": {
+    "clans": {
+      "akimichi": 8
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 10,
+  "modifiers": {
+    "melee_damage": 0.1,
+    "xp_taijutsu": 0.25
+  },
+  "talent_bias": {
+    "taijutsu_genius": 3,
+    "heavy_handed": 2
+  }
+}

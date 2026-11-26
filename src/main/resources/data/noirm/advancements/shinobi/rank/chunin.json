@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:flak_vest"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.rank.chunin.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.rank.chunin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/rank/genin",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:rank",
+      "conditions": {
+        "key": "chunin"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50,
+    "loot": [
+      "noirm:advancement/ryo_200"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.jutsu.first_star.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.jutsu.first_star.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/jutsu/first_cast",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:jutsu",
+      "conditions": {
+        "event": "mastery",
+        "min": 1
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20,
+    "loot": [
+      "noirm:advancement/chakra_paper"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:blade_dance_dance_whirlwind",
+  "timing": {
+    "windup": 5,
+    "active": 4,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 22,
+    "range": 3.1,
+    "arc": 360,
+    "knockback": 1.0,
+    "hitstun": 14,
+    "hitstop": 3,
+    "shake": 0.75,
+    "lift": 0.3,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:blade_dance/dance_cut"
+  }
+}

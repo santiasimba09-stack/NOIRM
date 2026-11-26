@@ -1,0 +1,29 @@
+{
+  "animation": "noirm:viper_venom_strike",
+  "timing": {
+    "windup": 4,
+    "active": 2,
+    "recovery": 7,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 4.5,
+    "posture": 22,
+    "range": 2.8,
+    "arc": 70,
+    "knockback": 0.3,
+    "hitstun": 18,
+    "hitstop": 3,
+    "shake": 0.6,
+    "lunge": 0.4,
+    "guard_break": true,
+    "knockdown": true,
+    "ender": "knockdown"
+  },
+  "next": {
+    "light": "noirm:viper/fang_jab"
+  },
+  "effects": {
+    "stamina_drain": 16
+  }
+}

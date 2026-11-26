@@ -1,0 +1,22 @@
+{
+  "nature": "scorch",
+  "behavior": "steam_mummify",
+  "rank": "S",
+  "chakra_cost": 75,
+  "cooldown": 800,
+  "unlock": {
+    "after": "noirm:shakuton/swarm_of_suns",
+    "mastery": 3
+  },
+  "params": {
+    "range": 14,
+    "damage": 4,
+    "duration": 60,
+    "stun": 6,
+    "posture": 20,
+    "radius": 2.5,
+    "knockback": 0.8,
+    "effect": "hunger:3,weakness:1,slowness:2",
+    "effect_ticks": 60
+  }
+}

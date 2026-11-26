@@ -1,0 +1,25 @@
+{
+  "animation": "noirm:sumo_belt_throw",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 28,
+    "range": 2.4,
+    "arc": 120,
+    "knockback": 1.0,
+    "hitstun": 16,
+    "hitstop": 4,
+    "shake": 0.9,
+    "clinch": "release",
+    "knockdown": true,
+    "ender": "knockdown"
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  }
+}

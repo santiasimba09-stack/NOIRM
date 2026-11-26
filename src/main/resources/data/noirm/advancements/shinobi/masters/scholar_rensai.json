@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:jutsu_scroll_b"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.masters.scholar_rensai.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.masters.scholar_rensai.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/jutsu/first_cast",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:master",
+      "conditions": {
+        "key": "scholar_rensai"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

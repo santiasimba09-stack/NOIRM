@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:mossy_cobblestone"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.masters.stone_hermit.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.masters.stone_hermit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/natures/first_drill",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:master",
+      "conditions": {
+        "key": "stone_hermit"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80
+  }
+}

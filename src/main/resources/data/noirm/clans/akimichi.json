@@ -1,0 +1,42 @@
+{
+  "id": "akimichi",
+  "name": "Akimichi",
+  "weight": 2,
+  "natures": {
+    "earth": 1.5,
+    "yang": 0.8
+  },
+  "taijutsu_bonus": 2,
+  "awakening": "will",
+  "perks": {
+    "food_power": 1.5,
+    "max_health": 14,
+    "start_durability": 7,
+    "posture": 50,
+    "max_stamina": 60,
+    "melee_damage": 0.25,
+    "chakra_pool": 1.0,
+    "damage_taken": -0.05,
+    "start_speed": -4,
+    "xp_speed": -0.35
+  },
+  "clan_jutsu": [
+    "noirm:clan/multi_size"
+  ],
+  "look": {
+    "hair": [
+      "#8a3a22",
+      "#6a3a22"
+    ],
+    "eyes": "#5a3c24"
+  },
+  "talent_bias": {
+    "glutton": 6,
+    "stubborn_body": 3,
+    "tough_as_nails": 3,
+    "heavy_handed": 2,
+    "kindred_spirit": 2,
+    "fleet_footed": 0.4
+  },
+  "style": "sumo"
+}

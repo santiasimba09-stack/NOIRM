@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:sumo_oshidashi",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 34,
+    "range": 2.6,
+    "arc": 100,
+    "knockback": 1.6,
+    "hitstun": 12,
+    "hitstop": 4,
+    "shake": 0.8,
+    "lunge": 0.7,
+    "guard_break": true
+  },
+  "next": {
+    "light": "noirm:sumo/tsuppari"
+  },
+  "effects": {
+    "armour": 0.5
+  }
+}

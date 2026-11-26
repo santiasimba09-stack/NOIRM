@@ -1,0 +1,6 @@
+{
+  "animation": "noirm:greatsword_cleave",
+  "timing": { "windup": 8, "active": 3, "recovery": 11, "cancel_after": 5 },
+  "hit": { "damage": 12, "posture": 40, "range": 4.2, "arc": 60, "knockback": 0.5, "hitstun": 24, "hitstop": 4, "shake": 1.0, "knockdown": true, "ender": "knockdown", "guard_break": true },
+  "variants": { "aggressive": "noirm:greatsword/charge" }
+}

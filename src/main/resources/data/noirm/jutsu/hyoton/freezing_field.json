@@ -1,0 +1,20 @@
+{
+  "nature": "ice",
+  "behavior": "frost_field",
+  "rank": "B",
+  "chakra_cost": 28,
+  "cooldown": 220,
+  "unlock": {
+    "after": "noirm:hyoton/ice_spear",
+    "mastery": 2
+  },
+  "params": {
+    "radius": 5,
+    "duration": 12,
+    "damage": 4,
+    "stun": 20,
+    "posture": 20,
+    "effect": "slowness:3",
+    "effect_ticks": 80
+  }
+}

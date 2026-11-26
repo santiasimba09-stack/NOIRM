@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:drunken_fist_lurch_jab",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 14,
+    "range": 2.8,
+    "arc": 100,
+    "knockback": 0.5,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.4,
+    "lunge": 0.6
+  },
+  "next": {
+    "light": "noirm:drunken_fist/tipsy_hook"
+  }
+}

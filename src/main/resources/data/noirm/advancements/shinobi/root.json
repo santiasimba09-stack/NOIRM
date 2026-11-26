@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:forehead_protector_navy"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.root.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/block/deepslate_tiles.png"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

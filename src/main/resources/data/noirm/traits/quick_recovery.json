@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "stamina_regen": 0.3,
+    "health_regen": 0.05
+  }
+}

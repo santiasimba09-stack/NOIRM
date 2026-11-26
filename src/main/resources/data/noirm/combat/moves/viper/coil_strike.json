@@ -1,0 +1,27 @@
+{
+  "animation": "noirm:viper_coil_strike",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 5,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 10,
+    "range": 2.8,
+    "arc": 80,
+    "knockback": 0.15,
+    "hitstun": 8,
+    "hitstop": 2,
+    "shake": 0.3,
+    "lunge": 0.35
+  },
+  "next": {
+    "light": "noirm:viper/venom_strike",
+    "heavy": "noirm:viper/venom_strike"
+  },
+  "effects": {
+    "stamina_drain": 8
+  }
+}

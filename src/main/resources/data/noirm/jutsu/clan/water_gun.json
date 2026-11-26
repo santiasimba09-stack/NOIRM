@@ -1,0 +1,14 @@
+{
+  "nature": "water",
+  "behavior": "projectile",
+  "rank": "C",
+  "chakra_cost": 12,
+  "cooldown": 70,
+  "params": {
+    "count": 1,
+    "speed": 2.6,
+    "damage": 6,
+    "knockback": 0.9,
+    "posture": 20
+  }
+}

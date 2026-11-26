@@ -1,0 +1,55 @@
+{
+  "openers": {
+    "light": "noirm:mountain/stone_palm",
+    "heavy": "noirm:mountain/earth_palm",
+    "launcher": "noirm:mountain/rising_peak",
+    "forward_light": "noirm:mountain/avalanche_step",
+    "forward_heavy": "noirm:mountain/avalanche_charge",
+    "back_light": "noirm:mountain/rooted_push",
+    "back_heavy": "noirm:mountain/quake_stomp"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_mountain",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_mountain_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_mountain_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:mountain/riposte",
+  "identity": {
+    "footwork": "rooted",
+    "rhythm": "counter",
+    "move_speed": 0.85,
+    "guard": {
+      "type": "counter",
+      "parry_window": 2.2,
+      "keep": 0.2,
+      "posture": 0.8,
+      "speed": 0.4
+    },
+    "dodge": {
+      "kind": "step",
+      "speed": 0.5,
+      "ticks": 8,
+      "iframes": 5,
+      "stamina": 0.8,
+      "lift": 0.04
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.015,
+    "scroll": 2
+  },
+  "npc": {
+    "min_class": "B"
+  }
+}

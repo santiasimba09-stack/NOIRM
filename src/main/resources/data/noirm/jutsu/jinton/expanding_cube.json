@@ -1,0 +1,20 @@
+{
+  "nature": "dust",
+  "behavior": "detach_cube",
+  "rank": "A",
+  "chakra_cost": 50,
+  "cooldown": 420,
+  "unlock": {
+    "after": "noirm:jinton/cone_detachment",
+    "mastery": 2
+  },
+  "params": {
+    "range": 16,
+    "radius": 2.2,
+    "duration": 10,
+    "damage": 14,
+    "posture": 45,
+    "stun": 10,
+    "knockback": 0.4
+  }
+}

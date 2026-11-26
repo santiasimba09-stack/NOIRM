@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:shield"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.combat.parry.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.combat.parry.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/first_defeat",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:combat_feat",
+      "conditions": {
+        "event": "just_frame_parry"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

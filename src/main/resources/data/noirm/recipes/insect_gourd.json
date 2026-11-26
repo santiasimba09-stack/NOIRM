@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "J J",
+    "JLJ"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "J": {
+      "item": "noirm:insect_jar"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "item": "noirm:insect_gourd",
+    "count": 1
+  }
+}

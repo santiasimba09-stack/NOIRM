@@ -1,0 +1,23 @@
+{
+  "nature": "earth",
+  "behavior": "rock_hounds",
+  "rank": "C",
+  "chakra_cost": 22,
+  "cooldown": 160,
+  "unlock": {
+    "after": "noirm:doton/earth_spikes",
+    "mastery": 2
+  },
+  "params": {
+    "count": 3,
+    "range": 16,
+    "speed": 0.42,
+    "damage": 5,
+    "stun": 15,
+    "duration": 70,
+    "posture": 15,
+    "knockback": 0.4,
+    "effect": "slowness:1",
+    "effect_ticks": 40
+  }
+}

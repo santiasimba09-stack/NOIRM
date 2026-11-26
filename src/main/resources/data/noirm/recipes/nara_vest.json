@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "ABA",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "minecraft:green_dye"
+    },
+    "C": {
+      "item": "minecraft:brown_wool"
+    }
+  },
+  "result": {
+    "item": "noirm:nara_vest"
+  }
+}

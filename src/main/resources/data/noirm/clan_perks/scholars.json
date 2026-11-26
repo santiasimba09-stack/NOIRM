@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "mastery": 0.4,
+    "xp_control": 0.2
+  },
+  "talent_bias": {
+    "strategist": 3,
+    "quick_learner": 2
+  }
+}

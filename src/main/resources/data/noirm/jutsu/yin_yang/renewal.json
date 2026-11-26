@@ -1,0 +1,14 @@
+{
+  "nature": "yin_yang",
+  "behavior": "renewal",
+  "rank": "B",
+  "chakra_cost": 30,
+  "cooldown": 400,
+  "unlock": {
+    "after": "noirm:yin_yang/truth_seeking_orb",
+    "mastery": 1
+  },
+  "params": {
+    "damage": 10
+  }
+}

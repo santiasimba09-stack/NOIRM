@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_scout",
+  "rank": "D",
+  "chakra_cost": 3,
+  "cooldown": 200,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "kikaichu",
+    "mode": "scout",
+    "insects": 300
+  },
+  "params": {
+    "range": 200
+  }
+}

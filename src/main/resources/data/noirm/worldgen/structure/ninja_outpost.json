@@ -1,0 +1,9 @@
+{
+  "type": "noirm:ninja_village",
+  "size": "outpost",
+  "avoid": "noirm:hidden_villages",
+  "biomes": "#noirm:has_structure/ninja_outpost",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {}
+}

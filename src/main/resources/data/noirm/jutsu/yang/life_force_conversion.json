@@ -1,0 +1,15 @@
+{
+  "nature": "yang",
+  "behavior": "life_conversion",
+  "rank": "B",
+  "chakra_cost": 0,
+  "cooldown": 600,
+  "unlock": {
+    "after": "noirm:yang/rapid_regeneration",
+    "mastery": 2
+  },
+  "params": {
+    "damage": 8,
+    "range": 3
+  }
+}

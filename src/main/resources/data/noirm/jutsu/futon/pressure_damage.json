@@ -1,0 +1,22 @@
+{
+  "nature": "wind",
+  "cast": "charge",
+  "behavior": "wave",
+  "rank": "S",
+  "chakra_cost": 60,
+  "cooldown": 500,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:futon/great_breakthrough",
+    "mastery": 2
+  },
+  "params": {
+    "range": 24,
+    "radius": 5,
+    "speed": 1.2,
+    "damage": 10,
+    "knockback": 3.0,
+    "posture": 40
+  }
+}

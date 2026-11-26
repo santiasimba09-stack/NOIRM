@@ -1,0 +1,13 @@
+{
+  "behavior": "genjutsu",
+  "rank": "B",
+  "chakra_cost": 24,
+  "cooldown": 260,
+  "params": {
+    "range": 16,
+    "stun": 60,
+    "duration": 140,
+    "effect": "minecraft:blindness:0",
+    "effect_ticks": 60
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "nature": "fire",
+  "cast": "channel",
+  "behavior": "stream",
+  "rank": "B",
+  "chakra_cost": 15,
+  "cooldown": 100,
+  "max_duration": 80,
+  "params": {
+    "damage": 1.5,
+    "range": 6,
+    "knockback": 0.05,
+    "posture": 2,
+    "fire_seconds": 3
+  },
+  "unlock": {
+    "after": "noirm:katon/phoenix_flower",
+    "mastery": 2
+  }
+}

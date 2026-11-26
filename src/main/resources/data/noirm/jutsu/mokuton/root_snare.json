@@ -1,0 +1,14 @@
+{
+  "nature": "wood",
+  "behavior": "wood_roots",
+  "rank": "C",
+  "starter": true,
+  "chakra_cost": 16,
+  "cooldown": 160,
+  "params": {
+    "range": 12,
+    "damage": 4,
+    "posture": 20,
+    "stun": 40
+  }
+}

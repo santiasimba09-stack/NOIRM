@@ -1,0 +1,33 @@
+{
+  "id": "hozuki",
+  "name": "Hōzuki",
+  "weight": 1,
+  "natures": {
+    "water": 1.5
+  },
+  "kekkei_genkai": "hydrification",
+  "awakening": "will",
+  "perks": {
+    "water_dodge": 0.75,
+    "chakra_pool": 1.0,
+    "dot_resist": 0.3,
+    "xp_speed": 0.2,
+    "max_health": -4
+  },
+  "clan_jutsu": [
+    "noirm:clan/water_gun"
+  ],
+  "look": {
+    "hair": [
+      "#b8c8d8",
+      "#9ec4e8"
+    ],
+    "eyes": "#8a5ab0"
+  },
+  "talent_bias": {
+    "fleet_footed": 2,
+    "hot_blooded": 2,
+    "heavy_handed": 2,
+    "glass_jaw": 1.5
+  }
+}

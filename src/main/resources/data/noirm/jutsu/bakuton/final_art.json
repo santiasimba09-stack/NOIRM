@@ -1,0 +1,21 @@
+{
+  "nature": "explosion",
+  "cast": "charge",
+  "behavior": "mega_blast",
+  "rank": "S",
+  "chakra_cost": 110,
+  "cooldown": 2400,
+  "min_charge": 40,
+  "max_charge": 80,
+  "unlock": {
+    "after": "noirm:bakuton/clay_effigy",
+    "mastery": 3
+  },
+  "params": {
+    "radius": 9,
+    "damage": 40,
+    "knockback": 2.2,
+    "posture": 100,
+    "fire_seconds": 6
+  }
+}

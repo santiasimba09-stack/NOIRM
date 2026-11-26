@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "IGI",
+    "PPP"
+  ],
+  "key": {
+    "P": { "item": "minecraft:paper" },
+    "I": { "item": "minecraft:ink_sac" },
+    "G": { "item": "minecraft:gold_ingot" }
+  },
+  "result": { "item": "noirm:sealing_scroll", "count": 2 }
+}

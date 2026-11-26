@@ -1,0 +1,17 @@
+{
+  "cast": "tap",
+  "behavior": "swarm_wall",
+  "rank": "C",
+  "chakra_cost": 6,
+  "cooldown": 200,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 2,
+    "species": "kikaichu",
+    "mode": "wall",
+    "insects": 3000
+  },
+  "params": {
+    "duration": 160
+  }
+}

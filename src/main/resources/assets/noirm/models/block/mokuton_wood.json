@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": { "end": "noirm:block/mokuton_wood_top", "side": "noirm:block/mokuton_wood" }
+}

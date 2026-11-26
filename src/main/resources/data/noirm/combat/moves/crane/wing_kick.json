@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:crane_wing_kick",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 26,
+    "range": 3.2,
+    "arc": 200,
+    "knockback": 1.0,
+    "hitstun": 14,
+    "hitstop": 4,
+    "shake": 0.8,
+    "lift": 0.2,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:crane/snap_kick"
+  }
+}

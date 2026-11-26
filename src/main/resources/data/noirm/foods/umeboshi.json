@@ -1,0 +1,11 @@
+{
+  "item": "noirm:umeboshi",
+  "color": "#C2364A",
+  "effects": [
+    {
+      "type": "posture_recovery",
+      "amount": 1.5,
+      "seconds": 30
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "cast": "tap",
+  "behavior": "insect_legion",
+  "rank": "S",
+  "chakra_cost": 30,
+  "cooldown": 2400,
+  "hiden": {
+    "clan": "aburame",
+    "rank": 6,
+    "species": "kikaichu",
+    "mode": "cling",
+    "insects": 10000
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "item": "noirm:antidote_pill",
+  "color": "#3CBE96",
+  "cooldown": 20,
+  "toxicity": 10,
+  "instant": {
+    "cure": true
+  },
+  "effects": [
+    {
+      "type": "poison_ward",
+      "seconds": 30
+    }
+  ],
+  "recipe": {
+    "ingredients": [
+      {
+        "item": "noirm:bloodleaf",
+        "count": 1
+      },
+      {
+        "item": "noirm:mistcap",
+        "count": 1
+      }
+    ],
+    "yield": 2,
+    "difficulty": 12,
+    "min_pharmacology": 8,
+    "unlock": "perk:poison_lore",
+    "xp": 20
+  }
+}

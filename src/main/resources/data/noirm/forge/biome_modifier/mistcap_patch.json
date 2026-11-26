@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#noirm:has_herb/mistcap",
+  "features": "noirm:mistcap_patch",
+  "step": "vegetal_decoration"
+}

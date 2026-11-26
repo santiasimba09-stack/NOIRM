@@ -1,0 +1,402 @@
+{
+  "_comment": "Written by tools/gear/clan_wear.py. The 3D cloth and props each item carries (gear/Drapes, client/DrapeLayer): cape, skirt, collar, hood, sleeves, shoulders, hat, prop. Sizes in model pixels.",
+  "noirm:uchiha_collar_shirt": [
+    {
+      "type": "collar",
+      "texture": "uchiha_collar",
+      "height": 2.4,
+      "open": 1.5
+    }
+  ],
+  "noirm:uchiha_war_armor": [
+    {
+      "type": "shoulders",
+      "texture": "uchiha_plates"
+    }
+  ],
+  "noirm:uchiha_war_tassets": [
+    {
+      "type": "skirt",
+      "texture": "uchiha_tassets",
+      "length": 7.5,
+      "top": 3.2,
+      "flare": 0.3,
+      "stiff": 0.9,
+      "panels": 5
+    }
+  ],
+  "noirm:uzushio_robe": [
+    {
+      "type": "sleeves",
+      "texture": "uzushio_skirt",
+      "length": 4.5
+    }
+  ],
+  "noirm:uzushio_robe_hem": [
+    {
+      "type": "skirt",
+      "texture": "uzushio_skirt",
+      "length": 14.4,
+      "top": 3,
+      "flare": 0.4,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:aburame_coat": [
+    {
+      "type": "collar",
+      "texture": "aburame_pale_collar",
+      "height": 5.0,
+      "open": 3.8
+    },
+    {
+      "type": "skirt",
+      "texture": "aburame_pale_tails",
+      "length": 11,
+      "top": 3.5,
+      "flare": 0.3,
+      "stiff": 0.2,
+      "open": 2.2
+    },
+    {
+      "type": "sleeves",
+      "texture": "aburame_pale_tails",
+      "length": 3.6
+    }
+  ],
+  "noirm:aburame_field_coat": [
+    {
+      "type": "collar",
+      "texture": "aburame_dark_collar",
+      "height": 5.0,
+      "open": 3.8
+    },
+    {
+      "type": "skirt",
+      "texture": "aburame_dark_tails",
+      "length": 9.5,
+      "top": 3.5,
+      "flare": 0.3,
+      "stiff": 0.2,
+      "open": 2.4
+    },
+    {
+      "type": "prop",
+      "texture": "bug_jar",
+      "shape": "jar"
+    }
+  ],
+  "noirm:aburame_hood": [
+    {
+      "type": "hood",
+      "texture": "aburame_hood"
+    }
+  ],
+  "noirm:senju_plate_armor": [
+    {
+      "type": "shoulders",
+      "texture": "senju_plates"
+    }
+  ],
+  "noirm:senju_thigh_plates": [
+    {
+      "type": "skirt",
+      "texture": "senju_tassets",
+      "length": 7.5,
+      "top": 3.2,
+      "flare": 0.3,
+      "stiff": 0.9,
+      "panels": 4
+    }
+  ],
+  "noirm:hyuga_gown": [
+    {
+      "type": "sleeves",
+      "texture": "hyuga_skirt",
+      "length": 3.6
+    }
+  ],
+  "noirm:hyuga_gown_hem": [
+    {
+      "type": "skirt",
+      "texture": "hyuga_skirt",
+      "length": 14.4,
+      "top": 3,
+      "flare": 0.38,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:inuzuka_fur_coat": [
+    {
+      "type": "collar",
+      "texture": "fur_collar",
+      "height": 1.9,
+      "open": 1.2
+    },
+    {
+      "type": "skirt",
+      "texture": "inuzuka_tails",
+      "length": 6,
+      "top": 3.5,
+      "flare": 0.3,
+      "stiff": 0.2,
+      "open": 2.0
+    }
+  ],
+  "noirm:kaguya_robe_hem": [
+    {
+      "type": "skirt",
+      "texture": "kaguya_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:hoshigaki_cloak": [
+    {
+      "type": "cape",
+      "texture": "hoshigaki_cape",
+      "length": 18,
+      "width": 11.5,
+      "wrap": 1.8,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:sand_gourd": [
+    {
+      "type": "prop",
+      "texture": "sand_gourd",
+      "shape": "gourd"
+    }
+  ],
+  "noirm:root_robe": [
+    {
+      "type": "collar",
+      "texture": "root_collar",
+      "height": 2.0,
+      "open": 1.2
+    }
+  ],
+  "noirm:cape": [
+    {
+      "type": "cape",
+      "texture": "cape_plain",
+      "length": 19,
+      "width": 11,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15,
+      "tinted": true
+    }
+  ],
+  "noirm:kage_cape": [
+    {
+      "type": "cape",
+      "texture": "kage_cape",
+      "length": 20,
+      "width": 11.5,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:travel_cape": [
+    {
+      "type": "cape",
+      "texture": "travel_cape",
+      "length": 18,
+      "width": 11,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:rogue_cape": [
+    {
+      "type": "cape",
+      "texture": "rogue_cape",
+      "length": 18.5,
+      "width": 11,
+      "wrap": 1.2,
+      "flare": 0.32,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:uchiha_cape": [
+    {
+      "type": "cape",
+      "texture": "uchiha_cape",
+      "length": 19,
+      "width": 11,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:senju_cape": [
+    {
+      "type": "cape",
+      "texture": "senju_cape",
+      "length": 19,
+      "width": 11,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:uzumaki_cape": [
+    {
+      "type": "cape",
+      "texture": "uzumaki_cape",
+      "length": 19,
+      "width": 11,
+      "wrap": 1.4,
+      "flare": 0.25,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:cloud_cloak": [
+    {
+      "type": "collar",
+      "texture": "cloud_collar",
+      "height": 4.2,
+      "open": 3.0
+    },
+    {
+      "type": "skirt",
+      "texture": "cloud_skirt",
+      "length": 14.4,
+      "top": 3.0,
+      "flare": 0.4,
+      "stiff": 0.2
+    },
+    {
+      "type": "sleeves",
+      "texture": "cloud_skirt",
+      "length": 2.6
+    }
+  ],
+  "noirm:kasa_hat": [
+    {
+      "type": "hat",
+      "texture": "kasa_hat",
+      "width": 9.5,
+      "height": 4.8,
+      "length": 7.5,
+      "panels": 16
+    }
+  ],
+  "noirm:hooded_cloak": [
+    {
+      "type": "cape",
+      "texture": "hooded_cloak_cape",
+      "length": 19.5,
+      "width": 11.5,
+      "wrap": 2.0,
+      "flare": 0.3,
+      "stiff": 0.15
+    }
+  ],
+  "noirm:travel_hood": [
+    {
+      "type": "hood",
+      "texture": "travel_hood"
+    }
+  ],
+  "noirm:kage_robe": [
+    {
+      "type": "sleeves",
+      "texture": "kage_skirt",
+      "length": 4.0
+    }
+  ],
+  "noirm:kage_robe_hem": [
+    {
+      "type": "skirt",
+      "texture": "kage_skirt",
+      "length": 14.6,
+      "top": 3,
+      "flare": 0.42,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:priestess_gown": [
+    {
+      "type": "sleeves",
+      "texture": "priestess_sleeve",
+      "length": 4.6
+    }
+  ],
+  "noirm:priestess_gown_hem": [
+    {
+      "type": "skirt",
+      "texture": "priestess_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.45,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:medic_gown_hem": [
+    {
+      "type": "skirt",
+      "texture": "medic_skirt",
+      "length": 13.8,
+      "top": 3,
+      "flare": 0.32,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:formal_robe_hem": [
+    {
+      "type": "skirt",
+      "texture": "formal_skirt",
+      "length": 14.4,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:kimono_indigo_hem": [
+    {
+      "type": "skirt",
+      "texture": "kimono_indigo_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:kimono_crimson_hem": [
+    {
+      "type": "skirt",
+      "texture": "kimono_crimson_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:kimono_sage_hem": [
+    {
+      "type": "skirt",
+      "texture": "kimono_sage_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ],
+  "noirm:kimono_plum_hem": [
+    {
+      "type": "skirt",
+      "texture": "kimono_plum_skirt",
+      "length": 14.2,
+      "top": 3,
+      "flare": 0.35,
+      "stiff": 0.2
+    }
+  ]
+}

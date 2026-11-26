@@ -1,0 +1,19 @@
+{
+  "nature": "wind",
+  "behavior": "projectile",
+  "rank": "C",
+  "chakra_cost": 20,
+  "cooldown": 100,
+  "unlock": {
+    "after": "noirm:futon/vacuum_bullets",
+    "mastery": 2
+  },
+  "params": {
+    "count": 1,
+    "speed": 1.5,
+    "damage": 7,
+    "radius": 1.6,
+    "knockback": 1.6,
+    "posture": 25
+  }
+}

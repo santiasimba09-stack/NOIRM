@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "ABA",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:brown_wool"
+    },
+    "B": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "C": {
+      "item": "minecraft:gray_wool"
+    }
+  },
+  "result": {
+    "item": "noirm:inuzuka_fur_coat"
+  }
+}

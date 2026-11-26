@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:spinning_backfist",
+  "timing": {
+    "windup": 3,
+    "active": 2,
+    "recovery": 6,
+    "cancel_after": 2
+  },
+  "hit": {
+    "damage": 4,
+    "posture": 12,
+    "range": 2.7,
+    "arc": 120,
+    "knockback": 0.4,
+    "lunge": 0.5,
+    "hitstun": 9,
+    "hitstop": 2,
+    "shake": 0.4
+  },
+  "next": {
+    "light": "noirm:basic/hook",
+    "heavy": "noirm:basic/heavy_kick"
+  }
+}

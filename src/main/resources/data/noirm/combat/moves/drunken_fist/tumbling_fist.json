@@ -1,0 +1,28 @@
+{
+  "animation": "noirm:drunken_fist_tumbling_fist",
+  "timing": {
+    "windup": 5,
+    "active": 2,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6,
+    "posture": 24,
+    "range": 2.8,
+    "arc": 100,
+    "knockback": 1.0,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7,
+    "lunge": 0.6,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:drunken_fist/stagger_jab"
+  },
+  "variants": {
+    "aggressive": "noirm:drunken_fist/gourd_slam",
+    "defensive": "noirm:drunken_fist/lean_away_kick"
+  }
+}

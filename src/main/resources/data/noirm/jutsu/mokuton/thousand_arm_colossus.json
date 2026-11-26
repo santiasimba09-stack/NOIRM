@@ -1,0 +1,19 @@
+{
+  "nature": "wood",
+  "behavior": "wood_colossus",
+  "rank": "S",
+  "chakra_cost": 100,
+  "cooldown": 1500,
+  "unlock": {
+    "after": "noirm:mokuton/deep_forest_emergence",
+    "mastery": 2
+  },
+  "params": {
+    "range": 26,
+    "count": 16,
+    "damage": 9,
+    "radius": 2.8,
+    "posture": 35,
+    "stun": 20
+  }
+}

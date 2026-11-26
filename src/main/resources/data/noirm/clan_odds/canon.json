@@ -1,0 +1,33 @@
+{
+  "canon_share": 0.8,
+  "weights": {
+    "uchiha": 35,
+    "hyuga": 35,
+    "senju": 25,
+    "uzumaki": 25,
+    "kaguya": 20,
+
+    "nara": 60,
+    "akimichi": 60,
+    "yamanaka": 60,
+    "inuzuka": 60,
+    "aburame": 50,
+    "sarutobi": 40,
+    "hatake": 25,
+    "might": 20,
+
+    "yotsuki": 35,
+    "fuma": 35,
+    "hozuki": 30,
+    "kamizuru": 30,
+    "kurogane": 30,
+    "shimura": 25,
+    "yuki": 20,
+    "kurama": 15,
+    "iburi": 15,
+    "kazekage": 14,
+    "chinoike": 12,
+    "hoshigaki": 12,
+    "jugo": 12
+  }
+}

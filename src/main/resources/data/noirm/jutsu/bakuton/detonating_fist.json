@@ -1,0 +1,18 @@
+{
+  "nature": "explosion",
+  "behavior": "blast_fist",
+  "rank": "B",
+  "chakra_cost": 24,
+  "cooldown": 160,
+  "unlock": {
+    "after": "noirm:bakuton/landmine",
+    "mastery": 2
+  },
+  "params": {
+    "range": 3.5,
+    "damage": 10,
+    "knockback": 1.4,
+    "posture": 50,
+    "stun": 10
+  }
+}

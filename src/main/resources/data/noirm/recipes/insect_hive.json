@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LHL",
+    "HPH",
+    "LHL"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "H": {
+      "item": "minecraft:honeycomb"
+    },
+    "P": {
+      "item": "noirm:chakra_paper"
+    }
+  },
+  "result": {
+    "item": "noirm:insect_hive",
+    "count": 1
+  }
+}

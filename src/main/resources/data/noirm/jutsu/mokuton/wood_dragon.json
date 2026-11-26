@@ -1,0 +1,17 @@
+{
+  "nature": "wood",
+  "behavior": "wood_dragon",
+  "rank": "A",
+  "chakra_cost": 50,
+  "cooldown": 640,
+  "unlock": {
+    "after": "noirm:mokuton/wood_binding",
+    "mastery": 3
+  },
+  "params": {
+    "range": 22,
+    "damage": 10,
+    "posture": 50,
+    "duration": 70
+  }
+}

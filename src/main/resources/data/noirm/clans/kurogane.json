@@ -1,0 +1,32 @@
+{
+  "id": "kurogane",
+  "name": "Kurogane",
+  "weight": 1,
+  "natures": {
+    "earth": 1.0
+  },
+  "taijutsu_bonus": 2,
+  "awakening": "will",
+  "perks": {
+    "melee_damage": 0.4,
+    "posture": 60,
+    "start_durability": 5,
+    "xp_taijutsu": 0.4,
+    "genjutsu_resist": 0.2,
+    "jutsu_power": -0.4,
+    "jutsu_cost": 0.3
+  },
+  "look": {
+    "hair": [
+      "#141418",
+      "#2a2224"
+    ],
+    "eyes": "#2a2a2e"
+  },
+  "talent_bias": {
+    "taijutsu_genius": 3,
+    "iron_will": 3,
+    "heavy_handed": 2,
+    "stubborn_body": 2
+  }
+}

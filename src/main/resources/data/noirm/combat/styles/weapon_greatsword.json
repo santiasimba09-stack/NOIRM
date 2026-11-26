@@ -1,0 +1,27 @@
+{
+  "openers": {
+    "light": "noirm:greatsword/sweep",
+    "heavy": "noirm:greatsword/cleave",
+    "launcher": "noirm:greatsword/rising",
+    "forward_light": "noirm:greatsword/charge",
+    "forward_heavy": "noirm:greatsword/charge",
+    "back_heavy": "noirm:greatsword/spin"
+  },
+  "npc_weight": 0,
+  "playable": false,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_greatsword",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_greatsword_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_greatsword_defensive",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:greatsword/counter"
+}

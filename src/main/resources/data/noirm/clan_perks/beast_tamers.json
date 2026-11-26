@@ -1,0 +1,12 @@
+{
+  "kind": "positive",
+  "weight": 5,
+  "modifiers": {
+    "beast_bond": 0.4,
+    "crew_respect": 0.2,
+    "sensor": 10
+  },
+  "talent_bias": {
+    "kindred_spirit": 4
+  }
+}

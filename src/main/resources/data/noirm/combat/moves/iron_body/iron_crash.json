@@ -1,0 +1,28 @@
+{
+  "animation": "noirm:iron_body_iron_crash",
+  "timing": {
+    "windup": 7,
+    "active": 3,
+    "recovery": 10,
+    "cancel_after": 7
+  },
+  "hit": {
+    "damage": 9,
+    "posture": 42,
+    "range": 2.8,
+    "arc": 100,
+    "knockback": 1.4,
+    "hitstun": 16,
+    "hitstop": 4,
+    "shake": 1.0,
+    "lunge": 0.7,
+    "guard_break": true,
+    "ender": "splat"
+  },
+  "next": {
+    "light": "noirm:iron_body/iron_jab"
+  },
+  "effects": {
+    "armour": 0.6
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "nature": "magnet",
+  "behavior": "ward_shell",
+  "rank": "C",
+  "chakra_cost": 24,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:jiton/lodestone_pull",
+    "mastery": 2
+  },
+  "params": {
+    "duration": 140,
+    "radius": 1.5,
+    "damage": 1,
+    "knockback": 0.8,
+    "posture": 15,
+    "effect": "resistance:1"
+  }
+}

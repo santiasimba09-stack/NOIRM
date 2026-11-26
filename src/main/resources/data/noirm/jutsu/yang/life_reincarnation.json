@@ -1,0 +1,16 @@
+{
+  "nature": "yang",
+  "behavior": "reincarnation",
+  "rank": "S",
+  "chakra_cost": 90,
+  "cooldown": 6000,
+  "unlock": {
+    "after": "noirm:yang/life_force_conversion",
+    "mastery": 3
+  },
+  "params": {
+    "range": 16,
+    "duration": 6000,
+    "damage": 0.6
+  }
+}

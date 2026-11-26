@@ -1,0 +1,66 @@
+{
+  "openers": {
+    "light": "noirm:shadow/shade_jab",
+    "heavy": "noirm:shadow/hidden_palm",
+    "launcher": "noirm:shadow/rising_shade",
+    "forward_light": "noirm:shadow/phantom_step",
+    "forward_heavy": "noirm:shadow/phantom_lunge",
+    "back_light": "noirm:shadow/fade_strike",
+    "back_heavy": "noirm:shadow/ghost_sweep"
+  },
+  "npc_weight": 1,
+  "stances": {
+    "neutral": {
+      "animation": "noirm:stance_shadow",
+      "switch": 2
+    },
+    "aggressive": {
+      "animation": "noirm:stance_shadow_aggressive",
+      "switch": 2
+    },
+    "defensive": {
+      "animation": "noirm:stance_shadow_defensive",
+      "switch": 2
+    },
+    "low": {
+      "animation": "noirm:stance_shadow_low",
+      "switch": 2
+    }
+  },
+  "counter": "noirm:shadow/shadow_counter",
+  "identity": {
+    "footwork": "bladed",
+    "rhythm": "deceptive",
+    "move_speed": 1.1,
+    "guard": {
+      "type": "standard",
+      "keep": 0.28
+    },
+    "dodge": {
+      "kind": "slide",
+      "speed": 1.3,
+      "ticks": 7,
+      "iframes": 5,
+      "stamina": 0.9,
+      "lift": 0.0
+    },
+    "strike": {
+      "backstab": 1.6
+    },
+    "feint": {
+      "cost": 6,
+      "window": 14,
+      "windup": 1,
+      "pierce": 0.6,
+      "posture": 1.6
+    }
+  },
+  "learn": {
+    "required": true,
+    "watch": 0.015,
+    "scroll": 3
+  },
+  "npc": {
+    "min_class": "C"
+  }
+}

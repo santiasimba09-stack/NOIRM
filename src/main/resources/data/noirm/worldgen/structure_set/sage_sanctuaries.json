@@ -1,0 +1,12 @@
+{
+  "structures": [
+    { "structure": "noirm:sage_sanctuary", "weight": 1 }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 64,
+    "separation": 32,
+    "salt": 1093287441,
+    "exclusion_zone": { "other_set": "noirm:hidden_villages", "chunk_count": 20 }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:leaf_hurricane_leaf_tornado",
+  "timing": {
+    "windup": 5,
+    "active": 4,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 5.5,
+    "posture": 22,
+    "range": 3.0,
+    "arc": 360,
+    "knockback": 0.6,
+    "hitstun": 16,
+    "hitstop": 3,
+    "shake": 0.8,
+    "lift": 0.8,
+    "ender": "launch"
+  },
+  "next": {
+    "light": "noirm:leaf_hurricane/hurricane_jab"
+  }
+}

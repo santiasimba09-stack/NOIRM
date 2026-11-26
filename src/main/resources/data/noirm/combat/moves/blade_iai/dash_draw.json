@@ -1,0 +1,24 @@
+{
+  "animation": "noirm:blade_iai_dash_draw",
+  "timing": {
+    "windup": 6,
+    "active": 2,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 8,
+    "posture": 22,
+    "range": 3.6,
+    "arc": 80,
+    "knockback": 0.6,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.75,
+    "lunge": 1.2,
+    "pierce": 0.35
+  },
+  "next": {
+    "light": "noirm:blade_iai/return_cut"
+  }
+}

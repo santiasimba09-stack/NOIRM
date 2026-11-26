@@ -1,0 +1,7 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "perception": 0.1
+  }
+}

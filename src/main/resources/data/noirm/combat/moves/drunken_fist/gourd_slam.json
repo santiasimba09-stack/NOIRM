@@ -1,0 +1,26 @@
+{
+  "animation": "noirm:drunken_fist_gourd_slam",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 9,
+    "cancel_after": 6
+  },
+  "hit": {
+    "damage": 7,
+    "posture": 32,
+    "range": 2.6,
+    "arc": 100,
+    "knockback": 0.4,
+    "hitstun": 16,
+    "hitstop": 4,
+    "shake": 0.9,
+    "lunge": 0.3,
+    "guard_break": true,
+    "knockdown": true,
+    "ender": "knockdown"
+  },
+  "next": {
+    "light": "noirm:drunken_fist/stagger_jab"
+  }
+}

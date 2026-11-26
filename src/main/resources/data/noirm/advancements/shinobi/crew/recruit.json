@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:lead"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.crew.recruit.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.crew.recruit.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/first_defeat",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:crew",
+      "conditions": {
+        "event": "size",
+        "min": 1
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20,
+    "loot": [
+      "noirm:advancement/ramen_crew"
+    ]
+  }
+}

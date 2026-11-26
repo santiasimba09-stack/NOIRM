@@ -1,0 +1,18 @@
+{
+  "nature": "wind",
+  "behavior": "ward_shell",
+  "rank": "B",
+  "chakra_cost": 28,
+  "cooldown": 300,
+  "unlock": {
+    "after": "noirm:futon/great_breakthrough",
+    "mastery": 2
+  },
+  "params": {
+    "duration": 120,
+    "radius": 1.8,
+    "damage": 2,
+    "knockback": 1.4,
+    "posture": 15
+  }
+}

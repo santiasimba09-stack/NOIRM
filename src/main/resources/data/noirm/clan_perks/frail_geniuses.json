@@ -1,0 +1,13 @@
+{
+  "kind": "mixed",
+  "weight": 5,
+  "modifiers": {
+    "jutsu_power": 0.15,
+    "mastery": 0.2,
+    "max_health": -4
+  },
+  "talent_bias": {
+    "frail_but_precise": 3,
+    "prodigy": 2
+  }
+}

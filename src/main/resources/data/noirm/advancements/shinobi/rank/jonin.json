@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "noirm:jonin_vest"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.rank.jonin.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.rank.jonin.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/rank/chunin",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:rank",
+      "conditions": {
+        "key": "jonin"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80,
+    "loot": [
+      "noirm:advancement/ryo_300"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "cast": "tap",
+  "behavior": "bind",
+  "rank": "A",
+  "chakra_cost": 35,
+  "cooldown": 320,
+  "params": {
+    "range": 14,
+    "stun": 70,
+    "damage": 2,
+    "posture": 40,
+    "block": "minecraft:chain",
+    "effect": "noirm:chakra_seal,minecraft:weakness:1",
+    "effect_ticks": 120
+  }
+}

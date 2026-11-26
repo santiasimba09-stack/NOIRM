@@ -1,0 +1,7 @@
+{
+  "nature": "yang", "behavior": "mode", "rank": "B",
+  "chakra_cost": 20, "cooldown": 60,
+  "unlock": { "after": "noirm:yang/mystical_palm", "mastery": 2 },
+  "params": { "duration": 0 },
+  "mode": { "speed": -0.15, "perception": 1.0, "damage": 1.6, "defense": 0.7, "action_speed": 0.85, "drain": 1.5 }
+}

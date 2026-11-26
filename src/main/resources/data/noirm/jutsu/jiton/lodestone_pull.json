@@ -1,0 +1,15 @@
+{
+  "nature": "magnet",
+  "behavior": "magnet_pull",
+  "rank": "D",
+  "starter": true,
+  "chakra_cost": 12,
+  "cooldown": 80,
+  "params": {
+    "range": 12,
+    "knockback": 1.4,
+    "damage": 2,
+    "posture": 12,
+    "stun": 14
+  }
+}

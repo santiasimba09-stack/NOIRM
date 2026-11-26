@@ -1,0 +1,7 @@
+{
+  "weight": 30, "night_weight": 15,
+  "min_size": 1, "max_size": 1,
+  "spar_chance": 0.5,
+  "leader_strength": 1.0,
+  "outfit": "clan"
+}

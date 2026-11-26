@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:dragon_head"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.combat.legend.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.combat.legend.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/combat/class_s",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:defeat",
+      "conditions": {
+        "event": "defeat",
+        "min": 5
+      }
+    }
+  },
+  "rewards": {
+    "experience": 500,
+    "loot": [
+      "noirm:advancement/ryo_500"
+    ]
+  }
+}

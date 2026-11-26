@@ -1,0 +1,5 @@
+{
+  "nature": "wind", "cast": "tap", "behavior": "burst", "rank": "C", "starter": true,
+  "chakra_cost": 15, "cooldown": 60,
+  "params": { "damage": 4, "range": 6, "knockback": 2.2, "posture": 30 }
+}

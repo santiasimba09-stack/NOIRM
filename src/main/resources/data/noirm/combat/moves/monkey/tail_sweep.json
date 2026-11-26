@@ -1,0 +1,23 @@
+{
+  "animation": "noirm:monkey_tail_sweep",
+  "timing": {
+    "windup": 3,
+    "active": 3,
+    "recovery": 5,
+    "cancel_after": 3
+  },
+  "hit": {
+    "damage": 3,
+    "posture": 12,
+    "range": 2.7,
+    "arc": 200,
+    "knockback": 0.2,
+    "hitstun": 10,
+    "hitstop": 2,
+    "shake": 0.35
+  },
+  "next": {
+    "light": "noirm:monkey/cartwheel_kick",
+    "heavy": "noirm:monkey/spinning_sweep"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "retrieve",
+  "rank": "B",
+  "reward": 800,
+  "points": 50,
+  "min_distance": 140,
+  "max_distance": 220,
+  "encounter": "noirm:rogue_band",
+  "strength": 28
+}

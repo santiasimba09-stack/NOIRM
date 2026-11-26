@@ -1,0 +1,16 @@
+{
+  "item": "noirm:grilled_fish",
+  "color": "#C89A60",
+  "effects": [
+    {
+      "type": "stamina_regen",
+      "amount": 1.2,
+      "seconds": 60
+    },
+    {
+      "type": "health_regen",
+      "amount": 0.25,
+      "seconds": 20
+    }
+  ]
+}

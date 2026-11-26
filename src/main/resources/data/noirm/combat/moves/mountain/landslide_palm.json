@@ -1,0 +1,22 @@
+{
+  "animation": "noirm:mountain_landslide_palm",
+  "timing": {
+    "windup": 5,
+    "active": 3,
+    "recovery": 8,
+    "cancel_after": 5
+  },
+  "hit": {
+    "damage": 6.5,
+    "posture": 30,
+    "range": 2.5,
+    "arc": 100,
+    "knockback": 0.8,
+    "hitstun": 12,
+    "hitstop": 3,
+    "shake": 0.7
+  },
+  "next": {
+    "light": "noirm:mountain/mountain_crush"
+  }
+}

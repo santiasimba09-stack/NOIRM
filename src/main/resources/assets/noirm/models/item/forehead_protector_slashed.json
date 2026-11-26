@@ -1,0 +1,1 @@
+{ "parent": "minecraft:item/generated", "textures": { "layer0": "noirm:item/forehead_protector_slashed" } }

@@ -1,0 +1,17 @@
+{
+  "wear": true,
+  "items": [
+    {
+      "item": "noirm:forehead_protector_cloud"
+    },
+    {
+      "item": "noirm:medic_coat"
+    },
+    {
+      "item": "noirm:shinobi_pants"
+    },
+    {
+      "item": "noirm:shinobi_sandals"
+    }
+  ]
+}

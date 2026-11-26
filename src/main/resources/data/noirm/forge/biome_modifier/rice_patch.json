@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#noirm:has_herb/rice",
+  "features": "noirm:rice_patch",
+  "step": "vegetal_decoration"
+}

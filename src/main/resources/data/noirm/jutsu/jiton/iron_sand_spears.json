@@ -1,0 +1,15 @@
+{
+  "nature": "magnet",
+  "behavior": "projectile",
+  "rank": "B",
+  "starter": true,
+  "chakra_cost": 25,
+  "cooldown": 120,
+  "params": {
+    "count": 4,
+    "spread": 12,
+    "speed": 2.0,
+    "damage": 4,
+    "posture": 15
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "behavior": "genjutsu_release",
+  "rank": "E",
+  "quick": true,
+  "chakra_cost": 8,
+  "cooldown": 80,
+  "unlock": {
+    "after": "noirm:universal/substitution",
+    "mastery": 1
+  }
+}

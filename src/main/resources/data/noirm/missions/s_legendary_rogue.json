@@ -1,0 +1,10 @@
+{
+  "type": "hunt",
+  "rank": "S",
+  "reward": 5000,
+  "points": 200,
+  "min_distance": 200,
+  "max_distance": 300,
+  "encounter": "noirm:rogue_strong",
+  "strength": 40
+}

@@ -1,0 +1,16 @@
+{
+  "nature": "storm",
+  "behavior": "rain",
+  "rank": "A",
+  "starter": true,
+  "chakra_cost": 40,
+  "cooldown": 320,
+  "params": {
+    "range": 12,
+    "radius": 4,
+    "count": 8,
+    "duration": 60,
+    "damage": 4,
+    "stun": 10
+  }
+}

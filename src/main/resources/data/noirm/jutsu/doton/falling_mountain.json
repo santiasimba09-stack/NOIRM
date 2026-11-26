@@ -1,0 +1,23 @@
+{
+  "nature": "earth",
+  "cast": "charge",
+  "behavior": "falling_mountain",
+  "rank": "S",
+  "chakra_cost": 80,
+  "cooldown": 900,
+  "min_charge": 10,
+  "max_charge": 40,
+  "unlock": {
+    "after": "noirm:doton/added_weight_rock",
+    "mastery": 3
+  },
+  "params": {
+    "range": 18,
+    "radius": 4,
+    "duration": 16,
+    "damage": 22,
+    "knockback": 1.2,
+    "posture": 70,
+    "stun": 12
+  }
+}

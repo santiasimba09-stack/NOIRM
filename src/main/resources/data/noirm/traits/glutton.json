@@ -1,0 +1,8 @@
+{
+  "kind": "positive",
+  "weight": 7,
+  "modifiers": {
+    "food_power": 0.4,
+    "max_stamina": 10
+  }
+}

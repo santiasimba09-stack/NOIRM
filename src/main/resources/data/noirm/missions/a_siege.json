@@ -1,0 +1,10 @@
+{
+  "type": "defend",
+  "rank": "A",
+  "reward": 2000,
+  "points": 100,
+  "time_limit": 720,
+  "count": 3,
+  "encounter": "noirm:rogue_band",
+  "strength": 36
+}

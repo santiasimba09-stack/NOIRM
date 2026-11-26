@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "S  ",
+    " G ",
+    " CS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:decorated_pot"
+    },
+    "C": {
+      "item": "minecraft:sand"
+    }
+  },
+  "result": {
+    "item": "noirm:sand_gourd"
+  }
+}

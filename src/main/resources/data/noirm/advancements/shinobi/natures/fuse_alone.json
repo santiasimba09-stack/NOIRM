@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:magma_block"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.natures.fuse_alone.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.natures.fuse_alone.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "noirm:shinobi/natures/combined",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:fuse_natures"
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

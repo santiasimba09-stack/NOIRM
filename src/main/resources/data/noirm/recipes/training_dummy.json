@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " H ",
+    "SHS",
+    " S "
+  ],
+  "key": {
+    "H": { "item": "minecraft:hay_block" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": { "item": "noirm:training_dummy" }
+}

@@ -1,0 +1,6 @@
+{
+  "cast": "tap", "behavior": "izanagi", "rank": "S",
+  "requires": { "dojutsu": "mangekyo", "stage": 1 },
+  "chakra_cost": 50, "cooldown": 6000,
+  "params": { "duration": 200 }
+}

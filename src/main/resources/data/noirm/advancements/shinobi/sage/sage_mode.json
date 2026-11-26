@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:moss_block"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.sage.sage_mode.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.sage.sage_mode.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/masters/stone_hermit",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:sage",
+      "conditions": {
+        "event": "mode"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 150
+  }
+}

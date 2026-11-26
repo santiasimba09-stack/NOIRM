@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:iron_ingot"
+    },
+    "title": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_15.title"
+    },
+    "description": {
+      "translate": "advancement.noirm.shinobi.beginnings.stat_15.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "noirm:shinobi/beginnings/training",
+  "criteria": {
+    "done": {
+      "trigger": "noirm:stat",
+      "conditions": {
+        "min": 15
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20,
+    "loot": [
+      "noirm:advancement/ryo_50"
+    ]
+  }
+}

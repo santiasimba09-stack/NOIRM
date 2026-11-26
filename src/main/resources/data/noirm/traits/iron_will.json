@@ -1,0 +1,9 @@
+{
+  "kind": "positive",
+  "weight": 8,
+  "modifiers": {
+    "genjutsu_resist": 0.3,
+    "start_willpower": 3,
+    "resolve": 0.25
+  }
+}
