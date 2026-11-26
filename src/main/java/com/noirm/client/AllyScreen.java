@@ -5,6 +5,7 @@ import com.noirm.ally.AllyMenu;
 import com.noirm.ally.AllyPackets;
 import com.noirm.ally.Behaviour;
 import com.noirm.ally.CrewBrain;
+import com.noirm.ally.CrewFusion;
 import com.noirm.ally.NatureTeaching;
 import com.noirm.ally.Occupation;
 import com.noirm.ally.Order;
@@ -305,6 +306,7 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
         Ui.chip(g, font, chipX + 2, y - 2, Ui.fit(font, traitName.getString(), chipW - 10), GOLD);
         hits.add(new Hit(chipX, y - 2, chipW, 12, null, List.of(traitName.copy().withStyle(s -> s.withColor(GOLD)),
                 Component.translatable("screen.noirm.ally.trait." + info.trait().toLowerCase(Locale.ROOT) + ".desc"))));
+        chipX = drawEyeChip(g, chipX, y, mouseX, mouseY);
         String clanLabel = Component.translatable("screen.noirm.ally.clan").getString() + " ";
         g.drawString(font, clanLabel, x, y, DIM, false);
         String clan = info.extra().clan().isEmpty() ? "—" : info.extra().clan();
@@ -369,12 +371,49 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
             Component text = Component.translatable("screen.noirm.ally.lesson.short", Component.translatable(nature.translationKey()),
                     Math.round(100 * lesson.seconds() / lesson.needed()));
             g.drawString(font, fit(text.getString(), w), x, y, 0xFF000000 | nature.color(), false);
+        } else if (info.extra().fusion().nature() >= 0) {
+            AllyPackets.Fusion fusion = info.extra().fusion();
+            Nature nature = Nature.values()[fusion.nature()];
+            Component text = Component.translatable("screen.noirm.ally.fusion.short", Component.translatable(nature.translationKey()),
+                    Math.round(100 * fusion.seconds() / Math.max(1f, fusion.needed())));
+            g.drawString(font, fit(text.getString(), w), x, y, 0xFF000000 | nature.color(), false);
         } else {
             Component tactics = Component.translatable("screen.noirm.ally.tactics_summary",
                     Component.translatable(Tactics.Range.values()[info.extra().range()].key()),
                     Component.translatable(Tactics.JutsuUse.values()[info.extra().jutsuUse()].key()));
             g.drawString(font, fit(tactics.getString(), w), x, y, DIM, false);
         }
+    }
+
+    /**
+     * Their Sharingan as a small red chip ending at {@code right} (tomoe, or "+" when you carry an eye
+     * they'd take: click to give it). Returns where the chip starts (or {@code right} if none).
+     */
+    private int drawEyeChip(GuiGraphics g, int right, int y, int mouseX, int mouseY) {
+        AllyPackets.Eyes eyes = info.extra().eyes();
+        if (eyes.stage() <= 0 && eyes.offer() <= 0) {
+            return right;
+        }
+        String label = "眼" + (eyes.stage() > 0 ? " " + "●".repeat(eyes.stage()) : "") + (eyes.offer() > 0 ? " +" : "");
+        int cw = font.width(label) + 10;
+        int cx = right - 4 - cw;
+        Ui.chip(g, font, cx + 2, y - 2, label, eyes.stage() > 0 ? 0xFFE03030 : 0xFF905050);
+        List<Component> tip = new ArrayList<>();
+        if (eyes.stage() > 0) {
+            tip.add(Component.translatable("screen.noirm.ally.eye.title", eyes.stage()).withStyle(s -> s.withColor(0xFFE03030)));
+            tip.add(eyes.stage() >= 3 ? Component.translatable("screen.noirm.ally.eye.max")
+                    : Component.translatable("screen.noirm.ally.eye.progress", Math.round(eyes.progress() * 100)));
+            if (eyes.implanted()) {
+                tip.add(Component.translatable("screen.noirm.ally.eye.implanted").withStyle(s -> s.withColor(DIM)));
+            }
+        } else {
+            tip.add(Component.translatable("screen.noirm.ally.eye.none"));
+        }
+        if (eyes.offer() > 0) {
+            tip.add(Component.translatable("screen.noirm.ally.eye.offer", eyes.offer()).withStyle(s -> s.withColor(GOLD)));
+        }
+        hits.add(new Hit(cx, y - 2, cw, 12, eyes.offer() > 0 ? () -> send(AllyPackets.Action.GIVE_EYE, "") : null, tip));
+        return cx;
     }
 
     private void resource(GuiGraphics g, int x, int y, int w, String key, float value, float max, int color) {
@@ -725,7 +764,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
             for (Nature part : nature.components()) {
                 float[] from = pos.get(part);
                 dotted(g, from[0], from[1], to[0], to[1], s == AllyPackets.NATURE_OWNED ? 0xFF000000 | nature.color()
-                        : s == AllyPackets.NATURE_TEACHABLE || s == AllyPackets.NATURE_LEARNING ? 0xFF8A7A3E : 0xFF35313B);
+                        : s == AllyPackets.NATURE_TEACHABLE || s == AllyPackets.NATURE_LEARNING ? 0xFF8A7A3E
+                        : s == AllyPackets.NATURE_FUSABLE || s == AllyPackets.NATURE_FUSING ? 0xFF4E8A6C : 0xFF35313B);
             }
         }
         float time = (minecraft.player == null ? 0 : minecraft.player.tickCount) + partialTick;
@@ -743,6 +783,8 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
                 case AllyPackets.NATURE_TEACHABLE -> lerp(0xFF8A7A3E, GOLD, pulse);
                 case AllyPackets.NATURE_BUSY -> 0xFF6E6240; // teachable once the current lesson ends
                 case AllyPackets.NATURE_QUEUED -> lerp(0xFF6E6240, 0xFFB8A060, pulse * 0.5f);
+                case AllyPackets.NATURE_FUSABLE -> lerp(0xFF4E8A6C, Tab.NATURES.accent, pulse); // they can fuse it themselves
+                case AllyPackets.NATURE_FUSING -> lerp(darken(color, 0.4f), color, pulse);
                 default -> 0xFF47434E;
             };
             boolean chosen = nature == selected;
@@ -752,10 +794,13 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
             }
             hexagon(g, px, py, r - 1, s == AllyPackets.NATURE_OWNED ? Theme.mix(CARD, color, 0.18f) : Theme.WELL);
             Ui.textCentered(g, font, nature == Nature.YIN_YANG ? "☯" : nature.kanji().substring(0, 1), px, py - 4,
-                    s == AllyPackets.NATURE_OWNED || s == AllyPackets.NATURE_LEARNING ? color : s == AllyPackets.NATURE_TEACHABLE ? GOLD : 0xFF5E5866);
+                    s == AllyPackets.NATURE_OWNED || s == AllyPackets.NATURE_LEARNING || s == AllyPackets.NATURE_FUSING ? color
+                            : s == AllyPackets.NATURE_TEACHABLE ? GOLD : s == AllyPackets.NATURE_FUSABLE ? Tab.NATURES.accent : 0xFF5E5866);
             if (s == AllyPackets.NATURE_TEACHABLE) {
                 g.drawString(font, "+", px + r - 2, py - r - 3, GOLD, false);
-            } else if (s == AllyPackets.NATURE_LEARNING) {
+            } else if (s == AllyPackets.NATURE_FUSABLE) {
+                g.drawString(font, "+", px + r - 2, py - r - 3, Tab.NATURES.accent, false);
+            } else if (s == AllyPackets.NATURE_LEARNING || s == AllyPackets.NATURE_FUSING) {
                 g.drawString(font, "…", px + r - 3, py - r - 3, color, false);
             } else if (s == AllyPackets.NATURE_QUEUED) {
                 int place = queuePlace(nature);
@@ -782,7 +827,15 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
             y = natureDetails(g, shown, statusOf(status, shown), x, y, w, lessonTop - 4, mouseX, mouseY);
         }
         Ui.hairline(g, sx + 6, lessonTop - 2, sw - 12);
-        drawLesson(g, x, lessonTop + 2, w, bottom - 4, mouseX, mouseY);
+        int shownStatus = shown == null ? -1 : statusOf(status, shown);
+        AllyPackets.Fusion fusion = info.extra().fusion();
+        if (shownStatus == AllyPackets.NATURE_FUSING || (fusion.nature() >= 0 && info.extra().lesson().nature() < 0 && shownStatus != AllyPackets.NATURE_FUSABLE)) {
+            drawFusion(g, x, lessonTop + 2, w, bottom - 4, mouseX, mouseY);
+        } else if (shownStatus == AllyPackets.NATURE_FUSABLE) {
+            drawFusionOffer(g, shown, x, lessonTop + 2, w, bottom - 4, mouseX, mouseY);
+        } else {
+            drawLesson(g, x, lessonTop + 2, w, bottom - 4, mouseX, mouseY);
+        }
     }
 
     private int natureDetails(GuiGraphics g, Nature nature, int s, int x, int y, int w, int maxY, int mouseX, int mouseY) {
@@ -796,14 +849,20 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
             case AllyPackets.NATURE_NEEDS_PARTS -> "parts";
             case AllyPackets.NATURE_BUSY -> "busy";
             case AllyPackets.NATURE_QUEUED -> "queued";
+            case AllyPackets.NATURE_FUSABLE -> "fusable";
+            case AllyPackets.NATURE_FUSING -> "fusing";
             default -> "you_lack";
         };
         int statusColor = s == AllyPackets.NATURE_OWNED ? GREEN : s == AllyPackets.NATURE_TEACHABLE || s == AllyPackets.NATURE_LEARNING
-                || s == AllyPackets.NATURE_QUEUED ? GOLD : 0xFFB07070;
+                || s == AllyPackets.NATURE_QUEUED ? GOLD : s == AllyPackets.NATURE_FUSABLE || s == AllyPackets.NATURE_FUSING ? Tab.NATURES.accent : 0xFFB07070;
         if (s == AllyPackets.NATURE_OWNED) {
             float affinity = nature.ordinal() < info.extra().natureAffinity().length ? info.extra().natureAffinity()[nature.ordinal()] : 0f;
             String strength = affinity >= 1.5f ? "primary" : affinity >= 1f ? "secondary" : "trained";
             y = wrap(g, Component.translatable("screen.noirm.ally.nature.status.owned", Component.translatable("nature.noirm.strength." + strength)),
+                    x, y, w, maxY, statusColor) + 2;
+        } else if (s == AllyPackets.NATURE_FUSING) {
+            AllyPackets.Fusion fusion = info.extra().fusion();
+            y = wrap(g, Component.translatable("screen.noirm.ally.nature.status.fusing", Math.round(100 * fusion.seconds() / Math.max(1f, fusion.needed()))),
                     x, y, w, maxY, statusColor) + 2;
         } else {
             y = wrap(g, Component.translatable("screen.noirm.ally.nature.status." + statusKey), x, y, w, maxY, statusColor) + 2;
@@ -889,6 +948,59 @@ public class AllyScreen extends AbstractContainerScreen<AllyMenu> implements Noi
         Component stop = Component.translatable("screen.noirm.ally.lesson.stop");
         pill(g, x, stopY, w, 13, stop, RED, true, false, mouseX, mouseY);
         hits.add(new Hit(x, stopY, w, 13, () -> send(AllyPackets.Action.NATURE_STOP, ""), List.of(Component.translatable("screen.noirm.ally.lesson.stop.tip"))));
+    }
+
+    /** Their fusion lesson (ally/CrewFusion): progress, pace and why, and a stop button. */
+    private void drawFusion(GuiGraphics g, int x, int y, int w, int bottom, int mouseX, int mouseY) {
+        AllyPackets.Fusion fusion = info.extra().fusion();
+        if (fusion.nature() < 0) {
+            drawLesson(g, x, y, w, bottom, mouseX, mouseY);
+            return;
+        }
+        Nature nature = Nature.values()[fusion.nature()];
+        int color = 0xFF000000 | nature.color();
+        g.drawString(font, fit(Component.translatable("screen.noirm.ally.fusion.fusing", Component.translatable(nature.translationKey())).getString(), w),
+                x, y, color, false);
+        y += 11;
+        float fraction = Mth.clamp(fusion.seconds() / Math.max(1f, fusion.needed()), 0f, 1f);
+        String pct = Math.round(fraction * 100) + "%";
+        bar(g, x, y + 1, w - font.width("100%") - 4, 6, fraction, color);
+        g.drawString(font, pct, x + w - font.width(pct), y, PAPER, false);
+        y += 11;
+        int stopY = bottom - 14;
+        Component when = fusion.rate() > 0f ? eta((fusion.needed() - fusion.seconds()) / fusion.rate())
+                : Component.translatable("screen.noirm.ally.lesson.paused.far", (int) CrewFusion.GUIDE_RANGE);
+        y = wrap(g, when, x, y, w, stopY - 33, fusion.rate() > 0f ? PAPER : 0xFFE0A050) + 1;
+        CrewFusion.Kind kind = fusion.kind(nature);
+        y = factor(g, x, y, w, kind.rate() >= 1f, Component.translatable("screen.noirm.ally.fusion.f.kind", Component.translatable(kind.key()),
+                "×" + kind.rate()), stopY - 2);
+        y = factor(g, x, y, w, fusion.has(AllyPackets.FUSE_STUDYING), Component.translatable("screen.noirm.ally.lesson.f.order"), stopY - 2);
+        factor(g, x, y, w, fusion.has(AllyPackets.FUSE_TOGETHER), Component.translatable("screen.noirm.ally.lesson.f.together",
+                "×" + CrewFusion.TOGETHER_BONUS), stopY - 2);
+        Component stop = Component.translatable("screen.noirm.ally.fusion.stop");
+        pill(g, x, stopY, w, 13, stop, RED, true, false, mouseX, mouseY);
+        hits.add(new Hit(x, stopY, w, 13, () -> send(AllyPackets.Action.FUSE_STOP, ""), List.of(Component.translatable("screen.noirm.ally.fusion.stop.tip"))));
+    }
+
+    /** A combined nature they could fuse themselves: how they'd come to it and the button to begin. */
+    private void drawFusionOffer(GuiGraphics g, Nature nature, int x, int y, int w, int bottom, int mouseX, int mouseY) {
+        AllyPackets.Fusion fusion = info.extra().fusion();
+        int color = 0xFF000000 | nature.color();
+        g.drawString(font, fit(Component.translatable("screen.noirm.ally.fusion.offer", Component.translatable(nature.translationKey())).getString(), w),
+                x, y, color, false);
+        y += 11;
+        g.drawString(font, fit(Component.translatable("screen.noirm.ally.fusion.title").getString(), w), x, y, Tab.NATURES.accent, false);
+        y += 11;
+        CrewFusion.Kind kind = fusion.kind(nature);
+        int startY = bottom - 14;
+        y = factor(g, x, y, w, kind.rate() >= 1f, Component.translatable("screen.noirm.ally.fusion.f.kind", Component.translatable(kind.key()),
+                "×" + kind.rate()), startY - 2);
+        float days = CrewFusion.secondsNeeded(nature) / Math.max(0.01f, kind.rate()) / 1200f;
+        Component tipText = Component.translatable("screen.noirm.ally.fusion.start.tip", String.format(Locale.ROOT, "%.1f", days));
+        wrap(g, tipText, x, y + 2, w, startY - 2, FAINT);
+        Component start = Component.translatable("screen.noirm.ally.fusion.start");
+        pill(g, x, startY, w, 13, start, Tab.NATURES.accent, true, false, mouseX, mouseY);
+        hits.add(new Hit(x, startY, w, 13, () -> send(AllyPackets.Action.FUSE_START, nature.getSerializedName()), List.of(tipText)));
     }
 
     private int factor(GuiGraphics g, int x, int y, int w, boolean on, Component text, int maxY) {

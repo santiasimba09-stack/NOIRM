@@ -19,7 +19,8 @@ import java.util.Map;
  * set ({@link Tactics}, {@link Occupation}, {@link Behaviour}), the post they guard, the nature
  * they're being taught and the ones queued after it ({@link NatureTeaching}), the jutsu waiting
  * on a nature, the natures they learned that way (kept when their clan's natures are re-applied
- * on load), the nature energy they gather meditating and the loot a gatherer carries.
+ * on load), the nature energy they gather meditating, the loot a gatherer carries, the combined
+ * nature they're fusing ({@link CrewFusion}) and their Sharingan's growth ({@link CrewEyes}).
  * Saved in the ninja's NBT under {@code "Ally"}.
  */
 public final class AllyState {
@@ -43,8 +44,16 @@ public final class AllyState {
     private float natureEnergy;
     /** What a gatherer is carrying to you. */
     private final List<ItemStack> carried = new ArrayList<>();
+    /** The combined nature they're fusing on their own ({@link CrewFusion}), or null, and the seconds put in. */
+    private Nature fusion;
+    private float fusionSeconds;
+    /** Sharingan growth from fights ({@link CrewEyes}), and whether the eye was transplanted (not born with it). */
+    private float eyeXp;
+    private boolean eyeImplanted;
 
     // Not saved: the brain's short-term memory.
+    /** Game time of the last time a comrade's danger stirred their eyes ({@link CrewEyes}). */
+    public long lastEyeMoment = -100000L;
     /** Game time until which they don't pick new fights (after "fall back"). */
     public long holdFireUntil;
     /** Where they were at the last progress check, and for how long they've been stuck. */
@@ -133,6 +142,40 @@ public final class AllyState {
         lessonSeconds = Math.max(0f, seconds);
     }
 
+    public Nature fusion() {
+        return fusion;
+    }
+
+    public float fusionSeconds() {
+        return fusionSeconds;
+    }
+
+    /** Starts (or, with null, ends) a fusion lesson; progress starts from zero. */
+    public void setFusion(Nature nature) {
+        fusion = nature;
+        fusionSeconds = 0f;
+    }
+
+    public void setFusionSeconds(float seconds) {
+        fusionSeconds = Math.max(0f, seconds);
+    }
+
+    public float eyeXp() {
+        return eyeXp;
+    }
+
+    public void setEyeXp(float xp) {
+        eyeXp = Math.max(0f, xp);
+    }
+
+    public boolean eyeImplanted() {
+        return eyeImplanted;
+    }
+
+    public void setEyeImplanted(boolean implanted) {
+        eyeImplanted = implanted;
+    }
+
     public Map<Nature, Float> learned() {
         return learned;
     }
@@ -163,6 +206,12 @@ public final class AllyState {
         ListTag items = new ListTag();
         carried.forEach(stack -> items.add(stack.save(new CompoundTag())));
         tag.put("Carried", items);
+        if (fusion != null) {
+            tag.putString("Fusion", fusion.getSerializedName());
+            tag.putFloat("FusionSeconds", fusionSeconds);
+        }
+        tag.putFloat("EyeXp", eyeXp);
+        tag.putBoolean("EyeImplanted", eyeImplanted);
         return tag;
     }
 
@@ -204,6 +253,10 @@ public final class AllyState {
                 carried.add(stack);
             }
         });
+        fusion = nature(tag.getString("Fusion"));
+        fusionSeconds = fusion == null ? 0f : Math.max(0f, tag.getFloat("FusionSeconds"));
+        eyeXp = Math.max(0f, tag.getFloat("EyeXp"));
+        eyeImplanted = tag.getBoolean("EyeImplanted");
     }
 
     public static Nature nature(String name) {
