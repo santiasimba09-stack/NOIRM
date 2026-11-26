@@ -2,6 +2,14 @@
 
 Newest first. One entry per working session or PR.
 
+## 2026-11-26 — Creature skills (branch `claude/entity-skills`)
+
+- Three new skills for making living creatures (summons, tailed beasts, bosses), used in order:
+  `noirm-entity-design` (canon research, manga first; bone tree, scale, moods, idle life → `docs/entities/<id>.md`),
+  `noirm-entity-textures` (`.bbmodel` + 64 px/block ink-style texture and glow mask from `tools/beastgen/`),
+  `noirm-entity-animation` (vanilla procedural animation on `BakedBbModel`, moods, idle AI, configurable scale,
+  multi-part hitboxes, glow, aura, summon smoke, LOD). Docs only; no code changed.
+
 ## 2026-11-26 — NOIRM v0.5 (= v0.22.0): the Hyūga wave (PR #6; protocol 41)
 
 The owner's brief (`docs/WAVE_HYUGA.md`): make the Hyūga the Leaf's strongest clan without building anything new.
