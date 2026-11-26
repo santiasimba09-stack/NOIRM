@@ -8,7 +8,7 @@ HUD, input, animations, renderers. This runs the **real client off-screen** and 
    You spawn in a glass arena in the sky with a sparring ninja 3 blocks ahead.
 3. Drive it and take screenshots (the display's auth file is created by `xvfb-run`):
    ```
-   export XAUTHORITY=$(ls /tmp/xvfb-run.*/Xauthority | head -1)
+   export XAUTHORITY=$(ls -t /tmp/xvfb-run.*/Xauthority | head -1)   # the newest: old runs leave stale ones
    python3 -I tools/client-smoke/xinput.py :99 move 640 360 click 3 key F5 key r click 1 click 1
    import -display :99 -window root shot.png
    ```
